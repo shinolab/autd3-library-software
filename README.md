@@ -1,6 +1,8 @@
 # autd3 #
 
-これはhttps://github.com/shinolab/autdをフォークし, C#, Unityの機能を追加したものです.
+これは https://github.com/shinolab/autd をフォークし, C#, Unityの機能を追加したものです.
+
+InstallはWikiを参照して下さい.
 
 # Authors #
 
