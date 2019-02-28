@@ -1,0 +1,13 @@
+﻿<Dictionary>
+    <Acronyms>
+        <CasingExceptions>
+            <Acronym>AUTD</Acronym>
+            <!--  Airborne Ultrasound Tactile Display  -->
+            <Acronym>PCM</Acronym>
+            <Acronym>LM</Acronym>
+            <Acronym>SVD</Acronym>
+            <Acronym>ZYZ</Acronym>
+            <Acronym>XYZ</Acronym>
+        </CasingExceptions>
+    </Acronyms>
+</Dictionary>

@@ -1,0 +1,19 @@
+//
+//  link.cpp
+//  autd3
+//
+//  Created by Seki Inoue on 6/17/16.
+//  Changed by Shun Suzuki on 02/07/2018.
+//
+//
+
+#include <stdio.h>
+#include "link.hpp"
+
+std::vector<uint16_t>& autd::internal::Link::accessGainData(GainPtr gain, const int deviceId) {
+    return gain->_data[deviceId];
+}
+
+uint32_t& autd::internal::Link::accessSent(ModulationPtr mod) {
+    return mod->sent;
+}
