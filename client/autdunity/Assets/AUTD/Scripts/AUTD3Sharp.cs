@@ -19,6 +19,7 @@
 
 using Microsoft.Win32.SafeHandles;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -98,6 +99,11 @@ namespace AUTD3Sharp
         #region field
         private bool _isDisposed = false;
         private AUTDControllerHandle _autdControllerHandle;
+
+        // そのうちなんとかしたい
+        // 現状はNative/マイコン側の実装の問題
+        private List<Gain> _lateralGains = null;
+
         #endregion
 
         #region Controller
@@ -230,6 +236,7 @@ namespace AUTD3Sharp
             return new Gain(gainPtr);
         }
         public static Gain GroupedGain(params GainPair[] gainPairs) => GroupedGain(new GainMap(gainPairs));
+
         public static Gain BesselBeamGain(float startPosX, float startPosY, float startPosZ, float dirX, float dirY, float dirZ, float thetaZ)
             => BesselBeamGain(new Vector3f(startPosX, startPosY, startPosZ), new Vector3f(dirX, dirY, dirZ), thetaZ);
         public static Gain BesselBeamGain(Vector3f point, Vector3f dir, float thetaZ)
@@ -359,6 +366,9 @@ namespace AUTD3Sharp
         {
             if (gain == null) throw new ArgumentNullException(nameof(gain));
 
+            if (_lateralGains == null) _lateralGains = new List<Gain>();
+            _lateralGains.Add(gain);
+
             NativeMethods.AUTDAppendLateralGain(_autdControllerHandle, gain);
         }
         public void AppendLateralGain(params Gain[] gainList)
@@ -377,6 +387,7 @@ namespace AUTD3Sharp
         }
         public void ResetLateralGain()
         {
+            if (_lateralGains != null) _lateralGains.Clear();
             NativeMethods.AUTDResetLateralGain(_autdControllerHandle);
         }
         public void SetGain(int deviceIndex, int transIndex, int amp, int phase)

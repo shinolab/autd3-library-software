@@ -19,7 +19,11 @@ namespace AUTD3SharpTest.Test
                 autd.AddDevice(Vector3f.Zero, Vector3f.Zero);
 
                 autd.AppendModulationSync(AUTD.SineModulation(150)); // AM sin 150 HZ
-                autd.AppendGainSync(AUTD.FocalPointGain(x, y, z)); // FocalPoint at (x,y,z)
+
+                var gain = AUTD.FocalPointGain(x, y, z);
+                gain.Fix(); // 位相振幅独立制御用の修正
+
+                autd.AppendGainSync(gain); // FocalPoint at (x,y,z)
 
                 Console.WriteLine("press any key to finish...");
                 Console.ReadKey(true);

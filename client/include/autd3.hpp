@@ -121,6 +121,8 @@ namespace autd {
 		friend class internal::Link;
 	protected:
 		Gain();
+		void FixImpl();
+
 		template <class T>
 #if DLL_FOR_CSHARP
 		static T* CreateHelper() {
@@ -133,6 +135,7 @@ namespace autd {
 #endif
 		std::mutex _mtx;
 		bool _built;
+		bool _fix;
 		GeometryPtr _geometry;
 		std::map<int, std::vector<uint16_t> > _data;
 	public:
@@ -142,6 +145,7 @@ namespace autd {
 		 Unless called explicitly by user, this method will be called internally on not-main thread. Be careful to manage critical sections if you extend this class.
 		 */
 		virtual void build();
+		void Fix();
 		void SetGeometry(const GeometryPtr &geometry);
 		GeometryPtr geometry();
 		std::map<int, std::vector<uint16_t> > data();

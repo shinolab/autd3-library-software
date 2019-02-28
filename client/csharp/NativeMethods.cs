@@ -50,6 +50,7 @@ namespace AUTD3Sharp
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDDoubleGain(out AUTDGainPtr gain, float* points, float* amps);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDNullGain(out AUTDGainPtr gain);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDDeleteGain(AUTDGainPtr gain);
+        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDFixGain(AUTDGainPtr gain);
         #endregion
 
         #region Modulation

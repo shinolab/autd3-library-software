@@ -49,6 +49,11 @@ namespace AUTD3Sharp
             NativeMethods.AUTDDeleteGain(handle);
             return true;
         }
+
+        public void Fix()
+        {
+            NativeMethods.AUTDFixGain(handle);
+        }
     }
 
     [ComVisible(false)]

@@ -18,8 +18,12 @@ int main()
 	if (!autd.isOpen()) return ENXIO;
 	
 	autd.geometry()->AddDevice(Eigen::Vector3f(0, 0, 0), Eigen::Vector3f(0, 0, 0));
-	
-	autd.AppendGainSync(autd::FocalPointGain::Create(Eigen::Vector3f(90, 70, 200)));
+
+	auto gain = autd::FocalPointGain::Create(Eigen::Vector3f(90, 70, 200));
+
+	gain->Fix(); // 位相振幅独立制御用の修正
+
+	autd.AppendGainSync(gain);
 	autd.AppendModulationSync(autd::SineModulation::Create(150)); // 150Hz AM
 	
 	std::cout << "press any key to finish..." << std::endl;

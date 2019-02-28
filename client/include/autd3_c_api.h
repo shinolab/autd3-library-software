@@ -51,6 +51,7 @@ extern "C" {
 	__declspec(dllexport) void AUTDHoloGain(AUTDGainPtr *gain, float* points, float* amps, int size);
 	__declspec(dllexport) void AUTDNullGain(AUTDGainPtr *gain);
 	__declspec(dllexport) void AUTDDeleteGain(AUTDGainPtr gain);
+	__declspec(dllexport) void AUTDFixGain(AUTDGainPtr gain);
 #pragma endregion
 
 #pragma region Modulation

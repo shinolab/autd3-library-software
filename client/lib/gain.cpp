@@ -24,6 +24,7 @@ autd::GainPtr autd::Gain::Create() {
 
 autd::Gain::Gain() {
 	this->_built = false;
+	this->_fix = false;
 	this->_geometry = GeometryPtr(nullptr);
 }
 
@@ -42,6 +43,31 @@ bool autd::Gain::built() {
 
 void autd::Gain::SetGeometry(const autd::GeometryPtr &geometry) {
 	this->_geometry = geometry;
+}
+
+inline void ConvertAmpPhase(uint8_t amp_i, uint8_t phase_i, uint8_t& amp_o, uint8_t& phase_o)
+{
+	double d = asin(amp_i / 255.0) / M_PIf;  // duty (0 ~ 0.5)
+	amp_o = static_cast<uint8_t>(511 * d);
+	phase_o = static_cast<uint8_t>((int)(phase_i + 256 - 128 * d) % 256);
+}
+
+void autd::Gain::Fix() {
+	this->_fix = true;
+}
+
+void autd::Gain::FixImpl() {
+	for (int i = 0; i < this->geometry()->numDevices(); i++) {
+		std::vector<uint16_t> *vec = &this->_data[this->geometry()->deviceIdForDeviceIdx(i)];
+		for (size_t j = 0; j < vec->size(); j++)
+		{
+			auto amp = (uint8_t)((*vec)[j] >> 8);
+			auto phase = (uint8_t)(*vec)[j];
+			uint8_t amp_fix, phase_fix;
+			ConvertAmpPhase(amp, phase, amp_fix, phase_fix);
+			(*vec)[j] = (uint16_t)(amp_fix << 8) + phase_fix;
+		}
+	}
 }
 
 autd::GeometryPtr autd::Gain::geometry() {
@@ -87,7 +113,6 @@ autd::GainPtr autd::FocalPointGain::Create(Eigen::Vector3f point, uint8_t amp) {
 	gain->_amp = amp;
 	return gain;
 }
-
 
 void autd::FocalPointGain::build() {
 	if (this->built()) return;

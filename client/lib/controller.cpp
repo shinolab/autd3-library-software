@@ -192,6 +192,7 @@ void autd::Controller::impl::InitPipeline() {
 
 			// build gain
 			if (gain != nullptr && !gain->built()) gain->build();
+			if (gain != nullptr && gain->_fix) gain->FixImpl();
 
 			// pass gain to next pipeline stage
 			{
@@ -250,6 +251,7 @@ void autd::Controller::impl::InitPipeline() {
 	});
 }
 
+
 void autd::Controller::impl::AppendGain(GainPtr gain) {
 	{
 		this->FinishLateralModulation();
@@ -265,6 +267,7 @@ void autd::Controller::impl::AppendGainSync(autd::GainPtr gain) {
 		this->FinishLateralModulation();
 		gain->SetGeometry(this->_geometry);
 		if (!gain->built()) gain->build();
+		if (gain->_fix) gain->FixImpl();
 
 		size_t body_size = 0;
 

@@ -150,6 +150,10 @@ void AUTDDeleteGain(AUTDGainPtr gain) {
 	auto *g = static_cast<Gain *>(gain);
 	delete g;
 }
+void AUTDFixGain(AUTDGainPtr gain) {
+	auto *g = static_cast<Gain *>(gain);
+	g->Fix();
+}
 #pragma endregion
 
 #pragma region Modulation
