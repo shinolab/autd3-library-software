@@ -2,7 +2,7 @@
 
 これは https://github.com/shinolab/autd をフォークし, C#, Unityの機能を追加したものです.
 
-InstallはWikiを参照して下さい.
+Installは[GitHubのWiki](https://github.com/shinolab/autd3-library-software/wiki)を参照して下さい.
 
 # Authors #
 
