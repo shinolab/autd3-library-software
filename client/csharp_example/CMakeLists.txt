@@ -23,7 +23,7 @@ endif()
 
 set_target_properties(AUTD3SharpTest
   PROPERTIES
-  VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.6"
+  VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.7.2"
 )
 
 target_link_libraries(AUTD3SharpTest AUTD3Sharp)

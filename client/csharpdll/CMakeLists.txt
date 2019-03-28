@@ -41,7 +41,6 @@ if (Matlab_FOUND AND Matlab_MX_LIBRARY)
 endif()
 
 if (USE_UNITY)
-    message(aaaaaa)
     add_custom_command(TARGET AUTD3SharpDll
                  POST_BUILD
                  COMMAND copy /Y $(TargetPath) $(SolutionDir)autdunity\\Assets\\AUTD\\Plugins\\x86_64)
