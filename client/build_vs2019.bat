@@ -2,8 +2,8 @@
 cd /d %~dp0
 
 set BUILD_DIR=%~dp0
-set PROJECT_DIR=%BUILD_DIR%build_x86\
-set IDE_NAME="Visual Studio 15 2017"
+set PROJECT_DIR=%BUILD_DIR%build\
+set IDE_NAME="Visual Studio 16 2019"
 set USE_UNITY=ON
 
 if "%1" == "-nounity" (
@@ -14,6 +14,8 @@ SETLOCAL ENABLEDELAYEDEXPANSION
 for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do rem"') do (
     set "DEL=%%a" 
 )
+
+chcp 65001 > nul
 
 cmake -version > nul 2>&1
 if not %errorlevel% == 0 (
@@ -76,7 +78,7 @@ echo : Success to create project directory "%PROJECT_DIR%"
 call :colorEcho 0a "INFO"
 echo : Creating VS solution...
 pushd %PROJECT_DIR%
-cmake -G %IDE_NAME% -D USE_UNITY=%USE_UNITY% %BUILD_DIR% 
+cmake -G %IDE_NAME% -A "x64" -D USE_UNITY=%USE_UNITY% %BUILD_DIR%
 popd
 
 if not "%1" == "-nounity" (
@@ -88,6 +90,12 @@ if not "%1" == "-nounity" (
   @copy /Y .\csharp\Util\GainMap.cs autdunity\Assets\AUTD\Scripts\Util\GainMap.cs > nul
   @xcopy .\autdunity %PROJECT_DIR%\autdunity /s/i > nul
 )
+
+call :colorEcho 0a "INFO"
+echo : Setting PlatformTarget to x64...
+
+call SetTargetx64.bat %PROJECT_DIR%csharp\ AUTD3Sharp.csproj tmp.csproj x86 x64
+call SetTargetx64.bat %PROJECT_DIR%csharp_example\ AUTD3SharpTest.csproj tmp.csproj x86 x64
 
 call :colorEcho 0a "INFO"
 echo : Done.
