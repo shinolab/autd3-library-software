@@ -3,7 +3,7 @@
 //  autd3
 //
 //  Created by Seki Inoue on 6/17/16.
-//  Changed by Shun Suzuki on 02/07/2018.
+//  Modified by Shun Suzuki on 02/07/2018.
 //
 //
 

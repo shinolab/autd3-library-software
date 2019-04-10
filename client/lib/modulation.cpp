@@ -3,7 +3,8 @@
 //  autd3
 //
 //  Created by Seki Inoue on 6/11/16.
-//  Changed by Shun Suzuki on 02/07/2018.
+//  Modified by Shun Suzuki on 02/07/2018.
+//  Modified by Shun Suzuki on 04/10/2019.
 //
 //
 
@@ -16,13 +17,25 @@
 #include "autd3.hpp"
 #include "privdef.hpp"
 
+#pragma region Util
+inline float sinc(float x) {
+	if (fabs(x) < std::numeric_limits<float>::epsilon()) return 1;
+	return sinf(M_PIf*x) / (M_PIf*x);
+}
+
+template<typename T>
+inline T clamp(T value, T min, T max) {
+	return value < min ? min : value > max ? max : value;
+}
+#pragma endregion
+
+#pragma region Modulation
 autd::Modulation::Modulation() {
 	this->sent = 0;
 	this->loop = true;
 }
 
-
-const float autd::Modulation::samplingFrequency() {
+constexpr float autd::Modulation::samplingFrequency() {
 	return MOD_SAMPLING_FREQ;
 }
 
@@ -35,44 +48,44 @@ autd::ModulationPtr autd::Modulation::Create(uint8_t amp) {
 	mod->buffer.resize(1, amp);
 	return mod;
 }
+#pragma endregion 
 
-
+#pragma region SineModulation
 autd::ModulationPtr autd::SineModulation::Create(float freq, float amp, float offset) {
 	auto mod = CreateHelper<SineModulation>();
 
-	freq = std::min<float>(mod->samplingFrequency() / 2, std::max<float>(1.0, freq));
+	freq = clamp(freq, 1.0f, mod->samplingFrequency() / 2);
 
-	int T = (int)round(1.0 / freq * mod->samplingFrequency());
+	auto T = (int)round(1.0 / freq * mod->samplingFrequency());
 	mod->buffer.resize(T, 0);
 	for (int i = 0; i < T; i++) {
-		float tamp = 255.0f*offset + 127.5f*amp*cosf(2.0f * M_PIf * i / T);
-		mod->buffer[i] = (uint8_t)floor(fmin(fmaxf(tamp, 0.0f), 255.0f));
+		auto tamp = 255.0f*offset + 127.5f*amp*cosf(2.0f * M_PIf * i / T);
+		mod->buffer[i] = (uint8_t)floor(clamp(tamp, 0.0f, 255.0f));
 		if (mod->buffer[i] == 0) mod->buffer[i] = 1;
 	}
 	mod->loop = true;
 	return mod;
 }
+#pragma endregion
 
+#pragma region SawModulation
 autd::ModulationPtr autd::SawModulation::Create(float freq) {
 	auto mod = CreateHelper<SawModulation>();
 
-	freq = std::min<float>(mod->samplingFrequency() / 2, std::max<float>(1.0, freq));
+	freq = clamp(freq, 1.0f, mod->samplingFrequency() / 2);
 
-	int T = (int)round(1.0 / freq * mod->samplingFrequency());
+	auto T = (int)round(1.0 / freq * mod->samplingFrequency());
 	mod->buffer.resize(T, 0);
 	for (int i = 0; i < T; i++) {
-		float amp = 255.0f * i / T;
-		mod->buffer[i] = (uint8_t)floor(fmaxf(amp, 0.0f));
+		auto amp = 255.0f * i / T;
+		mod->buffer[i] = (uint8_t)floor(amp);
 	}
 	mod->loop = true;
 	return mod;
 }
+#pragma endregion
 
-inline float sinc(float x) {
-	if (fabs(x) < std::numeric_limits<float>::epsilon()) return 1;
-	return sinf(M_PIf*x) / (M_PIf*x);
-}
-
+#pragma region RawPCMModulation
 autd::ModulationPtr autd::RawPCMModulation::Create(std::string filename, float samplingFreq) {
 	if (samplingFreq < std::numeric_limits<float>::epsilon()) samplingFreq = MOD_SAMPLING_FREQ;
 	auto mod = CreateHelper<RawPCMModulation>();
@@ -93,10 +106,10 @@ autd::ModulationPtr autd::RawPCMModulation::Create(std::string filename, float s
 		memcpy(&value, buf, sizeof(value));
 		tmp.push_back(value);
 	}
-
-	// 少なくともVS2017ではこのコードが動かない
-	// 具体的には永遠にvに0が入る
 /*
+	以下が元の実装
+	少なくともVS2017ではこのコードが動かない
+	具体的には永遠にvに0が入る
 	do {
 		short v = 0;
 		ifs >> v;
@@ -104,9 +117,9 @@ autd::ModulationPtr autd::RawPCMModulation::Create(std::string filename, float s
 	} while (!ifs.eof());
 */
 
-	// up sampling
-	// TODO: impl. down sampling
-	// TODO: efficient memory management
+// up sampling
+// TODO: impl. down sampling
+// TODO: efficient memory management
 
 	std::vector<float> smpl_buf;
 	const float freqratio = mod->samplingFrequency() / samplingFreq;
@@ -144,3 +157,4 @@ autd::ModulationPtr autd::RawPCMModulation::Create(std::string filename, float s
 
 	return mod;
 }
+#pragma endregion

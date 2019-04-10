@@ -41,19 +41,17 @@ namespace autd {
 		class Link;
 	}
 	class Controller;
-	class Gain;
-#if DLL_FOR_CSHARP
-	typedef Gain* GainPtr;
-#else
-	typedef std::shared_ptr<Gain> GainPtr;
-#endif
-
 	class Geometry;
 	typedef std::shared_ptr<Geometry> GeometryPtr;
+
+	class Gain;
 	class Modulation;
+
 #if DLL_FOR_CSHARP
+	typedef Gain* GainPtr;
 	typedef Modulation* ModulationPtr;
 #else
+	typedef std::shared_ptr<Gain> GainPtr;
 	typedef std::shared_ptr<Modulation> ModulationPtr;
 #endif
 
@@ -259,7 +257,7 @@ namespace autd {
 	public:
 		static ModulationPtr Create();
 		static ModulationPtr Create(uint8_t amp);
-		const float samplingFrequency();
+		constexpr float samplingFrequency();
 		bool loop;
 		std::vector<uint8_t> buffer;
 	protected:
