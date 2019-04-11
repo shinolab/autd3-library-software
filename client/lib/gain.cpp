@@ -3,7 +3,8 @@
 //  autd3
 //
 //  Created by Seki Inoue on 6/1/16.
-//  Changed by Shun Suzuki on 02/07/2018.
+//  Modified by Shun Suzuki on 02/07/2018.
+//  Modified by Shun Suzuki on 04/11/2018.
 //
 
 #include <iostream>
@@ -15,8 +16,11 @@
 #pragma warning( disable : ALL_CODE_ANALYSIS_WARNINGS )
 #include <boost/assert.hpp>
 #pragma warning( pop )
-#include "privdef.hpp"
+
 #include "autd3.hpp"
+#include "controller.hpp"
+#include "gain.hpp"
+#include "privdef.hpp"
 
 autd::GainPtr autd::Gain::Create() {
 	return CreateHelper<Gain>();

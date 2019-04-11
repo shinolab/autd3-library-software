@@ -16,7 +16,7 @@ public:
 	void Start();
 	void Stop();
 protected:
-	int _interval;
+	int _interval_us;
 	virtual void Run() = 0;
 private:
 	std::thread _mainThread;

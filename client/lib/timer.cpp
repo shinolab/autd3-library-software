@@ -18,15 +18,17 @@ constexpr auto TIME_SCALE = 1000 * 1000L; //us
 
 using namespace std;
 
-Timer::Timer() {}
+Timer::Timer() {
+	this->_interval_us = 1;
+}
 Timer::~Timer() {
 	this->Stop();
 }
 
-void Timer::SetInterval(int interval)
+void Timer::SetInterval(int interval_us)
 {
-	if (interval <= 0) throw new std::runtime_error("Interval must be positive integer.");
-	this->_interval = interval;
+	if (interval_us <= 0) throw new std::runtime_error("Interval must be positive integer.");
+	this->_interval_us = interval_us;
 }
 
 void Timer::Start() {
@@ -77,9 +79,9 @@ void Timer::MainLoop() {
 		this->Run();
 
 		QueryPerformanceCounter(&now);
-		auto elasped = (double)(now.QuadPart - start.QuadPart) / freq.QuadPart * TIME_SCALE;
+		auto elasped = static_cast<double>(now.QuadPart - start.QuadPart) / freq.QuadPart * TIME_SCALE;
 
-		sleep_t = (int)(this->_interval * ++count - elasped);
+		sleep_t = (int)(this->_interval_us * ++count - elasped);
 		if (sleep_t > 0) {
 			MicroSleep(sleep_t);
 		}

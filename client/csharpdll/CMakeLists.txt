@@ -17,19 +17,31 @@ include_directories(../include ${EIGEN3_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${Ads_
 
 add_library(AUTD3SharpDll SHARED
   c_api.cpp
-  ../lib/controller.cpp
+  
   ../lib/link.cpp
   ../lib/ethercat_link.cpp
-  ../lib/geometry.cpp
+  
   ../lib/gain.cpp
   ../lib/matlabgain.cpp
   ../lib/holo_gain.cpp
   ../lib/groupedgain.cpp
+  
   ../lib/modulation.cpp
+  
+  ../lib/controller.cpp
+  ../lib/geometry.cpp
+  
+  ../lib/timer.cpp
+    
   ../lib/link.hpp
   ../lib/timer.hpp
-  ../lib/timer.cpp
   ../lib/ethercat_link.hpp
+  
+  ../lib/controller.hpp
+  ../lib/core.hpp
+  ../lib/gain.hpp
+  ../lib/modulation.hpp
+  
   ../include/privdef.hpp
   ../include/autd3.hpp
   ../include/autd3_c_api.h

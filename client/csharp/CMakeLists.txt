@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.8)
 enable_language(CSharp)
 include(CSharpUtilities)
 
-set(CMAKE_CSharp_FLAGS "/langversion:7.3")
-
 add_library(AUTD3Sharp 
   SHARED
   AUTD3Sharp.cs

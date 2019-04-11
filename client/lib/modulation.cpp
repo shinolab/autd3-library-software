@@ -15,6 +15,7 @@
 #include <limits>
 #include <fstream>
 #include "autd3.hpp"
+#include "modulation.hpp"
 #include "privdef.hpp"
 
 #pragma region Util
@@ -56,7 +57,7 @@ autd::ModulationPtr autd::SineModulation::Create(float freq, float amp, float of
 
 	freq = clamp(freq, 1.0f, mod->samplingFrequency() / 2);
 
-	auto T = (int)round(1.0 / freq * mod->samplingFrequency());
+	auto T = (int)floor(1.0 / freq * mod->samplingFrequency());
 	mod->buffer.resize(T, 0);
 	for (int i = 0; i < T; i++) {
 		auto tamp = 255.0f*offset + 127.5f*amp*cosf(2.0f * M_PIf * i / T);
@@ -151,7 +152,7 @@ autd::ModulationPtr autd::RawPCMModulation::Create(std::string filename, float s
 	if (max_v == min_v) max_v = min_v + 1;
 	mod->buffer.resize(lpf_buf.size(), 0);
 	for (size_t i = 0; i < lpf_buf.size(); i++) {
-		mod->buffer[i] = (uint8_t)round(255.0 * (lpf_buf[i] - min_v) / (max_v - min_v));
+		mod->buffer[i] = (uint8_t)round(255.0f * (lpf_buf[i] - min_v) / (max_v - min_v));
 	}
 	mod->loop = true;
 

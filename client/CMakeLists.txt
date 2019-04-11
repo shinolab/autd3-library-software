@@ -4,12 +4,15 @@ set(CMAKE_CONFIGURATION_TYPES "Debug;Release" )
 set(CMAKE_SUPPRESS_REGENERATION true)
 
 option (USE_UNITY "Use Unity" OFF)
+option (ENABLE_TESTS "Include Test Project" OFF)
 
 project(autd3)
 set(VERSION_MAJOR   3   CACHE STRING "Project major version number.")
 set(VERSION_MINOR   2   CACHE STRING "Project minor version number.")
-set(VERSION_PATCH   0   CACHE STRING "Project patch version number.")
+set(VERSION_PATCH   1   CACHE STRING "Project patch version number.")
 mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
+
+set(CMAKE_CSharp_FLAGS "/langversion:latest")
 
 ADD_CUSTOM_TARGET(cpplint
   python
@@ -28,5 +31,8 @@ add_subdirectory(doc)
 add_subdirectory(example)
 add_subdirectory(csharp_example)
 add_subdirectory(csharpdll)
+if (ENABLE_TESTS)
+	add_subdirectory(tests)
+endif()
 
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT AUTD3SharpTest)

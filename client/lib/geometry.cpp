@@ -14,6 +14,7 @@
 #include <Eigen/Geometry>
 #pragma warning( pop )
 #include "autd3.hpp"
+#include "controller.hpp"
 #include "privdef.hpp"
 
 class Device {
@@ -34,7 +35,7 @@ public:
 		for (int y = 0; y < NUM_TRANS_Y; y++)
 			for (int x = 0; x < NUM_TRANS_X; x++)
 				if (!IS_MISSING_TRANSDUCER(x, y))
-					local_trans_positions.col(index++) = Eigen::Vector3f(x*TRANS_SIZE, y*TRANS_SIZE, 0);
+					local_trans_positions.col(index++) = Eigen::Vector3f(x*TRANS_SIZE_MM, y*TRANS_SIZE_MM, 0);
 
 		global_trans_positions = transform_matrix * local_trans_positions;
 	};
@@ -50,7 +51,7 @@ public:
 		for (int y = 0; y < NUM_TRANS_Y; y++)
 			for (int x = 0; x < NUM_TRANS_X; x++)
 				if (!IS_MISSING_TRANSDUCER(x, y))
-					local_trans_positions.col(index++) = Eigen::Vector3f(x*TRANS_SIZE, y*TRANS_SIZE, 0);
+					local_trans_positions.col(index++) = Eigen::Vector3f(x*TRANS_SIZE_MM, y*TRANS_SIZE_MM, 0);
 
 		global_trans_positions = transform_matrix * local_trans_positions;
 	};
@@ -79,7 +80,8 @@ autd::GeometryPtr autd::Geometry::Create() {
 }
 
 autd::Geometry::Geometry() {
-	this->_pimpl = std::unique_ptr<impl>(new impl());
+	this->_pimpl = std::make_unique<impl>();
+	this->_freq_shift = -3;
 }
 
 autd::Geometry::~Geometry() {

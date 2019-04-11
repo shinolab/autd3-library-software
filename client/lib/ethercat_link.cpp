@@ -110,7 +110,7 @@ typedef long(_stdcall *TcAdsSyncWriteReqEx)(long, AmsAddr*, unsigned long, unsig
 void autd::internal::LocalEthercatLink::Open(std::string location) {
 	this->lib = LoadLibrary("TcAdsDll.dll");
 	//	this->lib = LoadPackagedLibrary(TEXT("TcAdsDll.dll"), 0);
-	if (lib == NULL) {
+	if (lib == nullptr) {
 		BOOST_ASSERT_MSG(false, "couldn't find TcADS-DLL.");
 		return;
 	}

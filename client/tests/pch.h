@@ -1,0 +1,11 @@
+//
+// pch.h
+// Header for standard system include files.
+//
+
+#pragma once
+
+#include "gtest/gtest.h"
+#include "gmock/gmock.h"
+#include "autd3.hpp"
+#include "privdef.hpp"

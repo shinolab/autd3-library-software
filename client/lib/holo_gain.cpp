@@ -20,6 +20,8 @@
 #pragma warning( pop )
 #include "privdef.hpp"
 #include "autd3.hpp"
+#include "controller.hpp"
+#include "gain.hpp"
 #define _USE_MATH_DEFINES
 #include <math.h>
 #define REPEAT_SDP (10)

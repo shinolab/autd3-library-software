@@ -6,8 +6,7 @@
 //
 //
 
-#ifndef ethercat_link_hpp
-#define ethercat_link_hpp
+#pragma once
 
 #include <stdio.h>
 #include <string>
@@ -21,9 +20,6 @@
 #else
 typedef void* HMODULE;
 #endif
-
-/* The classes below are not exported */
-#pragma GCC visibility push(hidden)
 
 namespace autd {
     namespace internal {
@@ -49,7 +45,3 @@ namespace autd {
         };
     }
 }
-
-#pragma GCC visibility pop
-
-#endif /* ethercat_link_hpp */
