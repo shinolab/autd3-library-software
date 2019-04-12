@@ -10,10 +10,10 @@
 #include <stdio.h>
 #include "link.hpp"
 
-std::vector<uint16_t>& autd::internal::Link::accessGainData(GainPtr gain, const int deviceId) {
-    return gain->_data[deviceId];
+std::vector<uint16_t>& autd::internal::Link::accessGainData(Gain& gain, const int deviceId) {
+    return gain._data[deviceId];
 }
 
-uint32_t& autd::internal::Link::accessSent(ModulationPtr mod) {
-    return mod->sent;
+uint32_t& autd::internal::Link::accessSent(Modulation& mod) noexcept {
+    return mod.sent;
 }

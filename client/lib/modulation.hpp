@@ -16,9 +16,9 @@ namespace autd {
 	class Modulation;
 
 #if DLL_FOR_CSHARP
-	typedef Modulation* ModulationPtr;
+	using ModulationPtr = Modulation *;
 #else
-	typedef std::shared_ptr<Modulation> ModulationPtr;
+	using ModulationPtr = std::shared_ptr<Modulation>;
 #endif
 
 	class Modulation
@@ -26,23 +26,12 @@ namespace autd {
 		friend class Controller;
 		friend class internal::Link;
 	public:
+		Modulation() noexcept;
 		static ModulationPtr Create();
 		static ModulationPtr Create(uint8_t amp);
-		constexpr float samplingFrequency();
+		constexpr static auto samplingFrequency();
 		bool loop;
 		std::vector<uint8_t> buffer;
-	protected:
-		Modulation();
-		template <class T>
-#if DLL_FOR_CSHARP
-		static T* CreateHelper() {
-			return new T;
-		}
-#else
-		static std::shared_ptr<T> CreateHelper() {
-			return std::shared_ptr<T>(new T());
-		}
-#endif
 	private:
 		uint32_t sent;
 	};

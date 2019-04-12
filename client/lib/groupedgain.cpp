@@ -18,33 +18,36 @@
 #include "gain.hpp"
 #include "privdef.hpp"
 
-autd::GainPtr autd::GroupedGain::Create(std::map<int, autd::GainPtr> gainmap) {
-	auto gain =CreateHelper<GroupedGain>();
+using namespace autd;
+
+GainPtr GroupedGain::Create(std::map<int, GainPtr> gainmap) {
+	auto gain = CreateHelper<GroupedGain>();
 	gain->_gainmap = gainmap;
-	gain->_geometry = GeometryPtr(nullptr);
+	gain->_geometry = nullptr;
 	return gain;
 }
 
-void autd::GroupedGain::build() {
+void GroupedGain::build() {
 	if (this->built()) return;
-	if (this->geometry() == nullptr) BOOST_ASSERT_MSG(false, "Geometry is required to build Gain");
+	auto geo = this->geometry();
+	if (geo == nullptr) BOOST_ASSERT_MSG(false, "Geometry is required to build Gain");
 
 	this->_data.clear();
 
-	const int ndevice = this->geometry()->numDevices();
+	const auto ndevice = geo->numDevices();
 	for (int i = 0; i < ndevice; i++) {
-		this->_data[this->geometry()->deviceIdForDeviceIdx(i)].resize(NUM_TRANS_IN_UNIT);
+		this->_data[geo->deviceIdForDeviceIdx(i)].resize(NUM_TRANS_IN_UNIT);
 	}
 
 	for (std::pair<int, GainPtr> p : this->_gainmap) {
 		auto g = p.second;
-		g->SetGeometry(this->geometry());
+		g->SetGeometry(geo);
 		g->build();
 	}
 
 	for (int i = 0; i < ndevice; i++)
 	{
-		auto groupId = this->geometry()->GroupIDForDeviceID(i);
+		auto groupId = geo->GroupIDForDeviceID(i);
 		if (_gainmap.count(groupId)) {
 			auto data = _gainmap[groupId]->data();
 			this->_data[i] = data[i];

@@ -25,8 +25,8 @@ namespace autd {
 	class Controller
 	{
 	public:
-		Controller();
-		~Controller();
+		Controller() noexcept(false);
+		~Controller() noexcept(false);
 		/*!
 		 @brief Open device by link type and location.
 			The scheme of location is as follows:
@@ -41,7 +41,7 @@ namespace autd {
 
 		size_t remainingInBuffer();
 		GeometryPtr geometry() noexcept;
-		void SetGeometry(const GeometryPtr &geometry) noexcept;
+		void SetGeometry(const GeometryPtr& geometry) noexcept;
 
 		void SetSilentMode(bool silent) noexcept;
 		bool silentMode() noexcept;
@@ -50,15 +50,12 @@ namespace autd {
 		void AppendModulation(ModulationPtr modulation);
 		void AppendModulationSync(ModulationPtr modulation);
 		void AppendLateralGain(GainPtr gain);
-		void AppendLateralGain(const std::vector<GainPtr> &gain_list);
+		void AppendLateralGain(const std::vector<GainPtr>& gain_list);
 		void StartLateralModulation(float freq);
 		void FinishLateralModulation();
 		void ResetLateralGain();
 		void Flush();
 
-		Controller &operator<<(const uint8_t coef);
-		Controller &operator<<(GainPtr gain);
-		Controller &operator<<(ModulationPtr mod);
 	private:
 		class impl;
 		class lateraltimer;

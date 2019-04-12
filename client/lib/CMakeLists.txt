@@ -37,6 +37,7 @@ add_library(autd3 STATIC
   core.hpp
   gain.hpp
   modulation.hpp
+  geometry.hpp
   ../include/privdef.hpp
   ../include/autd3.hpp
 )

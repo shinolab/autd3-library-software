@@ -10,11 +10,16 @@
 
 class Timer {
 public:
-	Timer();
-	~Timer();
+	Timer() noexcept;
+	~Timer() noexcept(false);
 	void SetInterval(int interval);
 	void Start();
 	void Stop();
+
+	Timer(const Timer&) = default;
+	Timer(Timer&&) = default;
+	Timer& operator=(const Timer&) = default;
+	Timer& operator=(Timer&&) = default;
 protected:
 	int _interval_us;
 	virtual void Run() = 0;
