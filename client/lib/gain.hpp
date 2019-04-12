@@ -25,9 +25,9 @@ namespace autd {
 	class Gain;
 
 #if DLL_FOR_CSHARP
-	typedef Gain* GainPtr;
+	using GainPtr = Gain *;
 #else
-	typedef std::shared_ptr<Gain> GainPtr;
+	using GainPtr = std::shared_ptr<Gain>;
 #endif
 
 	class Gain
@@ -36,19 +36,9 @@ namespace autd {
 		friend class Geometry;
 		friend class internal::Link;
 	protected:
-		Gain();
+		Gain() noexcept;
 		void FixImpl();
 
-		template <class T>
-#if DLL_FOR_CSHARP
-		static T* CreateHelper() {
-			return new T;
-		}
-#else
-		static std::shared_ptr<T> CreateHelper() {
-			return std::shared_ptr<T>(new T());
-		}
-#endif
 		std::mutex _mtx;
 		bool _built;
 		bool _fix;
@@ -57,19 +47,19 @@ namespace autd {
 	public:
 		static GainPtr Create();
 		virtual void build();
-		void Fix();
-		void SetGeometry(const GeometryPtr &geometry);
-		GeometryPtr geometry();
+		void Fix() noexcept;
+		void SetGeometry(const GeometryPtr& geometry) noexcept;
+		GeometryPtr geometry() noexcept;
 		std::map<int, std::vector<uint16_t> > data();
 		bool built();
 	};
 
-	typedef Gain NullGain;
+	using NullGain = Gain;
 
 	class PlaneWaveGain : public Gain {
 	public:
 		static GainPtr Create(Eigen::Vector3f direction);
-		void build();
+		void build() override;
 	private:
 		Eigen::Vector3f _direction;
 	};
@@ -78,16 +68,16 @@ namespace autd {
 	public:
 		static GainPtr Create(Eigen::Vector3f point);
 		static GainPtr Create(Eigen::Vector3f point, uint8_t amp);
-		void build();
+		void build() override;
 	private:
 		Eigen::Vector3f _point;
-		uint8_t _amp;
+		uint8_t _amp = 0xff;
 	};
 
 	class BesselBeamGain : public Gain {
 	public:
 		static GainPtr Create(Eigen::Vector3f point, Eigen::Vector3f vec_n, float theta_z);
-		void build();
+		void build() override;
 	private:
 		Eigen::Vector3f _point;
 		Eigen::Vector3f _vec_n;
@@ -97,7 +87,7 @@ namespace autd {
 	class CustomGain : public Gain {
 	public:
 		static GainPtr Create(uint16_t* data, int dataLength);
-		void build();
+		void build() override;
 	private:
 		std::vector<uint16_t> _rawdata;
 	};
@@ -105,7 +95,7 @@ namespace autd {
 	class GroupedGain : public Gain {
 	public:
 		static GainPtr Create(std::map<int, autd::GainPtr> gainmap);
-		void build();
+		void build() override;
 	private:
 		std::map<int, autd::GainPtr> _gainmap;
 	};
@@ -113,18 +103,18 @@ namespace autd {
 	class HoloGainSdp : public Gain {
 	public:
 		static GainPtr Create(Eigen::MatrixX3f foci, Eigen::VectorXf amp);
-		virtual void build();
+		void build() override;
 	protected:
 		Eigen::MatrixX3f _foci;
 		Eigen::VectorXf _amp;
 	};
 
-	typedef HoloGainSdp HoloGain;
+	using HoloGain = HoloGainSdp;
 
 	class MatlabGain : public Gain {
 	public:
 		static GainPtr Create(std::string filename, std::string varname);
-		void build();
+		void build() override;
 	protected:
 		std::string _filename, _varname;
 	};
@@ -132,7 +122,7 @@ namespace autd {
 	class TransducerTestGain : public Gain {
 	public:
 		static GainPtr Create(int transducer_index, int amp, int phase);
-		void build();
+		void build() override;
 	protected:
 		int _xdcr_idx;
 		int _amp, _phase;

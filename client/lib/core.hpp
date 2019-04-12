@@ -8,18 +8,38 @@
 
 #pragma once
 
+#include <memory>
+
 namespace autd {
 	namespace internal {
 		class Link;
 	}
 
-	typedef enum {
+	enum LinkType {
 		ETHERCAT,
 		ETHERNET,
 		USB,
 		SERIAL,
-	} LinkType;
+	};
 
 	class Controller;
 	class Geometry;
+
+	template <class T>
+#if DLL_FOR_CSHARP
+	static T* CreateHelper() {
+		struct impl : T {
+			impl() : T() {}
+		};
+		return new impl;
+	}
+#else
+	static std::shared_ptr<T> CreateHelper() {
+		struct impl : T {
+			impl() : T() {}
+		};
+		auto p = std::make_shared<impl>();
+		return std::move(p);
+	}
+#endif
 }

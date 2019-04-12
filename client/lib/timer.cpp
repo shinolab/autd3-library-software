@@ -6,6 +6,7 @@
 */
 
 #include <stdexcept>
+#include <string>
 #include <future>
 #include <iostream>
 #include <vector>
@@ -18,10 +19,10 @@ constexpr auto TIME_SCALE = 1000 * 1000L; //us
 
 using namespace std;
 
-Timer::Timer() {
+Timer::Timer() noexcept {
 	this->_interval_us = 1;
 }
-Timer::~Timer() {
+Timer::~Timer() noexcept(false) {
 	this->Stop();
 }
 
@@ -48,28 +49,31 @@ void Timer::InitTimer() {
 	this->_mainThread = std::thread([&] {Timer::MainLoop(); });
 }
 
-inline void MicroSleep(int micro_sec) {
-	LARGE_INTEGER start, end, freq;
-
+inline void MicroSleep(int micro_sec) noexcept {
+	LARGE_INTEGER  freq;
 	QueryPerformanceFrequency(&freq);
 
-	auto sleep = micro_sec * (freq.QuadPart / TIME_SCALE);
+	const auto sleep = micro_sec * (freq.QuadPart / TIME_SCALE);
 
+	LARGE_INTEGER start;
 	QueryPerformanceCounter(&start);
 	while (true)
 	{
-		QueryPerformanceCounter(&end);
-		if (end.QuadPart - start.QuadPart > sleep) break;
+		LARGE_INTEGER now;
+		QueryPerformanceCounter(&now);
+		if (now.QuadPart - start.QuadPart > sleep) break;
 	}
 }
 
 void Timer::MainLoop() {
-	LARGE_INTEGER start, now, freq;
-	auto count = 0xffffffffL;
-
+	LARGE_INTEGER freq;
 	QueryPerformanceFrequency(&freq);
 
-	int sleep_t;
+	LARGE_INTEGER start;
+	QueryPerformanceCounter(&start);
+
+	auto count = 0xffffffffL;
+	int sleep_t = 0;
 	while (this->_loop) {
 		if (count > 0xfffffff0) {
 			count = 0;
@@ -78,10 +82,11 @@ void Timer::MainLoop() {
 
 		this->Run();
 
+		LARGE_INTEGER now;
 		QueryPerformanceCounter(&now);
-		auto elasped = static_cast<double>(now.QuadPart - start.QuadPart) / freq.QuadPart * TIME_SCALE;
+		const auto elasped = static_cast<double>(now.QuadPart - start.QuadPart) / freq.QuadPart * TIME_SCALE;
 
-		sleep_t = (int)(this->_interval_us * ++count - elasped);
+		sleep_t = static_cast<int>(this->_interval_us * ++count - elasped);
 		if (sleep_t > 0) {
 			MicroSleep(sleep_t);
 		}

@@ -41,6 +41,7 @@ add_library(AUTD3SharpDll SHARED
   ../lib/core.hpp
   ../lib/gain.hpp
   ../lib/modulation.hpp
+  ../lib/geometry.hpp
   
   ../include/privdef.hpp
   ../include/autd3.hpp

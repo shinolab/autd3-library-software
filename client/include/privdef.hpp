@@ -25,7 +25,7 @@ constexpr auto ULTRASOUND_FREQUENCY_DEFAULT = 40000;
 constexpr auto ULTRASOUND_WAVELENGTH = 8.5f;
 constexpr auto M_PIf = 3.14159265f;
 
-constexpr auto MOD_SAMPLING_FREQ = 4000.0;
+constexpr auto MOD_SAMPLING_FREQ = 4000.0f;
 constexpr auto MOD_FRAME_SIZE = 124;
 
 enum RxGlobalControlFlags {

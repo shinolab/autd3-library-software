@@ -24,31 +24,36 @@
 #include "gain.hpp"
 #define _USE_MATH_DEFINES
 #include <math.h>
-#define REPEAT_SDP (10)
-#define LAMBDA_SDP (0.8)
+
+constexpr auto REPEAT_SDP = 10;
+constexpr auto LAMBDA_SDP = 0.8;
+
+using namespace std;
+using namespace autd;
+using namespace Eigen;
 
 namespace hologainimpl {
 	// TODO: use cache and interpolate. don't use exp
-	std::complex<float> transfer(Eigen::Vector3f trans_pos, Eigen::Vector3f trans_norm, Eigen::Vector3f target_pos) {
-		Eigen::Vector3f diff = trans_pos - target_pos;
-		float dist = diff.norm();
-		float cos = diff.dot(trans_norm) / dist / trans_norm.norm();
+	complex<float> transfer(Vector3f trans_pos, Vector3f trans_norm, Vector3f target_pos) {
+		const auto diff = trans_pos - target_pos;
+		const auto dist = diff.norm();
+		const auto cos = diff.dot(trans_norm) / dist / trans_norm.norm();
 
 		//1.11   & 1.06  &  0.24 &  -0.12  &  0.035
-		float directivity = 1.11f *sqrt((2 * 0 + 1) / (4 * M_PIf)) * 1
-			+ 1.06f*sqrt((2 * 1 + 1) / (4 * M_PIf))*cos
-			+ 0.24f*sqrt((2 * 2 + 1) / (4 * M_PIf)) / 2 * (3 * cos*cos - 1)
-			- 0.12f*sqrt((2 * 3 + 1) / (4 * M_PIf)) / 2 * cos*(5 * cos*cos - 3)
-			+ 0.035f*sqrt((2 * 4 + 1) / (4 * M_PIf)) / 8 * (35 * cos*cos*cos*cos - 30 * cos*cos + 3);
+		const auto directivity = 1.11f * sqrt((2 * 0 + 1) / (4 * M_PIf)) * 1
+			+ 1.06f * sqrt((2 * 1 + 1) / (4 * M_PIf)) * cos
+			+ 0.24f * sqrt((2 * 2 + 1) / (4 * M_PIf)) / 2 * (3 * cos * cos - 1)
+			- 0.12f * sqrt((2 * 3 + 1) / (4 * M_PIf)) / 2 * cos * (5 * cos * cos - 3)
+			+ 0.035f * sqrt((2 * 4 + 1) / (4 * M_PIf)) / 8 * (35 * cos * cos * cos * cos - 30 * cos * cos + 3);
 
-		std::complex<float> g = directivity / dist * exp(std::complex<float>(-dist * 1.15e-4f, -2 * M_PIf / ULTRASOUND_WAVELENGTH * dist));
+		auto g = directivity / dist * exp(complex<float>(-dist * 1.15e-4f, -2 * M_PIf / ULTRASOUND_WAVELENGTH * dist));
 		return g;
 	}
 
-	void removeRow(Eigen::MatrixXcf& matrix, unsigned int rowToRemove)
+	void removeRow(MatrixXcf & matrix, size_t rowToRemove)
 	{
-		unsigned int numRows = (unsigned int)matrix.rows() - 1;
-		unsigned int numCols = (unsigned int)matrix.cols();
+		const auto numRows = static_cast<size_t>(matrix.rows()) - 1;
+		const auto numCols = static_cast<size_t>(matrix.cols());
 
 		if (rowToRemove < numRows)
 			matrix.block(rowToRemove, 0, numRows - rowToRemove, numCols) = matrix.block(rowToRemove + 1, 0, numRows - rowToRemove, numCols);
@@ -56,10 +61,10 @@ namespace hologainimpl {
 		matrix.conservativeResize(numRows, numCols);
 	}
 
-	void removeColumn(Eigen::MatrixXcf& matrix, unsigned int colToRemove)
+	void removeColumn(MatrixXcf & matrix, size_t colToRemove)
 	{
-		unsigned int numRows = (unsigned int)matrix.rows();
-		unsigned int numCols = (unsigned int)matrix.cols() - 1;
+		const auto numRows = static_cast<size_t>(matrix.rows());
+		const auto numCols = static_cast<size_t>(matrix.cols()) - 1;
 
 		if (colToRemove < numCols)
 			matrix.block(0, colToRemove, numRows, numCols - colToRemove) = matrix.block(0, colToRemove + 1, numRows, numCols - colToRemove);
@@ -68,7 +73,7 @@ namespace hologainimpl {
 	}
 }
 
-autd::GainPtr autd::HoloGainSdp::Create(Eigen::MatrixX3f foci, Eigen::VectorXf amp) {
+autd::GainPtr autd::HoloGainSdp::Create(MatrixX3f foci, VectorXf amp) {
 	auto ptr = CreateHelper<HoloGainSdp>();
 	ptr->_foci = foci;
 	ptr->_amp = amp;
@@ -77,57 +82,57 @@ autd::GainPtr autd::HoloGainSdp::Create(Eigen::MatrixX3f foci, Eigen::VectorXf a
 
 void autd::HoloGainSdp::build() {
 	if (this->built()) return;
-	if (this->geometry() == nullptr) BOOST_ASSERT_MSG(false, "Geometry is required to build Gain");
+	auto geo = this->geometry();
+	if (geo == nullptr) BOOST_ASSERT_MSG(false, "Geometry is required to build Gain");
 
-	//const double pinvtoler=1.e-7;
-	const float alpha = 1e-3f;
+	const auto alpha = 1e-3f;
 
-	const int M = (int)_foci.rows();
-	const int N = (int)this->geometry()->numTransducers();
+	const auto M = (_foci.rows());
+	const auto N = static_cast<int>(geo->numTransducers());
 
-	Eigen::MatrixXcf P = Eigen::MatrixXcf::Zero(M, M);
-	Eigen::VectorXcf p = Eigen::VectorXcf::Zero(M);
-	Eigen::MatrixXcf B = Eigen::MatrixXcf(M, N);
-	Eigen::VectorXcf q = Eigen::VectorXcf(N);
+	MatrixXcf P = MatrixXcf::Zero(M, M);
+	VectorXcf p = VectorXcf::Zero(M);
+	MatrixXcf B = MatrixXcf(M, N);
+	VectorXcf q = VectorXcf(N);
 
-	boost::random::mt19937 rng(static_cast<unsigned int>(time(0)));
-	boost::random::uniform_real_distribution<> range(0, 1);
+	const boost::random::mt19937 rng(static_cast<unsigned int>(time(nullptr)));
+	const boost::random::uniform_real_distribution<> range(0, 1);
 	boost::random::variate_generator< boost::random::mt19937, boost::random::uniform_real_distribution<> > mt(rng, range);
 
 	for (int i = 0; i < M; i++) {
-		p(i) = _amp(i)*exp(std::complex<float>(0.0f, 2.0f * M_PIf*(float)mt()));
+		p(i) = _amp(i) * exp(complex<float>(0.0f, 2.0f * M_PIf * static_cast<float>(mt())));
 		P(i, i) = _amp(i);
 
-		Eigen::Vector3f tp = _foci.row(i);
+		const auto tp = _foci.row(i);
 		for (int j = 0; j < N; j++) {
 			B(i, j) = hologainimpl::transfer(
-				this->geometry()->position(j),
-				this->geometry()->direction(j),
+				geo->position(j),
+				geo->direction(j),
 				tp);
 		}
 	}
 
-	Eigen::JacobiSVD<Eigen::MatrixXcf> svd(B, Eigen::ComputeThinU | Eigen::ComputeThinV);
-	Eigen::JacobiSVD<Eigen::MatrixXcf>::SingularValuesType singularValues_inv = svd.singularValues();
+	JacobiSVD<MatrixXcf> svd(B, ComputeThinU | ComputeThinV);
+	JacobiSVD<MatrixXcf>::SingularValuesType singularValues_inv = svd.singularValues();
 	for (long i = 0; i < singularValues_inv.size(); ++i) {
-		singularValues_inv(i) = singularValues_inv(i) / (singularValues_inv(i) *singularValues_inv(i) + alpha * alpha);
+		singularValues_inv(i) = singularValues_inv(i) / (singularValues_inv(i) * singularValues_inv(i) + alpha * alpha);
 	}
-	Eigen::MatrixXcf pinvB = (svd.matrixV()*singularValues_inv.asDiagonal()*svd.matrixU().adjoint());
+	MatrixXcf pinvB = (svd.matrixV() * singularValues_inv.asDiagonal() * svd.matrixU().adjoint());
 
-	Eigen::MatrixXcf MM = P * (Eigen::MatrixXcf::Identity(M, M) - B * pinvB)*P;
-	Eigen::MatrixXcf X = Eigen::MatrixXcf::Identity(M, M);
+	MatrixXcf MM = P * (MatrixXcf::Identity(M, M) - B * pinvB) * P;
+	MatrixXcf X = MatrixXcf::Identity(M, M);
 	for (int i = 0; i < REPEAT_SDP; i++) {
-		unsigned int ii = (unsigned int)(mt()*M);
+		auto ii = static_cast<size_t>(mt() * M);
 
-		Eigen::MatrixXcf Xc = X;
+		auto Xc = X;
 		hologainimpl::removeRow(Xc, ii);
 		hologainimpl::removeColumn(Xc, ii);
-		Eigen::VectorXcf MMc = MM.col(ii);
+		VectorXcf MMc = MM.col(ii);
 		MMc.block(ii, 0, MMc.rows() - 1 - ii, 1) = MMc.block(ii + 1, 0, MMc.rows() - 1 - ii, 1);
 		MMc.conservativeResize(MMc.rows() - 1, 1);
 
-		Eigen::VectorXcf x = Xc * MMc;
-		std::complex<float> gamma = x.adjoint()*MMc;
+		VectorXcf x = Xc * MMc;
+		complex<float> gamma = x.adjoint() * MMc;
 		if (gamma.real() > 1e-7) {
 			x = -x * sqrt(LAMBDA_SDP / gamma.real());
 			X.block(ii, 0, 1, ii) = x.block(0, 0, ii, 1).adjoint().eval();
@@ -136,39 +141,39 @@ void autd::HoloGainSdp::build() {
 			X.block(ii + 1, ii, M - ii - 1, 1) = x.block(ii, 0, M - 1 - ii, 1).eval();
 		}
 		else {
-			X.block(ii, 0, 1, ii) = Eigen::VectorXcf::Zero(ii).adjoint();
-			X.block(ii, ii + 1, 1, M - ii - 1) = Eigen::VectorXcf::Zero(M - ii - 1).adjoint();
-			X.block(0, ii, ii, 1) = Eigen::VectorXcf::Zero(ii);
-			X.block(ii + 1, ii, M - ii - 1, 1) = Eigen::VectorXcf::Zero(M - ii - 1);
+			X.block(ii, 0, 1, ii) = VectorXcf::Zero(ii).adjoint();
+			X.block(ii, ii + 1, 1, M - ii - 1) = VectorXcf::Zero(M - ii - 1).adjoint();
+			X.block(0, ii, ii, 1) = VectorXcf::Zero(ii);
+			X.block(ii + 1, ii, M - ii - 1, 1) = VectorXcf::Zero(M - ii - 1);
 		}
 	}
 
-	Eigen::ComplexEigenSolver<Eigen::MatrixXcf> ces(X);
-	Eigen::VectorXcf evs = ces.eigenvalues();
+	ComplexEigenSolver<MatrixXcf> ces(X);
+	VectorXcf evs = ces.eigenvalues();
 	float abseiv = 0;
 	int idx = 0;
 	for (int j = 0; j < evs.rows(); j++) {
-		float eiv = abs(evs(j));
+		const auto eiv = abs(evs(j));
 		if (abseiv < eiv) {
 			abseiv = eiv;
 			idx = j;
 		}
 	}
 
-	Eigen::VectorXcf u = ces.eigenvectors().col(idx);
-	q = pinvB * P*u;
+	VectorXcf u = ces.eigenvectors().col(idx);
+	q = pinvB * P * u;
 
 	this->_data.clear();
-	const int ndevice = this->geometry()->numDevices();
+	const int ndevice = geo->numDevices();
 	for (int i = 0; i < ndevice; i++) {
-		this->_data[this->geometry()->deviceIdForDeviceIdx(i)].resize(NUM_TRANS_IN_UNIT);
+		this->_data[geo->deviceIdForDeviceIdx(i)].resize(NUM_TRANS_IN_UNIT);
 	}
 
 	//float maxCoeff = sqrt(q.cwiseAbs2().maxCoeff());
 	for (int j = 0; j < N; j++) {
-		float famp = 1.0;//abs(q(j))/maxCoeff;
-		float fphase = arg(q(j)) / (2 * M_PIf) + 0.5f;
-		uint8_t amp = (uint8_t)(famp * 255), phase = (uint8_t)((1 - fphase) * 255);
-		this->_data[this->geometry()->deviceIdForTransIdx(j)][j%NUM_TRANS_IN_UNIT] = ((uint16_t)amp << 8) + phase;
+		const auto famp = 1.0f;//abs(q(j))/maxCoeff;
+		const auto fphase = arg(q(j)) / (2 * M_PIf) + 0.5f;
+		auto amp = static_cast<uint8_t>(famp * 255), phase = static_cast<uint8_t>((1 - fphase) * 255);
+		this->_data[geo->deviceIdForTransIdx(j)].at(j % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(amp) << 8) + phase;
 	}
 }
