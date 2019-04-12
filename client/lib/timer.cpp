@@ -1,6 +1,6 @@
 ﻿/*
 *
-*  Created by Shun Suzuki and Saya Mizutani on 02/07/2018.
+*  Created by Shun Suzuki on 04/10/2019.
 *  Copyright © 2018 Hapis Lab. All rights reserved.
 *
 */
@@ -14,19 +14,21 @@
 #include <cmath>
 #include "timer.hpp"
 
-#define TimeScale (1000*1000) //us
+constexpr auto TIME_SCALE = 1000 * 1000L; //us
 
 using namespace std;
 
-Timer::Timer() {}
+Timer::Timer() {
+	this->_interval_us = 1;
+}
 Timer::~Timer() {
 	this->Stop();
 }
 
-void Timer::SetInterval(int interval)
+void Timer::SetInterval(int interval_us)
 {
-	if (interval <= 0) throw new std::runtime_error("Interval must be positive integer.");
-	this->_interval = interval;
+	if (interval_us <= 0) throw new std::runtime_error("Interval must be positive integer.");
+	this->_interval_us = interval_us;
 }
 
 void Timer::Start() {
@@ -46,56 +48,43 @@ void Timer::InitTimer() {
 	this->_mainThread = std::thread([&] {Timer::MainLoop(); });
 }
 
-inline bool MicroSleep(int micro_sec) {
+inline void MicroSleep(int micro_sec) {
 	LARGE_INTEGER start, end, freq;
+
 	QueryPerformanceFrequency(&freq);
 
-	if (!QueryPerformanceCounter(&start))
-		return false;
+	auto sleep = micro_sec * (freq.QuadPart / TIME_SCALE);
 
+	QueryPerformanceCounter(&start);
 	while (true)
 	{
-		if (!QueryPerformanceCounter(&end)) return false;
-		auto dur = ((double)(end.QuadPart - start.QuadPart) / freq.QuadPart) * TimeScale;
-		if (dur > micro_sec) break;
+		QueryPerformanceCounter(&end);
+		if (end.QuadPart - start.QuadPart > sleep) break;
 	}
-	return true;
 }
 
 void Timer::MainLoop() {
-
-	LARGE_INTEGER start, end, freq;
-	LARGE_INTEGER e;
-	LARGE_INTEGER fs, fe;
-	clock_t sleep_t = 0;
-	double delay = 0;
-	clock_t t0 = 0;
+	LARGE_INTEGER start, now, freq;
+	auto count = 0xffffffffL;
 
 	QueryPerformanceFrequency(&freq);
 
+	int sleep_t;
 	while (this->_loop) {
-		QueryPerformanceCounter(&fs);
-		delay = 0;
-		QueryPerformanceCounter(&start);
+		if (count > 0xfffffff0) {
+			count = 0;
+			QueryPerformanceCounter(&start);
+		}
 
 		this->Run();
 
-		QueryPerformanceCounter(&end);
-		sleep_t = (clock_t)((-(double)(end.QuadPart - start.QuadPart) / freq.QuadPart) *TimeScale + this->_interval - delay);
+		QueryPerformanceCounter(&now);
+		auto elasped = static_cast<double>(now.QuadPart - start.QuadPart) / freq.QuadPart * TIME_SCALE;
 
-		delay = 0;
-
+		sleep_t = (int)(this->_interval_us * ++count - elasped);
 		if (sleep_t > 0) {
 			MicroSleep(sleep_t);
-			sleep_t = 0;
 		}
-		if (sleep_t > _interval) break;
-
-		QueryPerformanceCounter(&e);
-		delay = ((double)(e.QuadPart - start.QuadPart) / freq.QuadPart) *TimeScale - this->_interval;
-
+		else continue;
 	}
-	QueryPerformanceCounter(&fe);
-
-
 }

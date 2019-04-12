@@ -3,7 +3,7 @@
 //  autd3
 //
 //  Created by Seki Inoue on 9/20/16.
-//  Changed by Shun Suzuki on 02 / 07 / 2018.
+//  Modified by Shun Suzuki on 02 / 07 / 2018.
 //
 //
 
@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <complex>
 #include "autd3.hpp"
+#include "controller.hpp"
+#include "gain.hpp"
 #include "privdef.hpp"
 
 #ifdef MATLAB_ENABLED

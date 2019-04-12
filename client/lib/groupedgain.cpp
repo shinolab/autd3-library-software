@@ -14,6 +14,8 @@
 #include <boost/assert.hpp>
 #pragma warning( pop )
 #include "autd3.hpp"
+#include "controller.hpp"
+#include "gain.hpp"
 #include "privdef.hpp"
 
 autd::GainPtr autd::GroupedGain::Create(std::map<int, autd::GainPtr> gainmap) {

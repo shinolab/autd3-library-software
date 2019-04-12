@@ -85,7 +85,7 @@ namespace AUTD3Sharp
         }
     }
 
-    public class AUTD : IDisposable
+    public sealed class AUTD : IDisposable
     {
         #region const
         public static readonly float UltrasoundWavelength = 8.5f;
@@ -151,14 +151,18 @@ namespace AUTD3Sharp
             if (dispoing)
             {
                 Close();
-                _autdControllerHandle.Dispose();
             }
+
+            _autdControllerHandle.Dispose();
+
             _isDisposed = true;
         }
+
         public void SetSilentMode(bool mode)
         {
             NativeMethods.AUTDSetSilentMode(_autdControllerHandle, mode);
         }
+
         ~AUTD()
         {
             Dispose(false);
