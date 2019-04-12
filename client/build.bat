@@ -6,6 +6,8 @@ for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1)
     set "DEL=%%a" 
 )
 
+chcp 65001 > nul
+
 set BUILD_DIR=%~dp0
 set PROJECT_DIR=%BUILD_DIR%build\
 
@@ -59,7 +61,7 @@ if %TOOL_CHAIN% == "" (
 :SET_IDE
 
 set IDE_NAME="Visual Studio
-if %VS_VERSION% equ 2017 if %ARCH% == "x86" (
+if %VS_VERSION% equ 2017 if %ARCH% == "Win32" (
   set IDE_NAME=%IDE_NAME% 15 2017"
 )
 if %VS_VERSION% equ 2017 if %ARCH% == "x64" (
@@ -166,6 +168,14 @@ if %USE_UNITY% == ON (
   @copy /Y .\csharp\Util\Matrix3x3f.cs autdunity\Assets\AUTD\Scripts\Util\Matrix3x3f.cs > nul
   @copy /Y .\csharp\Util\GainMap.cs autdunity\Assets\AUTD\Scripts\Util\GainMap.cs > nul
   @xcopy .\autdunity %PROJECT_DIR%\autdunity /s/i > nul
+)
+
+if %VS_VERSION% equ 2019 if %ARCH%=="x64" (
+  call :colorEcho 0a "INFO"
+  echo : Setting PlatformTarget to x64...
+
+  call SetTargetx64.bat %PROJECT_DIR%csharp\ AUTD3Sharp.csproj tmp.csproj x86 x64
+  call SetTargetx64.bat %PROJECT_DIR%csharp_example\ AUTD3SharpTest.csproj tmp.csproj x86 x64
 )
 
 call :colorEcho 0a "INFO"
