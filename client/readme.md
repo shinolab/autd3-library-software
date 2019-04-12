@@ -13,15 +13,22 @@ build.batを使うとbuild以下にautd.sln生成されます.
 
 ### 注意: VS2017 ###
 
-AUTDSharpのプロパティの「ビルド」→「詳細設定」で言語ヴァージョンをC#7.2以上にして下さい.
+AUTDSharpのプロパティの「ビルド」→「詳細設定」で言語バージョンをC#7.2以上にして下さい.
 
-cmakeのバグでマイナーヴァージョンの指定ができないためです.
+cmakeのバグでマイナーバージョンの指定ができないためです.
 
 ### 注意: 単体テスト ###
 
+vcpkgを使います. vcpkgでgtestをinstallしておいて下さい.
 
+また, -testに続いて, vcpkgのtoolchain fileを指定して下さい.
+
+EX.
+```
+ -test "-DCMAKE_TOOLCHAIN_FILE=C:[...]\vcpkg\scripts\buildsystems\vcpkg.cmake"
+```
 ## Memo ##
-cmakeのバグかは知らないけど, -Aオプションでx64プラットフォームを指定してもターゲットがx64にならない.
+cmakeのバグかは知らないけど, -Aオプションでx64プラットフォームを指定してもC#のターゲットがx64にならない.
 
 そのため, csproj内を直接書き換えることにしている.
 
