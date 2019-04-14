@@ -1,3 +1,0 @@
-[submodule "client/deps/BeckhoffADS/ADS"]
-	path = client/deps/BeckhoffADS/ADS
-url=https://github.com/Beckhoff/ADS.git
