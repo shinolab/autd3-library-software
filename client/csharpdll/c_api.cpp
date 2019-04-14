@@ -17,44 +17,43 @@
 #include <Eigen/Geometry>
 #pragma warning( pop )
 
-
 using namespace autd;
 using namespace Eigen;
 
 #pragma region Controller
-void AUTDCreateController(AUTDControllerHandle *out) {
-	auto *cnt = new Controller;
+void AUTDCreateController(AUTDControllerHandle* out) {
+	auto* cnt = new Controller;
 	*out = cnt;
 }
 int AUTDOpenController(AUTDControllerHandle handle, const char* location) {
-	auto *cnt = static_cast<Controller *>(handle);
+	auto* cnt = static_cast<Controller*>(handle);
 	cnt->Open(LinkType::ETHERCAT, std::string(location));
 	if (!cnt->isOpen()) return ENXIO;
 	return 0;
 }
 int AUTDAddDevice(AUTDControllerHandle handle, float x, float y, float z, float rz1, float ry, float rz2, int groupId) {
-	auto *cnt = static_cast<Controller *>(handle);
+	auto* cnt = static_cast<Controller*>(handle);
 	return cnt->geometry()->AddDevice(Vector3f(x, y, z), Vector3f(rz1, ry, rz2), groupId);
 }
 int AUTDAddDeviceQuaternion(AUTDControllerHandle handle, float x, float y, float z, float qua_w, float qua_x, float qua_y, float qua_z, int groupId) {
-	auto *cnt = static_cast<Controller *>(handle);
+	auto* cnt = static_cast<Controller*>(handle);
 	return cnt->geometry()->AddDeviceQuaternion(Vector3f(x, y, z), Quaternionf(qua_w, qua_x, qua_y, qua_z), groupId);
 }
 void AUTDDelDevice(AUTDControllerHandle handle, int devId) {
-	auto *cnt = static_cast<Controller *>(handle);
+	auto* cnt = static_cast<Controller*>(handle);
 	cnt->geometry()->DelDevice(devId);
 }
 void AUTDCloseController(AUTDControllerHandle handle) {
-	auto *cnt = static_cast<Controller *>(handle);
+	auto* cnt = static_cast<Controller*>(handle);
 	cnt->Close();
 }
 void AUTDFreeController(AUTDControllerHandle handle) {
-	auto *cnt = static_cast<Controller *>(handle);
+	auto* cnt = static_cast<Controller*>(handle);
 	delete cnt;
 }
 void AUTDSetSilentMode(AUTDControllerHandle handle, bool mode)
 {
-	auto *cnt = static_cast<Controller *>(handle);
+	auto* cnt = static_cast<Controller*>(handle);
 	cnt->SetSilentMode(mode);
 }
 #pragma endregion
@@ -62,73 +61,73 @@ void AUTDSetSilentMode(AUTDControllerHandle handle, bool mode)
 #pragma region Property
 bool AUTDIsOpen(AUTDControllerHandle handle)
 {
-	Controller *cnt = static_cast<Controller *>(handle);
+	Controller* cnt = static_cast<Controller*>(handle);
 	return cnt->isOpen();
 }
 bool AUTDIsSilentMode(AUTDControllerHandle handle)
 {
-	Controller *cnt = static_cast<Controller *>(handle);
+	Controller* cnt = static_cast<Controller*>(handle);
 	return cnt->silentMode();
 }
 int AUTDNumDevices(AUTDControllerHandle handle)
 {
-	Controller *cnt = static_cast<Controller *>(handle);
+	Controller* cnt = static_cast<Controller*>(handle);
 	return cnt->geometry()->numDevices();
 }
 int AUTDNumTransducers(AUTDControllerHandle handle)
 {
-	Controller *cnt = static_cast<Controller *>(handle);
+	Controller* cnt = static_cast<Controller*>(handle);
 	return cnt->geometry()->numTransducers();
 }
 float AUTDFreqency(AUTDControllerHandle handle) {
-	Controller *cnt = static_cast<Controller *>(handle);
+	Controller* cnt = static_cast<Controller*>(handle);
 	return cnt->geometry()->frequency();
 }
 size_t AUTDRemainingInBuffer(AUTDControllerHandle handle)
 {
-	Controller *cnt = static_cast<Controller *>(handle);
+	Controller* cnt = static_cast<Controller*>(handle);
 	return cnt->remainingInBuffer();
 }
 #pragma endregion
 
 #pragma region Gain
-void AUTDFocalPointGain(AUTDGainPtr *gain, float x, float y, float z, uint8_t amp) {
-	auto *g = FocalPointGain::Create(Vector3f(x, y, z), amp);
+void AUTDFocalPointGain(AUTDGainPtr* gain, float x, float y, float z, uint8_t amp) {
+	auto* g = FocalPointGain::Create(Vector3f(x, y, z), amp);
 	*gain = g;
 }
-void AUTDGroupedGain(AUTDGainPtr *gain, int* groupIDs, AUTDGainPtr* gains, int size) {
+void AUTDGroupedGain(AUTDGainPtr* gain, int* groupIDs, AUTDGainPtr* gains, int size) {
 	std::map<int, GainPtr> gainmap;
 
 	for (int i = 0; i < size; i++)
 	{
 		auto id = groupIDs[i];
 		auto gain_id = gains[i];
-		auto *g = static_cast<Gain *>(gain_id);
+		auto* g = static_cast<Gain*>(gain_id);
 		gainmap[id] = g;
 	}
 
-	auto *ggain = GroupedGain::Create(gainmap);
+	auto* ggain = GroupedGain::Create(gainmap);
 
 	*gain = ggain;
 }
-void AUTDBesselBeamGain(AUTDGainPtr *gain, float x, float y, float z, float n_x, float n_y, float n_z, float theta_z) {
-	auto *g = BesselBeamGain::Create(Vector3f(x, y, z), Vector3f(n_x, n_y, n_z), theta_z);
+void AUTDBesselBeamGain(AUTDGainPtr* gain, float x, float y, float z, float n_x, float n_y, float n_z, float theta_z) {
+	auto* g = BesselBeamGain::Create(Vector3f(x, y, z), Vector3f(n_x, n_y, n_z), theta_z);
 	*gain = g;
 }
-void AUTDPlaneWaveGain(AUTDGainPtr *gain, float n_x, float n_y, float n_z) {
-	auto *g = PlaneWaveGain::Create(Vector3f(n_x, n_y, n_z));
+void AUTDPlaneWaveGain(AUTDGainPtr* gain, float n_x, float n_y, float n_z) {
+	auto* g = PlaneWaveGain::Create(Vector3f(n_x, n_y, n_z));
 	*gain = g;
 }
-void AUTDMatlabGain(AUTDGainPtr *gain, const char* filename, const char* varname) {
-	auto *g = MatlabGain::Create(std::string(filename), std::string(varname));
+void AUTDMatlabGain(AUTDGainPtr* gain, const char* filename, const char* varname) {
+	auto* g = MatlabGain::Create(std::string(filename), std::string(varname));
 	*gain = g;
 }
-void AUTDCustomGain(AUTDGainPtr *gain, uint16_t * data, int dataLength)
+void AUTDCustomGain(AUTDGainPtr* gain, uint16_t* data, int dataLength)
 {
-	auto *g = CustomGain::Create(data, dataLength);
+	auto* g = CustomGain::Create(data, dataLength);
 	*gain = g;
 }
-void AUTDHoloGain(AUTDGainPtr *gain, float* points, float* amps, int size) {
+void AUTDHoloGain(AUTDGainPtr* gain, float* points, float* amps, int size) {
 
 	MatrixX3f holo(size, 3);
 	VectorXf amp(size);
@@ -139,132 +138,130 @@ void AUTDHoloGain(AUTDGainPtr *gain, float* points, float* amps, int size) {
 		amp(i) = amps[i];
 	}
 
-	auto *g = HoloGainSdp::Create(holo, amp);
+	auto* g = HoloGainSdp::Create(holo, amp);
 	*gain = g;
 }
-void AUTDNullGain(AUTDGainPtr *gain) {
-	auto *g = NullGain::Create();
+void AUTDNullGain(AUTDGainPtr* gain) {
+	auto* g = NullGain::Create();
 	*gain = g;
 }
 void AUTDDeleteGain(AUTDGainPtr gain) {
-	auto *g = static_cast<Gain *>(gain);
+	auto* g = static_cast<Gain*>(gain);
 	delete g;
 }
 void AUTDFixGain(AUTDGainPtr gain) {
-	auto *g = static_cast<Gain *>(gain);
+	auto* g = static_cast<Gain*>(gain);
 	g->Fix();
 }
 #pragma endregion
 
 #pragma region Modulation
-void AUTDModulation(AUTDModulationPtr *mod, uint8_t amp) {
-	auto *m = Modulation::Create(amp);
+void AUTDModulation(AUTDModulationPtr* mod, uint8_t amp) {
+	auto* m = Modulation::Create(amp);
 	*mod = m;
 }
-void AUTDRawPCMModulation(AUTDModulationPtr *mod, const char* filename, float sampFreq) {
-	auto *m = RawPCMModulation::Create(std::string(filename), sampFreq);
+void AUTDRawPCMModulation(AUTDModulationPtr* mod, const char* filename, float sampFreq) {
+	auto* m = RawPCMModulation::Create(std::string(filename), sampFreq);
 	*mod = m;
 }
-void AUTDSawModulation(AUTDModulationPtr *mod, float freq) {
-	auto *m = SawModulation::Create(freq);
+void AUTDSawModulation(AUTDModulationPtr* mod, float freq) {
+	auto* m = SawModulation::Create(freq);
 	*mod = m;
 }
-void AUTDSineModulation(AUTDModulationPtr *mod, float freq, float amp, float offset) {
-	auto *m = SineModulation::Create(freq, amp, offset);
+void AUTDSineModulation(AUTDModulationPtr* mod, float freq, float amp, float offset) {
+	auto* m = SineModulation::Create(freq, amp, offset);
 	*mod = m;
 }
 void AUTDDeleteModulation(AUTDModulationPtr mod) {
-	auto *m = static_cast<Modulation *>(mod);
+	auto* m = static_cast<Modulation*>(mod);
 	delete m;
 }
 #pragma endregion
 
 #pragma region LowLevelInterface
 void AUTDAppendGain(AUTDControllerHandle handle, AUTDGainPtr gain) {
-	auto *cnt = static_cast<Controller *>(handle);
-	auto *g = static_cast<Gain *>(gain);
+	auto* cnt = static_cast<Controller*>(handle);
+	auto* g = static_cast<Gain*>(gain);
 	cnt->AppendGain(g);
 }
 
 void AUTDAppendGainSync(AUTDControllerHandle handle, AUTDGainPtr gain) {
-	auto *cnt = static_cast<Controller *>(handle);
-	auto *g = static_cast<Gain *>(gain);
+	auto* cnt = static_cast<Controller*>(handle);
+	auto* g = static_cast<Gain*>(gain);
 	cnt->AppendGainSync(g);
 }
 void AUTDAppendModulation(AUTDControllerHandle handle, AUTDModulationPtr mod) {
-	auto *cnt = static_cast<Controller *>(handle);
-	auto *m = static_cast<Modulation *>(mod);
+	auto* cnt = static_cast<Controller*>(handle);
+	auto* m = static_cast<Modulation*>(mod);
 	cnt->AppendModulation(m);
 }
 void AUTDAppendModulationSync(AUTDControllerHandle handle, AUTDModulationPtr mod) {
-	auto *cnt = static_cast<Controller *>(handle);
-	auto *m = static_cast<Modulation *>(mod);
+	auto* cnt = static_cast<Controller*>(handle);
+	auto* m = static_cast<Modulation*>(mod);
 	cnt->AppendModulationSync(m);
 }
 void AUTDAppendLateralGain(AUTDControllerHandle handle, AUTDGainPtr gain)
 {
-	auto *cnt = static_cast<Controller *>(handle);
-	auto *g = static_cast<Gain *>(gain);
+	auto* cnt = static_cast<Controller*>(handle);
+	auto* g = static_cast<Gain*>(gain);
 	cnt->AppendLateralGain(g);
 }
 void AUTDStartLateralModulation(AUTDControllerHandle handle, float freq)
 {
-	auto *cnt = static_cast<Controller *>(handle);
+	auto* cnt = static_cast<Controller*>(handle);
 	cnt->StartLateralModulation(freq);
 }
 void AUTDFinishLateralModulation(AUTDControllerHandle handle)
 {
-	auto *cnt = static_cast<Controller *>(handle);
+	auto* cnt = static_cast<Controller*>(handle);
 	cnt->FinishLateralModulation();
 }
 void AUTDResetLateralGain(AUTDControllerHandle handle)
 {
-	auto *cnt = static_cast<Controller *>(handle);
+	auto* cnt = static_cast<Controller*>(handle);
 	cnt->ResetLateralGain();
 }
 void AUTDSetGain(AUTDControllerHandle handle, int deviceIndex, int transIndex, int amp, int phase) {
-	auto *cnt = static_cast<Controller *>(handle);
+	auto* cnt = static_cast<Controller*>(handle);
 	auto g = TransducerTestGain::Create(deviceIndex * 249 + transIndex, amp, phase);
 	cnt->AppendGainSync(g);
 }
 void AUTDFlush(AUTDControllerHandle handle)
 {
-	auto *cnt = static_cast<Controller *>(handle);
+	auto* cnt = static_cast<Controller*>(handle);
 	cnt->Flush();
 }
 int AUTDDevIdForDeviceIdx(AUTDControllerHandle handle, int devIdx) {
-	auto *cnt = static_cast<Controller *>(handle);
+	auto* cnt = static_cast<Controller*>(handle);
 	return cnt->geometry()->deviceIdForDeviceIdx(devIdx);
 }
 int AUTDDevIdForTransIdx(AUTDControllerHandle handle, int transIdx) {
-	auto *cnt = static_cast<Controller *>(handle);
+	auto* cnt = static_cast<Controller*>(handle);
 	return cnt->geometry()->deviceIdForTransIdx(transIdx);
 }
 float* AUTDTransPosition(AUTDControllerHandle handle, int transIdx) {
-	auto *cnt = static_cast<Controller *>(handle);
+	auto* cnt = static_cast<Controller*>(handle);
 	auto pos = cnt->geometry()->position(transIdx);
-	auto *array = new float[3];
+	auto* array = new float[3];
 	array[0] = pos[0];
 	array[1] = pos[1];
 	array[2] = pos[2];
 	return array;
 }
 float* AUTDTransDirection(AUTDControllerHandle handle, int transIdx) {
-	auto *cnt = static_cast<Controller *>(handle);
+	auto* cnt = static_cast<Controller*>(handle);
 	auto dir = cnt->geometry()->direction(transIdx);
-	auto *array = new float[3];
+	auto* array = new float[3];
 	array[0] = dir[0];
 	array[1] = dir[1];
 	array[2] = dir[2];
 	return array;
 }
-double* GetAngleZYZ(double* rotationMatrix) {
-	Matrix3d rot;
-	for (int i = 0; i < 9; i++) {
-		rot(i / 3, i % 3) = rotationMatrix[i];
-	}
+float* GetAngleZYZ(float* rotationMatrix) {
+	Matrix3f rot;
+	for (int i = 0; i < 9; i++) rot(i / 3, i % 3) = rotationMatrix[i];
 	auto euler = rot.eulerAngles(2, 1, 2);
-	auto *angleZYZ = new double[3];
+	auto * angleZYZ = new float[3];
 	angleZYZ[0] = euler[0];
 	angleZYZ[1] = euler[1];
 	angleZYZ[2] = euler[2];

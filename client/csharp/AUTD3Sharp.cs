@@ -116,7 +116,6 @@ namespace AUTD3Sharp
         {
             _autdControllerHandle = new AUTDControllerHandle(true);
         }
-
         public int Open() => Open("");
         public int Open(string location) => NativeMethods.AUTDOpenController(_autdControllerHandle, location);
 
@@ -326,7 +325,6 @@ namespace AUTD3Sharp
             NativeMethods.AUTDModulation(out IntPtr modPtr, amp);
             return new Modulation(modPtr);
         }
-        public static Modulation RawPCMModulation(string fileName) => RawPCMModulation(fileName, 0.0f);
         public static Modulation RawPCMModulation(string fileName, float samplingFreq)
         {
             NativeMethods.AUTDRawPCMModulation(out IntPtr modPtr, fileName, samplingFreq);
@@ -427,19 +425,19 @@ namespace AUTD3Sharp
             var fp = NativeMethods.AUTDTransDirection(_autdControllerHandle, transIdx);
             return new Vector3f(fp[0], fp[1], fp[2]);
         }
-        unsafe public static double[] GetEulerAngleZYZ(double[] rot)
+        unsafe public static Vector3f GetEulerAngleZYZ(float[] rot)
         {
-            var angs = new double[3];
+            var res = new Vector3f();
 
-            fixed (double* r = rot)
+            fixed (float* r = rot)
             {
                 var ang = NativeMethods.GetAngleZYZ(r);
 
-                angs[0] = ang[0];
-                angs[1] = ang[1];
-                angs[2] = ang[2];
+                res[0] = ang[0];
+                res[1] = ang[1];
+                res[2] = ang[2];
             }
-            return angs;
+            return res;
         }
         #endregion
 

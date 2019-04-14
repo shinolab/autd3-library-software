@@ -77,7 +77,7 @@ extern "C" {
 	__declspec(dllexport) int AUTDDevIdForTransIdx(AUTDControllerHandle handle, int transIdx);
 	__declspec(dllexport) float* AUTDTransPosition(AUTDControllerHandle handle, int transIdx);
 	__declspec(dllexport) float* AUTDTransDirection(AUTDControllerHandle handle, int transIdx);
-	__declspec(dllexport) double* GetAngleZYZ(double* rotationMatrix);
+	__declspec(dllexport) float* GetAngleZYZ(float* rotationMatrix);
 #pragma endregion
 
 #pragma region Debug
