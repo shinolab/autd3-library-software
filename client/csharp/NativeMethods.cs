@@ -24,6 +24,7 @@ namespace AUTD3Sharp
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDCreateController(out IntPtr handle);
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)] public static extern int AUTDOpenController(AUTDControllerHandle handle, string location);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern int AUTDAddDevice(AUTDControllerHandle handle, float x, float y, float z, float rz1, float ry, float rz2, int groupId);
+        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern int AUTDAddDeviceQuaternion(AUTDControllerHandle handle, float x, float y, float z, float qua_w, float qua_x, float qua_y, float qua_z, int groupId);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDDelDevice(AUTDControllerHandle handle, int devId);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDCloseController(AUTDControllerHandle handle);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDFreeController(IntPtr handle);
@@ -47,7 +48,6 @@ namespace AUTD3Sharp
         [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDMatlabGain(out AUTDGainPtr gain, string filename, string varname);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDCustomGain(out AUTDGainPtr gain, ushort* data, int dataLength);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDHoloGain(out AUTDGainPtr gain, float* points, float* amps, int size);
-        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDDoubleGain(out AUTDGainPtr gain, float* points, float* amps);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDNullGain(out AUTDGainPtr gain);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDDeleteGain(AUTDGainPtr gain);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDFixGain(AUTDGainPtr gain);
@@ -76,15 +76,7 @@ namespace AUTD3Sharp
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern int AUTDDevIdForTransIdx(AUTDControllerHandle handle, int transIdx);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern float* AUTDTransPosition(AUTDControllerHandle handle, int transIdx);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern float* AUTDTransDirection(AUTDControllerHandle handle, int transIdx);
-        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern double* GetAngleZYZ(double* rotationMatrix);
-        #endregion
-
-        #region HighLevelInterface
-        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern int AUTDSetFocalPoint(AUTDControllerHandle handle, float x, float y, float z, int amp);
-        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern int AUTDSetFocalPointSine(AUTDControllerHandle handle, float x, float y, float z, float freq, float amp, float offset);
-        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern int AUTDSetFocalPointLM(AUTDControllerHandle handle, float x, float y, float z, float lmamp_x, float lmamp_y, float lmamp_z, float freq, float amp);
-        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern int AUTDSetBesselBeam(AUTDControllerHandle handle, float x, float y, float z, float vec_x, float vec_y, float vec_z, float theta_z, int amp);
-        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern int AUTDSetBesselBeamSine(AUTDControllerHandle handle, float x, float y, float z, float vec_x, float vec_y, float vec_z, float theta_z, float freq, float amp, float offset);
+        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern float* GetAngleZYZ(float* rotationMatrix);
         #endregion
 
         #region Debug
