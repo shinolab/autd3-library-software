@@ -290,7 +290,7 @@ public:
 protected:
 	void Run() override;
 private:
-	shared_ptr<Controller::impl> _pcnt;
+	weak_ptr<Controller::impl> _pcnt;
 	int _lateral_gain_size;
 	int _lateral_gain_idx;
 	vector<GainPtr> _lateral_gain;
@@ -311,10 +311,16 @@ void Controller::lateraltimer::Run() {
 	try {
 		auto gain = this->_lateral_gain.at(this->_lateral_gain_idx);
 		this->_lateral_gain_idx = (this->_lateral_gain_idx + 1) % this->_lateral_gain_size;
-		this->_pcnt->AppendGainSync(gain);
+		{
+			auto cnt = this->_pcnt.lock();
+			cnt->AppendGainSync(gain);
+		}
 	}
 	catch (const int errnum) {
-		this->_pcnt->Close();
+		{
+			auto cnt = this->_pcnt.lock();
+			cnt->Close();
+		}
 		cerr << errnum << "Link closed." << endl;
 	}
 }

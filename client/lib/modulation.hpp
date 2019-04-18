@@ -33,7 +33,7 @@ namespace autd {
 		bool loop;
 		std::vector<uint8_t> buffer;
 	private:
-		uint32_t sent;
+		size_t sent;
 	};
 
 	class SineModulation : public Modulation
