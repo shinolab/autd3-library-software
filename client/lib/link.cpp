@@ -14,6 +14,6 @@ std::vector<uint16_t>& autd::internal::Link::accessGainData(Gain& gain, const in
     return gain._data[deviceId];
 }
 
-uint32_t& autd::internal::Link::accessSent(Modulation& mod) noexcept {
+size_t& autd::internal::Link::accessSent(Modulation& mod) noexcept {
     return mod.sent;
 }
