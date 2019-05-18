@@ -3,7 +3,7 @@ using System;
 
 namespace AUTD3SharpTest.Test
 {
-    class BesselTest
+    class BesselExample
     {
         public static void Test()
         {
@@ -29,6 +29,6 @@ namespace AUTD3SharpTest.Test
             }
         }
 
-        private BesselTest() { }
+        private BesselExample() { }
     }
 }

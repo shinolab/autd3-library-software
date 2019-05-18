@@ -20,8 +20,8 @@
 using Microsoft.Win32.SafeHandles;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -32,7 +32,7 @@ using Quaternionf = UnityEngine.Quaternion;
 #endif
 
 [assembly: CLSCompliant(false), ComVisible(false)]
-[assembly: AssemblyVersion("3.2.1.0")]
+[assembly: AssemblyVersion("3.3.0.0")]
 namespace AUTD3Sharp
 {
     [ComVisible(false)]
