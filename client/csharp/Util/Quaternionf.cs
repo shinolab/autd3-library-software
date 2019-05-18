@@ -5,7 +5,6 @@
 */
 
 using System;
-using System.Globalization;
 
 namespace AUTD3Sharp
 {
@@ -14,18 +13,18 @@ namespace AUTD3Sharp
         #region ctor
         public Quaternionf(float x, float y, float z, float w)
         {
-            this.X = x;
-            this.Y = y;
-            this.Z = z;
-            this.W = w;
+            X = x;
+            Y = y;
+            Z = z;
+            W = w;
         }
         #endregion
 
         #region property
-        public float X { get; internal set; }
-        public float Y { get; internal set; }
-        public float Z { get; internal set; }
-        public float W { get; internal set; }
+        public float X { get; }
+        public float Y { get; }
+        public float Z { get; }
+        public float W { get; }
         #endregion
 
         #region arithmetic
@@ -34,13 +33,13 @@ namespace AUTD3Sharp
 
         public bool Equals(Quaternionf other)
         {
-            return this.X == other.X && this.Y == other.Y && this.Z == other.Z && this.W == other.W;
+            return X.Equals(other.X) && Y.Equals(other.Y) && Z.Equals(other.Z) && W.Equals(other.W);
         }
 
         public override bool Equals(object obj)
         {
             if (obj is Quaternionf qua)
-                return this.Equals(qua);
+                return Equals(qua);
             else return false;
         }
         #endregion
@@ -48,7 +47,7 @@ namespace AUTD3Sharp
         #region util
         public override int GetHashCode()
         {
-            return this.X.GetHashCode() ^ this.Y.GetHashCode() ^ this.Z.GetHashCode() ^ this.W.GetHashCode();
+            return X.GetHashCode() ^ Y.GetHashCode() ^ Z.GetHashCode() ^ W.GetHashCode();
         }
         #endregion
     }

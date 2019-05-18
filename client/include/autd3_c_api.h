@@ -37,7 +37,7 @@ extern "C" {
 	__declspec(dllexport) bool AUTDIsSilentMode(AUTDControllerHandle handle);
 	__declspec(dllexport) int AUTDNumDevices(AUTDControllerHandle handle);
 	__declspec(dllexport) int AUTDNumTransducers(AUTDControllerHandle handle);
-	__declspec(dllexport) float AUTDFreqency(AUTDControllerHandle handle);
+	__declspec(dllexport) float AUTDFrequency(AUTDControllerHandle handle);
 	__declspec(dllexport) size_t AUTDRemainingInBuffer(AUTDControllerHandle handle);
 #pragma endregion
 

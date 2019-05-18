@@ -6,30 +6,29 @@
 */
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace AUTD3Sharp
 {
-    public class GainMap 
+    public class GainMap
     {
-        public int Size { get; private set; }
+        public int Size { get; }
 
-        private readonly int[] _IDs;
+        private readonly int[] _ids;
         private readonly IntPtr[] _gains;
 
         public unsafe IntPtr* GainPointer
         {
-            get {
+            get
+            {
                 fixed (IntPtr* p = _gains) return p;
             }
         }
-        public unsafe int* IdPointer {
+        public unsafe int* IdPointer
+        {
             get
             {
-                fixed (int* p = _IDs) return p;
+                fixed (int* p = _ids) return p;
             }
         }
 
@@ -37,39 +36,39 @@ namespace AUTD3Sharp
         {
             if (gainPairs == null) throw new ArgumentNullException(nameof(gainPairs));
 
-            this.Size = gainPairs.Length;
-            this._IDs = new int[this.Size];
-            this._gains = new IntPtr[this.Size];
-            for (int i = 0; i < this.Size; i++)
+            Size = gainPairs.Length;
+            _ids = new int[Size];
+            _gains = new IntPtr[Size];
+            for (var i = 0; i < Size; i++)
             {
-                this._IDs[i] = gainPairs[i].Id;
-                this._gains[i] = gainPairs[i].Gain.GainPtr;
+                _ids[i] = gainPairs[i].Id;
+                _gains[i] = gainPairs[i].Gain.GainPtr;
             }
 
-            var duplication = this.Size > this._IDs.GroupBy(i => i).Count();
+            var duplication = Size > _ids.GroupBy(i => i).Count();
             if (duplication)
                 throw new ArgumentException("Multiple Gains are set for the same Group ID");
         }
     }
 
-    public struct GainPair
+    public struct GainPair : IEquatable<GainPair>
     {
-        public int Id { get; private set; }
-        public Gain Gain { get; private set; }
+        public int Id { get; }
+        public Gain Gain { get; }
         public GainPair(int id, Gain gain)
         {
-            this.Id = id;
-            this.Gain = gain;
+            Id = id;
+            Gain = gain;
         }
 
         public static bool operator ==(GainPair left, GainPair right) => left.Equals(right);
         public static bool operator !=(GainPair left, GainPair right) => !left.Equals(right);
-        public bool Equals(GainPair other) => this.Id == other.Id && this.Gain == other.Gain;
+        public bool Equals(GainPair other) => Id == other.Id && Gain == other.Gain;
 
         public override bool Equals(object obj)
         {
             if (obj is GainPair pair)
-                return this.Equals(pair);
+                return Equals(pair);
             return false;
         }
         public override int GetHashCode() => Id ^ Gain.GetHashCode();
