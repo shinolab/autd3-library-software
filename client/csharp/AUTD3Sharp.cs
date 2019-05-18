@@ -32,7 +32,7 @@ using Quaternionf = UnityEngine.Quaternion;
 #endif
 
 [assembly: CLSCompliant(false), ComVisible(false)]
-[assembly: AssemblyVersion("3.2.1.0")]
+[assembly: AssemblyVersion("3.3.0.0")]
 namespace AUTD3Sharp
 {
     [ComVisible(false)]

@@ -18,7 +18,7 @@ namespace AUTD3Sharp
 {
     internal static unsafe class NativeMethods
     {
-        const string DllName = "AUTD3SharpDll";
+        const string DllName = "autd3capi";
 
         #region Controller
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDCreateController(out IntPtr handle);

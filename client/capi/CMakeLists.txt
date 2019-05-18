@@ -15,7 +15,7 @@ find_package( MATLAB )
 
 include_directories(../include ${EIGEN3_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${Ads_INCLUDE_DIR} ${Matlab_INCLUDE_DIRS})
 
-add_library(AUTD3SharpDll SHARED
+add_library(autd3capi SHARED
   c_api.cpp
   
   ../lib/link.cpp
@@ -54,14 +54,14 @@ if (Matlab_FOUND AND Matlab_MX_LIBRARY)
 endif()
 
 if (USE_UNITY)
-    add_custom_command(TARGET AUTD3SharpDll
+    add_custom_command(TARGET autd3capi
                  POST_BUILD
                  COMMAND copy /Y $(TargetPath) $(SolutionDir)autdunity\\Assets\\AUTD\\Plugins\\x86_64)
 endif()
 
-target_link_libraries(AUTD3SharpDll ${Boost_LIBRARIES} ${Ads_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(autd3capi ${Boost_LIBRARIES} ${Ads_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
-set_target_properties(AUTD3SharpDll
+set_target_properties(autd3capi
     PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/csharp_example"
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/csharp_example"
@@ -69,4 +69,4 @@ set_target_properties(AUTD3SharpDll
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4068")
-add_compile_definitions(DLL_FOR_CSHARP)
+add_compile_definitions(DLL_FOR_CAPI)
