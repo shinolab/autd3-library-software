@@ -427,18 +427,18 @@ namespace AUTD3Sharp
         }
         public static unsafe Vector3f GetEulerAngleZyz(float[] rot)
         {
-            var res = new float[3];
+            float x, y, z;
 
             fixed (float* r = rot)
             {
                 var ang = NativeMethods.GetAngleZYZ(r);
 
-                res[0] = ang[0];
-                res[1] = ang[1];
-                res[2] = ang[2];
+                x = ang[0];
+                y = ang[1];
+                z = ang[2];
             }
 
-            return new Vector3f(res);
+            return new Vector3f(x, y, z);
         }
         #endregion
 
@@ -474,15 +474,15 @@ namespace AUTD3Sharp
 #endif
         }
 
-//        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-//        [SuppressMessage("ReSharper", "UnusedParameter.Local")]
-//        private static void AdjustQuaternion(ref Quaternionf quaternion)
-//        {
-//#if LEFT_HANDED
-//            quaternion[0] = -quaternion[0];
-//            quaternion.w = -quaternion.w;
-//#endif
-//        }
+        //        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //        [SuppressMessage("ReSharper", "UnusedParameter.Local")]
+        //        private static void AdjustQuaternion(ref Quaternionf quaternion)
+        //        {
+        //#if LEFT_HANDED
+        //            quaternion[0] = -quaternion[0];
+        //            quaternion.w = -quaternion.w;
+        //#endif
+        //        }
         #endregion
     }
 }

@@ -12,7 +12,7 @@ public class Simple : MonoBehaviour
         _autd.Open();
 
         _autd.AppendModulationSync(AUTD.SineModulation(150));
-        _autd.AppendGainSync(AUTD.FocalPointGain(new Vector3(80, 60, 150) * 0.001f));
+        _autd.AppendGainSync(AUTD.FocalPointGain(new Vector3(-80, 60, 150) * 0.001f));
     }
 
     private void OnApplicationQuit()

@@ -196,7 +196,7 @@ namespace AUTD3Sharp
 
             var yRot = new Matrix3x3f((float)Math.Cos(eulerY), 0, (float)Math.Sin(eulerY),
                                         0, 1, 0,
-                                        -(float)Math.Sin(eulerY),0 , (float)Math.Cos(eulerY));
+                                        -(float)Math.Sin(eulerY), 0, (float)Math.Cos(eulerY));
 
             var zRot = new Matrix3x3f((float)Math.Cos(eulerZ), -(float)Math.Sin(eulerZ), 0,
                                         (float)Math.Sin(eulerZ), (float)Math.Cos(eulerZ), 0,
@@ -222,8 +222,13 @@ namespace AUTD3Sharp
             var eigenvalue2 = Jacobi(xxt, out Matrix3x3f u);
 
             var eigenvalue = ((eigenvalue1 + eigenvalue2) / 2);
+#if UNITY
+            eigenvalue.x = eigenvalue.x > 0 ? eigenvalue.x: 0;
+            eigenvalue.y = eigenvalue.y > 0 ? eigenvalue.y: 0;
+            eigenvalue.z = eigenvalue.z > 0 ? eigenvalue.z: 0;
+#else
             eigenvalue = eigenvalue.Rectify();
-
+#endif
             var s = CreateDiagonal((float)Math.Sqrt(eigenvalue[0]), (float)Math.Sqrt(eigenvalue[1]), (float)Math.Sqrt(eigenvalue[2]));
 
             var sp = u.Transpose() * x * v;

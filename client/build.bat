@@ -175,7 +175,7 @@ if %VS_VERSION% equ 2019 if %ARCH%=="x64" (
   echo : Setting PlatformTarget to x64...
 
   call SetTargetx64.bat %PROJECT_DIR%csharp\ AUTD3Sharp.csproj tmp.csproj x86 x64
-  call SetTargetx64.bat %PROJECT_DIR%csharp_example\ AUTD3SharpTest.csproj tmp.csproj x86 x64
+  call SetTargetx64.bat %PROJECT_DIR%csharp_example\ AUTD3SharpSample.csproj tmp.csproj x86 x64
 )
 
 call :colorEcho 0a "INFO"
