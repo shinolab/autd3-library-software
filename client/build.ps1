@@ -54,10 +54,10 @@ else {
     ColorEcho "Red" "Error" "This Library only support Visual Studio 2017 or 2019."
 }
 
-ColorEcho "Green" "Info" "Use", $IDE_NAME, "with", $ARCH, "architecture."
+ColorEcho "Green" "INFO" "Use", $IDE_NAME, "with", $ARCH, "architecture."
 
 if (-not (Get-Command cmake -ea SilentlyContinue)) {
-    ColorEcho "Green" "Info" "CMake not found in PATH. Looking for CMake..."
+    ColorEcho "Green" "INFO" "CMake not found in PATH. Looking for CMake..."
     $cmake_path = FindCMake
     if ($cmake_path -eq "NULL") {
         ColorEcho "Red" "Error" "CMake not found. Install CMake or set CMake binary folder to PATH."
@@ -74,9 +74,9 @@ foreach ($line in cmake -version) {
     $cmake_version = $ary[2]
     break
 }
-ColorEcho "Green" "Info" "Find CMake", $cmake_version
+ColorEcho "Green" "INFO" "Find CMake", $cmake_version
 
-ColorEcho "Green" "Info" "Create project directory if not exists."
+ColorEcho "Green" "INFO" "Create project directory if not exists."
 if (Test-Path $PROJECT_DIR) { 
     ColorEcho "Yellow" "WARNING" "Directory", $PROJECT_DIR, "is already exists."
     $ans = Read-Host "Overwrite (Y/[N])?"
@@ -88,20 +88,20 @@ if (Test-Path $PROJECT_DIR) {
             exit
         }
         else {
-            ColorEcho "Green" "Info" "Remove directory", $PROJECT_DIR         
+            ColorEcho "Green" "INFO" "Remove directory", $PROJECT_DIR         
         }
     }
     else {
-        ColorEcho "Green" "Info" "Cancled..."
+        ColorEcho "Green" "INFO" "Cancled..."
         $host.UI.RawUI.ReadKey() | Out-Null
         exit
     }
 }
 if (New-Item -Path $PROJECT_DIR -ItemType Directory) {
-    ColorEcho "Green" "Info" "Success to create project directory", $PROJECT_DIR
+    ColorEcho "Green" "INFO" "Success to create project directory", $PROJECT_DIR
 }
 
-ColorEcho "Green" "Info" "Creating VS solution..."
+ColorEcho "Green" "INFO" "Creating VS solution..."
 Push-Location $PROJECT_DIR
 $command = "cmake .. -G " + '$IDE_NAME'
 if ($VS_VERSION -ne 2017) {
@@ -135,11 +135,11 @@ if (-not $NOUNITY) {
 }
 
 if (($VS_VERSION -eq 2019) -and ($ARCH -eq "x64")) {
-    ColorEcho "Green" "Info" "Setting PlatformTarget to x64..."
+    ColorEcho "Green" "INFO" "Setting PlatformTarget to x64..."
 
     $tmp = Join-Path $PROJECT_DIR csharp\AUTD3Sharp.csproj
     ReplaceContent $tmp "x86" "x64"
-    $tmp = Join-Path $PROJECT_DIR csharp_example\AUTD3SharpTest.csproj
+    $tmp = Join-Path $PROJECT_DIR csharp_example\AUTD3SharpSample.csproj
     ReplaceContent $tmp "x86" "x64"
 }
 

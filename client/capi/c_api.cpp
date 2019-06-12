@@ -79,7 +79,7 @@ int AUTDNumTransducers(AUTDControllerHandle handle)
 	Controller* cnt = static_cast<Controller*>(handle);
 	return cnt->geometry()->numTransducers();
 }
-float AUTDFreqency(AUTDControllerHandle handle) {
+float AUTDFrequency(AUTDControllerHandle handle) {
 	Controller* cnt = static_cast<Controller*>(handle);
 	return cnt->geometry()->frequency();
 }

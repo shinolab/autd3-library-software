@@ -6,10 +6,10 @@ namespace AUTD3SharpTest
     {
         static void Main()
         {
-            SimpleTest.Test();
-            BesselTest.Test();
-            HoloGainTest.Test();
-            LateralTest.Test();
+            SimpleExample.Test();
+            BesselExample.Test();
+            HoloGainExample.Test();
+            LateralExmaple.Test();
 
             // Following test needs 2 AUTDs
             //GroupedGainTest.Test();

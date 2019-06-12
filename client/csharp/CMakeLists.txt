@@ -46,4 +46,4 @@ set_target_properties(AUTD3Sharp
   VS_GLOBAL_ROOTNAMESPACE "AUTD3Sharp"
 )
 
-target_link_libraries(AUTD3Sharp PRIVATE AUTD3SharpDll)
+target_link_libraries(AUTD3Sharp PRIVATE autd3capi)

@@ -3,7 +3,7 @@ using System;
 
 namespace AUTD3SharpTest.Test
 {
-    class HoloGainTest
+    class HoloGainExample
     {
         public static void Test()
         {
@@ -33,6 +33,6 @@ namespace AUTD3SharpTest.Test
                 Console.ReadKey(true);
             }
         }
-        private HoloGainTest() { }
+        private HoloGainExample() { }
     }
 }

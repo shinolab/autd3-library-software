@@ -15,7 +15,7 @@
 namespace autd {
 	class Modulation;
 
-#if DLL_FOR_CSHARP
+#if DLL_FOR_CAPI
 	using ModulationPtr = Modulation *;
 #else
 	using ModulationPtr = std::shared_ptr<Modulation>;

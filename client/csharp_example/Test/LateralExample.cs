@@ -3,11 +3,11 @@ using System;
 
 namespace AUTD3SharpTest.Test
 {
-    class SimpleTest
+    class LateralExmaple
     {
         public static void Test()
         {
-            Console.WriteLine("Start Simple Test");
+            Console.WriteLine("Start LateralModulation Test");
 
             float x = 83.0f;
             float y = 66.0f;
@@ -18,18 +18,20 @@ namespace AUTD3SharpTest.Test
                 autd.Open();
                 autd.AddDevice(Vector3f.Zero, Vector3f.Zero);
 
-                autd.AppendModulationSync(AUTD.SineModulation(150)); // AM sin 150 HZ
+                autd.AppendModulationSync(AUTD.Modulation(255));
 
-                var gain = AUTD.FocalPointGain(x, y, z);
-                gain.Fix(); // 位相振幅独立制御用の修正
+                var f1 = AUTD.FocalPointGain(x - 7, y, z);
+                var f2 = AUTD.FocalPointGain(x + 7, y, z);
 
-                autd.AppendGainSync(gain); // FocalPoint at (x,y,z)
+                autd.AppendLateralGain(f1);
+                autd.AppendLateralGain(f2);
+                autd.StartLateralModulation(50);
 
                 Console.WriteLine("press any key to finish...");
                 Console.ReadKey(true);
             }
         }
 
-        private SimpleTest() { }
+        private LateralExmaple() { }
     }
 }

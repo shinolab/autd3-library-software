@@ -26,7 +26,7 @@ namespace autd {
 	class Geometry;
 
 	template <class T>
-#if DLL_FOR_CSHARP
+#if DLL_FOR_CAPI
 	static T* CreateHelper() {
 		struct impl : T {
 			impl() : T() {}

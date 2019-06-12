@@ -24,7 +24,7 @@
 namespace autd {
 	class Gain;
 
-#if DLL_FOR_CSHARP
+#if DLL_FOR_CAPI
 	using GainPtr = Gain *;
 #else
 	using GainPtr = std::shared_ptr<Gain>;

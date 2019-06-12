@@ -5,18 +5,31 @@
 */
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace AUTD3Sharp
 {
-    public struct Vector3f : IEquatable<Vector3f>
+    // ReSharper disable once InconsistentNaming
+    public struct Vector3f : IEquatable<Vector3f>, IEnumerable<float>
     {
         #region ctor
         public Vector3f(float x, float y, float z)
         {
-            this.X = x;
-            this.Y = y;
-            this.Z = z;
+            X = x;
+            Y = y;
+            Z = z;
+        }
+
+        public Vector3f(params float[] vector)
+        {
+            if (vector == null) throw new ArgumentNullException(nameof(vector));
+            if (vector.Length != 3) throw new InvalidCastException();
+
+            X = vector[0];
+            Y = vector[1];
+            Z = vector[2];
         }
         #endregion
 
@@ -28,9 +41,9 @@ namespace AUTD3Sharp
         public Vector3f Normalized => this / L2Norm;
         public float L2Norm => (float)Math.Sqrt(L2NormSquared);
         public float L2NormSquared => X * X + Y * Y + Z * Z;
-        public float X { get; internal set; }
-        public float Y { get; internal set; }
-        public float Z { get; internal set; }
+        public float X { get; }
+        public float Y { get; }
+        public float Z { get; }
         #endregion
 
         #region indexcer
@@ -44,17 +57,7 @@ namespace AUTD3Sharp
                     case 1: return Y;
                     case 2: return Z;
                     default: throw new ArgumentOutOfRangeException(nameof(index));
-                };
-            }
-            set
-            {
-                switch (index)
-                {
-                    case 0: X = value; break;
-                    case 1: Y = value; break;
-                    case 2: Z = value; break;
-                    default: throw new ArgumentOutOfRangeException(nameof(index));
-                };
+                }
             }
         }
         #endregion
@@ -105,37 +108,46 @@ namespace AUTD3Sharp
 
         public bool Equals(Vector3f other)
         {
-            return this.X == other.X && this.Y == other.Y && this.Z == other.Z;
+            return X.Equals(other.X) && Y.Equals(other.Y) && Z.Equals(other.Z);
         }
 
         public override bool Equals(object obj)
         {
             if (obj is Vector3f vec)
-                return this.Equals(vec);
-            else return false;
+                return Equals(vec);
+            return false;
         }
         #endregion
 
         #region public methods
-        public void Rectify()
-        {
-            X = Math.Max(X, 0);
-            Y = Math.Max(Y, 0);
-            Z = Math.Max(Z, 0);
-        }
+        public Vector3f Rectify() => new Vector3f(Math.Max(X,0), Math.Max(Y, 0), Math.Max(Z, 0));
 
-        public float[] ToArray() => new float[] { X, Y, Z };
+        public float[] ToArray() => new[] { X, Y, Z };
         #endregion
 
         #region util
         public override int GetHashCode()
         {
-            return this.X.GetHashCode() ^ this.Y.GetHashCode() ^ this.Z.GetHashCode();
+            return X.GetHashCode() ^ Y.GetHashCode() ^ Z.GetHashCode();
         }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         public string ToString(string format) => "3d Column Vector:\n"
-                + String.Format(CultureInfo.CurrentCulture, format, X) + "\n"
-                + String.Format(CultureInfo.CurrentCulture, format, Y) + "\n"
-                + String.Format(CultureInfo.CurrentCulture, format, Z);
+                + string.Format(CultureInfo.CurrentCulture, format, X) + "\n"
+                + string.Format(CultureInfo.CurrentCulture, format, Y) + "\n"
+                + string.Format(CultureInfo.CurrentCulture, format, Z);
+
+        public IEnumerator<float> GetEnumerator()
+        {
+            yield return X;
+            yield return Y;
+            yield return Z;
+        }
+
         public override string ToString() => ToString("{0,-20}");
         #endregion
     }
