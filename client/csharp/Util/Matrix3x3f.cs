@@ -25,7 +25,7 @@ namespace AUTD3Sharp
     public unsafe struct Matrix3x3f : IEquatable<Matrix3x3f>, IEnumerable<float>
     {
         #region const
-        private const float Eps = 1e-5f;
+        private const float Eps = 1e-7f;
         #endregion
 
         #region field
@@ -196,13 +196,13 @@ namespace AUTD3Sharp
 
             var yRot = new Matrix3x3f((float)Math.Cos(eulerY), 0, (float)Math.Sin(eulerY),
                                         0, 1, 0,
-                                        -(float)Math.Sin(eulerY), (float)Math.Sin(eulerX), (float)Math.Cos(eulerY));
+                                        -(float)Math.Sin(eulerY),0 , (float)Math.Cos(eulerY));
 
             var zRot = new Matrix3x3f((float)Math.Cos(eulerZ), -(float)Math.Sin(eulerZ), 0,
                                         (float)Math.Sin(eulerZ), (float)Math.Cos(eulerZ), 0,
                                         0, 0, 1);
 
-            return zRot * yRot * xRot;
+            return xRot * yRot * zRot;
         }
         #endregion
 
