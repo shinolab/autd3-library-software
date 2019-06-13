@@ -202,7 +202,7 @@ namespace AUTD3Sharp
                                         (float)Math.Sin(eulerZ), (float)Math.Cos(eulerZ), 0,
                                         0, 0, 1);
 
-            return xRot * yRot * zRot;
+            return zRot * yRot * xRot;
         }
         #endregion
 

@@ -89,18 +89,23 @@ namespace AUTD3Sharp
     public sealed class AUTD : IDisposable
     {
         #region const
-        public static readonly float UltrasoundWavelength = 8.5f;
 
-        public const int NumTransInDevice = 249;
+#if DIMENSION_M
+        public static readonly float UltrasoundWavelength = 0.0085f;
+        public const float AUTDWidth = 0.192f;
+        public const float AUTDHeight = 0.1514f;
+#else
+        public static readonly float UltrasoundWavelength = 8.5f;
         public const float AUTDWidth = 192.0f;
         public const float AUTDHeight = 151.4f;
-
+#endif
         public const float Pi = 3.14159265f;
+        public const int NumTransInDevice = 249;
 
 #if UNITY
         public readonly static float MeterScale = 1000f;
 #endif
-        #endregion
+#endregion
 
         #region field
         private bool _isDisposed;
@@ -129,6 +134,15 @@ namespace AUTD3Sharp
             var res = NativeMethods.AUTDAddDevice(_autdControllerHandle, position[0], position[1], position[2], rotation[0], rotation[1], rotation[2], groupId);
             return res;
         }
+        public int AddDevice(Vector3f position, Quaternionf quaternion) => AddDevice(position, quaternion, 0);
+        public int AddDevice(Vector3f position, Quaternionf quaternion, int groupId)
+        {
+            AdjustVector(ref position);
+            AdjustQuaternion(ref quaternion);
+            var res = NativeMethods.AUTDAddDeviceQuaternion(_autdControllerHandle, position[0], position[1], position[2], quaternion[3], quaternion[0], quaternion[1], quaternion[2], groupId);
+            return res;
+        }
+
         public void DelDevice(int devId)
         {
             NativeMethods.AUTDDelDevice(_autdControllerHandle, devId);
@@ -465,7 +479,7 @@ namespace AUTD3Sharp
         private static void AdjustVector(ref Vector3f vector)
         {
 #if LEFT_HANDED
-            vector[0] = -vector[0];
+            vector[2] = -vector[2];
 #endif
 #if DIMENSION_M
             vector[0] *= MeterScale;
@@ -474,15 +488,15 @@ namespace AUTD3Sharp
 #endif
         }
 
-        //        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //        [SuppressMessage("ReSharper", "UnusedParameter.Local")]
-        //        private static void AdjustQuaternion(ref Quaternionf quaternion)
-        //        {
-        //#if LEFT_HANDED
-        //            quaternion[0] = -quaternion[0];
-        //            quaternion.w = -quaternion.w;
-        //#endif
-        //        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [SuppressMessage("ReSharper", "UnusedParameter.Local")]
+        private static void AdjustQuaternion(ref Quaternionf quaternion)
+        {
+#if LEFT_HANDED
+            quaternion[2] = -quaternion[2];
+            quaternion[3] = -quaternion[3];
+#endif
+        }
         #endregion
     }
 }

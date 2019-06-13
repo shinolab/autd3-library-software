@@ -27,6 +27,24 @@ namespace AUTD3Sharp
         public float W { get; }
         #endregion
 
+        #region indexcer
+        public float this[int index]
+        {
+            get
+            {
+                switch (index)
+                {
+                    case 0: return X;
+                    case 1: return Y;
+                    case 2: return Z;
+                    case 3: return W;
+                    default: throw new ArgumentOutOfRangeException(nameof(index));
+                }
+            }
+        }
+        #endregion
+
+
         #region arithmetic
         public static bool operator ==(Quaternionf left, Quaternionf right) => left.Equals(right);
         public static bool operator !=(Quaternionf left, Quaternionf right) => !left.Equals(right);
