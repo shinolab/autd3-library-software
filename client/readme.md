@@ -45,9 +45,6 @@ vcpkgでgtestをインストールしておく必要があります.
     -test "-DCMAKE_TOOLCHAIN_FILE=C:[...]\vcpkg\scripts\buildsystems\vcpkg.cmake"
     ```
 
-
-
-
 ## Memo ##
 cmakeのバグかは知らないけど, -Aオプションでx64プラットフォームを指定してもC#のターゲットがx64にならない.
 
