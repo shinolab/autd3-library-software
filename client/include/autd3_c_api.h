@@ -49,6 +49,7 @@ extern "C" {
 	__declspec(dllexport) void AUTDMatlabGain(AUTDGainPtr *gain, const char * filename, const char * varname);
 	__declspec(dllexport) void AUTDCustomGain(AUTDGainPtr *gain, uint16_t* data, int dataLength);
 	__declspec(dllexport) void AUTDHoloGain(AUTDGainPtr *gain, float* points, float* amps, int size);
+	__declspec(dllexport) void AUTDTransducerTestGain(AUTDGainPtr* gain, int idx, int amp, int phase);
 	__declspec(dllexport) void AUTDNullGain(AUTDGainPtr *gain);
 	__declspec(dllexport) void AUTDDeleteGain(AUTDGainPtr gain);
 	__declspec(dllexport) void AUTDFixGain(AUTDGainPtr gain);

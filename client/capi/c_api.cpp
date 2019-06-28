@@ -141,6 +141,10 @@ void AUTDHoloGain(AUTDGainPtr* gain, float* points, float* amps, int size) {
 	auto* g = HoloGainSdp::Create(holo, amp);
 	*gain = g;
 }
+void AUTDTransducerTestGain(AUTDGainPtr* gain, int idx, int amp, int phase) {
+	auto* g = TransducerTestGain::Create(idx,amp,phase);
+	*gain = g;
+}
 void AUTDNullGain(AUTDGainPtr* gain) {
 	auto* g = NullGain::Create();
 	*gain = g;
