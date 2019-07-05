@@ -212,13 +212,13 @@ void Controller::impl::FlushBuffer() {
 	queue<ModulationPtr>().swap(_send_mod_q);
 }
 
-unique_ptr<uint8_t[]> Controller::impl::MakeBody(GainPtr gain, ModulationPtr mod, size_t * size) {
+unique_ptr<uint8_t[]> Controller::impl::MakeBody(GainPtr gain, ModulationPtr mod, size_t* size) {
 	auto num_devices = (gain != nullptr) ? gain->geometry()->numDevices() : 0;
 
 	*size = sizeof(RxGlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;
 	auto body = make_unique<uint8_t[]>(*size);
 
-	auto * header = reinterpret_cast<RxGlobalHeader*>(&body[0]);
+	auto* header = reinterpret_cast<RxGlobalHeader*>(&body[0]);
 	header->msg_id = static_cast<uint8_t>(rand() % 256); // NOLINT
 	header->control_flags = 0;
 	header->mod_size = 0;
@@ -239,7 +239,7 @@ unique_ptr<uint8_t[]> Controller::impl::MakeBody(GainPtr gain, ModulationPtr mod
 		mod->sent += mod_size;
 	}
 
-	auto * cursor = &body[0] + sizeof(RxGlobalHeader) / sizeof(body[0]);
+	auto* cursor = &body[0] + sizeof(RxGlobalHeader) / sizeof(body[0]);
 	if (gain != nullptr) {
 		for (int i = 0; i < gain->geometry()->numDevices(); i++) {
 			auto deviceId = gain->geometry()->deviceIdForDeviceIdx(i);
@@ -349,7 +349,7 @@ void Controller::lateraltimer::AppendLateralGain(GainPtr gain, const GeometryPtr
 	this->_lateral_gain.push_back(gain);
 }
 
-void Controller::lateraltimer::AppendLateralGain(const vector<GainPtr> & gain_list, const GeometryPtr geometry)
+void Controller::lateraltimer::AppendLateralGain(const vector<GainPtr>& gain_list, const GeometryPtr geometry)
 {
 	for (auto g : gain_list) {
 		this->AppendLateralGain(g, geometry);
@@ -363,8 +363,8 @@ void Controller::lateraltimer::FinishLateralModulation() {
 
 void Controller::lateraltimer::ResetLateralGain()
 {
-	this->FinishLateralModulation();
-	vector<GainPtr>().swap(this->_lateral_gain);
+	this->_lateral_gain_size = 0;
+	this->_lateral_gain.clear();
 }
 #pragma endregion
 
@@ -442,7 +442,7 @@ void Controller::AppendLateralGain(GainPtr gain)
 	this->_ptimer->AppendLateralGain(gain, this->geometry());
 }
 
-void Controller::AppendLateralGain(const vector<GainPtr> & gain_list)
+void Controller::AppendLateralGain(const vector<GainPtr>& gain_list)
 {
 	this->_ptimer->AppendLateralGain(gain_list, this->geometry());
 }
@@ -454,11 +454,13 @@ void Controller::StartLateralModulation(float freq)
 
 void Controller::FinishLateralModulation()
 {
+	this->AppendGainSync(NullGain::Create());
 	this->_ptimer->FinishLateralModulation();
 }
 
 void Controller::ResetLateralGain()
 {
+	this->FinishLateralModulation();
 	this->_ptimer->ResetLateralGain();
 }
 
@@ -470,7 +472,7 @@ GeometryPtr Controller::geometry() noexcept {
 	return this->_pimpl->_geometry;
 }
 
-void Controller::SetGeometry(const GeometryPtr & geometry) noexcept {
+void Controller::SetGeometry(const GeometryPtr& geometry) noexcept {
 	this->_pimpl->_geometry = geometry;
 }
 
