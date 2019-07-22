@@ -176,6 +176,10 @@ namespace AUTD3Sharp
         {
             NativeMethods.AUTDSetSilentMode(_autdControllerHandle, mode);
         }
+        public void SetLMSilentMode(bool mode)
+        {
+            NativeMethods.AUTDSetLMSilentMode(_autdControllerHandle, mode);
+        }
 
         ~AUTD()
         {

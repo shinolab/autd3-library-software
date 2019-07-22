@@ -53,7 +53,8 @@ public:
 	mutex _send_mtx;
 
 	bool silentMode = true;
-	uint8_t modReset = MOD_RESET;
+	bool lm_silentMode = true;
+	//uint8_t modReset = MOD_RESET;
 
 	~impl() noexcept(false);
 	bool isOpen();
@@ -212,21 +213,22 @@ void Controller::impl::FlushBuffer() {
 	queue<ModulationPtr>().swap(_send_mod_q);
 }
 
-unique_ptr<uint8_t[]> Controller::impl::MakeBody(GainPtr gain, ModulationPtr mod, size_t * size) {
+unique_ptr<uint8_t[]> Controller::impl::MakeBody(GainPtr gain, ModulationPtr mod, size_t* size) {
 	auto num_devices = (gain != nullptr) ? gain->geometry()->numDevices() : 0;
 
 	*size = sizeof(RxGlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;
 	auto body = make_unique<uint8_t[]>(*size);
 
-	auto * header = reinterpret_cast<RxGlobalHeader*>(&body[0]);
+	auto* header = reinterpret_cast<RxGlobalHeader*>(&body[0]);
 	header->msg_id = static_cast<uint8_t>(rand() % 256); // NOLINT
 	header->control_flags = 0;
 	header->mod_size = 0;
 
 	if (this->silentMode) header->control_flags |= SILENT;
+	if (this->lm_silentMode) header->control_flags |= LM_SILENT;
 
 	if (mod != nullptr) {
-		header->control_flags |= (this->modReset ^= MOD_RESET);
+		//header->control_flags |= (this->modReset ^= MOD_RESET);
 
 		const uint8_t mod_size = max(0, min(static_cast<int>(mod->buffer.size() - mod->sent), MOD_FRAME_SIZE));
 		header->mod_size = mod_size;
@@ -239,7 +241,7 @@ unique_ptr<uint8_t[]> Controller::impl::MakeBody(GainPtr gain, ModulationPtr mod
 		mod->sent += mod_size;
 	}
 
-	auto * cursor = &body[0] + sizeof(RxGlobalHeader) / sizeof(body[0]);
+	auto* cursor = &body[0] + sizeof(RxGlobalHeader) / sizeof(body[0]);
 	if (gain != nullptr) {
 		for (int i = 0; i < gain->geometry()->numDevices(); i++) {
 			auto deviceId = gain->geometry()->deviceIdForDeviceIdx(i);
@@ -349,7 +351,7 @@ void Controller::lateraltimer::AppendLateralGain(GainPtr gain, const GeometryPtr
 	this->_lateral_gain.push_back(gain);
 }
 
-void Controller::lateraltimer::AppendLateralGain(const vector<GainPtr> & gain_list, const GeometryPtr geometry)
+void Controller::lateraltimer::AppendLateralGain(const vector<GainPtr>& gain_list, const GeometryPtr geometry)
 {
 	for (auto g : gain_list) {
 		this->AppendLateralGain(g, geometry);
@@ -372,7 +374,8 @@ Controller::Controller() noexcept(false) {
 	this->_pimpl = make_shared<impl>();
 	this->_pimpl->_geometry = Geometry::Create();
 	this->_pimpl->silentMode = true;
-	this->_pimpl->modReset = MOD_RESET;
+	this->_pimpl->lm_silentMode = false;
+	//this->_pimpl->modReset = MOD_RESET;
 
 	this->_ptimer = make_unique<lateraltimer>();
 	this->_ptimer->_pcnt = this->_pimpl;
@@ -442,7 +445,7 @@ void Controller::AppendLateralGain(GainPtr gain)
 	this->_ptimer->AppendLateralGain(gain, this->geometry());
 }
 
-void Controller::AppendLateralGain(const vector<GainPtr> & gain_list)
+void Controller::AppendLateralGain(const vector<GainPtr>& gain_list)
 {
 	this->_ptimer->AppendLateralGain(gain_list, this->geometry());
 }
@@ -470,7 +473,7 @@ GeometryPtr Controller::geometry() noexcept {
 	return this->_pimpl->_geometry;
 }
 
-void Controller::SetGeometry(const GeometryPtr & geometry) noexcept {
+void Controller::SetGeometry(const GeometryPtr& geometry) noexcept {
 	this->_pimpl->_geometry = geometry;
 }
 
@@ -480,6 +483,10 @@ size_t Controller::remainingInBuffer() {
 
 void Controller::SetSilentMode(bool silent) noexcept {
 	this->_pimpl->silentMode = silent;
+}
+
+void Controller::SetLMSilentMode(bool silent) noexcept {
+	this->_pimpl->lm_silentMode = silent;
 }
 
 bool Controller::silentMode() noexcept {

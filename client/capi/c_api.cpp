@@ -56,6 +56,11 @@ void AUTDSetSilentMode(AUTDControllerHandle handle, bool mode)
 	auto* cnt = static_cast<Controller*>(handle);
 	cnt->SetSilentMode(mode);
 }
+void AUTDSetLMSilentMode(AUTDControllerHandle handle, bool mode)
+{
+	auto* cnt = static_cast<Controller*>(handle);
+	cnt->SetLMSilentMode(mode);
+}
 #pragma endregion
 
 #pragma region Property

@@ -17,12 +17,20 @@ namespace AUTD3SharpTest.Test
             {
                 autd.Open();
                 autd.AddDevice(Vector3f.Zero, Vector3f.Zero);
+                autd.SetLMSilentMode(false);
 
                 autd.AppendModulationSync(AUTD.SineModulation(150)); // AM sin 150 HZ
 
                 var gain = AUTD.FocalPointGain(x, y, z);
-                gain.Fix(); // 位相振幅独立制御用の修正
+                //gain.Fix(); // 位相振幅独立制御用の修正
 
+                autd.AppendGainSync(gain); // FocalPoint at (x,y,z)
+
+                Console.WriteLine("SILENT");
+                Console.ReadKey(true);
+
+                autd.SetSilentMode(false);
+                autd.SetLMSilentMode(true);
                 autd.AppendGainSync(gain); // FocalPoint at (x,y,z)
 
                 Console.WriteLine("press any key to finish...");

@@ -44,6 +44,7 @@ namespace autd {
 		void SetGeometry(const GeometryPtr& geometry) noexcept;
 
 		void SetSilentMode(bool silent) noexcept;
+		void SetLMSilentMode(bool silent) noexcept;
 		bool silentMode() noexcept;
 		void AppendGain(GainPtr gain);
 		void AppendGainSync(GainPtr gain);
