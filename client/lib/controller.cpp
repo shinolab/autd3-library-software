@@ -30,7 +30,7 @@
 #include "privdef.hpp"
 #include "ethercat_link.hpp"
 #include "lateraltimer.hpp"
-
+#include <bitset>
 using namespace autd;
 using namespace std;
 
@@ -54,7 +54,7 @@ public:
 
 	bool silentMode = true;
 	bool lm_silentMode = true;
-	//uint8_t modReset = MOD_RESET;
+	uint8_t modReset = MOD_RESET;
 
 	~impl() noexcept(false);
 	bool isOpen();
@@ -227,8 +227,10 @@ unique_ptr<uint8_t[]> Controller::impl::MakeBody(GainPtr gain, ModulationPtr mod
 	if (this->silentMode) header->control_flags |= SILENT;
 	if (this->lm_silentMode) header->control_flags |= LM_SILENT;
 
+	//std::cout << std::bitset<8>(header->control_flags) << std::endl;
+
 	if (mod != nullptr) {
-		//header->control_flags |= (this->modReset ^= MOD_RESET);
+		header->control_flags |= (this->modReset ^= MOD_RESET);
 
 		const uint8_t mod_size = max(0, min(static_cast<int>(mod->buffer.size() - mod->sent), MOD_FRAME_SIZE));
 		header->mod_size = mod_size;
@@ -260,6 +262,8 @@ bool Controller::impl::isOpen() {
 
 void Controller::impl::Close() {
 	if (this->isOpen()) {
+		this->silentMode = false;
+		this->lm_silentMode = false;
 		auto nullgain = NullGain::Create();
 		this->AppendGainSync(nullgain);
 #if DLL_FOR_CSHARP
@@ -375,7 +379,7 @@ Controller::Controller() noexcept(false) {
 	this->_pimpl->_geometry = Geometry::Create();
 	this->_pimpl->silentMode = true;
 	this->_pimpl->lm_silentMode = false;
-	//this->_pimpl->modReset = MOD_RESET;
+	this->_pimpl->modReset = MOD_RESET;
 
 	this->_ptimer = make_unique<lateraltimer>();
 	this->_ptimer->_pcnt = this->_pimpl;

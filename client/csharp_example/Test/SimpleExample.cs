@@ -17,6 +17,7 @@ namespace AUTD3SharpTest.Test
             {
                 autd.Open();
                 autd.AddDevice(Vector3f.Zero, Vector3f.Zero);
+                autd.SetSilentMode(true);
                 autd.SetLMSilentMode(false);
 
                 autd.AppendModulationSync(AUTD.SineModulation(150)); // AM sin 150 HZ
@@ -30,9 +31,11 @@ namespace AUTD3SharpTest.Test
                 Console.ReadKey(true);
 
                 autd.SetSilentMode(false);
-                autd.SetLMSilentMode(true);
+                autd.SetLMSilentMode(false);
                 autd.AppendGainSync(gain); // FocalPoint at (x,y,z)
 
+
+                Console.WriteLine("NO SILENT");
                 Console.WriteLine("press any key to finish...");
                 Console.ReadKey(true);
             }
