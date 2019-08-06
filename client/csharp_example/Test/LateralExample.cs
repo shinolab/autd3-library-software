@@ -18,13 +18,13 @@ namespace AUTD3SharpTest.Test
                 autd.Open();
                 autd.AddDevice(Vector3f.Zero, Vector3f.Zero);
 
-                autd.SetSilentMode(true);
+                autd.SetSilentMode(false);
                 autd.SetLMSilentMode(false);
 
                 autd.AppendModulationSync(AUTD.Modulation(255));
 
-                var f1 = AUTD.FocalPointGain(x - 10, y, z);
-                var f2 = AUTD.FocalPointGain(x + 10, y, z);
+                var f1 = AUTD.FocalPointGain(x + 10, y, z);
+                var f2 = AUTD.FocalPointGain(x - 10, y, z);
 
                 autd.AppendLateralGain(f1);
                 autd.AppendLateralGain(f2);
@@ -32,6 +32,35 @@ namespace AUTD3SharpTest.Test
 
                 Console.WriteLine("press any key to finish...");
                 Console.ReadKey(true);
+
+                autd.FinishLateralModulation();
+                autd.ResetLateralGain();
+
+                autd.SetSilentMode(true);
+                autd.SetLMSilentMode(false);
+
+                autd.AppendLateralGain(f1);
+                autd.AppendLateralGain(f2);
+                autd.StartLateralModulation(50);
+
+                Console.WriteLine("press any key to finish...");
+                Console.ReadKey(true);
+
+                autd.FinishLateralModulation();
+                autd.ResetLateralGain();
+
+                autd.SetSilentMode(false);
+                autd.SetLMSilentMode(true);
+
+                autd.AppendLateralGain(f1);
+                autd.AppendLateralGain(f2);
+                autd.StartLateralModulation(50);
+
+                Console.WriteLine("press any key to finish...");
+                Console.ReadKey(true);
+
+                autd.FinishLateralModulation();
+                autd.ResetLateralGain();
             }
         }
 

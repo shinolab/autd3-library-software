@@ -369,8 +369,8 @@ void Controller::lateraltimer::FinishLateralModulation() {
 
 void Controller::lateraltimer::ResetLateralGain()
 {
-	this->FinishLateralModulation();
-	vector<GainPtr>().swap(this->_lateral_gain);
+	this->_lateral_gain_size = 0;
+	this->_lateral_gain.clear();
 }
 #pragma endregion
 
@@ -461,11 +461,13 @@ void Controller::StartLateralModulation(float freq)
 
 void Controller::FinishLateralModulation()
 {
+	this->AppendGainSync(autd::NullGain::Create());
 	this->_ptimer->FinishLateralModulation();
 }
 
 void Controller::ResetLateralGain()
 {
+	this->FinishLateralModulation();
 	this->_ptimer->ResetLateralGain();
 }
 

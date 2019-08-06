@@ -6,7 +6,7 @@ namespace AUTD3SharpTest
     {
         static void Main()
         {
-            //SimpleExample.Test();
+            SimpleExample.Test();
             //BesselExample.Test();
             //HoloGainExample.Test();
             LateralExmaple.Test();
