@@ -160,7 +160,7 @@ void AUTDDeleteGain(AUTDGainPtr gain) {
 }
 void AUTDFixGain(AUTDGainPtr gain) {
 	auto* g = static_cast<Gain*>(gain);
-	g->Fix();
+	g->SignalDesign();
 }
 #pragma endregion
 

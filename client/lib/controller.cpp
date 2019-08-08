@@ -96,7 +96,6 @@ void Controller::impl::InitPipeline() {
 			if (gain != nullptr)
 			{
 				if (gain->built()) gain->build();
-				if (gain->_fix) gain->FixImpl();
 			}
 			// pass gain to next pipeline stage
 			{
@@ -125,17 +124,11 @@ void Controller::impl::InitPipeline() {
 					if (_send_mod_q.size())
 						mod = _send_mod_q.front();
 				}
-#ifdef DEBUG
-				auto start = chrono::steady_clock::now();
-#endif
 
 				size_t body_size = 0;
 				auto body = MakeBody(gain, mod, &body_size);
 				if (this->_link->isOpen()) this->_link->Send(body_size, move(body));
-#ifdef DEBUG
-				auto end = chrono::steady_clock::now();
-				cout << chrono::duration <double, milli>(end - start).count() << " ms" << endl;
-#endif
+
 				// remove elements
 				unique_lock<mutex> lk(_send_mtx);
 				if (gain != nullptr)
@@ -168,7 +161,6 @@ void Controller::impl::AppendGainSync(GainPtr gain) {
 	try {
 		gain->SetGeometry(this->_geometry);
 		if (!gain->built()) gain->build();
-		if (gain->_fix) gain->FixImpl();
 
 		size_t body_size = 0;
 		auto body = this->MakeBody(gain, nullptr, &body_size);
@@ -225,7 +217,6 @@ unique_ptr<uint8_t[]> Controller::impl::MakeBody(GainPtr gain, ModulationPtr mod
 	header->mod_size = 0;
 
 	if (this->silentMode) header->control_flags |= SILENT;
-	if (this->lm_silentMode) header->control_flags |= LM_SILENT;
 
 	//std::cout << std::bitset<8>(header->control_flags) << std::endl;
 

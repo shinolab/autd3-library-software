@@ -37,17 +37,19 @@ namespace autd {
 		friend class internal::Link;
 	protected:
 		Gain() noexcept;
-		void FixImpl();
+		inline void SignalDesign(uint8_t amp_i, uint8_t phase_i, uint8_t& amp_o, uint8_t& phase_o) noexcept {
+			auto d = asin(amp_i / 255.0) / M_PIf;  // duty (0 ~ 0.5)
+			amp_o = static_cast<uint8_t>(511 * d);
+			phase_o = static_cast<uint8_t>(static_cast<int>(phase_i + 64 - 128 * d) % 256);
+		}
 
 		std::mutex _mtx;
 		bool _built;
-		bool _fix;
 		GeometryPtr _geometry;
 		std::map<int, std::vector<uint16_t> > _data;
 	public:
 		static GainPtr Create();
 		virtual void build();
-		void Fix() noexcept;
 		void SetGeometry(const GeometryPtr& geometry) noexcept;
 		GeometryPtr geometry() noexcept;
 		std::map<int, std::vector<uint16_t> > data();
@@ -77,11 +79,13 @@ namespace autd {
 	class BesselBeamGain : public Gain {
 	public:
 		static GainPtr Create(Eigen::Vector3f point, Eigen::Vector3f vec_n, float theta_z);
+		static GainPtr Create(Eigen::Vector3f point, Eigen::Vector3f vec_n, float theta_z, uint8_t amp);
 		void build() override;
 	private:
 		Eigen::Vector3f _point;
 		Eigen::Vector3f _vec_n;
 		float _theta_z;
+		uint8_t _amp = 0xff;
 	};
 
 	class CustomGain : public Gain {
