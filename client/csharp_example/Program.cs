@@ -7,8 +7,8 @@ namespace AUTD3SharpTest
         static void Main()
         {
             SimpleExample.Test();
-            //BesselExample.Test();
-            //HoloGainExample.Test();
+            BesselExample.Test();
+            HoloGainExample.Test();
             LateralExmaple.Test();
 
             // Following test needs 2 AUTDs

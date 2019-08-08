@@ -9,8 +9,8 @@ namespace AUTD3SharpTest.Test
         {
             Console.WriteLine("Start BesselBeam Test");
 
-            float x = 83.0f;
-            float y = 66.0f;
+            var x = 83.0f;
+            var y = 66.0f;
 
             using (var autd = new AUTD())
             {
@@ -21,14 +21,11 @@ namespace AUTD3SharpTest.Test
 
                 var start = new Vector3f(x, y, 0);
                 var dir = Vector3f.UnitZ;
-
-                autd.AppendGainSync(AUTD.BesselBeamGain(start, dir, 13.0f / 180 * AUTD.Pi)); // BesselBeam from (x,y,0), theta = 13 deg
+                autd.AppendGainSync(AUTD.BesselBeamGain(start, dir, 13.0f / 180 * AUTD.Pi)); // BesselBeam from (x, y, 0), theta = 13 deg
 
                 Console.WriteLine("press any key to finish...");
                 Console.ReadKey(true);
             }
         }
-
-        private BesselExample() { }
     }
 }

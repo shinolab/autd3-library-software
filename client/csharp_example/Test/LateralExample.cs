@@ -32,38 +32,7 @@ namespace AUTD3SharpTest.Test
 
                 Console.WriteLine("press any key to finish...");
                 Console.ReadKey(true);
-
-                autd.FinishLateralModulation();
-                autd.ResetLateralGain();
-
-                autd.SetSilentMode(true);
-                autd.SetLMSilentMode(false);
-
-                autd.AppendLateralGain(f1);
-                autd.AppendLateralGain(f2);
-                autd.StartLateralModulation(50);
-
-                Console.WriteLine("press any key to finish...");
-                Console.ReadKey(true);
-
-                autd.FinishLateralModulation();
-                autd.ResetLateralGain();
-
-                autd.SetSilentMode(false);
-                autd.SetLMSilentMode(true);
-
-                autd.AppendLateralGain(f1);
-                autd.AppendLateralGain(f2);
-                autd.StartLateralModulation(50);
-
-                Console.WriteLine("press any key to finish...");
-                Console.ReadKey(true);
-
-                autd.FinishLateralModulation();
-                autd.ResetLateralGain();
             }
         }
-
-        private LateralExmaple() { }
     }
 }
