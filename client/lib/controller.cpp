@@ -30,7 +30,6 @@
 #include "privdef.hpp"
 #include "ethercat_link.hpp"
 #include "lateraltimer.hpp"
-
 using namespace autd;
 using namespace std;
 
@@ -95,7 +94,6 @@ void Controller::impl::InitPipeline() {
 			if (gain != nullptr)
 			{
 				if (gain->built()) gain->build();
-				if (gain->_fix) gain->FixImpl();
 			}
 			// pass gain to next pipeline stage
 			{
@@ -124,17 +122,11 @@ void Controller::impl::InitPipeline() {
 					if (_send_mod_q.size())
 						mod = _send_mod_q.front();
 				}
-#ifdef DEBUG
-				auto start = chrono::steady_clock::now();
-#endif
 
 				size_t body_size = 0;
 				auto body = MakeBody(gain, mod, &body_size);
 				if (this->_link->isOpen()) this->_link->Send(body_size, move(body));
-#ifdef DEBUG
-				auto end = chrono::steady_clock::now();
-				cout << chrono::duration <double, milli>(end - start).count() << " ms" << endl;
-#endif
+
 				// remove elements
 				unique_lock<mutex> lk(_send_mtx);
 				if (gain != nullptr)
@@ -167,7 +159,6 @@ void Controller::impl::AppendGainSync(GainPtr gain) {
 	try {
 		gain->SetGeometry(this->_geometry);
 		if (!gain->built()) gain->build();
-		if (gain->_fix) gain->FixImpl();
 
 		size_t body_size = 0;
 		auto body = this->MakeBody(gain, nullptr, &body_size);
@@ -225,6 +216,8 @@ unique_ptr<uint8_t[]> Controller::impl::MakeBody(GainPtr gain, ModulationPtr mod
 
 	if (this->silentMode) header->control_flags |= SILENT;
 
+	//std::cout << std::bitset<8>(header->control_flags) << std::endl;
+
 	if (mod != nullptr) {
 		header->control_flags |= (this->modReset ^= MOD_RESET);
 
@@ -258,6 +251,7 @@ bool Controller::impl::isOpen() {
 
 void Controller::impl::Close() {
 	if (this->isOpen()) {
+		this->silentMode = false;
 		auto nullgain = NullGain::Create();
 		this->AppendGainSync(nullgain);
 #if DLL_FOR_CSHARP
@@ -363,6 +357,10 @@ void Controller::lateraltimer::FinishLateralModulation() {
 
 void Controller::lateraltimer::ResetLateralGain()
 {
+<<<<<<< HEAD
+=======
+	this->FinishLateralModulation();
+>>>>>>> lm_silent
 	this->_lateral_gain_size = 0;
 	this->_lateral_gain.clear();
 }
@@ -456,6 +454,7 @@ void Controller::FinishLateralModulation()
 {
 	this->AppendGainSync(NullGain::Create());
 	this->_ptimer->FinishLateralModulation();
+	this->AppendGainSync(autd::NullGain::Create());
 }
 
 void Controller::ResetLateralGain()

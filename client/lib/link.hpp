@@ -19,9 +19,6 @@
 namespace autd {
 	namespace internal {
 		class Link {
-		protected:
-			virtual std::vector<uint16_t>& accessGainData(Gain& gain, const int deviceId);
-			virtual size_t& accessSent(Modulation& mod) noexcept;
 		public:
 			virtual void Open(std::string location) = 0;
 			virtual void Close() = 0;

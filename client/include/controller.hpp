@@ -16,7 +16,6 @@
 #include <Eigen/Geometry> 
 #pragma warning( pop )
 
-#include "link.hpp"
 #include "geometry.hpp"
 #include "gain.hpp"
 #include "modulation.hpp"

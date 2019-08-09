@@ -30,6 +30,7 @@ extern "C" {
 	__declspec(dllexport) void AUTDCloseController(AUTDControllerHandle handle);
 	__declspec(dllexport) void AUTDFreeController(AUTDControllerHandle handle);
 	__declspec(dllexport) void AUTDSetSilentMode(AUTDControllerHandle handle, bool mode);
+	__declspec(dllexport) void AUTDSetLMSilentMode(AUTDControllerHandle handle, bool mode);
 #pragma endregion
 
 #pragma region Property

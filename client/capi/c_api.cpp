@@ -7,7 +7,7 @@
 */
 
 #include "autd3.hpp"
-#include "privdef.hpp"
+//#include "../lib/privdef.hpp"
 #include "autd3_c_api.h"
 #include <errno.h>
 #include <windows.h>
@@ -152,10 +152,6 @@ void AUTDNullGain(AUTDGainPtr* gain) {
 void AUTDDeleteGain(AUTDGainPtr gain) {
 	auto* g = static_cast<Gain*>(gain);
 	delete g;
-}
-void AUTDFixGain(AUTDGainPtr gain) {
-	auto* g = static_cast<Gain*>(gain);
-	g->Fix();
 }
 #pragma endregion
 

@@ -79,7 +79,7 @@ ColorEcho "Green" "INFO" "Find CMake", $cmake_version
 ColorEcho "Green" "INFO" "Create project directory if not exists."
 if (Test-Path $PROJECT_DIR) { 
     ColorEcho "Yellow" "WARNING" "Directory", $PROJECT_DIR, "is already exists."
-    $ans = Read-Host "Overwrite (Y/[N])?"
+    $ans = Read-Host "Overwrite? (Y/[N])"
     if (($ans -eq "y") -or ($ans -eq "Y")) {
         Remove-Item $PROJECT_DIR -Recurse -Force
         if (Test-Path $PROJECT_DIR) {         

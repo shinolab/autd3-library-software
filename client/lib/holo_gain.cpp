@@ -50,7 +50,7 @@ namespace hologainimpl {
 		return g;
 	}
 
-	void removeRow(MatrixXcf & matrix, size_t rowToRemove)
+	void removeRow(MatrixXcf& matrix, size_t rowToRemove)
 	{
 		const auto numRows = static_cast<size_t>(matrix.rows()) - 1;
 		const auto numCols = static_cast<size_t>(matrix.cols());
@@ -61,7 +61,7 @@ namespace hologainimpl {
 		matrix.conservativeResize(numRows, numCols);
 	}
 
-	void removeColumn(MatrixXcf & matrix, size_t colToRemove)
+	void removeColumn(MatrixXcf& matrix, size_t colToRemove)
 	{
 		const auto numRows = static_cast<size_t>(matrix.rows());
 		const auto numCols = static_cast<size_t>(matrix.cols()) - 1;
@@ -169,11 +169,14 @@ void autd::HoloGainSdp::build() {
 		this->_data[geo->deviceIdForDeviceIdx(i)].resize(NUM_TRANS_IN_UNIT);
 	}
 
-	//float maxCoeff = sqrt(q.cwiseAbs2().maxCoeff());
+	//auto maxCoeff = sqrt(q.cwiseAbs2().maxCoeff());
 	for (int j = 0; j < N; j++) {
-		const auto famp = 1.0f;//abs(q(j))/maxCoeff;
+		const auto famp = 1.0f; //abs(q(j)) / maxCoeff;
 		const auto fphase = arg(q(j)) / (2 * M_PIf) + 0.5f;
-		auto amp = static_cast<uint8_t>(famp * 255), phase = static_cast<uint8_t>((1 - fphase) * 255);
-		this->_data[geo->deviceIdForTransIdx(j)].at(j % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(amp) << 8) + phase;
+		const auto amp = static_cast<uint8_t>(famp * 255);
+		const auto phase = static_cast<uint8_t>((1 - fphase) * 255);
+		uint8_t D, S;
+		SignalDesign(amp, phase, D, S);
+		this->_data[geo->deviceIdForTransIdx(j)].at(j % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(D) << 8) + S;
 	}
 }

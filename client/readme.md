@@ -50,6 +50,8 @@ cmakeのバグかは知らないけど, -Aオプションでx64プラットフ�
 
 そのため, csproj内を直接書き換えることにしている.
 
+* lm_silent: 結局LPF書けるのが一番静かなので中止
+
 # Author #
 
 Shun Suzuki, 2019

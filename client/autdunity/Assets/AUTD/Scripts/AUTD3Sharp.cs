@@ -50,11 +50,6 @@ namespace AUTD3Sharp
             NativeMethods.AUTDDeleteGain(handle);
             return true;
         }
-
-        public void Fix()
-        {
-            NativeMethods.AUTDFixGain(handle);
-        }
     }
 
     [ComVisible(false)]
@@ -105,7 +100,7 @@ namespace AUTD3Sharp
 #if UNITY
         public readonly static float MeterScale = 1000f;
 #endif
-#endregion
+        #endregion
 
         #region field
         private bool _isDisposed;
@@ -176,7 +171,6 @@ namespace AUTD3Sharp
         {
             NativeMethods.AUTDSetSilentMode(_autdControllerHandle, mode);
         }
-
         ~AUTD()
         {
             Dispose(false);
@@ -308,6 +302,13 @@ namespace AUTD3Sharp
             }
             return new Gain(gainPtr);
         }
+
+        public static Gain TransducerTestGain(int index, int amp, int phase)
+        {
+            NativeMethods.AUTDTransducerTestGain(out IntPtr gainPtr, index, amp, phase);
+            return new Gain(gainPtr);
+        }
+
         public static Gain NullGain()
         {
             NativeMethods.AUTDNullGain(out IntPtr gainPtr);

@@ -15,7 +15,6 @@ find_package( MATLAB )
 include_directories(../include ${EIGEN3_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${Ads_INCLUDE_DIR} ${Matlab_INCLUDE_DIRS})
 
 add_library(autd3 STATIC
-  link.cpp
   ethercat_link.cpp
  
   gain.cpp
@@ -33,12 +32,13 @@ add_library(autd3 STATIC
   link.hpp
   timer.hpp
   ethercat_link.hpp
-  controller.hpp
-  core.hpp
-  gain.hpp
-  modulation.hpp
-  geometry.hpp
-  ../include/privdef.hpp
+  privdef.hpp
+  
+  ../include/core.hpp
+  ../include/controller.hpp
+  ../include/gain.hpp
+  ../include/modulation.hpp
+  ../include/geometry.hpp
   ../include/autd3.hpp
 )
 

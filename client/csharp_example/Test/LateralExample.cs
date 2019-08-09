@@ -18,10 +18,12 @@ namespace AUTD3SharpTest.Test
                 autd.Open();
                 autd.AddDevice(Vector3f.Zero, Vector3f.Zero);
 
+                autd.SetSilentMode(false);
+
                 autd.AppendModulationSync(AUTD.Modulation(255));
 
-                var f1 = AUTD.FocalPointGain(x - 7, y, z);
-                var f2 = AUTD.FocalPointGain(x + 7, y, z);
+                var f1 = AUTD.FocalPointGain(x + 10, y, z);
+                var f2 = AUTD.FocalPointGain(x - 10, y, z);
 
                 autd.AppendLateralGain(f1);
                 autd.AppendLateralGain(f2);
@@ -31,7 +33,5 @@ namespace AUTD3SharpTest.Test
                 Console.ReadKey(true);
             }
         }
-
-        private LateralExmaple() { }
     }
 }

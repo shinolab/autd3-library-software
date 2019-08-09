@@ -24,7 +24,7 @@ namespace autd {
 	class Modulation
 	{
 		friend class Controller;
-		friend class internal::Link;
+		//friend class internal::Link;
 	public:
 		Modulation() noexcept;
 		static ModulationPtr Create();

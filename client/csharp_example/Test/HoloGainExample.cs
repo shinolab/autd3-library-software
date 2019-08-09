@@ -33,6 +33,5 @@ namespace AUTD3SharpTest.Test
                 Console.ReadKey(true);
             }
         }
-        private HoloGainExample() { }
     }
 }
