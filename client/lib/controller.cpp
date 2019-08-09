@@ -30,6 +30,7 @@
 #include "privdef.hpp"
 #include "ethercat_link.hpp"
 #include "lateraltimer.hpp"
+
 using namespace autd;
 using namespace std;
 
@@ -216,14 +217,14 @@ unique_ptr<uint8_t[]> Controller::impl::MakeBody(GainPtr gain, ModulationPtr mod
 
 	if (this->silentMode) header->control_flags |= SILENT;
 
-	//std::cout << std::bitset<8>(header->control_flags) << std::endl;
-
 	if (mod != nullptr) {
-		header->control_flags |= (this->modReset ^= MOD_RESET);
 
 		const uint8_t mod_size = max(0, min(static_cast<int>(mod->buffer.size() - mod->sent), MOD_FRAME_SIZE));
 		header->mod_size = mod_size;
-		if (mod->sent == 0) header->control_flags |= MOD_BEGIN;
+		if (mod->sent == 0) {
+			header->control_flags |= MOD_BEGIN;
+			header->control_flags |= (this->modReset ^= MOD_RESET);
+		}
 		if (mod->loop && mod->sent == 0) header->control_flags |= LOOP_BEGIN;
 		if (mod->loop && mod->sent + mod_size >= mod->buffer.size()) header->control_flags |= LOOP_END;
 		header->frequency_shift = this->_geometry->_freq_shift;
@@ -357,10 +358,7 @@ void Controller::lateraltimer::FinishLateralModulation() {
 
 void Controller::lateraltimer::ResetLateralGain()
 {
-<<<<<<< HEAD
-=======
 	this->FinishLateralModulation();
->>>>>>> lm_silent
 	this->_lateral_gain_size = 0;
 	this->_lateral_gain.clear();
 }
@@ -452,9 +450,8 @@ void Controller::StartLateralModulation(float freq)
 
 void Controller::FinishLateralModulation()
 {
-	this->AppendGainSync(NullGain::Create());
 	this->_ptimer->FinishLateralModulation();
-	this->AppendGainSync(autd::NullGain::Create());
+	this->AppendGainSync(NullGain::Create());
 }
 
 void Controller::ResetLateralGain()
