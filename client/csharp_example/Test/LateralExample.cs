@@ -19,7 +19,6 @@ namespace AUTD3SharpTest.Test
                 autd.AddDevice(Vector3f.Zero, Vector3f.Zero);
 
                 autd.SetSilentMode(false);
-                autd.SetLMSilentMode(false);
 
                 autd.AppendModulationSync(AUTD.Modulation(255));
 

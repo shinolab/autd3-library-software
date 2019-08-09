@@ -11,6 +11,7 @@
 #include <memory>
 #include <mutex>
 #include <map>
+#include <vector>
 
 #include <codeanalysis\warnings.h>
 #pragma warning(push)
@@ -20,6 +21,8 @@
 
 #include "core.hpp"
 #include "geometry.hpp"
+
+constexpr auto M_PIf = 3.14159265f;
 
 namespace autd {
 	class Gain;
@@ -34,7 +37,7 @@ namespace autd {
 	{
 		friend class Controller;
 		friend class Geometry;
-		friend class internal::Link;
+		//friend class internal::Link;
 	protected:
 		Gain() noexcept;
 		inline void SignalDesign(uint8_t amp_i, uint8_t phase_i, uint8_t& amp_o, uint8_t& phase_o) noexcept {
@@ -53,7 +56,7 @@ namespace autd {
 		void SetGeometry(const GeometryPtr& geometry) noexcept;
 		GeometryPtr geometry() noexcept;
 		std::map<int, std::vector<uint16_t> > data();
-		bool built();
+		bool built() noexcept;
 	};
 
 	using NullGain = Gain;

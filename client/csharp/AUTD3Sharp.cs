@@ -32,7 +32,7 @@ using Quaternionf = UnityEngine.Quaternion;
 #endif
 
 [assembly: CLSCompliant(false), ComVisible(false)]
-[assembly: AssemblyVersion("3.3.0.0")]
+[assembly: AssemblyVersion("3.3.1.0")]
 namespace AUTD3Sharp
 {
     [ComVisible(false)]
@@ -49,11 +49,6 @@ namespace AUTD3Sharp
         {
             NativeMethods.AUTDDeleteGain(handle);
             return true;
-        }
-
-        public void Fix()
-        {
-            NativeMethods.AUTDFixGain(handle);
         }
     }
 
@@ -176,11 +171,6 @@ namespace AUTD3Sharp
         {
             NativeMethods.AUTDSetSilentMode(_autdControllerHandle, mode);
         }
-        public void SetLMSilentMode(bool mode)
-        {
-            NativeMethods.AUTDSetLMSilentMode(_autdControllerHandle, mode);
-        }
-
         ~AUTD()
         {
             Dispose(false);

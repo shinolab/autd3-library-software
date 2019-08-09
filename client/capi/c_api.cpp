@@ -7,7 +7,7 @@
 */
 
 #include "autd3.hpp"
-#include "privdef.hpp"
+//#include "../lib/privdef.hpp"
 #include "autd3_c_api.h"
 #include <errno.h>
 #include <windows.h>
@@ -55,11 +55,6 @@ void AUTDSetSilentMode(AUTDControllerHandle handle, bool mode)
 {
 	auto* cnt = static_cast<Controller*>(handle);
 	cnt->SetSilentMode(mode);
-}
-void AUTDSetLMSilentMode(AUTDControllerHandle handle, bool mode)
-{
-	auto* cnt = static_cast<Controller*>(handle);
-	cnt->SetLMSilentMode(mode);
 }
 #pragma endregion
 
@@ -157,10 +152,6 @@ void AUTDNullGain(AUTDGainPtr* gain) {
 void AUTDDeleteGain(AUTDGainPtr gain) {
 	auto* g = static_cast<Gain*>(gain);
 	delete g;
-}
-void AUTDFixGain(AUTDGainPtr gain) {
-	auto* g = static_cast<Gain*>(gain);
-	g->SignalDesign();
 }
 #pragma endregion
 

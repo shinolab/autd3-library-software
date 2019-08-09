@@ -53,7 +53,6 @@ public:
 	mutex _send_mtx;
 
 	bool silentMode = true;
-	bool lm_silentMode = true;
 	uint8_t modReset = MOD_RESET;
 
 	~impl() noexcept(false);
@@ -254,7 +253,6 @@ bool Controller::impl::isOpen() {
 void Controller::impl::Close() {
 	if (this->isOpen()) {
 		this->silentMode = false;
-		this->lm_silentMode = false;
 		auto nullgain = NullGain::Create();
 		this->AppendGainSync(nullgain);
 #if DLL_FOR_CSHARP
@@ -360,6 +358,7 @@ void Controller::lateraltimer::FinishLateralModulation() {
 
 void Controller::lateraltimer::ResetLateralGain()
 {
+	this->FinishLateralModulation();
 	this->_lateral_gain_size = 0;
 	this->_lateral_gain.clear();
 }
@@ -369,7 +368,6 @@ Controller::Controller() noexcept(false) {
 	this->_pimpl = make_shared<impl>();
 	this->_pimpl->_geometry = Geometry::Create();
 	this->_pimpl->silentMode = true;
-	this->_pimpl->lm_silentMode = false;
 	this->_pimpl->modReset = MOD_RESET;
 
 	this->_ptimer = make_unique<lateraltimer>();
@@ -452,13 +450,12 @@ void Controller::StartLateralModulation(float freq)
 
 void Controller::FinishLateralModulation()
 {
-	this->AppendGainSync(autd::NullGain::Create());
 	this->_ptimer->FinishLateralModulation();
+	this->AppendGainSync(autd::NullGain::Create());
 }
 
 void Controller::ResetLateralGain()
 {
-	this->FinishLateralModulation();
 	this->_ptimer->ResetLateralGain();
 }
 
@@ -480,10 +477,6 @@ size_t Controller::remainingInBuffer() {
 
 void Controller::SetSilentMode(bool silent) noexcept {
 	this->_pimpl->silentMode = silent;
-}
-
-void Controller::SetLMSilentMode(bool silent) noexcept {
-	this->_pimpl->lm_silentMode = silent;
 }
 
 bool Controller::silentMode() noexcept {

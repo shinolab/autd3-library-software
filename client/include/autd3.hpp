@@ -20,10 +20,11 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #pragma warning( pop )
+#include <memory>
 
-#include "../lib/controller.hpp"
-#include "../lib/geometry.hpp"
-#include "../lib/gain.hpp"
-#include "../lib/modulation.hpp"
+#include "controller.hpp"
+#include "geometry.hpp"
+#include "gain.hpp"
+#include "modulation.hpp"
 
 #endif

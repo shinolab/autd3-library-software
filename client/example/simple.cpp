@@ -21,8 +21,6 @@ int main()
 
 	auto gain = autd::FocalPointGain::Create(Eigen::Vector3f(90, 70, 200));
 
-	gain->SignalDesign(); // 位相振幅独立制御用の修正
-
 	autd.AppendGainSync(gain);
 	autd.AppendModulationSync(autd::SineModulation::Create(150)); // 150Hz AM
 

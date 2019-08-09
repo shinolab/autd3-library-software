@@ -50,11 +50,6 @@ namespace AUTD3Sharp
             NativeMethods.AUTDDeleteGain(handle);
             return true;
         }
-
-        public void Fix()
-        {
-            NativeMethods.AUTDFixGain(handle);
-        }
     }
 
     [ComVisible(false)]
@@ -176,11 +171,6 @@ namespace AUTD3Sharp
         {
             NativeMethods.AUTDSetSilentMode(_autdControllerHandle, mode);
         }
-        public void SetLMSilentMode(bool mode)
-        {
-            NativeMethods.AUTDSetLMSilentMode(_autdControllerHandle, mode);
-        }
-
         ~AUTD()
         {
             Dispose(false);

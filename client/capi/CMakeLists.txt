@@ -18,7 +18,6 @@ include_directories(../include ${EIGEN3_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${Ads_
 add_library(autd3capi SHARED
   c_api.cpp
   
-  ../lib/link.cpp
   ../lib/ethercat_link.cpp
   
   ../lib/gain.cpp
@@ -36,14 +35,13 @@ add_library(autd3capi SHARED
   ../lib/link.hpp
   ../lib/timer.hpp
   ../lib/ethercat_link.hpp
+  ../lib/privdef.hpp
   
-  ../lib/controller.hpp
-  ../lib/core.hpp
-  ../lib/gain.hpp
-  ../lib/modulation.hpp
-  ../lib/geometry.hpp
-  
-  ../include/privdef.hpp
+  ../include/core.hpp
+  ../include/controller.hpp
+  ../include/gain.hpp
+  ../include/modulation.hpp
+  ../include/geometry.hpp
   ../include/autd3.hpp
   ../include/autd3_c_api.h
 )

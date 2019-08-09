@@ -9,7 +9,7 @@ option (ENABLE_TESTS "Include Test Project" OFF)
 project(autd3)
 set(VERSION_MAJOR   3   CACHE STRING "Project major version number.")
 set(VERSION_MINOR   3   CACHE STRING "Project minor version number.")
-set(VERSION_PATCH   0   CACHE STRING "Project patch version number.")
+set(VERSION_PATCH   1   CACHE STRING "Project patch version number.")
 mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
 
 set(CMAKE_CSharp_FLAGS "/langversion:latest")
