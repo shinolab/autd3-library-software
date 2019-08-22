@@ -25,10 +25,14 @@ ADD_CUSTOM_TARGET(cpplint
 # ADS
 add_subdirectory(deps/BeckhoffADS)
 
+#SOEM
+add_subdirectory(libsoem)
+
 add_subdirectory(lib)
 add_subdirectory(csharp)
 add_subdirectory(doc)
 add_subdirectory(example)
+add_subdirectory(example_soem)
 add_subdirectory(csharp_example)
 add_subdirectory(capi)
 if (ENABLE_TESTS)

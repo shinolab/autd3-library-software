@@ -16,6 +16,7 @@ include_directories(../include ${EIGEN3_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${Ads_
 
 add_library(autd3 STATIC
   ethercat_link.cpp
+  soem_link.cpp
  
   gain.cpp
   matlabgain.cpp
@@ -32,6 +33,7 @@ add_library(autd3 STATIC
   link.hpp
   timer.hpp
   ethercat_link.hpp
+  soem_link.hpp
   privdef.hpp
   
   ../include/core.hpp
@@ -50,6 +52,7 @@ endif()
 source_group("link" FILES
   link.cpp
   ethercat_link.cpp
+  soem_link.cpp
 )
 
 source_group("gain" FILES

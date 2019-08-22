@@ -19,6 +19,7 @@ add_library(autd3capi SHARED
   c_api.cpp
   
   ../lib/ethercat_link.cpp
+  ../lib/soem_link.cpp
   
   ../lib/gain.cpp
   ../lib/matlabgain.cpp
@@ -35,6 +36,7 @@ add_library(autd3capi SHARED
   ../lib/link.hpp
   ../lib/timer.hpp
   ../lib/ethercat_link.hpp
+  ../lib/soem_link.hpp
   ../lib/privdef.hpp
   
   ../include/core.hpp

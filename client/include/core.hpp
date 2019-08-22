@@ -20,6 +20,7 @@ namespace autd {
 		ETHERNET,
 		USB,
 		SERIAL,
+		SOEM
 	};
 
 	class Controller;

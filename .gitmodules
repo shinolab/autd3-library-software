@@ -1,3 +1,6 @@
 [submodule "client/deps/BeckhoffADS/ADS"]
 	path = client/deps/BeckhoffADS/ADS
 	url = https://github.com/Beckhoff/ADS.git
+[submodule "client/deps/SOEM"]
+	path = client/deps/SOEM
+	url = https://github.com/OpenEtherCATsociety/SOEM
