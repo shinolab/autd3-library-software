@@ -22,6 +22,18 @@ build.ps1またはbuild.batを使うとbuild以下にautd.sln生成されます.
 * -nounity: unityいらない人用.
 * -test: 単体テストプロジェクトを含む場合.
 
+### SOEM ###
+
+Windowsしか対応してないです.
+
+SOEMを使いたい場合はWinPcapをインストールする必要があります
+https://www.winpcap.org/install/default.htm
+
+また, dist/slaveinfo.exeを実行してEthernetのデバイス名を取得して, Openの際に指定してください
+```
+	autd.Open(autd::LinkType::SOEM, "\\Device\\NPF_{B5B631C6-ED16-4780-9C4C-3941AE8120A6}");
+```
+
 ### 注意: VS2017 ###
 
 AUTDSharpのプロパティの「ビルド」→「詳細設定」で言語バージョンをC#7.2以上にして下さい.
