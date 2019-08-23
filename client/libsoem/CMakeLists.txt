@@ -47,3 +47,11 @@ source_group("soem" FILES
 	${SOEM_PATH}/oshw/win32/nicdrv.c
 	${SOEM_PATH}/oshw/win32/oshw.c
 )
+
+add_custom_command(TARGET libsoem
+                   POST_BUILD
+                   COMMAND lib /OUT:$(OUTDIR)temp.lib $(TARGETPATH) $(SolutionDir)..\\deps\\SOEM\\oshw\\win32\\wpcap\\Lib\\x64\\*.lib
+                   COMMAND del $(TARGETPATH)
+                   COMMAND rename $(OUTDIR)temp.lib $(TargetFileName)
+)
+

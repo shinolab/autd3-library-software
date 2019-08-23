@@ -1,5 +1,9 @@
-#include <memory>
+#define __STDC_LIMIT_MACROS
+
 #include <iostream>
+#include <cstdint>
+#include <mutex>
+#include <memory>
 
 #include "libsoem.hpp"
 #include "ethercat.h"
@@ -11,51 +15,66 @@ class SOEMController::impl
 public:
 	void Open(const char* ifname, size_t devNum);
 	void Send(size_t size, std::unique_ptr<uint8_t[]> buf);
+	static void CALLBACK RTthread(PVOID lpParam, BOOLEAN TimerOrWaitFired);
 	void Close();
 
 private:
-	uint8_t* _IOmap;
+	void SetSendCheck(bool val);
+	bool GetSendCheck();
+
+	std::unique_ptr<uint8_t[]>  _IOmap;
 	bool _isClosed;
 	size_t _devNum;
+	uint32_t _mmResult;
+	bool _sendCheck;
+	std::mutex _mutex;
+	HANDLE _timerQueue;
+	HANDLE _timer;
 };
 
 void SOEMController::impl::Send(size_t size, std::unique_ptr<uint8_t[]> buf)
 {
-	const auto header_size = MOD_SIZE + 4;
-	const auto data_size = TRANS_NUM * 2;
-	const auto includes_gain = ((size - header_size) / data_size) > 0;
+	if (!_isClosed) {
+		const auto header_size = MOD_SIZE + 4;
+		const auto data_size = TRANS_NUM * 2;
+		const auto includes_gain = ((size - header_size) / data_size) > 0;
 
-	//ec_configdc();
-
-	for (size_t i = 0; i < _devNum; i++)
-	{
-		if (includes_gain) memcpy(&_IOmap[FRAME_SIZE * i], &buf[header_size + data_size * i], TRANS_NUM * 2);
-		memcpy(&_IOmap[FRAME_SIZE * i + TRANS_NUM * 2], &buf[0], MOD_SIZE + 4);
+		for (size_t i = 0; i < _devNum; i++)
+		{
+			if (includes_gain) memcpy(&_IOmap[OUTPUT_FRAME_SIZE * i], &buf[header_size + data_size * i], TRANS_NUM * 2);
+			memcpy(&_IOmap[OUTPUT_FRAME_SIZE * i + TRANS_NUM * 2], &buf[0], MOD_SIZE + 4);
+		}
+		SetSendCheck(true);
+		while (GetSendCheck());
 	}
+}
 
-	/*std::cout << "**************************************" << std::endl;
-	for (size_t i = 0; i < FRAME_SIZE * _devNum; i++)
-	{
-		std::cout << i << "," << (int)_IOmap[i];
-	}*/
+void SOEMController::impl::SetSendCheck(bool val) {
+	std::lock_guard<std::mutex> lock(_mutex);
+	_sendCheck = val;
+}
 
+bool SOEMController::impl::GetSendCheck() {
+	std::lock_guard<std::mutex> lock(_mutex);
+	return _sendCheck;
+}
+
+void CALLBACK SOEMController::impl::RTthread(PVOID lpParam, BOOLEAN TimerOrWaitFired) {
 	ec_send_processdata();
-	//ec_receive_processdata(EC_TIMEOUTRET);
-
-	//ec_config_map(_IOmap);
+	(reinterpret_cast<SOEMController::impl*>(lpParam))->SetSendCheck(false);
 }
 
 void SOEMController::impl::Open(const char* ifname, size_t devNum)
 {
 	_devNum = devNum;
-	auto size = FRAME_SIZE * _devNum;
-	_IOmap = new uint8_t[size];
+	auto size = (OUTPUT_FRAME_SIZE + INPUT_FRAME_SIZE) * _devNum;
+	_IOmap = std::make_unique<uint8_t[]>(size);
 
 	if (ec_init(ifname))
 	{
 		if (ec_config_init(0) > 0)
 		{
-			ec_config_map(_IOmap);
+			ec_config_map(&_IOmap[0]);
 			ec_configdc();
 
 			ec_statecheck(0, EC_STATE_SAFE_OP, EC_TIMEOUTSTATE * 4);
@@ -63,6 +82,13 @@ void SOEMController::impl::Open(const char* ifname, size_t devNum)
 			ec_slave[0].state = EC_STATE_OPERATIONAL;
 			ec_send_processdata();
 			ec_receive_processdata(EC_TIMEOUTRET);
+
+			_timerQueue = CreateTimerQueue();
+			if (_timerQueue == NULL)
+				std::cerr << "CreateTimerQueue failed." << std::endl;
+
+			if (!CreateTimerQueueTimer(&_timer, _timerQueue, (WAITORTIMERCALLBACK)RTthread, reinterpret_cast<void*>(this), 0, 1, 0))
+				std::cerr << "CreateTimerQueueTimer failed." << std::endl;
 
 			ec_writestate(0);
 
@@ -77,7 +103,8 @@ void SOEMController::impl::Open(const char* ifname, size_t devNum)
 				_isClosed = false;
 			}
 			else {
-
+				if (!DeleteTimerQueueTimer(_timerQueue, _timer, 0))
+					std::cerr << "DeleteTimerQueue failed." << std::endl;
 				std::cerr << "One ore more slaves are not responding." << std::endl;
 			}
 		}
@@ -95,12 +122,13 @@ void SOEMController::impl::Open(const char* ifname, size_t devNum)
 void SOEMController::impl::Close()
 {
 	if (!_isClosed) {
+		if (!DeleteTimerQueueTimer(_timerQueue, _timer, 0))
+			std::cerr << "DeleteTimerQueue failed." << std::endl;
+
 		ec_slave[0].state = EC_STATE_INIT;
 		ec_writestate(0);
 
 		ec_close();
-
-		delete[] _IOmap;
 
 		_isClosed = true;
 	}

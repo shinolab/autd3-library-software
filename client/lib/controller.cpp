@@ -248,7 +248,7 @@ unique_ptr<uint8_t[]> Controller::impl::MakeBody(GainPtr gain, ModulationPtr mod
 
 
 bool Controller::impl::isOpen() {
-	return this->_link != nullptr && this->_link.get() && this->_link->isOpen();
+	return this->_link.get() && this->_link->isOpen();
 }
 
 void Controller::impl::Close() {
@@ -265,7 +265,7 @@ void Controller::impl::Close() {
 		if (this_thread::get_id() != this->_build_thr.get_id() && this->_build_thr.joinable()) this->_build_thr.join();
 		this->_send_cond.notify_all();
 		if (this_thread::get_id() != this->_send_thr.get_id() && this->_send_thr.joinable()) this->_send_thr.join();
-		this->_link =nullptr;
+		this->_link = shared_ptr<internal::EthercatLink>(nullptr);
 	}
 }
 

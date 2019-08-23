@@ -12,7 +12,8 @@
 
 constexpr auto TRANS_NUM = 249;
 constexpr auto MOD_SIZE = 124;
-constexpr auto FRAME_SIZE = TRANS_NUM * 2 + MOD_SIZE + 4;
+constexpr auto OUTPUT_FRAME_SIZE = TRANS_NUM * 2 + MOD_SIZE + 4;
+constexpr auto INPUT_FRAME_SIZE = 2;
 
 namespace libsoem {
 	class SOEMController

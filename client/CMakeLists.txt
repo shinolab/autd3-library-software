@@ -39,4 +39,4 @@ if (ENABLE_TESTS)
 	add_subdirectory(tests)
 endif()
 
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT AUTD3SharpSample)
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT simple_soem)
