@@ -24,13 +24,13 @@ private:
 	bool GetSendCheck();
 
 	unique_ptr<uint8_t[]>  _IOmap;
-	bool _isOpened;
-	size_t _devNum;
-	uint32_t _mmResult;
-	bool _sendCheck;
+	bool _isOpened = false;
+	size_t _devNum = 0;
+	uint32_t _mmResult = 0;
+	bool _sendCheck = false;
 	mutex _mutex;
-	HANDLE _timerQueue;
-	HANDLE _timer;
+	HANDLE _timerQueue = NULL;
+	HANDLE _timer = NULL;
 };
 
 void SOEMController::impl::Send(size_t size, unique_ptr<uint8_t[]> buf)

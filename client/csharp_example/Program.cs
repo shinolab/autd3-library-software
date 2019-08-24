@@ -1,5 +1,7 @@
 ﻿using AUTD3SharpTest.Test;
+using System.Reflection;
 
+[assembly: AssemblyVersion("3.3.1.0")]
 namespace AUTD3SharpTest
 {
     class Program

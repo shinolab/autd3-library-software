@@ -120,7 +120,7 @@ namespace AUTD3Sharp
         #endregion
 
         #region public methods
-        public Vector3f Rectify() => new Vector3f(Math.Max(X,0), Math.Max(Y, 0), Math.Max(Z, 0));
+        public Vector3f Rectify() => new Vector3f(Math.Max(X, 0), Math.Max(Y, 0), Math.Max(Z, 0));
 
         public float[] ToArray() => new[] { X, Y, Z };
         #endregion

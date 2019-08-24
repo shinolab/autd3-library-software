@@ -24,15 +24,11 @@ build.ps1またはbuild.batを使うとbuild以下にautd.sln生成されます.
 
 ### SOEM ###
 
-Windowsしか対応してないです.
+* Windowsしか対応してないです. (そのうち, Mac, Linuxのサポート追加予定です)
 
-SOEMを使いたい場合はWinPcapをインストールする必要があります
-https://www.winpcap.org/install/default.htm
+* SOEMを使いたい場合はWinPcapをインストールする必要があります https://www.winpcap.org/install/default.htm
 
-また, dist/slaveinfo.exeを実行してEthernetのデバイス名を取得して, Openの際に指定してください
-```
-	autd.Open(autd::LinkType::SOEM, "\\Device\\NPF_{B5B631C6-ED16-4780-9C4C-3941AE8120A6}");
-```
+* USB to Ethernet 変換アダプターなども使用可能です
 
 ### 注意: VS2017 ###
 
@@ -58,8 +54,7 @@ vcpkgでgtestをインストールしておく必要があります.
     ```
 
 ## Memo ##
-cmakeのバグかは知らないけど, -Aオプションでx64プラットフォームを指定してもC#のターゲットがx64にならない.
-
+* cmakeのバグかは知らないけど, -Aオプションでx64プラットフォームを指定してもC#のターゲットがx64にならない.
 そのため, csproj内を直接書き換えることにしている.
 
 * lm_silent: 結局LPF書けるのが一番静かなので中止

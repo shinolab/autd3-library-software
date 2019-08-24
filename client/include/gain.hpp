@@ -87,7 +87,7 @@ namespace autd {
 	private:
 		Eigen::Vector3f _point;
 		Eigen::Vector3f _vec_n;
-		float _theta_z;
+		float _theta_z = 0;
 		uint8_t _amp = 0xff;
 	};
 
@@ -131,7 +131,8 @@ namespace autd {
 		static GainPtr Create(int transducer_index, int amp, int phase);
 		void build() override;
 	protected:
-		int _xdcr_idx;
-		int _amp, _phase;
+		int _xdcr_idx = 0;
+		uint8_t _amp =0;
+		uint8_t _phase = 0;
 	};
 }

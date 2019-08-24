@@ -10,7 +10,11 @@
 
 #include <stdio.h>
 #include <string>
+#include <codeanalysis\warnings.h>
+#pragma warning(push)
+#pragma warning(disable:ALL_CODE_ANALYSIS_WARNINGS)
 #include <AdsLib.h>
+#pragma warning(pop)
 #include "link.hpp"
 
 #ifdef _WINDOWS
@@ -31,7 +35,7 @@ namespace autd {
             virtual void Send(size_t size, std::unique_ptr<uint8_t[]> buf);
             bool isOpen();
         protected:
-            long _port;
+            long _port = 0L;
             AmsNetId _netId;
         };
         
@@ -41,7 +45,7 @@ namespace autd {
 			void Close();
 			void Send(size_t size, std::unique_ptr<uint8_t[]> buf);
 		private:
-			HMODULE lib;
+			HMODULE lib = NULL;
         };
     }
 }

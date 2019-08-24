@@ -13,8 +13,8 @@ namespace autd {
 			bool isOpen();
 		protected:
 			std::unique_ptr<libsoem::SOEMController> _cnt;
-			bool _isOpen;
-			int _devNum;
+			bool _isOpen = false;
+			int _devNum = 0;
 		};
 	}
 }

@@ -424,7 +424,7 @@ void Controller::Close() {
 
 EtherCATAdapters Controller::EnumerateAdapters(int &size) {
 	auto adapters = libsoem::EtherCATAdapterInfo::EnumerateAdapters();
-	size = adapters.size();
+	size = static_cast<int>(adapters.size());
 #if DLL_FOR_CAPI
 	EtherCATAdapters res = new EtherCATAdapter[size];
 	int i = 0;

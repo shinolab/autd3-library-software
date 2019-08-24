@@ -50,8 +50,10 @@ source_group("soem" FILES
 
 add_custom_command(TARGET libsoem
                    POST_BUILD
-                   COMMAND lib /OUT:$(OUTDIR)temp.lib $(TARGETPATH) $(SolutionDir)..\\deps\\SOEM\\oshw\\win32\\wpcap\\Lib\\x64\\*.lib
+                   COMMAND lib /OUT:$(OUTDIR)temp.lib $(TARGETPATH) $(SolutionDir)..\\deps\\SOEM\\oshw\\win32\\wpcap\\Lib\\x64\\*.lib /ignore:4006
                    COMMAND del $(TARGETPATH)
                    COMMAND rename $(OUTDIR)temp.lib $(TargetFileName)
 )
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd26451 /wd6385  /wd6386 /wd6011 /wd26495 /wd4996 /wd6001 /wd4200")
 

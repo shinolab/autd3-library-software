@@ -53,7 +53,7 @@ public:
 		return Create(device_id, position, quaternion);
 	}
 
-	int device_id;
+	int device_id = 0;
 	Matrix<float, 3, NUM_TRANS_IN_UNIT> global_trans_positions;
 	Vector3f z_direction;
 };
