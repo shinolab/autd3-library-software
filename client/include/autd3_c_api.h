@@ -22,15 +22,17 @@ extern "C" {
 #endif
 
 #pragma region Controller
-	__declspec(dllexport) void AUTDCreateController(AUTDControllerHandle *out);
-	__declspec(dllexport) int AUTDOpenController(AUTDControllerHandle handle, const char* location);
+	__declspec(dllexport) void AUTDCreateController(AUTDControllerHandle* out);
+	__declspec(dllexport) int AUTDOpenController(AUTDControllerHandle handle, int linkType, const char* location);
+	__declspec(dllexport) int AUTDGetAdapterPointer(void** out);
+	__declspec(dllexport) void AUTDGetAdapter(void* p_adapter, int index, char* descs, char* names);
+	__declspec(dllexport) void AUTDFreeAdapterPointer(void* p_adapter);
 	__declspec(dllexport) int AUTDAddDevice(AUTDControllerHandle handle, float x, float y, float z, float rz1, float ry, float rz2, int groupId);
 	__declspec(dllexport) int AUTDAddDeviceQuaternion(AUTDControllerHandle handle, float x, float y, float z, float qua_w, float qua_x, float qua_y, float qua_z, int groupId);
 	__declspec(dllexport) void AUTDDelDevice(AUTDControllerHandle handle, int devId);
 	__declspec(dllexport) void AUTDCloseController(AUTDControllerHandle handle);
 	__declspec(dllexport) void AUTDFreeController(AUTDControllerHandle handle);
 	__declspec(dllexport) void AUTDSetSilentMode(AUTDControllerHandle handle, bool mode);
-	__declspec(dllexport) void AUTDSetLMSilentMode(AUTDControllerHandle handle, bool mode);
 #pragma endregion
 
 #pragma region Property
@@ -43,24 +45,23 @@ extern "C" {
 #pragma endregion
 
 #pragma region Gain
-	__declspec(dllexport) void AUTDFocalPointGain(AUTDGainPtr *gain, float x, float y, float z, uint8_t amp);
-	__declspec(dllexport) void AUTDGroupedGain(AUTDGainPtr *gain, int* groupIDs, AUTDGainPtr* gains, int size);
-	__declspec(dllexport) void AUTDBesselBeamGain(AUTDGainPtr *gain, float x, float y, float z, float n_x, float n_y, float n_z, float theta_z);
-	__declspec(dllexport) void AUTDPlaneWaveGain(AUTDGainPtr *gain, float n_x, float n_y, float n_z);
-	__declspec(dllexport) void AUTDMatlabGain(AUTDGainPtr *gain, const char * filename, const char * varname);
-	__declspec(dllexport) void AUTDCustomGain(AUTDGainPtr *gain, uint16_t* data, int dataLength);
-	__declspec(dllexport) void AUTDHoloGain(AUTDGainPtr *gain, float* points, float* amps, int size);
+	__declspec(dllexport) void AUTDFocalPointGain(AUTDGainPtr* gain, float x, float y, float z, uint8_t amp);
+	__declspec(dllexport) void AUTDGroupedGain(AUTDGainPtr* gain, int* groupIDs, AUTDGainPtr* gains, int size);
+	__declspec(dllexport) void AUTDBesselBeamGain(AUTDGainPtr* gain, float x, float y, float z, float n_x, float n_y, float n_z, float theta_z);
+	__declspec(dllexport) void AUTDPlaneWaveGain(AUTDGainPtr* gain, float n_x, float n_y, float n_z);
+	__declspec(dllexport) void AUTDMatlabGain(AUTDGainPtr* gain, const char* filename, const char* varname);
+	__declspec(dllexport) void AUTDCustomGain(AUTDGainPtr* gain, uint16_t* data, int dataLength);
+	__declspec(dllexport) void AUTDHoloGain(AUTDGainPtr* gain, float* points, float* amps, int size);
 	__declspec(dllexport) void AUTDTransducerTestGain(AUTDGainPtr* gain, int idx, int amp, int phase);
-	__declspec(dllexport) void AUTDNullGain(AUTDGainPtr *gain);
+	__declspec(dllexport) void AUTDNullGain(AUTDGainPtr* gain);
 	__declspec(dllexport) void AUTDDeleteGain(AUTDGainPtr gain);
-	__declspec(dllexport) void AUTDFixGain(AUTDGainPtr gain);
 #pragma endregion
 
 #pragma region Modulation
-	__declspec(dllexport) void AUTDModulation(AUTDModulationPtr *mod, uint8_t amp);
-	__declspec(dllexport) void AUTDRawPCMModulation(AUTDModulationPtr *mod, const char * filename, float sampFreq);
-	__declspec(dllexport) void AUTDSawModulation(AUTDModulationPtr *mod, float freq);
-	__declspec(dllexport) void AUTDSineModulation(AUTDModulationPtr *mod, float freq, float amp, float offset);
+	__declspec(dllexport) void AUTDModulation(AUTDModulationPtr* mod, uint8_t amp);
+	__declspec(dllexport) void AUTDRawPCMModulation(AUTDModulationPtr* mod, const char* filename, float sampFreq);
+	__declspec(dllexport) void AUTDSawModulation(AUTDModulationPtr* mod, float freq);
+	__declspec(dllexport) void AUTDSineModulation(AUTDModulationPtr* mod, float freq, float amp, float offset);
 	__declspec(dllexport) void AUTDDeleteModulation(AUTDModulationPtr mod);
 #pragma endregion
 

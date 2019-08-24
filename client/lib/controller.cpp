@@ -256,7 +256,7 @@ void Controller::impl::Close() {
 		this->silentMode = false;
 		auto nullgain = NullGain::Create();
 		this->AppendGainSync(nullgain);
-#if DLL_FOR_CSHARP
+#if DLL_FOR_CAPI
 		delete nullgain;
 #endif
 		this->_link->Close();
@@ -400,7 +400,7 @@ void Controller::Open(LinkType type, string location) {
 	case LinkType::SOEM: {
 		this->_pimpl->_link = make_shared<internal::SOEMLink>();
 		auto devnum = this->_pimpl->_geometry->numDevices();
-		this->_pimpl->_link->Open(location + ":" +  to_string(devnum));
+		this->_pimpl->_link->Open(location + ":" + to_string(devnum));
 		break;
 	}
 	default:
@@ -420,6 +420,30 @@ bool Controller::isOpen() {
 
 void Controller::Close() {
 	this->_pimpl->Close();
+}
+
+EtherCATAdapters Controller::EnumerateAdapters(int &size) {
+	auto adapters = libsoem::EtherCATAdapterInfo::EnumerateAdapters();
+	size = adapters.size();
+#if DLL_FOR_CAPI
+	EtherCATAdapters res = new EtherCATAdapter[size];
+	int i = 0;
+#else
+	EtherCATAdapters res;
+#endif
+	for (auto adapter : libsoem::EtherCATAdapterInfo::EnumerateAdapters()) {
+		EtherCATAdapter p;
+#if DLL_FOR_CAPI
+		p.first = *adapter.desc.get();
+		p.second = *adapter.name.get();
+		res[i++] = p;
+#else
+		p.first = adapter.desc;
+		p.second = adapter.name;
+		res.push_back(p);
+#endif
+	}
+	return res;
 }
 
 void Controller::AppendGain(GainPtr gain) {

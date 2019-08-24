@@ -24,6 +24,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 
 #if UNITY
 using UnityEngine;
@@ -81,6 +82,16 @@ namespace AUTD3Sharp
         }
     }
 
+    public struct EtherCATAdapter
+    {
+        public string Desc { get; internal set; }
+        public string Name { get; internal set; }
+        public override string ToString()
+        {
+            return $"{Desc}, {Name}";
+        }
+    }
+
     public sealed class AUTD : IDisposable
     {
         #region const
@@ -117,9 +128,21 @@ namespace AUTD3Sharp
         {
             _autdControllerHandle = new AUTDControllerHandle(true);
         }
-        public int Open() => Open("");
-        public int Open(string location) => NativeMethods.AUTDOpenController(_autdControllerHandle, location);
-
+        public int Open() => Open(LinkType.ETHERCAT, "");
+        public int Open(string location) => Open(LinkType.ETHERCAT, location);
+        public int Open(LinkType linkType, string location) => NativeMethods.AUTDOpenController(_autdControllerHandle, linkType, location);
+        public static IEnumerable<EtherCATAdapter> EnumerateAdapters()
+        {
+            var size = NativeMethods.AUTDGetAdapterPointer(out IntPtr handle);
+            for (int i = 0; i < size; i++)
+            {
+                var sb_desc = new StringBuilder(128);
+                var sb_name = new StringBuilder(128);
+                NativeMethods.AUTDGetAdapter(handle, i, sb_desc, sb_name);
+                yield return new EtherCATAdapter() { Desc = sb_desc.ToString(), Name = sb_name.ToString() };
+            }
+            NativeMethods.AUTDFreeAdapterPointer(handle);
+        }
         public int AddDevice(float x, float y, float z, float rz1, float ry, float rz2) => AddDevice(new Vector3f(x, y, z), new Vector3f(rz1, ry, rz2), 0);
         public int AddDevice(float x, float y, float z, float rz1, float ry, float rz2, int groupId) => AddDevice(new Vector3f(x, y, z), new Vector3f(rz1, ry, rz2), groupId);
         public int AddDevice(Vector3f position, Vector3f rotation) => AddDevice(position, rotation, 0);

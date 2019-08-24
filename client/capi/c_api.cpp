@@ -7,7 +7,6 @@
 */
 
 #include "autd3.hpp"
-//#include "../lib/privdef.hpp"
 #include "autd3_c_api.h"
 #include <errno.h>
 #include <windows.h>
@@ -25,11 +24,28 @@ void AUTDCreateController(AUTDControllerHandle* out) {
 	auto* cnt = new Controller;
 	*out = cnt;
 }
-int AUTDOpenController(AUTDControllerHandle handle, const char* location) {
+int AUTDOpenController(AUTDControllerHandle handle, int linkType, const char* location) {
 	auto* cnt = static_cast<Controller*>(handle);
-	cnt->Open(LinkType::ETHERCAT, std::string(location));
+	cnt->Open(static_cast<LinkType>(linkType), std::string(location));
 	if (!cnt->isOpen()) return ENXIO;
 	return 0;
+}
+int AUTDGetAdapterPointer(void** out) {
+	int size;
+	auto adapters = autd::Controller::EnumerateAdapters(size);
+	*out = adapters;
+	return size;
+}
+void AUTDGetAdapter(void* p_adapter, int index, char* desc, char* name) {
+	auto* adapters = static_cast<std::pair<std::string, std::string>*>(p_adapter);
+	auto desc_ = adapters[index].first;
+	auto name_ = adapters[index].second;
+	std::char_traits<char>::copy(desc, desc_.c_str(), desc_.size() + 1);
+	std::char_traits<char>::copy(name, name_.c_str(), name_.size() + 1);
+}
+void AUTDFreeAdapterPointer(void* p_adapter) {
+	auto* adapters = static_cast<std::pair<std::string, std::string>*>(p_adapter);
+	delete[] adapters;
 }
 int AUTDAddDevice(AUTDControllerHandle handle, float x, float y, float z, float rz1, float ry, float rz2, int groupId) {
 	auto* cnt = static_cast<Controller*>(handle);
@@ -142,7 +158,7 @@ void AUTDHoloGain(AUTDGainPtr* gain, float* points, float* amps, int size) {
 	*gain = g;
 }
 void AUTDTransducerTestGain(AUTDGainPtr* gain, int idx, int amp, int phase) {
-	auto* g = TransducerTestGain::Create(idx,amp,phase);
+	auto* g = TransducerTestGain::Create(idx, amp, phase);
 	*gain = g;
 }
 void AUTDNullGain(AUTDGainPtr* gain) {
@@ -261,7 +277,7 @@ float* GetAngleZYZ(float* rotationMatrix) {
 	Matrix3f rot;
 	for (int i = 0; i < 9; i++) rot(i / 3, i % 3) = rotationMatrix[i];
 	auto euler = rot.eulerAngles(2, 1, 2);
-	auto * angleZYZ = new float[3];
+	auto* angleZYZ = new float[3];
 	angleZYZ[0] = euler[0];
 	angleZYZ[1] = euler[1];
 	angleZYZ[2] = euler[2];

@@ -60,6 +60,9 @@ if (USE_UNITY)
 endif()
 
 target_link_libraries(autd3capi ${Boost_LIBRARIES} ${Ads_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(autd3capi libsoem)
+target_link_libraries(autd3capi ws2_32.lib)
+target_link_libraries(autd3capi winmm.lib)
 
 set_target_properties(autd3capi
     PROPERTIES

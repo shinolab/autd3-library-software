@@ -6,7 +6,7 @@
 
 using System;
 using System.Runtime.InteropServices;
-
+using System.Text;
 using AUTDGainPtr = System.IntPtr;
 using AUTDModulationPtr = System.IntPtr;
 
@@ -16,13 +16,25 @@ using DebugLogFunc = System.IntPtr;
 
 namespace AUTD3Sharp
 {
+    public enum LinkType : int
+    {
+        ETHERCAT,
+        ETHERNET,
+        USB,
+        SERIAL,
+        SOEM
+    };
+
     internal static unsafe class NativeMethods
     {
         const string DllName = "autd3capi";
 
         #region Controller
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDCreateController(out IntPtr handle);
-        [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)] public static extern int AUTDOpenController(AUTDControllerHandle handle, string location);
+        [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)] public static extern int AUTDOpenController(AUTDControllerHandle handle, LinkType linkType, string location);
+        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern int AUTDGetAdapterPointer(out IntPtr p_adapter);
+        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDFreeAdapterPointer(IntPtr p_adapter);
+        [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDGetAdapter(IntPtr p_adapter, int index, StringBuilder desc, StringBuilder name);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern int AUTDAddDevice(AUTDControllerHandle handle, float x, float y, float z, float rz1, float ry, float rz2, int groupId);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern int AUTDAddDeviceQuaternion(AUTDControllerHandle handle, float x, float y, float z, float quaW, float quaX, float quaY, float quaZ, int groupId);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDDelDevice(AUTDControllerHandle handle, int devId);

@@ -20,9 +20,21 @@
 #include "gain.hpp"
 #include "modulation.hpp"
 
+using namespace std;
+
+#if DLL_FOR_CAPI
+using EtherCATAdapter = pair<string, string>;
+using EtherCATAdapters = pair<string, string>*;
+#else
+using EtherCATAdapter = pair<shared_ptr<string>, shared_ptr<string>>;
+using EtherCATAdapters = std::vector<EtherCATAdapter>;
+#endif
+
 namespace autd {
 	class Controller
 	{
+
+
 	public:
 		Controller() noexcept(false);
 		~Controller() noexcept(false);
@@ -37,6 +49,8 @@ namespace autd {
 		void Open(LinkType type, std::string location = "");
 		bool isOpen();
 		void Close();
+
+		static EtherCATAdapters EnumerateAdapters(int& size);
 
 		size_t remainingInBuffer();
 		GeometryPtr geometry() noexcept;
