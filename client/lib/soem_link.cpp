@@ -1,3 +1,12 @@
+﻿/*
+*  soem_link.cpp
+*  autd3
+*
+*  Created by Shun Suzuki on 08/23/2019.
+*  Copyright © 2019 Hapis Lab. All rights reserved.
+*
+*/
+
 #include "libsoem.hpp"
 #include "soem_link.hpp"
 

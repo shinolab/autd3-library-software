@@ -1,12 +1,12 @@
-//
-//  matlabgain.cpp
-//  autd3
-//
-//  Created by Seki Inoue on 9/20/16.
-//  Modified by Shun Suzuki on 02 / 07 / 2018.
-//
-//
-
+﻿/*
+*  matlabgain.cpp
+*  autd3
+*
+*  Created by Seki Inoue on 9/20/16.
+*  Modified by Shun Suzuki on 02/07/2018.
+*  Copyright © 2016-2019 Hapis Lab. All rights reserved.
+*
+*/
 
 #include <stdio.h>
 #include <complex>

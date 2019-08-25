@@ -1,7 +1,10 @@
 ﻿/*
 *
-*  Created by Shun Suzuki on 04/10/2019.
-*  Copyright © 2018 Hapis Lab. All rights reserved.
+*  timer.cpp
+*  autd3
+*
+*  Created by Shun Suzuki and Saya Mizutani on 02/07/2018.
+*  Copyright © 2018-2019 Hapis Lab. All rights reserved.
 *
 */
 

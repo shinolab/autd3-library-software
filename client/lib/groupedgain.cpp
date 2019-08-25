@@ -1,10 +1,11 @@
-//
-//  groupedgain.cpp
-//
-//  Created by Shun Suzuki on 09 / 07 / 2018.
-//
-//
-
+﻿/*
+*  groupedgain.cpp
+*  autd3
+*
+*  Created by Shun Suzuki on 09/07/18.
+*  Copyright © 2018-2019 Hapis Lab. All rights reserved.
+*
+*/
 
 #include <stdio.h>
 #include <map>

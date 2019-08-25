@@ -1,6 +1,10 @@
 ﻿/*
 *
-*  Created by Shun Suzuki on 24/07/2018.
+*  Matrix3x3f.cs
+*  AUTD3Sharp
+*  
+*  Created by Shun Suzuki on 07/24/2018.
+*  Copyright © 2018-2019 Hapis Lab. All rights reserved.
 *
 */
 

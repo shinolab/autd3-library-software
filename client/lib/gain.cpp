@@ -1,11 +1,12 @@
-//
-//  gain.cpp
-//  autd3
-//
-//  Created by Seki Inoue on 6/1/16.
-//  Modified by Shun Suzuki on 02/07/2018.
-//  Modified by Shun Suzuki on 04/11/2018.
-//
+﻿/*
+*  gain.cpp
+*  autd3
+*
+*  Created by Seki Inoue on 6/1/16.
+*  Modified by Shun Suzuki on 08/25/2019.
+*  Copyright © 2016-2019 Hapis Lab. All rights reserved.
+*
+*/
 
 #include <iostream>
 #include <string>

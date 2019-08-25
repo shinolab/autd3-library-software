@@ -1,4 +1,13 @@
-﻿using AUTD3SharpTest.Test;
+﻿/*
+ *  Program.cs
+ *  AUTD3SharpSample
+ *
+ *  Created by Shun Suzuki on 08/25/2019.
+ *  Copyright © 2019 Hapis Lab. All rights reserved.
+ *
+ */
+
+using AUTD3SharpTest.Test;
 using System.Reflection;
 
 [assembly: AssemblyVersion("3.3.1.0")]

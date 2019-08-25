@@ -1,10 +1,13 @@
-//
-//  ethercat_link.cpp
-//  autd3
-//
-//  Created by Seki Inoue on 6/1/16.
-//
-//
+﻿/*
+*  ethercat_link.cpp
+*  autd3
+*
+*  Created by Seki Inoue on 6/1/16.
+*  Modified by Shun Suzuki on 08/25/2019.
+*  Copyright © 2016-2019 Hapis Lab. All rights reserved.
+*
+*/
+
 #include <windows.h>
 #include <string>
 #include <vector>
@@ -77,7 +80,7 @@ void autd::internal::EthercatLink::Send(size_t size, std::unique_ptr<uint8_t[]> 
 	long ret = AdsSyncWriteReqEx(this->_port, // NOLINT
 		&pAddr, INDEX_GROUP,
 		INDEX_OFFSET_BASE,
-		(uint32_t)size,//add cast by ss
+		(uint32_t)size,
 		&buf[0]);
 	if (ret > 0) {
 		switch (ret) {
@@ -137,7 +140,7 @@ void autd::internal::LocalEthercatLink::Send(size_t size, std::unique_ptr<uint8_
 	long ret = write(this->_port, // NOLINT
 		&addr, INDEX_GROUP,
 		INDEX_OFFSET_BASE,
-		(unsigned long)size,//add cast by ss
+		(unsigned long)size,
 		&buf[0]);
 	if (ret > 0) {
 		// https://infosys.beckhoff.com/english.php?content=../content/1033/tcadscommon/html/tcadscommon_intro.htm&id=

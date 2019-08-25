@@ -1,10 +1,12 @@
-//
-//  geometry.cpp
-//  autd3
-//
-//  Created by Seki Inoue on 6/8/16.
-//
-//
+﻿/*
+*  geometry.cpp
+*  autd3
+*
+*  Created by Seki Inoue on 6/8/16.
+*  Modified by Shun Suzuki on 08/25/2019.
+*  Copyright © 2016-2019 Hapis Lab. All rights reserved.
+*
+*/
 
 #include <stdio.h>
 #include <map>

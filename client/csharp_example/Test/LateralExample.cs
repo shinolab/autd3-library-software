@@ -1,4 +1,12 @@
-﻿using AUTD3Sharp;
+﻿/*
+ *  LateralExmaple.cs
+ *  AUTD3SharpSample
+ *
+ *  Created by Shun Suzuki on 08/25/2019.
+ *  Copyright © 2019 Hapis Lab. All rights reserved.
+ *
+ */
+using AUTD3Sharp;
 using System;
 
 namespace AUTD3SharpTest.Test

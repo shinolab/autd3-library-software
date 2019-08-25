@@ -1,8 +1,8 @@
 /*
- *  simple.cpp
- *  simple
+ *  simple_soem.cpp
+ *  simple_soem
  *
- *  Created by Shun Suzuki on 5/18/16.
+ *  Created by Shun Suzuki on 08/25/2019.
  *  Copyright © 2019 Hapis Lab. All rights reserved.
  *
  */

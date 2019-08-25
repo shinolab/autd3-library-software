@@ -1,3 +1,12 @@
+﻿/*
+*  soem_link.hpp
+*  autd3
+*
+*  Created by Shun Suzuki on 08/23/2019.
+*  Copyright © 2019 Hapis Lab. All rights reserved.
+*
+*/
+
 #pragma once
 
 #include "link.hpp"

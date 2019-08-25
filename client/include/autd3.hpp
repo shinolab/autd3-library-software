@@ -3,9 +3,8 @@
  *  autd3
  *
  *  Created by Seki Inoue on 5/13/16.
- *  Modified by Shun Suzuki on 02/07/2018.
  *  Modified by Shun Suzuki on 04/11/2018.
- *  Copyright © 2018 Hapis Lab. All rights reserved.
+ *  Copyright © 2016-2019 Hapis Lab. All rights reserved.
  *
  */
 

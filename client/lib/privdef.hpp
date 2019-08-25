@@ -1,10 +1,15 @@
-//
+﻿//
 //  privdef.hpp
-//  autd3
-//
-//  Created by Seki Inoue on 6/7/16.
-//
-//
+/*
+ *  gain.hpp
+ *  autd3
+ *
+ *  Created by Seki Inoue on 6/7/16.
+ *  Modified by Shun Suzuki on 01/13/2019.
+ *  Copyright © 2016-2019 Hapis Lab. All rights reserved.
+ *
+ */
+
 
 #ifndef privdef_h
 #define privdef_h

@@ -1,11 +1,10 @@
 /*
-*  autd3.cpp
+*  controller.cpp
 *  autd3
 *
 *  Created by Seki Inoue on 5/13/16.
-*  Modified by Shun Suzuki on 02/07/2018.
-*  Modified by Shun Suzuki on 04/11/2019.
-*  Copyright © 2018 Hapis Lab. All rights reserved.
+*  Modified by Shun Suzuki on 08/25/2019.
+*  Copyright © 2016-2019 Hapis Lab. All rights reserved.
 *
 */
 

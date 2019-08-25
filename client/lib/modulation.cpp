@@ -1,12 +1,13 @@
-//
-//  modulation.cpp
-//  autd3
-//
-//  Created by Seki Inoue on 6/11/16.
-//  Modified by Shun Suzuki on 02/07/2018.
-//  Modified by Shun Suzuki on 04/10/2019.
-//
-//
+ï»¿/*
+*  modulation.cpp
+*  autd3
+*
+*  Created by Seki Inoue on 6/111/16.
+*  Modified by Shun Suzuki on 04/10/2019.
+*  Copyright Â© 2016-2019 Hapis Lab. All rights reserved.
+*
+*/
+
 
 #include <stdio.h>
 #define _USE_MATH_DEFINES
@@ -106,9 +107,9 @@ autd::ModulationPtr autd::RawPCMModulation::Create(std::string filename, float s
 		tmp.push_back(value);
 	}
 	/*
-		ˆÈ‰º‚ªŒ³‚ÌŽÀ‘•
-		­‚È‚­‚Æ‚àVS2017‚Å‚Í‚±‚ÌƒR[ƒh‚ª“®‚©‚È‚¢
-		‹ï‘Ì“I‚É‚Í‰i‰“‚Év‚É0‚ª“ü‚é
+		ä»¥ä¸‹ãŒå…ƒã®å®Ÿè£…
+		å°‘ãªãã¨ã‚‚VS2017ã§ã¯ã“ã®ã‚³ãƒ¼ãƒ‰ãŒå‹•ã‹ãªã„
+		å…·ä½“çš„ã«ã¯æ°¸é ã«vã«0ãŒå…¥ã‚‹
 		do {
 			short v = 0;
 			ifs >> v;

@@ -1,10 +1,11 @@
-//
-//  controller.hpp
-//  autd3
-//
-//  Created by Shun Suzuki on 04/11/2018.
-//
-//
+﻿/*
+ *  core.hpp
+ *  autd3
+ *
+ *  Created by Shun Suzuki on 04/11/2018.
+ *  Copyright © 2018-2019 Hapis Lab. All rights reserved.
+ *
+ */
 
 #pragma once
 

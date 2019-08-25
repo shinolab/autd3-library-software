@@ -1,3 +1,13 @@
+﻿/*
+*  libsoem.cpp
+*  libsoem
+*
+*  Created by Shun Suzuki on 08/23/2019.
+*  Copyright © 2019 Hapis Lab. All rights reserved.
+*
+*/
+
+
 #define __STDC_LIMIT_MACROS
 
 #include <iostream>

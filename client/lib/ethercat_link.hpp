@@ -1,10 +1,11 @@
-//
-//  ethercat_link.hpp
-//  autd3
-//
-//  Created by Seki Inoue on 6/1/16.
-//
-//
+﻿/*
+ *  ethercat_link.hpp
+ *  autd3
+ *
+ *  Created by Seki Inoue on 6/1/16.
+ *  Copyright © 2016-2019 Hapis Lab. All rights reserved.
+ *
+ */
 
 #pragma once
 
