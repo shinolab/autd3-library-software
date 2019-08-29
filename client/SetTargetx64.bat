@@ -1,3 +1,10 @@
+:
+:  SetTargetx64.bat
+:  
+:  Created by Shun Suzuki on 08/25/2019.
+:  Copyright © 2019 Hapis Lab. All rights reserved.
+:
+
 @echo off
 
 set dir=%1

@@ -1,7 +1,10 @@
 ﻿/*
 *
+*  GainMap.cs
+*  AUTD3Sharp
+*  
 *  Created by Shun Suzuki on 10/07/2018.
-*  Copyright © 2018 Hapis Lab. All rights reserved.
+*  Copyright © 2018-2019 Hapis Lab. All rights reserved.
 *
 */
 

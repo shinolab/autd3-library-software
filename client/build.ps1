@@ -1,3 +1,12 @@
+﻿##########################################################
+#
+#  build.bat
+#  
+#  Created by Shun Suzuki on 08/25/2019.
+#  Copyright © 2019 Hapis Lab. All rights reserved.
+#
+##########################################################
+
 Param(
     [string]$BUILD_DIR = "\build",
     [switch]$NOUNITY,
