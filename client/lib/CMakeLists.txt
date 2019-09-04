@@ -14,7 +14,7 @@ find_package( Threads REQUIRED )
 
 include_directories(../include ${EIGEN3_INCLUDE_DIR} ${Boost_INCLUDE_DIR})
 
-add_library(autd3 STATIC
+set(SOURCE_LIST 
   soem_link.cpp
  
   gain.cpp
@@ -44,12 +44,13 @@ add_library(autd3 STATIC
 
 if(WIN32)
   include_directories(${Ads_INCLUDE_DIR})
-  add_library(autd3 STATIC
-    ethercat_link.cpp
+  list(APPEND SOURCE_LIST
+  	ethercat_link.cpp
     ethercat_link.hpp
   )
 endif()
 
+add_library(autd3 STATIC ${SOURCE_LIST})
 
 if(WIN32)
   set(Matlab_INCLUDE_DIRS "")
@@ -92,6 +93,6 @@ endif()
 target_link_libraries(autd3 ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
 if (WIN32)
-  target_link_libraries(${Ads_LIBRARIES})
+  target_link_libraries(autd3 ${Ads_LIBRARIES})
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4068")
 endif()
