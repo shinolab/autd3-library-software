@@ -1,11 +1,15 @@
-﻿##########################################################
+﻿#
+# File: build.ps1
+# Project: client
+# Created Date: 25/08/2019
+# Author: Shun Suzuki
+# -----
+# Last Modified: 04/09/2019
+# Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
+# -----
+# Copyright (c) 2019 Hapis Lab. All rights reserved.
+# 
 #
-#  build.bat
-#  
-#  Created by Shun Suzuki on 08/25/2019.
-#  Copyright © 2019 Hapis Lab. All rights reserved.
-#
-##########################################################
 
 Param(
     [string]$BUILD_DIR = "\build",

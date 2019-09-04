@@ -4,6 +4,14 @@ set (CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/deps)
 
+if(WIN32)
+	set(OS win32)
+elseif(APPLE)
+	set(OS macosx)
+else()
+	set(OS linux)
+endif()
+
 if (POLICY CMP0074)
   cmake_policy(SET CMP0074 NEW)
 endif()
@@ -26,7 +34,7 @@ set(SOURCE_LIST
   controller.cpp
   geometry.cpp
  
-  timer.cpp
+  ${OS}/timer.cpp
  
   link.hpp
   timer.hpp
@@ -85,7 +93,7 @@ if(WIN32)
   )
 
   source_group("util" FILES
-    timer.cpp
+    ${OS}/timer.cpp
   )
 endif()
 

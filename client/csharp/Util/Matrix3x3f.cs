@@ -1,12 +1,15 @@
 ﻿/*
-*
-*  Matrix3x3f.cs
-*  AUTD3Sharp
-*  
-*  Created by Shun Suzuki on 07/24/2018.
-*  Copyright © 2018-2019 Hapis Lab. All rights reserved.
-*
-*/
+ * File: Matrix3x3f.cs
+ * Project: Util
+ * Created Date: 24/07/2018
+ * Author: Shun Suzuki
+ * -----
+ * Last Modified: 04/09/2019
+ * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
+ * -----
+ * Copyright (c) 2019 Hapis Lab. All rights reserved.
+ * 
+ */
 
 #if UNITY_2018_3_OR_NEWER
 #define UNITY

@@ -1,12 +1,15 @@
 ﻿/*
-*
-*  Vector3f.cs
-*  AUTD3Sharp
-*  
-*  Created by Shun Suzuki on 02/07/2018.
-*  Copyright © 2018-2019 Hapis Lab. All rights reserved.
-*
-*/
+ * File: Vector3f.cs
+ * Project: Util
+ * Created Date: 02/07/2018
+ * Author: Shun Suzuki
+ * -----
+ * Last Modified: 04/09/2019
+ * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
+ * -----
+ * Copyright (c) 2018-2019 Hapis Lab. All rights reserved.
+ * 
+ */
 
 using System;
 using System.Collections;

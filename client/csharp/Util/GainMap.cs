@@ -1,12 +1,15 @@
 ﻿/*
-*
-*  GainMap.cs
-*  AUTD3Sharp
-*  
-*  Created by Shun Suzuki on 10/07/2018.
-*  Copyright © 2018-2019 Hapis Lab. All rights reserved.
-*
-*/
+ * File: GainMap.cs
+ * Project: Util
+ * Created Date: 07/10/2018
+ * Author: Shun Suzuki
+ * -----
+ * Last Modified: 04/09/2019
+ * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
+ * -----
+ * Copyright (c) 2019 Hapis Lab. All rights reserved.
+ * 
+ */
 
 using System;
 using System.Linq;

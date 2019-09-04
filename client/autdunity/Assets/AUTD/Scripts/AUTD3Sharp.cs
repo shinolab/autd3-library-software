@@ -1,12 +1,15 @@
 ﻿/*
-*
-*  AUTD3Sharp.cs
-*  AUTD3Sharp
-*  
-*  Created by Shun Suzuki on 02/07/2018.
-*  Copyright © 2018-2019 Hapis Lab. All rights reserved.
-*
-*/
+ * File: AUTD3Sharp.cs
+ * Project: csharp
+ * Created Date: 02/07/2018
+ * Author: Shun Suzuki
+ * -----
+ * Last Modified: 04/09/2019
+ * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
+ * -----
+ * Copyright (c) 2018-2019 Hapis Lab. All rights reserved.
+ * 
+ */
 
 #if UNITY_2018_3_OR_NEWER
 #define UNITY

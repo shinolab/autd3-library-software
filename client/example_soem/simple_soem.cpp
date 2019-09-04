@@ -1,17 +1,22 @@
 /*
- *  simple_soem.cpp
- *  simple_soem
- *
- *  Created by Shun Suzuki on 08/25/2019.
- *  Copyright © 2019 Hapis Lab. All rights reserved.
- *
+ * File: simple_soem.cpp
+ * Project: example_soem
+ * Created Date: 24/08/2019
+ * Author: Shun Suzuki
+ * -----
+ * Last Modified: 04/09/2019
+ * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
+ * -----
+ * Copyright (c) 2019 Hapis Lab. All rights reserved.
+ * 
  */
 
 #include "autd3.hpp"
 
 using namespace std;
 
-string GetAdapterName() {
+string GetAdapterName()
+{
 	int size;
 	auto adapters = autd::Controller::EnumerateAdapters(size);
 	for (auto i = 0; i < size; i++)
@@ -41,7 +46,8 @@ int main()
 	// If you have already recognized the EtherCAT adapter name, you can write it directly like below.
 	//autd.Open(autd::LinkType::SOEM, "\\Device\\NPF_{B5B631C6-ED16-4780-9C4C-3941AE8120A6}");
 
-	if (!autd.isOpen()) return ENXIO;
+	if (!autd.isOpen())
+		return ENXIO;
 
 	auto gain = autd::FocalPointGain::Create(Eigen::Vector3f(90, 70, 150));
 

@@ -2,6 +2,14 @@ cmake_minimum_required(VERSION 3.12)
 
 set (CMAKE_CXX_STANDARD 11)
 
+if(WIN32)
+	set(OS win32)
+elseif(APPLE)
+	set(OS macosx)
+else()
+	set(OS linux)
+endif()
+
 # Eigen3
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/deps)
 set(Matlab_INCLUDE_DIRS "")
@@ -30,7 +38,7 @@ add_library(autd3capi SHARED
   ../lib/controller.cpp
   ../lib/geometry.cpp
   
-  ../lib/timer.cpp
+  ../lib/${OS}/timer.cpp
     
   ../lib/link.hpp
   ../lib/timer.hpp
