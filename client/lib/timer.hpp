@@ -12,6 +12,8 @@
 #include <future>
 
 #if WIN32
+#elif __APPLE__
+#include <dispatch/dispatch.h>
 #else
 #include <time.h>
 #include <signal.h>
@@ -32,6 +34,9 @@ public:
 protected:
 	int _interval_us;
 #if WIN32
+#elif __APPLE__
+	dispatch_queue_t _queue;
+	dispatch_source_t _timer;
 #else
     timer_t _timer_id;
 #endif
@@ -41,6 +46,8 @@ private:
 	bool _loop = false;
 #if WIN32
 	void MainLoop();
+#elif __APPLE__
+	static void MainLoop(Timer* ptr);
 #else
 	static void MainLoop(int signum);
 	static void Notify(union sigval sv);

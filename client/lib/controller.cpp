@@ -52,7 +52,8 @@ public:
 	bool silentMode = true;
 	uint8_t modReset = MOD_RESET;
 
-	~impl() noexcept(false);
+	impl();
+	~impl() ;
 	bool isOpen();
 	void Close();
 
@@ -66,10 +67,12 @@ public:
 	unique_ptr<uint8_t[]> MakeBody(GainPtr gain, ModulationPtr mod, size_t* size);
 };
 
-Controller::impl::~impl() noexcept(false) {
+Controller::impl::~impl(){
 	if (this_thread::get_id() != this->_build_thr.get_id() && this->_build_thr.joinable()) this->_build_thr.join();
 	if (this_thread::get_id() != this->_send_thr.get_id() && this->_send_thr.joinable()) this->_send_thr.join();
 }
+
+Controller::impl::impl(){}
 
 void Controller::impl::InitPipeline() {
 	// pipeline step #1
@@ -361,8 +364,8 @@ void Controller::lateraltimer::ResetLateralGain()
 }
 #pragma endregion
 
-Controller::Controller() noexcept(false) {
-	this->_pimpl = make_shared<impl>();
+Controller::Controller() {
+	this->_pimpl = std::make_shared<impl>();
 	this->_pimpl->_geometry = Geometry::Create();
 	this->_pimpl->silentMode = true;
 	this->_pimpl->modReset = MOD_RESET;

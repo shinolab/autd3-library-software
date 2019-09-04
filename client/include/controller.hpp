@@ -37,8 +37,6 @@ using EtherCATAdapters = std::vector<EtherCATAdapter>;
 namespace autd {
 	class Controller
 	{
-
-
 	public:
 		Controller() noexcept(false);
 		~Controller() noexcept(false);

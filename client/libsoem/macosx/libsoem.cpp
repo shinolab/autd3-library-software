@@ -2,7 +2,9 @@
 #include <signal.h>
 #include <time.h>
 #include <unistd.h>
- #include <string.h>
+#include <string.h>
+
+#include <dispatch/dispatch.h>
 
 #include <iostream>
 #include <cstdint>
@@ -19,7 +21,7 @@ class libsoem::SOEMController::impl
 public:
 	void Open(const char* ifname, size_t devNum);
 	void Send(size_t size, unique_ptr<uint8_t[]> buf);
-    static void RTthread(union sigval sv);
+    static void RTthread(SOEMController::impl* ptr);
 	void Close();
 
 private:
@@ -32,7 +34,8 @@ private:
 	uint32_t _mmResult = 0;
 	bool _sendCheck = false;
 	mutex _mutex;
-    timer_t _timer_id;
+	dispatch_queue_t _queue;
+	dispatch_source_t _timer;
 };
 
 void libsoem::SOEMController::impl::Send(size_t size, unique_ptr<uint8_t[]> buf)
@@ -63,9 +66,9 @@ bool libsoem::SOEMController::impl::GetSendCheck() {
 	return _sendCheck;
 }
 
-void libsoem::SOEMController::impl::RTthread(union sigval sv){  
+void libsoem::SOEMController::impl::RTthread(SOEMController::impl* ptr){  
 	ec_send_processdata();
-    (reinterpret_cast<SOEMController::impl*>(sv.sival_ptr))->SetSendCheck(false);
+    ptr->SetSendCheck(false);
 }
 
 void libsoem::SOEMController::impl::Open(const char* ifname, size_t devNum)
@@ -87,27 +90,19 @@ void libsoem::SOEMController::impl::Open(const char* ifname, size_t devNum)
 			ec_send_processdata();
 			ec_receive_processdata(EC_TIMEOUTRET);
 
-            struct itimerspec itval;
-            struct sigevent se;
+            _queue = dispatch_queue_create("timerQueue", 0);
 
-            itval.it_value.tv_sec = 0;
-            itval.it_value.tv_nsec = 1000 * 1000;
-            itval.it_interval.tv_sec = 0;
-            itval.it_interval.tv_nsec = 1000 * 1000;
+			_timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _queue);
+			dispatch_source_set_event_handler(_timer, ^{RTthread(this);});
 
-            memset(&se, 0, sizeof(se));
-            se.sigev_value.sival_ptr = this;
-            se.sigev_notify = SIGEV_THREAD;
-            se.sigev_notify_function = RTthread;
-            se.sigev_notify_attributes = NULL;
+			dispatch_source_set_cancel_handler(_timer, ^{
+				dispatch_release(_timer);
+				dispatch_release(_queue);
+			});
 
-            if(timer_create(CLOCK_REALTIME, &se, &_timer_id) < 0) {
-                cerr << "Error: timer_create." << endl;
-            }
-        
-            if(timer_settime(_timer_id, 0, &itval, NULL) < 0) {
-                cerr << "Error: timer_settime." << endl;
-            }
+			dispatch_time_t start = dispatch_time(DISPATCH_TIME_NOW, 0);
+			dispatch_source_set_timer(_timer, start, 1000 * 1000, 0);
+			dispatch_resume(_timer);
 
 			ec_writestate(0);
 
@@ -122,7 +117,7 @@ void libsoem::SOEMController::impl::Open(const char* ifname, size_t devNum)
 				_isOpened = true;
 			}
 			else {
-				timer_delete(_timer_id);
+            dispatch_source_cancel(_timer);
 				cerr << "One ore more slaves are not responding." << endl;
 			}
 		}
@@ -140,7 +135,7 @@ void libsoem::SOEMController::impl::Open(const char* ifname, size_t devNum)
 void libsoem::SOEMController::impl::Close()
 {
 	if (_isOpened) {
-        timer_delete(_timer_id);
+            dispatch_source_cancel(_timer);
 	
 		ec_slave[0].state = EC_STATE_INIT;
 		ec_writestate(0);
