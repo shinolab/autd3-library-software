@@ -9,11 +9,10 @@ set(Matlab_INCLUDE_DIRS "")
 cmake_policy(SET CMP0074 NEW)
 
 find_package( Eigen3 REQUIRED )
-find_package( Boost REQUIRED )
 find_package( Threads REQUIRED )
 find_package( MATLAB )
 
-include_directories(../include ${EIGEN3_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${Ads_INCLUDE_DIR} ${Matlab_INCLUDE_DIRS})
+include_directories(../include ${EIGEN3_INCLUDE_DIR} ${Ads_INCLUDE_DIR} ${Matlab_INCLUDE_DIRS})
 
 add_library(autd3capi SHARED
   c_api.cpp
@@ -59,7 +58,7 @@ if (USE_UNITY)
                  COMMAND copy /Y $(TargetPath) $(SolutionDir)autdunity\\Assets\\AUTD\\Plugins\\x86_64)
 endif()
 
-target_link_libraries(autd3capi ${Boost_LIBRARIES} ${Ads_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(autd3capi ${Ads_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(autd3capi libsoem)
 target_link_libraries(autd3capi ws2_32.lib)
 target_link_libraries(autd3capi winmm.lib)

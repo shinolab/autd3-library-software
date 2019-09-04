@@ -9,10 +9,9 @@ if (POLICY CMP0074)
 endif()
 
 find_package( Eigen3 REQUIRED )
-find_package( Boost REQUIRED )
 find_package( Threads REQUIRED )
 
-include_directories(../include ${EIGEN3_INCLUDE_DIR} ${Boost_INCLUDE_DIR})
+include_directories(../include ${EIGEN3_INCLUDE_DIR})
 
 set(SOURCE_LIST 
   soem_link.cpp
@@ -90,7 +89,7 @@ if(WIN32)
   )
 endif()
 
-target_link_libraries(autd3 ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(autd3 ${CMAKE_THREAD_LIBS_INIT})
 
 if (WIN32)
   target_link_libraries(autd3 ${Ads_LIBRARIES})

@@ -13,14 +13,13 @@
 #include <map>
 #include <complex>
 #include <vector>
+#include <random>
 
 #if WIN32
 #include <codeanalysis\warnings.h>
 #pragma warning(push)
 #pragma warning(disable:ALL_CODE_ANALYSIS_WARNINGS)
 #endif
-#include <boost/assert.hpp>
-#include <boost/random.hpp>
 #include <Eigen/Eigen>
 #if WIN32
 #pragma warning(pop)
@@ -91,7 +90,9 @@ autd::GainPtr autd::HoloGainSdp::Create(MatrixX3f foci, VectorXf amp) {
 void autd::HoloGainSdp::build() {
 	if (this->built()) return;
 	auto geo = this->geometry();
-	if (geo == nullptr) BOOST_ASSERT_MSG(false, "Geometry is required to build Gain");
+	if (geo == nullptr) {
+		throw runtime_error("Geometry is required to build Gain");
+	}
 
 	const auto alpha = 1e-3f;
 
@@ -103,12 +104,12 @@ void autd::HoloGainSdp::build() {
 	MatrixXcf B = MatrixXcf(M, N);
 	VectorXcf q = VectorXcf(N);
 
-	const boost::random::mt19937 rng(static_cast<unsigned int>(time(nullptr)));
-	const boost::random::uniform_real_distribution<> range(0, 1);
-	boost::random::variate_generator< boost::random::mt19937, boost::random::uniform_real_distribution<> > mt(rng, range);
+	std::random_device rnd;
+	std::mt19937 mt(rnd());
+	std::uniform_real_distribution<> range(0, 1);
 
 	for (int i = 0; i < M; i++) {
-		p(i) = _amp(i) * exp(complex<float>(0.0f, 2.0f * M_PIf * static_cast<float>(mt())));
+		p(i) = _amp(i) * exp(complex<float>(0.0f, 2.0f * M_PIf * static_cast<float>(range(mt))));
 		P(i, i) = _amp(i);
 
 		const auto tp = _foci.row(i);

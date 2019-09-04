@@ -14,23 +14,6 @@
 
 using namespace std;
 
-vector<string> split(const string& s, char delim) {
-	vector<string> tokens;
-	string token;
-	for (char ch : s) {
-		if (ch == delim) {
-			if (!token.empty())
-				tokens.push_back(token);
-			token.clear();
-		}
-		else
-			token += ch;
-	}
-	if (!token.empty())
-		tokens.push_back(token);
-	return tokens;
-}
-
 void autd::internal::SOEMLink::Open(std::string ifname) {
 	_cnt = std::make_unique<libsoem::SOEMController>();
 

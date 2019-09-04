@@ -13,17 +13,6 @@
 #include <map>
 #include <vector>
 
-#if WIN32
-#include <codeanalysis\warnings.h>
-#pragma warning(push)
-#pragma warning(disable:ALL_CODE_ANALYSIS_WARNINGS)
-#endif
-#include <boost/assert.hpp>
-#if WIN32
-#pragma warning(pop)
-#endif
-
-
 #include "core.hpp"
 #include "autd3.hpp"
 #include "controller.hpp"
@@ -45,9 +34,10 @@ Gain::Gain() noexcept {
 
 void Gain::build() {
 	if (this->built()) return;
-
 	auto geo = this->geometry();
-	if (geo == nullptr) BOOST_ASSERT_MSG(false, "Geometry is required to build Gain");
+	if (geo == nullptr) {
+		throw runtime_error("Geometry is required to build Gain");
+	}
 
 	for (int i = 0; i < geo->numDevices(); i++) {
 		this->_data[geo->deviceIdForDeviceIdx(i)] = std::vector<uint16_t>(NUM_TRANS_IN_UNIT, 0x0000);
@@ -80,9 +70,10 @@ GainPtr PlaneWaveGain::Create(Vector3f direction) {
 
 void PlaneWaveGain::build() {
 	if (this->built()) return;
-
 	auto geo = this->geometry();
-	if (geo == nullptr) BOOST_ASSERT_MSG(false, "Geometry is required to build Gain");
+	if (geo == nullptr) {
+		throw runtime_error("Geometry is required to build Gain");
+	}
 
 	this->_data.clear();
 	const auto ndevice = geo->numDevices();
@@ -114,8 +105,9 @@ void FocalPointGain::build() {
 	if (this->built()) return;
 
 	auto geo = this->geometry();
-	if (geo == nullptr) BOOST_ASSERT_MSG(false, "Geometry is required to build Gain");
-
+	if (geo == nullptr) {
+		throw runtime_error("Geometry is required to build Gain");
+	}
 	this->_data.clear();
 
 	const auto ndevice = geo->numDevices();
@@ -155,7 +147,9 @@ GainPtr BesselBeamGain::Create(Vector3f point, Vector3f vec_n, float theta_z, ui
 void BesselBeamGain::build() {
 	if (this->built()) return;
 	auto geo = this->geometry();
-	if (geo == nullptr) BOOST_ASSERT_MSG(false, "Geometry is required to build Gain");
+	if (geo == nullptr) {
+		throw runtime_error("Geometry is required to build Gain");
+	}
 
 	this->_data.clear();
 	const auto ndevice = geo->numDevices();
@@ -197,7 +191,9 @@ GainPtr CustomGain::Create(uint16_t* data, int dataLength) {
 void CustomGain::build() {
 	if (this->built()) return;
 	auto geo = this->geometry();
-	if (geo == nullptr) BOOST_ASSERT_MSG(false, "Geometry is required to build Gain");
+	if (geo == nullptr) {
+		throw runtime_error("Geometry is required to build Gain");
+	}
 
 	this->_data.clear();
 	const auto ndevice = geo->numDevices();
@@ -229,7 +225,9 @@ GainPtr TransducerTestGain::Create(int idx, int amp, int phase) {
 void TransducerTestGain::build() {
 	if (this->built()) return;
 	auto geo = this->geometry();
-	if (geo == nullptr) BOOST_ASSERT_MSG(false, "Geometry is required to build Gain");
+	if (geo == nullptr) {
+		throw runtime_error("Geometry is required to build Gain");
+	}
 
 	this->_data.clear();
 	const auto ndevice = geo->numDevices();

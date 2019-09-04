@@ -13,12 +13,6 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
-#include <codeanalysis\warnings.h>
-#pragma warning( push )
-#pragma warning( disable : ALL_CODE_ANALYSIS_WARNINGS )
-#include <boost/algorithm/string.hpp>
-#include <boost/assert.hpp>
-#pragma warning( pop )
 #include <AdsLib.h>
 #include "privdef.hpp"
 #include "ethercat_link.hpp"
@@ -26,9 +20,12 @@
 #define INDEX_GROUP (0x3040030)
 #define INDEX_OFFSET_BASE (0x81000000)
 #define PORT (301)
+
+using namespace std;
+
 void autd::internal::EthercatLink::Open(std::string location) {
-	std::vector<std::string> sep;
-	boost::algorithm::split(sep, location, boost::is_any_of(":"));
+	auto sep = split(location, ':');
+
 	if (sep.size() == 1) {
 		this->Open(sep[0], "");
 	}
@@ -36,13 +33,14 @@ void autd::internal::EthercatLink::Open(std::string location) {
 		this->Open(sep[1], sep[0]);
 	}
 	else {
-		BOOST_ASSERT_MSG(false, "Invalid address");
+		throw runtime_error("Invalid address");
 	}
 }
 void autd::internal::EthercatLink::Open(std::string ams_net_id, std::string ipv4addr) {
-	std::vector<std::string> octets;
-	boost::algorithm::split(octets, ams_net_id, boost::is_any_of("."));
-	BOOST_ASSERT_MSG(octets.size() == 6, "Ams net id must have 6 octets");
+	auto octets = split(ams_net_id, '.');
+	if (octets.size() != 6) {
+		throw runtime_error("Ams net id must have 6 octets");
+	}
 	if (ipv4addr == "") {
 		// Extract ipv6 addr from leading four octets of the ams net id.
 		for (int i = 0; i < 3; i++) {
@@ -110,11 +108,12 @@ typedef long(_stdcall *TcAdsSyncWriteReqEx)(long, AmsAddr*, unsigned long, unsig
 #define TCADS_AdsPortCloseEx "_AdsPortCloseEx@4"
 #define TCADS_AdsSyncWriteReqEx "_AdsSyncWriteReqEx@24"
 #endif
+
 void autd::internal::LocalEthercatLink::Open(std::string location) {
 	this->lib = LoadLibrary("TcAdsDll.dll");
 	//	this->lib = LoadPackagedLibrary(TEXT("TcAdsDll.dll"), 0);
 	if (lib == nullptr) {
-		BOOST_ASSERT_MSG(false, "couldn't find TcADS-DLL.");
+		throw runtime_error("couldn't find TcADS-DLL.");
 		return;
 	}
 	// open a new ADS port
@@ -151,7 +150,7 @@ void autd::internal::LocalEthercatLink::Send(size_t size, std::unique_ptr<uint8_
 }
 #else
 void autd::internal::LocalEthercatLink::Open(std::string location) {
-	BOOST_ASSERT_MSG(false, "Link to localhost has not been compiled. Rebuild this library on a Twincat3 host machine with TcADS-DLL.");
+	throw runtime_error("Link to localhost has not been compiled. Rebuild this library on a Twincat3 host machine with TcADS-DLL.");
 }
 void autd::internal::LocalEthercatLink::Close() {
 }

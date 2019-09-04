@@ -18,17 +18,6 @@
 #include <thread>
 #include <chrono>
 
-#if WIN32
-#include <codeanalysis\warnings.h>
-#pragma warning(push)
-#pragma warning(disable:ALL_CODE_ANALYSIS_WARNINGS)
-#endif
-#include <boost/algorithm/string.hpp>
-#include <boost/assert.hpp>
-#if WIN32
-#pragma warning(pop)
-#endif
-
 #include "link.hpp"
 #include "controller.hpp"
 #include "geometry.hpp"
@@ -413,7 +402,7 @@ void Controller::Open(LinkType type, string location) {
 		break;
 	}
 	default:
-		BOOST_ASSERT_MSG(false, "This link type is not implemented yet.");
+		throw runtime_error("This link type is not implemented yet.");
 		break;
 	}
 

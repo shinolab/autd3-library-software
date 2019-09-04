@@ -10,16 +10,6 @@
 #include <stdio.h>
 #include <map>
 
-#if WIN32
-#include <codeanalysis\warnings.h>
-#pragma warning(push)
-#pragma warning(disable:ALL_CODE_ANALYSIS_WARNINGS)
-#endif
-#include <boost/assert.hpp>
-#if WIN32
-#pragma warning(pop)
-#endif
-
 #include "autd3.hpp"
 #include "controller.hpp"
 #include "gain.hpp"
@@ -37,7 +27,9 @@ GainPtr GroupedGain::Create(std::map<int, GainPtr> gainmap) {
 void GroupedGain::build() {
 	if (this->built()) return;
 	auto geo = this->geometry();
-	if (geo == nullptr) BOOST_ASSERT_MSG(false, "Geometry is required to build Gain");
+	if (geo == nullptr) {
+		throw runtime_error("Geometry is required to build Gain");
+	}
 
 	this->_data.clear();
 
