@@ -36,7 +36,7 @@ autd::Modulation::Modulation() noexcept {
 	this->loop = true;
 }
 
-constexpr auto autd::Modulation::samplingFrequency() {
+constexpr float autd::Modulation::samplingFrequency() {
 	return MOD_SAMPLING_FREQ;
 }
 

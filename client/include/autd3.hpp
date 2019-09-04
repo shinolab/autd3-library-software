@@ -13,13 +13,18 @@
 
 #include <iostream> 
 #include <string>
+#include <memory>
+#if WIN32
 #include <codeanalysis\warnings.h>
-#pragma warning( push )
-#pragma warning ( disable : ALL_CODE_ANALYSIS_WARNINGS )
+#pragma warning(push)
+#pragma warning(disable:ALL_CODE_ANALYSIS_WARNINGS)
+#endif
 #include <Eigen/Core>
 #include <Eigen/Geometry>
-#pragma warning( pop )
-#include <memory>
+#if WIN32
+#pragma warning(pop)
+#endif
+
 
 #include "controller.hpp"
 #include "geometry.hpp"

@@ -12,11 +12,17 @@
 #include <string>
 #include <map>
 #include <vector>
+
+#if WIN32
 #include <codeanalysis\warnings.h>
-#pragma warning( push )
-#pragma warning( disable : ALL_CODE_ANALYSIS_WARNINGS )
+#pragma warning(push)
+#pragma warning(disable:ALL_CODE_ANALYSIS_WARNINGS)
+#endif
 #include <boost/assert.hpp>
-#pragma warning( pop )
+#if WIN32
+#pragma warning(pop)
+#endif
+
 
 #include "core.hpp"
 #include "autd3.hpp"

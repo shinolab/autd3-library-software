@@ -10,12 +10,16 @@
 #pragma once
 
 #include <memory>
+#if WIN32
 #include <codeanalysis\warnings.h>
-#pragma warning( push )
-#pragma warning ( disable : ALL_CODE_ANALYSIS_WARNINGS )
-#include <Eigen/Core>
+#pragma warning(push)
+#pragma warning(disable:ALL_CODE_ANALYSIS_WARNINGS)
+#endif
+#include <Eigen/Core> 
 #include <Eigen/Geometry> 
-#pragma warning( pop )
+#if WIN32
+#pragma warning(pop)
+#endif
 
 using namespace Eigen;
 

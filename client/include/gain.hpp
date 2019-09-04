@@ -14,11 +14,15 @@
 #include <map>
 #include <vector>
 
+#if WIN32
 #include <codeanalysis\warnings.h>
 #pragma warning(push)
 #pragma warning(disable:ALL_CODE_ANALYSIS_WARNINGS)
+#endif
 #include <Eigen/Core> 
+#if WIN32
 #pragma warning(pop)
+#endif
 
 #include "core.hpp"
 #include "geometry.hpp"

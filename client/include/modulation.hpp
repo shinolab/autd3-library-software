@@ -30,7 +30,7 @@ namespace autd {
 		Modulation() noexcept;
 		static ModulationPtr Create();
 		static ModulationPtr Create(uint8_t amp);
-		constexpr static auto samplingFrequency();
+		constexpr static float samplingFrequency();
 		bool loop;
 		std::vector<uint8_t> buffer;
 	private:

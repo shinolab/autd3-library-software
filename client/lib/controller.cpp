@@ -17,17 +17,25 @@
 #include <mutex>
 #include <thread>
 #include <chrono>
+
+#if WIN32
 #include <codeanalysis\warnings.h>
-#pragma warning( push )
-#pragma warning ( disable : ALL_CODE_ANALYSIS_WARNINGS )
+#pragma warning(push)
+#pragma warning(disable:ALL_CODE_ANALYSIS_WARNINGS)
+#endif
 #include <boost/algorithm/string.hpp>
 #include <boost/assert.hpp>
-#pragma warning( pop )
+#if WIN32
+#pragma warning(pop)
+#endif
+
 #include "link.hpp"
 #include "controller.hpp"
 #include "geometry.hpp"
 #include "privdef.hpp"
+#if WIN32
 #include "ethercat_link.hpp"
+#endif
 #include "soem_link.hpp"
 #include "lateraltimer.hpp"
 
@@ -264,7 +272,7 @@ void Controller::impl::Close() {
 		if (this_thread::get_id() != this->_build_thr.get_id() && this->_build_thr.joinable()) this->_build_thr.join();
 		this->_send_cond.notify_all();
 		if (this_thread::get_id() != this->_send_thr.get_id() && this->_send_thr.joinable()) this->_send_thr.join();
-		this->_link = shared_ptr<internal::EthercatLink>(nullptr);
+		this->_link = shared_ptr<internal::Link>(nullptr);
 	}
 }
 
@@ -382,6 +390,7 @@ void Controller::Open(LinkType type, string location) {
 	this->Close();
 
 	switch (type) {
+#if WIN32
 	case LinkType::ETHERCAT: {
 		// TODO(volunteer): a smarter localhost detection
 		if (location == "" ||
@@ -396,6 +405,7 @@ void Controller::Open(LinkType type, string location) {
 		this->_pimpl->_link->Open(location);
 		break;
 	}
+#endif
 	case LinkType::SOEM: {
 		this->_pimpl->_link = make_shared<internal::SOEMLink>();
 		auto devnum = this->_pimpl->_geometry->numDevices();

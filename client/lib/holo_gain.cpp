@@ -13,13 +13,19 @@
 #include <map>
 #include <complex>
 #include <vector>
+
+#if WIN32
 #include <codeanalysis\warnings.h>
-#pragma warning( push )
-#pragma warning ( disable : ALL_CODE_ANALYSIS_WARNINGS )
+#pragma warning(push)
+#pragma warning(disable:ALL_CODE_ANALYSIS_WARNINGS)
+#endif
 #include <boost/assert.hpp>
 #include <boost/random.hpp>
 #include <Eigen/Eigen>
-#pragma warning( pop )
+#if WIN32
+#pragma warning(pop)
+#endif
+
 #include "privdef.hpp"
 #include "autd3.hpp"
 #include "controller.hpp"

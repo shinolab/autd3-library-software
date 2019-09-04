@@ -9,12 +9,16 @@
 
 #pragma once
 
+#if WIN32
 #include <codeanalysis\warnings.h>
-#pragma warning( push )
-#pragma warning ( disable : ALL_CODE_ANALYSIS_WARNINGS )
+#pragma warning(push)
+#pragma warning(disable:ALL_CODE_ANALYSIS_WARNINGS)
+#endif
 #include <Eigen/Core>
-#include <Eigen/Geometry> 
-#pragma warning( pop )
+#include <Eigen/Geometry>
+#if WIN32
+#pragma warning(pop)
+#endif
 
 #include "geometry.hpp"
 #include "gain.hpp"
