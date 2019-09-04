@@ -4,6 +4,8 @@ set(SOEM_PATH ../deps/SOEM)
 
 if(WIN32)
 	set(OS win32)
+elseif(APPLE)
+	set(OS macosx)
 else()
 	set(OS linux)
 endif()
