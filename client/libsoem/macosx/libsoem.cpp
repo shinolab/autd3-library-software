@@ -4,7 +4,7 @@
  * Created Date: 04/09/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 04/09/2019
+ * Last Modified: 05/09/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -44,7 +44,6 @@ private:
 	unique_ptr<uint8_t[]> _IOmap;
 	bool _isOpened = false;
 	size_t _devNum = 0;
-	uint32_t _mmResult = 0;
 	bool _sendCheck = false;
 	mutex _mutex;
 	dispatch_queue_t _queue;

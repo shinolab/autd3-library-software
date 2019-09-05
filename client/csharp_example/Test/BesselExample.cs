@@ -4,7 +4,7 @@
  * Created Date: 25/08/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 04/09/2019
+ * Last Modified: 05/09/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -22,8 +22,8 @@ namespace AUTD3SharpTest.Test
         {
             Console.WriteLine("Start BesselBeam Test");
 
-            var x = 83.0f;
-            var y = 66.0f;
+            float x = AUTD.AUTDWidth / 2;
+            float y = AUTD.AUTDHeight / 2;
 
             using (var autd = new AUTD())
             {
