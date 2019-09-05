@@ -18,7 +18,7 @@
 #include <vector>
 #include <chrono>
 #include <cmath>
-#include "timer.hpp"
+#include "../timer.hpp"
 
 #include <signal.h>
 #include <time.h>
