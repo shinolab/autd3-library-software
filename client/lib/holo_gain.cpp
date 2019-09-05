@@ -4,7 +4,7 @@
  * Created Date: 06/07/2016
  * Author: Seki Inoue
  * -----
- * Last Modified: 04/09/2019
+ * Last Modified: 05/09/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2016-2019 Hapis Lab. All rights reserved.
@@ -112,11 +112,12 @@ void autd::HoloGainSdp::build()
 
 	std::random_device rnd;
 	std::mt19937 mt(rnd());
-	std::uniform_real_distribution<> range(0, 1);
+	std::uniform_real_distribution<float> range(0, 1);
 
 	for (int i = 0; i < M; i++)
 	{
-		p(i) = _amp(i) * exp(complex<float>(0.0f, 2.0f * M_PIf * static_cast<float>(range(mt))));
+		p(i) = _amp(i) * exp(complex<float>(0.0f, 2.0f * M_PIf * range(mt)));
+
 		P(i, i) = _amp(i);
 
 		const auto tp = _foci.row(i);
@@ -139,9 +140,9 @@ void autd::HoloGainSdp::build()
 
 	MatrixXcf MM = P * (MatrixXcf::Identity(M, M) - B * pinvB) * P;
 	MatrixXcf X = MatrixXcf::Identity(M, M);
-	for (int i = 0; i < REPEAT_SDP; i++)
+	for (int i = 0; i < M * REPEAT_SDP; i++)
 	{
-		auto ii = static_cast<size_t>(mt() * M);
+		auto ii = static_cast<size_t>(range(mt) * M);
 
 		auto Xc = X;
 		hologainimpl::removeRow(Xc, ii);
