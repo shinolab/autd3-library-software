@@ -16,7 +16,7 @@ using System;
 
 namespace AUTD3SharpTest.Test
 {
-    class BesselExample
+    internal class BesselExample
     {
         public static void Test()
         {
@@ -25,15 +25,15 @@ namespace AUTD3SharpTest.Test
             float x = AUTD.AUTDWidth / 2;
             float y = AUTD.AUTDHeight / 2;
 
-            using (var autd = new AUTD())
+            using (AUTD autd = new AUTD())
             {
                 autd.Open();
                 autd.AddDevice(Vector3f.Zero, Vector3f.Zero);
 
                 autd.AppendModulationSync(AUTD.SineModulation(150)); // AM sin 150 HZ
 
-                var start = new Vector3f(x, y, 0);
-                var dir = Vector3f.UnitZ;
+                Vector3f start = new Vector3f(x, y, 0);
+                Vector3f dir = Vector3f.UnitZ;
                 autd.AppendGainSync(AUTD.BesselBeamGain(start, dir, 13.0f / 180 * AUTD.Pi)); // BesselBeam from (x, y, 0), theta = 13 deg
 
                 Console.WriteLine("press any key to finish...");

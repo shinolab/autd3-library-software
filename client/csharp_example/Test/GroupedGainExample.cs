@@ -4,7 +4,7 @@
  * Created Date: 25/08/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 04/09/2019
+ * Last Modified: 05/09/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -16,7 +16,7 @@ using System;
 
 namespace AUTD3SharpTest.Test
 {
-    class GroupedGainTest
+    internal class GroupedGainTest
     {
         public static void Test()
         {
@@ -26,7 +26,7 @@ namespace AUTD3SharpTest.Test
             float y = 66.0f;
             float z = 150.0f;
 
-            using (var autd = new AUTD())
+            using (AUTD autd = new AUTD())
             {
                 autd.Open();
                 autd.AddDevice(Vector3f.Zero, Vector3f.Zero, 0); // Group ID 0

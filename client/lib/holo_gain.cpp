@@ -102,7 +102,7 @@ void autd::HoloGainSdp::build()
 
 	const auto alpha = 1e-3f;
 
-	const auto M = (_foci.rows());
+	const size_t M = _foci.rows();
 	const auto N = static_cast<int>(geo->numTransducers());
 
 	MatrixXcf P = MatrixXcf::Zero(M, M);
@@ -142,7 +142,7 @@ void autd::HoloGainSdp::build()
 	MatrixXcf X = MatrixXcf::Identity(M, M);
 	for (int i = 0; i < M * REPEAT_SDP; i++)
 	{
-		auto ii = static_cast<size_t>(range(mt) * M);
+		auto ii = static_cast<size_t>(M * static_cast<double>(range(mt)));
 
 		auto Xc = X;
 		hologainimpl::removeRow(Xc, ii);

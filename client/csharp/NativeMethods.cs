@@ -4,7 +4,7 @@
  * Created Date: 02/07/2018
  * Author: Shun Suzuki
  * -----
- * Last Modified: 04/09/2019
+ * Last Modified: 05/09/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2018-2019 Hapis Lab. All rights reserved.
@@ -34,7 +34,7 @@ namespace AUTD3Sharp
 
     internal static unsafe class NativeMethods
     {
-        const string DllName = "autd3capi";
+        private const string DllName = "autd3capi";
 
         #region Controller
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDCreateController(out IntPtr handle);
