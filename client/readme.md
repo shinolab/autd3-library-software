@@ -1,8 +1,10 @@
 # README #
 
+## Windows ##
+
 build.ps1またはbuild.batを使うとbuild以下にautd.sln生成されます.
 
-## Option (PowerShell) ##
+### Option (PowerShell) ###
 
 []内がデフォルト指定.
 
@@ -13,7 +15,7 @@ build.ps1またはbuild.batを使うとbuild以下にautd.sln生成されます.
 * -ENABLE_TEST = [False]
 * -TOOL_CHAIN = [""]
 
-## Option (CMD) ##
+### Option (CMD) ###
 
 デフォルトではVS2019にってます.
 
@@ -24,9 +26,9 @@ build.ps1またはbuild.batを使うとbuild以下にautd.sln生成されます.
 
 ### SOEM ###
 
-* Windowsしか対応してないです. (そのうち, Mac, Linuxのサポート追加予定です)
+* Windows/Mac OSX/Linuxで使えます
 
-* SOEMを使いたい場合はWinPcapをインストールする必要があります https://www.winpcap.org/install/default.htm
+* WindowsでSOEMを使いたい場合はWinPcapをインストールする必要があります https://www.winpcap.org/install/default.htm
 
 * USB to Ethernet 変換アダプターなども使用可能です
 
@@ -53,11 +55,18 @@ vcpkgでgtestをインストールしておく必要があります.
     -test "-DCMAKE_TOOLCHAIN_FILE=C:[...]\vcpkg\scripts\buildsystems\vcpkg.cmake"
     ```
 
+## Mac/Linux ##
+
+```
+mkdir build && cd build
+cmake ..
+make
+sudo exmaple_soem/simple_soem
+```
+
 ## Memo ##
 * cmakeのバグかは知らないけど, -Aオプションでx64プラットフォームを指定してもC#のターゲットがx64にならない.
-そのため, csproj内を直接書き換えることにしている.
-
-* lm_silent: 結局LPF書けるのが一番静かなので中止
+そのため, csproj内を直接書き換えることにしている
 
 # Author #
 
