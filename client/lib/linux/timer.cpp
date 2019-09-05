@@ -18,7 +18,7 @@
 #include <vector>
 #include <chrono>
 #include <cmath>
-#include "timer.hpp"
+#include "../timer.hpp"
 
 #include <signal.h>
 #include <time.h>
@@ -106,4 +106,4 @@ void Timer::Notify(union sigval sv)
 {
 	(reinterpret_cast<Timer *>(sv.sival_ptr))->Run();
 }
-#endif
+
