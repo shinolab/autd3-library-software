@@ -1,9 +1,11 @@
-# autd3 #
+# autd3 (dev) #
 
-これは https://github.com/shinolab/autd をフォークし, C#, Unity等の機能を追加したものです.
+これは最新のDevelopment verです.
+Installは[Wiki](https://github.com/shinolab/autd3-library-software/wiki/Install-(dev))を参照してください.
 
-Installは[GitHubのWiki](https://github.com/shinolab/autd3-library-software/wiki)及び[Readme](client/readme.md)を参照して下さい.
-
-# Authors #
-
-Shun Suzuki, 2019
+以下の変更がなされています
+* Simple Open EtherCAT Master (SOEM) による制御を追加 
+    * これによりLinux, macサポート
+    * また, WindowsでもTwinCATを用いなくても良くなった
+    * Usb to Ethernet変換ケーブルなども利用可能
+* boostライブラリへの依存を削除
