@@ -4,7 +4,7 @@
  * Created Date: 23/08/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 25/09/2019
+ * Last Modified: 26/09/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -192,10 +192,11 @@ void SOEMController::impl::Close()
 		}
 
 		auto size = (OUTPUT_FRAME_SIZE + INPUT_FRAME_SIZE) * _devNum;
-		vector<uint8_t> null_vec(size, 0x00);
-		memcpy(&_IOmap[0], &null_vec[0], size);
-		ec_send_processdata();
-		Sleep(10);
+		memset(&_IOmap[0], 0x00, size);
+		for (int i = 0; i < 200; i++)
+		{
+			ec_send_processdata();
+		}
 
 		ec_slave[0].state = EC_STATE_INIT;
 		ec_writestate(0);
