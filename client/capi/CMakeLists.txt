@@ -15,6 +15,7 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/deps)
 set(Matlab_INCLUDE_DIRS "")
 
 cmake_policy(SET CMP0074 NEW)
+cmake_policy(set CMP0079 NEW)
 
 find_package( Eigen3 REQUIRED )
 find_package( Threads REQUIRED )
