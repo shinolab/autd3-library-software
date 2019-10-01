@@ -2,23 +2,32 @@ cmake_minimum_required(VERSION 3.12)
 
 set (CMAKE_CXX_STANDARD 11)
 
+if(WIN32)
+	set(OS win32)
+elseif(APPLE)
+	set(OS macosx)
+else()
+	set(OS linux)
+endif()
+
 # Eigen3
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/deps)
 set(Matlab_INCLUDE_DIRS "")
 
 cmake_policy(SET CMP0074 NEW)
+cmake_policy(set CMP0079 NEW)
 
 find_package( Eigen3 REQUIRED )
-find_package( Boost REQUIRED )
 find_package( Threads REQUIRED )
 find_package( MATLAB )
 
-include_directories(../include ${EIGEN3_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${Ads_INCLUDE_DIR} ${Matlab_INCLUDE_DIRS})
+include_directories(../include ${EIGEN3_INCLUDE_DIR} ${Ads_INCLUDE_DIR} ${Matlab_INCLUDE_DIRS})
 
 add_library(autd3capi SHARED
   c_api.cpp
   
   ../lib/ethercat_link.cpp
+  ../lib/soem_link.cpp
   
   ../lib/gain.cpp
   ../lib/matlabgain.cpp
@@ -30,11 +39,12 @@ add_library(autd3capi SHARED
   ../lib/controller.cpp
   ../lib/geometry.cpp
   
-  ../lib/timer.cpp
+  ../lib/${OS}/timer.cpp
     
   ../lib/link.hpp
   ../lib/timer.hpp
   ../lib/ethercat_link.hpp
+  ../lib/soem_link.hpp
   ../lib/privdef.hpp
   
   ../include/core.hpp
@@ -57,7 +67,10 @@ if (USE_UNITY)
                  COMMAND copy /Y $(TargetPath) $(SolutionDir)autdunity\\Assets\\AUTD\\Plugins\\x86_64)
 endif()
 
-target_link_libraries(autd3capi ${Boost_LIBRARIES} ${Ads_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(autd3capi ${Ads_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(autd3capi libsoem)
+target_link_libraries(autd3capi ws2_32.lib)
+target_link_libraries(autd3capi winmm.lib)
 
 set_target_properties(autd3capi
     PROPERTIES

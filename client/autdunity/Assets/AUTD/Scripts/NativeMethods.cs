@@ -1,12 +1,19 @@
 ﻿/*
-*
-*  Created by Shun Suzuki on 02/07/2018.
-*
-*/
+ * File: NativeMethods.cs
+ * Project: csharp
+ * Created Date: 02/07/2018
+ * Author: Shun Suzuki
+ * -----
+ * Last Modified: 05/09/2019
+ * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
+ * -----
+ * Copyright (c) 2018-2019 Hapis Lab. All rights reserved.
+ * 
+ */
 
 using System;
 using System.Runtime.InteropServices;
-
+using System.Text;
 using AUTDGainPtr = System.IntPtr;
 using AUTDModulationPtr = System.IntPtr;
 
@@ -16,13 +23,27 @@ using DebugLogFunc = System.IntPtr;
 
 namespace AUTD3Sharp
 {
+    public enum LinkType : int
+    {
+        ETHERCAT,
+        ETHERNET,
+        USB,
+        SERIAL,
+        SOEM
+    };
+
     internal static unsafe class NativeMethods
     {
-        const string DllName = "autd3capi";
+        private const string DllName = "autd3capi";
 
         #region Controller
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDCreateController(out IntPtr handle);
-        [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)] public static extern int AUTDOpenController(AUTDControllerHandle handle, string location);
+        [DllImport(DllName, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true, CallingConvention = CallingConvention.StdCall)]
+        public static extern int AUTDOpenController(AUTDControllerHandle handle, LinkType linkType, string location);
+        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern int AUTDGetAdapterPointer(out IntPtr p_adapter);
+        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDFreeAdapterPointer(IntPtr p_adapter);
+        [DllImport(DllName, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true, CallingConvention = CallingConvention.StdCall)]
+        public static extern void AUTDGetAdapter(IntPtr p_adapter, int index, StringBuilder desc, StringBuilder name);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern int AUTDAddDevice(AUTDControllerHandle handle, float x, float y, float z, float rz1, float ry, float rz2, int groupId);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern int AUTDAddDeviceQuaternion(AUTDControllerHandle handle, float x, float y, float z, float quaW, float quaX, float quaY, float quaZ, int groupId);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDDelDevice(AUTDControllerHandle handle, int devId);
@@ -45,7 +66,8 @@ namespace AUTD3Sharp
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDGroupedGain(out AUTDGainPtr gain, int* groupIDs, AUTDGainPtr* gains, int size);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDBesselBeamGain(out AUTDGainPtr gain, float x, float y, float z, float nX, float nY, float nZ, float thetaZ);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDPlaneWaveGain(out AUTDGainPtr gain, float nX, float nY, float nZ);
-        [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDMatlabGain(out AUTDGainPtr gain, string filename, string varName);
+        [DllImport(DllName, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true, CallingConvention = CallingConvention.StdCall)]
+        public static extern void AUTDMatlabGain(out AUTDGainPtr gain, string filename, string varName);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDCustomGain(out AUTDGainPtr gain, ushort* data, int dataLength);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDHoloGain(out AUTDGainPtr gain, float* points, float* amps, int size);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDTransducerTestGain(out AUTDGainPtr gain, int idx, int amp, int phase);
@@ -55,7 +77,8 @@ namespace AUTD3Sharp
 
         #region Modulation
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDModulation(out AUTDModulationPtr mod, byte amp);
-        [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDRawPCMModulation(out AUTDModulationPtr mod, string filename, float samplingFrequency);
+        [DllImport(DllName, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true, CallingConvention = CallingConvention.StdCall)]
+        public static extern void AUTDRawPCMModulation(out AUTDModulationPtr mod, string filename, float samplingFrequency);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDSawModulation(out AUTDModulationPtr mod, float freq);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDSineModulation(out AUTDModulationPtr mod, float freq, float amp, float offset);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDDeleteModulation(AUTDGainPtr gainHandle);
@@ -84,7 +107,8 @@ namespace AUTD3Sharp
         [UnmanagedFunctionPointer(CallingConvention.StdCall)] public delegate void DebugLogDelegate(string str);
 
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void SetDebugLog(DebugLogFunc func);
-        [DllImport(DllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)] public static extern void DebugLog(string msg);
+        [DllImport(DllName, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true, CallingConvention = CallingConvention.StdCall)]
+        public static extern void DebugLog(string msg);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void DebugLogTest();
 #endif
         #endregion

@@ -1,8 +1,15 @@
 ﻿/*
-*
-*  Created by Shun Suzuki on 24/07/2018.
-*
-*/
+ * File: Matrix3x3f.cs
+ * Project: Util
+ * Created Date: 24/07/2018
+ * Author: Shun Suzuki
+ * -----
+ * Last Modified: 05/09/2019
+ * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
+ * -----
+ * Copyright (c) 2019 Hapis Lab. All rights reserved.
+ * 
+ */
 
 #if UNITY_2018_3_OR_NEWER
 #define UNITY
@@ -43,8 +50,15 @@ namespace AUTD3Sharp
         #region ctor
         public Matrix3x3f(params float[] mat)
         {
-            if (mat == null) throw new ArgumentNullException(nameof(mat));
-            if (mat.Length != 9) throw new InvalidCastException();
+            if (mat == null)
+            {
+                throw new ArgumentNullException(nameof(mat));
+            }
+
+            if (mat.Length != 9)
+            {
+                throw new InvalidCastException();
+            }
 
             M00 = mat[0];
             M01 = mat[1];
@@ -59,28 +73,43 @@ namespace AUTD3Sharp
 
         public Matrix3x3f(Vector3f[] pcX, Vector3f[] pcY)
         {
-            if (pcX == null) throw new ArgumentNullException(nameof(pcX));
-            if (pcY == null) throw new ArgumentNullException(nameof(pcY));
+            if (pcX == null)
+            {
+                throw new ArgumentNullException(nameof(pcX));
+            }
 
-            if (pcX.Length != pcY.Length) throw new ArgumentException("Size of point sets must be the same.");
+            if (pcY == null)
+            {
+                throw new ArgumentNullException(nameof(pcY));
+            }
 
-            var mat = new float[9];
+            if (pcX.Length != pcY.Length)
+            {
+                throw new ArgumentException("Size of point sets must be the same.");
+            }
+
+            float[] mat = new float[9];
 
             fixed (Vector3f* xvp = pcX)
             fixed (Vector3f* yvp = pcY)
             {
                 {
-                    var xp = (float*)xvp;
-                    var yp = (float*)yvp;
+                    float* xp = (float*)xvp;
+                    float* yp = (float*)yvp;
 
-                    for (var i = 0; i < 3; i++)
-                        for (var j = 0; j < 3; j++)
+                    for (int i = 0; i < 3; i++)
+                    {
+                        for (int j = 0; j < 3; j++)
                         {
-                            var temp = 0.0f;
-                            for (var k = 0; k < pcX.Length; k++)
+                            float temp = 0.0f;
+                            for (int k = 0; k < pcX.Length; k++)
+                            {
                                 temp += xp[k * 3 + i] * yp[k * 3 + j];
+                            }
+
                             mat[i * 3 + j] = temp;
                         }
+                    }
                 }
             }
 
@@ -97,29 +126,48 @@ namespace AUTD3Sharp
 
         public Matrix3x3f(Vector3f[] pcX, Vector3f[] pcY, float[] weight)
         {
-            if (pcX == null) throw new ArgumentNullException(nameof(pcX));
-            if (pcY == null) throw new ArgumentNullException(nameof(pcY));
-            if (weight == null) throw new ArgumentNullException(nameof(weight));
+            if (pcX == null)
+            {
+                throw new ArgumentNullException(nameof(pcX));
+            }
 
-            if (pcX.Length != pcY.Length || pcX.Length != weight.Length) throw new ArgumentException("Size of point sets and weights must be the same.");
+            if (pcY == null)
+            {
+                throw new ArgumentNullException(nameof(pcY));
+            }
 
-            var mat = new float[9];
+            if (weight == null)
+            {
+                throw new ArgumentNullException(nameof(weight));
+            }
+
+            if (pcX.Length != pcY.Length || pcX.Length != weight.Length)
+            {
+                throw new ArgumentException("Size of point sets and weights must be the same.");
+            }
+
+            float[] mat = new float[9];
 
             fixed (Vector3f* xvp = pcX)
             fixed (Vector3f* yvp = pcY)
             fixed (float* wp = weight)
             {
-                var xp = (float*)xvp;
-                var yp = (float*)yvp;
+                float* xp = (float*)xvp;
+                float* yp = (float*)yvp;
 
-                for (var i = 0; i < 3; i++)
-                    for (var j = 0; j < 3; j++)
+                for (int i = 0; i < 3; i++)
+                {
+                    for (int j = 0; j < 3; j++)
                     {
-                        var temp = 0.0f;
-                        for (var k = 0; k < pcX.Length; k++)
+                        float temp = 0.0f;
+                        for (int k = 0; k < pcX.Length; k++)
+                        {
                             temp += xp[k * 3 + i] * yp[k * 3 + j] * wp[k];
+                        }
+
                         mat[i * 3 + j] = temp;
                     }
+                }
             }
 
             M00 = mat[0];
@@ -141,7 +189,7 @@ namespace AUTD3Sharp
         {
             get
             {
-                var det = 0.0f;
+                float det = 0.0f;
 
                 det += M00 * M11 * M22 + M02 * M10 * M21 + M01 * M12 * M20;
                 det -= M02 * M11 * M20 + M01 * M10 * M22 + M00 * M12 * M21;
@@ -170,7 +218,15 @@ namespace AUTD3Sharp
                     case 7: return M21;
                     case 8: return M22;
 
-                    default: if (2 < row) throw new ArgumentOutOfRangeException(nameof(row)); else throw new ArgumentOutOfRangeException(nameof(col));
+                    default:
+                        if (2 < row)
+                        {
+                            throw new ArgumentOutOfRangeException(nameof(row));
+                        }
+                        else
+                        {
+                            throw new ArgumentOutOfRangeException(nameof(col));
+                        }
                 }
             }
         }
@@ -179,26 +235,39 @@ namespace AUTD3Sharp
         #region factory
         public static Matrix3x3f CreateDiagonal(params float[] diagonal)
         {
-            if (diagonal == null) throw new ArgumentNullException(nameof(diagonal));
-            if (diagonal.Length != 3) throw new InvalidCastException();
+            if (diagonal == null)
+            {
+                throw new ArgumentNullException(nameof(diagonal));
+            }
+
+            if (diagonal.Length != 3)
+            {
+                throw new InvalidCastException();
+            }
 
             return new Matrix3x3f(diagonal[0], 0, 0, 0, diagonal[1], 0, 0, 0, diagonal[2]);
         }
-        public static Matrix3x3f CreateDiagonal(Vector3f diagonal) => CreateDiagonal(diagonal[0], diagonal[1], diagonal[2]);
+        public static Matrix3x3f CreateDiagonal(Vector3f diagonal)
+        {
+            return CreateDiagonal(diagonal[0], diagonal[1], diagonal[2]);
+        }
 
-        public static Vector3f FromDiagonal(Matrix3x3f mat) => new Vector3f(mat[0, 0], mat[1, 1], mat[2, 2]);
+        public static Vector3f FromDiagonal(Matrix3x3f mat)
+        {
+            return new Vector3f(mat[0, 0], mat[1, 1], mat[2, 2]);
+        }
 
         public static Matrix3x3f FromEulerXyz(float eulerX, float eulerY, float eulerZ)
         {
-            var xRot = new Matrix3x3f(1, 0, 0,
+            Matrix3x3f xRot = new Matrix3x3f(1, 0, 0,
                                         0, (float)Math.Cos(eulerX), -(float)Math.Sin(eulerX),
                                         0, (float)Math.Sin(eulerX), (float)Math.Cos(eulerX));
 
-            var yRot = new Matrix3x3f((float)Math.Cos(eulerY), 0, (float)Math.Sin(eulerY),
+            Matrix3x3f yRot = new Matrix3x3f((float)Math.Cos(eulerY), 0, (float)Math.Sin(eulerY),
                                         0, 1, 0,
                                         -(float)Math.Sin(eulerY), 0, (float)Math.Cos(eulerY));
 
-            var zRot = new Matrix3x3f((float)Math.Cos(eulerZ), -(float)Math.Sin(eulerZ), 0,
+            Matrix3x3f zRot = new Matrix3x3f((float)Math.Cos(eulerZ), -(float)Math.Sin(eulerZ), 0,
                                         (float)Math.Sin(eulerZ), (float)Math.Cos(eulerZ), 0,
                                         0, 0, 1);
 
@@ -213,15 +282,15 @@ namespace AUTD3Sharp
         /// <returns>結果を格納した構造体</returns>
         public SvdMatrices Svd()
         {
-            var x = this;
+            Matrix3x3f x = this;
 
-            var xtx = x.Transpose() * x;
-            var eigenvalue1 = Jacobi(xtx, out Matrix3x3f v);
+            Matrix3x3f xtx = x.Transpose() * x;
+            Vector3f eigenvalue1 = Jacobi(xtx, out Matrix3x3f v);
 
-            var xxt = x * x.Transpose();
-            var eigenvalue2 = Jacobi(xxt, out Matrix3x3f u);
+            Matrix3x3f xxt = x * x.Transpose();
+            Vector3f eigenvalue2 = Jacobi(xxt, out Matrix3x3f u);
 
-            var eigenvalue = ((eigenvalue1 + eigenvalue2) / 2);
+            Vector3f eigenvalue = ((eigenvalue1 + eigenvalue2) / 2);
 #if UNITY
             eigenvalue.x = eigenvalue.x > 0 ? eigenvalue.x: 0;
             eigenvalue.y = eigenvalue.y > 0 ? eigenvalue.y: 0;
@@ -229,11 +298,11 @@ namespace AUTD3Sharp
 #else
             eigenvalue = eigenvalue.Rectify();
 #endif
-            var s = CreateDiagonal((float)Math.Sqrt(eigenvalue[0]), (float)Math.Sqrt(eigenvalue[1]), (float)Math.Sqrt(eigenvalue[2]));
+            Matrix3x3f s = CreateDiagonal((float)Math.Sqrt(eigenvalue[0]), (float)Math.Sqrt(eigenvalue[1]), (float)Math.Sqrt(eigenvalue[2]));
 
-            var sp = u.Transpose() * x * v;
+            Matrix3x3f sp = u.Transpose() * x * v;
 
-            var h = CreateDiagonal(new Vector3f(sp.M00 < 0 ? -1 : 1, sp.M11 < 0 ? -1 : 1, sp.M22 < 0 ? -1 : 1));
+            Matrix3x3f h = CreateDiagonal(new Vector3f(sp.M00 < 0 ? -1 : 1, sp.M11 < 0 ? -1 : 1, sp.M22 < 0 ? -1 : 1));
             v *= h;
 
             return new SvdMatrices(u, s, v);
@@ -250,36 +319,46 @@ namespace AUTD3Sharp
         {
             float max;
 
-            var eigenvectorsArray = new float[] { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+            float[] eigenvectorsArray = new float[] { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
 
-            var count = 0;
-            var eigenvalues = symmetricMatrix.ToArray();
+            int count = 0;
+            float[] eigenvalues = symmetricMatrix.ToArray();
 
             do
             {
-                if (++count > 1000) break;
-                if (Math.Abs((max = GetMaxValue(eigenvalues, out var p, out var q))) < Eps) break;
-
-                var app = eigenvalues[p * 3 + p];
-                var apq = eigenvalues[p * 3 + q];
-                var aqq = eigenvalues[q * 3 + q];
-
-                var alpha = (app - aqq) / 2;
-                var beta = -apq;
-                var gamma = (float)(Math.Abs(alpha) / Math.Sqrt(alpha * alpha + beta * beta));
-
-                var s = (float)Math.Sqrt((1 - gamma) / 2);
-                var c = (float)Math.Sqrt((1 + gamma) / 2);
-                if (alpha * beta < 0) s = -s;
-
-                for (var i = 0; i < 3; i++)
+                if (++count > 1000)
                 {
-                    var temp = c * eigenvalues[p * 3 + i] - s * eigenvalues[q * 3 + i];
+                    break;
+                }
+
+                if (Math.Abs((max = GetMaxValue(eigenvalues, out int p, out int q))) < Eps)
+                {
+                    break;
+                }
+
+                float app = eigenvalues[p * 3 + p];
+                float apq = eigenvalues[p * 3 + q];
+                float aqq = eigenvalues[q * 3 + q];
+
+                float alpha = (app - aqq) / 2;
+                float beta = -apq;
+                float gamma = (float)(Math.Abs(alpha) / Math.Sqrt(alpha * alpha + beta * beta));
+
+                float s = (float)Math.Sqrt((1 - gamma) / 2);
+                float c = (float)Math.Sqrt((1 + gamma) / 2);
+                if (alpha * beta < 0)
+                {
+                    s = -s;
+                }
+
+                for (int i = 0; i < 3; i++)
+                {
+                    float temp = c * eigenvalues[p * 3 + i] - s * eigenvalues[q * 3 + i];
                     eigenvalues[q * 3 + i] = s * eigenvalues[p * 3 + i] + c * eigenvalues[q * 3 + i];
                     eigenvalues[p * 3 + i] = temp;
                 }
 
-                for (var i = 0; i < 3; i++)
+                for (int i = 0; i < 3; i++)
                 {
                     eigenvalues[i * 3 + p] = eigenvalues[p * 3 + i];
                     eigenvalues[i * 3 + q] = eigenvalues[q * 3 + i];
@@ -290,9 +369,9 @@ namespace AUTD3Sharp
                 eigenvalues[q * 3 + p] = s * c * (app - aqq) + (c * c - s * s) * apq;
                 eigenvalues[q * 3 + q] = s * s * app + c * c * aqq + 2 * s * c * apq;
 
-                for (var i = 0; i < 3; i++)
+                for (int i = 0; i < 3; i++)
                 {
-                    var temp = c * eigenvectorsArray[i * 3 + p] - s * eigenvectorsArray[i * 3 + q];
+                    float temp = c * eigenvectorsArray[i * 3 + p] - s * eigenvectorsArray[i * 3 + q];
                     eigenvectorsArray[i * 3 + q] = s * eigenvectorsArray[i * 3 + p] + c * eigenvectorsArray[i * 3 + q];
                     eigenvectorsArray[i * 3 + p] = temp;
                 }
@@ -307,11 +386,16 @@ namespace AUTD3Sharp
         }
         public Matrix3x3f Transpose()
         {
-            var temp = new float[3 * 3];
+            float[] temp = new float[3 * 3];
 
-            for (var i = 0; i < 3; i++)
-                for (var j = 0; j < 3; j++)
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
                     temp[i * 3 + j] = this[j, i];
+                }
+            }
+
             return new Matrix3x3f(temp);
         }
         #endregion
@@ -319,7 +403,7 @@ namespace AUTD3Sharp
         #region arithmetic
         public static Matrix3x3f Multiply(in Matrix3x3f left, in Matrix3x3f right)
         {
-            var res = new float[3 * 3];
+            float[] res = new float[3 * 3];
 
             res[0] = left.M00 * right.M00 + left.M01 * right.M10 + left.M02 * right.M20;
             res[1] = left.M00 * right.M01 + left.M01 * right.M11 + left.M02 * right.M21;
@@ -338,30 +422,79 @@ namespace AUTD3Sharp
 
         public static Vector3f Multiply(in Matrix3x3f left, in Vector3f right)
         {
-            var v1 = left.M00 * right[0] + left.M01 * right[1] + left.M02 * right[2];
-            var v2 = left.M10 * right[0] + left.M11 * right[1] + left.M12 * right[2];
-            var v3 = left.M20 * right[0] + left.M21 * right[1] + left.M22 * right[2];
+            float v1 = left.M00 * right[0] + left.M01 * right[1] + left.M02 * right[2];
+            float v2 = left.M10 * right[0] + left.M11 * right[1] + left.M12 * right[2];
+            float v3 = left.M20 * right[0] + left.M21 * right[1] + left.M22 * right[2];
 
             return new Vector3f(v1, v2, v3);
         }
 
-        public static Matrix3x3f operator *(in Matrix3x3f left, in Matrix3x3f right) => Multiply(left, right);
-        public static Vector3f operator *(in Matrix3x3f left, in Vector3f right) => Multiply(left, right);
+        public static Matrix3x3f operator *(in Matrix3x3f left, in Matrix3x3f right)
+        {
+            return Multiply(left, right);
+        }
 
-        public static bool operator !=(Matrix3x3f left, Matrix3x3f right) => !left.Equals(right);
-        public static bool operator ==(Matrix3x3f left, Matrix3x3f right) => left.Equals(right);
+        public static Vector3f operator *(in Matrix3x3f left, in Vector3f right)
+        {
+            return Multiply(left, right);
+        }
+
+        public static bool operator !=(Matrix3x3f left, Matrix3x3f right)
+        {
+            return !left.Equals(right);
+        }
+
+        public static bool operator ==(Matrix3x3f left, Matrix3x3f right)
+        {
+            return left.Equals(right);
+        }
 
         public bool Equals(Matrix3x3f other)
         {
-            if (!M00.Equals(other.M00)) return false;
-            if (!M01.Equals(other.M01)) return false;
-            if (!M02.Equals(other.M02)) return false;
-            if (!M10.Equals(other.M10)) return false;
-            if (!M11.Equals(other.M11)) return false;
-            if (!M12.Equals(other.M12)) return false;
-            if (!M20.Equals(other.M20)) return false;
-            if (!M21.Equals(other.M21)) return false;
-            if (!M22.Equals(other.M22)) return false;
+            if (!M00.Equals(other.M00))
+            {
+                return false;
+            }
+
+            if (!M01.Equals(other.M01))
+            {
+                return false;
+            }
+
+            if (!M02.Equals(other.M02))
+            {
+                return false;
+            }
+
+            if (!M10.Equals(other.M10))
+            {
+                return false;
+            }
+
+            if (!M11.Equals(other.M11))
+            {
+                return false;
+            }
+
+            if (!M12.Equals(other.M12))
+            {
+                return false;
+            }
+
+            if (!M20.Equals(other.M20))
+            {
+                return false;
+            }
+
+            if (!M21.Equals(other.M21))
+            {
+                return false;
+            }
+
+            if (!M22.Equals(other.M22))
+            {
+                return false;
+            }
 
             return true;
         }
@@ -369,7 +502,10 @@ namespace AUTD3Sharp
         public override bool Equals(object obj)
         {
             if (obj is Matrix3x3f mat)
+            {
                 return Equals(mat);
+            }
+
             return false;
         }
 
@@ -409,7 +545,10 @@ namespace AUTD3Sharp
                 + string.Format(CultureInfo.CurrentCulture, format, M20) + "\t" + string.Format(CultureInfo.CurrentCulture, format, M21) + "\t" + string.Format(CultureInfo.CurrentCulture, format, M22);
 
         }
-        public override string ToString() => ToString("{0,-20}");
+        public override string ToString()
+        {
+            return ToString("{0,-20}");
+        }
         #endregion
 
         #region private methods
@@ -423,43 +562,56 @@ namespace AUTD3Sharp
         /// <returns>最大値</returns>
         private static float GetMaxValue(float[] matrix, out int p, out int q)
         {
-            if (matrix == null) throw new ArgumentNullException(nameof(matrix));
+            if (matrix == null)
+            {
+                throw new ArgumentNullException(nameof(matrix));
+            }
 
-            var max = Math.Abs(matrix[0 * 3 + 1]);
+            float max = Math.Abs(matrix[0 * 3 + 1]);
             p = 0;
             q = 1;
 
-            for (var i = 0; i < 3; i++)
-                for (var j = i + 1; j < 3; j++)
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = i + 1; j < 3; j++)
                 {
-                    var temp = Math.Abs(matrix[i * 3 + j]);
-                    if (temp < max) continue;
+                    float temp = Math.Abs(matrix[i * 3 + j]);
+                    if (temp < max)
+                    {
+                        continue;
+                    }
 
                     max = temp;
                     p = i;
                     q = j;
                 }
+            }
+
             return max;
         }
 
         private static void OrderByEigenvalues(IList<float> eigenvectors, IList<float> eigenvalues)
         {
-            for (var i = 0; i < 3; i++)
-                for (var j = i; j + 1 < 3; j++)
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = i; j + 1 < 3; j++)
+                {
                     if (eigenvalues[i * 3 + i] < eigenvalues[(j + 1) * 3 + (j + 1)])
                     {
                         ExchangeColumn(eigenvectors, i, j + 1);
-                        var tempt = eigenvalues[(j + 1) * 3 + (j + 1)];
+                        float tempt = eigenvalues[(j + 1) * 3 + (j + 1)];
                         eigenvalues[(j + 1) * 3 + (j + 1)] = eigenvalues[i * 3 + i];
                         eigenvalues[i * 3 + i] = tempt;
                     }
+                }
+            }
         }
 
         private static void ExchangeColumn(IList<float> mat, int i, int j)
         {
-            for (var row = 0; row < 3; row++)
+            for (int row = 0; row < 3; row++)
             {
-                var temp = mat[row * 3 + i];
+                float temp = mat[row * 3 + i];
                 mat[row * 3 + i] = mat[row * 3 + j];
                 mat[row * 3 + j] = temp;
             }
@@ -480,17 +632,33 @@ namespace AUTD3Sharp
         public Matrix3x3f U { get; }
         public Matrix3x3f V { get; }
 
-        public static bool operator !=(SvdMatrices left, SvdMatrices right) => !left.Equals(right);
-        public static bool operator ==(SvdMatrices left, SvdMatrices right) => left.Equals(right);
+        public static bool operator !=(SvdMatrices left, SvdMatrices right)
+        {
+            return !left.Equals(right);
+        }
 
-        public bool Equals(SvdMatrices other) => S == other.S && V == other.V && U == other.U;
+        public static bool operator ==(SvdMatrices left, SvdMatrices right)
+        {
+            return left.Equals(right);
+        }
+
+        public bool Equals(SvdMatrices other)
+        {
+            return S == other.S && V == other.V && U == other.U;
+        }
 
         public override bool Equals(object obj)
         {
             if (obj is SvdMatrices other)
+            {
                 return Equals(other);
+            }
+
             return false;
         }
-        public override int GetHashCode() => S.GetHashCode() ^ V.GetHashCode() ^ U.GetHashCode();
+        public override int GetHashCode()
+        {
+            return S.GetHashCode() ^ V.GetHashCode() ^ U.GetHashCode();
+        }
     }
 }

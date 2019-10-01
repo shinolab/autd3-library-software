@@ -1,8 +1,15 @@
 ﻿/*
-*
-*  Created by Shun Suzuki on 02/07/2018.
-*
-*/
+ * File: Vector3f.cs
+ * Project: Util
+ * Created Date: 02/07/2018
+ * Author: Shun Suzuki
+ * -----
+ * Last Modified: 05/09/2019
+ * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
+ * -----
+ * Copyright (c) 2018-2019 Hapis Lab. All rights reserved.
+ * 
+ */
 
 using System;
 using System.Collections;
@@ -24,8 +31,15 @@ namespace AUTD3Sharp
 
         public Vector3f(params float[] vector)
         {
-            if (vector == null) throw new ArgumentNullException(nameof(vector));
-            if (vector.Length != 3) throw new InvalidCastException();
+            if (vector == null)
+            {
+                throw new ArgumentNullException(nameof(vector));
+            }
+
+            if (vector.Length != 3)
+            {
+                throw new InvalidCastException();
+            }
 
             X = vector[0];
             Y = vector[1];
@@ -63,48 +77,85 @@ namespace AUTD3Sharp
         #endregion
 
         #region arithmetic
-        public static Vector3f Negate(Vector3f operand) => new Vector3f(-operand.X, -operand.Y, -operand.Z);
+        public static Vector3f Negate(Vector3f operand)
+        {
+            return new Vector3f(-operand.X, -operand.Y, -operand.Z);
+        }
+
         public static Vector3f Add(Vector3f left, Vector3f right)
         {
-            var v1 = left.X + right.X;
-            var v2 = left.Y + right.Y;
-            var v3 = left.Z + right.Z;
+            float v1 = left.X + right.X;
+            float v2 = left.Y + right.Y;
+            float v3 = left.Z + right.Z;
             return new Vector3f(v1, v2, v3);
         }
         public static Vector3f Subtract(Vector3f left, Vector3f right)
         {
-            var v1 = left.X - right.X;
-            var v2 = left.Y - right.Y;
-            var v3 = left.Z - right.Z;
+            float v1 = left.X - right.X;
+            float v2 = left.Y - right.Y;
+            float v3 = left.Z - right.Z;
             return new Vector3f(v1, v2, v3);
         }
         public static Vector3f Divide(Vector3f left, float right)
         {
-            var v1 = left.X / right;
-            var v2 = left.Y / right;
-            var v3 = left.Z / right;
+            float v1 = left.X / right;
+            float v2 = left.Y / right;
+            float v3 = left.Z / right;
 
             return new Vector3f(v1, v2, v3);
         }
         public static Vector3f Multiply(Vector3f left, float right)
         {
-            var v1 = left.X * right;
-            var v2 = left.Y * right;
-            var v3 = left.Z * right;
+            float v1 = left.X * right;
+            float v2 = left.Y * right;
+            float v3 = left.Z * right;
             return new Vector3f(v1, v2, v3);
         }
 
-        public static Vector3f Multiply(float left, Vector3f right) => Multiply(right, left);
+        public static Vector3f Multiply(float left, Vector3f right)
+        {
+            return Multiply(right, left);
+        }
 
-        public static Vector3f operator -(Vector3f operand) => Negate(operand);
-        public static Vector3f operator +(Vector3f left, Vector3f right) => Add(left, right);
-        public static Vector3f operator -(Vector3f left, Vector3f right) => Subtract(left, right);
-        public static Vector3f operator *(Vector3f left, float right) => Multiply(left, right);
-        public static Vector3f operator *(float left, Vector3f right) => Multiply(right, left);
-        public static Vector3f operator /(Vector3f left, float right) => Divide(left, right);
+        public static Vector3f operator -(Vector3f operand)
+        {
+            return Negate(operand);
+        }
 
-        public static bool operator ==(Vector3f left, Vector3f right) => left.Equals(right);
-        public static bool operator !=(Vector3f left, Vector3f right) => !left.Equals(right);
+        public static Vector3f operator +(Vector3f left, Vector3f right)
+        {
+            return Add(left, right);
+        }
+
+        public static Vector3f operator -(Vector3f left, Vector3f right)
+        {
+            return Subtract(left, right);
+        }
+
+        public static Vector3f operator *(Vector3f left, float right)
+        {
+            return Multiply(left, right);
+        }
+
+        public static Vector3f operator *(float left, Vector3f right)
+        {
+            return Multiply(right, left);
+        }
+
+        public static Vector3f operator /(Vector3f left, float right)
+        {
+            return Divide(left, right);
+        }
+
+        public static bool operator ==(Vector3f left, Vector3f right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(Vector3f left, Vector3f right)
+        {
+            return !left.Equals(right);
+        }
 
         public bool Equals(Vector3f other)
         {
@@ -114,15 +165,24 @@ namespace AUTD3Sharp
         public override bool Equals(object obj)
         {
             if (obj is Vector3f vec)
+            {
                 return Equals(vec);
+            }
+
             return false;
         }
         #endregion
 
         #region public methods
-        public Vector3f Rectify() => new Vector3f(Math.Max(X,0), Math.Max(Y, 0), Math.Max(Z, 0));
+        public Vector3f Rectify()
+        {
+            return new Vector3f(Math.Max(X, 0), Math.Max(Y, 0), Math.Max(Z, 0));
+        }
 
-        public float[] ToArray() => new[] { X, Y, Z };
+        public float[] ToArray()
+        {
+            return new[] { X, Y, Z };
+        }
         #endregion
 
         #region util
@@ -136,10 +196,13 @@ namespace AUTD3Sharp
             return GetEnumerator();
         }
 
-        public string ToString(string format) => "3d Column Vector:\n"
-                + string.Format(CultureInfo.CurrentCulture, format, X) + "\n"
-                + string.Format(CultureInfo.CurrentCulture, format, Y) + "\n"
-                + string.Format(CultureInfo.CurrentCulture, format, Z);
+        public string ToString(string format)
+        {
+            return "3d Column Vector:\n"
++ string.Format(CultureInfo.CurrentCulture, format, X) + "\n"
++ string.Format(CultureInfo.CurrentCulture, format, Y) + "\n"
++ string.Format(CultureInfo.CurrentCulture, format, Z);
+        }
 
         public IEnumerator<float> GetEnumerator()
         {
@@ -148,7 +211,10 @@ namespace AUTD3Sharp
             yield return Z;
         }
 
-        public override string ToString() => ToString("{0,-20}");
+        public override string ToString()
+        {
+            return ToString("{0,-20}");
+        }
         #endregion
     }
 }
