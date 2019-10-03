@@ -57,7 +57,7 @@ namespace AUTDServer
                 IPAddress.TryParse(ipaddrStr, out ipaddr);
 
                 Console.WriteLine("Connecting to VisualStudio DTE...");
-                Type t = System.Type.GetTypeFromProgID("VisualStudio.DTE.12.0");
+                Type t = System.Type.GetTypeFromProgID("TcXaeShell.DTE.15.0");
                 EnvDTE80.DTE2 dte = (EnvDTE80.DTE2)System.Activator.CreateInstance(t);
             
                 dte.SuppressUI = false;
@@ -108,7 +108,7 @@ namespace AUTDServer
 
         public static DTE GetDTE(int processId)
         {
-            string progId = "!VisualStudio.DTE.12.0:" + processId.ToString();
+            string progId = "!TcXaeShell.DTE.15.0:" + processId.ToString();
             object runningObject = null;
 
             IBindCtx bindCtx = null;
