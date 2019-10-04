@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 
-set (CMAKE_CXX_STANDARD 17)
+set (CMAKE_CXX_STANDARD 11)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/deps)
+set(Matlab_INCLUDE_DIRS "")
 
 if(WIN32)
 	set(OS win32)
@@ -16,10 +17,17 @@ if (POLICY CMP0074)
   cmake_policy(SET CMP0074 NEW)
 endif()
 
+if (POLICY CMP0079)
+  cmake_policy(SET CMP0079 NEW)
+endif()
+
 find_package( Eigen3 REQUIRED )
 find_package( Threads REQUIRED )
 
-include_directories(../include ${EIGEN3_INCLUDE_DIR})
+set(INCLUDE_LIST
+  ../include
+  ${EIGEN3_INCLUDE_DIR}
+)
 
 set(SOURCE_LIST 
   soem_link.cpp
@@ -50,7 +58,10 @@ set(SOURCE_LIST
 )
 
 if(WIN32)
-  include_directories(${Ads_INCLUDE_DIR})
+  list(APPEND INCLUDE_LIST
+    ${Ads_INCLUDE_DIR}
+  )
+  
   list(APPEND SOURCE_LIST
   	ethercat_link.cpp
     ethercat_link.hpp
@@ -62,12 +73,16 @@ add_library(autd3 STATIC ${SOURCE_LIST})
 if(WIN32)
   set(Matlab_INCLUDE_DIRS "")
   find_package( MATLAB )
-  include_directories(${Matlab_INCLUDE_DIRS})
+  list(APPEND INCLUDE_LIST
+    ${Matlab_INCLUDE_DIRS}
+  )
   if (Matlab_FOUND AND Matlab_MX_LIBRARY)
       add_definitions(-DMATLAB_ENABLED)
       target_link_libraries(autd3 ${Matlab_MX_LIBRARY} ${Matlab_MAT_LIBRARY})
   endif()
 endif()
+
+include_directories(${INCLUDE_LIST})
 
 if(WIN32)
   source_group("link" FILES
