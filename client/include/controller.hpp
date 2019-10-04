@@ -77,6 +77,8 @@ public:
 	void ResetLateralGain();
 	void Flush();
 
+	void LateralModulationAT(Eigen::Vector3f point, Eigen::Vector3f dir = Eigen::Vector3f::UnitY(), float lm_amp = 2.5, float lm_freq = 100);
+
 private:
 	class impl;
 	class lateraltimer;

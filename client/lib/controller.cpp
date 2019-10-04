@@ -54,7 +54,7 @@ public:
 	mutex _send_mtx;
 
 	bool silentMode = true;
-	uint8_t modReset = MOD_RESET;
+	uint8_t modReset = 0;
 
 	impl();
 	~impl();
@@ -250,7 +250,6 @@ unique_ptr<uint8_t[]> Controller::impl::MakeBody(GainPtr gain, ModulationPtr mod
 
 	if (mod != nullptr)
 	{
-
 		const uint8_t mod_size = max(0, min(static_cast<int>(mod->buffer.size() - mod->sent), MOD_FRAME_SIZE));
 		header->mod_size = mod_size;
 		if (mod->sent == 0)
@@ -424,7 +423,7 @@ Controller::Controller()
 	this->_pimpl = std::make_shared<impl>();
 	this->_pimpl->_geometry = Geometry::Create();
 	this->_pimpl->silentMode = true;
-	this->_pimpl->modReset = MOD_RESET;
+	this->_pimpl->modReset = 0;
 
 	this->_ptimer = make_unique<lateraltimer>();
 	this->_ptimer->_pcnt = this->_pimpl;
@@ -566,6 +565,15 @@ void Controller::ResetLateralGain()
 void Controller::Flush()
 {
 	this->_pimpl->FlushBuffer();
+}
+
+void Controller::LateralModulationAT(Eigen::Vector3f point, Eigen::Vector3f dir, float lm_amp, float lm_freq) {
+	auto p1 = point + lm_amp * dir;
+	auto p2 = point - lm_amp * dir;
+	this->ResetLateralGain();
+	this->AppendLateralGain(autd::FocalPointGain::Create(p1));
+	this->AppendLateralGain(autd::FocalPointGain::Create(p2));
+	this->StartLateralModulation(lm_freq);
 }
 
 GeometryPtr Controller::geometry() noexcept
