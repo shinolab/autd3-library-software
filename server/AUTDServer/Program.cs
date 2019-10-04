@@ -56,7 +56,7 @@ namespace AUTDServer
 
                 IPAddress.TryParse(ipaddrStr, out ipaddr);
 
-                Console.WriteLine("Connecting to VisualStudio DTE...");
+                Console.WriteLine("Connecting to TcXaeShell DTE...");
                 Type t = System.Type.GetTypeFromProgID("TcXaeShell.DTE.15.0");
                 EnvDTE80.DTE2 dte = (EnvDTE80.DTE2)System.Activator.CreateInstance(t);
             
