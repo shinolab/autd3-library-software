@@ -4,11 +4,11 @@
  * Created Date: 11/06/2016
  * Author: Seki Inoue
  * -----
- * Last Modified: 04/09/2019
+ * Last Modified: 07/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2016-2019 Hapis Lab. All rights reserved.
- * 
+ *
  */
 
 #include <stdio.h>
@@ -68,13 +68,13 @@ autd::ModulationPtr autd::SineModulation::Create(float freq, float amp, float of
 
 	const auto T = static_cast<int>(floor(1.0 / freq * autd::Modulation::samplingFrequency()));
 	mod->buffer.resize(T, 0);
+	const auto maxamp = clamp(255.0f * amp, 0.0f, 255.0f);
 	for (int i = 0; i < T; i++)
 	{
-		const auto tamp = 255.0f * offset + 127.5f * amp * cosf(2.0f * M_PIf * i / T);
-		mod->buffer.at(i) = static_cast<uint8_t>(floor(clamp(tamp, 0.0f, 255.0f)));
-		if (mod->buffer.at(i) == 0)
-			mod->buffer.at(i) = 1;
+		const auto tamp = i <= T / 2 ? 255.0f * (offset + amp / 2 - amp * 2.0f * i / T) : 255.0f * (offset + amp * 2.0f * i / T - 1.5f * amp);
+		mod->buffer.at(i) = static_cast<uint8_t>(floor(clamp(tamp, 1.0f, 255.0f)));
 	}
+
 	mod->loop = true;
 	return mod;
 }

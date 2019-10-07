@@ -4,7 +4,7 @@
  * Created Date: 23/08/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 26/09/2019
+ * Last Modified: 07/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -31,12 +31,14 @@ using namespace std;
 class SOEMController::impl
 {
 public:
-	void Open(const char *ifname, size_t devNum);
+	void Open(const char* ifname, size_t devNum);
 	void Send(size_t size, unique_ptr<uint8_t[]> buf);
 	static void CALLBACK RTthread(PVOID lpParam, BOOLEAN TimerOrWaitFired);
 	void Close();
 
 private:
+	void SetupSync0();
+
 	unique_ptr<uint8_t[]> _IOmap;
 
 	queue<size_t> _send_size_q;
@@ -68,7 +70,7 @@ void CALLBACK SOEMController::impl::RTthread(PVOID lpParam, BOOLEAN TimerOrWaitF
 {
 	ec_send_processdata();
 
-	const auto impl = (reinterpret_cast<SOEMController::impl *>(lpParam));
+	const auto impl = (reinterpret_cast<SOEMController::impl*>(lpParam));
 	{
 		lock_guard<mutex> lk(impl->_send_mtx);
 		impl->_sent = true;
@@ -76,11 +78,24 @@ void CALLBACK SOEMController::impl::RTthread(PVOID lpParam, BOOLEAN TimerOrWaitF
 	impl->_send_cond.notify_all();
 }
 
-void SOEMController::impl::Open(const char *ifname, size_t devNum)
+void SOEMController::impl::SetupSync0()
+{
+	for (uint16 slave = 1; slave <= _devNum; slave++)
+	{
+		int shift = static_cast<int>(_devNum) - slave;
+		ec_dcsync0(slave, TRUE, CYCLE_TIME_NANO_SEC, shift * CYCLE_TIME_NANO_SEC); // SYNC0
+	}
+}
+
+void SOEMController::impl::Open(const char* ifname, size_t devNum)
 {
 	_devNum = devNum;
 	auto size = (OUTPUT_FRAME_SIZE + INPUT_FRAME_SIZE) * _devNum;
 	_IOmap = make_unique<uint8_t[]>(size);
+
+	HANDLE hProcess;
+	hProcess = GetCurrentProcess();
+	SetPriorityClass(hProcess, REALTIME_PRIORITY_CLASS); // No means for Windows 10
 
 	if (ec_init(ifname))
 	{
@@ -99,7 +114,7 @@ void SOEMController::impl::Open(const char *ifname, size_t devNum)
 			if (_timerQueue == NULL)
 				cerr << "CreateTimerQueue failed." << endl;
 
-			if (!CreateTimerQueueTimer(&_timer, _timerQueue, (WAITORTIMERCALLBACK)RTthread, reinterpret_cast<void *>(this), 0, 1, 0))
+			if (!CreateTimerQueueTimer(&_timer, _timerQueue, (WAITORTIMERCALLBACK)RTthread, reinterpret_cast<void*>(this), 0, CYCLE_TIME_MILLI_SEC, 0))
 				cerr << "CreateTimerQueueTimer failed." << endl;
 
 			ec_writestate(0);
@@ -113,6 +128,9 @@ void SOEMController::impl::Open(const char *ifname, size_t devNum)
 			if (ec_slave[0].state == EC_STATE_OPERATIONAL)
 			{
 				_isOpened = true;
+
+				SetupSync0();
+
 				_cpy_thread = thread([&] {
 					while (_isOpened)
 					{
@@ -122,7 +140,7 @@ void SOEMController::impl::Open(const char *ifname, size_t devNum)
 							unique_lock<mutex> lk(_cpy_mtx);
 							_cpy_cond.wait(lk, [&] {
 								return _send_buf_q.size() > 0 || !_isOpened;
-							});
+								});
 
 							if (_send_buf_q.size() > 0)
 							{
@@ -155,7 +173,7 @@ void SOEMController::impl::Open(const char *ifname, size_t devNum)
 							}
 						}
 					}
-				});
+					});
 			}
 			else
 			{
@@ -191,6 +209,9 @@ void SOEMController::impl::Close()
 				cerr << "DeleteTimerQueue failed." << endl;
 		}
 
+		for (uint16 i = 0; i < _devNum; i++)
+			ec_dcsync0(i + 1, FALSE, CYCLE_TIME_NANO_SEC, 0);
+
 		auto size = (OUTPUT_FRAME_SIZE + INPUT_FRAME_SIZE) * _devNum;
 		memset(&_IOmap[0], 0x00, size);
 		for (int i = 0; i < 200; i++)
@@ -215,7 +236,7 @@ SOEMController::~SOEMController()
 	this->_pimpl->Close();
 }
 
-void SOEMController::Open(const char *ifname, size_t devNum)
+void SOEMController::Open(const char* ifname, size_t devNum)
 {
 	this->_pimpl->Open(ifname, devNum);
 }
@@ -236,7 +257,7 @@ vector<EtherCATAdapterInfo> EtherCATAdapterInfo::EnumerateAdapters()
 	auto _adapters = vector<EtherCATAdapterInfo>();
 	while (adapter != NULL)
 	{
-		auto *info = new EtherCATAdapterInfo;
+		auto* info = new EtherCATAdapterInfo;
 		info->desc = make_shared<string>(adapter->desc);
 		info->name = make_shared<string>(adapter->name);
 		_adapters.push_back(*info);

@@ -29,7 +29,7 @@ namespace AUTD3SharpTest
 
             // This don't need TwinCAT
             SimpleExample_SOEM.Test();
-    
+
             // Following test needs 2 AUTDs
             //GroupedGainTest.Test();
         }
