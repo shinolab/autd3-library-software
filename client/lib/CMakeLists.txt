@@ -1,16 +1,17 @@
 cmake_minimum_required(VERSION 3.10)
 
-set (CMAKE_CXX_STANDARD 11)
-
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/deps)
 set(Matlab_INCLUDE_DIRS "")
 
 if(WIN32)
 	set(OS win32)
+	set (CMAKE_CXX_STANDARD 11) # error C2872: 'byte': ambiguous symbol
 elseif(APPLE)
 	set(OS macosx)
+	set (CMAKE_CXX_STANDARD 17)
 else()
 	set(OS linux)
+	set (CMAKE_CXX_STANDARD 17)
 endif()
 
 if (POLICY CMP0074)
