@@ -4,7 +4,7 @@
  * Created Date: 04/09/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 05/09/2019
+ * Last Modified: 08/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -142,7 +142,7 @@ void libsoem::SOEMController::impl::Open(const char *ifname, size_t devNum)
 			{
 				_isOpened = true;
 
-					SetupSync0();
+				SetupSync0();
 
 				_cpy_thread = thread([&] {
 					while (_isOpened)
@@ -153,7 +153,7 @@ void libsoem::SOEMController::impl::Open(const char *ifname, size_t devNum)
 							unique_lock<mutex> lk(_cpy_mtx);
 							_cpy_cond.wait(lk, [&] {
 								return _send_buf_q.size() > 0 || !_isOpened;
-								});
+							});
 
 							if (_send_buf_q.size() > 0)
 							{
@@ -186,7 +186,7 @@ void libsoem::SOEMController::impl::Open(const char *ifname, size_t devNum)
 							}
 						}
 					}
-					});
+				});
 			}
 			else
 			{
