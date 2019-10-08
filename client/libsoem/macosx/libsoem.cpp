@@ -4,7 +4,7 @@
  * Created Date: 04/09/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 05/09/2019
+ * Last Modified: 08/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -22,7 +22,10 @@
 #include <iostream>
 #include <cstdint>
 #include <mutex>
+#include <condition_variable>
 #include <memory>
+#include <queue>
+#include <thread>
 
 #include "libsoem.hpp"
 #include "ethercat.h"
@@ -38,55 +41,52 @@ public:
 	void Close();
 
 private:
-	void SetSendCheck(bool val);
-	bool GetSendCheck();
+	void SetupSync0();
 
 	unique_ptr<uint8_t[]> _IOmap;
+
+	queue<size_t> _send_size_q;
+	queue<unique_ptr<uint8_t[]>> _send_buf_q;
+	thread _cpy_thread;
+	condition_variable _cpy_cond;
+	condition_variable _send_cond;
+	bool _sent;
+	mutex _cpy_mtx;
+	mutex _send_mtx;
+
 	bool _isOpened = false;
 	size_t _devNum = 0;
-	bool _sendCheck = false;
-	mutex _mutex;
 	dispatch_queue_t _queue;
 	dispatch_source_t _timer;
 };
 
 void libsoem::SOEMController::impl::Send(size_t size, unique_ptr<uint8_t[]> buf)
 {
-	if (_isOpened)
 	{
-		const auto header_size = MOD_SIZE + 4;
-		const auto data_size = TRANS_NUM * 2;
-		const auto includes_gain = ((size - header_size) / data_size) > 0;
-
-		for (size_t i = 0; i < _devNum; i++)
-		{
-			if (includes_gain)
-				memcpy(&_IOmap[OUTPUT_FRAME_SIZE * i], &buf[header_size + data_size * i], TRANS_NUM * 2);
-			memcpy(&_IOmap[OUTPUT_FRAME_SIZE * i + TRANS_NUM * 2], &buf[0], MOD_SIZE + 4);
-		}
-
-		SetSendCheck(true);
-		while (GetSendCheck())
-			;
+		unique_lock<mutex> lk(_cpy_mtx);
+		_send_size_q.push(size);
+		_send_buf_q.push(move(buf));
 	}
-}
-
-void libsoem::SOEMController::impl::SetSendCheck(bool val)
-{
-	lock_guard<mutex> lock(_mutex);
-	_sendCheck = val;
-}
-
-bool libsoem::SOEMController::impl::GetSendCheck()
-{
-	lock_guard<mutex> lock(_mutex);
-	return _sendCheck;
+	_cpy_cond.notify_all();
 }
 
 void libsoem::SOEMController::impl::RTthread(SOEMController::impl *ptr)
 {
 	ec_send_processdata();
-	ptr->SetSendCheck(false);
+	{
+		lock_guard<mutex> lk(ptr->_send_mtx);
+		ptr->_sent = true;
+	}
+	ptr->_send_cond.notify_all();
+}
+
+void libsoem::SOEMController::impl::SetupSync0()
+{
+	for (uint16 slave = 1; slave <= _devNum; slave++)
+	{
+		int shift = static_cast<int>(_devNum) - slave;
+		ec_dcsync0(slave, TRUE, CYCLE_TIME_NANO_SEC, shift * CYCLE_TIME_NANO_SEC); // SYNC0
+	}
 }
 
 void libsoem::SOEMController::impl::Open(const char *ifname, size_t devNum)
@@ -135,6 +135,52 @@ void libsoem::SOEMController::impl::Open(const char *ifname, size_t devNum)
 			if (ec_slave[0].state == EC_STATE_OPERATIONAL)
 			{
 				_isOpened = true;
+
+				SetupSync0();
+
+				_cpy_thread = thread([&] {
+					while (_isOpened)
+					{
+						unique_ptr<uint8_t[]> buf = nullptr;
+						size_t size = 0;
+						{
+							unique_lock<mutex> lk(_cpy_mtx);
+							_cpy_cond.wait(lk, [&] {
+								return _send_buf_q.size() > 0 || !_isOpened;
+							});
+
+							if (_send_buf_q.size() > 0)
+							{
+								buf = move(_send_buf_q.front());
+								size = _send_size_q.front();
+							}
+						}
+
+						if (buf != nullptr && _isOpened)
+						{
+							const auto header_size = MOD_SIZE + 4;
+							const auto data_size = TRANS_NUM * 2;
+							const auto includes_gain = ((size - header_size) / data_size) > 0;
+
+							for (size_t i = 0; i < _devNum; i++)
+							{
+								if (includes_gain)
+									memcpy(&_IOmap[OUTPUT_FRAME_SIZE * i], &buf[header_size + data_size * i], TRANS_NUM * 2);
+								memcpy(&_IOmap[OUTPUT_FRAME_SIZE * i + TRANS_NUM * 2], &buf[0], MOD_SIZE + 4);
+							}
+							{
+								unique_lock<mutex> lk(_send_mtx);
+								_sent = false;
+								_send_cond.wait(lk, [this] { return _sent || !_isOpened; });
+							}
+							{
+								unique_lock<mutex> lk(_cpy_mtx);
+								_send_size_q.pop();
+								_send_buf_q.pop();
+							}
+						}
+					}
+				});
 			}
 			else
 			{
@@ -157,14 +203,28 @@ void libsoem::SOEMController::impl::Close()
 {
 	if (_isOpened)
 	{
+		_isOpened = false;
+		_cpy_cond.notify_all();
+		_send_cond.notify_all();
+		if (this_thread::get_id() != _cpy_thread.get_id() && this->_cpy_thread.joinable())
+			this->_cpy_thread.join();
+
 		dispatch_source_cancel(_timer);
+
+		for (uint16 i = 0; i < _devNum; i++)
+			ec_dcsync0(i + 1, FALSE, CYCLE_TIME_NANO_SEC, 0);
+
+		auto size = (OUTPUT_FRAME_SIZE + INPUT_FRAME_SIZE) * _devNum;
+		memset(&_IOmap[0], 0x00, size);
+		for (int i = 0; i < 200; i++)
+		{
+			ec_send_processdata();
+		}
 
 		ec_slave[0].state = EC_STATE_INIT;
 		ec_writestate(0);
 
 		ec_close();
-
-		_isOpened = false;
 	}
 }
 
