@@ -4,7 +4,7 @@
  * Created Date: 07/06/2016
  * Author: Seki Inoue
  * -----
- * Last Modified: 04/09/2019
+ * Last Modified: 11/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2016-2019 Hapis Lab. All rights reserved.
@@ -30,6 +30,7 @@ constexpr auto ULTRASOUND_FREQUENCY_DEFAULT = 40000;
 constexpr auto ULTRASOUND_WAVELENGTH = 8.5f;
 
 constexpr auto MOD_SAMPLING_FREQ = 4000.0f;
+constexpr auto MOD_BUF_SIZE = 256;
 constexpr auto MOD_FRAME_SIZE = 124;
 
 enum RxGlobalControlFlags

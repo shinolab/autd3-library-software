@@ -1,6 +1,6 @@
 # autd3 #
 
-Version: 3.0.1.1
+Version: 3.0.1.2
 
 旧安定版は[v3.0.0ブランチ](https://github.com/shinolab/autd3-library-software/tree/v3.0.0)にあります.
 
@@ -10,9 +10,12 @@ Version: 3.0.1.1
 
 # Change log
 
+* 3.0.1.2
+    * mod_reset修正 (100ns)
+
 * 3.0.1.1
     * SOEMのSYNC0同期信号追加
-    * mod_reset修正
+    * mod_reset修正 (100us)
 
 * 3.0.1.0
     * Simple Open EtherCAT Master (SOEM) による制御を追加 

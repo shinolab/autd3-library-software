@@ -4,7 +4,7 @@
  * Created Date: 01/06/2016
  * Author: Seki Inoue
  * -----
- * Last Modified: 04/09/2019
+ * Last Modified: 11/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2016-2019 Hapis Lab. All rights reserved.
@@ -43,6 +43,7 @@ public:
     virtual void Close();
     virtual void Send(size_t size, std::unique_ptr<uint8_t[]> buf);
     bool isOpen();
+    void CalibrateModulation();
 
 protected:
     long _port = 0L;

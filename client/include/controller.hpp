@@ -4,7 +4,7 @@
  * Created Date: 11/04/2018
  * Author: Shun Suzuki
  * -----
- * Last Modified: 04/09/2019
+ * Last Modified: 11/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -76,6 +76,7 @@ public:
 	void FinishLateralModulation();
 	void ResetLateralGain();
 	void Flush();
+	void CalibrateModulation();
 
 	void LateralModulationAT(Eigen::Vector3f point, Eigen::Vector3f dir = Eigen::Vector3f::UnitY(), float lm_amp = 2.5, float lm_freq = 100);
 

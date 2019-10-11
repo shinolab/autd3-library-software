@@ -4,11 +4,11 @@
  * Created Date: 13/05/2016
  * Author: Seki Inoue
  * -----
- * Last Modified: 04/09/2019
+ * Last Modified: 11/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2016-2019 Hapis Lab. All rights reserved.
- * 
+ *
  */
 
 #include <iostream>
@@ -54,7 +54,6 @@ public:
 	mutex _send_mtx;
 
 	bool silentMode = true;
-	uint8_t modReset = 0;
 
 	impl();
 	~impl();
@@ -66,8 +65,9 @@ public:
 	void AppendGainSync(const GainPtr gain);
 	void AppendModulation(const ModulationPtr mod);
 	void AppendModulationSync(const ModulationPtr mod);
-
+	void CalibrateModulation();
 	void FlushBuffer();
+
 	unique_ptr<uint8_t[]> MakeBody(GainPtr gain, ModulationPtr mod, size_t *size);
 };
 
@@ -255,7 +255,6 @@ unique_ptr<uint8_t[]> Controller::impl::MakeBody(GainPtr gain, ModulationPtr mod
 		if (mod->sent == 0)
 		{
 			header->control_flags |= MOD_BEGIN;
-			header->control_flags |= (this->modReset ^= MOD_RESET);
 		}
 		if (mod->loop && mod->sent == 0)
 			header->control_flags |= LOOP_BEGIN;
@@ -306,6 +305,11 @@ void Controller::impl::Close()
 			this->_send_thr.join();
 		this->_link = shared_ptr<internal::Link>(nullptr);
 	}
+}
+
+void Controller::impl::CalibrateModulation()
+{
+	this->_link->CalibrateModulation();
 }
 
 #pragma endregion
@@ -423,7 +427,6 @@ Controller::Controller()
 	this->_pimpl = std::make_shared<impl>();
 	this->_pimpl->_geometry = Geometry::Create();
 	this->_pimpl->silentMode = true;
-	this->_pimpl->modReset = 0;
 
 	this->_ptimer = make_unique<lateraltimer>();
 	this->_ptimer->_pcnt = this->_pimpl;
@@ -567,7 +570,13 @@ void Controller::Flush()
 	this->_pimpl->FlushBuffer();
 }
 
-void Controller::LateralModulationAT(Eigen::Vector3f point, Eigen::Vector3f dir, float lm_amp, float lm_freq) {
+void Controller::CalibrateModulation()
+{
+	this->_pimpl->CalibrateModulation();
+}
+
+void Controller::LateralModulationAT(Eigen::Vector3f point, Eigen::Vector3f dir, float lm_amp, float lm_freq)
+{
 	auto p1 = point + lm_amp * dir;
 	auto p2 = point - lm_amp * dir;
 	this->ResetLateralGain();

@@ -4,7 +4,7 @@
  * Created Date: 02/07/2018
  * Author: Shun Suzuki
  * -----
- * Last Modified: 05/09/2019
+ * Last Modified: 11/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2018-2019 Hapis Lab. All rights reserved.
@@ -231,6 +231,12 @@ namespace AUTD3Sharp
         {
             NativeMethods.AUTDSetSilentMode(_autdControllerHandle, mode);
         }
+
+        public void CalibrateModulation()
+        {
+            NativeMethods.AUTDCalibrateModulation(_autdControllerHandle);
+        }
+
         ~AUTD()
         {
             Dispose(false);

@@ -4,7 +4,7 @@
  * Created Date: 24/08/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 06/10/2019
+ * Last Modified: 11/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -36,7 +36,7 @@ public:
 	SOEMController();
 	~SOEMController();
 
-	void Open(const char *ifname, size_t devNum);
+	void Open(const char *ifname, size_t devNum, uint32_t CycleTime = CYCLE_TIME_NANO_SEC);
 	void Send(size_t size, unique_ptr<uint8_t[]> buf);
 	void Close();
 

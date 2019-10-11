@@ -4,7 +4,7 @@
  * Created Date: 04/09/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 08/10/2019
+ * Last Modified: 11/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -33,15 +33,17 @@ using namespace std;
 class libsoem::SOEMController::impl
 {
 public:
-	void Open(const char *ifname, size_t devNum);
+	void Open(const char *ifname, size_t devNum, uint32_t CycleTime);
 	void Send(size_t size, unique_ptr<uint8_t[]> buf);
-	static void RTthread(union sigval sv);
 	void Close();
 
 private:
-	void SetupSync0();
+	static void RTthread(union sigval sv);
+	void SetupSync0(bool actiavte, uint32_t CycleTime);
+	void CreateCopyThread();
 
 	unique_ptr<uint8_t[]> _IOmap;
+	uint32_t _cycleTime;
 
 	queue<size_t> _send_size_q;
 	queue<unique_ptr<uint8_t[]>> _send_buf_q;
@@ -78,20 +80,68 @@ void libsoem::SOEMController::impl::RTthread(union sigval sv)
 	impl->_send_cond.notify_all();
 }
 
-void libsoem::SOEMController::impl::SetupSync0()
+void libsoem::SOEMController::impl::SetupSync0(bool actiavte, uint32_t CycleTime)
 {
 	for (uint16 slave = 1; slave <= _devNum; slave++)
 	{
 		int shift = static_cast<int>(_devNum) - slave;
-		ec_dcsync0(slave, TRUE, CYCLE_TIME_NANO_SEC, shift * CYCLE_TIME_NANO_SEC); // SYNC0
+		ec_dcsync0(slave, actiavte, CycleTime, shift * CycleTime); // SYNC0
 	}
 }
 
-void libsoem::SOEMController::impl::Open(const char *ifname, size_t devNum)
+void libsoem::SOEMController::impl::CreateCopyThread()
+{
+	_cpy_thread = thread([&] {
+		while (_isOpened)
+		{
+			unique_ptr<uint8_t[]> buf = nullptr;
+			size_t size = 0;
+			{
+				unique_lock<mutex> lk(_cpy_mtx);
+				_cpy_cond.wait(lk, [&] {
+					return _send_buf_q.size() > 0 || !_isOpened;
+				});
+				if (_send_buf_q.size() > 0)
+				{
+					buf = move(_send_buf_q.front());
+					size = _send_size_q.front();
+				}
+			}
+
+			if (buf != nullptr && _isOpened)
+			{
+				const auto header_size = MOD_SIZE + 4;
+				const auto data_size = TRANS_NUM * 2;
+				const auto includes_gain = ((size - header_size) / data_size) > 0;
+
+				for (size_t i = 0; i < _devNum; i++)
+				{
+					if (includes_gain)
+						memcpy(&_IOmap[OUTPUT_FRAME_SIZE * i], &buf[header_size + data_size * i], data_size);
+					memcpy(&_IOmap[OUTPUT_FRAME_SIZE * i + data_size], &buf[0], header_size);
+				}
+				{
+					unique_lock<mutex> lk(_send_mtx);
+					_sent = false;
+					_send_cond.wait(lk, [this] { return _sent || !_isOpened; });
+				}
+				{
+					unique_lock<mutex> lk(_cpy_mtx);
+					_send_size_q.pop();
+					_send_buf_q.pop();
+				}
+			}
+		}
+	});
+}
+
+void libsoem::SOEMController::impl::Open(const char *ifname, size_t devNum, uint32_t CycleTime)
 {
 	_devNum = devNum;
 	auto size = (OUTPUT_FRAME_SIZE + INPUT_FRAME_SIZE) * _devNum;
 	_IOmap = make_unique<uint8_t[]>(size);
+
+	_cycleTime = CycleTime;
 
 	if (ec_init(ifname))
 	{
@@ -142,51 +192,9 @@ void libsoem::SOEMController::impl::Open(const char *ifname, size_t devNum)
 			{
 				_isOpened = true;
 
-				SetupSync0();
+				SetupSync0(true, _cycleTime);
 
-				_cpy_thread = thread([&] {
-					while (_isOpened)
-					{
-						unique_ptr<uint8_t[]> buf = nullptr;
-						size_t size = 0;
-						{
-							unique_lock<mutex> lk(_cpy_mtx);
-							_cpy_cond.wait(lk, [&] {
-								return _send_buf_q.size() > 0 || !_isOpened;
-							});
-
-							if (_send_buf_q.size() > 0)
-							{
-								buf = move(_send_buf_q.front());
-								size = _send_size_q.front();
-							}
-						}
-
-						if (buf != nullptr && _isOpened)
-						{
-							const auto header_size = MOD_SIZE + 4;
-							const auto data_size = TRANS_NUM * 2;
-							const auto includes_gain = ((size - header_size) / data_size) > 0;
-
-							for (size_t i = 0; i < _devNum; i++)
-							{
-								if (includes_gain)
-									memcpy(&_IOmap[OUTPUT_FRAME_SIZE * i], &buf[header_size + data_size * i], TRANS_NUM * 2);
-								memcpy(&_IOmap[OUTPUT_FRAME_SIZE * i + TRANS_NUM * 2], &buf[0], MOD_SIZE + 4);
-							}
-							{
-								unique_lock<mutex> lk(_send_mtx);
-								_sent = false;
-								_send_cond.wait(lk, [this] { return _sent || !_isOpened; });
-							}
-							{
-								unique_lock<mutex> lk(_cpy_mtx);
-								_send_size_q.pop();
-								_send_buf_q.pop();
-							}
-						}
-					}
-				});
+				CreateCopyThread();
 			}
 			else
 			{
@@ -217,8 +225,7 @@ void libsoem::SOEMController::impl::Close()
 
 		timer_delete(_timer_id);
 
-		for (uint16 i = 0; i < _devNum; i++)
-			ec_dcsync0(i + 1, FALSE, CYCLE_TIME_NANO_SEC, 0);
+		SetupSync0(false, _cycleTime);
 
 		auto size = (OUTPUT_FRAME_SIZE + INPUT_FRAME_SIZE) * _devNum;
 		memset(&_IOmap[0], 0x00, size);
@@ -244,9 +251,9 @@ libsoem::SOEMController::~SOEMController()
 	this->_pimpl->Close();
 }
 
-void libsoem::SOEMController::Open(const char *ifname, size_t devNum)
+void libsoem::SOEMController::Open(const char *ifname, size_t devNum, uint32_t CycleTime)
 {
-	this->_pimpl->Open(ifname, devNum);
+	this->_pimpl->Open(ifname, devNum, CycleTime);
 }
 
 void libsoem::SOEMController::Send(size_t size, unique_ptr<uint8_t[]> buf)

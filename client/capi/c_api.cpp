@@ -4,7 +4,7 @@
  * Created Date: 02/07/2018
  * Author: Shun Suzuki
  * -----
- * Last Modified: 04/09/2019
+ * Last Modified: 11/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -88,6 +88,11 @@ void AUTDSetSilentMode(AUTDControllerHandle handle, bool mode)
 {
 	auto *cnt = static_cast<Controller *>(handle);
 	cnt->SetSilentMode(mode);
+}
+void AUTDCalibrateModulation(AUTDControllerHandle handle)
+{
+	auto *cnt = static_cast<Controller *>(handle);
+	cnt->CalibrateModulation();
 }
 #pragma endregion
 

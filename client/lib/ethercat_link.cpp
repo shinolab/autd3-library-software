@@ -4,7 +4,7 @@
  * Created Date: 01/06/2016
  * Author: Seki Inoue
  * -----
- * Last Modified: 04/09/2019
+ * Last Modified: 11/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2016-2019 Hapis Lab. All rights reserved.
@@ -17,6 +17,8 @@
 #include <iostream>
 #include <algorithm>
 #include <AdsLib.h>
+#include <exception>
+#include <stdexcept>
 #include "privdef.hpp"
 #include "ethercat_link.hpp"
 // XXX: should be configuarable?
@@ -108,6 +110,12 @@ void autd::internal::EthercatLink::Send(size_t size, std::unique_ptr<uint8_t[]> 
 		throw static_cast<int>(ret);
 	}
 }
+
+void autd::internal::EthercatLink::CalibrateModulation()
+{
+	throw new std::runtime_error("Calibrate method is not supported for TwinCAT.");
+}
+
 // for localhost connection
 #ifdef _WIN32
 typedef long(_stdcall *TcAdsPortOpenEx)(void);																	   // NOLINT

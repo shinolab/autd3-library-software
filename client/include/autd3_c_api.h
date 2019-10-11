@@ -4,7 +4,7 @@
  * Created Date: 07/02/2018
  * Author: Shun Suzuki
  * -----
- * Last Modified: 04/09/2019
+ * Last Modified: 11/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -40,6 +40,7 @@ extern "C"
 	__declspec(dllexport) void AUTDCloseController(AUTDControllerHandle handle);
 	__declspec(dllexport) void AUTDFreeController(AUTDControllerHandle handle);
 	__declspec(dllexport) void AUTDSetSilentMode(AUTDControllerHandle handle, bool mode);
+	__declspec(dllexport) void AUTDCalibrateModulation(AUTDControllerHandle handle);
 #pragma endregion
 
 #pragma region Property
