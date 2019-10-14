@@ -31,7 +31,7 @@ using namespace std;
 class SOEMController::impl
 {
 public:
-	void Open(const char *ifname, size_t devNum, uint32_t CycleTime);
+	void Open(const char *ifname, size_t devNum);
 	void Send(size_t size, unique_ptr<uint8_t[]> buf);
 	void Close();
 
@@ -41,7 +41,6 @@ private:
 	void CreateCopyThread();
 
 	unique_ptr<uint8_t[]> _IOmap;
-	uint32_t _cycleTime;
 
 	queue<size_t> _send_size_q;
 	queue<unique_ptr<uint8_t[]>> _send_buf_q;
@@ -110,7 +109,7 @@ void SOEMController::impl::CreateCopyThread()
 
 			if (buf != nullptr && _isOpened)
 			{
-				const auto header_size = MOD_SIZE + 4;
+				const auto header_size = MOD_FRAME_SIZE + 4;
 				const auto data_size = TRANS_NUM * 2;
 				const auto includes_gain = ((size - header_size) / data_size) > 0;
 
@@ -135,13 +134,11 @@ void SOEMController::impl::CreateCopyThread()
 	});
 }
 
-void SOEMController::impl::Open(const char *ifname, size_t devNum, uint32_t CycleTime)
+void SOEMController::impl::Open(const char *ifname, size_t devNum)
 {
 	_devNum = devNum;
 	auto size = (OUTPUT_FRAME_SIZE + INPUT_FRAME_SIZE) * _devNum;
 	_IOmap = make_unique<uint8_t[]>(size);
-
-	_cycleTime = CycleTime;
 
 	HANDLE hProcess;
 	hProcess = GetCurrentProcess();
@@ -164,7 +161,7 @@ void SOEMController::impl::Open(const char *ifname, size_t devNum, uint32_t Cycl
 			if (_timerQueue == NULL)
 				cerr << "CreateTimerQueue failed." << endl;
 
-			if (!CreateTimerQueueTimer(&_timer, _timerQueue, (WAITORTIMERCALLBACK)RTthread, reinterpret_cast<void *>(this), 0, CYCLE_TIME_MILLI_SEC, 0))
+			if (!CreateTimerQueueTimer(&_timer, _timerQueue, (WAITORTIMERCALLBACK)RTthread, reinterpret_cast<void *>(this), 0, SM3_CYCLE_TIME_MILLI_SEC, 0))
 				cerr << "CreateTimerQueueTimer failed." << endl;
 
 			ec_writestate(0);
@@ -179,7 +176,7 @@ void SOEMController::impl::Open(const char *ifname, size_t devNum, uint32_t Cycl
 			{
 				_isOpened = true;
 
-				SetupSync0(true, _cycleTime);
+				SetupSync0(true, SYNC0_CYCLE_TIME_NANO_SEC);
 
 				CreateCopyThread();
 			}
@@ -217,7 +214,7 @@ void SOEMController::impl::Close()
 				cerr << "DeleteTimerQueue failed." << endl;
 		}
 
-		SetupSync0(false, _cycleTime);
+		SetupSync0(false, SYNC0_CYCLE_TIME_NANO_SEC);
 
 		auto size = (OUTPUT_FRAME_SIZE + INPUT_FRAME_SIZE) * _devNum;
 		memset(&_IOmap[0], 0x00, size);
@@ -243,9 +240,9 @@ SOEMController::~SOEMController()
 	this->_pimpl->Close();
 }
 
-void SOEMController::Open(const char *ifname, size_t devNum, uint32_t CycleTime)
+void SOEMController::Open(const char *ifname, size_t devNum)
 {
-	this->_pimpl->Open(ifname, devNum, CycleTime);
+	this->_pimpl->Open(ifname, devNum);
 }
 
 void SOEMController::Send(size_t size, unique_ptr<uint8_t[]> buf)

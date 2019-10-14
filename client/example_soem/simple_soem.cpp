@@ -39,10 +39,14 @@ int main()
 
 	// AddDevice() must be called before Open(), and be called as many times as for the number of AUTDs connected.
 	autd.geometry()->AddDevice(Eigen::Vector3f(0, 0, 0), Eigen::Vector3f(0, 0, 0));
+	autd.geometry()->AddDevice(Eigen::Vector3f(0, 0, 0), Eigen::Vector3f(0, 0, 0));
+	autd.geometry()->AddDevice(Eigen::Vector3f(0, 0, 0), Eigen::Vector3f(0, 0, 0));
+	autd.geometry()->AddDevice(Eigen::Vector3f(0, 0, 0), Eigen::Vector3f(0, 0, 0));
 	//autd.geometry()->AddDevice(Eigen::Vector3f(0, 151.4f, 0), Eigen::Vector3f(0, 0, 0));
 
 	auto ifname = GetAdapterName();
 	autd.Open(autd::LinkType::SOEM, ifname);
+	//autd.Open(autd::LinkType::ETHERCAT);
 	// If you have already recognized the EtherCAT adapter name, you can write it directly like below.
 	//autd.Open(autd::LinkType::SOEM, "\\Device\\NPF_{B5B631C6-ED16-4780-9C4C-3941AE8120A6}");
 
@@ -51,7 +55,7 @@ int main()
 
 	auto gain = autd::FocalPointGain::Create(Eigen::Vector3f(90, 70, 150));
 
-	autd.AppendModulationSync(autd::SineModulation::Create(150)); // 150Hz AM
+	autd.AppendModulationSync(autd::Modulation::Create(1)); // 150Hz AM
 	autd.AppendGainSync(gain);
 
 	std::cout << "press any key to finish..." << std::endl;

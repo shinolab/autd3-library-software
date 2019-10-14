@@ -4,7 +4,7 @@
  * Created Date: 07/06/2016
  * Author: Seki Inoue
  * -----
- * Last Modified: 11/10/2019
+ * Last Modified: 14/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2016-2019 Hapis Lab. All rights reserved.
@@ -39,7 +39,7 @@ enum RxGlobalControlFlags
 	LOOP_END = 1 << 1,
 	MOD_BEGIN = 1 << 2,
 	SILENT = 1 << 3,
-	MOD_RESET = 1 << 5,
+	MOD_RESET_MODE = 1 << 5,
 };
 
 struct RxGlobalHeader

@@ -4,7 +4,7 @@
  * Created Date: 11/04/2018
  * Author: Shun Suzuki
  * -----
- * Last Modified: 04/09/2019
+ * Last Modified: 14/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -24,12 +24,10 @@ namespace internal
 class Link;
 }
 
-enum LinkType
+enum class LinkType : int
 {
 	ETHERCAT,
-	ETHERNET,
-	USB,
-	SERIAL,
+	TwinCAT,
 	SOEM
 };
 

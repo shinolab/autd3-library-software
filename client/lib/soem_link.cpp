@@ -4,7 +4,7 @@
  * Created Date: 24/08/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 11/10/2019
+ * Last Modified: 14/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -53,25 +53,4 @@ void autd::internal::SOEMLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf)
 bool autd::internal::SOEMLink::isOpen()
 {
 	return _isOpen;
-}
-
-void autd::internal::SOEMLink::CalibrateModulation()
-{
-	constexpr auto MOD_PERIOD_MS = (uint32_t)((MOD_BUF_SIZE / MOD_SAMPLING_FREQ) * 1000);
-
-	_cnt->Close();
-	_cnt->Open(_ifname.c_str(), _devNum, MOD_PERIOD_MS * 1000 * 1000);
-
-	auto size = sizeof(RxGlobalHeader);
-	auto body = make_unique<uint8_t[]>(size);
-	auto *header = reinterpret_cast<RxGlobalHeader *>(&body[0]);
-	header->msg_id = static_cast<uint8_t>(rand() % 256); // NOLINT
-	header->control_flags |= MOD_RESET;
-
-	Send(size, move(body));
-
-	std::this_thread::sleep_for(std::chrono::milliseconds(MOD_PERIOD_MS * 10));
-
-	_cnt->Close();
-	_cnt->Open(_ifname.c_str(), _devNum);
 }

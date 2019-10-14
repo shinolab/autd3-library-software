@@ -4,7 +4,7 @@
  * Created Date: 04/09/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 11/10/2019
+ * Last Modified: 14/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -33,7 +33,7 @@ using namespace std;
 class libsoem::SOEMController::impl
 {
 public:
-	void Open(const char *ifname, size_t devNum, uint32_t CycleTime);
+	void Open(const char *ifname, size_t devNum);
 	void Send(size_t size, unique_ptr<uint8_t[]> buf);
 	void Close();
 
@@ -43,7 +43,6 @@ private:
 	void CreateCopyThread();
 
 	unique_ptr<uint8_t[]> _IOmap;
-	uint32_t _cycleTime;
 
 	queue<size_t> _send_size_q;
 	queue<unique_ptr<uint8_t[]>> _send_buf_q;
@@ -135,13 +134,11 @@ void libsoem::SOEMController::impl::CreateCopyThread()
 	});
 }
 
-void libsoem::SOEMController::impl::Open(const char *ifname, size_t devNum, uint32_t CycleTime)
+void libsoem::SOEMController::impl::Open(const char *ifname, size_t devNum)
 {
 	_devNum = devNum;
 	auto size = (OUTPUT_FRAME_SIZE + INPUT_FRAME_SIZE) * _devNum;
 	_IOmap = make_unique<uint8_t[]>(size);
-
-	_cycleTime = CycleTime;
 
 	if (ec_init(ifname))
 	{
@@ -160,9 +157,9 @@ void libsoem::SOEMController::impl::Open(const char *ifname, size_t devNum, uint
 			struct sigevent se;
 
 			itval.it_value.tv_sec = 0;
-			itval.it_value.tv_nsec = 1000 * 1000;
+			itval.it_value.tv_nsec = SM3_CYCLE_TIME_NANO_SEC;
 			itval.it_interval.tv_sec = 0;
-			itval.it_interval.tv_nsec = 1000 * 1000;
+			itval.it_interval.tv_nsec = SM3_CYCLE_TIME_NANO_SEC;
 
 			memset(&se, 0, sizeof(se));
 			se.sigev_value.sival_ptr = this;
@@ -192,7 +189,7 @@ void libsoem::SOEMController::impl::Open(const char *ifname, size_t devNum, uint
 			{
 				_isOpened = true;
 
-				SetupSync0(true, _cycleTime);
+				SetupSync0(true, SYNC0_CYCLE_TIME_NANO_SEC);
 
 				CreateCopyThread();
 			}
@@ -225,7 +222,7 @@ void libsoem::SOEMController::impl::Close()
 
 		timer_delete(_timer_id);
 
-		SetupSync0(false, _cycleTime);
+		SetupSync0(false, SYNC0_CYCLE_TIME_NANO_SEC);
 
 		auto size = (OUTPUT_FRAME_SIZE + INPUT_FRAME_SIZE) * _devNum;
 		memset(&_IOmap[0], 0x00, size);
@@ -251,9 +248,9 @@ libsoem::SOEMController::~SOEMController()
 	this->_pimpl->Close();
 }
 
-void libsoem::SOEMController::Open(const char *ifname, size_t devNum, uint32_t CycleTime)
+void libsoem::SOEMController::Open(const char *ifname, size_t devNum)
 {
-	this->_pimpl->Open(ifname, devNum, CycleTime);
+	this->_pimpl->Open(ifname, devNum);
 }
 
 void libsoem::SOEMController::Send(size_t size, unique_ptr<uint8_t[]> buf)

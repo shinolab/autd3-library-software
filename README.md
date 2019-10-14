@@ -1,6 +1,6 @@
 # autd3 #
 
-Version: 3.0.1.2
+Version: 3.0.1.3
 
 旧安定版は[v3.0.0ブランチ](https://github.com/shinolab/autd3-library-software/tree/v3.0.0)にあります.
 
@@ -9,6 +9,10 @@ Version: 3.0.1.2
 対応するファームウェアは"dist/firmware"内においてあります.
 
 # Change log
+
+* 3.0.1.3
+    * AppendGain修正
+    * Sync0のデフォルト周期を64msに
 
 * 3.0.1.2
     * mod_reset修正 (100ns)

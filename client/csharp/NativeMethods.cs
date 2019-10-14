@@ -4,7 +4,7 @@
  * Created Date: 02/07/2018
  * Author: Shun Suzuki
  * -----
- * Last Modified: 11/10/2019
+ * Last Modified: 14/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2018-2019 Hapis Lab. All rights reserved.
@@ -26,9 +26,7 @@ namespace AUTD3Sharp
     public enum LinkType : int
     {
         ETHERCAT,
-        ETHERNET,
-        USB,
-        SERIAL,
+        TwinCAT,
         SOEM
     };
 
@@ -50,7 +48,6 @@ namespace AUTD3Sharp
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDCloseController(AUTDControllerHandle handle);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDFreeController(IntPtr handle);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDSetSilentMode(AUTDControllerHandle handle, [MarshalAs(UnmanagedType.U1)] bool mode);
-        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDCalibrateModulation(AUTDControllerHandle handle);
         #endregion
 
         #region Property

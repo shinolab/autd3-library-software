@@ -4,7 +4,7 @@
  * Created Date: 01/06/2016
  * Author: Seki Inoue
  * -----
- * Last Modified: 11/10/2019
+ * Last Modified: 14/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2016-2019 Hapis Lab. All rights reserved.
@@ -82,8 +82,8 @@ void autd::internal::EthercatLink::Open(std::string ams_net_id, std::string ipv4
 }
 void autd::internal::EthercatLink::Close()
 {
-	AdsPortCloseEx(this->_port);
 	this->_port = 0;
+	AdsPortCloseEx(this->_port);
 }
 bool autd::internal::EthercatLink::isOpen()
 {
@@ -109,11 +109,6 @@ void autd::internal::EthercatLink::Send(size_t size, std::unique_ptr<uint8_t[]> 
 		}
 		throw static_cast<int>(ret);
 	}
-}
-
-void autd::internal::EthercatLink::CalibrateModulation()
-{
-	throw new std::runtime_error("Calibrate method is not supported for TwinCAT.");
 }
 
 // for localhost connection
@@ -159,9 +154,9 @@ void autd::internal::LocalEthercatLink::Open(std::string location)
 }
 void autd::internal::LocalEthercatLink::Close()
 {
+	this->_port = 0;
 	TcAdsPortCloseEx portClose = (TcAdsPortCloseEx)GetProcAddress(this->lib, TCADS_AdsPortCloseEx);
 	(*portClose)(this->_port);
-	this->_port = 0;
 }
 void autd::internal::LocalEthercatLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf)
 {

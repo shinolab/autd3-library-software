@@ -52,7 +52,7 @@ namespace AUTD3SharpTest.Test
                 // AM
                 Console.WriteLine("Amplitude Modulation");
 
-                Modulation mod = AUTD.SineModulation(150); // AM sin 150 Hz
+                Modulation mod = AUTD.Modulation(1); // AM sin 150 Hz
                 autd.AppendModulationSync(mod);
 
                 Gain gain = AUTD.FocalPointGain(x, y, z); // Focal point @ (x, y, z) [mm]

@@ -4,7 +4,7 @@
  * Created Date: 24/08/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 11/10/2019
+ * Last Modified: 14/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -27,7 +27,6 @@ public:
 	void Close();
 	void Send(size_t size, std::unique_ptr<uint8_t[]> buf);
 	bool isOpen();
-	void CalibrateModulation();
 
 protected:
 	std::unique_ptr<libsoem::SOEMController> _cnt;
