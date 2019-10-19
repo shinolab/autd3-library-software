@@ -4,7 +4,7 @@
  * Created Date: 02/07/2018
  * Author: Shun Suzuki
  * -----
- * Last Modified: 14/10/2019
+ * Last Modified: 19/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -88,6 +88,11 @@ void AUTDSetSilentMode(AUTDControllerHandle handle, bool mode)
 {
 	auto *cnt = static_cast<Controller *>(handle);
 	cnt->SetSilentMode(mode);
+}
+void AUTDCalibrateModulation(AUTDControllerHandle handle)
+{
+	auto *cnt = static_cast<Controller *>(handle);
+	cnt->CalibrateModulation();
 }
 #pragma endregion
 
@@ -210,12 +215,12 @@ void AUTDRawPCMModulation(AUTDModulationPtr *mod, const char *filename, float sa
 	auto *m = RawPCMModulation::Create(std::string(filename), sampFreq);
 	*mod = m;
 }
-void AUTDSawModulation(AUTDModulationPtr *mod, float freq)
+void AUTDSawModulation(AUTDModulationPtr *mod, int freq)
 {
 	auto *m = SawModulation::Create(freq);
 	*mod = m;
 }
-void AUTDSineModulation(AUTDModulationPtr *mod, float freq, float amp, float offset)
+void AUTDSineModulation(AUTDModulationPtr *mod, int freq, float amp, float offset)
 {
 	auto *m = SineModulation::Create(freq, amp, offset);
 	*mod = m;

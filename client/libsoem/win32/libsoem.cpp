@@ -4,7 +4,7 @@
  * Created Date: 23/08/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 11/10/2019
+ * Last Modified: 19/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -20,6 +20,7 @@
 #include <condition_variable>
 #include <memory>
 #include <queue>
+#include <vector>
 #include <thread>
 
 #include "libsoem.hpp"
@@ -31,27 +32,29 @@ using namespace std;
 class SOEMController::impl
 {
 public:
-	void Open(const char *ifname, size_t devNum);
+	void Open(const char* ifname, size_t devNum, uint32_t CycleTime);
 	void Send(size_t size, unique_ptr<uint8_t[]> buf);
 	void Close();
+
+	bool _isOpened = false;
 
 private:
 	static void CALLBACK RTthread(PVOID lpParam, BOOLEAN TimerOrWaitFired);
 	void SetupSync0(bool actiavte, uint32_t CycleTime);
 	void CreateCopyThread();
 
-	unique_ptr<uint8_t[]> _IOmap;
+	vector<uint8_t> _IOmap;
+	uint32_t _cycleTime = 0;
 
 	queue<size_t> _send_size_q;
 	queue<unique_ptr<uint8_t[]>> _send_buf_q;
 	thread _cpy_thread;
 	condition_variable _cpy_cond;
 	condition_variable _send_cond;
-	bool _sent;
+	bool _sent = false;
 	mutex _cpy_mtx;
 	mutex _send_mtx;
 
-	bool _isOpened = false;
 	size_t _devNum = 0;
 	HANDLE _timerQueue = NULL;
 	HANDLE _timer = NULL;
@@ -70,8 +73,7 @@ void SOEMController::impl::Send(size_t size, unique_ptr<uint8_t[]> buf)
 void CALLBACK SOEMController::impl::RTthread(PVOID lpParam, BOOLEAN TimerOrWaitFired)
 {
 	ec_send_processdata();
-
-	const auto impl = (reinterpret_cast<SOEMController::impl *>(lpParam));
+	const auto impl = (reinterpret_cast<SOEMController::impl*>(lpParam));
 	{
 		lock_guard<mutex> lk(impl->_send_mtx);
 		impl->_sent = true;
@@ -81,10 +83,18 @@ void CALLBACK SOEMController::impl::RTthread(PVOID lpParam, BOOLEAN TimerOrWaitF
 
 void SOEMController::impl::SetupSync0(bool actiavte, uint32_t CycleTime)
 {
+	auto exceed = static_cast<unsigned long>(_devNum - 1)* static_cast<unsigned long>(CycleTime) > 0x7ffffffful;
 	for (uint16 slave = 1; slave <= _devNum; slave++)
 	{
-		int shift = static_cast<int>(_devNum) - slave;
-		ec_dcsync0(slave, actiavte, CycleTime, shift * CycleTime); // SYNC0
+		if (exceed)
+		{
+			ec_dcsync0(slave, actiavte, CycleTime, 0); // SYNC0
+		}
+		else
+		{
+			int shift = static_cast<int>(_devNum) - slave;
+			ec_dcsync0(slave, actiavte, CycleTime, shift * CycleTime); // SYNC0
+		}
 	}
 }
 
@@ -99,7 +109,7 @@ void SOEMController::impl::CreateCopyThread()
 				unique_lock<mutex> lk(_cpy_mtx);
 				_cpy_cond.wait(lk, [&] {
 					return _send_buf_q.size() > 0 || !_isOpened;
-				});
+					});
 				if (_send_buf_q.size() > 0)
 				{
 					buf = move(_send_buf_q.front());
@@ -119,30 +129,29 @@ void SOEMController::impl::CreateCopyThread()
 						memcpy(&_IOmap[OUTPUT_FRAME_SIZE * i], &buf[header_size + data_size * i], data_size);
 					memcpy(&_IOmap[OUTPUT_FRAME_SIZE * i + data_size], &buf[0], header_size);
 				}
+
 				{
 					unique_lock<mutex> lk(_send_mtx);
 					_sent = false;
 					_send_cond.wait(lk, [this] { return _sent || !_isOpened; });
 				}
-				{
-					unique_lock<mutex> lk(_cpy_mtx);
-					_send_size_q.pop();
-					_send_buf_q.pop();
-				}
+
+				_send_size_q.pop();
+				_send_buf_q.pop();
 			}
 		}
-	});
+		});
 }
 
-void SOEMController::impl::Open(const char *ifname, size_t devNum)
+void SOEMController::impl::Open(const char* ifname, size_t devNum, uint32_t CycleTime)
 {
 	_devNum = devNum;
 	auto size = (OUTPUT_FRAME_SIZE + INPUT_FRAME_SIZE) * _devNum;
-	_IOmap = make_unique<uint8_t[]>(size);
+	if (_IOmap.size() != size) {
+		_IOmap = vector<uint8_t>(size, 0);
+	}
 
-	HANDLE hProcess;
-	hProcess = GetCurrentProcess();
-	SetPriorityClass(hProcess, REALTIME_PRIORITY_CLASS); // No means for Windows 10
+	_cycleTime = CycleTime;
 
 	if (ec_init(ifname))
 	{
@@ -161,7 +170,7 @@ void SOEMController::impl::Open(const char *ifname, size_t devNum)
 			if (_timerQueue == NULL)
 				cerr << "CreateTimerQueue failed." << endl;
 
-			if (!CreateTimerQueueTimer(&_timer, _timerQueue, (WAITORTIMERCALLBACK)RTthread, reinterpret_cast<void *>(this), 0, SM3_CYCLE_TIME_MILLI_SEC, 0))
+			if (!CreateTimerQueueTimer(&_timer, _timerQueue, (WAITORTIMERCALLBACK)RTthread, reinterpret_cast<void*>(this), 0, SM3_CYCLE_TIME_MILLI_SEC, 0))
 				cerr << "CreateTimerQueueTimer failed." << endl;
 
 			ec_writestate(0);
@@ -176,7 +185,7 @@ void SOEMController::impl::Open(const char *ifname, size_t devNum)
 			{
 				_isOpened = true;
 
-				SetupSync0(true, SYNC0_CYCLE_TIME_NANO_SEC);
+				SetupSync0(true, _cycleTime);
 
 				CreateCopyThread();
 			}
@@ -203,6 +212,7 @@ void SOEMController::impl::Close()
 	if (_isOpened)
 	{
 		_isOpened = false;
+
 		_cpy_cond.notify_all();
 		_send_cond.notify_all();
 		if (this_thread::get_id() != _cpy_thread.get_id() && this->_cpy_thread.joinable())
@@ -212,11 +222,13 @@ void SOEMController::impl::Close()
 		{
 			if (GetLastError() != ERROR_IO_PENDING)
 				cerr << "DeleteTimerQueue failed." << endl;
+			else
+				Sleep(200);
 		}
 
-		SetupSync0(false, SYNC0_CYCLE_TIME_NANO_SEC);
+		SetupSync0(false, _cycleTime);
 
-		auto size = (OUTPUT_FRAME_SIZE + INPUT_FRAME_SIZE) * _devNum;
+		auto size = OUTPUT_FRAME_SIZE * _devNum;
 		memset(&_IOmap[0], 0x00, size);
 		for (int i = 0; i < 200; i++)
 		{
@@ -226,13 +238,15 @@ void SOEMController::impl::Close()
 		ec_slave[0].state = EC_STATE_INIT;
 		ec_writestate(0);
 
+		ec_statecheck(0, EC_STATE_INIT, EC_TIMEOUTSTATE);
+
 		ec_close();
 	}
 }
 
 SOEMController::SOEMController()
 {
-	this->_pimpl = make_shared<impl>();
+	this->_pimpl = make_unique<impl>();
 }
 
 SOEMController::~SOEMController()
@@ -240,9 +254,9 @@ SOEMController::~SOEMController()
 	this->_pimpl->Close();
 }
 
-void SOEMController::Open(const char *ifname, size_t devNum)
+void SOEMController::Open(const char* ifname, size_t devNum, uint32_t CycleTime)
 {
-	this->_pimpl->Open(ifname, devNum);
+	this->_pimpl->Open(ifname, devNum, CycleTime);
 }
 
 void SOEMController::Send(size_t size, unique_ptr<uint8_t[]> buf)
@@ -255,13 +269,17 @@ void SOEMController::Close()
 	this->_pimpl->Close();
 }
 
+bool SOEMController::isOpen() {
+	return this->_pimpl->_isOpened;
+}
+
 vector<EtherCATAdapterInfo> EtherCATAdapterInfo::EnumerateAdapters()
 {
 	auto adapter = ec_find_adapters();
 	auto _adapters = vector<EtherCATAdapterInfo>();
 	while (adapter != NULL)
 	{
-		auto *info = new EtherCATAdapterInfo;
+		auto* info = new EtherCATAdapterInfo;
 		info->desc = make_shared<string>(adapter->desc);
 		info->name = make_shared<string>(adapter->name);
 		_adapters.push_back(*info);

@@ -4,7 +4,7 @@
  * Created Date: 02/07/2018
  * Author: Shun Suzuki
  * -----
- * Last Modified: 14/10/2019
+ * Last Modified: 19/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2018-2019 Hapis Lab. All rights reserved.
@@ -39,7 +39,7 @@ using Quaternionf = UnityEngine.Quaternion;
 #endif
 
 [assembly: CLSCompliant(false), ComVisible(false)]
-[assembly: AssemblyVersion("3.0.1.3")]
+[assembly: AssemblyVersion("3.0.2.0")]
 namespace AUTD3Sharp
 {
     [ComVisible(false)]
@@ -232,6 +232,10 @@ namespace AUTD3Sharp
             NativeMethods.AUTDSetSilentMode(_autdControllerHandle, mode);
         }
 
+        public void CalibrateModulation()
+        {
+            NativeMethods.AUTDCalibrateModulation(_autdControllerHandle);
+        }
 
         ~AUTD()
         {
@@ -451,22 +455,22 @@ namespace AUTD3Sharp
             NativeMethods.AUTDRawPCMModulation(out IntPtr modPtr, fileName, samplingFreq);
             return new Modulation(modPtr);
         }
-        public static Modulation SawModulation(float freq)
+        public static Modulation SawModulation(int freq)
         {
             NativeMethods.AUTDSawModulation(out IntPtr modPtr, freq);
             return new Modulation(modPtr);
         }
-        public static Modulation SineModulation(float freq)
+        public static Modulation SineModulation(int freq)
         {
             return SineModulation(freq, 1, 0.5f);
         }
 
-        public static Modulation SineModulation(float freq, float amp)
+        public static Modulation SineModulation(int freq, float amp)
         {
             return SineModulation(freq, amp, 0.5f);
         }
 
-        public static Modulation SineModulation(float freq, float amp, float offset)
+        public static Modulation SineModulation(int freq, float amp, float offset)
         {
             NativeMethods.AUTDSineModulation(out IntPtr modPtr, freq, amp, offset);
             return new Modulation(modPtr);

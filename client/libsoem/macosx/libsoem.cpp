@@ -4,7 +4,7 @@
  * Created Date: 04/09/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 14/10/2019
+ * Last Modified: 19/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -35,7 +35,7 @@ using namespace std;
 class libsoem::SOEMController::impl
 {
 public:
-	void Open(const char *ifname, size_t devNum);
+	void Open(const char *ifname, size_t devNum, uint32_t CycleTime = SYNC0_CYCLE_TIME_NANO_SEC);
 	void Send(size_t size, unique_ptr<uint8_t[]> buf);
 	void Close();
 
@@ -45,6 +45,7 @@ private:
 	void CreateCopyThread();
 
 	unique_ptr<uint8_t[]> _IOmap;
+	uint32_t _cycleTime;
 
 	queue<size_t> _send_size_q;
 	queue<unique_ptr<uint8_t[]>> _send_buf_q;
@@ -83,10 +84,18 @@ void libsoem::SOEMController::impl::RTthread(SOEMController::impl *ptr)
 
 void libsoem::SOEMController::impl::SetupSync0(bool actiavte, uint32_t CycleTime)
 {
+	auto exceed = static_cast<unsigned long>(_devNum - 1) * static_cast<unsigned long>(CycleTime) > 0x7ffffffful;
 	for (uint16 slave = 1; slave <= _devNum; slave++)
 	{
-		int shift = static_cast<int>(_devNum) - slave;
-		ec_dcsync0(slave, actiavte, CycleTime, shift * CycleTime); // SYNC0
+		if (exceed)
+		{
+			ec_dcsync0(slave, actiavte, CycleTime, 0); // SYNC0
+		}
+		else
+		{
+			int shift = static_cast<int>(_devNum) - slave;
+			ec_dcsync0(slave, actiavte, CycleTime, shift * CycleTime); // SYNC0
+		}
 	}
 }
 
@@ -136,7 +145,7 @@ void libsoem::SOEMController::impl::CreateCopyThread()
 	});
 }
 
-void libsoem::SOEMController::impl::Open(const char *ifname, size_t devNum)
+void libsoem::SOEMController::impl::Open(const char *ifname, size_t devNum, uint32_t CycleTime)
 {
 	_devNum = devNum;
 	auto size = (OUTPUT_FRAME_SIZE + INPUT_FRAME_SIZE) * _devNum;
@@ -185,7 +194,7 @@ void libsoem::SOEMController::impl::Open(const char *ifname, size_t devNum)
 			{
 				_isOpened = true;
 
-				SetupSync0(true, SYNC0_CYCLE_TIME_NANO_SEC);
+				SetupSync0(true, _cycleTime);
 
 				CreateCopyThread();
 			}
@@ -218,7 +227,7 @@ void libsoem::SOEMController::impl::Close()
 
 		dispatch_source_cancel(_timer);
 
-		SetupSync0(false, SYNC0_CYCLE_TIME_NANO_SEC);
+		SetupSync0(false, _cycleTime);
 
 		auto size = (OUTPUT_FRAME_SIZE + INPUT_FRAME_SIZE) * _devNum;
 		memset(&_IOmap[0], 0x00, size);
@@ -244,9 +253,9 @@ libsoem::SOEMController::~SOEMController()
 	this->_pimpl->Close();
 }
 
-void libsoem::SOEMController::Open(const char *ifname, size_t devNum)
+void libsoem::SOEMController::Open(const char *ifname, size_t devNum, uint32_t CycleTime)
 {
-	this->_pimpl->Open(ifname, devNum);
+	this->_pimpl->Open(ifname, devNum, CycleTime);
 }
 
 void libsoem::SOEMController::Send(size_t size, unique_ptr<uint8_t[]> buf)

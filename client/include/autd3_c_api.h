@@ -4,7 +4,7 @@
  * Created Date: 07/02/2018
  * Author: Shun Suzuki
  * -----
- * Last Modified: 14/10/2019
+ * Last Modified: 19/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -40,6 +40,7 @@ extern "C"
 	__declspec(dllexport) void AUTDCloseController(AUTDControllerHandle handle);
 	__declspec(dllexport) void AUTDFreeController(AUTDControllerHandle handle);
 	__declspec(dllexport) void AUTDSetSilentMode(AUTDControllerHandle handle, bool mode);
+	__declspec(dllexport) void AUTDCalibrateModulation(AUTDControllerHandle handle);
 #pragma endregion
 
 #pragma region Property
@@ -67,8 +68,8 @@ extern "C"
 #pragma region Modulation
 	__declspec(dllexport) void AUTDModulation(AUTDModulationPtr *mod, uint8_t amp);
 	__declspec(dllexport) void AUTDRawPCMModulation(AUTDModulationPtr *mod, const char *filename, float sampFreq);
-	__declspec(dllexport) void AUTDSawModulation(AUTDModulationPtr *mod, float freq);
-	__declspec(dllexport) void AUTDSineModulation(AUTDModulationPtr *mod, float freq, float amp, float offset);
+	__declspec(dllexport) void AUTDSawModulation(AUTDModulationPtr *mod, int freq);
+	__declspec(dllexport) void AUTDSineModulation(AUTDModulationPtr *mod, int freq, float amp, float offset);
 	__declspec(dllexport) void AUTDDeleteModulation(AUTDModulationPtr mod);
 #pragma endregion
 

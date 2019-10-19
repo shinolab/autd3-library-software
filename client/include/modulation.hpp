@@ -4,7 +4,7 @@
  * Created Date: 04/11/2018
  * Author: Shun Suzuki
  * -----
- * Last Modified: 04/09/2019
+ * Last Modified: 19/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2018-2019 Hapis Lab. All rights reserved.
@@ -35,8 +35,7 @@ public:
 	Modulation() noexcept;
 	static ModulationPtr Create();
 	static ModulationPtr Create(uint8_t amp);
-	constexpr static float samplingFrequency();
-	bool loop;
+	constexpr static int samplingFrequency();
 	std::vector<uint8_t> buffer;
 
 private:
@@ -46,13 +45,13 @@ private:
 class SineModulation : public Modulation
 {
 public:
-	static ModulationPtr Create(float freq, float amp = 1.0f, float offset = 0.5f);
+	static ModulationPtr Create(int freq, float amp = 1.0f, float offset = 0.5f);
 };
 
 class SawModulation : public Modulation
 {
 public:
-	static ModulationPtr Create(float freq);
+	static ModulationPtr Create(int freq);
 };
 
 class RawPCMModulation : public Modulation

@@ -4,7 +4,7 @@
  * Created Date: 11/06/2016
  * Author: Seki Inoue
  * -----
- * Last Modified: 07/10/2019
+ * Last Modified: 19/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2016-2019 Hapis Lab. All rights reserved.
@@ -17,6 +17,7 @@
 #include <cmath>
 #include <limits>
 #include <fstream>
+
 #include "autd3.hpp"
 #include "modulation.hpp"
 #include "privdef.hpp"
@@ -28,10 +29,15 @@ inline float sinc(float x) noexcept
 		return 1;
 	return sinf(M_PIf * x) / (M_PIf * x);
 }
-
-constexpr float clamp(float value, float min, float max) noexcept
+template <typename T>
+T clamp(T v, T min, T max)
 {
-	return value < min ? min : value > max ? max : value;
+	return (v < min) ? min : (v > max) ? max : v;
+}
+int gcd(int u, int V)
+{
+	const auto t = u % V;
+	return (t == 0) ? V : gcd(V, t);
 }
 #pragma endregion
 
@@ -39,10 +45,9 @@ constexpr float clamp(float value, float min, float max) noexcept
 autd::Modulation::Modulation() noexcept
 {
 	this->sent = 0;
-	this->loop = true;
 }
 
-constexpr float autd::Modulation::samplingFrequency()
+constexpr int autd::Modulation::samplingFrequency()
 {
 	return MOD_SAMPLING_FREQ;
 }
@@ -55,46 +60,59 @@ autd::ModulationPtr autd::Modulation::Create()
 autd::ModulationPtr autd::Modulation::Create(uint8_t amp)
 {
 	auto mod = CreateHelper<Modulation>();
-	mod->buffer.resize(1, amp);
+	mod->buffer.resize(MOD_FRAME_SIZE, amp);
 	return mod;
 }
 #pragma endregion
 
 #pragma region SineModulation
-autd::ModulationPtr autd::SineModulation::Create(float freq, float amp, float offset)
+autd::ModulationPtr autd::SineModulation::Create(int freq, float amp, float offset)
 {
-	auto mod = CreateHelper<SineModulation>();
-	freq = clamp(freq, 1.0f, autd::Modulation::samplingFrequency() / 2);
+	assert(offset + 0.5f * amp <= 1.0f && offset - 0.5f * amp >= 0.0f);
 
-	const auto T = static_cast<int>(floor(1.0 / freq * autd::Modulation::samplingFrequency()));
-	mod->buffer.resize(T, 0);
-	const auto maxamp = clamp(255.0f * amp, 0.0f, 255.0f);
-	for (int i = 0; i < T; i++)
+	auto mod = CreateHelper<SineModulation>();
+	constexpr auto sf = autd::Modulation::samplingFrequency();
+	freq = clamp(freq, 1, sf / 2);
+
+	const auto d = gcd(sf, freq);
+
+	const auto N = MOD_BUF_SIZE / d;
+	const auto REP = freq / d;
+
+	mod->buffer.resize(N, 0);
+
+	for (size_t i = 0; i < N; i++)
 	{
-		const auto tamp = i <= T / 2 ? 255.0f * (offset + amp / 2 - amp * 2.0f * i / T) : 255.0f * (offset + amp * 2.0f * i / T - 1.5f * amp);
-		mod->buffer.at(i) = static_cast<uint8_t>(floor(clamp(tamp, 1.0f, 255.0f)));
+		auto tamp = fmodf(static_cast<float>(2 * REP * i) / N, 2.0f);
+		tamp = tamp > 1.0f ? 2.0f - tamp : tamp;
+		tamp = offset + (tamp - 0.5f) * amp;
+		mod->buffer.at(i) = static_cast<uint8_t>(tamp * 255.0f);
 	}
 
-	mod->loop = true;
 	return mod;
 }
 #pragma endregion
 
 #pragma region SawModulation
-autd::ModulationPtr autd::SawModulation::Create(float freq)
+autd::ModulationPtr autd::SawModulation::Create(int freq)
 {
 	auto mod = CreateHelper<SawModulation>();
+	constexpr auto sf = autd::Modulation::samplingFrequency();
+	freq = clamp(freq, 1, sf / 2);
 
-	freq = clamp(freq, 1.0f, autd::Modulation::samplingFrequency() / 2);
+	const auto d = gcd(sf, freq);
 
-	const auto T = static_cast<int>(round(1.0 / freq * autd::Modulation::samplingFrequency()));
-	mod->buffer.resize(T, 0);
-	for (int i = 0; i < T; i++)
+	const auto N = MOD_BUF_SIZE / d;
+	const auto REP = freq / d;
+
+	mod->buffer.resize(N, 0);
+
+	for (size_t i = 0; i < N; i++)
 	{
-		const auto amp = 255.0f * i / T;
-		mod->buffer.at(i) = static_cast<uint8_t>(floor(amp));
+		auto tamp = fmodf(static_cast<float>(REP * i) / N, 1.0f);
+		mod->buffer.at(i) = static_cast<uint8_t>(asin(tamp) / M_PIf * 510.0f);
 	}
-	mod->loop = true;
+
 	return mod;
 }
 #pragma endregion
@@ -176,7 +194,6 @@ autd::ModulationPtr autd::RawPCMModulation::Create(std::string filename, float s
 	{
 		mod->buffer.at(i) = static_cast<uint8_t>(round(255.0f * (lpf_buf.at(i) - min_v) / (max_v - min_v)));
 	}
-	mod->loop = true;
 
 	return mod;
 }

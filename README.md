@@ -1,6 +1,6 @@
 # autd3 #
 
-Version: 3.0.1.3
+Version: 3.0.2.0
 
 旧安定版は[v3.0.0ブランチ](https://github.com/shinolab/autd3-library-software/tree/v3.0.0)にあります.
 
@@ -9,6 +9,12 @@ Version: 3.0.1.3
 対応するファームウェアは"dist/firmware"内においてあります.
 
 # Change log
+
+* 3.0.2.0
+    * ModulationCalibration実装
+        * これにより破壊的な変更がソフト/CPU/FPGAに入った
+        * Sync0のデフォルト周期を1msに戻した
+        * TwinCAT未対応
 
 * 3.0.1.3
     * AppendGain修正

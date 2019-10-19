@@ -4,7 +4,7 @@
  * Created Date: 07/06/2016
  * Author: Seki Inoue
  * -----
- * Last Modified: 14/10/2019
+ * Last Modified: 19/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2016-2019 Hapis Lab. All rights reserved.
@@ -29,15 +29,14 @@ constexpr auto FPGA_CLOCK = 25600000;
 constexpr auto ULTRASOUND_FREQUENCY_DEFAULT = 40000;
 constexpr auto ULTRASOUND_WAVELENGTH = 8.5f;
 
-constexpr auto MOD_SAMPLING_FREQ = 4000.0f;
-constexpr auto MOD_BUF_SIZE = 256;
+constexpr auto MOD_SAMPLING_FREQ = 4000;
+constexpr auto MOD_BUF_SIZE = 4000;
 constexpr auto MOD_FRAME_SIZE = 124;
 
 enum RxGlobalControlFlags
 {
 	LOOP_BEGIN = 1 << 0,
 	LOOP_END = 1 << 1,
-	MOD_BEGIN = 1 << 2,
 	SILENT = 1 << 3,
 	MOD_RESET_MODE = 1 << 5,
 };

@@ -4,7 +4,7 @@
  * Created Date: 24/08/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 14/10/2019
+ * Last Modified: 19/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -30,7 +30,7 @@ void autd::internal::SOEMLink::Open(std::string ifname)
 	_devNum = stoi(ifname_and_devNum[1]);
 	_ifname = ifname_and_devNum[0];
 	_cnt->Open(_ifname.c_str(), _devNum);
-	_isOpen = true;
+	_isOpen = _cnt->isOpen();
 }
 
 void autd::internal::SOEMLink::Close()
@@ -53,4 +53,34 @@ void autd::internal::SOEMLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf)
 bool autd::internal::SOEMLink::isOpen()
 {
 	return _isOpen;
+}
+
+void autd::internal::SOEMLink::CalibrateModulation()
+{
+	cout << "Start calibrating modulation..." << endl;
+	constexpr auto MOD_PERIOD_MS = (uint32_t)((MOD_BUF_SIZE / MOD_SAMPLING_FREQ) * 1000);
+
+	_cnt->Close();
+	_cnt->Open(_ifname.c_str(), _devNum, MOD_PERIOD_MS * 1000 * 1000);
+
+	auto size = sizeof(RxGlobalHeader);
+	auto body = make_unique<uint8_t[]>(size);
+	auto* header = reinterpret_cast<RxGlobalHeader*>(&body[0]);
+	header->msg_id = (++_id) % 56 + 200;
+	header->control_flags |= MOD_RESET_MODE;
+
+	Send(size, move(body));
+
+	std::this_thread::sleep_for(std::chrono::milliseconds((_devNum + 5) * MOD_PERIOD_MS));
+
+	auto body2 = make_unique<uint8_t[]>(size);
+	auto* header2 = reinterpret_cast<RxGlobalHeader*>(&body2[0]);
+	header2->msg_id = (++_id) % 56 + 200;
+	header2->control_flags &= ~MOD_RESET_MODE;
+
+	Send(size, move(body2));
+	std::this_thread::sleep_for(std::chrono::milliseconds(200));
+	_cnt->Close();
+	_cnt->Open(_ifname.c_str(), _devNum);
+	cout << "Finish calibrating modulation..." << endl;
 }

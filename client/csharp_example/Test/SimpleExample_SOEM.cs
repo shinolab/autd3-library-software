@@ -4,7 +4,7 @@
  * Created Date: 25/08/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 07/10/2019
+ * Last Modified: 19/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -49,10 +49,14 @@ namespace AUTD3SharpTest.Test
                 // If you have already recognized the EtherCAT adapter name, you can write it directly like below.
                 // autd.Open(LinkType.SOEM, "\\Device\\NPF_{D8BC5907-A0E5-4EAF-A013-8C7F76E3E1F3}");
 
+                // If you use more than one AUTD, call this function only once after Open().
+                // It takes several seconds proportional to the number of AUTD you use.
+                //autd.CalibrateModulation();
+
                 // AM
                 Console.WriteLine("Amplitude Modulation");
 
-                Modulation mod = AUTD.Modulation(1); // AM sin 150 Hz
+                Modulation mod = AUTD.SineModulation(150); // AM sin 150 Hz
                 autd.AppendModulationSync(mod);
 
                 Gain gain = AUTD.FocalPointGain(x, y, z); // Focal point @ (x, y, z) [mm]

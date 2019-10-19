@@ -4,7 +4,7 @@
  * Created Date: 01/06/2016
  * Author: Seki Inoue
  * -----
- * Last Modified: 14/10/2019
+ * Last Modified: 19/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2016-2019 Hapis Lab. All rights reserved.
@@ -31,6 +31,7 @@ public:
 	virtual void Close() = 0;
 	virtual void Send(size_t size, std::unique_ptr<uint8_t[]> buf) = 0;
 	virtual bool isOpen() = 0;
+	virtual void CalibrateModulation() = 0; // Todo: make more elegant
 };
 } // namespace internal
 } // namespace autd

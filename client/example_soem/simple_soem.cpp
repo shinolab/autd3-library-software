@@ -4,11 +4,11 @@
  * Created Date: 24/08/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 04/09/2019
+ * Last Modified: 19/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
- * 
+ *
  */
 
 #include "autd3.hpp"
@@ -39,23 +39,22 @@ int main()
 
 	// AddDevice() must be called before Open(), and be called as many times as for the number of AUTDs connected.
 	autd.geometry()->AddDevice(Eigen::Vector3f(0, 0, 0), Eigen::Vector3f(0, 0, 0));
-	autd.geometry()->AddDevice(Eigen::Vector3f(0, 0, 0), Eigen::Vector3f(0, 0, 0));
-	autd.geometry()->AddDevice(Eigen::Vector3f(0, 0, 0), Eigen::Vector3f(0, 0, 0));
-	autd.geometry()->AddDevice(Eigen::Vector3f(0, 0, 0), Eigen::Vector3f(0, 0, 0));
-	//autd.geometry()->AddDevice(Eigen::Vector3f(0, 151.4f, 0), Eigen::Vector3f(0, 0, 0));
 
 	auto ifname = GetAdapterName();
 	autd.Open(autd::LinkType::SOEM, ifname);
-	//autd.Open(autd::LinkType::ETHERCAT);
 	// If you have already recognized the EtherCAT adapter name, you can write it directly like below.
 	//autd.Open(autd::LinkType::SOEM, "\\Device\\NPF_{B5B631C6-ED16-4780-9C4C-3941AE8120A6}");
 
 	if (!autd.isOpen())
 		return ENXIO;
 
+	// If you use more than one AUTD, call this function only once after Open().
+	// It takes several seconds proportional to the number of AUTD you use.
+	//autd.CalibrateModulation();
+
 	auto gain = autd::FocalPointGain::Create(Eigen::Vector3f(90, 70, 150));
 
-	autd.AppendModulationSync(autd::Modulation::Create(1)); // 150Hz AM
+	autd.AppendModulationSync(autd::SineModulation::Create(150)); // 150Hz AM
 	autd.AppendGainSync(gain);
 
 	std::cout << "press any key to finish..." << std::endl;
