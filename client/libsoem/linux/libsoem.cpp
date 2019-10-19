@@ -33,9 +33,11 @@ using namespace std;
 class libsoem::SOEMController::impl
 {
 public:
-	void Open(const char *ifname, size_t devNum, uint32_t uint32_t CycleTime);
+	void Open(const char *ifname, size_t devNum, uint32_t CycleTime);
 	void Send(size_t size, unique_ptr<uint8_t[]> buf);
 	void Close();
+
+	bool _isOpened = false;
 
 private:
 	static void RTthread(union sigval sv);
@@ -54,7 +56,6 @@ private:
 	mutex _cpy_mtx;
 	mutex _send_mtx;
 
-	bool _isOpened = false;
 	size_t _devNum = 0;
 	timer_t _timer_id;
 };
@@ -118,7 +119,7 @@ void libsoem::SOEMController::impl::CreateCopyThread()
 
 			if (buf != nullptr && _isOpened)
 			{
-				const auto header_size = MOD_SIZE + 4;
+				const auto header_size = MOD_FRAME_SIZE + 4;
 				const auto data_size = TRANS_NUM * 2;
 				const auto includes_gain = ((size - header_size) / data_size) > 0;
 
@@ -143,7 +144,7 @@ void libsoem::SOEMController::impl::CreateCopyThread()
 	});
 }
 
-void libsoem::SOEMController::impl::Open(const char *ifname, size_t devNum)
+void libsoem::SOEMController::impl::Open(const char *ifname, size_t devNum, uint32_t CycleTime)
 {
 	_devNum = devNum;
 	auto size = (OUTPUT_FRAME_SIZE + INPUT_FRAME_SIZE) * _devNum;
@@ -251,7 +252,7 @@ void libsoem::SOEMController::impl::Close()
 
 libsoem::SOEMController::SOEMController()
 {
-	this->_pimpl = make_shared<impl>();
+	this->_pimpl = make_unique<impl>();
 }
 
 libsoem::SOEMController::~SOEMController()
@@ -272,6 +273,11 @@ void libsoem::SOEMController::Send(size_t size, unique_ptr<uint8_t[]> buf)
 void libsoem::SOEMController::Close()
 {
 	this->_pimpl->Close();
+}
+
+bool libsoem::SOEMController::isOpen()
+{
+	return this->_pimpl->_isOpened;
 }
 
 vector<libsoem::EtherCATAdapterInfo> libsoem::EtherCATAdapterInfo::EnumerateAdapters()
