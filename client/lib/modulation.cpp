@@ -29,11 +29,13 @@ inline float sinc(float x) noexcept
 		return 1;
 	return sinf(M_PIf * x) / (M_PIf * x);
 }
+#if _WINDOWS
 template <typename T>
 T clamp(T v, T min, T max)
 {
 	return (v < min) ? min : (v > max) ? max : v;
 }
+#endif
 int gcd(int u, int V)
 {
 	const auto t = u % V;
