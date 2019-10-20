@@ -4,7 +4,7 @@
  * Created Date: 04/09/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 19/10/2019
+ * Last Modified: 20/10/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -38,7 +38,7 @@ public:
 	void Open(const char *ifname, size_t devNum, uint32_t CycleTime);
 	void Send(size_t size, unique_ptr<uint8_t[]> buf);
 	void Close();
-	
+
 	bool _isOpened = false;
 
 private:
@@ -85,7 +85,7 @@ void libsoem::SOEMController::impl::RTthread(SOEMController::impl *ptr)
 
 void libsoem::SOEMController::impl::SetupSync0(bool actiavte, uint32_t CycleTime)
 {
-	auto exceed = static_cast<unsigned long>(_devNum - 1) * static_cast<unsigned long>(CycleTime) > 0x7ffffffful;
+	auto exceed = CycleTime > 1000000u;
 	for (uint16 slave = 1; slave <= _devNum; slave++)
 	{
 		if (exceed)
@@ -230,13 +230,6 @@ void libsoem::SOEMController::impl::Close()
 
 		SetupSync0(false, _cycleTime);
 
-		auto size = (OUTPUT_FRAME_SIZE + INPUT_FRAME_SIZE) * _devNum;
-		memset(&_IOmap[0], 0x00, size);
-		for (int i = 0; i < 200; i++)
-		{
-			ec_send_processdata();
-		}
-
 		ec_slave[0].state = EC_STATE_INIT;
 		ec_writestate(0);
 
@@ -269,7 +262,8 @@ void libsoem::SOEMController::Close()
 	this->_pimpl->Close();
 }
 
-bool libsoem::SOEMController::isOpen() {
+bool libsoem::SOEMController::isOpen()
+{
 	return this->_pimpl->_isOpened;
 }
 
