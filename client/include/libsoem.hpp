@@ -39,6 +39,7 @@ public:
 
 	void Open(const char *ifname, size_t devNum, uint32_t CycleTime = SYNC0_CYCLE_TIME_NANO_SEC);
 	void Send(size_t size, unique_ptr<uint8_t[]> buf);
+	vector<uint16_t> Read();
 	bool isOpen();
 	void Close();
 

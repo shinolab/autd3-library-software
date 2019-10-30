@@ -329,7 +329,7 @@ namespace AUTDServer
             doc.LoadXml(xml);
 
             // set cycle: 1ms
-            doc.SelectSingleNode("TreeItem/TaskDef/CycleTime").InnerText = "5000";
+            doc.SelectSingleNode("TreeItem/TaskDef/CycleTime").InnerText = "10000";
             task1.ConsumeXml(doc.OuterXml);
 
             ITcSmTreeItem task1out = sysManager.LookupTreeItem("TIRT^Task 1^Outputs");
@@ -415,7 +415,7 @@ namespace AUTDServer
                 //cpuAffinity.MaskQuad).ToString("x16"));
                 //writer.WriteElementString("Affinity", affinityString);
                 writer.WriteStartElement("CPUs");
-                writeCpuProperties(writer, 0, 5000);
+                writeCpuProperties(writer, 0, 10000);
                 writer.WriteEndElement();     // CPUs     
                 writer.WriteEndElement();     // RTimeSetDef     
                 writer.WriteEndElement();     // TreeItem

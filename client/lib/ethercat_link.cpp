@@ -112,7 +112,7 @@ void autd::internal::EthercatLink::Send(size_t size, std::unique_ptr<uint8_t[]> 
 }
 void autd::internal::EthercatLink::CalibrateModulation()
 {
-	cerr << "CalibrateModulation() is not supported for TwinCAT." << endl;
+	cerr << "You do not need to call CalibrateModulation() with TwinCAT." << endl;
 }
 
 // for localhost connection

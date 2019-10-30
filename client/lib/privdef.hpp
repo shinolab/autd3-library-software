@@ -39,6 +39,7 @@ enum RxGlobalControlFlags
 	LOOP_END = 1 << 1,
 	SILENT = 1 << 3,
 	MOD_RESET_MODE = 1 << 5,
+	IS_SYNC_FIRST_SYNC0 = 1 << 6, // reserve
 };
 
 struct RxGlobalHeader

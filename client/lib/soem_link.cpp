@@ -60,13 +60,23 @@ void autd::internal::SOEMLink::CalibrateModulation()
 	cout << "Start calibrating modulation..." << endl;
 	constexpr auto MOD_PERIOD_MS = (uint32_t)((MOD_BUF_SIZE / MOD_SAMPLING_FREQ) * 1000);
 
+	cout << "DEV No.\t| Header\t| BASE" << endl;
+	auto v = _cnt->Read();
+	cout << "************* PRE ******************" << endl;
+	for (size_t i = 0; i < v.size(); i++)
+	{
+		auto h = (v.at(i) & 0xC000) >> 14;
+		auto base = v.at(i) & 0x3FFF;
+		cout << i << "\t| " << (int)h << "\t| " << (int)base << endl;
+	}
+
 	_cnt->Close();
 	_cnt->Open(_ifname.c_str(), _devNum, MOD_PERIOD_MS * 1000 * 1000);
 
 	auto size = sizeof(RxGlobalHeader);
 	auto body = make_unique<uint8_t[]>(size);
 	auto* header = reinterpret_cast<RxGlobalHeader*>(&body[0]);
-	header->msg_id = (++_id) % 56 + 200;
+	header->msg_id = 0xFF;
 	header->control_flags |= MOD_RESET_MODE;
 
 	Send(size, move(body));
@@ -75,5 +85,15 @@ void autd::internal::SOEMLink::CalibrateModulation()
 
 	_cnt->Close();
 	_cnt->Open(_ifname.c_str(), _devNum);
+
+	v = _cnt->Read();
+	cout << "************* AFTER ******************" << endl;
+	for (size_t i = 0; i < v.size(); i++)
+	{
+		auto h = (v.at(i) & 0xC000) >> 14;
+		auto base = v.at(i) & 0x3FFF;
+		cout << i << "\t| " << (int)h << "\t| " << (int)base << endl;
+	}
+
 	cout << "Finish calibrating modulation..." << endl;
 }

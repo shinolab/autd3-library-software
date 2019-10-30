@@ -34,6 +34,7 @@ class SOEMController::impl
 public:
 	void Open(const char* ifname, size_t devNum, uint32_t CycleTime);
 	void Send(size_t size, unique_ptr<uint8_t[]> buf);
+	vector<uint16_t> Read();
 	void Close();
 
 	bool _isOpened = false;
@@ -79,6 +80,19 @@ void CALLBACK SOEMController::impl::RTthread(PVOID lpParam, BOOLEAN TimerOrWaitF
 		impl->_sent = true;
 	}
 	impl->_send_cond.notify_all();
+	ec_receive_processdata(EC_TIMEOUTRET);
+}
+
+vector<uint16_t> SOEMController::impl::Read() {
+	vector<uint16_t> res;
+
+	for (size_t i = 0; i < _devNum; i++)
+	{
+		uint16_t base = ((uint16_t)_IOmap[OUTPUT_FRAME_SIZE * _devNum + 2 * i + 1] << 8) | _IOmap[OUTPUT_FRAME_SIZE * _devNum + 2 * i];
+		res.push_back(base);
+	}
+
+	return res;
 }
 
 void SOEMController::impl::SetupSync0(bool actiavte, uint32_t CycleTime)
@@ -256,6 +270,11 @@ void SOEMController::Open(const char* ifname, size_t devNum, uint32_t CycleTime)
 void SOEMController::Send(size_t size, unique_ptr<uint8_t[]> buf)
 {
 	this->_pimpl->Send(size, move(buf));
+}
+
+vector<uint16_t> SOEMController::Read()
+{
+	return this->_pimpl->Read();
 }
 
 void SOEMController::Close()

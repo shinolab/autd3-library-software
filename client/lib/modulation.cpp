@@ -67,6 +67,14 @@ autd::ModulationPtr autd::Modulation::Create(uint8_t amp)
 }
 #pragma endregion
 
+autd::ModulationPtr autd::TestModulation::Create()
+{
+	auto mod = CreateHelper<TestModulation>();
+	mod->buffer.resize(1000, 255);
+	mod->buffer.at(0) = 0;
+	return mod;
+}
+
 #pragma region SineModulation
 autd::ModulationPtr autd::SineModulation::Create(int freq, float amp, float offset)
 {

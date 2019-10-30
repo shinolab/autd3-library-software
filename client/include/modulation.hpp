@@ -48,6 +48,13 @@ public:
 	static ModulationPtr Create(int freq, float amp = 1.0f, float offset = 0.5f);
 };
 
+
+class TestModulation : public Modulation
+{
+public:
+	static ModulationPtr Create();
+};
+
 class SawModulation : public Modulation
 {
 public:
