@@ -67,7 +67,7 @@ void autd::internal::SOEMLink::CalibrateModulation()
 	{
 		auto h = (v.at(i) & 0xC000) >> 14;
 		auto base = v.at(i) & 0x3FFF;
-		cout << i << "\t| " << (int)h << "\t| " << (int)base << endl;
+		cout << i << "\t| " << (int)h << "\t\t| " << (int)base << endl;
 	}
 
 	_cnt->Close();
@@ -77,7 +77,6 @@ void autd::internal::SOEMLink::CalibrateModulation()
 	auto body = make_unique<uint8_t[]>(size);
 	auto* header = reinterpret_cast<RxGlobalHeader*>(&body[0]);
 	header->msg_id = 0xFF;
-	header->control_flags |= MOD_RESET_MODE;
 
 	Send(size, move(body));
 
@@ -86,13 +85,15 @@ void autd::internal::SOEMLink::CalibrateModulation()
 	_cnt->Close();
 	_cnt->Open(_ifname.c_str(), _devNum);
 
+	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
 	v = _cnt->Read();
 	cout << "************* AFTER ******************" << endl;
 	for (size_t i = 0; i < v.size(); i++)
 	{
 		auto h = (v.at(i) & 0xC000) >> 14;
 		auto base = v.at(i) & 0x3FFF;
-		cout << i << "\t| " << (int)h << "\t| " << (int)base << endl;
+		cout << i << "\t| " << (int)h << "\t\t| " << (int)base << endl;
 	}
 
 	cout << "Finish calibrating modulation..." << endl;
