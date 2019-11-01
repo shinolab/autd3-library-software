@@ -4,7 +4,7 @@
  * Created Date: 11/06/2016
  * Author: Seki Inoue
  * -----
- * Last Modified: 19/10/2019
+ * Last Modified: 01/11/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2016-2019 Hapis Lab. All rights reserved.
@@ -70,7 +70,7 @@ autd::ModulationPtr autd::Modulation::Create(uint8_t amp)
 autd::ModulationPtr autd::TestModulation::Create()
 {
 	auto mod = CreateHelper<TestModulation>();
-	mod->buffer.resize(1000, 255);
+	mod->buffer.resize(4000, 1);
 	mod->buffer.at(0) = 0;
 	return mod;
 }

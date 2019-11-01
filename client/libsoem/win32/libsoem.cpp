@@ -4,7 +4,7 @@
  * Created Date: 23/08/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 20/10/2019
+ * Last Modified: 01/11/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -32,9 +32,9 @@ using namespace std;
 class SOEMController::impl
 {
 public:
-	void Open(const char* ifname, size_t devNum, uint32_t CycleTime);
+	void Open(const char* ifname, size_t devNum, uint32_t ec_sm3_cyctime_ns, uint32_t ec_sync0_cyctime_ns, size_t header_size, size_t body_size, size_t input_frame_size);
 	void Send(size_t size, unique_ptr<uint8_t[]> buf);
-	vector<uint16_t> Read();
+	vector<uint16_t> Read(size_t input_frame_idx);
 	void Close();
 
 	bool _isOpened = false;
@@ -42,10 +42,10 @@ public:
 private:
 	static void CALLBACK RTthread(PVOID lpParam, BOOLEAN TimerOrWaitFired);
 	void SetupSync0(bool actiavte, uint32_t CycleTime);
-	void CreateCopyThread();
+	void CreateCopyThread(size_t header_size, size_t body_size);
 
 	vector<uint8_t> _IOmap;
-	uint32_t _cycleTime = 0;
+	uint32_t _sync0_cyctime = 0;
 
 	queue<size_t> _send_size_q;
 	queue<unique_ptr<uint8_t[]>> _send_buf_q;
@@ -83,12 +83,13 @@ void CALLBACK SOEMController::impl::RTthread(PVOID lpParam, BOOLEAN TimerOrWaitF
 	ec_receive_processdata(EC_TIMEOUTRET);
 }
 
-vector<uint16_t> SOEMController::impl::Read() {
+vector<uint16_t> SOEMController::impl::Read(size_t input_frame_idx)
+{
 	vector<uint16_t> res;
 
 	for (size_t i = 0; i < _devNum; i++)
 	{
-		uint16_t base = ((uint16_t)_IOmap[OUTPUT_FRAME_SIZE * _devNum + 2 * i + 1] << 8) | _IOmap[OUTPUT_FRAME_SIZE * _devNum + 2 * i];
+		uint16_t base = ((uint16_t)_IOmap[input_frame_idx + 2 * i + 1] << 8) | _IOmap[input_frame_idx + 2 * i];
 		res.push_back(base);
 	}
 
@@ -112,9 +113,9 @@ void SOEMController::impl::SetupSync0(bool actiavte, uint32_t CycleTime)
 	}
 }
 
-void SOEMController::impl::CreateCopyThread()
+void SOEMController::impl::CreateCopyThread(size_t header_size, size_t body_size)
 {
-	_cpy_thread = thread([&] {
+	_cpy_thread = thread([this](size_t header_size, size_t body_size) {
 		while (_isOpened)
 		{
 			unique_ptr<uint8_t[]> buf = nullptr;
@@ -133,15 +134,14 @@ void SOEMController::impl::CreateCopyThread()
 
 			if (buf != nullptr && _isOpened)
 			{
-				const auto header_size = MOD_FRAME_SIZE + 4;
-				const auto data_size = TRANS_NUM * 2;
-				const auto includes_gain = ((size - header_size) / data_size) > 0;
+				const auto includes_gain = ((size - header_size) / body_size) > 0;
+				const auto output_frame_size = header_size + body_size;
 
 				for (size_t i = 0; i < _devNum; i++)
 				{
 					if (includes_gain)
-						memcpy(&_IOmap[OUTPUT_FRAME_SIZE * i], &buf[header_size + data_size * i], data_size);
-					memcpy(&_IOmap[OUTPUT_FRAME_SIZE * i + data_size], &buf[0], header_size);
+						memcpy(&_IOmap[output_frame_size * i], &buf[header_size + body_size * i], body_size);
+					memcpy(&_IOmap[output_frame_size * i + body_size], &buf[0], header_size);
 				}
 
 				{
@@ -154,19 +154,19 @@ void SOEMController::impl::CreateCopyThread()
 				_send_buf_q.pop();
 			}
 		}
-		});
+		}, header_size, body_size);
 }
 
-void SOEMController::impl::Open(const char* ifname, size_t devNum, uint32_t CycleTime)
+void SOEMController::impl::Open(const char* ifname, size_t devNum, uint32_t ec_sm3_cyctime_ns, uint32_t ec_sync0_cyctime_ns, size_t header_size, size_t body_size, size_t input_frame_size)
 {
 	_devNum = devNum;
-	auto size = (OUTPUT_FRAME_SIZE + INPUT_FRAME_SIZE) * _devNum;
+	auto size = (header_size + body_size + input_frame_size) * _devNum;
 	if (_IOmap.size() != size)
 	{
 		_IOmap = vector<uint8_t>(size, 0);
 	}
 
-	_cycleTime = CycleTime;
+	_sync0_cyctime = ec_sync0_cyctime_ns;
 
 	if (ec_init(ifname))
 	{
@@ -185,9 +185,6 @@ void SOEMController::impl::Open(const char* ifname, size_t devNum, uint32_t Cycl
 			if (_timerQueue == NULL)
 				cerr << "CreateTimerQueue failed." << endl;
 
-			if (!CreateTimerQueueTimer(&_timer, _timerQueue, (WAITORTIMERCALLBACK)RTthread, reinterpret_cast<void*>(this), 0, SM3_CYCLE_TIME_MILLI_SEC, 0))
-				cerr << "CreateTimerQueueTimer failed." << endl;
-
 			ec_writestate(0);
 
 			auto chk = 200;
@@ -200,14 +197,15 @@ void SOEMController::impl::Open(const char* ifname, size_t devNum, uint32_t Cycl
 			{
 				_isOpened = true;
 
-				SetupSync0(true, _cycleTime);
+				SetupSync0(true, _sync0_cyctime);
 
-				CreateCopyThread();
+				if (!CreateTimerQueueTimer(&_timer, _timerQueue, (WAITORTIMERCALLBACK)RTthread, reinterpret_cast<void*>(this), 0, ec_sm3_cyctime_ns / 1000 / 1000, 0))
+					cerr << "CreateTimerQueueTimer failed." << endl;
+
+				CreateCopyThread(header_size, body_size);
 			}
 			else
 			{
-				if (!DeleteTimerQueueTimer(_timerQueue, _timer, 0))
-					cerr << "DeleteTimerQueue failed." << endl;
 				cerr << "One ore more slaves are not responding." << endl;
 			}
 		}
@@ -241,7 +239,7 @@ void SOEMController::impl::Close()
 				Sleep(200);
 		}
 
-		SetupSync0(false, _cycleTime);
+		SetupSync0(false, _sync0_cyctime);
 
 		ec_slave[0].state = EC_STATE_INIT;
 		ec_writestate(0);
@@ -262,9 +260,9 @@ SOEMController::~SOEMController()
 	this->_pimpl->Close();
 }
 
-void SOEMController::Open(const char* ifname, size_t devNum, uint32_t CycleTime)
+void SOEMController::Open(const char* ifname, size_t devNum, uint32_t ec_sm3_cyctime_ns, uint32_t ec_sync0_cyctime_ns, size_t header_size, size_t body_size, size_t input_frame_size)
 {
-	this->_pimpl->Open(ifname, devNum, CycleTime);
+	this->_pimpl->Open(ifname, devNum, ec_sm3_cyctime_ns, ec_sync0_cyctime_ns, header_size, body_size, input_frame_size);
 }
 
 void SOEMController::Send(size_t size, unique_ptr<uint8_t[]> buf)
@@ -272,9 +270,9 @@ void SOEMController::Send(size_t size, unique_ptr<uint8_t[]> buf)
 	this->_pimpl->Send(size, move(buf));
 }
 
-vector<uint16_t> SOEMController::Read()
+vector<uint16_t> SOEMController::Read(size_t input_frame_idx)
 {
-	return this->_pimpl->Read();
+	return this->_pimpl->Read(input_frame_idx);
 }
 
 void SOEMController::Close()
