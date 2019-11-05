@@ -30,7 +30,7 @@ if(WIN32)
 endif()
 
 add_library(libsoem STATIC
-	${OS}/libsoem.cpp
+	libsoem.cpp
 	../include/libsoem.hpp
 
 	${SOEM_PATH}/soem/ethercatbase.c
