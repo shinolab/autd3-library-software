@@ -13,9 +13,9 @@
 
 #if (_WIN32 || _WIN64)
 #define WINDOWS
-#elif __APPLE__
+#elif defined __APPLE__
 #define MACOSX
-#elif __linux__
+#elif defined __linux__
 #define LINUX
 #else
 #error "Not supported."
@@ -54,7 +54,7 @@ using namespace std;
 class SOEMController::impl
 {
 public:
-	void Open(const char *ifname, size_t devNum, uint32_t ec_sm3_cyctime_ns, uint32_t ec_sync0_cyctime_ns, size_t header_size, size_t body_size, size_t input_frame_size);
+	void Open(const char* ifname, size_t devNum, uint32_t ec_sm3_cyctime_ns, uint32_t ec_sync0_cyctime_ns, size_t header_size, size_t body_size, size_t input_frame_size);
 	void Send(size_t size, unique_ptr<uint8_t[]> buf);
 	vector<uint16_t> Read(size_t input_frame_idx);
 	void Close();
@@ -64,9 +64,9 @@ public:
 private:
 #ifdef WINDOWS
 	static void CALLBACK RTthread(PVOID lpParam, BOOLEAN TimerOrWaitFired);
-#elif MACOSX
-	static void RTthread(SOEMController::impl *pimpl);
-#elif LINUX
+#elif defined MACOSX
+	static void RTthread(SOEMController::impl* pimpl);
+#elif defined LINUX
 	static void RTthread(union sigval sv);
 #endif
 	void SetupSync0(bool actiavte, uint32_t CycleTime);
@@ -89,10 +89,10 @@ private:
 #ifdef WINDOWS
 	HANDLE _timerQueue = NULL;
 	HANDLE _timer = NULL;
-#elif MACOSX
+#elif defined MACOSX
 	dispatch_queue_t _queue;
 	dispatch_source_t _timer;
-#elif LINUX
+#elif defined LINUX
 	timer_t _timer_id;
 #endif
 };
@@ -110,14 +110,14 @@ void SOEMController::impl::Send(size_t size, unique_ptr<uint8_t[]> buf)
 #ifdef WINDOWS
 void CALLBACK SOEMController::impl::RTthread(PVOID lpParam, BOOLEAN TimerOrWaitFired)
 {
-	const auto pimpl = (reinterpret_cast<SOEMController::impl *>(lpParam));
-#elif MACOSX
-void libsoem::SOEMController::impl::RTthread(SOEMController::impl *pimpl)
+	const auto pimpl = (reinterpret_cast<SOEMController::impl*>(lpParam));
+#elif defined MACOSX
+void libsoem::SOEMController::impl::RTthread(SOEMController::impl * pimpl)
 {
-#elif LINUX
+#elif defined LINUX
 void libsoem::SOEMController::impl::RTthread(union sigval sv)
 {
-	const auto pimpl = (reinterpret_cast<SOEMController::impl *>(sv.sival_ptr));
+	const auto pimpl = (reinterpret_cast<SOEMController::impl*>(sv.sival_ptr));
 #endif
 	ec_send_processdata();
 	{
@@ -167,7 +167,7 @@ void SOEMController::impl::CreateCopyThread(size_t header_size, size_t body_size
 				unique_lock<mutex> lk(_cpy_mtx);
 				_cpy_cond.wait(lk, [&] {
 					return _send_buf_q.size() > 0 || !_isOpened;
-				});
+					});
 				if (_send_buf_q.size() > 0)
 				{
 					buf = move(_send_buf_q.front());
@@ -197,11 +197,11 @@ void SOEMController::impl::CreateCopyThread(size_t header_size, size_t body_size
 				_send_buf_q.pop();
 			}
 		}
-	},
-						 header_size, body_size);
+		},
+		header_size, body_size);
 }
 
-void SOEMController::impl::Open(const char *ifname, size_t devNum, uint32_t ec_sm3_cyctime_ns, uint32_t ec_sync0_cyctime_ns, size_t header_size, size_t body_size, size_t input_frame_size)
+void SOEMController::impl::Open(const char* ifname, size_t devNum, uint32_t ec_sm3_cyctime_ns, uint32_t ec_sync0_cyctime_ns, size_t header_size, size_t body_size, size_t input_frame_size)
 {
 	_devNum = devNum;
 	auto size = (header_size + body_size + input_frame_size) * _devNum;
@@ -244,25 +244,25 @@ void SOEMController::impl::Open(const char *ifname, size_t devNum, uint32_t ec_s
 				if (_timerQueue == NULL)
 					cerr << "CreateTimerQueue failed." << endl;
 
-				if (!CreateTimerQueueTimer(&_timer, _timerQueue, (WAITORTIMERCALLBACK)RTthread, reinterpret_cast<void *>(this), 0, ec_sm3_cyctime_ns / 1000 / 1000, 0))
+				if (!CreateTimerQueueTimer(&_timer, _timerQueue, (WAITORTIMERCALLBACK)RTthread, reinterpret_cast<void*>(this), 0, ec_sm3_cyctime_ns / 1000 / 1000, 0))
 					cerr << "CreateTimerQueueTimer failed." << endl;
-#elif MACOSX
+#elif defined MACOSX
 				_queue = dispatch_queue_create("timerQueue", 0);
 
 				_timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _queue);
-				dispatch_source_set_event_handler(_timer, ^{
+				dispatch_source_set_event_handler(_timer, ^ {
 				  RTthread(this);
-				});
+					});
 
-				dispatch_source_set_cancel_handler(_timer, ^{
+				dispatch_source_set_cancel_handler(_timer, ^ {
 				  dispatch_release(_timer);
 				  dispatch_release(_queue);
-				});
+					});
 
 				dispatch_time_t start = dispatch_time(DISPATCH_TIME_NOW, 0);
 				dispatch_source_set_timer(_timer, start, ec_sm3_cyctime_ns, 0);
 				dispatch_resume(_timer);
-#elif LINUX
+#elif defined LINUX
 				struct itimerspec itval;
 				struct sigevent se;
 
@@ -324,9 +324,9 @@ void SOEMController::impl::Close()
 			else
 				Sleep(200);
 		}
-#elif MACOSX
+#elif defined MACOSX
 		dispatch_source_cancel(_timer);
-#elif LINUX
+#elif defined LINUX
 		timer_delete(_timer_id);
 #endif
 		SetupSync0(false, _sync0_cyctime);
@@ -350,7 +350,7 @@ SOEMController::~SOEMController()
 	this->_pimpl->Close();
 }
 
-void SOEMController::Open(const char *ifname, size_t devNum, uint32_t ec_sm3_cyctime_ns, uint32_t ec_sync0_cyctime_ns, size_t header_size, size_t body_size, size_t input_frame_size)
+void SOEMController::Open(const char* ifname, size_t devNum, uint32_t ec_sm3_cyctime_ns, uint32_t ec_sync0_cyctime_ns, size_t header_size, size_t body_size, size_t input_frame_size)
 {
 	this->_pimpl->Open(ifname, devNum, ec_sm3_cyctime_ns, ec_sync0_cyctime_ns, header_size, body_size, input_frame_size);
 }
@@ -381,7 +381,7 @@ vector<EtherCATAdapterInfo> EtherCATAdapterInfo::EnumerateAdapters()
 	auto _adapters = vector<EtherCATAdapterInfo>();
 	while (adapter != NULL)
 	{
-		auto *info = new EtherCATAdapterInfo;
+		auto* info = new EtherCATAdapterInfo;
 		info->desc = make_shared<string>(adapter->desc);
 		info->name = make_shared<string>(adapter->name);
 		_adapters.push_back(*info);
