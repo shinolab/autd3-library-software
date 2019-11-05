@@ -8,13 +8,16 @@ Version: 3.0.2.0
 
 対応するファームウェアは"dist/firmware"内においてあります.
 
+## CAUTION ##
+
+必ず, dist/firmwareにあるv3.0.2のファームウェアを書き込んでから使用してください.
+
 # Change log
 
 * 3.0.2.0
     * ModulationCalibration実装
         * これにより破壊的な変更がソフト/CPU/FPGAに入った
         * Sync0のデフォルト周期を1msに戻した
-        * TwinCAT未対応
 
 * 3.0.1.3
     * AppendGain修正

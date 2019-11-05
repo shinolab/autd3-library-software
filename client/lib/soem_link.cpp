@@ -4,7 +4,7 @@
  * Created Date: 24/08/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 01/11/2019
+ * Last Modified: 05/11/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -58,44 +58,28 @@ bool autd::internal::SOEMLink::isOpen()
 	return _isOpen;
 }
 
-void autd::internal::SOEMLink::CalibrateModulation()
+bool autd::internal::SOEMLink::CalibrateModulation()
 {
-	auto log = [](ofstream &file, const vector<uint16_t> &v) {
-		for (size_t i = 0; i < v.size(); i++)
-		{
-			auto h = (v.at(i) & 0xC000) >> 14;
-			auto base = v.at(i) & 0x3FFF;
-			file << i << "\t| " << (int)h << "\t\t| " << (int)base << endl;
-		}
-	};
+	constexpr int SYNC0_STEP = EC_SYNC0_CYCLE_TIME_MICRO_SEC * MOD_SAMPLING_FREQ / (1000 * 1000);
+	constexpr uint32_t MOD_PERIOD_MS = (uint32_t)((MOD_BUF_SIZE / MOD_SAMPLING_FREQ) * 1000);
 
-	auto succeed_calib = [](const vector<uint16_t> &v) {
+	auto succeed_calib = [&](const vector<uint16_t> &v) {
 		auto min = *min_element(v.begin(), v.end());
 		for (size_t i = 0; i < v.size(); i++)
 		{
 			auto h = (v.at(i) & 0xC000) >> 14;
 			auto base = v.at(i) & 0x3FFF;
-			if (h == 3 || (base - min) % 4 != 0)
+			if (h != 1 || (base - min) % SYNC0_STEP != 0)
 				return false;
 		}
 
 		return true;
 	};
 
-	cout << "Start calibrating modulation..." << endl;
-	constexpr auto MOD_PERIOD_MS = (uint32_t)((MOD_BUF_SIZE / MOD_SAMPLING_FREQ) * 1000);
-
-	ofstream full_log_file("full_log.txt");
-	ofstream error_log_file("error_log.txt");
-
-	full_log_file << "DEV No.\t| Header\t| BASE" << endl;
-	error_log_file << "DEV No.\t| Header\t| BASE" << endl;
-
-	for (size_t i = 0; i < 20000; i++)
+	auto success = false;
+	std::vector<uint16_t> v;
+	for (size_t i = 0; i < 10; i++)
 	{
-		cout << i << "-th test start..." << endl;
-		full_log_file << i << "-th test start..." << endl;
-
 		_cnt->Close();
 		_cnt->Open(_ifname.c_str(), _devNum, EC_SM3_CYCLE_TIME_NANO_SEC, MOD_PERIOD_MS * 1000 * 1000, HEADER_SIZE, NUM_TRANS_IN_UNIT * 2, EC_INPUT_FRAME_SIZE);
 
@@ -111,22 +95,27 @@ void autd::internal::SOEMLink::CalibrateModulation()
 		_cnt->Close();
 		_cnt->Open(_ifname.c_str(), _devNum, EC_SM3_CYCLE_TIME_NANO_SEC, EC_SYNC0_CYCLE_TIME_NANO_SEC, HEADER_SIZE, NUM_TRANS_IN_UNIT * 2, EC_INPUT_FRAME_SIZE);
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-
-		auto v = _cnt->Read(EC_OUTPUT_FRAME_SIZE * _devNum);
-		log(full_log_file, v);
-		if (!succeed_calib(v))
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		v = _cnt->Read(EC_OUTPUT_FRAME_SIZE * _devNum);
+		if (succeed_calib(v))
 		{
-			cout << "failed!" << endl;
-			log(error_log_file, v);
+			success = true;
+			break;
 		}
 	}
 
-	full_log_file << "finish" << endl;
-	error_log_file << "finish" << endl;
+	if (!success)
+	{
+		cerr << "Failed to CalibrateModulation." << endl;
+		cerr << "======= Modulation Log ========" << endl;
+		for (size_t i = 0; i < v.size(); i++)
+		{
+			auto h = (v.at(i) & 0xC000) >> 14;
+			auto base = v.at(i) & 0x3FFF;
+			cerr << i << "," << (int)h << "," << (int)base << endl;
+		}
+		cerr << "===============================" << endl;
+	}
 
-	full_log_file.close();
-	error_log_file.close();
-
-	cout << "Finish calibrating modulation..." << endl;
+	return success;
 }
