@@ -58,7 +58,7 @@ add_library(autd3capi SHARED
 
 if (Matlab_FOUND AND Matlab_MX_LIBRARY)
     add_definitions(-DMATLAB_ENABLED)
-    target_link_libraries(autd3 ${Matlab_MX_LIBRARY} ${Matlab_MAT_LIBRARY})
+    target_link_libraries(autd3capi ${Matlab_MX_LIBRARY} ${Matlab_MAT_LIBRARY})
 endif()
 
 if (USE_UNITY)
