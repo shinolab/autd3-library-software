@@ -1,16 +1,17 @@
-﻿/*
+/*
  * File: matlabgain.cpp
  * Project: lib
  * Created Date: 20/09/2016
  * Author: Seki Inoue
  * -----
- * Last Modified: 04/09/2019
+ * Last Modified: 19/12/2019
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2016-2019 Hapis Lab. All rights reserved.
  * 
  */
 
+#define _USE_MATH_DEFINES
 #include <stdio.h>
 #include <complex>
 #include "autd3.hpp"
@@ -20,6 +21,7 @@
 
 #ifdef MATLAB_ENABLED
 #include "mat.h"
+#include "matrix.h"
 #endif
 
 template <typename T>
@@ -63,8 +65,7 @@ void autd::MatlabGain::build()
         throw new std::runtime_error("Insufficient number of data in mat file");
     }
 
-    double *real = mxGetPr(arr);
-    double *imag = mxGetPi(arr);
+    mxComplexDouble *array = mxGetComplexDoubles(arr);
 
     mxArray *pos = matGetVariable(pmat, "pos");
     double *posarr = NULL;
@@ -81,11 +82,11 @@ void autd::MatlabGain::build()
     }
     for (int i = 0; i < nelems; i++)
     {
-        float famp = sqrtf(real[i] * real[i] + imag[i] * imag[i]);
+        float famp = sqrtf(array[i].real * array[i].real + array[i].imag * array[i].imag);
         uint8_t amp = clamp<float>(famp, 0, 1) * 255.99;
         float fphase = 0.0f;
         if (amp != 0)
-            fphase = atan2f(imag[i], real[i]);
+            fphase = atan2f(array[i].imag, array[i].real);
         uint8_t phase = round((-fphase + M_PI) / (2.0 * M_PI) * 255.0);
 
         if (posarr != NULL)
