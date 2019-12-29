@@ -8,7 +8,7 @@
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2016-2019 Hapis Lab. All rights reserved.
- * 
+ *
  */
 
 #include <iostream>
@@ -45,41 +45,64 @@ using namespace Eigen;
 
 namespace hologainimpl
 {
-// TODO: use cache and interpolate. don't use exp
-complex<float> transfer(Vector3f trans_pos, Vector3f trans_norm, Vector3f target_pos)
-{
-	const auto diff = trans_pos - target_pos;
-	const auto dist = diff.norm();
-	const auto cos = diff.dot(trans_norm) / dist / trans_norm.norm();
+	const float DIR_COEF_A[] = { 1.0f,1.0f, 1.0f, 0.891250938f, 0.707945784f,0.501187234f, 0.354813389f,0.251188643f,0.199526231f };
+	const float DIR_COEF_B[] = { 0.f,0.f,-0.00459648054721f,	-0.0155520765675f,-0.0208114779827f,-0.0182211227016f,	-0.0122437497109f,-0.00780345575475f,	-0.00312857467007f};
+	const float DIR_COEF_C[] = { 0.f,0.f,-0.000787968093807f,-0.000307591508224f,-0.000218348633296f,0.00047738416141f,0.000120353137658f,0.000323676257958f,0.000143850511f};
+	const float DIR_COEF_D[] = { 0.f,0.f,1.60125528528e-05f,2.9747624976e-06f,2.31910931569e-05f,-1.1901034125e-05f,6.77743734332e-06f,-5.99548024824e-06f,-4.79372835035e-06f};
 
-	//1.11   & 1.06  &  0.24 &  -0.12  &  0.035
-	const auto directivity = 1.11f * sqrt((2 * 0 + 1) / (4 * M_PIf)) * 1 + 1.06f * sqrt((2 * 1 + 1) / (4 * M_PIf)) * cos + 0.24f * sqrt((2 * 2 + 1) / (4 * M_PIf)) / 2 * (3 * cos * cos - 1) - 0.12f * sqrt((2 * 3 + 1) / (4 * M_PIf)) / 2 * cos * (5 * cos * cos - 3) + 0.035f * sqrt((2 * 4 + 1) / (4 * M_PIf)) / 8 * (35 * cos * cos * cos * cos - 30 * cos * cos + 3);
+	static float directivity_t4010a1(float theta_deg) {
+		theta_deg = abs(theta_deg);
 
-	auto g = directivity / dist * exp(complex<float>(-dist * 1.15e-4f, -2 * M_PIf / ULTRASOUND_WAVELENGTH * dist));
-	return g;
-}
+		while (theta_deg > 90.0f) {
+			theta_deg = abs(180.0f - theta_deg);
+		}
 
-void removeRow(MatrixXcf &matrix, size_t rowToRemove)
-{
-	const auto numRows = static_cast<size_t>(matrix.rows()) - 1;
-	const auto numCols = static_cast<size_t>(matrix.cols());
+		size_t i = static_cast<size_t>(ceil(theta_deg / 10.0f));
 
-	if (rowToRemove < numRows)
-		matrix.block(rowToRemove, 0, numRows - rowToRemove, numCols) = matrix.block(rowToRemove + 1, 0, numRows - rowToRemove, numCols);
+		if (i == 0) {
+			return 1.0;
+		}
+		else {
+			auto a = DIR_COEF_A[i - 1];
+			auto b = DIR_COEF_B[i - 1];
+			auto c = DIR_COEF_C[i - 1];
+			auto d = DIR_COEF_D[i - 1];
+			auto x = theta_deg - (i - 1.0f) * 10.0f;
+			return	a + b * x + c * x * x + d * x * x * x;
+		}
+	}
 
-	matrix.conservativeResize(numRows, numCols);
-}
+	complex<float> transfer(Vector3f trans_pos, Vector3f trans_norm, Vector3f target_pos)
+	{
+		const auto diff = target_pos - trans_pos;
+		const auto dist = diff.norm();
+		const auto theta = atan2(diff.dot(trans_norm), dist * trans_norm.norm()) * 180.0f / M_PIf;
+		const auto directivity = directivity_t4010a1(theta);
 
-void removeColumn(MatrixXcf &matrix, size_t colToRemove)
-{
-	const auto numRows = static_cast<size_t>(matrix.rows());
-	const auto numCols = static_cast<size_t>(matrix.cols()) - 1;
+		return directivity / dist * exp(complex<float>(-dist * 1.15e-4f, -2 * M_PIf / ULTRASOUND_WAVELENGTH * dist));
+	}
 
-	if (colToRemove < numCols)
-		matrix.block(0, colToRemove, numRows, numCols - colToRemove) = matrix.block(0, colToRemove + 1, numRows, numCols - colToRemove);
+	void removeRow(MatrixXcf& matrix, size_t rowToRemove)
+	{
+		const auto numRows = static_cast<size_t>(matrix.rows()) - 1;
+		const auto numCols = static_cast<size_t>(matrix.cols());
 
-	matrix.conservativeResize(numRows, numCols);
-}
+		if (rowToRemove < numRows)
+			matrix.block(rowToRemove, 0, numRows - rowToRemove, numCols) = matrix.block(rowToRemove + 1, 0, numRows - rowToRemove, numCols);
+
+		matrix.conservativeResize(numRows, numCols);
+	}
+
+	void removeColumn(MatrixXcf& matrix, size_t colToRemove)
+	{
+		const auto numRows = static_cast<size_t>(matrix.rows());
+		const auto numCols = static_cast<size_t>(matrix.cols()) - 1;
+
+		if (colToRemove < numCols)
+			matrix.block(0, colToRemove, numRows, numCols - colToRemove) = matrix.block(0, colToRemove + 1, numRows, numCols - colToRemove);
+
+		matrix.conservativeResize(numRows, numCols);
+	}
 } // namespace hologainimpl
 
 autd::GainPtr autd::HoloGainSdp::Create(MatrixX3f foci, VectorXf amp)
@@ -106,9 +129,7 @@ void autd::HoloGainSdp::build()
 	const auto N = static_cast<int>(geo->numTransducers());
 
 	MatrixXcf P = MatrixXcf::Zero(M, M);
-	VectorXcf p = VectorXcf::Zero(M);
 	MatrixXcf B = MatrixXcf(M, N);
-	VectorXcf q = VectorXcf(N);
 
 	std::random_device rnd;
 	std::mt19937 mt(rnd());
@@ -116,8 +137,6 @@ void autd::HoloGainSdp::build()
 
 	for (int i = 0; i < M; i++)
 	{
-		p(i) = _amp(i) * exp(complex<float>(0.0f, 2.0f * M_PIf * range(mt)));
-
 		P(i, i) = _amp(i);
 
 		const auto tp = _foci.row(i);
@@ -153,7 +172,7 @@ void autd::HoloGainSdp::build()
 
 		VectorXcf x = Xc * MMc;
 		complex<float> gamma = x.adjoint() * MMc;
-		if (gamma.real() > 1e-7)
+		if (gamma.real() > 0)
 		{
 			x = -x * sqrt(LAMBDA_SDP / gamma.real());
 			X.block(ii, 0, 1, ii) = x.block(0, 0, ii, 1).adjoint().eval();
@@ -185,7 +204,7 @@ void autd::HoloGainSdp::build()
 	}
 
 	VectorXcf u = ces.eigenvectors().col(idx);
-	q = pinvB * P * u;
+	const auto q = pinvB * P * u;
 
 	this->_data.clear();
 	const int ndevice = geo->numDevices();
