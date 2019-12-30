@@ -78,10 +78,12 @@ class PlaneWaveGain : public Gain
 {
 public:
 	static GainPtr Create(Eigen::Vector3f direction);
+	static GainPtr Create(Eigen::Vector3f direction, uint8_t amp);
 	void build() override;
 
 private:
 	Eigen::Vector3f _direction;
+	uint8_t _amp;
 };
 
 class FocalPointGain : public Gain

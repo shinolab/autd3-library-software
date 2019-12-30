@@ -26,6 +26,11 @@
 using namespace autd;
 using namespace Eigen;
 
+inline float mod(float a, float b)
+{
+	return a - floor(a / b) * b;
+}
+
 GainPtr Gain::Create()
 {
 	return CreateHelper<Gain>();
@@ -74,8 +79,14 @@ std::map<int, std::vector<uint16_t>> Gain::data()
 
 GainPtr PlaneWaveGain::Create(Vector3f direction)
 {
+	return PlaneWaveGain::Create(direction, 0xFF);
+}
+
+GainPtr PlaneWaveGain::Create(Vector3f direction, uint8_t amp)
+{
 	auto ptr = CreateHelper<PlaneWaveGain>();
 	ptr->_direction = direction;
+	ptr->_amp = amp;
 	return ptr;
 }
 
@@ -94,9 +105,18 @@ void PlaneWaveGain::build()
 	}
 
 	const auto ntrans = geometry->numTransducers();
+	auto dir = this->_direction;
+	dir.normalize();
+
 	for (int i = 0; i < ntrans; i++)
 	{
-		this->_data[geometry->deviceIdForTransIdx(i)].at(i % NUM_TRANS_IN_UNIT) = 0xFF00;
+		const auto trp = geometry->position(i);
+		const auto dist = trp.dot(dir);
+		const auto fphase = mod(dist, ULTRASOUND_WAVELENGTH) / ULTRASOUND_WAVELENGTH;
+		const auto phase = static_cast<uint8_t>(round(255.0f * (1.0f - fphase)));
+		uint8_t D, S;
+		SignalDesign(this->_amp, phase, D, S);
+		this->_data[geometry->deviceIdForTransIdx(i)].at(i % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(D) << 8) + S;
 	}
 
 	this->_built = true;
