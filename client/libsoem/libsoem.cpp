@@ -36,6 +36,7 @@
 #include <dispatch/dispatch.h>
 #endif
 
+#include <atomic>
 #include <iostream>
 #include <cstdint>
 #include <mutex>
@@ -51,6 +52,8 @@
 using namespace libsoem;
 using namespace std;
 
+std::atomic<bool> SEND_COND(false);
+
 class SOEMController::impl
 {
 public:
@@ -58,6 +61,7 @@ public:
 	void Send(size_t size, unique_ptr<uint8_t[]> buf);
 	vector<uint16_t> Read(size_t input_frame_idx);
 	void Close();
+	~impl();
 
 	bool _isOpened = false;
 
@@ -72,14 +76,14 @@ private:
 	void SetupSync0(bool actiavte, uint32_t CycleTime);
 	void CreateCopyThread(size_t header_size, size_t body_size);
 
-	vector<uint8_t> _IOmap;
+	uint8_t* _IOmap; // should be shared_ptr?
+	size_t _iomap_size = 0;
 	uint32_t _sync0_cyctime = 0;
 
 	queue<size_t> _send_size_q;
 	queue<unique_ptr<uint8_t[]>> _send_buf_q;
 	thread _cpy_thread;
 	condition_variable _cpy_cond;
-	condition_variable _send_cond;
 	bool _sent = false;
 	mutex _cpy_mtx;
 	mutex _send_mtx;
@@ -107,10 +111,11 @@ void SOEMController::impl::Send(size_t size, unique_ptr<uint8_t[]> buf)
 	_cpy_cond.notify_all();
 }
 
+uint8_t tmp = 0x0000;
+
 #ifdef WINDOWS
 void CALLBACK SOEMController::impl::RTthread(PVOID lpParam, BOOLEAN TimerOrWaitFired)
 {
-	const auto pimpl = (reinterpret_cast<SOEMController::impl*>(lpParam));
 #elif defined MACOSX
 void libsoem::SOEMController::impl::RTthread(SOEMController::impl * pimpl)
 {
@@ -119,12 +124,11 @@ void libsoem::SOEMController::impl::RTthread(union sigval sv)
 {
 	const auto pimpl = (reinterpret_cast<SOEMController::impl*>(sv.sival_ptr));
 #endif
+	auto pre = SEND_COND.load(std::memory_order_acquire);
 	ec_send_processdata();
-	{
-		lock_guard<mutex> lk(pimpl->_send_mtx);
-		pimpl->_sent = true;
+	if (!pre) {
+		SEND_COND.store(true, std::memory_order_release);
 	}
-	pimpl->_send_cond.notify_all();
 	ec_receive_processdata(EC_TIMEOUTRET);
 }
 
@@ -188,26 +192,31 @@ void SOEMController::impl::CreateCopyThread(size_t header_size, size_t body_size
 				}
 
 				{
-					unique_lock<mutex> lk(_send_mtx);
-					_sent = false;
-					_send_cond.wait(lk, [this] { return _sent || !_isOpened; });
+					SEND_COND.store(false, std::memory_order_release);
+					while (!SEND_COND.load(std::memory_order_acquire)) {}
 				}
 
 				_send_size_q.pop();
 				_send_buf_q.pop();
 			}
 		}
-		},
-		header_size, body_size);
+		}, header_size, body_size);
 }
 
 void SOEMController::impl::Open(const char* ifname, size_t devNum, uint32_t ec_sm3_cyctime_ns, uint32_t ec_sync0_cyctime_ns, size_t header_size, size_t body_size, size_t input_frame_size)
 {
 	_devNum = devNum;
 	auto size = (header_size + body_size + input_frame_size) * _devNum;
-	if (_IOmap.size() != size)
-	{
-		_IOmap = vector<uint8_t>(size, 0);
+
+	if (size != _iomap_size) {
+		_iomap_size = size;
+
+		if (_IOmap != nullptr) {
+			delete[] _IOmap;
+		}
+
+		_IOmap = new uint8_t[size];
+		memset(_IOmap, 0x00, _iomap_size);
 	}
 
 	_sync0_cyctime = ec_sync0_cyctime_ns;
@@ -216,7 +225,7 @@ void SOEMController::impl::Open(const char* ifname, size_t devNum, uint32_t ec_s
 	{
 		if (ec_config_init(0) > 0)
 		{
-			ec_config_map(&_IOmap[0]);
+			ec_config_map(_IOmap);
 			ec_configdc();
 
 			ec_statecheck(0, EC_STATE_SAFE_OP, EC_TIMEOUTSTATE * 4);
@@ -309,11 +318,15 @@ void SOEMController::impl::Close()
 		_isOpened = false;
 
 		_cpy_cond.notify_all();
-		_send_cond.notify_all();
 		if (this_thread::get_id() != _cpy_thread.get_id() && this->_cpy_thread.joinable())
 			this->_cpy_thread.join();
 
-		fill(_IOmap.begin(), _IOmap.end(), 0x0000);
+		memset(_IOmap, 0x00, _iomap_size);
+
+		SEND_COND.store(false, std::memory_order_release);
+		while (!SEND_COND.load(std::memory_order_acquire)) {
+			this_thread::sleep_for(chrono::milliseconds(100));
+		}
 		this_thread::sleep_for(chrono::milliseconds(200));
 
 #ifdef WINDOWS
@@ -338,6 +351,11 @@ void SOEMController::impl::Close()
 
 		ec_close();
 	}
+}
+
+SOEMController::impl::~impl() {
+	if (_IOmap != nullptr)
+		delete[] _IOmap;
 }
 
 SOEMController::SOEMController()
