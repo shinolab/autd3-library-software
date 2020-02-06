@@ -4,7 +4,7 @@
  * Created Date: 25/08/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 19/10/2019
+ * Last Modified: 06/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -24,21 +24,14 @@ namespace AUTD3SharpTest.Test
         {
             Console.WriteLine("Start Simple Test (SOEM)");
 
-            //float x = AUTD.AUTDWidth / 2;
-            //float y = AUTD.AUTDHeight / 2;
-            //float z = 150;
-
-            float x = AUTD.AUTDWidth + 5f;
-            float y = AUTD.AUTDHeight;
-            float z = 295f;
+            float x = AUTD.AUTDWidth / 2;
+            float y = AUTD.AUTDHeight / 2;
+            float z = 150;
 
             using (AUTD autd = new AUTD())
             {
                 // AddDevice() must be called before Open(), and be called as many times as the number of AUTDs connected.
                 autd.AddDevice(Vector3f.Zero, Vector3f.Zero);
-                autd.AddDevice(Vector3f.UnitY * AUTD.AUTDHeight, Vector3f.Zero);
-                autd.AddDevice(Vector3f.UnitX*(AUTD.AUTDWidth + 10f) + Vector3f.UnitY * AUTD.AUTDHeight, Vector3f.Zero);
-                autd.AddDevice(Vector3f.UnitX * (AUTD.AUTDWidth + 10f), Vector3f.Zero);
                 //autd.AddDevice(Vector3f.UnitY * AUTD.AUTDHeight, Vector3f.Zero);
 
                 System.Collections.Generic.IEnumerable<EtherCATAdapter> adapters = AUTD.EnumerateAdapters();
@@ -58,28 +51,30 @@ namespace AUTD3SharpTest.Test
 
                 // If you use more than one AUTD, call this function only once after Open().
                 // It takes several seconds proportional to the number of AUTD you use.
-                autd.CalibrateModulation();
+                //autd.CalibrateModulation();
 
                 // AM
                 Console.WriteLine("Amplitude Modulation");
 
-                //Modulation mod = AUTD.SineModulation(150); // AM sin 150 Hz
-                Modulation mod = AUTD.Modulation(255); // AM sin 150 Hz
+                Modulation mod = AUTD.SineModulation(150); // AM sin 150 Hz
                 autd.AppendModulationSync(mod);
 
                 Gain gain = AUTD.FocalPointGain(x, y, z); // Focal point @ (x, y, z) [mm]
                 autd.AppendGainSync(gain);
 
-                //// LM
-                //Console.WriteLine("Lateral Modulation");
-                //autd.AppendModulationSync(AUTD.Modulation(255));
+                Console.WriteLine("press any key to start lateral modulation...");
+                Console.ReadKey(true);
 
-                //Gain f1 = AUTD.FocalPointGain(x + 2.5f, y, z);
-                //Gain f2 = AUTD.FocalPointGain(x - 2.5f, y, z);
+                // LM
+                Console.WriteLine("Lateral Modulation");
+                autd.AppendModulationSync(AUTD.Modulation(255));
 
-                //autd.AppendLateralGain(f1);
-                //autd.AppendLateralGain(f2);
-                //autd.StartLateralModulation(100); // Tapping f1 and f2 at 100Hz
+                Gain f1 = AUTD.FocalPointGain(x + 2.5f, y, z);
+                Gain f2 = AUTD.FocalPointGain(x - 2.5f, y, z);
+
+                autd.AppendLateralGain(f1);
+                autd.AppendLateralGain(f2);
+                autd.StartLateralModulation(100); // Tapping f1 and f2 at 100Hz
 
                 Console.WriteLine("press any key to finish...");
                 Console.ReadKey(true);
