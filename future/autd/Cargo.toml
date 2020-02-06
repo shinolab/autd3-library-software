@@ -17,8 +17,7 @@ rand = "0.7"
 csv = "1.1"
 lazy_static = "1.4"
 hound = "3.4"
-rusoem = { path = "../rusoem"}
-# rusoem = { git = "https://github.com/sssssssuzuki/rusoem.git", rev="d29f777"}
+rusoem = { git = "https://github.com/sssssssuzuki/rusoem.git", rev="b0ea426"}
 
 [dev-dependencies]
 colored = "1.9"

@@ -4,7 +4,7 @@
  * Created Date: 13/05/2016
  * Author: Seki Inoue
  * -----
- * Last Modified: 01/11/2019
+ * Last Modified: 06/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2016-2019 Hapis Lab. All rights reserved.
@@ -68,11 +68,11 @@ public:
 	void FlushBuffer();
 	void CalibrateModulation();
 
-	unique_ptr<uint8_t[]> MakeBody(GainPtr gain, ModulationPtr mod, size_t* size);
+	unique_ptr<uint8_t[]> MakeBody(GainPtr gain, ModulationPtr mod, size_t *size);
 
 	static uint8_t get_id()
 	{
-		static atomic<uint8_t> id{ 0 };
+		static atomic<uint8_t> id{0};
 
 		if (id == 0)
 		{
@@ -111,7 +111,7 @@ void Controller::impl::InitPipeline()
 
 				_build_cond.wait(lk, [&] {
 					return _build_q.size() || !this->isOpen();
-					});
+				});
 
 				if (_build_q.size() > 0)
 				{
@@ -134,7 +134,7 @@ void Controller::impl::InitPipeline()
 				}
 			}
 		}
-		});
+	});
 
 	// pipeline step #2
 	this->_send_thr = thread([&] {
@@ -150,7 +150,7 @@ void Controller::impl::InitPipeline()
 					unique_lock<mutex> lk(_send_mtx);
 					_send_cond.wait(lk, [&] {
 						return _send_gain_q.size() || _send_mod_q.size() || !this->isOpen();
-						});
+					});
 					if (_send_gain_q.size() > 0)
 						gain = _send_gain_q.front();
 					if (_send_mod_q.size() > 0)
@@ -178,7 +178,7 @@ void Controller::impl::InitPipeline()
 			this->Close();
 			cerr << errnum << "Link closed." << endl;
 		}
-		});
+	});
 }
 
 void Controller::impl::AppendGain(GainPtr gain)
@@ -201,12 +201,6 @@ void Controller::impl::AppendGainSync(GainPtr gain)
 
 		size_t body_size = 0;
 		auto body = this->MakeBody(gain, nullptr, &body_size);
-
-		cout << "GAIN" << endl;
-		for (size_t i = 0; i < body_size; ++i) {
-			std::cout << (int)body[i] << ",";
-		}
-		cout << endl;
 
 		if (this->isOpen())
 			this->_link->Send(body_size, move(body));
@@ -236,12 +230,6 @@ void Controller::impl::AppendModulationSync(ModulationPtr mod)
 				size_t body_size = 0;
 				auto body = this->MakeBody(nullptr, mod, &body_size);
 
-				cout << "MOD" << endl;
-				for (size_t i = 0; i < body_size; ++i) {
-					std::cout << (int)body[i] << ",";
-				}
-				cout << endl;
-
 				this->_link->Send(body_size, move(body));
 				this_thread::sleep_for(chrono::milliseconds(1));
 			}
@@ -269,14 +257,14 @@ void Controller::impl::FlushBuffer()
 	queue<ModulationPtr>().swap(_send_mod_q);
 }
 
-unique_ptr<uint8_t[]> Controller::impl::MakeBody(GainPtr gain, ModulationPtr mod, size_t* size)
+unique_ptr<uint8_t[]> Controller::impl::MakeBody(GainPtr gain, ModulationPtr mod, size_t *size)
 {
 	auto num_devices = (gain != nullptr) ? gain->geometry()->numDevices() : 0;
 
 	*size = sizeof(RxGlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;
 	auto body = make_unique<uint8_t[]>(*size);
 
-	auto* header = reinterpret_cast<RxGlobalHeader*>(&body[0]);
+	auto *header = reinterpret_cast<RxGlobalHeader *>(&body[0]);
 	header->msg_id = get_id();
 	header->control_flags = 0;
 	header->mod_size = 0;
@@ -298,7 +286,7 @@ unique_ptr<uint8_t[]> Controller::impl::MakeBody(GainPtr gain, ModulationPtr mod
 		mod->sent += mod_size;
 	}
 
-	auto* cursor = &body[0] + sizeof(RxGlobalHeader) / sizeof(body[0]);
+	auto *cursor = &body[0] + sizeof(RxGlobalHeader) / sizeof(body[0]);
 	if (gain != nullptr)
 	{
 		for (int i = 0; i < gain->geometry()->numDevices(); i++)
@@ -335,7 +323,7 @@ void Controller::impl::Close()
 		if (this_thread::get_id() != this->_send_thr.get_id() && this->_send_thr.joinable())
 			this->_send_thr.join();
 		this->_link = shared_ptr<internal::Link>(nullptr);
-}
+	}
 }
 #pragma endregion
 
@@ -347,7 +335,7 @@ class Controller::lateraltimer : public Timer
 public:
 	lateraltimer() noexcept;
 	void AppendLateralGain(GainPtr gain, const GeometryPtr geometry);
-	void AppendLateralGain(const vector<GainPtr>& gain_list, const GeometryPtr geometry);
+	void AppendLateralGain(const vector<GainPtr> &gain_list, const GeometryPtr geometry);
 	void StartLateralModulation(float freq);
 	void FinishLateralModulation();
 	void ResetLateralGain();
@@ -424,7 +412,7 @@ void Controller::lateraltimer::AppendLateralGain(GainPtr gain, const GeometryPtr
 	this->_lateral_gain.push_back(gain);
 }
 
-void Controller::lateraltimer::AppendLateralGain(const vector<GainPtr>& gain_list, const GeometryPtr geometry)
+void Controller::lateraltimer::AppendLateralGain(const vector<GainPtr> &gain_list, const GeometryPtr geometry)
 {
 	for (auto g : gain_list)
 	{
@@ -516,7 +504,7 @@ void Controller::Close()
 	this->_pimpl->Close();
 }
 
-EtherCATAdapters Controller::EnumerateAdapters(int& size)
+EtherCATAdapters Controller::EnumerateAdapters(int &size)
 {
 	auto adapters = libsoem::EtherCATAdapterInfo::EnumerateAdapters();
 	size = static_cast<int>(adapters.size());
@@ -569,7 +557,7 @@ void Controller::AppendLateralGain(GainPtr gain)
 	this->_ptimer->AppendLateralGain(gain, this->geometry());
 }
 
-void Controller::AppendLateralGain(const vector<GainPtr>& gain_list)
+void Controller::AppendLateralGain(const vector<GainPtr> &gain_list)
 {
 	this->_ptimer->AppendLateralGain(gain_list, this->geometry());
 }
@@ -616,7 +604,7 @@ GeometryPtr Controller::geometry() noexcept
 	return this->_pimpl->_geometry;
 }
 
-void Controller::SetGeometry(const GeometryPtr& geometry) noexcept
+void Controller::SetGeometry(const GeometryPtr &geometry) noexcept
 {
 	this->_pimpl->_geometry = geometry;
 }
