@@ -32,9 +32,6 @@ namespace AUTD3SharpTest.Test
             {
                 // AddDevice() must be called before Open(), and be called as many times as the number of AUTDs connected.
                 autd.AddDevice(Vector3f.Zero, Vector3f.Zero);
-                autd.AddDevice(Vector3f.Zero, Vector3f.Zero);
-                autd.AddDevice(Vector3f.Zero, Vector3f.Zero);
-                autd.AddDevice(Vector3f.Zero, Vector3f.Zero);
                 //autd.AddDevice(Vector3f.UnitY * AUTD.AUTDHeight, Vector3f.Zero);
 
                 System.Collections.Generic.IEnumerable<EtherCATAdapter> adapters = AUTD.EnumerateAdapters();
