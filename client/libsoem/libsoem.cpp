@@ -4,7 +4,7 @@
  * Created Date: 23/08/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 06/02/2020
+ * Last Modified: 07/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -61,7 +61,7 @@ public:
 	void Open(const char *ifname, size_t devNum, uint32_t ec_sm3_cyctime_ns, uint32_t ec_sync0_cyctime_ns, size_t header_size, size_t body_size, size_t input_frame_size);
 	void Send(size_t size, unique_ptr<uint8_t[]> buf);
 	vector<uint16_t> Read(size_t input_frame_idx);
-	void Close();
+	bool Close();
 	~impl();
 
 	bool _isOpened = false;
@@ -79,6 +79,7 @@ private:
 
 	uint8_t *_IOmap; // should be shared_ptr?
 	size_t _iomap_size = 0;
+	size_t _output_frame_size = 0;
 	uint32_t _sync0_cyctime = 0;
 
 	queue<size_t> _send_size_q;
@@ -122,17 +123,18 @@ void libsoem::SOEMController::impl::RTthread(SOEMController::impl *pimpl)
 void libsoem::SOEMController::impl::RTthread(union sigval sv)
 {
 #endif
-	if (!RTTHREAD_LOCK.load(std::memory_order_acquire))
+	bool expected = false;
+	if (RTTHREAD_LOCK.compare_exchange_weak(expected, true))
 	{
-		RTTHREAD_LOCK.store(true, std::memory_order_release);
 
 		auto pre = SEND_COND.load(std::memory_order_acquire);
 		ec_send_processdata();
+		ec_receive_processdata(EC_TIMEOUTRET);
 		if (!pre)
 		{
 			SEND_COND.store(true, std::memory_order_release);
 		}
-		ec_receive_processdata(EC_TIMEOUTRET);
+
 		RTTHREAD_LOCK.store(false, std::memory_order_release);
 	}
 }
@@ -214,8 +216,9 @@ void SOEMController::impl::CreateCopyThread(size_t header_size, size_t body_size
 void SOEMController::impl::Open(const char *ifname, size_t devNum, uint32_t ec_sm3_cyctime_ns, uint32_t ec_sync0_cyctime_ns, size_t header_size, size_t body_size, size_t input_frame_size)
 {
 	_devNum = devNum;
-	auto size = (header_size + body_size + input_frame_size) * _devNum;
+	_output_frame_size = (header_size + body_size) * _devNum;
 
+	auto size = (header_size + body_size + input_frame_size) * _devNum;
 	if (size != _iomap_size)
 	{
 		_iomap_size = size;
@@ -324,12 +327,11 @@ void SOEMController::impl::Open(const char *ifname, size_t devNum, uint32_t ec_s
 	}
 }
 
-void SOEMController::impl::Close()
+bool SOEMController::impl::Close()
 {
 	if (_isOpened)
 	{
 		_isOpened = false;
-
 		{
 			unique_lock<mutex> lk(_cpy_mtx);
 			std::queue<size_t>().swap(_send_size_q);
@@ -339,32 +341,46 @@ void SOEMController::impl::Close()
 		if (this_thread::get_id() != _cpy_thread.get_id() && this->_cpy_thread.joinable())
 			this->_cpy_thread.join();
 
-		memset(_IOmap, 0x00, _iomap_size);
+		memset(_IOmap, 0x00, _output_frame_size);
 		SEND_COND.store(false, std::memory_order_release);
-		while (!SEND_COND.load(std::memory_order_acquire))
-		{
-			this_thread::sleep_for(chrono::milliseconds(100));
-		}
-		auto chk = 200;
 		do
 		{
-			ec_send_processdata();
 			this_thread::sleep_for(chrono::milliseconds(1));
-		} while (chk--);
+		} while (!SEND_COND.load(std::memory_order_acquire));
 
 #ifdef WINDOWS
 		if (!DeleteTimerQueueTimer(_timerQueue, _timer, 0))
 		{
 			if (GetLastError() != ERROR_IO_PENDING)
 				cerr << "DeleteTimerQueue failed." << endl;
-			else
-				Sleep(200);
 		}
 #elif defined MACOSX
 		dispatch_source_cancel(_timer);
 #elif defined LINUX
 		timer_delete(_timer_id);
 #endif
+		auto chk = 200;
+		auto clear = true;
+		do
+		{
+			RTthread(NULL, FALSE);
+			this_thread::sleep_for(chrono::milliseconds(1));
+
+			auto r = Read(_output_frame_size);
+			for
+				each(auto c in r)
+				{
+					if (c != 0)
+					{
+						clear = false;
+						break;
+					}
+					else
+					{
+						clear = true;
+					}
+				}
+		} while (chk-- && !clear);
 
 		SetupSync0(false, _sync0_cyctime);
 
@@ -374,6 +390,12 @@ void SOEMController::impl::Close()
 		ec_statecheck(0, EC_STATE_INIT, EC_TIMEOUTSTATE);
 
 		ec_close();
+
+		return clear;
+	}
+	else
+	{
+		return true;
 	}
 }
 
@@ -408,9 +430,9 @@ vector<uint16_t> SOEMController::Read(size_t input_frame_idx)
 	return this->_pimpl->Read(input_frame_idx);
 }
 
-void SOEMController::Close()
+bool SOEMController::Close()
 {
-	this->_pimpl->Close();
+	return this->_pimpl->Close();
 }
 
 bool SOEMController::isOpen()

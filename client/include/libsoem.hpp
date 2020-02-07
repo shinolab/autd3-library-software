@@ -4,7 +4,7 @@
  * Created Date: 24/08/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 01/11/2019
+ * Last Modified: 07/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -32,7 +32,7 @@ public:
 	void Send(size_t size, unique_ptr<uint8_t[]> buf);
 	vector<uint16_t> Read(size_t input_frame_idx);
 	bool isOpen();
-	void Close();
+	bool Close();
 
 private:
 	class impl;

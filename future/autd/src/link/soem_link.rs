@@ -4,7 +4,7 @@
  * Created Date: 02/09/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 05/02/2020
+ * Last Modified: 07/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -13,6 +13,7 @@
 
 use crate::consts::{BODY_SIZE, HEADER_SIZE, INPUT_FRAME_SIZE};
 use crate::consts::{EC_SM2_CYCTIME_NS, EC_SYNC0_CYCTIME_NS, SYNC0_STEP};
+use crate::consts::{MOD_BUF_SIZE_FPGA, MOD_SAMPLING_FREQUENCY};
 use crate::link::Link;
 use crate::rx_global_header::{RxGlobalControlFlags, RxGlobalHeader};
 use rusoem::{ECConfig, RuSOEM};
@@ -53,6 +54,8 @@ impl Link for SoemLink {
     }
 
     fn calibrate(&mut self) -> bool {
+        let mod_period_ms = ((MOD_BUF_SIZE_FPGA as f32 / MOD_SAMPLING_FREQUENCY) * 1000.0) as u32;
+
         let succeed_calib = |v: &Vec<u16>| {
             let min = v.iter().fold(0xFFFFu16, |x, &y| y.min(x));
             for b in v {
@@ -70,7 +73,7 @@ impl Link for SoemLink {
         for _ in 0..10 {
             self.handler.close();
             self.handler
-                .start(self.dev_num, EC_SM2_CYCTIME_NS, 1000 * 1000 * 1000)
+                .start(self.dev_num, EC_SM2_CYCTIME_NS, mod_period_ms * 1000 * 1000)
                 .unwrap();
             unsafe {
                 let size = mem::size_of::<RxGlobalHeader>();
@@ -80,12 +83,26 @@ impl Link for SoemLink {
                 (*header).ctrl_flag = RxGlobalControlFlags::IS_SYNC_FIRST_SYNC_N;
                 self.send(body);
             }
-            std::thread::sleep(std::time::Duration::from_secs(self.dev_num as u64 / 5 + 2));
+
+            std::thread::sleep(std::time::Duration::from_millis(
+                (self.dev_num as u64 / 5 + 2) * mod_period_ms as u64,
+            ));
+
             self.handler.close();
             self.handler
                 .start(self.dev_num, EC_SM2_CYCTIME_NS, EC_SYNC0_CYCTIME_NS)
                 .unwrap();
-            std::thread::sleep(std::time::Duration::from_millis(500));
+            unsafe {
+                let size = mem::size_of::<RxGlobalHeader>();
+                let mut body = vec![0x00; size];
+                let header = body.as_mut_ptr() as *mut RxGlobalHeader;
+                (*header).msg_id = 0xFF;
+                (*header).ctrl_flag = RxGlobalControlFlags::IS_SYNC_FIRST_SYNC_N;
+                self.send(body);
+            }
+
+            std::thread::sleep(std::time::Duration::from_millis(300));
+
             let input = self.handler.read::<u16>();
             if let Some(input) = input {
                 v = input;
@@ -96,17 +113,17 @@ impl Link for SoemLink {
             }
         }
 
-        if !success {
-            eprintln!("Failed to calibrate");
-            eprintln!("======== Log ========");
-            eprintln!("#Dev\tHeader\tBase");
-            for (i, b) in v.iter().enumerate() {
-                let h = (b & 0xC000) >> 14;
-                let base = b & 0x3FFF;
-                eprintln!("{}\t{}\t{}", i, h, base);
-            }
-            eprintln!("=====================");
+        // if !success {
+        eprintln!("Failed to calibrate");
+        eprintln!("======== Log ========");
+        eprintln!("#Dev\tHeader\tBase");
+        for (i, b) in v.iter().enumerate() {
+            let h = (b & 0xC000) >> 14;
+            let base = b & 0x3FFF;
+            eprintln!("{}\t{}\t{}", i, h, base);
         }
+        eprintln!("=====================");
+        // }
 
         success
     }

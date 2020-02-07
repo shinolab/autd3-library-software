@@ -1,6 +1,6 @@
 # autd3 #
 
-Version: 3.0.2.1
+Version: 3.0.2.2
 
 旧安定版は[v3.0.0ブランチ](https://github.com/shinolab/autd3-library-software/tree/v3.0.0)にあります.
 
@@ -13,6 +13,9 @@ Version: 3.0.2.1
 必ず, dist/firmwareにあるv3.0.2のファームウェアを書き込んでから使用してください.
 
 # Change log
+
+* 3.0.2.2
+    * Close時の処理を修正
 
 * 3.0.2.1
     * SOEM使用時のバグを修正

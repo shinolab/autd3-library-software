@@ -4,7 +4,7 @@
  * Created Date: 13/05/2016
  * Author: Seki Inoue
  * -----
- * Last Modified: 06/02/2020
+ * Last Modified: 07/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2016-2019 Hapis Lab. All rights reserved.
@@ -74,17 +74,11 @@ public:
 	{
 		static atomic<uint8_t> id{0};
 
-		if (id == 0)
-		{
-			id++;
-			return 200;
-		}
-		else
-		{
-			auto n = id.load();
-			id = id % 199 + 1;
-			return n;
-		}
+		id.fetch_add(0x01);
+		uint8_t expected = 0xf0;
+		id.compare_exchange_weak(expected, 1);
+
+		return id.load();
 	}
 };
 
@@ -501,6 +495,7 @@ bool Controller::isOpen()
 
 void Controller::Close()
 {
+	this->_ptimer->FinishLateralModulation();
 	this->_pimpl->Close();
 }
 

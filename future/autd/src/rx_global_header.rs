@@ -4,7 +4,7 @@
  * Created Date: 21/11/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 05/02/2020
+ * Last Modified: 07/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -42,7 +42,7 @@ pub struct RxGlobalControlFlags : u8 {
 impl RxGlobalHeader {
     pub fn new(ctrl_flag: RxGlobalControlFlags, data: &[u8]) -> RxGlobalHeader {
         MSG_ID.fetch_add(1, atomic::Ordering::SeqCst);
-        MSG_ID.compare_and_swap(0xff, 1, atomic::Ordering::SeqCst);
+        MSG_ID.compare_and_swap(0xf0, 1, atomic::Ordering::SeqCst);
 
         let mut data_array = [0x00; MOD_FRAME_SIZE];
         data_array[..data.len()].clone_from_slice(&data[..]);

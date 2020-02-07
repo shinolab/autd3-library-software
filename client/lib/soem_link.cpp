@@ -4,7 +4,7 @@
  * Created Date: 24/08/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 05/11/2019
+ * Last Modified: 07/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -82,20 +82,23 @@ bool autd::internal::SOEMLink::CalibrateModulation()
 	{
 		_cnt->Close();
 		_cnt->Open(_ifname.c_str(), _devNum, EC_SM3_CYCLE_TIME_NANO_SEC, MOD_PERIOD_MS * 1000 * 1000, HEADER_SIZE, NUM_TRANS_IN_UNIT * 2, EC_INPUT_FRAME_SIZE);
-
 		auto size = sizeof(RxGlobalHeader);
 		auto body = make_unique<uint8_t[]>(size);
 		auto *header = reinterpret_cast<RxGlobalHeader *>(&body[0]);
 		header->msg_id = 0xFF;
-
 		Send(size, move(body));
 
 		std::this_thread::sleep_for(std::chrono::milliseconds((_devNum + 1) * MOD_PERIOD_MS));
 
 		_cnt->Close();
 		_cnt->Open(_ifname.c_str(), _devNum, EC_SM3_CYCLE_TIME_NANO_SEC, EC_SYNC0_CYCLE_TIME_NANO_SEC, HEADER_SIZE, NUM_TRANS_IN_UNIT * 2, EC_INPUT_FRAME_SIZE);
+		size = sizeof(RxGlobalHeader);
+		body = make_unique<uint8_t[]>(size);
+		header = reinterpret_cast<RxGlobalHeader *>(&body[0]);
+		header->msg_id = 0xFF;
+		Send(size, move(body));
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		std::this_thread::sleep_for(std::chrono::milliseconds(300));
 		v = _cnt->Read(EC_OUTPUT_FRAME_SIZE * _devNum);
 		if (succeed_calib(v))
 		{
