@@ -32,6 +32,9 @@ namespace AUTD3SharpTest.Test
             {
                 // AddDevice() must be called before Open(), and be called as many times as the number of AUTDs connected.
                 autd.AddDevice(Vector3f.Zero, Vector3f.Zero);
+                autd.AddDevice(Vector3f.Zero, Vector3f.Zero);
+                autd.AddDevice(Vector3f.Zero, Vector3f.Zero);
+                autd.AddDevice(Vector3f.Zero, Vector3f.Zero);
                 //autd.AddDevice(Vector3f.UnitY * AUTD.AUTDHeight, Vector3f.Zero);
 
                 System.Collections.Generic.IEnumerable<EtherCATAdapter> adapters = AUTD.EnumerateAdapters();
@@ -51,7 +54,7 @@ namespace AUTD3SharpTest.Test
 
                 // If you use more than one AUTD, call this function only once after Open().
                 // It takes several seconds proportional to the number of AUTD you use.
-                //autd.CalibrateModulation();
+                autd.CalibrateModulation();
 
                 // AM
                 Console.WriteLine("Amplitude Modulation");
