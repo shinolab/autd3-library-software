@@ -99,18 +99,6 @@ bool autd::internal::SOEMLink::CalibrateModulation()
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(300));
 		v = _cnt->Read(EC_OUTPUT_FRAME_SIZE * _devNum);
-		{
-			cerr << "Failed to CalibrateModulation." << endl;
-			cerr << "======= Modulation Log ========" << endl;
-			for (size_t i = 0; i < v.size(); i++)
-			{
-				auto h = (v.at(i) & 0xC000) >> 14;
-				auto base = v.at(i) & 0x3FFF;
-				cerr << i << "," << (int)h << "," << (int)base << ": "<< v.at(i) << "(" << std::bitset<16>(v.at(i)) << ")" << endl;
-			}
-			cerr << "===============================" << endl;
-		}
-
 		if (succeed_calib(v))
 		{
 			success = true;
@@ -118,7 +106,7 @@ bool autd::internal::SOEMLink::CalibrateModulation()
 		}
 	}
 
-	//if (!success)
+	if (!success)
 	{
 		cerr << "Failed to CalibrateModulation." << endl;
 		cerr << "======= Modulation Log ========" << endl;
