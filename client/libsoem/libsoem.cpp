@@ -34,6 +34,7 @@
 
 #ifdef MACOSX
 #include <dispatch/dispatch.h>
+#include <sys/mman.h>
 #endif
 
 #include <atomic>
