@@ -87,7 +87,7 @@ bool autd::internal::SOEMLink::CalibrateModulation()
 		header->msg_id = 0xFF;
 		Send(size, move(body));
 
-		std::this_thread::sleep_for(std::chrono::milliseconds((_devNum / 5 + 1) * MOD_PERIOD_MS));
+		std::this_thread::sleep_for(std::chrono::milliseconds((_devNum / 5 + 2) * MOD_PERIOD_MS));
 
 		_cnt->Close();
 		_cnt->Open(_ifname.c_str(), _devNum, EC_SM3_CYCLE_TIME_NANO_SEC, EC_SYNC0_CYCLE_TIME_NANO_SEC, HEADER_SIZE, NUM_TRANS_IN_UNIT * 2, EC_INPUT_FRAME_SIZE);
