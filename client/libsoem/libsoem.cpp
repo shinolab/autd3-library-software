@@ -30,11 +30,11 @@
 #include <time.h>
 #include <unistd.h>
 #include <string.h>
+#include <sys/mman.h>
 #endif
 
 #ifdef MACOSX
 #include <dispatch/dispatch.h>
-#include <sys/mman.h>
 #endif
 
 #include <atomic>
@@ -118,7 +118,7 @@ void SOEMController::impl::Send(size_t size, unique_ptr<uint8_t[]> buf)
 void CALLBACK SOEMController::impl::RTthread(PVOID lpParam, BOOLEAN TimerOrWaitFired)
 {
 #elif defined MACOSX
-void libsoem::SOEMController::impl::RTthread(SOEMController::impl *pimpl)
+void libsoem::SOEMController::impl::RTthread(SOEMController::impl * pimpl)
 {
 #elif defined LINUX
 void libsoem::SOEMController::impl::RTthread(union sigval sv)
@@ -179,7 +179,7 @@ void SOEMController::impl::CreateCopyThread(size_t header_size, size_t body_size
 				unique_lock<mutex> lk(_cpy_mtx);
 				_cpy_cond.wait(lk, [&] {
 					return _send_buf_q.size() > 0 || !_isOpened;
-				});
+					});
 				if (_send_buf_q.size() > 0)
 				{
 					buf = move(_send_buf_q.front());
@@ -210,8 +210,8 @@ void SOEMController::impl::CreateCopyThread(size_t header_size, size_t body_size
 				_send_buf_q.pop();
 			}
 		}
-	},
-						 header_size, body_size);
+		},
+		header_size, body_size);
 }
 
 void SOEMController::impl::Open(const char *ifname, size_t devNum, uint32_t ec_sm3_cyctime_ns, uint32_t ec_sync0_cyctime_ns, size_t header_size, size_t body_size, size_t input_frame_size)
@@ -284,12 +284,12 @@ void SOEMController::impl::Open(const char *ifname, size_t devNum, uint32_t ec_s
 				_timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _queue);
 				dispatch_source_set_event_handler(_timer, ^{
 				  RTthread(this);
-				});
+					});
 
 				dispatch_source_set_cancel_handler(_timer, ^{
 				  dispatch_release(_timer);
 				  dispatch_release(_queue);
-				});
+					});
 
 				dispatch_time_t start = dispatch_time(DISPATCH_TIME_NOW, 0);
 				dispatch_source_set_timer(_timer, start, ec_sm3_cyctime_ns, 0);
@@ -374,6 +374,8 @@ bool SOEMController::impl::Close()
 			RTthread(NULL, FALSE);
 #elif defined MACOSX
 			RTthread(nullptr);
+#elif defined LINUX
+			RTthread(sigval{});
 #endif
 			this_thread::sleep_for(chrono::milliseconds(1));
 
