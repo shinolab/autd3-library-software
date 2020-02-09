@@ -4,7 +4,7 @@
  * Created Date: 23/08/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 07/02/2020
+ * Last Modified: 09/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -229,8 +229,14 @@ void SOEMController::impl::Open(const char *ifname, size_t devNum, uint32_t ec_s
 		}
 
 		_IOmap = new uint8_t[size];
+
+#ifdef WINDOWS
 		if (!VirtualLock(_IOmap, size))
+#else
+		if (mlock(_IOmap, size) == -1)
+#endif
 		{
+
 			cerr << "Memory lock failed." << endl;
 		}
 		memset(_IOmap, 0x00, _iomap_size);
@@ -363,23 +369,26 @@ bool SOEMController::impl::Close()
 		auto clear = true;
 		do
 		{
+#ifdef WINDOWS
 			RTthread(NULL, FALSE);
+#elif defined MACOSX
+			RTthread(nullptr);
+#endif
 			this_thread::sleep_for(chrono::milliseconds(1));
 
 			auto r = Read(_output_frame_size);
-			for
-				each(auto c in r)
+			for (auto c : r)
+			{
+				if (c != 0)
 				{
-					if (c != 0)
-					{
-						clear = false;
-						break;
-					}
-					else
-					{
-						clear = true;
-					}
+					clear = false;
+					break;
 				}
+				else
+				{
+					clear = true;
+				}
+			}
 		} while (chk-- && !clear);
 
 		SetupSync0(false, _sync0_cyctime);
