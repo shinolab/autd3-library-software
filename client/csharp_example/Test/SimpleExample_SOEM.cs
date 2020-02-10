@@ -4,7 +4,7 @@
  * Created Date: 25/08/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 06/02/2020
+ * Last Modified: 10/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -32,9 +32,6 @@ namespace AUTD3SharpTest.Test
             {
                 // AddDevice() must be called before Open(), and be called as many times as the number of AUTDs connected.
                 autd.AddDevice(Vector3f.Zero, Vector3f.Zero);
-                autd.AddDevice(Vector3f.Zero, Vector3f.Zero);
-                autd.AddDevice(Vector3f.Zero, Vector3f.Zero);
-                autd.AddDevice(Vector3f.Zero, Vector3f.Zero);
                 //autd.AddDevice(Vector3f.UnitY * AUTD.AUTDHeight, Vector3f.Zero);
 
                 System.Collections.Generic.IEnumerable<EtherCATAdapter> adapters = AUTD.EnumerateAdapters();
@@ -54,7 +51,7 @@ namespace AUTD3SharpTest.Test
 
                 // If you use more than one AUTD, call this function only once after Open().
                 // It takes several seconds proportional to the number of AUTD you use.
-                autd.CalibrateModulation();
+                //autd.CalibrateModulation();
 
                 // AM
                 Console.WriteLine("Amplitude Modulation");
@@ -75,12 +72,14 @@ namespace AUTD3SharpTest.Test
                 Gain f1 = AUTD.FocalPointGain(x + 2.5f, y, z);
                 Gain f2 = AUTD.FocalPointGain(x - 2.5f, y, z);
 
-                autd.AppendLateralGain(f1);
-                autd.AppendLateralGain(f2);
-                autd.StartLateralModulation(100); // Tapping f1 and f2 at 100Hz
+                autd.AppendSTMGain(f1);
+                autd.AppendSTMGain(f2);
+                autd.StartSTModulation(100); // Tapping f1 and f2 at 100Hz
 
                 Console.WriteLine("press any key to finish...");
                 Console.ReadKey(true);
+
+                autd.FinishSTModulation();
             }
         }
     }

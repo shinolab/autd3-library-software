@@ -4,7 +4,7 @@
  * Created Date: 04/09/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 04/09/2019
+ * Last Modified: 10/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -44,9 +44,10 @@ void Timer::SetInterval(int interval_us)
 	this->_interval_us = interval_us;
 }
 
-void Timer::Start()
+void Timer::Start(const std::function<void()> &callback)
 {
 	this->Stop();
+	this->cb = callback;
 	this->_loop = true;
 	this->InitTimer();
 }
@@ -81,5 +82,5 @@ void Timer::InitTimer()
 
 void Timer::MainLoop(Timer *ptr)
 {
-	ptr->Run();
+	ptr->cb();
 }

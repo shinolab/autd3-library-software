@@ -4,7 +4,7 @@
  * Created Date: 02/07/2018
  * Author: Shun Suzuki and Saya Mizutani
  * -----
- * Last Modified: 04/09/2019
+ * Last Modified: 10/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -28,7 +28,7 @@ public:
 	Timer() noexcept;
 	~Timer() noexcept(false);
 	void SetInterval(int interval);
-	void Start();
+	void Start(const std::function<void()> &callback);
 	void Stop();
 
 	Timer(const Timer &) = default;
@@ -38,6 +38,8 @@ public:
 
 protected:
 	int _interval_us;
+	std::function<void()> cb;
+
 #if WIN32
 #elif __APPLE__
 	dispatch_queue_t _queue;
@@ -45,7 +47,6 @@ protected:
 #else
 	timer_t _timer_id;
 #endif
-	virtual void Run() = 0;
 
 private:
 	std::thread _mainThread;

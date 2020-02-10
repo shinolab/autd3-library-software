@@ -4,11 +4,11 @@
  * Created Date: 07/02/2018
  * Author: Shun Suzuki
  * -----
- * Last Modified: 19/10/2019
+ * Last Modified: 10/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
- * 
+ *
  */
 
 #ifndef autd3capih_
@@ -78,10 +78,10 @@ extern "C"
 	__declspec(dllexport) void AUTDAppendGainSync(AUTDControllerHandle handle, AUTDGainPtr gain);
 	__declspec(dllexport) void AUTDAppendModulation(AUTDControllerHandle handle, AUTDModulationPtr mod);
 	__declspec(dllexport) void AUTDAppendModulationSync(AUTDControllerHandle handle, AUTDModulationPtr mod);
-	__declspec(dllexport) void AUTDAppendLateralGain(AUTDControllerHandle handle, AUTDGainPtr gain);
-	__declspec(dllexport) void AUTDStartLateralModulation(AUTDControllerHandle handle, float freq);
-	__declspec(dllexport) void AUTDFinishLateralModulation(AUTDControllerHandle handle);
-	__declspec(dllexport) void AUTDResetLateralGain(AUTDControllerHandle handle);
+	__declspec(dllexport) void AUTDAppendSTMGain(AUTDControllerHandle handle, AUTDGainPtr gain);
+	__declspec(dllexport) void AUTDStartSTModulation(AUTDControllerHandle handle, float freq);
+	__declspec(dllexport) void AUTDStopSTModulation(AUTDControllerHandle handle);
+	__declspec(dllexport) void AUTDFinishSTModulation(AUTDControllerHandle handle);
 	__declspec(dllexport) void AUTDSetGain(AUTDControllerHandle handle, int deviceIndex, int transIndex, int amp, int phase);
 	__declspec(dllexport) void AUTDFlush(AUTDControllerHandle handle);
 	__declspec(dllexport) int AUTDDevIdForDeviceIdx(AUTDControllerHandle handle, int devIdx);
@@ -89,6 +89,11 @@ extern "C"
 	__declspec(dllexport) float *AUTDTransPosition(AUTDControllerHandle handle, int transIdx);
 	__declspec(dllexport) float *AUTDTransDirection(AUTDControllerHandle handle, int transIdx);
 	__declspec(dllexport) float *GetAngleZYZ(float *rotationMatrix);
+
+	__declspec(dllexport) void AUTDAppendLateralGain(AUTDControllerHandle handle, AUTDGainPtr gain);
+	__declspec(dllexport) void AUTDStartLateralModulation(AUTDControllerHandle handle, float freq);
+	__declspec(dllexport) void AUTDFinishLateralModulation(AUTDControllerHandle handle);
+	__declspec(dllexport) void AUTDResetLateralGain(AUTDControllerHandle handle);
 #pragma endregion
 
 #pragma region Debug

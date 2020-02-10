@@ -4,7 +4,7 @@
  * Created Date: 02/07/2018
  * Author: Shun Suzuki
  * -----
- * Last Modified: 07/02/2020
+ * Last Modified: 10/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2018-2019 Hapis Lab. All rights reserved.
@@ -122,11 +122,6 @@ namespace AUTD3Sharp
         #region field
         private bool _isDisposed;
         private readonly AUTDControllerHandle _autdControllerHandle;
-
-        // そのうちなんとかしたい
-        // 現状はNative/マイコン側の実装の問題
-        private List<Gain> _lateralGains;
-
         #endregion
 
         #region Controller
@@ -514,23 +509,16 @@ namespace AUTD3Sharp
 
             NativeMethods.AUTDAppendModulationSync(_autdControllerHandle, mod);
         }
-        public void AppendLateralGain(Gain gain)
+        public void AppendSTMGain(Gain gain)
         {
             if (gain == null)
             {
                 throw new ArgumentNullException(nameof(gain));
             }
 
-            if (_lateralGains == null)
-            {
-                _lateralGains = new List<Gain>();
-            }
-
-            _lateralGains.Add(gain);
-
-            NativeMethods.AUTDAppendLateralGain(_autdControllerHandle, gain);
+            NativeMethods.AUTDAppendSTMGain(_autdControllerHandle, gain);
         }
-        public void AppendLateralGain(params Gain[] gainList)
+        public void AppendSTMGain(params Gain[] gainList)
         {
             if (gainList == null)
             {
@@ -539,21 +527,20 @@ namespace AUTD3Sharp
 
             foreach (Gain gain in gainList)
             {
-                AppendLateralGain(gain);
+                AppendSTMGain(gain);
             }
         }
-        public void StartLateralModulation(float freq)
+        public void StartSTModulation(float freq)
         {
-            NativeMethods.AUTDStartLateralModulation(_autdControllerHandle, freq);
+            NativeMethods.AUTDStartSTModulation(_autdControllerHandle, freq);
         }
-        public void FinishLateralModulation()
+        public void StopSTModulation()
         {
-            NativeMethods.AUTDFinishLateralModulation(_autdControllerHandle);
+            NativeMethods.AUTDStopSTModulation(_autdControllerHandle);
         }
-        public void ResetLateralGain()
+        public void FinishSTModulation()
         {
-            _lateralGains?.Clear();
-            NativeMethods.AUTDResetLateralGain(_autdControllerHandle);
+            NativeMethods.AUTDFinishSTModulation(_autdControllerHandle);
         }
         public void SetGain(int deviceIndex, int transIndex, int amp, int phase)
         {
@@ -598,6 +585,48 @@ namespace AUTD3Sharp
 
             return new Vector3f(x, y, z);
         }
+
+        #region Deprecated
+        [Obsolete("AppendLateralGain is deprecated. Please use AppendSTMGain instead.", false)]
+        public void AppendLateralGain(Gain gain)
+        {
+            if (gain == null)
+            {
+                throw new ArgumentNullException(nameof(gain));
+            }
+
+            NativeMethods.AUTDAppendLateralGain(_autdControllerHandle, gain);
+        }
+        [Obsolete("AppendLateralGain is deprecated. Please use AppendSTMGain instead.", false)]
+        public void AppendLateralGain(params Gain[] gainList)
+        {
+            if (gainList == null)
+            {
+                throw new ArgumentNullException(nameof(gainList));
+            }
+
+            foreach (Gain gain in gainList)
+            {
+                AppendLateralGain(gain);
+            }
+        }
+        [Obsolete("StartLateralModulation is deprecated. Please use StartSTModulation instead.", false)]
+        public void StartLateralModulation(float freq)
+        {
+            NativeMethods.AUTDStartLateralModulation(_autdControllerHandle, freq);
+        }
+        [Obsolete("FinishLateralModulation is deprecated. Please use StopSTModulation instead.", false)]
+        public void FinishLateralModulation()
+        {
+            NativeMethods.AUTDFinishLateralModulation(_autdControllerHandle);
+        }
+        [Obsolete("ResetLateralGain is deprecated. Please use FinishSTModulation instead.", false)]
+        public void ResetLateralGain()
+        {
+            NativeMethods.AUTDResetLateralGain(_autdControllerHandle);
+        }
+        #endregion
+
         #endregion
 
         #region DEBUG

@@ -4,7 +4,7 @@
  * Created Date: 13/05/2016
  * Author: Seki Inoue
  * -----
- * Last Modified: 07/02/2020
+ * Last Modified: 10/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2016-2019 Hapis Lab. All rights reserved.
@@ -37,14 +37,15 @@ using namespace std;
 #pragma region Controller::impl
 class Controller::impl
 {
-	friend class Controller::lateraltimer;
-
 public:
 	GeometryPtr _geometry;
 	shared_ptr<internal::Link> _link;
 	queue<GainPtr> _build_q;
 	queue<GainPtr> _send_gain_q;
 	queue<ModulationPtr> _send_mod_q;
+	queue<GainPtr> _stmGains;
+	vector<uint8_t *> _stmBodies;
+	unique_ptr<Timer> _pStmTimer;
 
 	thread _build_thr;
 	thread _send_thr;
@@ -54,10 +55,11 @@ public:
 	mutex _send_mtx;
 
 	bool silentMode = true;
+	bool isOpen();
 
 	impl();
 	~impl();
-	bool isOpen();
+	void CalibrateModulation();
 	void Close();
 
 	void InitPipeline();
@@ -65,8 +67,12 @@ public:
 	void AppendGainSync(const GainPtr gain);
 	void AppendModulation(const ModulationPtr mod);
 	void AppendModulationSync(const ModulationPtr mod);
+	void AppendSTMGain(GainPtr gain);
+	void AppendSTMGain(const std::vector<GainPtr> &gain_list);
+	void StartSTModulation(float freq);
+	void StopSTModulation();
+	void FinishSTModulation();
 	void FlushBuffer();
-	void CalibrateModulation();
 
 	unique_ptr<uint8_t[]> MakeBody(GainPtr gain, ModulationPtr mod, size_t *size);
 
@@ -82,6 +88,13 @@ public:
 	}
 };
 
+Controller::impl::impl()
+{
+	this->_geometry = Geometry::Create();
+	this->silentMode = true;
+	this->_pStmTimer = std::make_unique<Timer>();
+}
+
 Controller::impl::~impl()
 {
 	if (this_thread::get_id() != this->_build_thr.get_id() && this->_build_thr.joinable())
@@ -90,16 +103,12 @@ Controller::impl::~impl()
 		this->_send_thr.join();
 }
 
-Controller::impl::impl() {}
-
 void Controller::impl::InitPipeline()
 {
-	// pipeline step #1
 	this->_build_thr = thread([&] {
 		while (this->isOpen())
 		{
 			GainPtr gain = nullptr;
-			// wait for gain
 			{
 				unique_lock<mutex> lk(_build_mtx);
 
@@ -114,13 +123,10 @@ void Controller::impl::InitPipeline()
 				}
 			}
 
-			// build gain
 			if (gain != nullptr)
 			{
 				if (!gain->built())
 					gain->build();
-
-				// pass gain to next pipeline stage
 				{
 					unique_lock<mutex> lk(_send_mtx);
 					_send_gain_q.push(gain);
@@ -130,7 +136,6 @@ void Controller::impl::InitPipeline()
 		}
 	});
 
-	// pipeline step #2
 	this->_send_thr = thread([&] {
 		try
 		{
@@ -139,7 +144,6 @@ void Controller::impl::InitPipeline()
 				GainPtr gain = nullptr;
 				ModulationPtr mod = nullptr;
 
-				// wait for inputs
 				{
 					unique_lock<mutex> lk(_send_mtx);
 					_send_cond.wait(lk, [&] {
@@ -155,7 +159,6 @@ void Controller::impl::InitPipeline()
 				if (this->_link->isOpen())
 					this->_link->Send(body_size, move(body));
 
-				// remove elements
 				unique_lock<mutex> lk(_send_mtx);
 				if (gain != nullptr && _send_gain_q.size() > 0)
 					_send_gain_q.pop();
@@ -237,6 +240,75 @@ void Controller::impl::AppendModulationSync(ModulationPtr mod)
 	}
 }
 
+void Controller::impl::AppendSTMGain(GainPtr gain)
+{
+	_stmGains.push(gain);
+}
+
+void Controller::impl::AppendSTMGain(const std::vector<GainPtr> &gain_list)
+{
+	for (auto g : gain_list)
+	{
+		this->AppendSTMGain(g);
+	}
+}
+
+void Controller::impl::StartSTModulation(float freq)
+{
+	auto len = this->_stmGains.size();
+	auto itvl_us = static_cast<int>(1000000. / freq / len);
+	this->_pStmTimer->SetInterval(itvl_us);
+
+	vector<size_t> bodysizes;
+	this->_stmBodies.reserve(len);
+	bodysizes.reserve(len);
+
+	for (size_t i = 0; i < len; i++)
+	{
+		auto g = this->_stmGains.front();
+		g->SetGeometry(this->_geometry);
+		if (!g->built())
+			g->build();
+
+		size_t body_size = 0;
+		auto body = this->MakeBody(g, nullptr, &body_size);
+		uint8_t *b = new uint8_t[body_size];
+		std::memcpy(b, body.get(), body_size);
+		this->_stmBodies.push_back(b);
+		bodysizes.push_back(body_size);
+
+		this->_stmGains.pop();
+	}
+
+	size_t idx = 0;
+	this->_pStmTimer->Start(
+		[this, idx, len, bodysizes]() mutable {
+			auto body_size = bodysizes[idx];
+			auto body_copy = make_unique<uint8_t[]>(body_size);
+			uint8_t *p = this->_stmBodies[idx];
+			std::memcpy(body_copy.get(), p, body_size);
+			if (this->isOpen())
+				this->_link->Send(body_size, move(body_copy));
+			idx = (idx + 1) % len;
+		});
+}
+
+void Controller::impl::StopSTModulation()
+{
+	this->_pStmTimer->Stop();
+}
+
+void Controller::impl::FinishSTModulation()
+{
+	this->StopSTModulation();
+	queue<GainPtr>().swap(this->_stmGains);
+	for (uint8_t *p : this->_stmBodies)
+	{
+		delete[] p;
+	}
+	vector<uint8_t *>().swap(this->_stmBodies);
+}
+
 void Controller::impl::CalibrateModulation()
 {
 	this->_link->CalibrateModulation();
@@ -276,7 +348,7 @@ unique_ptr<uint8_t[]> Controller::impl::MakeBody(GainPtr gain, ModulationPtr mod
 			header->control_flags |= LOOP_END;
 		header->frequency_shift = this->_geometry->_freq_shift;
 
-		memcpy(header->mod, &mod->buffer[mod->sent], mod_size);
+		std::memcpy(header->mod, &mod->buffer[mod->sent], mod_size);
 		mod->sent += mod_size;
 	}
 
@@ -287,7 +359,7 @@ unique_ptr<uint8_t[]> Controller::impl::MakeBody(GainPtr gain, ModulationPtr mod
 		{
 			auto deviceId = gain->geometry()->deviceIdForDeviceIdx(i);
 			auto byteSize = NUM_TRANS_IN_UNIT * sizeof(uint16_t);
-			memcpy(cursor, &gain->_data[deviceId].at(0), byteSize);
+			std::memcpy(cursor, &gain->_data[deviceId].at(0), byteSize);
 			cursor += byteSize / sizeof(body[0]);
 		}
 	}
@@ -303,6 +375,7 @@ void Controller::impl::Close()
 {
 	if (this->isOpen())
 	{
+		this->FinishSTModulation();
 		auto nullgain = NullGain::Create();
 		this->AppendGainSync(nullgain);
 		this->_link->Close();
@@ -321,127 +394,61 @@ void Controller::impl::Close()
 }
 #pragma endregion
 
-#pragma region lateraltimer
-class Controller::lateraltimer : public Timer
-{
-	friend class Controller;
-
-public:
-	lateraltimer() noexcept;
-	void AppendLateralGain(GainPtr gain, const GeometryPtr geometry);
-	void AppendLateralGain(const vector<GainPtr> &gain_list, const GeometryPtr geometry);
-	void StartLateralModulation(float freq);
-	void FinishLateralModulation();
-	void ResetLateralGain();
-	int Size() noexcept;
-
-protected:
-	void Run() override;
-
-private:
-	weak_ptr<Controller::impl> _pcnt;
-	int _lateral_gain_size;
-	int _lateral_gain_idx;
-	vector<GainPtr> _lateral_gain;
-	bool _running;
-};
-
-Controller::lateraltimer::lateraltimer() noexcept
-{
-	this->_lateral_gain_size = 0;
-	this->_lateral_gain_idx = 0;
-	_running = false;
-}
-
-int Controller::lateraltimer::Size() noexcept
-{
-	return this->_lateral_gain_size;
-}
-
-void Controller::lateraltimer::Run()
-{
-	try
-	{
-		auto gain = this->_lateral_gain.at(this->_lateral_gain_idx);
-		this->_lateral_gain_idx = (this->_lateral_gain_idx + 1) % this->_lateral_gain_size;
-		{
-			auto cnt = this->_pcnt.lock();
-			cnt->AppendGainSync(gain);
-		}
-	}
-	catch (const int errnum)
-	{
-		{
-			auto cnt = this->_pcnt.lock();
-			cnt->Close();
-		}
-		cerr << errnum << "Link closed." << endl;
-	}
-}
-
-void Controller::lateraltimer::StartLateralModulation(float freq)
-{
-	if (this->Size() == 0)
-	{
-		cerr << "Call \"AppendLateralGain\" before start Lateral Modulation" << endl;
-		return;
-	}
-
-	this->FinishLateralModulation();
-
-	const auto itvl_us = static_cast<int>(1000 * 1000 / freq / this->Size());
-	this->SetInterval(itvl_us);
-	this->Start();
-	this->_running = true;
-}
-
-void Controller::lateraltimer::AppendLateralGain(GainPtr gain, const GeometryPtr geometry)
-{
-	gain->SetGeometry(geometry);
-	if (!gain->built())
-		gain->build();
-
-	this->_lateral_gain_size++;
-	this->_lateral_gain_idx = 0;
-	this->_lateral_gain.push_back(gain);
-}
-
-void Controller::lateraltimer::AppendLateralGain(const vector<GainPtr> &gain_list, const GeometryPtr geometry)
-{
-	for (auto g : gain_list)
-	{
-		this->AppendLateralGain(g, geometry);
-	}
-}
-
-void Controller::lateraltimer::FinishLateralModulation()
-{
-	if (this->_running)
-		this->Stop();
-	this->_running = false;
-}
-
-void Controller::lateraltimer::ResetLateralGain()
-{
-	this->FinishLateralModulation();
-	this->_lateral_gain_size = 0;
-	this->_lateral_gain.clear();
-}
-#pragma endregion
-
+#pragma region pimpl
 Controller::Controller()
 {
-	this->_pimpl = std::make_shared<impl>();
-	this->_pimpl->_geometry = Geometry::Create();
-	this->_pimpl->silentMode = true;
-
-	this->_ptimer = make_unique<lateraltimer>();
-	this->_ptimer->_pcnt = this->_pimpl;
+	this->_pimpl = std::make_unique<impl>();
 }
 
 Controller::~Controller() noexcept(false)
 {
 	this->Close();
+}
+
+bool Controller::isOpen()
+{
+	return this->_pimpl->isOpen();
+}
+
+GeometryPtr Controller::geometry() noexcept
+{
+	return this->_pimpl->_geometry;
+}
+
+bool Controller::silentMode() noexcept
+{
+	return this->_pimpl->silentMode;
+}
+
+size_t Controller::remainingInBuffer()
+{
+	return this->_pimpl->_send_gain_q.size() + this->_pimpl->_send_mod_q.size() + this->_pimpl->_build_q.size();
+}
+
+EtherCATAdapters Controller::EnumerateAdapters(int &size)
+{
+	auto adapters = libsoem::EtherCATAdapterInfo::EnumerateAdapters();
+	size = static_cast<int>(adapters.size());
+#if DLL_FOR_CAPI
+	EtherCATAdapters res = new EtherCATAdapter[size];
+	int i = 0;
+#else
+	EtherCATAdapters res;
+#endif
+	for (auto adapter : libsoem::EtherCATAdapterInfo::EnumerateAdapters())
+	{
+		EtherCATAdapter p;
+#if DLL_FOR_CAPI
+		p.first = *adapter.desc.get();
+		p.second = *adapter.name.get();
+		res[i++] = p;
+#else
+		p.first = adapter.desc;
+		p.second = adapter.name;
+		res.push_back(p);
+#endif
+	}
+	return res;
 }
 
 void Controller::Open(LinkType type, string location)
@@ -488,52 +495,28 @@ void Controller::Open(LinkType type, string location)
 		this->Close();
 }
 
-bool Controller::isOpen()
+void Controller::SetSilentMode(bool silent) noexcept
 {
-	return this->_pimpl->isOpen();
+	this->_pimpl->silentMode = silent;
+}
+
+void Controller::CalibrateModulation()
+{
+	this->_pimpl->CalibrateModulation();
 }
 
 void Controller::Close()
 {
-	this->_ptimer->FinishLateralModulation();
 	this->_pimpl->Close();
-}
-
-EtherCATAdapters Controller::EnumerateAdapters(int &size)
-{
-	auto adapters = libsoem::EtherCATAdapterInfo::EnumerateAdapters();
-	size = static_cast<int>(adapters.size());
-#if DLL_FOR_CAPI
-	EtherCATAdapters res = new EtherCATAdapter[size];
-	int i = 0;
-#else
-	EtherCATAdapters res;
-#endif
-	for (auto adapter : libsoem::EtherCATAdapterInfo::EnumerateAdapters())
-	{
-		EtherCATAdapter p;
-#if DLL_FOR_CAPI
-		p.first = *adapter.desc.get();
-		p.second = *adapter.name.get();
-		res[i++] = p;
-#else
-		p.first = adapter.desc;
-		p.second = adapter.name;
-		res.push_back(p);
-#endif
-	}
-	return res;
 }
 
 void Controller::AppendGain(GainPtr gain)
 {
-	this->_ptimer->FinishLateralModulation();
 	this->_pimpl->AppendGain(gain);
 }
 
 void Controller::AppendGainSync(GainPtr gain)
 {
-	this->_ptimer->FinishLateralModulation();
 	this->_pimpl->AppendGainSync(gain);
 }
 
@@ -547,31 +530,29 @@ void Controller::AppendModulationSync(ModulationPtr modulation)
 	this->_pimpl->AppendModulationSync(modulation);
 }
 
-void Controller::AppendLateralGain(GainPtr gain)
+void Controller::AppendSTMGain(GainPtr gain)
 {
-	this->_ptimer->AppendLateralGain(gain, this->geometry());
+	this->_pimpl->AppendSTMGain(gain);
 }
 
-void Controller::AppendLateralGain(const vector<GainPtr> &gain_list)
+void Controller::AppendSTMGain(const vector<GainPtr> &gain_list)
 {
-	this->_ptimer->AppendLateralGain(gain_list, this->geometry());
+	this->_pimpl->AppendSTMGain(gain_list);
 }
 
-void Controller::StartLateralModulation(float freq)
+void Controller::StartSTModulation(float freq)
 {
-	this->_ptimer->StartLateralModulation(freq);
+	this->_pimpl->StartSTModulation(freq);
 }
 
-void Controller::FinishLateralModulation()
+void Controller::StopSTModulation()
 {
-	this->_ptimer->FinishLateralModulation();
-	this->AppendGainSync(NullGain::Create());
+	this->_pimpl->StopSTModulation();
 }
 
-void Controller::ResetLateralGain()
+void Controller::FinishSTModulation()
 {
-	this->FinishLateralModulation();
-	this->_ptimer->ResetLateralGain();
+	this->_pimpl->FinishSTModulation();
 }
 
 void Controller::Flush()
@@ -579,42 +560,37 @@ void Controller::Flush()
 	this->_pimpl->FlushBuffer();
 }
 
-void Controller::CalibrateModulation()
-{
-	this->_pimpl->CalibrateModulation();
-}
-
 void Controller::LateralModulationAT(Eigen::Vector3f point, Eigen::Vector3f dir, float lm_amp, float lm_freq)
 {
 	auto p1 = point + lm_amp * dir;
 	auto p2 = point - lm_amp * dir;
-	this->ResetLateralGain();
-	this->AppendLateralGain(autd::FocalPointGain::Create(p1));
-	this->AppendLateralGain(autd::FocalPointGain::Create(p2));
-	this->StartLateralModulation(lm_freq);
+	this->FinishSTModulation();
+	this->AppendSTMGain(autd::FocalPointGain::Create(p1));
+	this->AppendSTMGain(autd::FocalPointGain::Create(p2));
+	this->StartSTModulation(lm_freq);
 }
 
-GeometryPtr Controller::geometry() noexcept
+#pragma region deprecated
+void Controller::AppendLateralGain(GainPtr gain)
 {
-	return this->_pimpl->_geometry;
+	this->AppendSTMGain(gain);
 }
+void Controller::AppendLateralGain(const std::vector<GainPtr> &gain_list)
+{
+	this->AppendSTMGain(gain_list);
+}
+void Controller::StartLateralModulation(float freq)
+{
+	this->StartSTModulation(freq);
+}
+void Controller::FinishLateralModulation()
+{
+	this->StopSTModulation();
+}
+void Controller::ResetLateralGain()
+{
+	this->FinishSTModulation();
+}
+#pragma endregion
 
-void Controller::SetGeometry(const GeometryPtr &geometry) noexcept
-{
-	this->_pimpl->_geometry = geometry;
-}
-
-size_t Controller::remainingInBuffer()
-{
-	return this->_pimpl->_send_gain_q.size() + this->_pimpl->_send_mod_q.size() + this->_pimpl->_build_q.size();
-}
-
-void Controller::SetSilentMode(bool silent) noexcept
-{
-	this->_pimpl->silentMode = silent;
-}
-
-bool Controller::silentMode() noexcept
-{
-	return this->_pimpl->silentMode;
-}
+#pragma endregion

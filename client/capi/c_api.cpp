@@ -4,11 +4,11 @@
  * Created Date: 02/07/2018
  * Author: Shun Suzuki
  * -----
- * Last Modified: 19/10/2019
+ * Last Modified: 10/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
- * 
+ *
  */
 
 #include "autd3.hpp"
@@ -258,26 +258,26 @@ void AUTDAppendModulationSync(AUTDControllerHandle handle, AUTDModulationPtr mod
 	auto *m = static_cast<Modulation *>(mod);
 	cnt->AppendModulationSync(m);
 }
-void AUTDAppendLateralGain(AUTDControllerHandle handle, AUTDGainPtr gain)
+void AUTDAppendSTMGain(AUTDControllerHandle handle, AUTDGainPtr gain)
 {
 	auto *cnt = static_cast<Controller *>(handle);
 	auto *g = static_cast<Gain *>(gain);
-	cnt->AppendLateralGain(g);
+	cnt->AppendSTMGain(g);
 }
-void AUTDStartLateralModulation(AUTDControllerHandle handle, float freq)
+void AUTDStartSTModulation(AUTDControllerHandle handle, float freq)
 {
 	auto *cnt = static_cast<Controller *>(handle);
-	cnt->StartLateralModulation(freq);
+	cnt->StartSTModulation(freq);
 }
-void AUTDFinishLateralModulation(AUTDControllerHandle handle)
+void AUTDStopSTModulation(AUTDControllerHandle handle)
 {
 	auto *cnt = static_cast<Controller *>(handle);
-	cnt->FinishLateralModulation();
+	cnt->StopSTModulation();
 }
-void AUTDResetLateralGain(AUTDControllerHandle handle)
+void AUTDFinishSTModulation(AUTDControllerHandle handle)
 {
 	auto *cnt = static_cast<Controller *>(handle);
-	cnt->ResetLateralGain();
+	cnt->FinishSTModulation();
 }
 void AUTDSetGain(AUTDControllerHandle handle, int deviceIndex, int transIndex, int amp, int phase)
 {
@@ -332,6 +332,31 @@ float *GetAngleZYZ(float *rotationMatrix)
 	angleZYZ[2] = euler[2];
 	return angleZYZ;
 }
+
+#pragma region deprecated
+void AUTDAppendLateralGain(AUTDControllerHandle handle, AUTDGainPtr gain)
+{
+	auto *cnt = static_cast<Controller *>(handle);
+	auto *g = static_cast<Gain *>(gain);
+	cnt->AppendLateralGain(g);
+}
+void AUTDStartLateralModulation(AUTDControllerHandle handle, float freq)
+{
+	auto *cnt = static_cast<Controller *>(handle);
+	cnt->StartLateralModulation(freq);
+}
+void AUTDFinishLateralModulation(AUTDControllerHandle handle)
+{
+	auto *cnt = static_cast<Controller *>(handle);
+	cnt->FinishLateralModulation();
+}
+void AUTDResetLateralGain(AUTDControllerHandle handle)
+{
+	auto *cnt = static_cast<Controller *>(handle);
+	cnt->ResetLateralGain();
+}
+#pragma endregion
+
 #pragma endregion
 
 #pragma region Debug
