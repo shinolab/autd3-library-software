@@ -24,7 +24,7 @@
 #include <time.h>
 #include <string.h>
 
-constexpr auto TIME_SCALE = 1000 * 1000L; //us
+constexpr auto TIME_SCALE = 1000L; //us
 
 using namespace std;
 
@@ -76,7 +76,7 @@ void Timer::InitTimer()
 	});
 
 	dispatch_time_t start = dispatch_time(DISPATCH_TIME_NOW, 0);
-	dispatch_source_set_timer(_timer, start, 1000 * 1000, 0);
+	dispatch_source_set_timer(_timer, start, this->_interval_us * TIME_SCALE, 0);
 	dispatch_resume(_timer);
 }
 

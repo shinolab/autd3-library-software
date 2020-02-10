@@ -24,7 +24,7 @@
 #include <time.h>
 #include <string.h>
 
-constexpr auto TIME_SCALE = 1000 * 1000L; //us
+constexpr auto TIME_SCALE = 1000L; //us to ns
 
 using namespace std;
 
@@ -78,9 +78,9 @@ void Timer::InitTimer()
 	}
 
 	itval.it_value.tv_sec = 0;
-	itval.it_value.tv_nsec = 1000 * 1000;
+	itval.it_value.tv_nsec = this->_interval_us * TIME_SCALE;
 	itval.it_interval.tv_sec = 0;
-	itval.it_interval.tv_nsec = 1000 * 1000;
+	itval.it_interval.tv_nsec = this->_interval_us * TIME_SCALE;
 
 	memset(&se, 0, sizeof(se));
 	se.sigev_value.sival_ptr = this;
