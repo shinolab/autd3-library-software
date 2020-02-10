@@ -17,14 +17,14 @@ rand = "0.7"
 csv = "1.1"
 lazy_static = "1.4"
 hound = "3.4"
-rusoem = { path="../rusoem"}
+rusoem = { git="https://github.com/sssssssuzuki/rusoem.git", rev="039c38f"}
 
 [dev-dependencies]
 colored = "1.9"
 
 [target.'cfg(windows)'.dependencies]
 winapi = { version = "0.3", features = ["threadpoollegacyapiset", "errhandlingapi", "handleapi", "winerror"] }
-ruads = { path="../ruads", optional = true}
+ruads = { git="https://github.com/sssssssuzuki/ruads.git", rev="2edd7b5", optional = true}
 
 [features]
 default = []
