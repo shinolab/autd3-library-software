@@ -4,7 +4,7 @@
  * Created Date: 25/08/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 26/09/2019
+ * Last Modified: 10/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -25,7 +25,7 @@ namespace AUTD3SharpTest
             //SimpleExample.Test();
             //BesselExample.Test();
             //HoloGainExample.Test();
-            //LateralExmaple.Test();
+            //STMExmaple.Test();
 
             // This don't need TwinCAT
             SimpleExample_SOEM.Test();

@@ -4,7 +4,7 @@
  * Created Date: 25/08/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 05/09/2019
+ * Last Modified: 10/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -16,11 +16,11 @@ using System;
 
 namespace AUTD3SharpTest.Test
 {
-    internal class LateralExmaple
+    internal class STMExmaple
     {
         public static void Test()
         {
-            Console.WriteLine("Start LateralModulation Test");
+            Console.WriteLine("Start Spatio-Temporal Modulation Test");
 
             float x = 83.0f;
             float y = 66.0f;
@@ -38,9 +38,9 @@ namespace AUTD3SharpTest.Test
                 Gain f1 = AUTD.FocalPointGain(x + 10, y, z);
                 Gain f2 = AUTD.FocalPointGain(x - 10, y, z);
 
-                autd.AppendLateralGain(f1);
-                autd.AppendLateralGain(f2);
-                autd.StartLateralModulation(50);
+                autd.AppendSTMGain(f1);
+                autd.AppendSTMGain(f2);
+                autd.StartSTModulation(50);
 
                 Console.WriteLine("press any key to finish...");
                 Console.ReadKey(true);

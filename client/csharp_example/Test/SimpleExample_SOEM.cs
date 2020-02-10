@@ -32,6 +32,9 @@ namespace AUTD3SharpTest.Test
             {
                 // AddDevice() must be called before Open(), and be called as many times as the number of AUTDs connected.
                 autd.AddDevice(Vector3f.Zero, Vector3f.Zero);
+                autd.AddDevice(Vector3f.Zero, Vector3f.Zero);
+                autd.AddDevice(Vector3f.Zero, Vector3f.Zero);
+                autd.AddDevice(Vector3f.Zero, Vector3f.Zero);
                 //autd.AddDevice(Vector3f.UnitY * AUTD.AUTDHeight, Vector3f.Zero);
 
                 System.Collections.Generic.IEnumerable<EtherCATAdapter> adapters = AUTD.EnumerateAdapters();
@@ -62,11 +65,11 @@ namespace AUTD3SharpTest.Test
                 Gain gain = AUTD.FocalPointGain(x, y, z); // Focal point @ (x, y, z) [mm]
                 autd.AppendGainSync(gain);
 
-                Console.WriteLine("press any key to start lateral modulation...");
+                Console.WriteLine("press any key to start spatio-temporal modulation...");
                 Console.ReadKey(true);
 
-                // LM
-                Console.WriteLine("Lateral Modulation");
+                // STM
+                Console.WriteLine("Spatio-Temporal Modulation");
                 autd.AppendModulationSync(AUTD.Modulation(255));
 
                 Gain f1 = AUTD.FocalPointGain(x + 2.5f, y, z);
