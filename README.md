@@ -3,7 +3,8 @@
 Version: 3.0.2.3
 
 * 旧安定版は[v3.0.0ブランチ](https://github.com/shinolab/autd3-library-software/tree/v3.0.0)にあります.
-* 最高1.28MHzの位相更新機能を追加した[version 3.1](https://github.com/shinolab/autd3-library-software/tree/v3.1)もあります.
+
+* 最高1.28MHzの位相更新機能を追加した[version 3.1](https://github.com/shinolab/autd3.1)もあります.
 
 * 詳細は[Wiki](https://github.com/shinolab/autd3-library-software/wiki)を参照してください.
 
