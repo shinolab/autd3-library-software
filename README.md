@@ -1,6 +1,6 @@
 # autd3 #
 
-Version: 3.0.2.2
+Version: 3.0.2.3
 
 旧安定版は[v3.0.0ブランチ](https://github.com/shinolab/autd3-library-software/tree/v3.0.0)にあります.
 
@@ -14,14 +14,21 @@ Version: 3.0.2.2
 
 # Change log
 
-* 3.0.2.2
-    * Close時の処理を修正
+* 3.0.2.3 (software)
+    * LateralModulationの実装を変更
+    * LateralModulationをSpatio-Temporal Modulationにリネーム
+    * Linux/Macのtimer.cppのバグを修正
 
-* 3.0.2.1
+* 3.0.2.2 (software/cpu/fpga)
+    * Close時の処理を修正
+    * fpgaのmcsファイル圧縮&コンフィグレーション時間短縮
+    * cpu/fpgaは互換性あり
+
+* 3.0.2.1 (software)
     * SOEM使用時のバグを修正
     * Rust版追加 (future/autd)
 
-* 3.0.2.0
+* 3.0.2.0 (software/cpu/fpga)
     * ModulationCalibration実装
         * これにより破壊的な変更がソフト/CPU/FPGAに入った
         * Sync0のデフォルト周期を1msに戻した
