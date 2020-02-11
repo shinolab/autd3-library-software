@@ -14,6 +14,14 @@ Version: 3.0.2.3
 
 必ず, dist/firmwareにあるv3.0.2のファームウェアを書き込んでから使用してください.
 
+
+## Wrappers ##
+
+* C# - AUTDSharp
+* Rust - future/autd
+* python - wrappers/python
+* julia - wrappers/julia
+
 # Change log
 
 * 3.0.2.3 (software)
@@ -55,4 +63,4 @@ Version: 3.0.2.3
 
 # Author #
 
-Shun Suzuki, 2019
+Shun Suzuki, 2019-2020
