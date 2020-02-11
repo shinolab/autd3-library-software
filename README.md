@@ -14,13 +14,18 @@ Version: 3.0.2.3
 
 必ず, dist/firmwareにあるv3.0.2のファームウェアを書き込んでから使用してください.
 
-
 ## Wrappers ##
 
 * C# - AUTDSharp
 * Rust - future/autd
 * python - wrappers/python
 * julia - wrappers/julia
+
+## Citing
+
+If you use this SDK in your research please consider to include the following citation in your publications:
+
+S. Inoue, Y. Makino and H. Shinoda "Scalable Architecture for Airborne Ultrasound Tactile Display", Asia Haptics 2016
 
 # Change log
 
