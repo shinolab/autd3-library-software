@@ -4,3 +4,6 @@
 [submodule "client/deps/SOEM"]
 	path = client/deps/SOEM
 	url = https://github.com/OpenEtherCATsociety/SOEM
+[submodule "future/autd"]
+	path = future/autd
+	url = https://github.com/sssssssuzuki/ruautd.git
