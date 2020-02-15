@@ -12,7 +12,7 @@ set_property PROGRAM.CHECKSUM  0 [ get_property PROGRAM.HW_CFGMEM [lindex [get_h
 refresh_hw_device [lindex [get_hw_devices xc7a200t_0] 0]
 
 set project_directory [file dirname [info script]]
-set mcs_file_path [file join $project_directory "autd3-fpga-v3.0.2.2.mcs"]
+set mcs_file_path [file join $project_directory "tmp.mcs"]
 set_property PROGRAM.ADDRESS_RANGE  {use_file} [ get_property PROGRAM.HW_CFGMEM [lindex [get_hw_devices xc7a200t_0] 0]]
 set_property PROGRAM.FILES [list $mcs_file_path ] [ get_property PROGRAM.HW_CFGMEM [lindex [get_hw_devices xc7a200t_0] 0]]
 set_property PROGRAM.PRM_FILE {} [ get_property PROGRAM.HW_CFGMEM [lindex [get_hw_devices xc7a200t_0] 0]]
