@@ -4,13 +4,14 @@
  * Created Date: 04/09/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 10/02/2020
+ * Last Modified: 16/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
  * 
  */
 
+#include <atomic>
 #include <stdexcept>
 #include <string>
 #include <future>
@@ -24,11 +25,13 @@
 #include <time.h>
 #include <string.h>
 
-constexpr auto TIME_SCALE = 1000L; //us
+static constexpr auto TIME_SCALE = 1000L; //us
+
+static std::atomic<bool> AUTD3_LIB_TIMER_LOCK(false);
 
 using namespace std;
 
-Timer::Timer() noexcept
+Timer::Timer(bool highResolusion) noexcept
 {
 	this->_interval_us = 1;
 }
@@ -82,5 +85,10 @@ void Timer::InitTimer()
 
 void Timer::MainLoop(Timer *ptr)
 {
-	ptr->cb();
+	bool expected = false;
+	if (AUTD3_LIB_TIMER_LOCK.compare_exchange_weak(expected, true))
+	{
+		ptr->cb();
+		AUTD3_LIB_TIMER_LOCK.store(false, std::memory_order_release);
+	}
 }

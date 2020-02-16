@@ -8,9 +8,10 @@
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2018-2019 Hapis Lab. All rights reserved.
- * 
+ *
  */
 
+#include <atomic>
 #include <stdexcept>
 #include <string>
 #include <future>
@@ -21,13 +22,16 @@
 #include <cmath>
 #include "../timer.hpp"
 
-constexpr auto TIME_SCALE = 1000 * 1000L; //us
-
 using namespace std;
 
-Timer::Timer() noexcept
+static constexpr auto TIME_SCALE = 1000 * 1000L; //us
+
+static std::atomic<bool> AUTD3_LIB_TIMER_LOCK(false);
+
+Timer::Timer(bool highResolusion) noexcept
 {
 	this->_interval_us = 1;
+	this->_highResolusion = highResolusion;
 }
 Timer::~Timer() noexcept(false)
 {
@@ -38,6 +42,11 @@ void Timer::SetInterval(int interval_us)
 {
 	if (interval_us <= 0)
 		throw new std::runtime_error("Interval must be positive integer.");
+
+	if (!this->_highResolusion && ((interval_us % 1000) != 0)) {
+		cerr << "The accuracy of the Windows timer is 1 ms. It may not run properly." << endl;
+	}
+
 	this->_interval_us = interval_us;
 }
 
@@ -46,7 +55,17 @@ void Timer::Start(const std::function<void()> &callback)
 	this->Stop();
 	this->cb = callback;
 	this->_loop = true;
-	this->InitTimer();
+	if (this->_highResolusion) {
+		this->InitTimer();
+	}
+	else {
+		this->_timerQueue = CreateTimerQueue();
+		if (this->_timerQueue == NULL)
+			cerr << "CreateTimerQueue failed." << endl;
+
+		if (!CreateTimerQueueTimer(&this->_timer, this->_timerQueue, (WAITORTIMERCALLBACK)TimerThread, reinterpret_cast<void *>(this), 0, this->_interval_us / 1000, 0))
+			cerr << "CreateTimerQueueTimer failed." << endl;
+	}
 }
 
 void Timer::Stop()
@@ -54,7 +73,19 @@ void Timer::Stop()
 	if (this->_loop)
 	{
 		this->_loop = false;
-		this->_mainThread.join();
+
+		if (this->_highResolusion) {
+			this->_mainThread.join();
+
+		}
+		else {
+			if (!DeleteTimerQueueTimer(_timerQueue, _timer, 0))
+			{
+				if (GetLastError() != ERROR_IO_PENDING)
+					cerr << "DeleteTimerQueue failed." << endl;
+			}
+		}
+
 	}
 }
 
@@ -112,5 +143,15 @@ void Timer::MainLoop()
 		}
 		else
 			continue;
+	}
+}
+
+void CALLBACK Timer::TimerThread(PVOID lpParam, BOOLEAN TimerOrWaitFired) {
+	bool expected = false;
+	if (AUTD3_LIB_TIMER_LOCK.compare_exchange_weak(expected, true))
+	{
+		Timer *_ptimer = reinterpret_cast<Timer *>(lpParam);
+		_ptimer->cb();
+		AUTD3_LIB_TIMER_LOCK.store(false, std::memory_order_release);
 	}
 }

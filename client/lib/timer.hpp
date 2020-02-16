@@ -4,11 +4,11 @@
  * Created Date: 02/07/2018
  * Author: Shun Suzuki and Saya Mizutani
  * -----
- * Last Modified: 10/02/2020
+ * Last Modified: 16/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
- * 
+ *
  */
 
 #pragma once
@@ -25,7 +25,7 @@
 class Timer
 {
 public:
-	Timer() noexcept;
+	Timer(bool highResolusion = false) noexcept;
 	~Timer() noexcept(false);
 	void SetInterval(int interval);
 	void Start(const std::function<void()> &callback);
@@ -41,6 +41,8 @@ protected:
 	std::function<void()> cb;
 
 #if WIN32
+	HANDLE _timerQueue = NULL;
+	HANDLE _timer = NULL;
 #elif __APPLE__
 	dispatch_queue_t _queue;
 	dispatch_source_t _timer;
@@ -52,7 +54,9 @@ private:
 	std::thread _mainThread;
 	bool _loop = false;
 #if WIN32
+	bool _highResolusion;
 	void MainLoop();
+	static void CALLBACK TimerThread(PVOID lpParam, BOOLEAN TimerOrWaitFired);
 #elif __APPLE__
 	static void MainLoop(Timer *ptr);
 #else
