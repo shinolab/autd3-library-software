@@ -53,8 +53,8 @@
 using namespace libsoem;
 using namespace std;
 
-std::atomic<bool> SEND_COND(false);
-std::atomic<bool> RTTHREAD_LOCK(false);
+static std::atomic<bool> AUTD3_LIB_SEND_COND(false);
+static std::atomic<bool> AUTD3_LIB_RTTHREAD_LOCK(false);
 
 class SOEMController::impl
 {
@@ -125,18 +125,18 @@ void libsoem::SOEMController::impl::RTthread(union sigval sv)
 {
 #endif
 	bool expected = false;
-	if (RTTHREAD_LOCK.compare_exchange_weak(expected, true))
+	if (AUTD3_LIB_RTTHREAD_LOCK.compare_exchange_weak(expected, true))
 	{
 
-		auto pre = SEND_COND.load(std::memory_order_acquire);
+		auto pre = AUTD3_LIB_SEND_COND.load(std::memory_order_acquire);
 		ec_send_processdata();
 		ec_receive_processdata(EC_TIMEOUTRET);
 		if (!pre)
 		{
-			SEND_COND.store(true, std::memory_order_release);
+			AUTD3_LIB_SEND_COND.store(true, std::memory_order_release);
 		}
 
-		RTTHREAD_LOCK.store(false, std::memory_order_release);
+		AUTD3_LIB_RTTHREAD_LOCK.store(false, std::memory_order_release);
 	}
 }
 
@@ -200,8 +200,8 @@ void SOEMController::impl::CreateCopyThread(size_t header_size, size_t body_size
 				}
 
 				{
-					SEND_COND.store(false, std::memory_order_release);
-					while (!SEND_COND.load(std::memory_order_acquire))
+					AUTD3_LIB_SEND_COND.store(false, std::memory_order_release);
+					while (!AUTD3_LIB_SEND_COND.load(std::memory_order_acquire))
 					{
 					}
 				}
@@ -278,6 +278,12 @@ void SOEMController::impl::Open(const char *ifname, size_t devNum, uint32_t ec_s
 
 				if (!CreateTimerQueueTimer(&_timer, _timerQueue, (WAITORTIMERCALLBACK)RTthread, reinterpret_cast<void *>(this), 0, ec_sm3_cyctime_ns / 1000 / 1000, 0))
 					cerr << "CreateTimerQueueTimer failed." << endl;
+
+				 HANDLE hProcess = GetCurrentProcess();
+				if (!SetPriorityClass(hProcess, REALTIME_PRIORITY_CLASS)) {
+					cerr << "Failed to SetPriorityClass" << endl;
+				}
+
 #elif defined MACOSX
 				_queue = dispatch_queue_create("timerQueue", 0);
 
@@ -349,11 +355,11 @@ bool SOEMController::impl::Close()
 			this->_cpy_thread.join();
 
 		memset(_IOmap, 0x00, _output_frame_size);
-		SEND_COND.store(false, std::memory_order_release);
+		AUTD3_LIB_SEND_COND.store(false, std::memory_order_release);
 		do
 		{
 			this_thread::sleep_for(chrono::milliseconds(1));
-		} while (!SEND_COND.load(std::memory_order_acquire));
+		} while (!AUTD3_LIB_SEND_COND.load(std::memory_order_acquire));
 
 #ifdef WINDOWS
 		if (!DeleteTimerQueueTimer(_timerQueue, _timer, 0))

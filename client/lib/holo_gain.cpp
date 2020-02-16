@@ -4,7 +4,7 @@
  * Created Date: 06/07/2016
  * Author: Seki Inoue
  * -----
- * Last Modified: 05/09/2019
+ * Last Modified: 16/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2016-2019 Hapis Lab. All rights reserved.
@@ -36,8 +36,8 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-constexpr auto REPEAT_SDP = 10;
-constexpr auto LAMBDA_SDP = 0.8;
+static constexpr auto REPEAT_SDP = 10;
+static constexpr auto LAMBDA_SDP = 0.8;
 
 using namespace std;
 using namespace autd;

@@ -4,7 +4,7 @@
  * Created Date: 11/06/2016
  * Author: Seki Inoue
  * -----
- * Last Modified: 01/11/2019
+ * Last Modified: 16/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2016-2019 Hapis Lab. All rights reserved.
@@ -23,7 +23,7 @@
 #include "privdef.hpp"
 
 #pragma region Util
-inline float sinc(float x) noexcept
+static inline float sinc(float x) noexcept
 {
 	if (fabs(x) < std::numeric_limits<float>::epsilon())
 		return 1;
@@ -31,12 +31,12 @@ inline float sinc(float x) noexcept
 }
 #if _WINDOWS
 template <typename T>
-T clamp(T v, T min, T max)
+static inline T clamp(T v, T min, T max)
 {
 	return (v < min) ? min : (v > max) ? max : v;
 }
 #endif
-int gcd(int u, int V)
+static int gcd(int u, int V)
 {
 	const auto t = u % V;
 	return (t == 0) ? V : gcd(V, t);
