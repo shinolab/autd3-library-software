@@ -4,7 +4,7 @@
  * Created Date: 24/08/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 07/02/2020
+ * Last Modified: 16/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -28,7 +28,7 @@ void autd::internal::SOEMLink::Open(std::string ifname)
 {
 	_cnt = std::make_unique<libsoem::SOEMController>();
 
-	auto ifname_and_devNum = split(ifname, ':');
+	auto ifname_and_devNum = autd::split(ifname, ':');
 	_devNum = stoi(ifname_and_devNum[1]);
 	_ifname = ifname_and_devNum[0];
 	_cnt->Open(_ifname.c_str(), _devNum, EC_SM3_CYCLE_TIME_NANO_SEC, EC_SYNC0_CYCLE_TIME_NANO_SEC, HEADER_SIZE, NUM_TRANS_IN_UNIT * 2, EC_INPUT_FRAME_SIZE);

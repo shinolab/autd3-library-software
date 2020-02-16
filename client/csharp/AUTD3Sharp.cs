@@ -4,7 +4,7 @@
  * Created Date: 02/07/2018
  * Author: Shun Suzuki
  * -----
- * Last Modified: 10/02/2020
+ * Last Modified: 16/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2018-2019 Hapis Lab. All rights reserved.
@@ -88,13 +88,42 @@ namespace AUTD3Sharp
         }
     }
 
-    public struct EtherCATAdapter
+    public struct EtherCATAdapter : IEquatable<EtherCATAdapter>
     {
         public string Desc { get; internal set; }
         public string Name { get; internal set; }
+
         public override string ToString()
         {
             return $"{Desc}, {Name}";
+        }
+
+        public bool Equals(EtherCATAdapter other)
+        {
+            return Desc.Equals(other.Desc) && Name.Equals(other.Name);
+        }
+
+        public static bool operator ==(EtherCATAdapter left, EtherCATAdapter right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(EtherCATAdapter left, EtherCATAdapter right)
+        {
+            return !left.Equals(right);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is EtherCATAdapter))
+                return false;
+
+            return Equals((EtherCATAdapter)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Desc.GetHashCode() ^ Name.GetHashCode();
         }
     }
 

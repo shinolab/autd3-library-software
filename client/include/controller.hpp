@@ -55,13 +55,13 @@ public:
 	static EtherCATAdapters EnumerateAdapters(int &size);
 
 	/*!
-				 @brief Open device by link type and location.
-					The scheme of location is as follows:
-					ETHERCAT - <ams net id> or <ipv4 addr>:<ams net id> (ex. 192.168.1.2:192.168.1.3.1.1 ). The ipv4 addr will be extracted from leading 4 octets of ams net id if not specified.
-					ETHERNET - ipv4 addr
-					USB      - ignored
-					SERIAL   - file discriptor
-				 */
+		@brief Open device by link type and location.
+		The scheme of location is as follows:
+		ETHERCAT - <ams net id> or <ipv4 addr>:<ams net id> (ex. 192.168.1.2:192.168.1.3.1.1 ). The ipv4 addr will be extracted from leading 4 octets of ams net id if not specified.
+		ETHERNET - ipv4 addr
+		USB      - ignored
+		SERIAL   - file discriptor
+		*/
 	void Open(LinkType type, std::string location = "");
 	void SetSilentMode(bool silent) noexcept;
 	void CalibrateModulation();

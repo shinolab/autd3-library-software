@@ -4,7 +4,7 @@
  * Created Date: 01/06/2016
  * Author: Seki Inoue
  * -----
- * Last Modified: 05/11/2019
+ * Last Modified: 16/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2016-2019 Hapis Lab. All rights reserved.
@@ -30,7 +30,7 @@ using namespace std;
 
 void autd::internal::EthercatLink::Open(std::string location)
 {
-	auto sep = split(location, ':');
+	auto sep = autd::split(location, ':');
 
 	if (sep.size() == 1)
 	{
@@ -47,7 +47,7 @@ void autd::internal::EthercatLink::Open(std::string location)
 }
 void autd::internal::EthercatLink::Open(std::string ams_net_id, std::string ipv4addr)
 {
-	auto octets = split(ams_net_id, '.');
+	auto octets = autd::split(ams_net_id, '.');
 	if (octets.size() != 6)
 	{
 		throw runtime_error("Ams net id must have 6 octets");
