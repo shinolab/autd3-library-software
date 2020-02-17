@@ -4,7 +4,7 @@
  * Created Date: 02/07/2018
  * Author: Shun Suzuki
  * -----
- * Last Modified: 10/02/2020
+ * Last Modified: 17/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2018-2019 Hapis Lab. All rights reserved.
@@ -49,6 +49,7 @@ namespace AUTD3Sharp
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDFreeController(IntPtr handle);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDSetSilentMode(AUTDControllerHandle handle, [MarshalAs(UnmanagedType.U1)] bool mode);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDCalibrateModulation(AUTDControllerHandle handle);
+        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDStop(AUTDControllerHandle handle);
         #endregion
 
         #region Property

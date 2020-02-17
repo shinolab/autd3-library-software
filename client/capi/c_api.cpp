@@ -4,7 +4,7 @@
  * Created Date: 02/07/2018
  * Author: Shun Suzuki
  * -----
- * Last Modified: 10/02/2020
+ * Last Modified: 17/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -93,6 +93,11 @@ void AUTDCalibrateModulation(AUTDControllerHandle handle)
 {
 	auto *cnt = static_cast<Controller *>(handle);
 	cnt->CalibrateModulation();
+}
+void AUTDStop(AUTDControllerHandle handle)
+{
+	auto *cnt = static_cast<Controller *>(handle);
+	cnt->Stop();
 }
 #pragma endregion
 

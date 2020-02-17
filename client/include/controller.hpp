@@ -4,7 +4,7 @@
  * Created Date: 11/04/2018
  * Author: Shun Suzuki
  * -----
- * Last Modified: 10/02/2020
+ * Last Modified: 17/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -67,6 +67,7 @@ public:
 	void CalibrateModulation();
 	void Close();
 
+	void Stop();
 	void AppendGain(GainPtr gain);
 	void AppendGainSync(GainPtr gain);
 	void AppendModulation(ModulationPtr modulation);

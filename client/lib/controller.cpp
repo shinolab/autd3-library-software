@@ -4,7 +4,7 @@
  * Created Date: 13/05/2016
  * Author: Seki Inoue
  * -----
- * Last Modified: 10/02/2020
+ * Last Modified: 17/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2016-2019 Hapis Lab. All rights reserved.
@@ -63,6 +63,7 @@ public:
 	void Close();
 
 	void InitPipeline();
+	void Stop();
 	void AppendGain(const GainPtr gain);
 	void AppendGainSync(const GainPtr gain);
 	void AppendModulation(const ModulationPtr mod);
@@ -176,6 +177,15 @@ void Controller::impl::InitPipeline()
 			cerr << errnum << "Link closed." << endl;
 		}
 	});
+}
+
+void Controller::impl::Stop()
+{
+	auto nullgain = NullGain::Create();
+	this->AppendGainSync(nullgain);
+#if DLL_FOR_CAPI
+	delete nullgain;
+#endif
 }
 
 void Controller::impl::AppendGain(GainPtr gain)
@@ -376,12 +386,8 @@ void Controller::impl::Close()
 	if (this->isOpen())
 	{
 		this->FinishSTModulation();
-		auto nullgain = NullGain::Create();
-		this->AppendGainSync(nullgain);
+		this->Stop();
 		this->_link->Close();
-#if DLL_FOR_CAPI
-		delete nullgain;
-#endif
 		this->FlushBuffer();
 		this->_build_cond.notify_all();
 		if (this_thread::get_id() != this->_build_thr.get_id() && this->_build_thr.joinable())
@@ -508,6 +514,11 @@ void Controller::CalibrateModulation()
 void Controller::Close()
 {
 	this->_pimpl->Close();
+}
+
+void Controller::Stop()
+{
+	this->_pimpl->Stop();
 }
 
 void Controller::AppendGain(GainPtr gain)
