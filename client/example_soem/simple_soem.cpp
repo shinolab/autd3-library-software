@@ -4,7 +4,7 @@
  * Created Date: 24/08/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 05/11/2019
+ * Last Modified: 17/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -53,15 +53,14 @@ int main()
 	// It takes several seconds proportional to the number of AUTD you use.
 	//autd.CalibrateModulation();
 
-	auto gain = autd::FocalPointGain::Create(Eigen::Vector3f(90, 70, 150));
-
+	autd.AppendGainSync(autd::FocalPointGain::Create(Eigen::Vector3f(90, 70, 150));
 	autd.AppendModulationSync(autd::SineModulation::Create(150)); // 150Hz AM
-	autd.AppendGainSync(gain);
 
 	std::cout << "press any key to finish..." << std::endl;
 	getchar();
 
 	std::cout << "disconnecting..." << std::endl;
 	autd.Close();
+
 	return 0;
 }

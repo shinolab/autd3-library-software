@@ -43,8 +43,9 @@ public:
 	queue<GainPtr> _build_q;
 	queue<GainPtr> _send_gain_q;
 	queue<ModulationPtr> _send_mod_q;
-	queue<GainPtr> _stmGains;
+	vector<GainPtr> _stmGains;
 	vector<uint8_t *> _stmBodies;
+	vector<size_t> _stmBodySizes;
 	unique_ptr<Timer> _pStmTimer;
 
 	thread _build_thr;
@@ -236,9 +237,7 @@ void Controller::impl::AppendModulationSync(ModulationPtr mod)
 			{
 				size_t body_size = 0;
 				auto body = this->MakeBody(nullptr, mod, &body_size);
-
 				this->_link->Send(body_size, move(body));
-				this_thread::sleep_for(chrono::milliseconds(1));
 			}
 			mod->sent = 0;
 		}
@@ -252,7 +251,7 @@ void Controller::impl::AppendModulationSync(ModulationPtr mod)
 
 void Controller::impl::AppendSTMGain(GainPtr gain)
 {
-	_stmGains.push(gain);
+	_stmGains.push_back(gain);
 }
 
 void Controller::impl::AppendSTMGain(const std::vector<GainPtr> &gain_list)
@@ -269,13 +268,13 @@ void Controller::impl::StartSTModulation(float freq)
 	auto itvl_us = static_cast<int>(1000000. / freq / len);
 	this->_pStmTimer->SetInterval(itvl_us);
 
-	vector<size_t> bodysizes;
-	this->_stmBodies.reserve(len);
-	bodysizes.reserve(len);
+	auto current_size = this->_stmBodies.size();
+	this->_stmBodies.resize(len);
+	this->_stmBodySizes.resize(len);
 
-	for (size_t i = 0; i < len; i++)
+	for (size_t i = current_size; i < len; i++)
 	{
-		auto g = this->_stmGains.front();
+		auto g = this->_stmGains[i];
 		g->SetGeometry(this->_geometry);
 		if (!g->built())
 			g->build();
@@ -284,16 +283,14 @@ void Controller::impl::StartSTModulation(float freq)
 		auto body = this->MakeBody(g, nullptr, &body_size);
 		uint8_t *b = new uint8_t[body_size];
 		std::memcpy(b, body.get(), body_size);
-		this->_stmBodies.push_back(b);
-		bodysizes.push_back(body_size);
-
-		this->_stmGains.pop();
+		this->_stmBodies[i] = b;
+		this->_stmBodySizes[i] = body_size;
 	}
 
 	size_t idx = 0;
 	this->_pStmTimer->Start(
-		[this, idx, len, bodysizes]() mutable {
-			auto body_size = bodysizes[idx];
+		[this, idx, len]() mutable {
+			auto body_size = this->_stmBodySizes[idx];
 			auto body_copy = make_unique<uint8_t[]>(body_size);
 			uint8_t *p = this->_stmBodies[idx];
 			std::memcpy(body_copy.get(), p, body_size);
@@ -306,17 +303,19 @@ void Controller::impl::StartSTModulation(float freq)
 void Controller::impl::StopSTModulation()
 {
 	this->_pStmTimer->Stop();
+	this->Stop();
 }
 
 void Controller::impl::FinishSTModulation()
 {
 	this->StopSTModulation();
-	queue<GainPtr>().swap(this->_stmGains);
+	vector<GainPtr>().swap(this->_stmGains);
 	for (uint8_t *p : this->_stmBodies)
 	{
 		delete[] p;
 	}
 	vector<uint8_t *>().swap(this->_stmBodies);
+	vector<size_t>().swap(this->_stmBodySizes);
 }
 
 void Controller::impl::CalibrateModulation()
