@@ -4,7 +4,7 @@
  * Created Date: 23/08/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 09/02/2020
+ * Last Modified: 17/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -118,7 +118,7 @@ void SOEMController::impl::Send(size_t size, unique_ptr<uint8_t[]> buf)
 void CALLBACK SOEMController::impl::RTthread(PVOID lpParam, BOOLEAN TimerOrWaitFired)
 {
 #elif defined MACOSX
-void libsoem::SOEMController::impl::RTthread(SOEMController::impl * pimpl)
+void libsoem::SOEMController::impl::RTthread(SOEMController::impl *pimpl)
 {
 #elif defined LINUX
 void libsoem::SOEMController::impl::RTthread(union sigval sv)
@@ -127,7 +127,6 @@ void libsoem::SOEMController::impl::RTthread(union sigval sv)
 	bool expected = false;
 	if (AUTD3_LIB_RTTHREAD_LOCK.compare_exchange_weak(expected, true))
 	{
-
 		auto pre = AUTD3_LIB_SEND_COND.load(std::memory_order_acquire);
 		ec_send_processdata();
 		ec_receive_processdata(EC_TIMEOUTRET);
@@ -179,7 +178,7 @@ void SOEMController::impl::CreateCopyThread(size_t header_size, size_t body_size
 				unique_lock<mutex> lk(_cpy_mtx);
 				_cpy_cond.wait(lk, [&] {
 					return _send_buf_q.size() > 0 || !_isOpened;
-					});
+				});
 				if (_send_buf_q.size() > 0)
 				{
 					buf = move(_send_buf_q.front());
@@ -210,8 +209,8 @@ void SOEMController::impl::CreateCopyThread(size_t header_size, size_t body_size
 				_send_buf_q.pop();
 			}
 		}
-		},
-		header_size, body_size);
+	},
+						 header_size, body_size);
 }
 
 void SOEMController::impl::Open(const char *ifname, size_t devNum, uint32_t ec_sm3_cyctime_ns, uint32_t ec_sync0_cyctime_ns, size_t header_size, size_t body_size, size_t input_frame_size)
@@ -279,8 +278,9 @@ void SOEMController::impl::Open(const char *ifname, size_t devNum, uint32_t ec_s
 				if (!CreateTimerQueueTimer(&_timer, _timerQueue, (WAITORTIMERCALLBACK)RTthread, reinterpret_cast<void *>(this), 0, ec_sm3_cyctime_ns / 1000 / 1000, 0))
 					cerr << "CreateTimerQueueTimer failed." << endl;
 
-				 HANDLE hProcess = GetCurrentProcess();
-				if (!SetPriorityClass(hProcess, REALTIME_PRIORITY_CLASS)) {
+				HANDLE hProcess = GetCurrentProcess();
+				if (!SetPriorityClass(hProcess, REALTIME_PRIORITY_CLASS))
+				{
 					cerr << "Failed to SetPriorityClass" << endl;
 				}
 
@@ -290,12 +290,12 @@ void SOEMController::impl::Open(const char *ifname, size_t devNum, uint32_t ec_s
 				_timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _queue);
 				dispatch_source_set_event_handler(_timer, ^{
 				  RTthread(this);
-					});
+				});
 
 				dispatch_source_set_cancel_handler(_timer, ^{
 				  dispatch_release(_timer);
 				  dispatch_release(_queue);
-					});
+				});
 
 				dispatch_time_t start = dispatch_time(DISPATCH_TIME_NOW, 0);
 				dispatch_source_set_timer(_timer, start, ec_sm3_cyctime_ns, 0);
@@ -345,14 +345,14 @@ bool SOEMController::impl::Close()
 	if (_isOpened)
 	{
 		_isOpened = false;
+		_cpy_cond.notify_all();
+		if (this_thread::get_id() != _cpy_thread.get_id() && this->_cpy_thread.joinable())
+			this->_cpy_thread.join();
 		{
 			unique_lock<mutex> lk(_cpy_mtx);
 			std::queue<size_t>().swap(_send_size_q);
 			std::queue<unique_ptr<uint8_t[]>>().swap(_send_buf_q);
 		}
-		_cpy_cond.notify_all();
-		if (this_thread::get_id() != _cpy_thread.get_id() && this->_cpy_thread.joinable())
-			this->_cpy_thread.join();
 
 		memset(_IOmap, 0x00, _output_frame_size);
 		AUTD3_LIB_SEND_COND.store(false, std::memory_order_release);
