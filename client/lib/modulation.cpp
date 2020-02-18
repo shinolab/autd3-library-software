@@ -16,6 +16,7 @@
 #include <cmath>
 #include <fstream>
 #include <limits>
+#include <algorithm>
 
 #include "autd3.hpp"
 #include "modulation.hpp"
@@ -26,12 +27,6 @@ static inline float sinc(float x) noexcept {
   if (fabs(x) < std::numeric_limits<float>::epsilon()) return 1;
   return sinf(M_PIf * x) / (M_PIf * x);
 }
-#if _WINDOWS
-template <typename T>
-static inline T clamp(T v, T min, T max) {
-  return (v < min) ? min : (v > max) ? max : v;
-}
-#endif
 static int gcd(int u, int V) {
   const auto t = u % V;
   return (t == 0) ? V : gcd(V, t);
@@ -65,7 +60,7 @@ autd::ModulationPtr autd::SineModulation::Create(int freq, float amp, float offs
 
   auto mod = CreateHelper<SineModulation>();
   constexpr auto sf = autd::Modulation::samplingFrequency();
-  freq = clamp(freq, 1, sf / 2);
+  freq = std::clamp(freq, 1, sf / 2);
 
   const auto d = gcd(sf, freq);
 
@@ -89,7 +84,7 @@ autd::ModulationPtr autd::SineModulation::Create(int freq, float amp, float offs
 autd::ModulationPtr autd::SawModulation::Create(int freq) {
   auto mod = CreateHelper<SawModulation>();
   constexpr auto sf = autd::Modulation::samplingFrequency();
-  freq = clamp(freq, 1, sf / 2);
+  freq = std::clamp(freq, 1, sf / 2);
 
   const auto d = gcd(sf, freq);
 
