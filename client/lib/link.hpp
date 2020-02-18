@@ -9,8 +9,8 @@
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
 //
 
-#ifndef link_hpp
-#define link_hpp
+#ifndef LIB_LINK_HPP_
+#define LIB_LINK_HPP_
 
 #include <stdio.h>
 
@@ -34,4 +34,4 @@ class Link {
 }  // namespace internal
 }  // namespace autd
 
-#endif /* link_hpp */
+#endif  // LIB_LINK_HPP_

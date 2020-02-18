@@ -9,8 +9,8 @@
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
 //
 
-#ifndef privdef_h
-#define privdef_h
+#ifndef LIB_PRIVDEF_HPP_
+#define LIB_PRIVDEF_HPP_
 
 #include <stdint.h>
 
@@ -59,4 +59,4 @@ struct RxGlobalHeader {
   uint8_t mod[MOD_FRAME_SIZE];
 };
 
-#endif /* privdef_h */
+#endif  // LIB_PRIVDEF_HPP_
