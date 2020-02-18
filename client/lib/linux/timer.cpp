@@ -63,7 +63,7 @@ void Timer::InitTimer() {
   act.sa_handler = MainLoop;
   act.sa_flags = SA_RESTART;
   if (sigaction(SIGALRM, &act, NULL) < 0) {
-    cerr << "Error: sigaction()." << endl;
+    std::cerr << "Error: sigaction()." << std::std::endl;
   }
 
   itval.it_value.tv_sec = 0;
@@ -78,11 +78,11 @@ void Timer::InitTimer() {
   se.sigev_notify_attributes = NULL;
 
   if (timer_create(CLOCK_REALTIME, &se, &_timer_id) < 0) {
-    cerr << "Error: timer_create." << endl;
+    std::cerr << "Error: timer_create." << std::endl;
   }
 
   if (timer_settime(_timer_id, 0, &itval, NULL) < 0) {
-    cerr << "Error: timer_settime." << endl;
+    std::cerr << "Error: timer_settime." << std::endl;
   }
 }
 
