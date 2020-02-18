@@ -44,19 +44,4 @@ static std::shared_ptr<T> CreateHelper() {
   return std::move(p);
 }
 #endif
-
-static std::vector<std::string> split(const std::string &s, char delim) {
-  std::vector<std::string> tokens;
-  std::string token;
-  for (char ch : s) {
-    if (ch == delim) {
-      if (!token.empty()) tokens.push_back(token);
-      token.clear();
-    } else {
-      token += ch;
-    }
-  }
-  if (!token.empty()) tokens.push_back(token);
-  return tokens;
-}
 }  // namespace autd
