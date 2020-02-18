@@ -63,7 +63,7 @@ void Timer::InitTimer() {
   act.sa_handler = MainLoop;
   act.sa_flags = SA_RESTART;
   if (sigaction(SIGALRM, &act, NULL) < 0) {
-    std::cerr << "Error: sigaction()." << std::std::endl;
+    std::cerr << "Error: sigaction()." << std::endl;
   }
 
   itval.it_value.tv_sec = 0;
