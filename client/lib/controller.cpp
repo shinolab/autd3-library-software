@@ -80,7 +80,7 @@ public:
 
 	static uint8_t get_id()
 	{
-		static atomic<uint8_t> id{0};
+		static atomic<uint8_t> id{ 0 };
 
 		id.fetch_add(0x01);
 		uint8_t expected = 0xf0;
@@ -116,7 +116,7 @@ void Controller::impl::InitPipeline()
 
 				_build_cond.wait(lk, [&] {
 					return _build_q.size() || !this->isOpen();
-				});
+					});
 
 				if (_build_q.size() > 0)
 				{
@@ -136,7 +136,7 @@ void Controller::impl::InitPipeline()
 				}
 			}
 		}
-	});
+		});
 
 	this->_send_thr = thread([&] {
 		try
@@ -150,7 +150,7 @@ void Controller::impl::InitPipeline()
 					unique_lock<mutex> lk(_send_mtx);
 					_send_cond.wait(lk, [&] {
 						return _send_gain_q.size() || _send_mod_q.size() || !this->isOpen();
-					});
+						});
 					if (_send_gain_q.size() > 0)
 						gain = _send_gain_q.front();
 					if (_send_mod_q.size() > 0)
@@ -177,7 +177,7 @@ void Controller::impl::InitPipeline()
 			this->Close();
 			cerr << errnum << "Link closed." << endl;
 		}
-	});
+		});
 }
 
 void Controller::impl::Stop()
@@ -191,6 +191,7 @@ void Controller::impl::Stop()
 
 void Controller::impl::AppendGain(GainPtr gain)
 {
+	this->_pStmTimer->Stop();
 	{
 		gain->SetGeometry(this->_geometry);
 		unique_lock<mutex> lk(_build_mtx);
@@ -201,6 +202,7 @@ void Controller::impl::AppendGain(GainPtr gain)
 
 void Controller::impl::AppendGainSync(GainPtr gain)
 {
+	this->_pStmTimer->Stop();
 	try
 	{
 		gain->SetGeometry(this->_geometry);
@@ -452,7 +454,7 @@ EtherCATAdapters Controller::EnumerateAdapters(int &size)
 		p.second = adapter.name;
 		res.push_back(p);
 #endif
-	}
+}
 	return res;
 }
 
