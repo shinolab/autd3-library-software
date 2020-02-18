@@ -1,15 +1,13 @@
-﻿/*
- * File: libsoem.cpp
- * Project: win32
- * Created Date: 23/08/2019
- * Author: Shun Suzuki
- * -----
- * Last Modified: 18/02/2020
- * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
- * -----
- * Copyright (c) 2019 Hapis Lab. All rights reserved.
- *
- */
+﻿// File: libsoem.cpp
+// Project: libsoem
+// Created Date: 23/08/2019
+// Author: Shun Suzuki
+// -----
+// Last Modified: 18/02/2020
+// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
+// -----
+// Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
+//
 
 #if (_WIN32 || _WIN64)
 #define WINDOWS

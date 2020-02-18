@@ -1,18 +1,16 @@
-﻿/*
- * File: autd3_c_api.h
- * Project: include
- * Created Date: 07/02/2018
- * Author: Shun Suzuki
- * -----
- * Last Modified: 18/02/2020
- * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
- * -----
- * Copyright (c) 2019 Hapis Lab. All rights reserved.
- *
- */
+﻿// File: autd3_c_api.h
+// Project: include
+// Created Date: 07/02/2018
+// Author: Shun Suzuki
+// -----
+// Last Modified: 18/02/2020
+// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
+// -----
+// Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
+//
 
-#ifndef autd3capih_
-#define autd3capih_
+#ifndef INCLUDE_AUTD3_C_API_H_
+#define INCLUDE_AUTD3_C_API_H_
 
 #ifdef _DEBUG
 #define UNITY_DEBUG
@@ -105,4 +103,4 @@ __declspec(dllexport) void DebugLogTest();
 #endif
 #pragma endregion
 }
-#endif
+#endif  // INCLUDE_AUTD3_C_API_H_

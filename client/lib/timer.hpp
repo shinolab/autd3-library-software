@@ -1,15 +1,13 @@
-﻿/*
- * File: timer.hpp
- * Project: lib
- * Created Date: 02/07/2018
- * Author: Shun Suzuki and Saya Mizutani
- * -----
- * Last Modified: 18/02/2020
- * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
- * -----
- * Copyright (c) 2019 Hapis Lab. All rights reserved.
- *
- */
+﻿// File: timer.hpp
+// Project: lib
+// Created Date:02/07/2018
+// Author: Shun Suzuki and Saya Mizutani
+// -----
+// Last Modified: 18/02/2020
+// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
+// -----
+// Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
+//
 
 #pragma once
 #include <future>

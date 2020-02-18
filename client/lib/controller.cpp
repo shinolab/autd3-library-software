@@ -1,15 +1,13 @@
-/*
- * File: controller.cpp
- * Project: lib
- * Created Date: 13/05/2016
- * Author: Seki Inoue
- * -----
- * Last Modified: 18/02/2020
- * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
- * -----
- * Copyright (c) 2016-2019 Hapis Lab. All rights reserved.
- *
- */
+// File: controller.cpp
+// Project: lib
+// Created Date: 13/05/2016
+// Author: Seki Inoue
+// -----
+// Last Modified: 18/02/2020
+// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
+// -----
+// Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
+//
 
 #include "controller.hpp"
 

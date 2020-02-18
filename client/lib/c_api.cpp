@@ -1,15 +1,13 @@
-﻿/*
- * File: c_api.cpp
- * Project: lib
- * Created Date: 07/02/2018
- * Author: Shun Suzuki
- * -----
- * Last Modified: 18/02/2020
- * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
- * -----
- * Copyright (c) 2018-2019 Hapis Lab. All rights reserved.
- *
- */
+﻿// File: c_api.cpp
+// Project: lib
+// Created Date: 07/02/2018
+// Author: Shun Suzuki
+// -----
+// Last Modified: 18/02/2020
+// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
+// -----
+// Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
+//
 
 #include <codeanalysis\warnings.h>
 #include <errno.h>

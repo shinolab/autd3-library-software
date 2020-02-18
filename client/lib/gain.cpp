@@ -1,15 +1,13 @@
-﻿/*
- * File: gain.cpp
- * Project: lib
- * Created Date: 01/06/2016
- * Author: Seki Inoue
- * -----
- * Last Modified: 18/02/2020
- * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
- * -----
- * Copyright (c) 2016-2019 Hapis Lab. All rights reserved.
- *
- */
+﻿// File: gain.cpp
+// Project: lib
+// Created Date: 01/06/2016
+// Author: Seki Inoue
+// -----
+// Last Modified: 18/02/2020
+// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
+// -----
+// Copyright (c) 2020 Hapis Lab. All rights reserved.
+//
 
 #include "gain.hpp"
 

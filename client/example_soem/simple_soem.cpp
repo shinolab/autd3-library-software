@@ -1,15 +1,13 @@
-/*
- * File: simple_soem.cpp
- * Project: example_soem
- * Created Date: 24/08/2019
- * Author: Shun Suzuki
- * -----
- * Last Modified: 18/02/2020
- * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
- * -----
- * Copyright (c) 2019 Hapis Lab. All rights reserved.
- *
- */
+// File: simple_soem.cpp
+// Project: example_soem
+// Created Date: 24/08/2019
+// Author: Shun Suzuki
+// -----
+// Last Modified: 18/02/2020
+// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
+// -----
+// Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
+//
 
 #include "autd3.hpp"
 

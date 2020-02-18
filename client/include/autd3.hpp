@@ -1,18 +1,16 @@
-/*
- * File: autd3.hpp
- * Project: include
- * Created Date: 13/05/2016
- * Author: Seki Inoue
- * -----
- * Last Modified: 18/02/2020
- * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
- * -----
- * Copyright (c) 2016-2019 Hapis Lab. All rights reserved.
- *
- */
+// File: autd3.hpp
+// Project: include
+// Created Date: 13/05/2016
+// Author: Seki Inoue
+// -----
+// Last Modified: 18/02/2020
+// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
+// -----
+// Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
+//
 
-#ifndef autd3hpp_
-#define autd3hpp_
+#ifndef INCLUDE_AUTD3_HPP_
+#define INCLUDE_AUTD3_HPP_
 
 #include <iostream>
 #include <memory>
@@ -33,4 +31,4 @@
 #include "geometry.hpp"
 #include "modulation.hpp"
 
-#endif
+#endif  // INCLUDE_AUTD3_HPP_
