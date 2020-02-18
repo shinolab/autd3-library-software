@@ -9,8 +9,8 @@
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
 //
 
-#ifndef LIB_LINK_HPP_
-#define LIB_LINK_HPP_
+#ifndef CLIENT_LIB_LINK_HPP_
+#define CLIENT_LIB_LINK_HPP_
 
 #include <stdio.h>
 
@@ -29,9 +29,9 @@ class Link {
   virtual void Close() = 0;
   virtual void Send(size_t size, std::unique_ptr<uint8_t[]> buf) = 0;
   virtual bool isOpen() = 0;
-  virtual bool CalibrateModulation() = 0;  // Todo: make more elegant
+  virtual bool CalibrateModulation() = 0;  //  Todo: make more elegant
 };
 }  // namespace internal
 }  // namespace autd
 
-#endif  // LIB_LINK_HPP_
+#endif  // CLIENT_LIB_LINK_HPP_
