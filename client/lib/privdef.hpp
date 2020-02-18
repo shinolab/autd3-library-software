@@ -4,7 +4,7 @@
  * Created Date: 07/06/2016
  * Author: Seki Inoue
  * -----
- * Last Modified: 01/11/2019
+ * Last Modified: 18/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2016-2019 Hapis Lab. All rights reserved.
@@ -15,6 +15,7 @@
 #define privdef_h
 
 #include <stdint.h>
+
 #include <array>
 
 constexpr auto NUM_TRANS_IN_UNIT = 249;
@@ -22,7 +23,9 @@ constexpr auto NUM_TRANS_X = 18;
 constexpr auto NUM_TRANS_Y = 14;
 constexpr auto TRANS_SIZE_MM = 10.18f;
 template <typename T>
-constexpr auto IS_MISSING_TRANSDUCER(T X, T Y) { return (Y == 1 && (X == 1 || X == 2 || X == 16)); }
+constexpr auto IS_MISSING_TRANSDUCER(T X, T Y) {
+  return (Y == 1 && (X == 1 || X == 2 || X == 16));
+}
 
 constexpr auto FPGA_CLOCK = 25600000;
 
@@ -43,21 +46,19 @@ constexpr uint32_t EC_SYNC0_CYCLE_TIME_MICRO_SEC = 1000;
 constexpr uint32_t EC_SM3_CYCLE_TIME_NANO_SEC = EC_SM3_CYCLE_TIME_MICRO_SEC * 1000;
 constexpr uint32_t EC_SYNC0_CYCLE_TIME_NANO_SEC = EC_SYNC0_CYCLE_TIME_MICRO_SEC * 1000;
 
-enum RxGlobalControlFlags
-{
-	LOOP_BEGIN = 1 << 0,
-	LOOP_END = 1 << 1,
-	SILENT = 1 << 3,
-	IS_SYNC_FIRST_SYNC0 = 1 << 5, // reserved, do not use
+enum RxGlobalControlFlags {
+  LOOP_BEGIN = 1 << 0,
+  LOOP_END = 1 << 1,
+  SILENT = 1 << 3,
+  IS_SYNC_FIRST_SYNC0 = 1 << 5,  //  reserved, do not use
 };
 
-struct RxGlobalHeader
-{
-	uint8_t msg_id;
-	uint8_t control_flags;
-	int8_t frequency_shift;
-	uint8_t mod_size;
-	uint8_t mod[MOD_FRAME_SIZE];
+struct RxGlobalHeader {
+  uint8_t msg_id;
+  uint8_t control_flags;
+  int8_t frequency_shift;
+  uint8_t mod_size;
+  uint8_t mod[MOD_FRAME_SIZE];
 };
 
 #endif /* privdef_h */
