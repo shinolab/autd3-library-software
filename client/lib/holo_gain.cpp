@@ -143,7 +143,7 @@ void autd::HoloGainSdp::build() {
   std::mt19937 mt(rnd());
   std::uniform_real_distribution<float> range(0, 1);
 
-  for (int i = 0; i < M; i++) {
+  for (size_t i = 0; i < M; i++) {
     P(i, i) = _amp(i);
 
     const auto tp = _foci.row(i);
@@ -161,7 +161,7 @@ void autd::HoloGainSdp::build() {
 
   Eigen::MatrixXcf MM = P * (Eigen::MatrixXcf::Identity(M, M) - B * pinvB) * P;
   Eigen::MatrixXcf X = Eigen::MatrixXcf::Identity(M, M);
-  for (int i = 0; i < M * REPEAT_SDP; i++) {
+  for (size_t i = 0; i < M * REPEAT_SDP; i++) {
     auto ii = static_cast<size_t>(M * static_cast<double>(range(mt)));
 
     auto Xc = X;

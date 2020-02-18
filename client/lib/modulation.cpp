@@ -64,7 +64,7 @@ autd::ModulationPtr autd::SineModulation::Create(int freq, float amp, float offs
 
   const auto d = gcd(sf, freq);
 
-  const auto N = MOD_BUF_SIZE / d;
+  const size_t N = MOD_BUF_SIZE / d;
   const auto REP = freq / d;
 
   mod->buffer.resize(N, 0);
@@ -88,7 +88,7 @@ autd::ModulationPtr autd::SawModulation::Create(int freq) {
 
   const auto d = gcd(sf, freq);
 
-  const auto N = MOD_BUF_SIZE / d;
+  const size_t N = MOD_BUF_SIZE / d;
   const auto REP = freq / d;
 
   mod->buffer.resize(N, 0);
