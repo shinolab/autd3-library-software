@@ -553,6 +553,18 @@ namespace AUTD3Sharp
 
             NativeMethods.AUTDAppendSTMGain(_autdControllerHandle, gain);
         }
+        public void AppendSTMGain(IList<Gain> gains)
+        {
+            if (gains == null)
+            {
+                throw new ArgumentNullException(nameof(gains));
+            }
+
+            foreach (Gain gain in gains)
+            {
+                AppendSTMGain(gain);
+            }
+        }
         public void AppendSTMGain(params Gain[] gainList)
         {
             if (gainList == null)
