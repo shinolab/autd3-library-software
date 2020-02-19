@@ -31,10 +31,10 @@ class Timer {
   void Start(const std::function<void()> &callback);
   void Stop();
 
-  Timer(const Timer &) = default;
-  Timer(Timer &&) = default;
-  Timer &operator=(const Timer &) = default;
-  Timer &operator=(Timer &&) = default;
+  Timer(const Timer &) = delete;
+  Timer(Timer &&) = delete;
+  Timer &operator=(const Timer &) = delete;
+  Timer &operator=(Timer &&) = delete;
 
  private:
   int _interval_us;
