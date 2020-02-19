@@ -1,12 +1,14 @@
-# Usage
+# Usage (Windows 64bit only)
 
-autd_firmware_writer.exeを実行後, 指示に従ってください
+Make sure that AUTD is connected via appropriate cables and power on.
+* FPGA: XILINX Platform Cable
+* CPU board: J-Link
 
-起動前にAUTDとPCを接続していること, 及び, AUTDに電源が入っていることを確認してください
-
-FPGAのコンフィグレーションにはXILINX Platform Cable, CPUボードのコンフィグレーションにはJ-Linkが必要です
+Then, run `autd_firmware_writer.ps1` with powershell 
 
 ## Requirements
 
-* Vivado (https://japan.xilinx.com/products/design-tools/vivado.html)
-* J-Link (https://www.segger.com/downloads/jlink/)
+Please install following softwares.
+
+* Vivado Design Suite (https://www.xilinx.com/products/design-tools/vivado.html)
+* J-Link Software (https://www.segger.com/downloads/jlink/)
