@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 18/02/2020
+// Last Modified: 19/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -79,7 +79,7 @@ class Controller::impl {
 
     id.fetch_add(0x01);
     uint8_t expected = 0xf0;
-    id.compare_exchange_weak(expected, 1);
+    id.compare_exchange_weak(expected, 0x01);
 
     return id.load();
   }
@@ -217,6 +217,8 @@ void Controller::impl::AppendSTMGain(const std::vector<GainPtr> &gain_list) {
 }
 
 void Controller::impl::StartSTModulation(float freq) {
+  this->_link->SetWaitForProcessMsg(false);
+
   auto len = this->_stmGains.size();
   auto itvl_us = static_cast<int>(1000000. / freq / len);
   this->_pStmTimer->SetInterval(itvl_us);
@@ -262,6 +264,7 @@ void Controller::impl::FinishSTModulation() {
   }
   std::vector<uint8_t *>().swap(this->_stmBodies);
   std::vector<size_t>().swap(this->_stmBodySizes);
+  this->_link->SetWaitForProcessMsg(true);
 }
 
 void Controller::impl::CalibrateModulation() { this->_link->CalibrateModulation(); }

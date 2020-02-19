@@ -50,13 +50,13 @@ function UpdateCPU([string]$cpuFirmwareFile) {
     }
     ColorEcho "Green" "INFO" "Find J-Link"
 
-    $firm_path = Join-Path "firmwares" $cpuFirmwareFile
-    Copy-Item -Path $firm_path -Destination "tmp.bin" -Force
+    Copy-Item -Path $cpuFirmwareFile -Destination "tmp.bin" -Force
     $command = "jlink -device R7S910018_R4F -if JTAG -speed 4000 -jtagconf -1,-1 -autoconnect 1 -CommanderScript ./scripts/cpu_flash.jlink"
     $success = $TRUE
     Invoke-Expression $command | Out-String -Stream | ForEach-Object {
-        Write-Host $_
-        if ($_.StartsWith("Cannot connect")) {
+        [string]$line = $_
+        Write-Host $line
+        if ($line.TrimStart().StartsWith("Cannot connect")) {
             ColorEcho "Red" "ERROR" "Cannnot connect to AUTD. Make sure that AUTD is connected and power on."
             $success = $FALSE
         }
@@ -92,20 +92,20 @@ function UpdateFPGA([string]$fpgaFirmwareFile) {
         }
 
         $vivado_ver = $vivados | Select-Object -first 1
-        ColorEcho "Green" "INFO" "Find Vivado", $vivado_ver
-        $vivado_bin = Join-Path $vivado_path $vivado_ver | Join-Path -ChildPath "bin"
-        $vivado_lib = Join-Path $vivado_path $vivado_ver | Join-Path -ChildPath "lib" | Join-Path -ChildPath "win64.o" 
+        ColorEcho "Green" "INFO" "Find Vivado", $vivado_ver.Name
+        $vivado_bin = Join-Path $vivado_ver.FullName "bin"
+        $vivado_lib = Join-Path $vivado_ver.FullName "lib" | Join-Path -ChildPath "win64.o" 
         $env:Path = $env:Path + ";" + $vivado_bin + ";" + $vivado_lib
     }
 
-    $firm_path = Join-Path "firmwares" $fpgaFirmwareFile
-    Copy-Item -Path $firm_path -Destination "./scripts/tmp.mcs" -Force
+    Copy-Item -Path $fpgaFirmwareFile -Destination "./scripts/tmp.mcs" -Force
     ColorEcho "Green" "INFO" "Invoking Vivado..."
     $command = "vivado -mode batch -nojournal -nolog -notrace -source ./scripts/fpga_configuration_script.tcl"
     $success = $TRUE
     Invoke-Expression $command | Out-String -Stream | ForEach-Object {
-        Write-Host $_
-        if ($_.StartsWith("ERROR")) {
+        [string]$line = $_
+        Write-Host $line
+        if ($line.TrimStart().StartsWith("ERROR")) {
             ColorEcho "Red" "ERROR" "Cannnot connect to AUTD. Make sure that AUTD is connected and power on."
             $success = $FALSE
         }
@@ -126,12 +126,12 @@ $cpu_firmware = ""
 foreach ($firmware in $firmwares) {
     $ext = $firmware.Name.Split('.') | Select-Object -last 1
     if ($ext -eq "bin") {
-        $cpu_firmware = $firmware
-        ColorEcho "Blue" "CPU " $cpu_firmware
+        $cpu_firmware = $firmware.FullName
+        ColorEcho "Blue" "CPU " $firmware.Name
     }
     if ($ext -eq "mcs") {
-        $fpga_firmware = $firmware
-        ColorEcho "Blue" "FPGA" $fpga_firmware
+        $fpga_firmware = $firmware.FullName
+        ColorEcho "Blue" "FPGA" $firmware.Name
     }
 }
 

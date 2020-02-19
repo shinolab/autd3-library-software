@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 18/02/2020
+// Last Modified: 19/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -58,6 +58,7 @@ class SOEMController::impl {
   void Open(const char *ifname, size_t devNum, uint32_t ec_sm3_cyctime_ns, uint32_t ec_sync0_cyctime_ns, size_t header_size, size_t body_size,
             size_t input_frame_size);
   void Send(size_t size, std::unique_ptr<uint8_t[]> buf);
+  void SetWaitForProcessMsg(bool is_wait);
   std::vector<uint16_t> Read(size_t input_frame_idx);
   bool Close();
   ~impl();
@@ -75,7 +76,9 @@ class SOEMController::impl {
   void SetupSync0(bool actiavte, uint32_t CycleTime);
   void CreateCopyThread(size_t header_size, size_t body_size);
 
-  uint8_t *_IOmap;  // should be shared_ptr?
+  bool WaitForProcessMsg(uint8_t sendMsgId);
+
+  uint8_t *_IOmap;
   size_t _iomap_size = 0;
   size_t _output_frame_size = 0;
   uint32_t _sync0_cyctime = 0;
@@ -85,8 +88,10 @@ class SOEMController::impl {
   std::thread _cpy_thread;
   std::condition_variable _cpy_cond;
   bool _sent = false;
+  bool _isWaitProcessMsg = true;
   std::mutex _cpy_mtx;
   std::mutex _send_mtx;
+  std::mutex _waitcond_mtx;
 
   size_t _devNum = 0;
 
@@ -111,12 +116,13 @@ void SOEMController::impl::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
 }
 
 #ifdef WINDOWS
-void CALLBACK SOEMController::impl::RTthread(PVOID lpParam, BOOLEAN TimerOrWaitFired) {
+void CALLBACK SOEMController::impl::RTthread(PVOID lpParam, BOOLEAN TimerOrWaitFired)
 #elif defined MACOSX
-void libsoem::SOEMController::impl::RTthread(SOEMController::impl *pimpl) {
+void libsoem::SOEMController::impl::RTthread(SOEMController::impl *pimpl)
 #elif defined LINUX
-void libsoem::SOEMController::impl::RTthread(union sigval sv) {
+void libsoem::SOEMController::impl::RTthread(union sigval sv)
 #endif
+{
   bool expected = false;
   if (AUTD3_LIB_RTTHREAD_LOCK.compare_exchange_weak(expected, true)) {
     auto pre = AUTD3_LIB_SEND_COND.load(std::memory_order_acquire);
@@ -128,7 +134,7 @@ void libsoem::SOEMController::impl::RTthread(union sigval sv) {
 
     AUTD3_LIB_RTTHREAD_LOCK.store(false, std::memory_order_release);
   }
-}  // namespace libsoem
+}
 
 std::vector<uint16_t> SOEMController::impl::Read(size_t input_frame_idx) {
   std::vector<uint16_t> res;
@@ -149,6 +155,29 @@ void SOEMController::impl::SetupSync0(bool actiavte, uint32_t CycleTime) {
       ec_dcsync0(slave, actiavte, CycleTime, shift * CycleTime);  // SYNC0
     }
   }
+}
+
+void SOEMController::impl::SetWaitForProcessMsg(bool iswait) {
+  std::unique_lock<std::mutex> lk(_waitcond_mtx);
+  this->_isWaitProcessMsg = iswait;
+}
+
+bool SOEMController::impl::WaitForProcessMsg(uint8_t sendMsgId) {
+  auto chk = 10;
+  while (chk--) {
+    int processed = 0;
+    for (size_t i = 0; i < _devNum; i++) {
+      uint8_t recv_id = _IOmap[_output_frame_size + 2 * i + 1];
+      if (recv_id == sendMsgId) {
+        processed++;
+      }
+    }
+    if (processed == _devNum) {
+      return true;
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+  }
+  return false;
 }
 
 void SOEMController::impl::CreateCopyThread(size_t header_size, size_t body_size) {
@@ -181,6 +210,20 @@ void SOEMController::impl::CreateCopyThread(size_t header_size, size_t body_size
               }
             }
 
+            bool isWait;
+            {
+              std::unique_lock<std::mutex> lk(_waitcond_mtx);
+              isWait = _isWaitProcessMsg;
+            }
+
+            if (isWait) {
+              auto sendMsgId = buf[0];
+              auto sucess = WaitForProcessMsg(sendMsgId);
+              if (!sucess) {
+                std::cerr << "Some data may not have been transferred to AUTDs." << std::endl;
+              }
+            }
+
             _send_size_q.pop();
             _send_buf_q.pop();
           }
@@ -203,15 +246,6 @@ void SOEMController::impl::Open(const char *ifname, size_t devNum, uint32_t ec_s
     }
 
     _IOmap = new uint8_t[size];
-
-#ifdef WINDOWS
-    if (!VirtualLock(_IOmap, size))
-#else
-    if (mlock(_IOmap, size) == -1)
-#endif
-    {
-      std::cerr << "Memory lock failed." << std::endl;
-    }
 
     memset(_IOmap, 0x00, _iomap_size);
   }
@@ -341,7 +375,8 @@ bool SOEMController::impl::Close() {
 
       auto r = Read(_output_frame_size);
       for (auto c : r) {
-        if (c != 0) {
+        uint8_t id = c & 0xff00;
+        if (id != 0) {
           clear = false;
           break;
         } else {
@@ -379,6 +414,8 @@ void SOEMController::Open(const char *ifname, size_t devNum, uint32_t ec_sm3_cyc
 }
 
 void SOEMController::Send(size_t size, std::unique_ptr<uint8_t[]> buf) { this->_pimpl->Send(size, std::move(buf)); }
+
+void SOEMController::SetWaitForProcessMsg(bool isWait) { this->_pimpl->SetWaitForProcessMsg(isWait); }
 
 std::vector<uint16_t> SOEMController::Read(size_t input_frame_idx) { return this->_pimpl->Read(input_frame_idx); }
 
