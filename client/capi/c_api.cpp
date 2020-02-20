@@ -29,7 +29,7 @@ void AUTDCreateController(AUTDControllerHandle *out) {
 int AUTDOpenController(AUTDControllerHandle handle, int linkType, const char *location) {
   auto *cnt = static_cast<autd::Controller *>(handle);
   cnt->Open(static_cast<autd::LinkType>(linkType), std::string(location));
-  if (!cnt->isOpen()) return ENXIO;
+  if (!cnt->is_open()) return ENXIO;
   return 0;
 }
 int AUTDGetAdapterPointer(void **out) {
@@ -86,11 +86,11 @@ void AUTDStop(AUTDControllerHandle handle) {
 #pragma region Property
 bool AUTDIsOpen(AUTDControllerHandle handle) {
   auto *cnt = static_cast<autd::Controller *>(handle);
-  return cnt->isOpen();
+  return cnt->is_open();
 }
 bool AUTDIsSilentMode(AUTDControllerHandle handle) {
   auto *cnt = static_cast<autd::Controller *>(handle);
-  return cnt->silentMode();
+  return cnt->silent_mode();
 }
 int AUTDNumDevices(AUTDControllerHandle handle) {
   auto *cnt = static_cast<autd::Controller *>(handle);
@@ -99,10 +99,6 @@ int AUTDNumDevices(AUTDControllerHandle handle) {
 int AUTDNumTransducers(AUTDControllerHandle handle) {
   auto *cnt = static_cast<autd::Controller *>(handle);
   return cnt->geometry()->numTransducers();
-}
-float AUTDFrequency(AUTDControllerHandle handle) {
-  auto *cnt = static_cast<autd::Controller *>(handle);
-  return cnt->geometry()->frequency();
 }
 size_t AUTDRemainingInBuffer(AUTDControllerHandle handle) {
   auto *cnt = static_cast<autd::Controller *>(handle);

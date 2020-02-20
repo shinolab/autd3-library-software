@@ -4,7 +4,7 @@
  * Created Date: 02/07/2018
  * Author: Shun Suzuki
  * -----
- * Last Modified: 19/02/2020
+ * Last Modified: 20/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2018-2019 Hapis Lab. All rights reserved.
@@ -116,7 +116,9 @@ namespace AUTD3Sharp
         public override bool Equals(object obj)
         {
             if (!(obj is EtherCATAdapter))
+            {
                 return false;
+            }
 
             return Equals((EtherCATAdapter)obj);
         }
@@ -303,14 +305,6 @@ namespace AUTD3Sharp
             get
             {
                 int res = NativeMethods.AUTDNumTransducers(_autdControllerHandle);
-                return res;
-            }
-        }
-        public float Frequency
-        {
-            get
-            {
-                float res = NativeMethods.AUTDFrequency(_autdControllerHandle);
                 return res;
             }
         }
