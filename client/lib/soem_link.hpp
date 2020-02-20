@@ -29,7 +29,7 @@ class SOEMLink : public Link {
   bool CalibrateModulation();
 
  protected:
-  std::unique_ptr<libsoem::SOEMController> _cnt;
+  std::unique_ptr<libsoem::ISOEMController> _cnt;
   bool _is_open = false;
   int _devNum = 0;
   std::string _ifname = "";

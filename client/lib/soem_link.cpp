@@ -27,7 +27,7 @@
 namespace autd {
 
 void internal::SOEMLink::Open(std::string ifname) {
-  _cnt = std::make_unique<libsoem::SOEMController>();
+  _cnt = libsoem::ISOEMController::Create();
 
   auto ifname_and_devNum = autd::split(ifname, ':');
   _devNum = stoi(ifname_and_devNum[1]);

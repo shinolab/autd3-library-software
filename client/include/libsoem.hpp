@@ -17,22 +17,18 @@
 
 namespace libsoem {
 
-class SOEMController {
+class ISOEMController {
  public:
-  SOEMController();
-  ~SOEMController();
+  static std::unique_ptr<ISOEMController> Create();
 
-  void Open(const char *ifname, size_t devNum, uint32_t ec_sm3_cyctime, uint32_t ec_sync0_cyctime, size_t header_size, size_t body_size,
-            size_t input_frame_size);
-  void Send(size_t size, std::unique_ptr<uint8_t[]> buf);
-  void SetWaitForProcessMsg(bool isWait);
-  std::vector<uint16_t> Read(size_t input_frame_idx);
-  bool is_open();
-  bool Close();
-
- private:
-  class impl;
-  std::unique_ptr<impl> _pimpl;
+  virtual void Open(const char *ifname, size_t devNum, uint32_t ec_sm3_cyctime,
+                    uint32_t ec_sync0_cyctime, size_t header_size,
+                    size_t body_size, size_t input_frame_size) = 0;
+  virtual void Send(size_t size, std::unique_ptr<uint8_t[]> buf) = 0;
+  virtual void SetWaitForProcessMsg(bool isWait) = 0;
+  virtual std::vector<uint16_t> Read(size_t input_frame_idx) = 0;
+  virtual bool is_open() = 0;
+  virtual bool Close() = 0;
 };
 
 struct EtherCATAdapterInfo {
