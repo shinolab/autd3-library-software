@@ -1,6 +1,7 @@
 stages:
   - build
   - lint
+  - cleanup
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
@@ -25,3 +26,8 @@ lint-library:
   script:
     - cd client/build
     - make cpplint
+
+cleanup:
+  stage: cleanup
+  script:
+    - rm -rf client/build
