@@ -19,4 +19,5 @@ lint-library:
   tags:
     - shell
   script:
+    - cd client/build
     - make cpplint
