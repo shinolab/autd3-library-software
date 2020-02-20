@@ -2,11 +2,19 @@ stages:
   - build
   - lint
 
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+cache:
+  paths:
+    - client/build
+
 build-library:
   stage: build
   tags:
     - shell
   script:
+    - cd client
     - mkdir build && cd build
     - cmake ..
 
@@ -15,4 +23,5 @@ lint-library:
   tags:
     - shell
   script:
+    - cd client/build
     - make cpplint
