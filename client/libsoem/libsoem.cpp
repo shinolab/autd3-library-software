@@ -60,8 +60,7 @@ class SOEMController : public ISOEMController {
 
   bool is_open() final;
 
-  void Open(const char *ifname, size_t devNum, uint32_t ec_sm3_cyctime_ns,
-            uint32_t ec_sync0_cyctime_ns, size_t header_size, size_t body_size,
+  void Open(const char *ifname, size_t devNum, uint32_t ec_sm3_cyctime_ns, uint32_t ec_sync0_cyctime_ns, size_t header_size, size_t body_size,
             size_t input_frame_size) final;
   void Send(size_t size, std::unique_ptr<uint8_t[]> buf) final;
   void SetWaitForProcessMsg(bool is_wait) final;
@@ -125,7 +124,7 @@ void SOEMController::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
 #ifdef WINDOWS
 void CALLBACK SOEMController::RTthread(PVOID lpParam, BOOLEAN TimerOrWaitFired)
 #elif defined MACOSX
-void libsoem::SOEMController::RTthread(SOEMController::impl *pimpl)
+void libsoem::SOEMController::RTthread(SOEMController *cnt)
 #elif defined LINUX
 void libsoem::SOEMController::RTthread(union sigval sv)
 #endif
@@ -146,8 +145,7 @@ void libsoem::SOEMController::RTthread(union sigval sv)
 std::vector<uint16_t> SOEMController::Read(size_t input_frame_idx) {
   std::vector<uint16_t> res;
   for (size_t i = 0; i < _devNum; i++) {
-    uint16_t base = ((uint16_t)_IOmap[input_frame_idx + 2 * i + 1] << 8) |
-                    _IOmap[input_frame_idx + 2 * i];
+    uint16_t base = ((uint16_t)_IOmap[input_frame_idx + 2 * i + 1] << 8) | _IOmap[input_frame_idx + 2 * i];
     res.push_back(base);
   }
   return res;
@@ -196,8 +194,7 @@ void SOEMController::CreateCopyThread(size_t header_size, size_t body_size) {
           size_t size = 0;
           {
             std::unique_lock<std::mutex> lk(_cpy_mtx);
-            _cpy_cond.wait(lk,
-                           [&] { return _send_buf_q.size() > 0 || !_is_open; });
+            _cpy_cond.wait(lk, [&] { return _send_buf_q.size() > 0 || !_is_open; });
             if (_send_buf_q.size() > 0) {
               buf = move(_send_buf_q.front());
               size = _send_size_q.front();
@@ -209,11 +206,8 @@ void SOEMController::CreateCopyThread(size_t header_size, size_t body_size) {
             const auto output_frame_size = header_size + body_size;
 
             for (size_t i = 0; i < _devNum; i++) {
-              if (includes_gain)
-                memcpy(&_IOmap[output_frame_size * i],
-                       &buf[header_size + body_size * i], body_size);
-              memcpy(&_IOmap[output_frame_size * i + body_size], &buf[0],
-                     header_size);
+              if (includes_gain) memcpy(&_IOmap[output_frame_size * i], &buf[header_size + body_size * i], body_size);
+              memcpy(&_IOmap[output_frame_size * i + body_size], &buf[0], header_size);
             }
 
             {
@@ -232,8 +226,7 @@ void SOEMController::CreateCopyThread(size_t header_size, size_t body_size) {
               auto sendMsgId = buf[0];
               auto sucess = WaitForProcessMsg(sendMsgId);
               if (!sucess) {
-                std::cerr << "Some data may not have been transferred to AUTDs."
-                          << std::endl;
+                std::cerr << "Some data may not have been transferred to AUTDs." << std::endl;
               }
             }
 
@@ -245,9 +238,7 @@ void SOEMController::CreateCopyThread(size_t header_size, size_t body_size) {
       header_size, body_size);
 }
 
-void SOEMController::Open(const char *ifname, size_t devNum,
-                          uint32_t ec_sm3_cyctime_ns,
-                          uint32_t ec_sync0_cyctime_ns, size_t header_size,
+void SOEMController::Open(const char *ifname, size_t devNum, uint32_t ec_sm3_cyctime_ns, uint32_t ec_sync0_cyctime_ns, size_t header_size,
                           size_t body_size, size_t input_frame_size) {
   _devNum = devNum;
   _output_frame_size = (header_size + body_size) * _devNum;
@@ -291,12 +282,9 @@ void SOEMController::Open(const char *ifname, size_t devNum,
 
 #ifdef WINDOWS
         _timerQueue = CreateTimerQueue();
-        if (_timerQueue == NULL)
-          std::cerr << "CreateTimerQueue failed." << std::endl;
+        if (_timerQueue == NULL) std::cerr << "CreateTimerQueue failed." << std::endl;
 
-        if (!CreateTimerQueueTimer(&_timer, _timerQueue,
-                                   (WAITORTIMERCALLBACK)RTthread,
-                                   reinterpret_cast<void *>(this), 0,
+        if (!CreateTimerQueueTimer(&_timer, _timerQueue, (WAITORTIMERCALLBACK)RTthread, reinterpret_cast<void *>(this), 0,
                                    ec_sm3_cyctime_ns / 1000 / 1000, 0))
           std::cerr << "CreateTimerQueueTimer failed." << std::endl;
 
@@ -308,8 +296,7 @@ void SOEMController::Open(const char *ifname, size_t devNum,
 #elif defined MACOSX
         _queue = dispatch_queue_create("timerQueue", 0);
 
-        _timer =
-            dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _queue);
+        _timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _queue);
         dispatch_source_set_event_handler(_timer, ^{
           RTthread(this);
         });
@@ -337,11 +324,9 @@ void SOEMController::Open(const char *ifname, size_t devNum,
         se.sigev_notify_function = RTthread;
         se.sigev_notify_attributes = NULL;
 
-        if (timer_create(CLOCK_REALTIME, &se, &_timer_id) < 0)
-          std::cerr << "Error: timer_create." << std::endl;
+        if (timer_create(CLOCK_REALTIME, &se, &_timer_id) < 0) std::cerr << "Error: timer_create." << std::endl;
 
-        if (timer_settime(_timer_id, 0, &itval, NULL) < 0)
-          std::cerr << "Error: timer_settime." << std::endl;
+        if (timer_settime(_timer_id, 0, &itval, NULL) < 0) std::cerr << "Error: timer_settime." << std::endl;
 #endif
 
         CreateCopyThread(header_size, body_size);
@@ -360,9 +345,7 @@ bool SOEMController::Close() {
   if (_is_open) {
     _is_open = false;
     _cpy_cond.notify_all();
-    if (std::this_thread::get_id() != _cpy_thread.get_id() &&
-        this->_cpy_thread.joinable())
-      this->_cpy_thread.join();
+    if (std::this_thread::get_id() != _cpy_thread.get_id() && this->_cpy_thread.joinable()) this->_cpy_thread.join();
     {
       std::unique_lock<std::mutex> lk(_cpy_mtx);
       std::queue<size_t>().swap(_send_size_q);
@@ -377,8 +360,7 @@ bool SOEMController::Close() {
 
 #ifdef WINDOWS
     if (!DeleteTimerQueueTimer(_timerQueue, _timer, 0)) {
-      if (GetLastError() != ERROR_IO_PENDING)
-        std::cerr << "DeleteTimerQueue failed." << std::endl;
+      if (GetLastError() != ERROR_IO_PENDING) std::cerr << "DeleteTimerQueue failed." << std::endl;
     }
 #elif defined MACOSX
     dispatch_source_cancel(_timer);
@@ -433,9 +415,7 @@ SOEMController::~SOEMController() {
   if (_IOmap != nullptr) delete[] _IOmap;
 }
 
-std::unique_ptr<ISOEMController> ISOEMController::Create() {
-  return std::make_unique<SOEMController>();
-}
+std::unique_ptr<ISOEMController> ISOEMController::Create() { return std::make_unique<SOEMController>(); }
 
 std::vector<EtherCATAdapterInfo> EtherCATAdapterInfo::EnumerateAdapters() {
   auto adapter = ec_find_adapters();

@@ -22,6 +22,7 @@
 #include <vector>
 
 #include "privdef.hpp"
+
 // XXX: should be configuarable?
 #define INDEX_GROUP (0x3040030)
 #define INDEX_OFFSET_BASE (0x81000000)
@@ -83,11 +84,13 @@ void autd::internal::EthercatLink::Send(size_t size, std::unique_ptr<uint8_t[]> 
   }
 }
 bool autd::internal::EthercatLink::CalibrateModulation() {
-  return true;  // No need to call CalibrateModulation() for TwinCAT.
+  // No need to call CalibrateModulation() for TwinCAT.
+  return true;
 }
 
 void autd::internal::EthercatLink::SetWaitForProcessMsg(bool is_wait) {
-  return;  // Not implemented or no need...?
+  // Not implemented or no need...?
+  return;
 }
 
 // for localhost connection

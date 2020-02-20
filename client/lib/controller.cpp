@@ -12,13 +12,13 @@
 #include "controller.hpp"
 
 #include <algorithm>
-#include <chrono>              //  NOLINT
-#include <condition_variable>  //  NOLINT
+#include <chrono>
+#include <condition_variable>
 #include <iostream>
-#include <mutex>  //  NOLINT
+#include <mutex>
 #include <queue>
 #include <string>
-#include <thread>  //  NOLINT
+#include <thread>
 #include <vector>
 
 #include "geometry.hpp"

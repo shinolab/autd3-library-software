@@ -9,12 +9,9 @@
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
 //
 
-#ifndef INCLUDE_AUTD3_HPP_
-#define INCLUDE_AUTD3_HPP_
+#pragma once
 
 #include "controller.hpp"
 #include "gain.hpp"
 #include "geometry.hpp"
 #include "modulation.hpp"
-
-#endif  // INCLUDE_AUTD3_HPP_

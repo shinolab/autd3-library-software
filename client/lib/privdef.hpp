@@ -9,8 +9,7 @@
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
 //
 
-#ifndef CLIENT_LIB_PRIVDEF_HPP_
-#define CLIENT_LIB_PRIVDEF_HPP_
+#pragma once
 
 #include <stdint.h>
 
@@ -58,5 +57,3 @@ struct RxGlobalHeader {
   uint8_t mod_size;
   uint8_t mod[MOD_FRAME_SIZE];
 };
-
-#endif  // CLIENT_LIB_PRIVDEF_HPP_

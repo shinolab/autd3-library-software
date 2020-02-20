@@ -9,8 +9,7 @@
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
 //
 
-#ifndef CLIENT_LIB_LINK_HPP_
-#define CLIENT_LIB_LINK_HPP_
+#pragma once
 
 #include <stdio.h>
 
@@ -30,7 +29,7 @@ class Link {
   virtual void Send(size_t size, std::unique_ptr<uint8_t[]> buf) = 0;
   virtual void SetWaitForProcessMsg(bool is_wait) = 0;
   virtual bool is_open() = 0;
-  virtual bool CalibrateModulation() = 0;  //  Todo: make more elegant
+  virtual bool CalibrateModulation() = 0;  // Todo: make more elegant
 };
 }  // namespace internal
 
@@ -50,5 +49,3 @@ static inline std::vector<std::string> split(const std::string &s, char delim) {
 }
 
 }  // namespace autd
-
-#endif  // CLIENT_LIB_LINK_HPP_

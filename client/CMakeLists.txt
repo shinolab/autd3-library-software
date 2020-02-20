@@ -9,7 +9,7 @@ mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
 ADD_CUSTOM_TARGET(cpplint
   python
   ${PROJECT_SOURCE_DIR}/deps/cpplint.py
-  --filter=-runtime/rtti,-build/include_order,-build/c++11
+  --filter=-runtime/rtti,-build/c++11,-whitespace/comments
   --linelength=150
   ${PROJECT_SOURCE_DIR}/lib/*
   )
