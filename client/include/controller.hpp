@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 18/02/2020
+// Last Modified: 20/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -33,23 +33,25 @@
 
 namespace autd {
 
-#if DLL_FOR_CAPI
+class Controller;
+
 using EtherCATAdapter = std::pair<std::string, std::string>;
-using EtherCATAdapters = std::pair<std::string, std::string> *;
+#if DLL_FOR_CAPI
+using EtherCATAdapters = EtherCATAdapter *;
+using ControllerPtr = Controller *;
 #else
-using EtherCATAdapter = std::pair<std::shared_ptr<std::string>, std::shared_ptr<std::string> >;
 using EtherCATAdapters = std::vector<EtherCATAdapter>;
+using ControllerPtr = std::shared_ptr<Controller>;
 #endif
 
 class Controller {
  public:
-  Controller() noexcept(false);
-  ~Controller() noexcept(false);
+  static ControllerPtr Create();
 
-  bool isOpen();
-  GeometryPtr geometry() noexcept;
-  bool silentMode() noexcept;
-  size_t remainingInBuffer();
+  virtual bool is_open() = 0;
+  virtual GeometryPtr geometry() noexcept = 0;
+  virtual bool silent_mode() noexcept = 0;
+  virtual size_t remainingInBuffer() = 0;
 
   static EtherCATAdapters EnumerateAdapters(int *const size);
 
@@ -62,33 +64,31 @@ class Controller {
    * USB      - ignored
    * SERIAL   - file discriptor
    */
-  void Open(LinkType type, std::string location = "");
-  void SetSilentMode(bool silent) noexcept;
-  void CalibrateModulation();
-  void Close();
+  virtual void Open(LinkType type, std::string location = "") = 0;
+  virtual void SetSilentMode(bool silent) noexcept = 0;
+  virtual void CalibrateModulation() = 0;
+  virtual void Close() = 0;
 
-  void Stop();
-  void AppendGain(GainPtr gain);
-  void AppendGainSync(GainPtr gain);
-  void AppendModulation(ModulationPtr modulation);
-  void AppendModulationSync(ModulationPtr modulation);
-  void AppendSTMGain(GainPtr gain);
-  void AppendSTMGain(const std::vector<GainPtr> &gain_list);
-  void StartSTModulation(float freq);
-  void StopSTModulation();
-  void FinishSTModulation();
-  void Flush();
+  virtual void Stop() = 0;
+  virtual void AppendGain(GainPtr gain) = 0;
+  virtual void AppendGainSync(GainPtr gain) = 0;
+  virtual void AppendModulation(ModulationPtr modulation) = 0;
+  virtual void AppendModulationSync(ModulationPtr modulation) = 0;
+  virtual void AppendSTMGain(GainPtr gain) = 0;
+  virtual void AppendSTMGain(const std::vector<GainPtr> &gain_list) = 0;
+  virtual void StartSTModulation(float freq) = 0;
+  virtual void StopSTModulation() = 0;
+  virtual void FinishSTModulation() = 0;
+  virtual void Flush() = 0;
 
-  void LateralModulationAT(Eigen::Vector3f point, Eigen::Vector3f dir = Eigen::Vector3f::UnitY(), float lm_amp = 2.5, float lm_freq = 100);
+  virtual void LateralModulationAT(Eigen::Vector3f point, Eigen::Vector3f dir = Eigen::Vector3f::UnitY(), float lm_amp = 2.5,
+                                   float lm_freq = 100) = 0;
 
-  [[deprecated("AppendLateralGain is deprecated. Please use AppendSTMGain()")]] void AppendLateralGain(GainPtr gain);
-  [[deprecated("AppendLateralGain is deprecated. Please use AppendSTMGain()")]] void AppendLateralGain(const std::vector<GainPtr> &gain_list);
-  [[deprecated("StartLateralModulation is deprecated. Please use StartSTModulation()")]] void StartLateralModulation(float freq);
-  [[deprecated("FinishLateralModulation is deprecated. Please use StopSTModulation()")]] void FinishLateralModulation();
-  [[deprecated("ResetLateralGain is deprecated. Please use FinishSTModulation()")]] void ResetLateralGain();
-
- private:
-  class impl;
-  std::unique_ptr<impl> _pimpl;
+  [[deprecated("AppendLateralGain is deprecated. Please use AppendSTMGain()")]] virtual void AppendLateralGain(GainPtr gain) = 0;
+  [[deprecated("AppendLateralGain is deprecated. Please use AppendSTMGain()")]] virtual void AppendLateralGain(
+      const std::vector<GainPtr> &gain_list) = 0;
+  [[deprecated("StartLateralModulation is deprecated. Please use StartSTModulation()")]] virtual void StartLateralModulation(float freq) = 0;
+  [[deprecated("FinishLateralModulation is deprecated. Please use StopSTModulation()")]] virtual void FinishLateralModulation() = 0;
+  [[deprecated("ResetLateralGain is deprecated. Please use FinishSTModulation()")]] virtual void ResetLateralGain() = 0;
 };
 }  // namespace autd

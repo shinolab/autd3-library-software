@@ -42,7 +42,7 @@ using GainPtr = std::shared_ptr<Gain>;
 #endif
 
 class Gain {
-  friend class Controller;
+  friend class AUTDController;
   friend class Geometry;
 
  protected:
