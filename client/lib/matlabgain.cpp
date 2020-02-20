@@ -17,6 +17,7 @@
 #define _USE_MATH_DEFINES
 #include <stdio.h>
 
+#include <algorithm>
 #include <complex>
 #include <iostream>
 
@@ -24,11 +25,6 @@
 #include "controller.hpp"
 #include "gain.hpp"
 #include "privdef.hpp"
-
-template <typename T>
-T clamp(T val, T _min, T _max) {
-  return std::max<T>(std::min<T>(val, _max), _min);
-}
 
 autd::GainPtr autd::MatlabGain::Create(std::string filename, std::string varname) {
 #ifndef MATLAB_ENABLED
@@ -75,18 +71,18 @@ void autd::MatlabGain::Build() {
     this->_data[this->geometry()->deviceIdForDeviceIdx(i)].resize(NUM_TRANS_IN_UNIT);
   }
   for (int i = 0; i < nelems; i++) {
-    float famp = sqrtf(array[i].real * array[i].real + array[i].imag * array[i].imag);
-    uint8_t amp = clamp<float>(famp, 0, 1) * 255.99;
-    float fphase = 0.0f;
-    if (amp != 0) fphase = atan2f(array[i].imag, array[i].real);
-    uint8_t phase = round((-fphase + M_PI) / (2.0 * M_PI) * 255.0);
+    double famp = sqrt(array[i].real * array[i].real + array[i].imag * array[i].imag);
+    uint8_t amp = static_cast<uint8_t>(std::clamp<double>(famp, 0, 1) * 255.99);
+    double fphase = 0.0;
+    if (amp != 0) fphase = atan2(array[i].imag, array[i].real);
+    uint8_t phase = static_cast<uint8_t>(round((-fphase + M_PI) / (2.0 * M_PI) * 255.0));
 
     if (posarr != NULL) {
       double x = posarr[i * 3 + 0];
       double y = posarr[i * 3 + 1];
       double z = posarr[i * 3 + 2];
-      Eigen::Vector3f mtp = Eigen::Vector3f(x, y, z) * 10.0;
-      Eigen::Vector3f trp = this->geometry()->position(i);
+      Eigen::Vector3d mtp = Eigen::Vector3d(x, y, z) * 10.0;
+      Eigen::Vector3d trp = this->geometry()->position(i);
       if ((mtp - trp).norm() > 10) {
         std::cout << "Warning: position mismatch at " << i << std::endl << mtp << std::endl << trp << std::endl;
       }

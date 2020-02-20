@@ -4,10 +4,10 @@
 # Created Date: 25/08/2019
 # Author: Shun Suzuki
 # -----
-# Last Modified: 04/09/2019
+# Last Modified: 20/02/2020
 # Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 # -----
-# Copyright (c) 2019 Hapis Lab. All rights reserved.
+# Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
 # 
 #
 
@@ -141,7 +141,7 @@ if (-not $NOUNITY) {
     ColorEcho "Green" "INFO" "Adding unity project..."
     Copy-Item .\csharp\AUTD3Sharp.cs autdunity\Assets\AUTD\Scripts\AUTD3Sharp.cs
     Copy-Item .\csharp\NativeMethods.cs autdunity\Assets\AUTD\Scripts\NativeMethods.cs
-    Copy-Item .\csharp\Util\Matrix3x3f.cs autdunity\Assets\AUTD\Scripts\Util\Matrix3x3f.cs
+    Copy-Item .\csharp\Util\Matrix3x3d.cs autdunity\Assets\AUTD\Scripts\Util\Matrix3x3d.cs
     Copy-Item .\csharp\Util\GainMap.cs autdunity\Assets\AUTD\Scripts\Util\GainMap.cs
     $dest = Join-Path $PROJECT_DIR "\autdunity"
     Copy-Item .\autdunity -Destination $dest -Recurse

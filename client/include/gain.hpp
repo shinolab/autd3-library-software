@@ -72,36 +72,36 @@ using NullGain = Gain;
 
 class PlaneWaveGain : public Gain {
  public:
-  static GainPtr Create(Eigen::Vector3f direction);
-  static GainPtr Create(Eigen::Vector3f direction, uint8_t amp);
+  static GainPtr Create(Eigen::Vector3d direction);
+  static GainPtr Create(Eigen::Vector3d direction, uint8_t amp);
   void Build() override;
 
  private:
-  Eigen::Vector3f _direction;
+  Eigen::Vector3d _direction;
   uint8_t _amp;
 };
 
 class FocalPointGain : public Gain {
  public:
-  static GainPtr Create(Eigen::Vector3f point);
-  static GainPtr Create(Eigen::Vector3f point, uint8_t amp);
+  static GainPtr Create(Eigen::Vector3d point);
+  static GainPtr Create(Eigen::Vector3d point, uint8_t amp);
   void Build() override;
 
  private:
-  Eigen::Vector3f _point;
+  Eigen::Vector3d _point;
   uint8_t _amp = 0xff;
 };
 
 class BesselBeamGain : public Gain {
  public:
-  static GainPtr Create(Eigen::Vector3f point, Eigen::Vector3f vec_n, float theta_z);
-  static GainPtr Create(Eigen::Vector3f point, Eigen::Vector3f vec_n, float theta_z, uint8_t amp);
+  static GainPtr Create(Eigen::Vector3d point, Eigen::Vector3d vec_n, double theta_z);
+  static GainPtr Create(Eigen::Vector3d point, Eigen::Vector3d vec_n, double theta_z, uint8_t amp);
   void Build() override;
 
  private:
-  Eigen::Vector3f _point;
-  Eigen::Vector3f _vec_n;
-  float _theta_z = 0;
+  Eigen::Vector3d _point;
+  Eigen::Vector3d _vec_n;
+  double _theta_z = 0;
   uint8_t _amp = 0xff;
 };
 
@@ -125,12 +125,12 @@ class GroupedGain : public Gain {
 
 class HoloGainSdp : public Gain {
  public:
-  static GainPtr Create(Eigen::MatrixX3f foci, Eigen::VectorXf amp);
+  static GainPtr Create(Eigen::MatrixX3d foci, Eigen::VectorXd amp);
   void Build() override;
 
  protected:
-  Eigen::MatrixX3f _foci;
-  Eigen::VectorXf _amp;
+  Eigen::MatrixX3d _foci;
+  Eigen::VectorXd _amp;
 };
 
 using HoloGain = HoloGainSdp;

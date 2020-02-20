@@ -1,10 +1,10 @@
 ﻿/*
- * File: Vector3f.cs
+ * File: Vector3d.cs
  * Project: Util
  * Created Date: 02/07/2018
  * Author: Shun Suzuki
  * -----
- * Last Modified: 05/09/2019
+ * Last Modified: 20/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2018-2019 Hapis Lab. All rights reserved.
@@ -19,17 +19,17 @@ using System.Globalization;
 namespace AUTD3Sharp
 {
     // ReSharper disable once InconsistentNaming
-    public struct Vector3f : IEquatable<Vector3f>, IEnumerable<float>
+    public struct Vector3d : IEquatable<Vector3d>, IEnumerable<double>
     {
         #region ctor
-        public Vector3f(float x, float y, float z)
+        public Vector3d(double x, double y, double z)
         {
             X = x;
             Y = y;
             Z = z;
         }
 
-        public Vector3f(params float[] vector)
+        public Vector3d(params double[] vector)
         {
             if (vector == null)
             {
@@ -48,20 +48,20 @@ namespace AUTD3Sharp
         #endregion
 
         #region property
-        public static Vector3f UnitX => new Vector3f(1, 0, 0);
-        public static Vector3f UnitY => new Vector3f(0, 1, 0);
-        public static Vector3f UnitZ => new Vector3f(0, 0, 1);
-        public static Vector3f Zero => new Vector3f(0, 0, 0);
-        public Vector3f Normalized => this / L2Norm;
-        public float L2Norm => (float)Math.Sqrt(L2NormSquared);
-        public float L2NormSquared => X * X + Y * Y + Z * Z;
-        public float X { get; }
-        public float Y { get; }
-        public float Z { get; }
+        public static Vector3d UnitX => new Vector3d(1, 0, 0);
+        public static Vector3d UnitY => new Vector3d(0, 1, 0);
+        public static Vector3d UnitZ => new Vector3d(0, 0, 1);
+        public static Vector3d Zero => new Vector3d(0, 0, 0);
+        public Vector3d Normalized => this / L2Norm;
+        public double L2Norm => Math.Sqrt(L2NormSquared);
+        public double L2NormSquared => X * X + Y * Y + Z * Z;
+        public double X { get; }
+        public double Y { get; }
+        public double Z { get; }
         #endregion
 
         #region indexcer
-        public float this[int index]
+        public double this[int index]
         {
             get
             {
@@ -77,94 +77,94 @@ namespace AUTD3Sharp
         #endregion
 
         #region arithmetic
-        public static Vector3f Negate(Vector3f operand)
+        public static Vector3d Negate(Vector3d operand)
         {
-            return new Vector3f(-operand.X, -operand.Y, -operand.Z);
+            return new Vector3d(-operand.X, -operand.Y, -operand.Z);
         }
 
-        public static Vector3f Add(Vector3f left, Vector3f right)
+        public static Vector3d Add(Vector3d left, Vector3d right)
         {
-            float v1 = left.X + right.X;
-            float v2 = left.Y + right.Y;
-            float v3 = left.Z + right.Z;
-            return new Vector3f(v1, v2, v3);
+            double v1 = left.X + right.X;
+            double v2 = left.Y + right.Y;
+            double v3 = left.Z + right.Z;
+            return new Vector3d(v1, v2, v3);
         }
-        public static Vector3f Subtract(Vector3f left, Vector3f right)
+        public static Vector3d Subtract(Vector3d left, Vector3d right)
         {
-            float v1 = left.X - right.X;
-            float v2 = left.Y - right.Y;
-            float v3 = left.Z - right.Z;
-            return new Vector3f(v1, v2, v3);
+            double v1 = left.X - right.X;
+            double v2 = left.Y - right.Y;
+            double v3 = left.Z - right.Z;
+            return new Vector3d(v1, v2, v3);
         }
-        public static Vector3f Divide(Vector3f left, float right)
+        public static Vector3d Divide(Vector3d left, double right)
         {
-            float v1 = left.X / right;
-            float v2 = left.Y / right;
-            float v3 = left.Z / right;
+            double v1 = left.X / right;
+            double v2 = left.Y / right;
+            double v3 = left.Z / right;
 
-            return new Vector3f(v1, v2, v3);
+            return new Vector3d(v1, v2, v3);
         }
-        public static Vector3f Multiply(Vector3f left, float right)
+        public static Vector3d Multiply(Vector3d left, double right)
         {
-            float v1 = left.X * right;
-            float v2 = left.Y * right;
-            float v3 = left.Z * right;
-            return new Vector3f(v1, v2, v3);
+            double v1 = left.X * right;
+            double v2 = left.Y * right;
+            double v3 = left.Z * right;
+            return new Vector3d(v1, v2, v3);
         }
 
-        public static Vector3f Multiply(float left, Vector3f right)
+        public static Vector3d Multiply(double left, Vector3d right)
         {
             return Multiply(right, left);
         }
 
-        public static Vector3f operator -(Vector3f operand)
+        public static Vector3d operator -(Vector3d operand)
         {
             return Negate(operand);
         }
 
-        public static Vector3f operator +(Vector3f left, Vector3f right)
+        public static Vector3d operator +(Vector3d left, Vector3d right)
         {
             return Add(left, right);
         }
 
-        public static Vector3f operator -(Vector3f left, Vector3f right)
+        public static Vector3d operator -(Vector3d left, Vector3d right)
         {
             return Subtract(left, right);
         }
 
-        public static Vector3f operator *(Vector3f left, float right)
+        public static Vector3d operator *(Vector3d left, double right)
         {
             return Multiply(left, right);
         }
 
-        public static Vector3f operator *(float left, Vector3f right)
+        public static Vector3d operator *(double left, Vector3d right)
         {
             return Multiply(right, left);
         }
 
-        public static Vector3f operator /(Vector3f left, float right)
+        public static Vector3d operator /(Vector3d left, double right)
         {
             return Divide(left, right);
         }
 
-        public static bool operator ==(Vector3f left, Vector3f right)
+        public static bool operator ==(Vector3d left, Vector3d right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator !=(Vector3f left, Vector3f right)
+        public static bool operator !=(Vector3d left, Vector3d right)
         {
             return !left.Equals(right);
         }
 
-        public bool Equals(Vector3f other)
+        public bool Equals(Vector3d other)
         {
             return X.Equals(other.X) && Y.Equals(other.Y) && Z.Equals(other.Z);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj is Vector3f vec)
+            if (obj is Vector3d vec)
             {
                 return Equals(vec);
             }
@@ -174,12 +174,12 @@ namespace AUTD3Sharp
         #endregion
 
         #region public methods
-        public Vector3f Rectify()
+        public Vector3d Rectify()
         {
-            return new Vector3f(Math.Max(X, 0), Math.Max(Y, 0), Math.Max(Z, 0));
+            return new Vector3d(Math.Max(X, 0), Math.Max(Y, 0), Math.Max(Z, 0));
         }
 
-        public float[] ToArray()
+        public double[] ToArray()
         {
             return new[] { X, Y, Z };
         }
@@ -204,7 +204,7 @@ namespace AUTD3Sharp
 + string.Format(CultureInfo.CurrentCulture, format, Z);
         }
 
-        public IEnumerator<float> GetEnumerator()
+        public IEnumerator<double> GetEnumerator()
         {
             yield return X;
             yield return Y;

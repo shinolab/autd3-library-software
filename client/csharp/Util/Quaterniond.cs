@@ -1,10 +1,10 @@
 ﻿/*
- * File: Quaternionf.cs
+ * File: Quaterniond.cs
  * Project: Util
  * Created Date: 02/07/2018
  * Author: Shun Suzuki
  * -----
- * Last Modified: 05/09/2019
+ * Last Modified: 20/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -15,10 +15,10 @@ using System;
 
 namespace AUTD3Sharp
 {
-    public struct Quaternionf : IEquatable<Quaternionf>
+    public struct Quaterniond : IEquatable<Quaterniond>
     {
         #region ctor
-        public Quaternionf(float x, float y, float z, float w)
+        public Quaterniond(double x, double y, double z, double w)
         {
             X = x;
             Y = y;
@@ -28,14 +28,14 @@ namespace AUTD3Sharp
         #endregion
 
         #region property
-        public float X { get; }
-        public float Y { get; }
-        public float Z { get; }
-        public float W { get; }
+        public double X { get; }
+        public double Y { get; }
+        public double Z { get; }
+        public double W { get; }
         #endregion
 
         #region indexcer
-        public float this[int index]
+        public double this[int index]
         {
             get
             {
@@ -53,24 +53,24 @@ namespace AUTD3Sharp
 
 
         #region arithmetic
-        public static bool operator ==(Quaternionf left, Quaternionf right)
+        public static bool operator ==(Quaterniond left, Quaterniond right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator !=(Quaternionf left, Quaternionf right)
+        public static bool operator !=(Quaterniond left, Quaterniond right)
         {
             return !left.Equals(right);
         }
 
-        public bool Equals(Quaternionf other)
+        public bool Equals(Quaterniond other)
         {
             return X.Equals(other.X) && Y.Equals(other.Y) && Z.Equals(other.Z) && W.Equals(other.W);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj is Quaternionf qua)
+            if (obj is Quaterniond qua)
             {
                 return Equals(qua);
             }

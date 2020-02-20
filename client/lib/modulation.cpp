@@ -24,9 +24,9 @@
 #include "privdef.hpp"
 
 #pragma region Util
-static inline float sinc(float x) noexcept {
-  if (fabs(x) < std::numeric_limits<float>::epsilon()) return 1;
-  return sinf(M_PI * x) / (M_PI * x);
+static inline double sinc(double x) noexcept {
+  if (fabs(x) < std::numeric_limits<double>::epsilon()) return 1;
+  return sin(M_PI * x) / (M_PI * x);
 }
 #pragma endregion
 
@@ -45,8 +45,8 @@ autd::ModulationPtr autd::Modulation::Create(uint8_t amp) {
 #pragma endregion
 
 #pragma region SineModulation
-autd::ModulationPtr autd::SineModulation::Create(int freq, float amp, float offset) {
-  assert(offset + 0.5f * amp <= 1.0f && offset - 0.5f * amp >= 0.0f);
+autd::ModulationPtr autd::SineModulation::Create(int freq, double amp, double offset) {
+  assert(offset + 0.5 * amp <= 1.0 && offset - 0.5 * amp >= 0.0);
 
   auto mod = CreateHelper<SineModulation>();
   constexpr auto sf = autd::Modulation::samplingFrequency();
@@ -55,15 +55,15 @@ autd::ModulationPtr autd::SineModulation::Create(int freq, float amp, float offs
   const auto d = std::gcd(sf, freq);
 
   const size_t N = MOD_BUF_SIZE / d;
-  const auto REP = freq / d;
+  const size_t REP = freq / d;
 
   mod->buffer.resize(N, 0);
 
   for (size_t i = 0; i < N; i++) {
-    auto tamp = fmodf(static_cast<float>(2 * REP * i) / N, 2.0f);
-    tamp = tamp > 1.0f ? 2.0f - tamp : tamp;
-    tamp = offset + (tamp - 0.5f) * amp;
-    mod->buffer.at(i) = static_cast<uint8_t>(tamp * 255.0f);
+    auto tamp = fmod(static_cast<double>(2 * REP * i) / N, 2.0);
+    tamp = tamp > 1.0 ? 2.0 - tamp : tamp;
+    tamp = offset + (tamp - 0.5) * amp;
+    mod->buffer.at(i) = static_cast<uint8_t>(tamp * 255.0);
   }
 
   return mod;
@@ -84,8 +84,8 @@ autd::ModulationPtr autd::SawModulation::Create(int freq) {
   mod->buffer.resize(N, 0);
 
   for (size_t i = 0; i < N; i++) {
-    auto tamp = fmodf(static_cast<float>(REP * i) / N, 1.0f);
-    mod->buffer.at(i) = static_cast<uint8_t>(asin(tamp) / M_PI * 510.0f);
+    auto tamp = fmod(static_cast<double>(REP * i) / N, 1.0);
+    mod->buffer.at(i) = static_cast<uint8_t>(asin(tamp) / M_PI * 510.0);
   }
 
   return mod;
@@ -93,8 +93,8 @@ autd::ModulationPtr autd::SawModulation::Create(int freq) {
 #pragma endregion
 
 #pragma region RawPCMModulation
-autd::ModulationPtr autd::RawPCMModulation::Create(std::string filename, float samplingFreq) {
-  if (samplingFreq < std::numeric_limits<float>::epsilon()) samplingFreq = MOD_SAMPLING_FREQ;
+autd::ModulationPtr autd::RawPCMModulation::Create(std::string filename, double samplingFreq) {
+  if (samplingFreq < std::numeric_limits<double>::epsilon()) samplingFreq = MOD_SAMPLING_FREQ;
   auto mod = CreateHelper<RawPCMModulation>();
 
   std::ifstream ifs;
@@ -102,8 +102,8 @@ autd::ModulationPtr autd::RawPCMModulation::Create(std::string filename, float s
 
   if (ifs.fail()) throw new std::runtime_error("Error on opening file.");
 
-  auto max_v = std::numeric_limits<float>::min();
-  auto min_v = std::numeric_limits<float>::max();
+  auto max_v = std::numeric_limits<double>::min();
+  auto min_v = std::numeric_limits<double>::max();
 
   std::vector<int> tmp;
   char buf[sizeof(int)];
@@ -124,36 +124,36 @@ autd::ModulationPtr autd::RawPCMModulation::Create(std::string filename, float s
   */
 
   // up sampling
-  std::vector<float> smpl_buf;
+  std::vector<double> smpl_buf;
   const auto freqratio = autd::Modulation::samplingFrequency() / samplingFreq;
   smpl_buf.resize(tmp.size() * static_cast<size_t>(freqratio));
   for (size_t i = 0; i < smpl_buf.size(); i++) {
-    smpl_buf.at(i) = (fmod(i / freqratio, 1.0) < 1 / freqratio) ? tmp.at(static_cast<int>(i / freqratio)) : 0.0f;
+    smpl_buf.at(i) = (fmod(i / freqratio, 1.0) < 1 / freqratio) ? tmp.at(static_cast<int>(i / freqratio)) : 0.0;
   }
 
   // LPF
   const auto NTAP = 31;
   const auto cutoff = samplingFreq / 2 / autd::Modulation::samplingFrequency();
-  std::vector<float> lpf(NTAP);
+  std::vector<double> lpf(NTAP);
   for (int i = 0; i < NTAP; i++) {
-    const auto t = i - NTAP / 2.0f;
-    lpf.at(i) = sinc(t * cutoff * 2.0f);
+    const auto t = i - NTAP / 2.0;
+    lpf.at(i) = sinc(t * cutoff * 2.0);
   }
 
-  std::vector<float> lpf_buf;
+  std::vector<double> lpf_buf;
   lpf_buf.resize(smpl_buf.size(), 0);
   for (size_t i = 0; i < lpf_buf.size(); i++) {
     for (int j = 0; j < NTAP; j++) {
       lpf_buf.at(i) += smpl_buf.at((i - j + smpl_buf.size()) % smpl_buf.size()) * lpf.at(j);
     }
-    max_v = std::max<float>(lpf_buf.at(i), max_v);
-    min_v = std::min<float>(lpf_buf.at(i), min_v);
+    max_v = std::max<double>(lpf_buf.at(i), max_v);
+    min_v = std::min<double>(lpf_buf.at(i), min_v);
   }
 
   if (max_v == min_v) max_v = min_v + 1;
   mod->buffer.resize(lpf_buf.size(), 0);
   for (size_t i = 0; i < lpf_buf.size(); i++) {
-    mod->buffer.at(i) = static_cast<uint8_t>(round(255.0f * (lpf_buf.at(i) - min_v) / (max_v - min_v)));
+    mod->buffer.at(i) = static_cast<uint8_t>(round(255.0 * (lpf_buf.at(i) - min_v) / (max_v - min_v)));
   }
 
   return mod;

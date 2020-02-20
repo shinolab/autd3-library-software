@@ -42,8 +42,8 @@ namespace AUTD3Sharp
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDFreeAdapterPointer(IntPtr p_adapter);
         [DllImport(DllName, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true, CallingConvention = CallingConvention.StdCall)]
         public static extern void AUTDGetAdapter(IntPtr p_adapter, int index, StringBuilder desc, StringBuilder name);
-        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern int AUTDAddDevice(AUTDControllerHandle handle, float x, float y, float z, float rz1, float ry, float rz2, int groupId);
-        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern int AUTDAddDeviceQuaternion(AUTDControllerHandle handle, float x, float y, float z, float quaW, float quaX, float quaY, float quaZ, int groupId);
+        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern int AUTDAddDevice(AUTDControllerHandle handle, double x, double y, double z, double rz1, double ry, double rz2, int groupId);
+        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern int AUTDAddDeviceQuaternion(AUTDControllerHandle handle, double x, double y, double z, double quaW, double quaX, double quaY, double quaZ, int groupId);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDDelDevice(AUTDControllerHandle handle, int devId);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDCloseController(AUTDControllerHandle handle);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDFreeController(IntPtr handle);
@@ -61,14 +61,14 @@ namespace AUTD3Sharp
         #endregion region
 
         #region Gain
-        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDFocalPointGain(out AUTDGainPtr gain, float x, float y, float z, byte amp);
+        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDFocalPointGain(out AUTDGainPtr gain, double x, double y, double z, byte amp);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDGroupedGain(out AUTDGainPtr gain, int* groupIDs, AUTDGainPtr* gains, int size);
-        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDBesselBeamGain(out AUTDGainPtr gain, float x, float y, float z, float nX, float nY, float nZ, float thetaZ);
-        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDPlaneWaveGain(out AUTDGainPtr gain, float nX, float nY, float nZ);
+        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDBesselBeamGain(out AUTDGainPtr gain, double x, double y, double z, double nX, double nY, double nZ, double thetaZ);
+        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDPlaneWaveGain(out AUTDGainPtr gain, double nX, double nY, double nZ);
         [DllImport(DllName, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true, CallingConvention = CallingConvention.StdCall)]
         public static extern void AUTDMatlabGain(out AUTDGainPtr gain, string filename, string varName);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDCustomGain(out AUTDGainPtr gain, ushort* data, int dataLength);
-        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDHoloGain(out AUTDGainPtr gain, float* points, float* amps, int size);
+        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDHoloGain(out AUTDGainPtr gain, double* points, double* amps, int size);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDTransducerTestGain(out AUTDGainPtr gain, int idx, int amp, int phase);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDNullGain(out AUTDGainPtr gain);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDDeleteGain(AUTDGainPtr gain);
@@ -77,9 +77,9 @@ namespace AUTD3Sharp
         #region Modulation
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDModulation(out AUTDModulationPtr mod, byte amp);
         [DllImport(DllName, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true, CallingConvention = CallingConvention.StdCall)]
-        public static extern void AUTDRawPCMModulation(out AUTDModulationPtr mod, string filename, float samplingFrequency);
+        public static extern void AUTDRawPCMModulation(out AUTDModulationPtr mod, string filename, double samplingFrequency);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDSawModulation(out AUTDModulationPtr mod, int freq);
-        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDSineModulation(out AUTDModulationPtr mod, int freq, float amp, float offset);
+        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDSineModulation(out AUTDModulationPtr mod, int freq, double amp, double offset);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDDeleteModulation(AUTDModulationPtr mod);
         #endregion
 
@@ -89,20 +89,20 @@ namespace AUTD3Sharp
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDAppendModulation(AUTDControllerHandle handle, Modulation mod);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDAppendModulationSync(AUTDControllerHandle handle, Modulation mod);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDAppendSTMGain(AUTDControllerHandle handle, Gain gainHandle);
-        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDStartSTModulation(AUTDControllerHandle handle, float freq);
+        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDStartSTModulation(AUTDControllerHandle handle, double freq);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDStopSTModulation(AUTDControllerHandle handle);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDFinishSTModulation(AUTDControllerHandle handle);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDSetGain(AUTDControllerHandle handle, int deviceIndex, int transIndex, int amp, int phase);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDFlush(AUTDControllerHandle handle);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern int AUTDDevIdForDeviceIdx(AUTDControllerHandle handle, int devIdx);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern int AUTDDevIdForTransIdx(AUTDControllerHandle handle, int transIdx);
-        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern float* AUTDTransPosition(AUTDControllerHandle handle, int transIdx);
-        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern float* AUTDTransDirection(AUTDControllerHandle handle, int transIdx);
-        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern float* GetAngleZYZ(float* rotationMatrix);
+        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern double* AUTDTransPosition(AUTDControllerHandle handle, int transIdx);
+        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern double* AUTDTransDirection(AUTDControllerHandle handle, int transIdx);
+        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern double* GetAngleZYZ(double* rotationMatrix);
 
         #region Deprecated
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDAppendLateralGain(AUTDControllerHandle handle, Gain gainHandle);
-        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDStartLateralModulation(AUTDControllerHandle handle, float freq);
+        [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDStartLateralModulation(AUTDControllerHandle handle, double freq);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDFinishLateralModulation(AUTDControllerHandle handle);
         [DllImport(DllName, CallingConvention = CallingConvention.StdCall)] public static extern void AUTDResetLateralGain(AUTDControllerHandle handle);
         #endregion

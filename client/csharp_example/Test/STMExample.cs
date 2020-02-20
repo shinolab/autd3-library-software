@@ -4,7 +4,7 @@
  * Created Date: 25/08/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 10/02/2020
+ * Last Modified: 20/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -22,14 +22,14 @@ namespace AUTD3SharpTest.Test
         {
             Console.WriteLine("Start Spatio-Temporal Modulation Test");
 
-            float x = 83.0f;
-            float y = 66.0f;
-            float z = 150.0f;
+            double x = 83.0;
+            double y = 66.0;
+            double z = 150.0;
 
             using (AUTD autd = new AUTD())
             {
                 autd.Open();
-                autd.AddDevice(Vector3f.Zero, Vector3f.Zero);
+                autd.AddDevice(Vector3d.Zero, Vector3d.Zero);
 
                 autd.SetSilentMode(false);
 

@@ -3,10 +3,10 @@
 : Created Date: 25/08/2019
 : Author: Shun Suzuki
 : -----
-: Last Modified: 04/09/2019
+: Last Modified: 20/02/2020
 : Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 : -----
-: Copyright (c) 2019 Hapis Lab. All rights reserved.
+: Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
 : 
 
 @echo off
@@ -176,7 +176,7 @@ if %USE_UNITY% == ON (
   echo : Adding unity project...
   @copy /Y .\csharp\AUTD3Sharp.cs autdunity\Assets\AUTD\Scripts\AUTD3Sharp.cs > nul
   @copy /Y .\csharp\NativeMethods.cs autdunity\Assets\AUTD\Scripts\NativeMethods.cs > nul
-  @copy /Y .\csharp\Util\Matrix3x3f.cs autdunity\Assets\AUTD\Scripts\Util\Matrix3x3f.cs > nul
+  @copy /Y .\csharp\Util\Matrix3x3d.cs autdunity\Assets\AUTD\Scripts\Util\Matrix3x3d.cs > nul
   @copy /Y .\csharp\Util\GainMap.cs autdunity\Assets\AUTD\Scripts\Util\GainMap.cs > nul
   @xcopy .\autdunity %PROJECT_DIR%\autdunity /s/i > nul
 )
