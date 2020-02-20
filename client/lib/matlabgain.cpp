@@ -10,14 +10,15 @@
 //
 
 #ifdef MATLAB_ENABLED
-#include "mat.h"
-#include "matrix.h"
+#include <mat.h>
+#include <matrix.h>
 #endif
 
 #define _USE_MATH_DEFINES
 #include <stdio.h>
 
 #include <complex>
+#include <iostream>
 
 #include "autd3.hpp"
 #include "controller.hpp"
