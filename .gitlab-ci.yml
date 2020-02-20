@@ -5,6 +5,10 @@ stages:
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
+cache:
+  paths:
+    - client/build
+
 build-library:
   stage: build
   tags:
