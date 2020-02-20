@@ -3,7 +3,7 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/02/2020
+// Last Modified: 20/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -27,7 +27,7 @@ class SOEMController {
   void Send(size_t size, std::unique_ptr<uint8_t[]> buf);
   void SetWaitForProcessMsg(bool isWait);
   std::vector<uint16_t> Read(size_t input_frame_idx);
-  bool isOpen();
+  bool is_open();
   bool Close();
 
  private:
@@ -44,7 +44,7 @@ struct EtherCATAdapterInfo {
   }
   static std::vector<EtherCATAdapterInfo> EnumerateAdapters();
 
-  std::shared_ptr<std::string> desc;
-  std::shared_ptr<std::string> name;
+  std::string desc;
+  std::string name;
 };
 }  //  namespace libsoem

@@ -3,7 +3,7 @@
 // Created Date: 11/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 18/02/2020
+// Last Modified: 20/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -13,10 +13,11 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+#include <algorithm>
 #include <cmath>
 #include <fstream>
 #include <limits>
-#include <algorithm>
+#include <numeric>
 
 #include "autd3.hpp"
 #include "modulation.hpp"
@@ -25,11 +26,7 @@
 #pragma region Util
 static inline float sinc(float x) noexcept {
   if (fabs(x) < std::numeric_limits<float>::epsilon()) return 1;
-  return sinf(M_PIf * x) / (M_PIf * x);
-}
-static int gcd(int u, int V) {
-  const auto t = u % V;
-  return (t == 0) ? V : gcd(V, t);
+  return sinf(M_PI * x) / (M_PI * x);
 }
 #pragma endregion
 
@@ -47,13 +44,6 @@ autd::ModulationPtr autd::Modulation::Create(uint8_t amp) {
 }
 #pragma endregion
 
-autd::ModulationPtr autd::TestModulation::Create() {
-  auto mod = CreateHelper<TestModulation>();
-  mod->buffer.resize(4000, 1);
-  mod->buffer.at(0) = 0;
-  return mod;
-}
-
 #pragma region SineModulation
 autd::ModulationPtr autd::SineModulation::Create(int freq, float amp, float offset) {
   assert(offset + 0.5f * amp <= 1.0f && offset - 0.5f * amp >= 0.0f);
@@ -62,7 +52,7 @@ autd::ModulationPtr autd::SineModulation::Create(int freq, float amp, float offs
   constexpr auto sf = autd::Modulation::samplingFrequency();
   freq = std::clamp(freq, 1, sf / 2);
 
-  const auto d = gcd(sf, freq);
+  const auto d = std::gcd(sf, freq);
 
   const size_t N = MOD_BUF_SIZE / d;
   const auto REP = freq / d;
@@ -86,7 +76,7 @@ autd::ModulationPtr autd::SawModulation::Create(int freq) {
   constexpr auto sf = autd::Modulation::samplingFrequency();
   freq = std::clamp(freq, 1, sf / 2);
 
-  const auto d = gcd(sf, freq);
+  const auto d = std::gcd(sf, freq);
 
   const size_t N = MOD_BUF_SIZE / d;
   const auto REP = freq / d;
@@ -95,7 +85,7 @@ autd::ModulationPtr autd::SawModulation::Create(int freq) {
 
   for (size_t i = 0; i < N; i++) {
     auto tamp = fmodf(static_cast<float>(REP * i) / N, 1.0f);
-    mod->buffer.at(i) = static_cast<uint8_t>(asin(tamp) / M_PIf * 510.0f);
+    mod->buffer.at(i) = static_cast<uint8_t>(asin(tamp) / M_PI * 510.0f);
   }
 
   return mod;

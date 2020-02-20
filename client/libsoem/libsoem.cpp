@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/02/2020
+// Last Modified: 20/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -421,15 +421,15 @@ std::vector<uint16_t> SOEMController::Read(size_t input_frame_idx) { return this
 
 bool SOEMController::Close() { return this->_pimpl->Close(); }
 
-bool SOEMController::isOpen() { return this->_pimpl->_isOpened; }
+bool SOEMController::is_open() { return this->_pimpl->_isOpened; }
 
 std::vector<EtherCATAdapterInfo> EtherCATAdapterInfo::EnumerateAdapters() {
   auto adapter = ec_find_adapters();
   auto _adapters = std::vector<EtherCATAdapterInfo>();
   while (adapter != NULL) {
     auto *info = new EtherCATAdapterInfo;
-    info->desc = std::make_shared<std::string>(adapter->desc);
-    info->name = std::make_shared<std::string>(adapter->name);
+    info->desc = std::string(adapter->desc);
+    info->name = std::string(adapter->name);
     _adapters.push_back(*info);
     adapter = adapter->next;
   }

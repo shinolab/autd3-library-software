@@ -3,7 +3,7 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/02/2020
+// Last Modified: 20/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -34,23 +34,23 @@ void internal::SOEMLink::Open(std::string ifname) {
   _ifname = ifname_and_devNum[0];
   _cnt->Open(_ifname.c_str(), _devNum, EC_SM3_CYCLE_TIME_NANO_SEC, EC_SYNC0_CYCLE_TIME_NANO_SEC, HEADER_SIZE, NUM_TRANS_IN_UNIT * 2,
              EC_INPUT_FRAME_SIZE);
-  _isOpen = _cnt->isOpen();
+  _is_open = _cnt->is_open();
 }
 
 void internal::SOEMLink::Close() {
-  if (_isOpen) {
+  if (_is_open) {
     _cnt->Close();
-    _isOpen = false;
+    _is_open = false;
   }
 }
 
 void internal::SOEMLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
-  if (_isOpen) {
+  if (_is_open) {
     _cnt->Send(size, std::move(buf));
   }
 }
 
-bool internal::SOEMLink::isOpen() { return _isOpen; }
+bool internal::SOEMLink::is_open() { return _is_open; }
 
 void internal::SOEMLink::SetWaitForProcessMsg(bool is_wait) { _cnt->SetWaitForProcessMsg(is_wait); }
 

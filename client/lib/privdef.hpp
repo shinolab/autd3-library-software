@@ -3,7 +3,7 @@
 // Created Date: 07/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 18/02/2020
+// Last Modified: 20/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -27,7 +27,7 @@ constexpr auto IS_MISSING_TRANSDUCER(T X, T Y) {
 
 constexpr auto FPGA_CLOCK = 25600000;
 
-constexpr auto ULTRASOUND_FREQUENCY_DEFAULT = 40000;
+constexpr auto ULTRASOUND_FREQUENCY = 40000;
 constexpr auto ULTRASOUND_WAVELENGTH = 8.5f;
 
 constexpr auto MOD_SAMPLING_FREQ = 4000;
@@ -54,7 +54,7 @@ enum RxGlobalControlFlags {
 struct RxGlobalHeader {
   uint8_t msg_id;
   uint8_t control_flags;
-  int8_t frequency_shift;
+  int8_t _frequency_shift;  // NO USE
   uint8_t mod_size;
   uint8_t mod[MOD_FRAME_SIZE];
 };

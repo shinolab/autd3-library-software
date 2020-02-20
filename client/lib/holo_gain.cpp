@@ -3,7 +3,7 @@
 // Created Date: 06/07/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 18/02/2020
+// Last Modified: 20/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -88,10 +88,10 @@ static float directivity_t4010a1(float theta_deg) {
 complex<float> transfer(Vector3f trans_pos, Vector3f trans_norm, Vector3f target_pos) {
   const auto diff = target_pos - trans_pos;
   const auto dist = diff.norm();
-  const auto theta = atan2(diff.dot(trans_norm), dist * trans_norm.norm()) * 180.0f / M_PIf;
+  const auto theta = atan2(diff.dot(trans_norm), dist * trans_norm.norm()) * 180.0f / M_PI;
   const auto directivity = directivity_t4010a1(theta);
 
-  return directivity / dist * exp(complex<float>(-dist * 1.15e-4f, -2 * M_PIf / ULTRASOUND_WAVELENGTH * dist));
+  return directivity / dist * exp(complex<float>(-dist * 1.15e-4f, -2 * M_PI / ULTRASOUND_WAVELENGTH * dist));
 }
 
 void removeRow(MatrixXcf* const matrix, size_t rowToRemove) {
@@ -124,7 +124,7 @@ autd::GainPtr autd::HoloGainSdp::Create(Eigen::MatrixX3f foci, Eigen::VectorXf a
   return ptr;
 }
 
-void autd::HoloGainSdp::build() {
+void autd::HoloGainSdp::Build() {
   if (this->built()) return;
   auto geo = this->geometry();
   if (geo == nullptr) {
@@ -211,7 +211,7 @@ void autd::HoloGainSdp::build() {
   // auto maxCoeff = sqrt(q.cwiseAbs2().maxCoeff());
   for (int j = 0; j < N; j++) {
     const auto famp = 1.0f;  // abs(q(j)) / maxCoeff;
-    const auto fphase = arg(q(j)) / (2 * M_PIf) + 0.5f;
+    const auto fphase = arg(q(j)) / (2 * M_PI) + 0.5f;
     const auto amp = static_cast<uint8_t>(famp * 255);
     const auto phase = static_cast<uint8_t>((1 - fphase) * 255);
     uint8_t D, S;

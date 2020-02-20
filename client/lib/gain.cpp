@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 18/02/2020
+// Last Modified: 20/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -24,7 +24,7 @@
 
 namespace autd {
 
-inline float mod(float a, float b) { return a - floor(a / b) * b; }
+inline float pos_mod(float a, float b) { return a - floor(a / b) * b; }
 
 GainPtr Gain::Create() { return CreateHelper<Gain>(); }
 
@@ -33,7 +33,7 @@ Gain::Gain() noexcept {
   this->_geometry = nullptr;
 }
 
-void Gain::build() {
+void Gain::Build() {
   if (this->built()) return;
   auto geometry = this->geometry();
   assert(geometry != nullptr);
@@ -62,7 +62,7 @@ GainPtr PlaneWaveGain::Create(Eigen::Vector3f direction, uint8_t amp) {
   return ptr;
 }
 
-void PlaneWaveGain::build() {
+void PlaneWaveGain::Build() {
   if (this->built()) return;
   auto geometry = this->geometry();
   assert(geometry != nullptr);
@@ -80,7 +80,7 @@ void PlaneWaveGain::build() {
   for (int i = 0; i < ntrans; i++) {
     const auto trp = geometry->position(i);
     const auto dist = trp.dot(dir);
-    const auto fphase = mod(dist, ULTRASOUND_WAVELENGTH) / ULTRASOUND_WAVELENGTH;
+    const auto fphase = pos_mod(dist, ULTRASOUND_WAVELENGTH) / ULTRASOUND_WAVELENGTH;
     const auto phase = static_cast<uint8_t>(round(255.0f * (1.0f - fphase)));
     uint8_t D, S;
     SignalDesign(this->_amp, phase, &D, &S);
@@ -100,7 +100,7 @@ GainPtr FocalPointGain::Create(Eigen::Vector3f point, uint8_t amp) {
   return gain;
 }
 
-void FocalPointGain::build() {
+void FocalPointGain::Build() {
   if (this->built()) return;
 
   auto geometry = this->geometry();
@@ -141,7 +141,7 @@ GainPtr BesselBeamGain::Create(Eigen::Vector3f point, Eigen::Vector3f vec_n, flo
   return gain;
 }
 
-void BesselBeamGain::build() {
+void BesselBeamGain::Build() {
   if (this->built()) return;
   auto geometry = this->geometry();
   assert(geometry != nullptr);
@@ -184,7 +184,7 @@ GainPtr CustomGain::Create(uint16_t* data, int dataLength) {
   return gain;
 }
 
-void CustomGain::build() {
+void CustomGain::Build() {
   if (this->built()) return;
   auto geometry = this->geometry();
   assert(geometry != nullptr);
@@ -216,7 +216,7 @@ GainPtr TransducerTestGain::Create(int idx, int amp, int phase) {
   return gain;
 }
 
-void TransducerTestGain::build() {
+void TransducerTestGain::Build() {
   if (this->built()) return;
   auto geometry = this->geometry();
   assert(geometry != nullptr);
