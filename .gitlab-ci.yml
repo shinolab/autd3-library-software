@@ -1,0 +1,18 @@
+stages:
+  - build
+  - lint
+
+build-library:
+  stage: build
+  tags:
+    - shell
+  script:
+    - mkdir build && cd build
+    - cmake ..
+
+lint-library:
+  stage: lint
+  tags:
+    - shell
+  script:
+    - make cpplint
