@@ -9,9 +9,9 @@ add_library(AUTD3Sharp
   GlobalSuppressions.cs
   CustomDictionary.xaml
   Util/GainMap.cs
-  Util/Matrix3x3f.cs
-  Util/Vector3f.cs
-  Util/Quaternionf.cs
+  Util/Matrix3x3d.cs
+  Util/Vector3d.cs
+  Util/Quaterniond.cs
 )
 
 csharp_set_xaml_cs_properties(CustomDictionary.xaml)

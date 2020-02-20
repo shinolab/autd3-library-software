@@ -76,18 +76,18 @@ class Controller {
   virtual void AppendModulationSync(ModulationPtr modulation) = 0;
   virtual void AppendSTMGain(GainPtr gain) = 0;
   virtual void AppendSTMGain(const std::vector<GainPtr> &gain_list) = 0;
-  virtual void StartSTModulation(float freq) = 0;
+  virtual void StartSTModulation(double freq) = 0;
   virtual void StopSTModulation() = 0;
   virtual void FinishSTModulation() = 0;
   virtual void Flush() = 0;
 
-  virtual void LateralModulationAT(Eigen::Vector3f point, Eigen::Vector3f dir = Eigen::Vector3f::UnitY(), float lm_amp = 2.5,
-                                   float lm_freq = 100) = 0;
+  virtual void LateralModulationAT(Eigen::Vector3d point, Eigen::Vector3d dir = Eigen::Vector3d::UnitY(), double lm_amp = 2.5,
+                                   double lm_freq = 100) = 0;
 
   [[deprecated("AppendLateralGain is deprecated. Please use AppendSTMGain()")]] virtual void AppendLateralGain(GainPtr gain) = 0;
   [[deprecated("AppendLateralGain is deprecated. Please use AppendSTMGain()")]] virtual void AppendLateralGain(
       const std::vector<GainPtr> &gain_list) = 0;
-  [[deprecated("StartLateralModulation is deprecated. Please use StartSTModulation()")]] virtual void StartLateralModulation(float freq) = 0;
+  [[deprecated("StartLateralModulation is deprecated. Please use StartSTModulation()")]] virtual void StartLateralModulation(double freq) = 0;
   [[deprecated("FinishLateralModulation is deprecated. Please use StopSTModulation()")]] virtual void FinishLateralModulation() = 0;
   [[deprecated("ResetLateralGain is deprecated. Please use FinishSTModulation()")]] virtual void ResetLateralGain() = 0;
 };

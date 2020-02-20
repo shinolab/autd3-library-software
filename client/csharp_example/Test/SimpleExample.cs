@@ -4,7 +4,7 @@
  * Created Date: 25/08/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 05/09/2019
+ * Last Modified: 20/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -22,14 +22,14 @@ namespace AUTD3SharpTest.Test
         {
             Console.WriteLine("Start Simple Test");
 
-            float x = AUTD.AUTDWidth / 2;
-            float y = AUTD.AUTDHeight / 2;
-            float z = 150f;
+            double x = AUTD.AUTDWidth / 2;
+            double y = AUTD.AUTDHeight / 2;
+            double z = 150;
 
             using (AUTD autd = new AUTD())
             {
                 autd.Open();
-                autd.AddDevice(Vector3f.Zero, Vector3f.Zero);
+                autd.AddDevice(Vector3d.Zero, Vector3d.Zero);
 
                 Modulation mod = AUTD.SineModulation(150); // AM sin 150 Hz
                 autd.AppendModulationSync(mod);

@@ -78,15 +78,15 @@ class AUTDController : public Controller {
   void AppendModulationSync(const ModulationPtr mod) final;
   void AppendSTMGain(GainPtr gain) final;
   void AppendSTMGain(const std::vector<GainPtr> &gain_list) final;
-  void StartSTModulation(float freq) final;
+  void StartSTModulation(double freq) final;
   void StopSTModulation() final;
   void FinishSTModulation() final;
   void Flush() final;
 
-  void LateralModulationAT(Eigen::Vector3f point, Eigen::Vector3f dir = Eigen::Vector3f::UnitY(), float lm_amp = 2.5, float lm_freq = 100) final;
+  void LateralModulationAT(Eigen::Vector3d point, Eigen::Vector3d dir = Eigen::Vector3d::UnitY(), double lm_amp = 2.5, double lm_freq = 100) final;
   void AppendLateralGain(GainPtr gain) final;
   void AppendLateralGain(const std::vector<GainPtr> &gain_list) final;
-  void StartLateralModulation(float freq) final;
+  void StartLateralModulation(double freq) final;
   void FinishLateralModulation() final;
   void ResetLateralGain() final;
 
@@ -247,7 +247,7 @@ void AUTDController::AppendSTMGain(const std::vector<GainPtr> &gain_list) {
   }
 }
 
-void AUTDController::StartSTModulation(float freq) {
+void AUTDController::StartSTModulation(double freq) {
   this->_link->SetWaitForProcessMsg(false);
 
   auto len = this->_stmGains.size();
@@ -306,7 +306,7 @@ void AUTDController::Flush() {
   std::queue<ModulationPtr>().swap(_send_mod_q);
 }
 
-void AUTDController::LateralModulationAT(Eigen::Vector3f point, Eigen::Vector3f dir, float lm_amp, float lm_freq) {
+void AUTDController::LateralModulationAT(Eigen::Vector3d point, Eigen::Vector3d dir, double lm_amp, double lm_freq) {
   auto p1 = point + lm_amp * dir;
   auto p2 = point - lm_amp * dir;
   this->FinishSTModulation();
@@ -409,7 +409,7 @@ std::unique_ptr<uint8_t[]> AUTDController::MakeBody(GainPtr gain, ModulationPtr 
 #pragma region deprecated
 void AUTDController::AppendLateralGain(GainPtr gain) { this->AppendSTMGain(gain); }
 void AUTDController::AppendLateralGain(const std::vector<GainPtr> &gain_list) { this->AppendSTMGain(gain_list); }
-void AUTDController::StartLateralModulation(float freq) { this->StartSTModulation(freq); }
+void AUTDController::StartLateralModulation(double freq) { this->StartSTModulation(freq); }
 void AUTDController::FinishLateralModulation() { this->StopSTModulation(); }
 void AUTDController::ResetLateralGain() { this->FinishSTModulation(); }
 #pragma endregion

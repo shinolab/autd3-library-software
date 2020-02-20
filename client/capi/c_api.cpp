@@ -49,13 +49,14 @@ void AUTDFreeAdapterPointer(void *p_adapter) {
   auto *adapters = static_cast<std::pair<std::string, std::string> *>(p_adapter);
   delete[] adapters;
 }
-int AUTDAddDevice(AUTDControllerHandle handle, float x, float y, float z, float rz1, float ry, float rz2, int groupId) {
+int AUTDAddDevice(AUTDControllerHandle handle, double x, double y, double z, double rz1, double ry, double rz2, int groupId) {
   auto *cnt = static_cast<autd::Controller *>(handle);
-  return cnt->geometry()->AddDevice(Eigen::Vector3f(x, y, z), Eigen::Vector3f(rz1, ry, rz2), groupId);
+  return cnt->geometry()->AddDevice(Eigen::Vector3d(x, y, z), Eigen::Vector3d(rz1, ry, rz2), groupId);
 }
-int AUTDAddDeviceQuaternion(AUTDControllerHandle handle, float x, float y, float z, float qua_w, float qua_x, float qua_y, float qua_z, int groupId) {
+int AUTDAddDeviceQuaternion(AUTDControllerHandle handle, double x, double y, double z, double qua_w, double qua_x, double qua_y, double qua_z,
+                            int groupId) {
   auto *cnt = static_cast<autd::Controller *>(handle);
-  return cnt->geometry()->AddDeviceQuaternion(Eigen::Vector3f(x, y, z), Eigen::Quaternionf(qua_w, qua_x, qua_y, qua_z), groupId);
+  return cnt->geometry()->AddDeviceQuaternion(Eigen::Vector3d(x, y, z), Eigen::Quaterniond(qua_w, qua_x, qua_y, qua_z), groupId);
 }
 void AUTDDelDevice(AUTDControllerHandle handle, int devId) {
   auto *cnt = static_cast<autd::Controller *>(handle);
@@ -107,8 +108,8 @@ size_t AUTDRemainingInBuffer(AUTDControllerHandle handle) {
 #pragma endregion
 
 #pragma region Gain
-void AUTDFocalPointGain(AUTDGainPtr *gain, float x, float y, float z, uint8_t amp) {
-  auto *g = autd::FocalPointGain::Create(Eigen::Vector3f(x, y, z), amp);
+void AUTDFocalPointGain(AUTDGainPtr *gain, double x, double y, double z, uint8_t amp) {
+  auto *g = autd::FocalPointGain::Create(Eigen::Vector3d(x, y, z), amp);
   *gain = g;
 }
 void AUTDGroupedGain(AUTDGainPtr *gain, int *groupIDs, AUTDGainPtr *gains, int size) {
@@ -125,12 +126,12 @@ void AUTDGroupedGain(AUTDGainPtr *gain, int *groupIDs, AUTDGainPtr *gains, int s
 
   *gain = ggain;
 }
-void AUTDBesselBeamGain(AUTDGainPtr *gain, float x, float y, float z, float n_x, float n_y, float n_z, float theta_z) {
-  auto *g = autd::BesselBeamGain::Create(Eigen::Vector3f(x, y, z), Eigen::Vector3f(n_x, n_y, n_z), theta_z);
+void AUTDBesselBeamGain(AUTDGainPtr *gain, double x, double y, double z, double n_x, double n_y, double n_z, double theta_z) {
+  auto *g = autd::BesselBeamGain::Create(Eigen::Vector3d(x, y, z), Eigen::Vector3d(n_x, n_y, n_z), theta_z);
   *gain = g;
 }
-void AUTDPlaneWaveGain(AUTDGainPtr *gain, float n_x, float n_y, float n_z) {
-  auto *g = autd::PlaneWaveGain::Create(Eigen::Vector3f(n_x, n_y, n_z));
+void AUTDPlaneWaveGain(AUTDGainPtr *gain, double n_x, double n_y, double n_z) {
+  auto *g = autd::PlaneWaveGain::Create(Eigen::Vector3d(n_x, n_y, n_z));
   *gain = g;
 }
 void AUTDMatlabGain(AUTDGainPtr *gain, const char *filename, const char *varname) {
@@ -141,9 +142,9 @@ void AUTDCustomGain(AUTDGainPtr *gain, uint16_t *data, int dataLength) {
   auto *g = autd::CustomGain::Create(data, dataLength);
   *gain = g;
 }
-void AUTDHoloGain(AUTDGainPtr *gain, float *points, float *amps, int size) {
-  Eigen::MatrixX3f holo(size, 3);
-  Eigen::VectorXf amp(size);
+void AUTDHoloGain(AUTDGainPtr *gain, double *points, double *amps, int size) {
+  Eigen::MatrixX3d holo(size, 3);
+  Eigen::VectorXd amp(size);
   for (int i = 0; i < size; i++) {
     holo(i, 0) = points[3 * i];
     holo(i, 1) = points[3 * i + 1];
@@ -173,7 +174,7 @@ void AUTDModulation(AUTDModulationPtr *mod, uint8_t amp) {
   auto *m = autd::Modulation::Create(amp);
   *mod = m;
 }
-void AUTDRawPCMModulation(AUTDModulationPtr *mod, const char *filename, float sampFreq) {
+void AUTDRawPCMModulation(AUTDModulationPtr *mod, const char *filename, double sampFreq) {
   auto *m = autd::RawPCMModulation::Create(std::string(filename), sampFreq);
   *mod = m;
 }
@@ -181,7 +182,7 @@ void AUTDSawModulation(AUTDModulationPtr *mod, int freq) {
   auto *m = autd::SawModulation::Create(freq);
   *mod = m;
 }
-void AUTDSineModulation(AUTDModulationPtr *mod, int freq, float amp, float offset) {
+void AUTDSineModulation(AUTDModulationPtr *mod, int freq, double amp, double offset) {
   auto *m = autd::SineModulation::Create(freq, amp, offset);
   *mod = m;
 }
@@ -218,7 +219,7 @@ void AUTDAppendSTMGain(AUTDControllerHandle handle, AUTDGainPtr gain) {
   auto *g = static_cast<autd::Gain *>(gain);
   cnt->AppendSTMGain(g);
 }
-void AUTDStartSTModulation(AUTDControllerHandle handle, float freq) {
+void AUTDStartSTModulation(AUTDControllerHandle handle, double freq) {
   auto *cnt = static_cast<autd::Controller *>(handle);
   cnt->StartSTModulation(freq);
 }
@@ -247,29 +248,29 @@ int AUTDDevIdForTransIdx(AUTDControllerHandle handle, int transIdx) {
   auto *cnt = static_cast<autd::Controller *>(handle);
   return cnt->geometry()->deviceIdForTransIdx(transIdx);
 }
-float *AUTDTransPosition(AUTDControllerHandle handle, int transIdx) {
+double *AUTDTransPosition(AUTDControllerHandle handle, int transIdx) {
   auto *cnt = static_cast<autd::Controller *>(handle);
   auto pos = cnt->geometry()->position(transIdx);
-  auto *array = new float[3];
+  auto *array = new double[3];
   array[0] = pos[0];
   array[1] = pos[1];
   array[2] = pos[2];
   return array;
 }
-float *AUTDTransDirection(AUTDControllerHandle handle, int transIdx) {
+double *AUTDTransDirection(AUTDControllerHandle handle, int transIdx) {
   auto *cnt = static_cast<autd::Controller *>(handle);
   auto dir = cnt->geometry()->direction(transIdx);
-  auto *array = new float[3];
+  auto *array = new double[3];
   array[0] = dir[0];
   array[1] = dir[1];
   array[2] = dir[2];
   return array;
 }
-float *GetAngleZYZ(float *rotationMatrix) {
-  Eigen::Matrix3f rot;
+double *GetAngleZYZ(double *rotationMatrix) {
+  Eigen::Matrix3d rot;
   for (int i = 0; i < 9; i++) rot(i / 3, i % 3) = rotationMatrix[i];
   auto euler = rot.eulerAngles(2, 1, 2);
-  auto *angleZYZ = new float[3];
+  auto *angleZYZ = new double[3];
   angleZYZ[0] = euler[0];
   angleZYZ[1] = euler[1];
   angleZYZ[2] = euler[2];
@@ -282,7 +283,7 @@ void AUTDAppendLateralGain(AUTDControllerHandle handle, AUTDGainPtr gain) {
   auto *g = static_cast<autd::Gain *>(gain);
   cnt->AppendLateralGain(g);
 }
-void AUTDStartLateralModulation(AUTDControllerHandle handle, float freq) {
+void AUTDStartLateralModulation(AUTDControllerHandle handle, double freq) {
   auto *cnt = static_cast<autd::Controller *>(handle);
   cnt->StartLateralModulation(freq);
 }

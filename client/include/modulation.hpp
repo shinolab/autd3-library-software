@@ -42,7 +42,7 @@ class Modulation {
 
 class SineModulation : public Modulation {
  public:
-  static ModulationPtr Create(int freq, float amp = 1.0f, float offset = 0.5f);
+  static ModulationPtr Create(int freq, double amp = 1.0, double offset = 0.5);
 };
 
 class SawModulation : public Modulation {
@@ -52,6 +52,6 @@ class SawModulation : public Modulation {
 
 class RawPCMModulation : public Modulation {
  public:
-  static ModulationPtr Create(std::string filename, float samplingFreq = 0.0f);
+  static ModulationPtr Create(std::string filename, double samplingFreq = 0.0);
 };
 }  // namespace autd

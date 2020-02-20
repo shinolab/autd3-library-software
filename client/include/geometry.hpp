@@ -40,8 +40,8 @@ class Geometry {
    *
    * @return an id of added device, which is used to delete or do other device specific controls.
    */
-  virtual int AddDevice(Eigen::Vector3f position, Eigen::Vector3f euler_angles, int group = 0) = 0;
-  virtual int AddDeviceQuaternion(Eigen::Vector3f position, Eigen::Quaternionf quaternion, int group = 0) = 0;
+  virtual int AddDevice(Eigen::Vector3d position, Eigen::Vector3d euler_angles, int group = 0) = 0;
+  virtual int AddDeviceQuaternion(Eigen::Vector3d position, Eigen::Quaterniond quaternion, int group = 0) = 0;
   /**
    * @brief Remove device from the geometry.
    */
@@ -49,11 +49,11 @@ class Geometry {
   virtual const int numDevices() noexcept = 0;
   virtual const int numTransducers() noexcept = 0;
   virtual int GroupIDForDeviceID(int deviceID) = 0;
-  virtual const Eigen::Vector3f position(int transducer_idx) = 0;
+  virtual const Eigen::Vector3d position(int transducer_idx) = 0;
   /**
    * @brief Normalized direction of a transducer specified by id
    */
-  virtual const Eigen::Vector3f &direction(int transducer_id) = 0;
+  virtual const Eigen::Vector3d &direction(int transducer_id) = 0;
   virtual const int deviceIdForTransIdx(int transducer_idx) = 0;
   virtual const int deviceIdForDeviceIdx(int device_index) = 0;
 };

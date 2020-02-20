@@ -4,7 +4,7 @@
  * Created Date: 25/08/2019
  * Author: Shun Suzuki
  * -----
- * Last Modified: 17/02/2020
+ * Last Modified: 20/02/2020
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2019 Hapis Lab. All rights reserved.
@@ -24,15 +24,15 @@ namespace AUTD3SharpTest.Test
         {
             Console.WriteLine("Start Simple Test (SOEM)");
 
-            float x = AUTD.AUTDWidth / 2;
-            float y = AUTD.AUTDHeight / 2;
-            float z = 150;
+            double x = AUTD.AUTDWidth / 2;
+            double y = AUTD.AUTDHeight / 2;
+            double z = 150;
 
             using (AUTD autd = new AUTD())
             {
                 // AddDevice() must be called before Open(), and be called as many times as the number of AUTDs connected.
-                autd.AddDevice(Vector3f.Zero, Vector3f.Zero);
-                //autd.AddDevice(Vector3f.UnitY * AUTD.AUTDHeight, Vector3f.Zero);
+                autd.AddDevice(Vector3d.Zero, Vector3d.Zero);
+                //autd.AddDevice(Vector3d.UnitY * AUTD.AUTDHeight, Vector3d.Zero);
 
                 System.Collections.Generic.IEnumerable<EtherCATAdapter> adapters = AUTD.EnumerateAdapters();
                 foreach ((EtherCATAdapter adapter, int index) in adapters.Select((adapter, index) => (adapter, index)))
@@ -56,8 +56,18 @@ namespace AUTD3SharpTest.Test
                 // AM
                 Console.WriteLine("Amplitude Modulation");
 
-                Gain gain = AUTD.FocalPointGain(x, y, z); // Focal point @ (x, y, z) [mm]
-                autd.AppendGainSync(gain);
+                //Gain gain = AUTD.FocalPointGain(x, y, z); // Focal point @ (x, y, z) [mm]
+                //autd.AppendGainSync(gain);
+
+                Vector3d[] focuses = new[] {
+                    new Vector3d(x - 30, y ,z),
+                    new Vector3d(x + 30, y ,z)
+                };
+                double[] amps = new[] {
+                    1.0,
+                    1.0
+                };
+                autd.AppendGainSync(AUTD.HoloGain(focuses, amps));
 
                 Modulation mod = AUTD.SineModulation(150); // AM sin 150 Hz
                 autd.AppendModulationSync(mod);
@@ -69,8 +79,8 @@ namespace AUTD3SharpTest.Test
                 Console.WriteLine("Spatio-Temporal Modulation");
                 autd.AppendModulationSync(AUTD.Modulation(255));
 
-                Gain f1 = AUTD.FocalPointGain(x + 2.5f, y, z);
-                Gain f2 = AUTD.FocalPointGain(x - 2.5f, y, z);
+                Gain f1 = AUTD.FocalPointGain(x + 2.5, y, z);
+                Gain f2 = AUTD.FocalPointGain(x - 2.5, y, z);
 
                 autd.AppendSTMGain(f1);
                 autd.AppendSTMGain(f2);
