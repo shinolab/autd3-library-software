@@ -30,20 +30,12 @@ See [readme](/dist/firmware/readme)
         make
     ```
 
-
-
 ## Wrappers ##
 
-* C# - AUTDSharp
-* Rust - future/autd
-* python - wrappers/python
-* julia - wrappers/julia
-
-## FAQ/Troubleshooting
-
-* "Dll not found exception"
-    * if you installed Matlab, please add Matlab bin directory to PATH. (e.g. C:\Program Files\MATLAB\R2019b\bin\win64)
-
+* [C#](https://github.com/shinolab/autd3sharp)
+* [Rust](future/autd)
+* [python](wrappers/python)
+* [julia](wrappers/julia)
 
 ## Citing
 

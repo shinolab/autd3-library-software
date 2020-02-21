@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/02/2020
+// Last Modified: 21/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -132,10 +132,6 @@ void AUTDBesselBeamGain(AUTDGainPtr *gain, double x, double y, double z, double 
 }
 void AUTDPlaneWaveGain(AUTDGainPtr *gain, double n_x, double n_y, double n_z) {
   auto *g = autd::PlaneWaveGain::Create(Eigen::Vector3d(n_x, n_y, n_z));
-  *gain = g;
-}
-void AUTDMatlabGain(AUTDGainPtr *gain, const char *filename, const char *varname) {
-  auto *g = autd::MatlabGain::Create(std::string(filename), std::string(varname));
   *gain = g;
 }
 void AUTDCustomGain(AUTDGainPtr *gain, uint16_t *data, int dataLength) {

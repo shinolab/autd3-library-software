@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/02/2020
+// Last Modified: 21/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -56,7 +56,6 @@ __declspec(dllexport) void AUTDFocalPointGain(AUTDGainPtr *gain, double x, doubl
 __declspec(dllexport) void AUTDGroupedGain(AUTDGainPtr *gain, int *groupIDs, AUTDGainPtr *gains, int size);
 __declspec(dllexport) void AUTDBesselBeamGain(AUTDGainPtr *gain, double x, double y, double z, double n_x, double n_y, double n_z, double theta_z);
 __declspec(dllexport) void AUTDPlaneWaveGain(AUTDGainPtr *gain, double n_x, double n_y, double n_z);
-__declspec(dllexport) void AUTDMatlabGain(AUTDGainPtr *gain, const char *filename, const char *varname);
 __declspec(dllexport) void AUTDCustomGain(AUTDGainPtr *gain, uint16_t *data, int dataLength);
 __declspec(dllexport) void AUTDHoloGain(AUTDGainPtr *gain, double *points, double *amps, int size);
 __declspec(dllexport) void AUTDTransducerTestGain(AUTDGainPtr *gain, int idx, int amp, int phase);

@@ -59,18 +59,6 @@ add_library(autd3capi SHARED
   ../include/autd3_c_api.h
 )
 
-if(WIN32 AND (NOT DISABLE_MATLAB))
-  set(Matlab_INCLUDE_DIRS "")
-  find_package( MATLAB )
-  list(APPEND INCLUDE_LIST
-    ${Matlab_INCLUDE_DIRS}
-  )
-  if (Matlab_FOUND AND Matlab_MX_LIBRARY)
-      add_definitions(-DMATLAB_ENABLED)
-      target_link_libraries(autd3capi ${Matlab_MX_LIBRARY} ${Matlab_MAT_LIBRARY})
-  endif()
-endif()
-
 include_directories(${INCLUDE_LIST})
 
 if (USE_UNITY)
