@@ -2,35 +2,19 @@
 
 ## Windows ##
 
-build.ps1またはbuild.batを使うとbuild以下にautd.sln生成されます.
+run `build.ps1`
 
-### Option (PowerShell) ###
+### Option ###
 
-[]内がデフォルト指定.
+[] is a default.
 
 * -BUILD_DIR = [\build]
 * -NOUNITY = [False]
 * -VS_VERSION = 2017, [2019]
 * -ARCH = [x64]
+* -DISABLE_MATLAB = [False]
 * -ENABLE_TEST = [False]
 * -TOOL_CHAIN = [""]
-
-### Option (CMD) ###
-
-デフォルトではVS2019にってます.
-
-* -vs2017 : Visual Studio 2017にする.
-* -x86: 32bitを使う人用.
-* -nounity: unityいらない人用.
-* -test: 単体テストプロジェクトを含む場合.
-
-### SOEM ###
-
-* Windows/Mac OSX/Linuxで使えます
-
-* WindowsでSOEMを使いたい場合はWinPcapをインストールする必要があります https://www.winpcap.org/install/default.htm
-
-* USB to Ethernet 変換アダプターなども使用可能です
 
 ### 注意: VS2017 ###
 

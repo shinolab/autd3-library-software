@@ -4,7 +4,7 @@
 # Created Date: 25/08/2019
 # Author: Shun Suzuki
 # -----
-# Last Modified: 20/02/2020
+# Last Modified: 21/02/2020
 # Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 # -----
 # Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -16,6 +16,7 @@ Param(
     [switch]$NOUNITY,
     [ValidateSet(2017 , 2019)]$VS_VERSION = 2019,
     [string]$ARCH = "x64",
+    [switch]$DISABLE_MATLAB = $FALSE,
     [switch]$ENABLE_TEST,
     [string]$TOOL_CHAIN = ""
 )
@@ -134,6 +135,14 @@ if ($ENABLE_TEST) {
 else {
     $command += " -D ENABLE_TESTS=OFF"
 }
+
+if ($DISABLE_MATLAB) {
+    $command += " -D DISABLE_MATLAB=ON"
+}
+else {
+    $command += " -D DISABLE_MATLAB=OFF"
+}
+
 Invoke-Expression $command
 Pop-Location
 

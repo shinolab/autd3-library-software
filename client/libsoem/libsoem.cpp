@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/02/2020
+// Last Modified: 21/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -45,8 +45,8 @@
 #include <thread>
 #include <vector>
 
+#include "../lib/libsoem.hpp"
 #include "ethercat.h"
-#include "libsoem.hpp"
 
 namespace libsoem {
 

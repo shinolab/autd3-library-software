@@ -14,6 +14,10 @@ Before using, be sure to write the v3.0.2 firmwares in `dist/firmware`
 
 See [readme](/dist/firmware/readme)
 
+## Requirements
+
+* If you are using Windows, install [Npcap](https://nmap.org/npcap/) with WinPcap API-compatible mode (recomennded) or [WinPcap](https://www.winpcap.org/).
+
 ## Build ##
 
 * Windows: run `client/build.ps1`

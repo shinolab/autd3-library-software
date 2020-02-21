@@ -12,16 +12,18 @@ endif()
 
 # Eigen3
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/deps)
-set(Matlab_INCLUDE_DIRS "")
 
 cmake_policy(SET CMP0074 NEW)
 cmake_policy(SET CMP0079 NEW)
 
 find_package( Eigen3 REQUIRED )
 find_package( Threads REQUIRED )
-find_package( MATLAB )
 
-include_directories(../include ${EIGEN3_INCLUDE_DIR} ${Ads_INCLUDE_DIR} ${Matlab_INCLUDE_DIRS})
+set(INCLUDE_LIST
+  ../include
+  ${EIGEN3_INCLUDE_DIR}
+  ${Ads_INCLUDE_DIR}
+)
 
 add_library(autd3capi SHARED
   c_api.cpp
@@ -46,6 +48,7 @@ add_library(autd3capi SHARED
   ../lib/ethercat_link.hpp
   ../lib/soem_link.hpp
   ../lib/privdef.hpp
+  ../lib/ec_config.hpp
   
   ../include/core.hpp
   ../include/controller.hpp
@@ -56,10 +59,19 @@ add_library(autd3capi SHARED
   ../include/autd3_c_api.h
 )
 
-if (Matlab_FOUND AND Matlab_MX_LIBRARY)
-    add_definitions(-DMATLAB_ENABLED)
-    target_link_libraries(autd3capi ${Matlab_MX_LIBRARY} ${Matlab_MAT_LIBRARY})
+if(WIN32 AND (NOT DISABLE_MATLAB))
+  set(Matlab_INCLUDE_DIRS "")
+  find_package( MATLAB )
+  list(APPEND INCLUDE_LIST
+    ${Matlab_INCLUDE_DIRS}
+  )
+  if (Matlab_FOUND AND Matlab_MX_LIBRARY)
+      add_definitions(-DMATLAB_ENABLED)
+      target_link_libraries(autd3capi ${Matlab_MX_LIBRARY} ${Matlab_MAT_LIBRARY})
+  endif()
 endif()
+
+include_directories(${INCLUDE_LIST})
 
 if (USE_UNITY)
     add_custom_command(TARGET autd3capi
