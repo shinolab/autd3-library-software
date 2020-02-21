@@ -17,6 +17,7 @@ build-library:
     - cd client
     - mkdir -p build && cd build
     - cmake ..
+    - make
 
 lint-library:
   stage: lint
