@@ -9,6 +9,8 @@
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
 //
 
+#pragma once
+
 #include "privdef.hpp"
 
 constexpr auto HEADER_SIZE = sizeof(RxGlobalHeader);
