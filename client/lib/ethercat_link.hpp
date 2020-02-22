@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 19/02/2020
+// Last Modified: 20/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -35,12 +35,12 @@ namespace autd {
 namespace internal {
 class EthercatLink : public Link {
  public:
-  virtual void Open(std::string location) override;
+  void Open(std::string location) override;
   virtual void Open(std::string ams_net_id, std::string ipv4addr);
-  virtual void Close() override;
+  void Close() override;
   virtual void Send(size_t size, std::unique_ptr<uint8_t[]> buf);
   void SetWaitForProcessMsg(bool is_wait) final;
-  bool isOpen() final;
+  bool is_open() final;
   bool CalibrateModulation() final;
 
  protected:

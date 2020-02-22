@@ -3,7 +3,7 @@
 // Created Date: 04/11/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 18/02/2020
+// Last Modified: 22/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -27,7 +27,7 @@ using ModulationPtr = std::shared_ptr<Modulation>;
 #endif
 
 class Modulation {
-  friend class Controller;
+  friend class AUTDController;
 
  public:
   Modulation() noexcept;
@@ -37,17 +37,12 @@ class Modulation {
   std::vector<uint8_t> buffer;
 
  private:
-  size_t sent;
+  size_t _sent;
 };
 
 class SineModulation : public Modulation {
  public:
-  static ModulationPtr Create(int freq, float amp = 1.0f, float offset = 0.5f);
-};
-
-class TestModulation : public Modulation {
- public:
-  static ModulationPtr Create();
+  static ModulationPtr Create(int freq, double amp = 1.0, double offset = 0.5);
 };
 
 class SawModulation : public Modulation {
@@ -57,6 +52,6 @@ class SawModulation : public Modulation {
 
 class RawPCMModulation : public Modulation {
  public:
-  static ModulationPtr Create(std::string filename, float samplingFreq = 0.0f);
+  static ModulationPtr Create(std::string filename, double samplingFreq = 0.0);
 };
 }  // namespace autd

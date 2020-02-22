@@ -3,7 +3,7 @@
 // Created Date:02/07/2018
 // Author: Shun Suzuki and Saya Mizutani
 // -----
-// Last Modified: 18/02/2020
+// Last Modified: 22/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -25,7 +25,7 @@ namespace autd {
 class Timer {
  public:
   Timer() noexcept;
-  explicit Timer(bool highResolusion) noexcept;
+  explicit Timer(bool high_resolusion) noexcept;
   ~Timer() noexcept(false);
   void SetInterval(int interval);
   void Start(const std::function<void()> &callback);
@@ -38,7 +38,7 @@ class Timer {
 
  private:
   int _interval_us;
-  std::function<void()> cb;
+  std::function<void()> _cb;
 
 #if WIN32
   HANDLE _timerQueue = NULL;
@@ -53,7 +53,7 @@ class Timer {
   std::thread _mainThread;
   bool _loop = false;
 #if WIN32
-  bool _highResolusion;
+  bool _high_resolusion;
   void MainLoop();
   static void CALLBACK TimerThread(PVOID lpParam, BOOLEAN TimerOrWaitFired);
 #elif __APPLE__

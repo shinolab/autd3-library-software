@@ -30,7 +30,7 @@ endif()
 
 add_library(libsoem STATIC
 	libsoem.cpp
-	../include/libsoem.hpp
+	../lib/libsoem.hpp
 
 	${SOEM_PATH}/soem/ethercatbase.c
 	${SOEM_PATH}/soem/ethercatcoe.c

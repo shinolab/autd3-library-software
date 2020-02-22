@@ -4,18 +4,18 @@
 # Created Date: 25/08/2019
 # Author: Shun Suzuki
 # -----
-# Last Modified: 04/09/2019
+# Last Modified: 21/02/2020
 # Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 # -----
-# Copyright (c) 2019 Hapis Lab. All rights reserved.
+# Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
 # 
 #
 
 Param(
     [string]$BUILD_DIR = "\build",
-    [switch]$NOUNITY,
     [ValidateSet(2017 , 2019)]$VS_VERSION = 2019,
     [string]$ARCH = "x64",
+    [switch]$DISABLE_MATLAB = $FALSE,
     [switch]$ENABLE_TEST,
     [string]$TOOL_CHAIN = ""
 )
@@ -121,40 +121,22 @@ if ($VS_VERSION -ne 2017) {
     $command += " -A " + $ARCH
 }
 
-if ($NOUNITY) {
-    $command += " -D USE_UNITY=OFF"
-}
-else {
-    $command += " -D USE_UNITY=ON"
-}
-
 if ($ENABLE_TEST) {
     $command += " -D ENABLE_TESTS=ON " + $TOOL_CHAIN
 }
 else {
     $command += " -D ENABLE_TESTS=OFF"
 }
+
+if ($DISABLE_MATLAB) {
+    $command += " -D DISABLE_MATLAB=ON"
+}
+else {
+    $command += " -D DISABLE_MATLAB=OFF"
+}
+
 Invoke-Expression $command
 Pop-Location
-
-if (-not $NOUNITY) {
-    ColorEcho "Green" "INFO" "Adding unity project..."
-    Copy-Item .\csharp\AUTD3Sharp.cs autdunity\Assets\AUTD\Scripts\AUTD3Sharp.cs
-    Copy-Item .\csharp\NativeMethods.cs autdunity\Assets\AUTD\Scripts\NativeMethods.cs
-    Copy-Item .\csharp\Util\Matrix3x3f.cs autdunity\Assets\AUTD\Scripts\Util\Matrix3x3f.cs
-    Copy-Item .\csharp\Util\GainMap.cs autdunity\Assets\AUTD\Scripts\Util\GainMap.cs
-    $dest = Join-Path $PROJECT_DIR "\autdunity"
-    Copy-Item .\autdunity -Destination $dest -Recurse
-}
-
-if (($VS_VERSION -eq 2019) -and ($ARCH -eq "x64")) {
-    ColorEcho "Green" "INFO" "Setting PlatformTarget to x64..."
-
-    $tmp = Join-Path $PROJECT_DIR csharp\AUTD3Sharp.csproj
-    ReplaceContent $tmp "x86" "x64"
-    $tmp = Join-Path $PROJECT_DIR csharp_example\AUTD3SharpSample.csproj
-    ReplaceContent $tmp "x86" "x64"
-}
 
 ColorEcho "Green" "INFO" "Done."
 $host.UI.RawUI.ReadKey() | Out-Null

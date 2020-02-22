@@ -9,7 +9,7 @@ mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
 ADD_CUSTOM_TARGET(cpplint
   python
   ${PROJECT_SOURCE_DIR}/deps/cpplint.py
-  --filter=-runtime/rtti,-build/include_order,-build/c++11
+  --filter=-runtime/rtti,-build/c++11,-whitespace/comments
   --linelength=150
   ${PROJECT_SOURCE_DIR}/lib/*
   )
@@ -24,13 +24,10 @@ if(WIN32)
     add_subdirectory(deps/BeckhoffADS)
 
     add_subdirectory(example)
-    add_subdirectory(csharp)
-    add_subdirectory(csharp_example)
     add_subdirectory(capi)
     if (ENABLE_TESTS)
       add_subdirectory(tests)
     endif()
-    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT AUTD3SharpSample)
 elseif(APPLE)
     include(cmakes/mac.cmake)
 else()
@@ -40,3 +37,7 @@ endif()
 add_subdirectory(lib)
 add_subdirectory(doc)
 add_subdirectory(example_soem)
+
+if(WIN32)
+  set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT simple_soem)
+endif()

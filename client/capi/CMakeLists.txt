@@ -12,16 +12,18 @@ endif()
 
 # Eigen3
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/deps)
-set(Matlab_INCLUDE_DIRS "")
 
 cmake_policy(SET CMP0074 NEW)
 cmake_policy(SET CMP0079 NEW)
 
 find_package( Eigen3 REQUIRED )
 find_package( Threads REQUIRED )
-find_package( MATLAB )
 
-include_directories(../include ${EIGEN3_INCLUDE_DIR} ${Ads_INCLUDE_DIR} ${Matlab_INCLUDE_DIRS})
+set(INCLUDE_LIST
+  ../include
+  ${EIGEN3_INCLUDE_DIR}
+  ${Ads_INCLUDE_DIR}
+)
 
 add_library(autd3capi SHARED
   c_api.cpp
@@ -46,6 +48,7 @@ add_library(autd3capi SHARED
   ../lib/ethercat_link.hpp
   ../lib/soem_link.hpp
   ../lib/privdef.hpp
+  ../lib/ec_config.hpp
   
   ../include/core.hpp
   ../include/controller.hpp
@@ -56,16 +59,7 @@ add_library(autd3capi SHARED
   ../include/autd3_c_api.h
 )
 
-if (Matlab_FOUND AND Matlab_MX_LIBRARY)
-    add_definitions(-DMATLAB_ENABLED)
-    target_link_libraries(autd3capi ${Matlab_MX_LIBRARY} ${Matlab_MAT_LIBRARY})
-endif()
-
-if (USE_UNITY)
-    add_custom_command(TARGET autd3capi
-                 POST_BUILD
-                 COMMAND copy /Y $(TargetPath) $(SolutionDir)autdunity\\Assets\\AUTD\\Plugins\\x86_64)
-endif()
+include_directories(${INCLUDE_LIST})
 
 target_link_libraries(autd3capi ${Ads_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(autd3capi libsoem)
@@ -74,9 +68,9 @@ target_link_libraries(autd3capi winmm.lib)
 
 set_target_properties(autd3capi
     PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/csharp_example"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/csharp_example"
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/csharp_example"
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/dll"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/dll"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/dll"
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4068")

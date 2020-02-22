@@ -3,14 +3,13 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 19/02/2020
+// Last Modified: 20/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
 //
 
-#ifndef CLIENT_LIB_LINK_HPP_
-#define CLIENT_LIB_LINK_HPP_
+#pragma once
 
 #include <stdio.h>
 
@@ -29,8 +28,8 @@ class Link {
   virtual void Close() = 0;
   virtual void Send(size_t size, std::unique_ptr<uint8_t[]> buf) = 0;
   virtual void SetWaitForProcessMsg(bool is_wait) = 0;
-  virtual bool isOpen() = 0;
-  virtual bool CalibrateModulation() = 0;  //  Todo: make more elegant
+  virtual bool is_open() = 0;
+  virtual bool CalibrateModulation() = 0;  // Todo: make more elegant
 };
 }  // namespace internal
 
@@ -50,5 +49,3 @@ static inline std::vector<std::string> split(const std::string &s, char delim) {
 }
 
 }  // namespace autd
-
-#endif  // CLIENT_LIB_LINK_HPP_
