@@ -1,6 +1,6 @@
 # autd3 #
 
-Version: 3.0.2.3
+Version: 3.0.2.4
 
 * 旧安定版は[v3.0.0ブランチ](https://github.com/shinolab/autd3-library-software/tree/v3.0.0)にあります.
 
@@ -28,6 +28,10 @@ If you use this SDK in your research please consider to include the following ci
 S. Inoue, Y. Makino and H. Shinoda "Scalable Architecture for Airborne Ultrasound Tactile Display", Asia Haptics 2016
 
 # Change log
+
+* 3.0.2.4 (software/cpu)
+    * 終了時の処理を修正
+    * SOEM使用時, まれにデータをロストする問題を修正
 
 * 3.0.2.3 (software)
     * LateralModulationの実装を変更

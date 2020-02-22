@@ -68,10 +68,6 @@ sudo exmaple_soem/simple_soem
 * cmakeのバグかは知らないけど, -Aオプションでx64プラットフォームを指定してもC#のターゲットがx64にならない.
 そのため, csproj内を直接書き換えることにしている
 
-## Coding Style ##
-
-Google C++ Style Guide with LineLength = 150
-
 # Author #
 
 Shun Suzuki, 2019
