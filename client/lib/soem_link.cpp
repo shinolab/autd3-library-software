@@ -33,8 +33,14 @@ void internal::SOEMLink::Open(std::string ifname) {
   auto ifname_and_devNum = autd::split(ifname, ':');
   _dev_num = stoi(ifname_and_devNum[1]);
   _ifname = ifname_and_devNum[0];
-  _cnt->Open(_ifname.c_str(), _devNum, EC_SM3_CYCLE_TIME_NANO_SEC, EC_SYNC0_CYCLE_TIME_NANO_SEC, HEADER_SIZE, NUM_TRANS_IN_UNIT * 2,
-             EC_INPUT_FRAME_SIZE);
+
+  this->_config.ec_sm3_cyctime_ns = EC_SM3_CYCLE_TIME_NANO_SEC;
+  this->_config.ec_sync0_cyctime_ns = EC_SYNC0_CYCLE_TIME_NANO_SEC;
+  this->_config.header_size = HEADER_SIZE;
+  this->_config.body_size = NUM_TRANS_IN_UNIT * 2;
+  this->_config.input_frame_size = EC_INPUT_FRAME_SIZE;
+
+  _cnt->Open(_ifname.c_str(), _dev_num, this->_config);
   _is_open = _cnt->is_open();
 }
 
@@ -56,53 +62,68 @@ bool internal::SOEMLink::is_open() { return _is_open; }
 void internal::SOEMLink::SetWaitForProcessMsg(bool is_wait) { _cnt->SetWaitForProcessMsg(is_wait); }
 
 bool internal::SOEMLink::CalibrateModulation() {
-  constexpr int SYNC0_STEP = EC_SYNC0_CYCLE_TIME_MICRO_SEC * MOD_SAMPLING_FREQ / (1000 * 1000);
-  constexpr uint32_t MOD_PERIOD_MS = (uint32_t)((MOD_BUF_SIZE / MOD_SAMPLING_FREQ) * 1000);
+  struct CalibrationStatus {
+    uint16_t header;
+    uint16_t sync_base;
+  };
 
-  auto succeed_calib = [&](const std::vector<uint16_t> &v) {
-    std::vector<uint8_t> bases;
+  auto parse = [](const std::vector<uint16_t> &v) {
+    std::vector<CalibrationStatus> statuses;
     for (size_t i = 0; i < v.size(); i++) {
-      auto h = static_cast<uint8_t>(v.at(i) & 0x00C0) >> 6;
-      if (h != 1) return false;
-      auto base = static_cast<uint8_t>(v.at(i) & 0x003F);
-      bases.push_back(base);
+      uint16_t h = v.at(i) & SYNC_HEADER_MASK;
+      uint16_t base = v.at(i) & SYNC_BASE_MASK;
+      statuses.push_back(CalibrationStatus{h, base});
+    }
+    return statuses;
+  };
+
+  auto succeed_calib = [](const std::vector<CalibrationStatus> &statuses) {
+    uint16_t min_base = 0xFFFF;
+    for (auto status : statuses) {
+      if (status.header != SYNC_HEADER_SUCCES) return false;
+      if (status.sync_base < min_base) min_base = status.sync_base;
     }
 
-    auto min = *std::min_element(bases.begin(), bases.end());
-    for (size_t i = 0; i < bases.size(); i++) {
-      auto base = bases[i];
-      if ((base - min) % SYNC0_STEP != 0) return false;
+    for (auto status : statuses) {
+      if ((status.sync_base - min_base) % SYNC0_STEP != 0) return false;
     }
 
     return true;
   };
 
+  auto make_calib_body = [](size_t *size) {
+    *size = sizeof(RxGlobalHeader);
+    auto body = std::make_unique<uint8_t[]>(*size);
+    auto *header = reinterpret_cast<RxGlobalHeader *>(&body[0]);
+    header->msg_id = CALIBRATION_HEADER;
+    return std::move(body);
+  };
+
   auto success = false;
-  std::vector<uint16_t> v;
+  std::vector<CalibrationStatus> statuses;
+
+  libsoem::ECConfig calib_config = this->_config;
+  calib_config.ec_sync0_cyctime_ns = MOD_PERIOD_MS * 1000 * 1000;
+
   for (size_t i = 0; i < 10; i++) {
     _cnt->Close();
-    _cnt->Open(_ifname.c_str(), _devNum, EC_SM3_CYCLE_TIME_NANO_SEC, MOD_PERIOD_MS * 1000 * 1000, HEADER_SIZE, NUM_TRANS_IN_UNIT * 2,
-               EC_INPUT_FRAME_SIZE);
-    auto size = sizeof(RxGlobalHeader);
-    auto body = std::make_unique<uint8_t[]>(size);
-    auto *header = reinterpret_cast<RxGlobalHeader *>(&body[0]);
-    header->msg_id = 0xFF;
-    Send(size, move(body));
+    _cnt->Open(_ifname.c_str(), _dev_num, calib_config);
+    size_t size;
+    auto body = make_calib_body(&size);
+    Send(size, std::move(body));
 
-    std::this_thread::sleep_for(std::chrono::milliseconds((_devNum / 5 + 2) * MOD_PERIOD_MS));
+    std::this_thread::sleep_for(std::chrono::milliseconds((_dev_num / 5 + 2) * MOD_PERIOD_MS));
 
     _cnt->Close();
-    _cnt->Open(_ifname.c_str(), _devNum, EC_SM3_CYCLE_TIME_NANO_SEC, EC_SYNC0_CYCLE_TIME_NANO_SEC, HEADER_SIZE, NUM_TRANS_IN_UNIT * 2,
-               EC_INPUT_FRAME_SIZE);
-    size = sizeof(RxGlobalHeader);
-    body = std::make_unique<uint8_t[]>(size);
-    header = reinterpret_cast<RxGlobalHeader *>(&body[0]);
-    header->msg_id = 0xFF;
-    Send(size, move(body));
+    _cnt->Open(_ifname.c_str(), _dev_num, this->_config);
+    auto body2 = make_calib_body(&size);
+    Send(size, std::move(body2));
+    _cnt->WaitForProcessMsg(CALIBRATION_HEADER);
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(300));
-    v = _cnt->Read(EC_OUTPUT_FRAME_SIZE * _devNum);
-    if (succeed_calib(v)) {
+    auto v = _cnt->Read();
+    statuses = parse(v);
+
+    if (succeed_calib(statuses)) {
       success = true;
       break;
     }
@@ -111,10 +132,9 @@ bool internal::SOEMLink::CalibrateModulation() {
   if (!success) {
     std::cerr << "Failed to CalibrateModulation." << std::endl;
     std::cerr << "======= Modulation Log ========" << std::endl;
-    for (size_t i = 0; i < v.size(); i++) {
-      auto h = (v.at(i) & 0x00C0) >> 6;
-      auto base = v.at(i) & 0x003F;
-      std::cerr << i << "," << static_cast<int>(h) << "," << static_cast<int>(base) << std::endl;
+    for (size_t i = 0; i < statuses.size(); i++) {
+      auto status = statuses[i];
+      std::cerr << i << "," << static_cast<int>(status.header) << "," << static_cast<int>(status.sync_base) << std::endl;
     }
     std::cerr << "===============================" << std::endl;
   }

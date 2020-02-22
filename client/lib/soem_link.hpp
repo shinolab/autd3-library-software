@@ -34,6 +34,7 @@ class SOEMLink : public Link {
   int _dev_num = 0;
   std::string _ifname = "";
   uint8_t _id = 0;
+  libsoem::ECConfig _config;
 };
 }  // namespace internal
 }  // namespace autd
