@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/02/2020
+// Last Modified: 22/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -49,14 +49,14 @@ void AUTDFreeAdapterPointer(void *p_adapter) {
   auto *adapters = static_cast<std::pair<std::string, std::string> *>(p_adapter);
   delete[] adapters;
 }
-int AUTDAddDevice(AUTDControllerHandle handle, double x, double y, double z, double rz1, double ry, double rz2, int groupId) {
+int AUTDAddDevice(AUTDControllerHandle handle, double x, double y, double z, double rz1, double ry, double rz2, int group_id) {
   auto *cnt = static_cast<autd::Controller *>(handle);
-  return cnt->geometry()->AddDevice(Eigen::Vector3d(x, y, z), Eigen::Vector3d(rz1, ry, rz2), groupId);
+  return cnt->geometry()->AddDevice(Eigen::Vector3d(x, y, z), Eigen::Vector3d(rz1, ry, rz2), group_id);
 }
 int AUTDAddDeviceQuaternion(AUTDControllerHandle handle, double x, double y, double z, double qua_w, double qua_x, double qua_y, double qua_z,
-                            int groupId) {
+                            int group_id) {
   auto *cnt = static_cast<autd::Controller *>(handle);
-  return cnt->geometry()->AddDeviceQuaternion(Eigen::Vector3d(x, y, z), Eigen::Quaterniond(qua_w, qua_x, qua_y, qua_z), groupId);
+  return cnt->geometry()->AddDeviceQuaternion(Eigen::Vector3d(x, y, z), Eigen::Quaterniond(qua_w, qua_x, qua_y, qua_z), group_id);
 }
 void AUTDDelDevice(AUTDControllerHandle handle, int devId) {
   auto *cnt = static_cast<autd::Controller *>(handle);
@@ -112,11 +112,11 @@ void AUTDFocalPointGain(AUTDGainPtr *gain, double x, double y, double z, uint8_t
   auto *g = autd::FocalPointGain::Create(Eigen::Vector3d(x, y, z), amp);
   *gain = g;
 }
-void AUTDGroupedGain(AUTDGainPtr *gain, int *groupIDs, AUTDGainPtr *gains, int size) {
+void AUTDGroupedGain(AUTDGainPtr *gain, int *group_ids, AUTDGainPtr *gains, int size) {
   std::map<int, autd::GainPtr> gainmap;
 
   for (int i = 0; i < size; i++) {
-    auto id = groupIDs[i];
+    auto id = group_ids[i];
     auto gain_id = gains[i];
     auto *g = static_cast<autd::Gain *>(gain_id);
     gainmap[id] = g;
@@ -134,8 +134,8 @@ void AUTDPlaneWaveGain(AUTDGainPtr *gain, double n_x, double n_y, double n_z) {
   auto *g = autd::PlaneWaveGain::Create(Eigen::Vector3d(n_x, n_y, n_z));
   *gain = g;
 }
-void AUTDCustomGain(AUTDGainPtr *gain, uint16_t *data, int dataLength) {
-  auto *g = autd::CustomGain::Create(data, dataLength);
+void AUTDCustomGain(AUTDGainPtr *gain, uint16_t *data, int data_length) {
+  auto *g = autd::CustomGain::Create(data, data_length);
   *gain = g;
 }
 void AUTDHoloGain(AUTDGainPtr *gain, double *points, double *amps, int size) {
@@ -170,8 +170,8 @@ void AUTDModulation(AUTDModulationPtr *mod, uint8_t amp) {
   auto *m = autd::Modulation::Create(amp);
   *mod = m;
 }
-void AUTDRawPCMModulation(AUTDModulationPtr *mod, const char *filename, double sampFreq) {
-  auto *m = autd::RawPCMModulation::Create(std::string(filename), sampFreq);
+void AUTDRawPCMModulation(AUTDModulationPtr *mod, const char *filename, double samp_freq) {
+  auto *m = autd::RawPCMModulation::Create(std::string(filename), samp_freq);
   *mod = m;
 }
 void AUTDSawModulation(AUTDModulationPtr *mod, int freq) {
@@ -227,44 +227,44 @@ void AUTDFinishSTModulation(AUTDControllerHandle handle) {
   auto *cnt = static_cast<autd::Controller *>(handle);
   cnt->FinishSTModulation();
 }
-void AUTDSetGain(AUTDControllerHandle handle, int deviceIndex, int transIndex, int amp, int phase) {
+void AUTDSetGain(AUTDControllerHandle handle, int device_idx, int trans_idx, int amp, int phase) {
   auto *cnt = static_cast<autd::Controller *>(handle);
-  auto g = autd::TransducerTestGain::Create(deviceIndex * 249 + transIndex, amp, phase);
+  auto g = autd::TransducerTestGain::Create(device_idx * 249 + trans_idx, amp, phase);
   cnt->AppendGainSync(g);
 }
 void AUTDFlush(AUTDControllerHandle handle) {
   auto *cnt = static_cast<autd::Controller *>(handle);
   cnt->Flush();
 }
-int AUTDDevIdForDeviceIdx(AUTDControllerHandle handle, int devIdx) {
+int AUTDDevIdForDeviceIdx(AUTDControllerHandle handle, int dev_idx) {
   auto *cnt = static_cast<autd::Controller *>(handle);
-  return cnt->geometry()->deviceIdForDeviceIdx(devIdx);
+  return cnt->geometry()->deviceIdForDeviceIdx(dev_idx);
 }
-int AUTDDevIdForTransIdx(AUTDControllerHandle handle, int transIdx) {
+int AUTDDevIdForTransIdx(AUTDControllerHandle handle, int trans_idx) {
   auto *cnt = static_cast<autd::Controller *>(handle);
-  return cnt->geometry()->deviceIdForTransIdx(transIdx);
+  return cnt->geometry()->deviceIdForTransIdx(trans_idx);
 }
-double *AUTDTransPosition(AUTDControllerHandle handle, int transIdx) {
+double *AUTDTransPosition(AUTDControllerHandle handle, int trans_idx) {
   auto *cnt = static_cast<autd::Controller *>(handle);
-  auto pos = cnt->geometry()->position(transIdx);
+  auto pos = cnt->geometry()->position(trans_idx);
   auto *array = new double[3];
   array[0] = pos[0];
   array[1] = pos[1];
   array[2] = pos[2];
   return array;
 }
-double *AUTDTransDirection(AUTDControllerHandle handle, int transIdx) {
+double *AUTDTransDirection(AUTDControllerHandle handle, int trans_idx) {
   auto *cnt = static_cast<autd::Controller *>(handle);
-  auto dir = cnt->geometry()->direction(transIdx);
+  auto dir = cnt->geometry()->direction(trans_idx);
   auto *array = new double[3];
   array[0] = dir[0];
   array[1] = dir[1];
   array[2] = dir[2];
   return array;
 }
-double *GetAngleZYZ(double *rotationMatrix) {
+double *GetAngleZYZ(double *rotation_matrix) {
   Eigen::Matrix3d rot;
-  for (int i = 0; i < 9; i++) rot(i / 3, i % 3) = rotationMatrix[i];
+  for (int i = 0; i < 9; i++) rot(i / 3, i % 3) = rotation_matrix[i];
   auto euler = rot.eulerAngles(2, 1, 2);
   auto *angleZYZ = new double[3];
   angleZYZ[0] = euler[0];

@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 20/02/2020
+// Last Modified: 22/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -176,10 +176,10 @@ void BesselBeamGain::Build() {
   this->_built = true;
 }
 
-GainPtr CustomGain::Create(uint16_t* data, int dataLength) {
+GainPtr CustomGain::Create(uint16_t* data, int data_length) {
   auto gain = CreateHelper<CustomGain>();
-  gain->_rawdata.resize(dataLength);
-  for (int i = 0; i < dataLength; i++) gain->_rawdata.at(i) = data[i];
+  gain->_rawdata.resize(data_length);
+  for (int i = 0; i < data_length; i++) gain->_rawdata.at(i) = data[i];
   gain->_geometry = nullptr;
   return gain;
 }

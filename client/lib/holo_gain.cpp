@@ -3,7 +3,7 @@
 // Created Date: 06/07/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 20/02/2020
+// Last Modified: 22/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -80,24 +80,24 @@ complex<double> transfer(Vector3d trans_pos, Vector3d trans_norm, Vector3d targe
   return directivity / dist * exp(complex<double>(-dist * 1.15e-4, -2 * M_PI / ULTRASOUND_WAVELENGTH * dist));
 }
 
-void removeRow(MatrixXcd* const matrix, size_t rowToRemove) {
-  const auto numRows = static_cast<size_t>(matrix->rows()) - 1;
-  const auto numCols = static_cast<size_t>(matrix->cols());
+void removeRow(MatrixXcd* const matrix, size_t row_to_remove) {
+  const auto num_rows = static_cast<size_t>(matrix->rows()) - 1;
+  const auto num_cols = static_cast<size_t>(matrix->cols());
 
-  if (rowToRemove < numRows)
-    matrix->block(rowToRemove, 0, numRows - rowToRemove, numCols) = matrix->block(rowToRemove + 1, 0, numRows - rowToRemove, numCols);
+  if (row_to_remove < num_rows)
+    matrix->block(row_to_remove, 0, num_rows - row_to_remove, num_cols) = matrix->block(row_to_remove + 1, 0, num_rows - row_to_remove, num_cols);
 
-  matrix->conservativeResize(numRows, numCols);
+  matrix->conservativeResize(num_rows, num_cols);
 }
 
-void removeColumn(MatrixXcd* const matrix, size_t colToRemove) {
-  const auto numRows = static_cast<size_t>(matrix->rows());
-  const auto numCols = static_cast<size_t>(matrix->cols()) - 1;
+void removeColumn(MatrixXcd* const matrix, size_t col_to_remove) {
+  const auto num_rows = static_cast<size_t>(matrix->rows());
+  const auto num_cols = static_cast<size_t>(matrix->cols()) - 1;
 
-  if (colToRemove < numCols)
-    matrix->block(0, colToRemove, numRows, numCols - colToRemove) = matrix->block(0, colToRemove + 1, numRows, numCols - colToRemove);
+  if (col_to_remove < num_cols)
+    matrix->block(0, col_to_remove, num_rows, num_cols - col_to_remove) = matrix->block(0, col_to_remove + 1, num_rows, num_cols - col_to_remove);
 
-  matrix->conservativeResize(numRows, numCols);
+  matrix->conservativeResize(num_rows, num_cols);
 }
 }  // namespace hologainimpl
 

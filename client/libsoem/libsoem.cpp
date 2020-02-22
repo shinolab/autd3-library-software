@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/02/2020
+// Last Modified: 22/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -77,13 +77,13 @@ class SOEMController : public ISOEMController {
 #elif defined LINUX
   static void RTthread(union sigval sv);
 #endif
-  void SetupSync0(bool actiavte, uint32_t CycleTime);
+  void SetupSync0(bool actiavte, uint32_t cycle_time);
   void CreateCopyThread(size_t header_size, size_t body_size);
 
   bool WaitForProcessMsg(uint8_t sendMsgId);
 
-  uint8_t *_IOmap;
-  size_t _iomap_size = 0;
+  uint8_t *_io_map;
+  size_t _io_map_size = 0;
   size_t _output_frame_size = 0;
   uint32_t _sync0_cyctime = 0;
 
@@ -92,12 +92,12 @@ class SOEMController : public ISOEMController {
   std::thread _cpy_thread;
   std::condition_variable _cpy_cond;
   bool _sent = false;
-  bool _isWaitProcessMsg = true;
+  bool _is_wait_msg_processed = true;
   std::mutex _cpy_mtx;
   std::mutex _send_mtx;
   std::mutex _waitcond_mtx;
 
-  size_t _devNum = 0;
+  size_t _dev_num = 0;
 
 #ifdef WINDOWS
   HANDLE _timerQueue = NULL;
@@ -163,22 +163,22 @@ void SOEMController::SetupSync0(bool actiavte, uint32_t CycleTime) {
   }
 }
 
-void SOEMController::SetWaitForProcessMsg(bool iswait) {
+void SOEMController::SetWaitForProcessMsg(bool is_wait) {
   std::unique_lock<std::mutex> lk(_waitcond_mtx);
-  this->_isWaitProcessMsg = iswait;
+  this->_is_wait_msg_processed = is_wait;
 }
 
-bool SOEMController::WaitForProcessMsg(uint8_t sendMsgId) {
+bool SOEMController::WaitForProcessMsg(uint8_t send_msg_id) {
   auto chk = 10;
   while (chk--) {
     int processed = 0;
-    for (size_t i = 0; i < _devNum; i++) {
-      uint8_t recv_id = _IOmap[_output_frame_size + 2 * i + 1];
-      if (recv_id == sendMsgId) {
+    for (size_t i = 0; i < _dev_num; i++) {
+      uint8_t recv_id = _io_map[_output_frame_size + 2 * i + 1];
+      if (recv_id == send_msg_id) {
         processed++;
       }
     }
-    if (processed == _devNum) {
+    if (processed == _dev_num) {
       return true;
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -219,7 +219,7 @@ void SOEMController::CreateCopyThread(size_t header_size, size_t body_size) {
             bool isWait;
             {
               std::unique_lock<std::mutex> lk(_waitcond_mtx);
-              isWait = _isWaitProcessMsg;
+              isWait = _is_wait_msg_processed;
             }
 
             if (isWait) {
@@ -247,19 +247,19 @@ void SOEMController::Open(const char *ifname, size_t devNum, uint32_t ec_sm3_cyc
   if (size != _iomap_size) {
     _iomap_size = size;
 
-    if (_IOmap != nullptr) {
-      delete[] _IOmap;
+    if (_io_map != nullptr) {
+      delete[] _io_map;
     }
 
-    _IOmap = new uint8_t[size];
+    _io_map = new uint8_t[size];
 
-    memset(_IOmap, 0x00, _iomap_size);
+    memset(_io_map, 0x00, _io_map_size);
   }
 
   _sync0_cyctime = ec_sync0_cyctime_ns;
 
   if (ec_init(ifname)) {
-    if (ec_config(0, _IOmap) > 0) {
+    if (ec_config(0, _io_map) > 0) {
       ec_configdc();
 
       ec_statecheck(0, EC_STATE_SAFE_OP, EC_TIMEOUTSTATE * 4);
@@ -408,11 +408,11 @@ bool SOEMController::Close() {
 
 SOEMController::SOEMController() {
   this->_is_open = false;
-  this->_IOmap = nullptr;
+  this->_io_map = nullptr;
 }
 
 SOEMController::~SOEMController() {
-  if (_IOmap != nullptr) delete[] _IOmap;
+  if (_io_map != nullptr) delete[] _io_map;
 }
 
 std::unique_ptr<ISOEMController> ISOEMController::Create() { return std::make_unique<SOEMController>(); }

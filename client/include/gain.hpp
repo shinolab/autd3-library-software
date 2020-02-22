@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/02/2020
+// Last Modified: 22/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -107,7 +107,7 @@ class BesselBeamGain : public Gain {
 
 class CustomGain : public Gain {
  public:
-  static GainPtr Create(uint16_t *data, int dataLength);
+  static GainPtr Create(uint16_t *data, int data_length);
   void Build() override;
 
  private:

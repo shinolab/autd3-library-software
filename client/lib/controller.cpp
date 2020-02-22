@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 20/02/2020
+// Last Modified: 22/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -43,13 +43,11 @@ EtherCATAdapters Controller::EnumerateAdapters(int *const size) {
 #endif
   for (auto adapter : libsoem::EtherCATAdapterInfo::EnumerateAdapters()) {
     EtherCATAdapter p;
-#if DLL_FOR_CAPI
     p.first = adapter.desc;
     p.second = adapter.name;
+#if DLL_FOR_CAPI
     res[i++] = p;
 #else
-    p.first = adapter.desc;
-    p.second = adapter.name;
     res.push_back(p);
 #endif
   }
@@ -96,10 +94,11 @@ class AUTDController : public Controller {
   std::queue<GainPtr> _build_q;
   std::queue<GainPtr> _send_gain_q;
   std::queue<ModulationPtr> _send_mod_q;
-  std::vector<GainPtr> _stmGains;
-  std::vector<uint8_t *> _stmBodies;
-  std::vector<size_t> _stmBodySizes;
-  std::unique_ptr<Timer> _pStmTimer;
+
+  std::vector<GainPtr> _stm_gains;
+  std::vector<uint8_t *> _stm_bodies;
+  std::vector<size_t> _stm_body__sizes;
+  std::unique_ptr<Timer> _p_stm_timer;
 
   std::thread _build_thr;
   std::thread _send_thr;
@@ -108,7 +107,7 @@ class AUTDController : public Controller {
   std::mutex _build_mtx;
   std::mutex _send_mtx;
 
-  bool _silentMode = true;
+  bool _silent_mode = true;
 
   void InitPipeline();
   std::unique_ptr<uint8_t[]> MakeBody(GainPtr gain, ModulationPtr mod, size_t *size);
@@ -126,8 +125,8 @@ class AUTDController : public Controller {
 
 AUTDController::AUTDController() {
   this->_geometry = Geometry::Create();
-  this->_silentMode = true;
-  this->_pStmTimer = std::make_unique<Timer>();
+  this->_silent_mode = true;
+  this->_p_stm_timer = std::make_unique<Timer>();
 }
 
 AUTDController::~AUTDController() {
@@ -137,7 +136,7 @@ AUTDController::~AUTDController() {
 
 bool AUTDController::is_open() { return this->_link.get() && this->_link->is_open(); }
 GeometryPtr AUTDController::geometry() noexcept { return this->_geometry; }
-bool AUTDController::silent_mode() noexcept { return this->_silentMode; }
+bool AUTDController::silent_mode() noexcept { return this->_silent_mode; }
 size_t AUTDController::remainingInBuffer() { return this->_send_gain_q.size() + this->_send_mod_q.size() + this->_build_q.size(); }
 
 void AUTDController::Open(LinkType type, std::string location) {
@@ -147,7 +146,6 @@ void AUTDController::Open(LinkType type, std::string location) {
 #if WIN32
     case LinkType::ETHERCAT:
     case LinkType::TwinCAT: {
-      // TODO(volunteer): a smarter localhost detection
       if (location == "" || location.find("localhost") == 0 || location.find("0.0.0.0") == 0 || location.find("127.0.0.1") == 0) {
         this->_link = std::make_shared<internal::LocalEthercatLink>();
       } else {
@@ -173,7 +171,7 @@ void AUTDController::Open(LinkType type, std::string location) {
   else
     this->Close();
 }
-void AUTDController::SetSilentMode(bool silent) noexcept { this->_silentMode = silent; }
+void AUTDController::SetSilentMode(bool silent) noexcept { this->_silent_mode = silent; }
 void AUTDController::CalibrateModulation() { this->_link->CalibrateModulation(); }
 void AUTDController::Close() {
   if (this->is_open()) {
@@ -197,7 +195,7 @@ void AUTDController::Stop() {
 #endif
 }
 void AUTDController::AppendGain(GainPtr gain) {
-  this->_pStmTimer->Stop();
+  this->_p_stm_timer->Stop();
   {
     gain->SetGeometry(this->_geometry);
     std::unique_lock<std::mutex> lk(_build_mtx);
@@ -206,7 +204,7 @@ void AUTDController::AppendGain(GainPtr gain) {
   _build_cond.notify_all();
 }
 void AUTDController::AppendGainSync(GainPtr gain) {
-  this->_pStmTimer->Stop();
+  this->_p_stm_timer->Stop();
   try {
     gain->SetGeometry(this->_geometry);
     if (!gain->built()) gain->Build();
@@ -228,19 +226,19 @@ void AUTDController::AppendModulation(ModulationPtr mod) {
 void AUTDController::AppendModulationSync(ModulationPtr mod) {
   try {
     if (this->is_open()) {
-      while (mod->buffer.size() > mod->sent) {
+      while (mod->buffer.size() > mod->_sent) {
         size_t body_size = 0;
         auto body = this->MakeBody(nullptr, mod, &body_size);
         this->_link->Send(body_size, move(body));
       }
-      mod->sent = 0;
+      mod->_sent = 0;
     }
   } catch (const int errnum) {
     this->Close();
     std::cerr << errnum << "Link closed." << std::endl;
   }
 }
-void AUTDController::AppendSTMGain(GainPtr gain) { _stmGains.push_back(gain); }
+void AUTDController::AppendSTMGain(GainPtr gain) { _stm_gains.push_back(gain); }
 void AUTDController::AppendSTMGain(const std::vector<GainPtr> &gain_list) {
   for (auto g : gain_list) {
     this->AppendSTMGain(g);
@@ -250,16 +248,16 @@ void AUTDController::AppendSTMGain(const std::vector<GainPtr> &gain_list) {
 void AUTDController::StartSTModulation(double freq) {
   this->_link->SetWaitForProcessMsg(false);
 
-  auto len = this->_stmGains.size();
+  auto len = this->_stm_gains.size();
   auto itvl_us = static_cast<int>(1000000. / freq / len);
-  this->_pStmTimer->SetInterval(itvl_us);
+  this->_p_stm_timer->SetInterval(itvl_us);
 
-  auto current_size = this->_stmBodies.size();
-  this->_stmBodies.resize(len);
-  this->_stmBodySizes.resize(len);
+  auto current_size = this->_stm_bodies.size();
+  this->_stm_bodies.resize(len);
+  this->_stm_body__sizes.resize(len);
 
   for (size_t i = current_size; i < len; i++) {
-    auto g = this->_stmGains[i];
+    auto g = this->_stm_gains[i];
     g->SetGeometry(this->_geometry);
     if (!g->built()) g->Build();
 
@@ -267,15 +265,15 @@ void AUTDController::StartSTModulation(double freq) {
     auto body = this->MakeBody(g, nullptr, &body_size);
     uint8_t *b = new uint8_t[body_size];
     std::memcpy(b, body.get(), body_size);
-    this->_stmBodies[i] = b;
-    this->_stmBodySizes[i] = body_size;
+    this->_stm_bodies[i] = b;
+    this->_stm_body__sizes[i] = body_size;
   }
 
   size_t idx = 0;
-  this->_pStmTimer->Start([this, idx, len]() mutable {
-    auto body_size = this->_stmBodySizes[idx];
+  this->_p_stm_timer->Start([this, idx, len]() mutable {
+    auto body_size = this->_stm_body__sizes[idx];
     auto body_copy = std::make_unique<uint8_t[]>(body_size);
-    uint8_t *p = this->_stmBodies[idx];
+    uint8_t *p = this->_stm_bodies[idx];
     std::memcpy(body_copy.get(), p, body_size);
     if (this->is_open()) this->_link->Send(body_size, std::move(body_copy));
     idx = (idx + 1) % len;
@@ -283,18 +281,18 @@ void AUTDController::StartSTModulation(double freq) {
 }
 
 void AUTDController::StopSTModulation() {
-  this->_pStmTimer->Stop();
+  this->_p_stm_timer->Stop();
   this->Stop();
 }
 
 void AUTDController::FinishSTModulation() {
   this->StopSTModulation();
-  std::vector<GainPtr>().swap(this->_stmGains);
-  for (uint8_t *p : this->_stmBodies) {
+  std::vector<GainPtr>().swap(this->_stm_gains);
+  for (uint8_t *p : this->_stm_bodies) {
     delete[] p;
   }
-  std::vector<uint8_t *>().swap(this->_stmBodies);
-  std::vector<size_t>().swap(this->_stmBodySizes);
+  std::vector<uint8_t *>().swap(this->_stm_bodies);
+  std::vector<size_t>().swap(this->_stm_body__sizes);
   this->_link->SetWaitForProcessMsg(true);
 }
 
@@ -359,8 +357,8 @@ void AUTDController::InitPipeline() {
 
         std::unique_lock<std::mutex> lk(_send_mtx);
         if (gain != nullptr && _send_gain_q.size() > 0) _send_gain_q.pop();
-        if (mod != nullptr && mod->buffer.size() <= mod->sent) {
-          mod->sent = 0;
+        if (mod != nullptr && mod->buffer.size() <= mod->_sent) {
+          mod->_sent = 0;
           if (_send_mod_q.size() > 0) _send_mod_q.pop();
         }
       }
@@ -382,16 +380,16 @@ std::unique_ptr<uint8_t[]> AUTDController::MakeBody(GainPtr gain, ModulationPtr 
   header->control_flags = 0;
   header->mod_size = 0;
 
-  if (this->_silentMode) header->control_flags |= SILENT;
+  if (this->_silent_mode) header->control_flags |= SILENT;
 
   if (mod != nullptr) {
-    const uint8_t mod_size = std::max(0, std::min(static_cast<int>(mod->buffer.size() - mod->sent), MOD_FRAME_SIZE));
+    const uint8_t mod_size = std::max(0, std::min(static_cast<int>(mod->buffer.size() - mod->_sent), MOD_FRAME_SIZE));
     header->mod_size = mod_size;
-    if (mod->sent == 0) header->control_flags |= LOOP_BEGIN;
-    if (mod->sent + mod_size >= mod->buffer.size()) header->control_flags |= LOOP_END;
+    if (mod->_sent == 0) header->control_flags |= LOOP_BEGIN;
+    if (mod->_sent + mod_size >= mod->buffer.size()) header->control_flags |= LOOP_END;
 
-    std::memcpy(header->mod, &mod->buffer[mod->sent], mod_size);
-    mod->sent += mod_size;
+    std::memcpy(header->mod, &mod->buffer[mod->_sent], mod_size);
+    mod->_sent += mod_size;
   }
 
   auto *cursor = &body[0] + sizeof(RxGlobalHeader) / sizeof(body[0]);

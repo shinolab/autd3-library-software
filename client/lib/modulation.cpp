@@ -3,7 +3,7 @@
 // Created Date: 11/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 20/02/2020
+// Last Modified: 22/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -31,7 +31,7 @@ static inline double sinc(double x) noexcept {
 #pragma endregion
 
 #pragma region Modulation
-autd::Modulation::Modulation() noexcept { this->sent = 0; }
+autd::Modulation::Modulation() noexcept { this->_sent = 0; }
 
 constexpr int autd::Modulation::samplingFrequency() { return MOD_SAMPLING_FREQ; }
 
@@ -93,8 +93,8 @@ autd::ModulationPtr autd::SawModulation::Create(int freq) {
 #pragma endregion
 
 #pragma region RawPCMModulation
-autd::ModulationPtr autd::RawPCMModulation::Create(std::string filename, double samplingFreq) {
-  if (samplingFreq < std::numeric_limits<double>::epsilon()) samplingFreq = MOD_SAMPLING_FREQ;
+autd::ModulationPtr autd::RawPCMModulation::Create(std::string filename, double sampling_freq) {
+  if (sampling_freq < std::numeric_limits<double>::epsilon()) sampling_freq = MOD_SAMPLING_FREQ;
   auto mod = CreateHelper<RawPCMModulation>();
 
   std::ifstream ifs;
@@ -125,7 +125,7 @@ autd::ModulationPtr autd::RawPCMModulation::Create(std::string filename, double 
 
   // up sampling
   std::vector<double> smpl_buf;
-  const auto freqratio = autd::Modulation::samplingFrequency() / samplingFreq;
+  const auto freqratio = autd::Modulation::samplingFrequency() / sampling_freq;
   smpl_buf.resize(tmp.size() * static_cast<size_t>(freqratio));
   for (size_t i = 0; i < smpl_buf.size(); i++) {
     smpl_buf.at(i) = (fmod(i / freqratio, 1.0) < 1 / freqratio) ? tmp.at(static_cast<int>(i / freqratio)) : 0.0;
@@ -133,7 +133,7 @@ autd::ModulationPtr autd::RawPCMModulation::Create(std::string filename, double 
 
   // LPF
   const auto NTAP = 31;
-  const auto cutoff = samplingFreq / 2 / autd::Modulation::samplingFrequency();
+  const auto cutoff = sampling_freq / 2 / autd::Modulation::samplingFrequency();
   std::vector<double> lpf(NTAP);
   for (int i = 0; i < NTAP; i++) {
     const auto t = i - NTAP / 2.0;
