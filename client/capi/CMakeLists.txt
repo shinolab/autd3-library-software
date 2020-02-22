@@ -61,12 +61,6 @@ add_library(autd3capi SHARED
 
 include_directories(${INCLUDE_LIST})
 
-if (USE_UNITY)
-    add_custom_command(TARGET autd3capi
-                 POST_BUILD
-                 COMMAND copy /Y $(TargetPath) $(SolutionDir)autdunity\\Assets\\AUTD\\Plugins\\x86_64)
-endif()
-
 target_link_libraries(autd3capi ${Ads_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(autd3capi libsoem)
 target_link_libraries(autd3capi ws2_32.lib)
@@ -74,9 +68,9 @@ target_link_libraries(autd3capi winmm.lib)
 
 set_target_properties(autd3capi
     PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/csharp_example"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/csharp_example"
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/csharp_example"
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/dll"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/dll"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/dll"
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4068")
