@@ -1,0 +1,24 @@
+name: Windows
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    - name: Checkout submodules
+      shell: bash
+      run: git submodule update --init --force --recursive
+    - name: setup-msbuild
+      uses: microsoft/setup-msbuild@v1
+    - name: CMake
+      run: |
+        cd client
+        mkdir build > NUL 2>&1
+        cmake -G "Visual Studio 16 2019" -A x64 -B "build"
+        cmake ..
+    - name: msbuild
+      run: msbuild build\\autd3.sln /t:build /p:Configuration=Release;Platform="x64"
