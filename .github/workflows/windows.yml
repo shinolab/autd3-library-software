@@ -17,7 +17,6 @@ jobs:
     - name: CMake
       run: |
         cd client
-        mkdir build > NUL 2>&1
         cmake -G "Visual Studio 16 2019" -A x64 -B "build"
         cmake ..
     - name: msbuild
