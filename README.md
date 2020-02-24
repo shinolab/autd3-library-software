@@ -1,10 +1,6 @@
 # autd3 #
 
-<<<<<<< HEAD
-Version: 3.0.2.4
-=======
 Version: 3.0.3.0
->>>>>>> dev
 
 * Old stable ver is [v3.0.0](https://github.com/shinolab/autd3-library-software/tree/v3.0.0)
 
@@ -33,17 +29,6 @@ See [readme](/dist/firmware/readme.md)
 ## Build ##
 
 * Windows: run `client/build.ps1`
-
-<<<<<<< HEAD
-* 3.0.2.4 (software/cpu)
-    * 終了時の処理を修正
-    * SOEM使用時, まれにデータをロストする問題を修正
-
-* 3.0.2.3 (software)
-    * LateralModulationの実装を変更
-    * LateralModulationをSpatio-Temporal Modulationにリネーム
-    * Linux/Macのtimer.cppのバグを修正
-=======
 * Linux/Mac: 
     ```
         cd client
@@ -51,7 +36,6 @@ See [readme](/dist/firmware/readme.md)
         cmake ..
         make
     ```
->>>>>>> dev
 
 ## For other programming languages ##
 
