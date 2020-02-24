@@ -1,34 +1,40 @@
 # autd3 #
 
+<<<<<<< HEAD
 Version: 3.0.2.4
+=======
+Version: 3.0.3.0
+>>>>>>> dev
 
-* 旧安定版は[v3.0.0ブランチ](https://github.com/shinolab/autd3-library-software/tree/v3.0.0)にあります.
+* Old stable ver is [v3.0.0](https://github.com/shinolab/autd3-library-software/tree/v3.0.0)
 
-* 最高1.28MHzの位相更新機能を追加した[version 3.1](https://github.com/shinolab/autd3.1)もあります.
+* There is also [version 3.1-rc](https://github.com/shinolab/autd3.1) which is equipped with the a high-speed amp/phase switching feature up to 1.28MHz.
 
-* 詳細は[Wiki](https://github.com/shinolab/autd3-library-software/wiki)を参照してください.
+* For more details, refer to [Wiki](https://github.com/shinolab/autd3-library-software/wiki)
 
-* 対応するファームウェアは"dist/firmware"内においてあります.
+## Versioning ##
+
+The meanings of version number 3.x.y.z are
+* x: Architecture version.
+* y: Firmware version. If this number changes, the firmware of FPGA or CPU must be changed.
+* z: Software version.
+This versioning was introduced after version 3.0.3.0.
 
 ## CAUTION ##
 
-必ず, dist/firmwareにあるv3.0.2のファームウェアを書き込んでから使用してください.
+Before using, be sure to write the v3.0.3 firmwares in `dist/firmware`
 
-## Wrappers ##
+See [readme](/dist/firmware/readme.md)
 
-* C# - AUTDSharp
-* Rust - future/autd
-* python - wrappers/python
-* julia - wrappers/julia
+## Requirements
 
-## Citing
+* If you are using Windows, install [Npcap](https://nmap.org/npcap/) with WinPcap API-compatible mode (recomennded) or [WinPcap](https://www.winpcap.org/).
 
-If you use this SDK in your research please consider to include the following citation in your publications:
+## Build ##
 
-S. Inoue, Y. Makino and H. Shinoda "Scalable Architecture for Airborne Ultrasound Tactile Display", Asia Haptics 2016
+* Windows: run `client/build.ps1`
 
-# Change log
-
+<<<<<<< HEAD
 * 3.0.2.4 (software/cpu)
     * 終了時の処理を修正
     * SOEM使用時, まれにデータをロストする問題を修正
@@ -37,38 +43,29 @@ S. Inoue, Y. Makino and H. Shinoda "Scalable Architecture for Airborne Ultrasoun
     * LateralModulationの実装を変更
     * LateralModulationをSpatio-Temporal Modulationにリネーム
     * Linux/Macのtimer.cppのバグを修正
+=======
+* Linux/Mac: 
+    ```
+        cd client
+        mkdir build && cd build
+        cmake ..
+        make
+    ```
+>>>>>>> dev
 
-* 3.0.2.2 (software/cpu/fpga)
-    * Close時の処理を修正
-    * fpgaのmcsファイル圧縮&コンフィグレーション時間短縮
-    * cpu/fpgaは互換性あり
+## For other programming languages ##
 
-* 3.0.2.1 (software)
-    * SOEM使用時のバグを修正
-    * Rust版追加 (future/autd)
+* [Rust](https://github.com/shinolab/ruautd)
+* [C#](https://github.com/shinolab/autd3sharp)
+* [python](https://github.com/shinolab/pyautd)
+* [julia](https://github.com/shinolab/AUTD3.jl)
 
-* 3.0.2.0 (software/cpu/fpga)
-    * ModulationCalibration実装
-        * これにより破壊的な変更がソフト/CPU/FPGAに入った
-        * Sync0のデフォルト周期を1msに戻した
+## Citing
 
-* 3.0.1.3
-    * AppendGain修正
-    * Sync0のデフォルト周期を64msに
+If you use this SDK in your research please consider to include the following citation in your publications:
 
-* 3.0.1.2
-    * mod_reset修正 (100ns)
+S. Inoue, Y. Makino and H. Shinoda "Scalable Architecture for Airborne Ultrasound Tactile Display", Asia Haptics 2016
 
-* 3.0.1.1
-    * SOEMのSYNC0同期信号追加
-    * mod_reset修正 (100us)
-
-* 3.0.1.0
-    * Simple Open EtherCAT Master (SOEM) による制御を追加 
-        * これによりLinux, macサポート
-        * また, WindowsでもTwinCATを用いなくても良くなった
-    * Usb to Ethernet変換ケーブルなども利用可能
-    * boostライブラリへの依存を削除
 
 # Author #
 

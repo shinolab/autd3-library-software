@@ -3,7 +3,7 @@
 // Created Date: 07/09/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 18/02/2020
+// Last Modified: 20/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -27,7 +27,7 @@ GainPtr GroupedGain::Create(std::map<int, GainPtr> gainmap) {
   return gain;
 }
 
-void GroupedGain::build() {
+void GroupedGain::Build() {
   if (this->built()) return;
   auto geo = this->geometry();
   if (geo == nullptr) {
@@ -44,7 +44,7 @@ void GroupedGain::build() {
   for (std::pair<int, GainPtr> p : this->_gainmap) {
     auto g = p.second;
     g->SetGeometry(geo);
-    g->build();
+    g->Build();
   }
 
   for (int i = 0; i < ndevice; i++) {

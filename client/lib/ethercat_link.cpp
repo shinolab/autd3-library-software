@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 19/02/2020
+// Last Modified: 20/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -22,6 +22,7 @@
 #include <vector>
 
 #include "privdef.hpp"
+
 // XXX: should be configuarable?
 #define INDEX_GROUP (0x3040030)
 #define INDEX_OFFSET_BASE (0x81000000)
@@ -66,7 +67,7 @@ void autd::internal::EthercatLink::Close() {
   this->_port = 0;
   AdsPortCloseEx(this->_port);
 }
-bool autd::internal::EthercatLink::isOpen() { return (this->_port > 0); }
+bool autd::internal::EthercatLink::is_open() { return (this->_port > 0); }
 void autd::internal::EthercatLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
   const AmsAddr pAddr = {this->_netId, PORT};
   long ret = AdsSyncWriteReqEx(this->_port,  // NOLINT
@@ -83,11 +84,13 @@ void autd::internal::EthercatLink::Send(size_t size, std::unique_ptr<uint8_t[]> 
   }
 }
 bool autd::internal::EthercatLink::CalibrateModulation() {
-  return true;  // No need to call CalibrateModulation() for TwinCAT.
+  // No need to call CalibrateModulation() for TwinCAT.
+  return true;
 }
 
 void autd::internal::EthercatLink::SetWaitForProcessMsg(bool is_wait) {
-  return;  // Not implemented or no need...?
+  // Not implemented or no need...?
+  return;
 }
 
 // for localhost connection

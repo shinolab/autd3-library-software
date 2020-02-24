@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki and Saya Mizutani
 // -----
-// Last Modified: 18/02/2020
+// Last Modified: 22/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -30,9 +30,9 @@ static std::atomic<bool> AUTD3_LIB_TIMER_LOCK(false);
 
 Timer::Timer() noexcept : Timer::Timer(false) {}
 
-Timer::Timer(bool highResolusion) noexcept {
+Timer::Timer(bool high_resolusion) noexcept {
   this->_interval_us = 1;
-  this->_highResolusion = highResolusion;
+  this->_high_resolusion = high_resolusion;
 }
 
 Timer::~Timer() noexcept(false) { this->Stop(); }
@@ -40,7 +40,7 @@ Timer::~Timer() noexcept(false) { this->Stop(); }
 void Timer::SetInterval(int interval_us) {
   if (interval_us <= 0) throw new std::runtime_error("Interval must be positive integer.");
 
-  if (!this->_highResolusion && ((interval_us % 1000) != 0)) {
+  if (!this->_high_resolusion && ((interval_us % 1000) != 0)) {
     std::cerr << "The accuracy of the Windows timer is 1 ms. It may not run properly." << std::endl;
   }
 
@@ -49,9 +49,9 @@ void Timer::SetInterval(int interval_us) {
 
 void Timer::Start(const std::function<void()> &callback) {
   this->Stop();
-  this->cb = callback;
+  this->_cb = callback;
   this->_loop = true;
-  if (this->_highResolusion) {
+  if (this->_high_resolusion) {
     this->InitTimer();
   } else {
     this->_timerQueue = CreateTimerQueue();
@@ -67,7 +67,7 @@ void Timer::Stop() {
   if (this->_loop) {
     this->_loop = false;
 
-    if (this->_highResolusion) {
+    if (this->_high_resolusion) {
       this->_mainThread.join();
 
     } else {
@@ -112,7 +112,7 @@ void Timer::MainLoop() {
       QueryPerformanceCounter(&start);
     }
 
-    this->cb();
+    this->_cb();
 
     LARGE_INTEGER now;
     QueryPerformanceCounter(&now);
@@ -131,7 +131,7 @@ void Timer::TimerThread(PVOID lpParam, BOOLEAN TimerOrWaitFired) {
   bool expected = false;
   if (AUTD3_LIB_TIMER_LOCK.compare_exchange_weak(expected, true)) {
     Timer *_ptimer = reinterpret_cast<Timer *>(lpParam);
-    _ptimer->cb();
+    _ptimer->_cb();
     AUTD3_LIB_TIMER_LOCK.store(false, std::memory_order_release);
   }
 }

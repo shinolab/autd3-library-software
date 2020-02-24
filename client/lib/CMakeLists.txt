@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/deps)
-set(Matlab_INCLUDE_DIRS "")
 
 set (CMAKE_CXX_STANDARD 17)
 
@@ -48,6 +47,7 @@ set(SOURCE_LIST
   timer.hpp
   soem_link.hpp
   privdef.hpp
+  ec_config.hpp
   
   ../include/core.hpp
   ../include/controller.hpp
@@ -70,7 +70,7 @@ endif()
 
 add_library(autd3 STATIC ${SOURCE_LIST})
 
-if(WIN32)
+if(WIN32 AND (NOT DISABLE_MATLAB))
   set(Matlab_INCLUDE_DIRS "")
   find_package( MATLAB )
   list(APPEND INCLUDE_LIST

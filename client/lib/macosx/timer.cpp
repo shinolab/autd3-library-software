@@ -3,7 +3,7 @@
 // Created Date: 04/09/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 18/02/2020
+// Last Modified: 23/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -31,7 +31,7 @@ static std::atomic<bool> AUTD3_LIB_TIMER_LOCK(false);
 
 Timer::Timer() noexcept : Timer::Timer(false) {}
 
-Timer::Timer(bool highResolusion) noexcept { this->_interval_us = 1; }
+Timer::Timer(bool high_resolusion) noexcept { this->_interval_us = 1; }
 Timer::~Timer() noexcept(false) { this->Stop(); }
 
 void Timer::SetInterval(int interval_us) {
@@ -41,7 +41,7 @@ void Timer::SetInterval(int interval_us) {
 
 void Timer::Start(const std::function<void()> &callback) {
   this->Stop();
-  this->cb = callback;
+  this->_cb = callback;
   this->_loop = true;
   this->InitTimer();
 }
@@ -74,7 +74,7 @@ void Timer::InitTimer() {
 void Timer::MainLoop(Timer *ptr) {
   bool expected = false;
   if (AUTD3_LIB_TIMER_LOCK.compare_exchange_weak(expected, true)) {
-    ptr->cb();
+    ptr->_cb();
     AUTD3_LIB_TIMER_LOCK.store(false, std::memory_order_release);
   }
 }
