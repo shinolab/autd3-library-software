@@ -122,7 +122,6 @@ bool internal::SOEMLink::CalibrateModulation() {
 
     auto v = _cnt->Read();
     statuses = parse(v);
-
     if (succeed_calib(statuses)) {
       success = true;
       break;

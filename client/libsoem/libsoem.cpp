@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/02/2020
+// Last Modified: 23/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -151,14 +151,13 @@ std::vector<uint16_t> SOEMController::Read() {
 }
 
 void SOEMController::SetupSync0(bool actiavte, uint32_t cycle_time_ns) {
-  auto exceed = cycle_time_ns >= 1000000u;
+  auto exceed = cycle_time_ns > 100 * 1000 * 1000u;  // 100 ms
   for (uint16 slave = 1; slave <= _dev_num; slave++) {
     if (exceed) {
-      ec_dcsync0(slave, actiavte, cycle_time_ns, 0);  // SYNC0
+      ec_dcsync0(slave, actiavte, cycle_time_ns, 0);
     } else {
       int shift = static_cast<int>(_dev_num) - slave;
-      ec_dcsync0(slave, actiavte, cycle_time_ns,
-                 shift * cycle_time_ns);  // SYNC0
+      ec_dcsync0(slave, actiavte, cycle_time_ns, shift * cycle_time_ns);
     }
   }
 }
@@ -216,15 +215,15 @@ void SOEMController::CreateCopyThread(size_t header_size, size_t body_size) {
               }
             }
 
-            bool isWait;
+            bool is_wait;
             {
               std::unique_lock<std::mutex> lk(_waitcond_mtx);
-              isWait = _is_wait_msg_processed;
+              is_wait = _is_wait_msg_processed;
             }
 
-            if (isWait) {
-              auto sendMsgId = buf[0];
-              auto sucess = WaitForProcessMsg(sendMsgId);
+            if (is_wait) {
+              auto send_id = buf[0];
+              auto sucess = WaitForProcessMsg(send_id);
               if (!sucess) {
                 std::cerr << "Some data may not have been transferred to AUTDs." << std::endl;
               }

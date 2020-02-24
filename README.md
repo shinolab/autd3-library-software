@@ -1,6 +1,6 @@
 # autd3 #
 
-Version: 3.0.2.3
+Version: 3.0.3.0
 
 * Old stable ver is [v3.0.0](https://github.com/shinolab/autd3-library-software/tree/v3.0.0)
 
@@ -8,11 +8,19 @@ Version: 3.0.2.3
 
 * For more details, refer to [Wiki](https://github.com/shinolab/autd3-library-software/wiki)
 
+## Versioning ##
+
+The meanings of version number 3.x.y.z are
+* x: Architecture version.
+* y: Firmware version. If this number changes, the firmware of FPGA or CPU must be changed.
+* z: Software version.
+This versioning was introduced after version 3.0.3.0.
+
 ## CAUTION ##
 
-Before using, be sure to write the v3.0.2 firmwares in `dist/firmware`
+Before using, be sure to write the v3.0.3 firmwares in `dist/firmware`
 
-See [readme](/dist/firmware/readme)
+See [readme](/dist/firmware/readme.md)
 
 ## Requirements
 
@@ -30,12 +38,12 @@ See [readme](/dist/firmware/readme)
         make
     ```
 
-## Wrappers ##
+## For other programming languages ##
 
+* [Rust](https://github.com/shinolab/ruautd)
 * [C#](https://github.com/shinolab/autd3sharp)
-* [Rust](future/autd)
-* [python](wrappers/python)
-* [julia](wrappers/julia)
+* [python](https://github.com/shinolab/pyautd)
+* [julia](https://github.com/shinolab/AUTD3.jl)
 
 ## Citing
 

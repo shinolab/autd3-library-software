@@ -1,38 +1,56 @@
-# Change log
+# 3.0.3
+* introduced versioning
+    *The meanings of version number 3.x.y.z are
+        * x: Architecture version.
+        * y: Firmware version.
+        * z: Software version.
+* Extensive refactoring
+    * Made code conform to almost Google C ++ Style Guide
+       * There are some differences from original. Refer to client/readme.md for details
+    * Removed pimpl idiom
+* (autd3sharp) Made C# library compliant with .Net Standard 2.0
+* (autd3sharp) register C# wrapper to NuGet https://www.nuget.org/packages/autd3sharp
+    * Therefore, autd3sharp is removed from this repository
+* (pyautd) supports installing with pip
+* (ruautd) fix implementations
 
-* 3.0.2.3 (software)
-    * LateralModulationの実装を変更
-    * LateralModulationをSpatio-Temporal Modulationにリネーム
-    * Linux/Macのtimer.cppのバグを修正
+# 3.0.2.4 (software/cpu)
+* fix bug in closing
+* fix bug of data packet loss when using SOEM
 
-* 3.0.2.2 (software/cpu/fpga)
-    * Close時の処理を修正
-    * fpgaのmcsファイル圧縮&コンフィグレーション時間短縮
-    * cpu/fpgaは互換性あり
+# 3.0.2.3 (software)
+* change implementation of LateralModulation
+* rename LateralModulation to Spatio-Temporal Modulation
+* fix bugs in timer.cpp (Linux/Max)
 
-* 3.0.2.1 (software)
-    * SOEM使用時のバグを修正
-    * Rust版追加 (future/autd)
+# 3.0.2.2 (software/cpu/fpga)
+* fix bug in closing
+* fpga mcs file compression & configuration time reduction
 
-* 3.0.2.0 (software/cpu/fpga)
-    * ModulationCalibration実装
-        * これにより破壊的な変更がソフト/CPU/FPGAに入った
-        * Sync0のデフォルト周期を1msに戻した
+# 3.0.2.1 (software)
+* fix bug when using SOEM
+    * make calling ec_send_processdata() exclusive
+* add Rust version (future/autd)
 
-* 3.0.1.3
-    * AppendGain修正
-    * Sync0のデフォルト周期を64msに
+# 3.0.2.0 (software/cpu/fpga)
+* implement ModulationCalibration()
+    * This caused breaking changes in software/CPU/FPGA
+    * default Sync0 period is set to 1ms
 
-* 3.0.1.2
-    * mod_reset修正 (100ns)
+# 3.0.1.3
+* fix AppendGain()
+* Sync0 period is set to 64ms
 
-* 3.0.1.1
-    * SOEMのSYNC0同期信号追加
-    * mod_reset修正 (100us)
+# 3.0.1.2
+* fix modulation synchronization probrem (100ns)
 
-* 3.0.1.0
-    * Simple Open EtherCAT Master (SOEM) による制御を追加 
-        * これによりLinux, macサポート
-        * また, WindowsでもTwinCATを用いなくても良くなった
-    * Usb to Ethernet変換ケーブルなども利用可能
-    * boostライブラリへの依存を削除
+# 3.0.1.1
+* add Sync0 synchronization signal with SOEM
+* fix modulation synchronization problem (100us)
+
+# 3.0.1.0
+* add a feature that controlling by Simple Open EtherCAT Master (SOEM)
+    * Linux and Mac support
+    * It is no longer necessary to use TwinCAT on Windows
+    * USB to Ethernet conversion cable is available
+* delete dependency on boost library
