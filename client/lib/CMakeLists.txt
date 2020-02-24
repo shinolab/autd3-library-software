@@ -4,6 +4,8 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/deps)
 
 set (CMAKE_CXX_STANDARD 17)
 
+set(EIGEN_PATH ../deps/Eigen3)
+
 if(WIN32)
 	set(OS win32)
 elseif(APPLE)
@@ -20,12 +22,11 @@ if (POLICY CMP0079)
   cmake_policy(SET CMP0079 NEW)
 endif()
 
-find_package( Eigen3 REQUIRED )
 find_package( Threads REQUIRED )
 
 set(INCLUDE_LIST
   ../include
-  ${EIGEN3_INCLUDE_DIR}
+  ${EIGEN_PATH}
 )
 
 set(SOURCE_LIST 
@@ -116,5 +117,5 @@ target_link_libraries(autd3 ${CMAKE_THREAD_LIBS_INIT})
 
 if (WIN32)
   target_link_libraries(autd3 ${Ads_LIBRARIES})
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4068")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4068 /wd4819")
 endif()

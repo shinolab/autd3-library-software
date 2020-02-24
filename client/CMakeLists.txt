@@ -14,17 +14,16 @@ ADD_CUSTOM_TARGET(cpplint
   ${PROJECT_SOURCE_DIR}/lib/*
   )
 
+
+# ADS
+add_subdirectory(deps/BeckhoffADS)
+
 #SOEM
 add_subdirectory(libsoem)
 
 if(WIN32)
     include(cmakes/win_vs.cmake)
     
-    # ADS
-    add_subdirectory(deps/BeckhoffADS)
-
-    add_subdirectory(example)
-    add_subdirectory(capi)
     if (ENABLE_TESTS)
       add_subdirectory(tests)
     endif()
@@ -34,9 +33,13 @@ else()
     include(cmakes/linux.cmake)
 endif()
 
+add_subdirectory(capi)
 add_subdirectory(lib)
 add_subdirectory(doc)
-add_subdirectory(example_soem)
+if(NOT IGNORE_EXAMPLE)
+    add_subdirectory(example)
+    add_subdirectory(example_soem)
+endif()
 
 if(WIN32)
   set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT simple_soem)

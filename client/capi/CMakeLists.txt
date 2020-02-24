@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.12)
 
 set (CMAKE_CXX_STANDARD 17)
 
+set(EIGEN_PATH ../deps/Eigen3)
+
 if(WIN32)
 	set(OS win32)
 elseif(APPLE)
@@ -10,18 +12,16 @@ else()
 	set(OS linux)
 endif()
 
-# Eigen3
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/deps)
 
 cmake_policy(SET CMP0074 NEW)
 cmake_policy(SET CMP0079 NEW)
 
-find_package( Eigen3 REQUIRED )
 find_package( Threads REQUIRED )
 
 set(INCLUDE_LIST
   ../include
-  ${EIGEN3_INCLUDE_DIR}
+  ${EIGEN_PATH}
   ${Ads_INCLUDE_DIR}
 )
 
@@ -73,5 +73,5 @@ set_target_properties(autd3capi
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/dll"
 )
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4068")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4068 /wd4819")
 add_compile_definitions(DLL_FOR_CAPI)

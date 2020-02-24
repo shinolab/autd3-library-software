@@ -4,3 +4,6 @@
 [submodule "client/deps/SOEM"]
 	path = client/deps/SOEM
 	url = https://github.com/OpenEtherCATsociety/SOEM
+[submodule "client/deps/Eigen3"]
+	path = client/deps/Eigen3
+	url = https://gitlab.com/libeigen/eigen.git
