@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 23/02/2020
+// Last Modified: 25/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -73,7 +73,7 @@ class SOEMController : public ISOEMController {
 #ifdef WINDOWS
   static void CALLBACK RTthread(PVOID lpParam, BOOLEAN TimerOrWaitFired);
 #elif defined MACOSX
-  static void RTthread(SOEMController::impl *pimpl);
+  static void RTthread(SOEMController *pimpl);
 #elif defined LINUX
   static void RTthread(union sigval sv);
 #endif

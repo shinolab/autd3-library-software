@@ -73,7 +73,7 @@ if(WIN32)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd26451 /wd6385  /wd6386 /wd6011 /wd26495 /wd4996 /wd6001 /wd4200")
 endif()
 
-if (NOT WIN32)
+if(UNIX AND NOT APPLE)
 	add_library(autdsoem_shared SHARED
 		libsoem.cpp
 		../lib/libsoem.hpp

@@ -6,8 +6,31 @@ on:
 name: Upload Release Asset
 
 jobs:   
-  publish:
-    name: Upload Release Asset
+  release:
+    name: Create Github Release
+    runs-on: ubuntu-latest
+    steps:
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1.0.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+    - name: Output Release URL File
+      run: echo "${{ steps.create_release.outputs.upload_url }}" > release_url.txt
+    - name: Save Release URL File for publish
+      uses: actions/upload-artifact@v1
+      with:
+        name: release_url
+        path: release_url.txt
+        
+  publish_win:
+    needs: [release]
+    name: Upload Release Asset Windows
     runs-on: windows-latest
     steps:
       - name: Checkout code
@@ -21,7 +44,6 @@ jobs:
           script: |
             return 'autd3-'+context.payload.ref.replace(/refs\/tags\//, '')+'-win-x64.zip';
       - name: Checkout submodules
-        shell: cmd
         run: git submodule update --init --force --recursive
       - name: setup-msbuild
         uses: microsoft/setup-msbuild@v1
@@ -36,27 +58,136 @@ jobs:
           mkdir publish/bin
           cd ../..
           copy client/build/lib/Release/autd3.lib client/build/publish/lib
-          copy client/build/libsoem/Release/libsoem.lib client/build/publish/lib
+          copy client/build/autdsoem/Release/autdsoem.lib client/build/publish/lib
           copy client/build/deps/BeckhoffADS/Release/ads.lib client/build/publish/lib
           copy client/build/bin/Release/autd3capi.dll client/build/publish/bin
           Compress-Archive -Path dist/AUTDServer, dist/firmware, client/include, client/build/publish/lib, client/build/publish/bin -DestinationPath assets.zip
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
+      - name: Load Release URL File from release job
+        uses: actions/download-artifact@v1
+        with:
+          name: release_url
+      - name: Get Release File Name & Upload URL
+        id: get_release_info
+        run: |
+          $value=cat release_url/release_url.txt
+          echo "::set-output name=upload_url::$value"
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
+          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
+          asset_path: ./assets.zip
+          asset_name: ${{ steps.get_version.outputs.result }}
+          asset_content_type: application/zip
+  
+  publish_linux:
+    needs: [release]
+    name: Upload Release Asset Linux
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Get the version
+        id: get_version
+        uses: actions/github-script@0.5.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          result-encoding: string
+          script: |
+            return 'autd3-'+context.payload.ref.replace(/refs\/tags\//, '')+'-linux-x64.tar.gz';
+      - name: Checkout submodules
+        run: git submodule update --init --force --recursive
+      - name: Build project
+        run: |
+          cd client
+          mkdir -p build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release
+          make
+          cd ../..
+          mkdir lib
+          mkdir bin
+          cp -f client/build/lib/libautd3.a lib
+          cp -f client/build/autdsoem/libautdsoem.a lib
+          cp -f client/build/deps/BeckhoffADS/libads.a lib
+          cp -f client/build/bin/libautd3capi.so bin
+          cp -f client/build/bin/libautdsoem.so bin
+          cp -f client/build/bin/libads.so bin
+          mv -f dist/firmware firmware/
+          mv -f client/include include/
+          tar -zcvf assets.tar.gz firmware include lib bin
+      - name: Load Release URL File from release job
+        uses: actions/download-artifact@v1
+        with:
+          name: release_url
+      - name: Get Release File Name & Upload URL
+        id: get_release_info
+        run: |
+          value=`cat release_url/release_url.txt`
+          echo ::set-output name=upload_url::$value
       - name: Upload Release Asset
         id: upload-release-asset 
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: ./assets.zip
+          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
+          asset_path: ./assets.tar.gz
           asset_name: ${{ steps.get_version.outputs.result }}
-          asset_content_type: application/zip
+          asset_content_type: application/octet-stream
+  
+  publish_mac:
+    needs: [release]
+    name: Upload Release Asset MacOS
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Get the version
+        id: get_version
+        uses: actions/github-script@0.5.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          result-encoding: string
+          script: |
+            return 'autd3-'+context.payload.ref.replace(/refs\/tags\//, '')+'-macos-x64.tar.gz';
+      - name: Checkout submodules
+        run: git submodule update --init --force --recursive
+      - name: Build project
+        run: |
+          cd client
+          mkdir -p build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release
+          make
+          cd ../..
+          mkdir -p lib
+          mkdir -p bin
+          cp -f client/build/lib/libautd3.a lib
+          cp -f client/build/autdsoem/libautdsoem.a lib
+          cp -f client/build/deps/BeckhoffADS/libads.a lib
+          cp -f client/build/bin/libautd3capi.dylib bin
+          mv -f dist/firmware firmware/
+          mv -f client/include include/
+          tar -zcvf assets.tar.gz firmware include lib bin
+      - name: Load Release URL File from release job
+        uses: actions/download-artifact@v1
+        with:
+          name: release_url
+      - name: Get Release File Name & Upload URL
+        id: get_release_info
+        run: |
+          value=`cat release_url/release_url.txt`
+          echo ::set-output name=upload_url::$value
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
+          asset_path: ./assets.tar.gz
+          asset_name: ${{ steps.get_version.outputs.result }}
+          asset_content_type: application/octet-stream

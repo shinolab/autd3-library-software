@@ -36,7 +36,7 @@ endif()
 
 #INSTALL(TARGETS ads LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
 
-if (NOT WIN32)
+if(UNIX AND NOT APPLE)
   add_library(ads_shared SHARED
     ADS/AdsLib/AdsDef.cpp
     ADS/AdsLib/AdsLib.cpp

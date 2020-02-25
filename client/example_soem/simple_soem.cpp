@@ -35,7 +35,15 @@ int main() {
   auto autd = autd::Controller::Create();
 
   // AddDevice() must be called before Open(), and be called as many times as for the number of AUTDs connected.
-  autd->geometry()->AddDevice(Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0, 0));
+  autd->geometry()->AddDevice(Eigen::Vector3d(0, 0, 0),
+                              Eigen::Vector3d(0, 0, 0));
+  autd->geometry()->AddDevice(Eigen::Vector3d(0, 0, 0),
+                              Eigen::Vector3d(0, 0, 0));
+  autd->geometry()->AddDevice(Eigen::Vector3d(0, 0, 0),
+                              Eigen::Vector3d(0, 0, 0));
+  autd->geometry()->AddDevice(Eigen::Vector3d(0, 0, 0),
+                              Eigen::Vector3d(0, 0, 0));
+
 
   auto ifname = GetAdapterName();
   autd->Open(autd::LinkType::SOEM, ifname);
@@ -46,7 +54,7 @@ int main() {
 
   // If you use more than one AUTD, call CalibrateModulation only once after Open.
   // It takes several seconds proportional to the number of AUTD you use.
-  // autd->CalibrateModulation();
+  autd->CalibrateModulation();
 
   autd->AppendGainSync(autd::FocalPointGain::Create(Eigen::Vector3d(90, 70, 150)));
   autd->AppendModulationSync(autd::SineModulation::Create(150));  // 150Hz AM
