@@ -14,8 +14,13 @@ endif()
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/deps)
 
-cmake_policy(SET CMP0074 NEW)
-cmake_policy(SET CMP0079 NEW)
+if (POLICY CMP0074)
+  cmake_policy(SET CMP0074 NEW)
+endif()
+
+if (POLICY CMP0079)
+  cmake_policy(SET CMP0079 NEW)
+endif()
 
 find_package( Threads REQUIRED )
 
@@ -61,10 +66,17 @@ add_library(autd3capi SHARED
 
 include_directories(${INCLUDE_LIST})
 
-target_link_libraries(autd3capi ${Ads_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
-target_link_libraries(autd3capi libsoem)
-target_link_libraries(autd3capi ws2_32.lib)
-target_link_libraries(autd3capi winmm.lib)
+target_link_libraries(autd3capi ${CMAKE_THREAD_LIBS_INIT})
+if(WIN32)
+    target_link_libraries(autd3capi autdsoem)
+    target_link_libraries(autd3capi ${Ads_LIBRARIES})
+    target_link_libraries(autd3capi ws2_32.lib)
+    target_link_libraries(autd3capi winmm.lib)
+elseif(APPLE)
+    target_link_libraries(autd3capi pcap)
+else()
+    target_link_libraries(autd3capi rt)
+endif()
 
 set_target_properties(autd3capi
     PROPERTIES
@@ -73,5 +85,12 @@ set_target_properties(autd3capi
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4068 /wd4819")
+if (WIN32)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4068 /wd4819")
+endif()
+
+if(NOT WIN32)
+  set_property(TARGET autd3capi PROPERTY POSITION_INDEPENDENT_CODE ON)
+endif()
+
 add_compile_definitions(DLL_FOR_CAPI)

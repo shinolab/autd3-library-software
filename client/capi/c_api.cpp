@@ -3,23 +3,26 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/02/2020
+// Last Modified: 25/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
 //
 
-#include <codeanalysis\warnings.h>
 #include <errno.h>
-#include <windows.h>
 
 #include "autd3.hpp"
 #include "autd3_c_api.h"
 
+#if WIN32
+#include <codeanalysis\warnings.h>
 #pragma warning(push)
 #pragma warning(disable : ALL_CODE_ANALYSIS_WARNINGS)
+#endif
 #include <Eigen/Geometry>
+#if WIN32
 #pragma warning(pop)
+#endif
 
 #pragma region Controller
 void AUTDCreateController(AUTDControllerHandle *out) {

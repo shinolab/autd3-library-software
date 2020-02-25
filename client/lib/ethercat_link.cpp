@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 20/02/2020
+// Last Modified: 25/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -12,7 +12,6 @@
 #include "ethercat_link.hpp"
 
 #include <AdsLib.h>
-#include <windows.h>
 
 #include <algorithm>
 #include <exception>
@@ -154,7 +153,7 @@ void autd::internal::LocalEthercatLink::Send(size_t size, std::unique_ptr<uint8_
 }
 #else
 void autd::internal::LocalEthercatLink::Open(std::string location) {
-  throw runtime_error(
+  throw std::runtime_error(
       "Link to localhost has not been compiled. Rebuild this library on a "
       "Twincat3 host machine with TcADS-DLL.");
 }

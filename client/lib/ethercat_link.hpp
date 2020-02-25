@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 20/02/2020
+// Last Modified: 25/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -11,16 +11,21 @@
 
 #pragma once
 
-#include <codeanalysis\warnings.h>
 #include <stdio.h>
 
 #include <memory>
 #include <string>
 
+#if WIN32
+#include <codeanalysis\warnings.h>
 #pragma warning(push)
 #pragma warning(disable : ALL_CODE_ANALYSIS_WARNINGS)
+#endif
 #include <AdsLib.h>
+#if WIN32
 #pragma warning(pop)
+#endif
+
 #include "link.hpp"
 
 #ifdef _WINDOWS

@@ -1,0 +1,26 @@
+name: Linux
+
+on:
+  push:
+    tags-ignore:
+      - v*
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    - name: Checkout submodules
+      run: git submodule update --init --force --recursive
+    - name: Build
+      run: |
+        cd client
+        mkdir -p build && cd build
+        cmake .. -DCMAKE_BUILD_TYPE=Release
+        make
+    - name: lint
+      run: |
+        cd client/build
+        make cpplint

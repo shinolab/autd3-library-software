@@ -41,10 +41,13 @@ set(SOURCE_LIST
  
   controller.cpp
   geometry.cpp
+  ethercat_link.cpp
  
   ${OS}/timer.cpp
  
   link.hpp
+
+  ethercat_link.hpp
   timer.hpp
   soem_link.hpp
   privdef.hpp
@@ -58,16 +61,9 @@ set(SOURCE_LIST
   ../include/autd3.hpp
 )
 
-if(WIN32)
-  list(APPEND INCLUDE_LIST
-    ${Ads_INCLUDE_DIR}
-  )
-  
-  list(APPEND SOURCE_LIST
-  	ethercat_link.cpp
-    ethercat_link.hpp
-  )
-endif()
+list(APPEND INCLUDE_LIST
+  ${Ads_INCLUDE_DIR}
+)
 
 add_library(autd3 STATIC ${SOURCE_LIST})
 
@@ -113,9 +109,8 @@ if(WIN32)
   )
 endif()
 
-target_link_libraries(autd3 ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(autd3 ${Ads_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
 if (WIN32)
-  target_link_libraries(autd3 ${Ads_LIBRARIES})
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4068 /wd4819")
 endif()
