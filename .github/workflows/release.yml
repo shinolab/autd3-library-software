@@ -1,0 +1,61 @@
+on:
+  push:
+    tags:
+    - 'v*'
+
+name: Upload Release Asset
+
+jobs:   
+  publish:
+    name: Upload Release Asset
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Get the version
+        id: get_version
+        uses: actions/github-script@0.5.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          result-encoding: string
+          script: |
+            return 'autd3-'+context.payload.ref.replace(/refs\/tags\//, '')+'-win-x64.zip';
+      - name: Checkout submodules
+        shell: cmd
+        run: git submodule update --init --force --recursive
+      - name: setup-msbuild
+        uses: microsoft/setup-msbuild@v1
+      - name: Build project
+        run: |
+          cd client
+          cmake -G "Visual Studio 16 2019" -A x64 -B "build"
+          cd build
+          msbuild autd3.sln /t:build /p:Configuration=Release -maxcpucount
+          mkdir publish
+          mkdir publish/lib
+          mkdir publish/bin
+          cd ../..
+          copy client/build/lib/Release/autd3.lib client/build/publish/lib
+          copy client/build/libsoem/Release/libsoem.lib client/build/publish/lib
+          copy client/build/bin/Release/autd3capi.dll client/build/publish/bin
+          Compress-Archive -Path dist/AUTDServer, dist/firmware, client/include, client/build/publish/lib, client/build/publish/bin -DestinationPath assets.zip
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} 
+          asset_path: ./assets.zip
+          asset_name: ${{ steps.get_version.outputs.result }}
+          asset_content_type: application/zip

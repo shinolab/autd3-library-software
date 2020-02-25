@@ -1,6 +1,9 @@
 name: Windows
 
-on: [push]
+on:
+  push:
+    tags-ignore:
+      - v*
 
 jobs:
   build:
@@ -10,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Checkout submodules
-      shell: bash
+      shell: cmd
       run: git submodule update --init --force --recursive
     - name: setup-msbuild
       uses: microsoft/setup-msbuild@v1
@@ -18,6 +21,7 @@ jobs:
       run: |
         cd client
         cmake -G "Visual Studio 16 2019" -A x64 -B "build"
-        cmake ..
-    - name: msbuild
-      run: msbuild build\\autd3.sln /t:build /p:Configuration=Release;Platform="x64"
+    - name: MSBuild
+      run: |
+        cd client/build
+        msbuild autd3.sln /t:build /p:Configuration=Release
