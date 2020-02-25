@@ -4,7 +4,9 @@ on:
   push:
     tags-ignore:
       - v*
-
+    branches:
+      - '*'
+      
 jobs:
   build:
 
