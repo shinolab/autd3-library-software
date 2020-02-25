@@ -37,6 +37,7 @@ jobs:
           cd ../..
           copy client/build/lib/Release/autd3.lib client/build/publish/lib
           copy client/build/libsoem/Release/libsoem.lib client/build/publish/lib
+          copy client/build/deps/BeckhoffADS/Release/ads.lib client/build/publish/lib
           copy client/build/bin/Release/autd3capi.dll client/build/publish/bin
           Compress-Archive -Path dist/AUTDServer, dist/firmware, client/include, client/build/publish/lib, client/build/publish/bin -DestinationPath assets.zip
       - name: Create Release
