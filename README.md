@@ -1,3 +1,8 @@
+![Windows](https://github.com/shinolab/autd3-library-software/workflows/Windows/badge.svg?branch=v0.3)
+![Linux](https://github.com/shinolab/autd3-library-software/workflows/Linux/badge.svg?branch=v0.3)
+![MacOS](https://github.com/shinolab/autd3-library-software/workflows/MacOS/badge.svg?branch=v0.3)
+[![Upload Release Asset](https://github.com/shinolab/autd3-library-software/workflows/Upload%20Release%20Asset/badge.svg?branch=v0.3)](https://github.com/shinolab/autd3-library-software/releases)
+
 # autd3 #
 
 Version: 3.0.3.0
@@ -12,8 +17,11 @@ Version: 3.0.3.0
 
 The meanings of version number 3.x.y.z are
 * x: Architecture version.
-* y: Firmware version. If this number changes, the firmware of FPGA or CPU must be changed.
+* y: Firmware version. 
 * z: Software version.
+
+If the number of x or y changes, the firmware of FPGA or CPU must be upgraded.
+
 This versioning was introduced after version 3.0.3.0.
 
 ## CAUTION ##
