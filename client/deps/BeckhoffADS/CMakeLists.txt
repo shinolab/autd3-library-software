@@ -36,24 +36,6 @@ endif()
 
 #INSTALL(TARGETS ads LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
 
-if(UNIX AND NOT APPLE)
-  add_library(ads_shared SHARED
-    ADS/AdsLib/AdsDef.cpp
-    ADS/AdsLib/AdsLib.cpp
-    ADS/AdsLib/AmsConnection.cpp
-    ADS/AdsLib/AmsPort.cpp
-    ADS/AdsLib/AmsRouter.cpp
-    ADS/AdsLib/Log.cpp
-    ADS/AdsLib/NotificationDispatcher.cpp
-    ADS/AdsLib/Sockets.cpp
-    ADS/AdsLib/Frame.cpp
-  )
-  set_property(TARGET ads_shared PROPERTY POSITION_INDEPENDENT_CODE ON)
-  set_target_properties(ads_shared PROPERTIES OUTPUT_NAME ads)
-  set_target_properties(ads_shared
-    PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-  )
+if(NOT WIN32)
+  set_target_properties(ads PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

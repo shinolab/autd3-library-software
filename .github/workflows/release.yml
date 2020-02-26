@@ -60,7 +60,7 @@ jobs:
           copy client/build/lib/Release/autd3.lib client/build/publish/lib
           copy client/build/autdsoem/Release/autdsoem.lib client/build/publish/lib
           copy client/build/deps/BeckhoffADS/Release/ads.lib client/build/publish/lib
-          copy client/build/bin/Release/autd3capi.dll client/build/publish/bin
+          copy client/build/bin/Release/*.dll client/build/publish/bin
           Compress-Archive -Path dist/AUTDServer, dist/firmware, client/include, client/build/publish/lib, client/build/publish/bin -DestinationPath assets.zip
       - name: Load Release URL File from release job
         uses: actions/download-artifact@v1
@@ -112,9 +112,7 @@ jobs:
           cp -f client/build/lib/libautd3.a lib
           cp -f client/build/autdsoem/libautdsoem.a lib
           cp -f client/build/deps/BeckhoffADS/libads.a lib
-          cp -f client/build/bin/libautd3capi.so bin
-          cp -f client/build/bin/libautdsoem.so bin
-          cp -f client/build/bin/libads.so bin
+          cp -f client/build/bin/*.so bin
           mv -f dist/firmware firmware/
           mv -f client/include include/
           tar -zcvf assets.tar.gz firmware include lib bin
@@ -168,7 +166,7 @@ jobs:
           cp -f client/build/lib/libautd3.a lib
           cp -f client/build/autdsoem/libautdsoem.a lib
           cp -f client/build/deps/BeckhoffADS/libads.a lib
-          cp -f client/build/bin/libautd3capi.dylib bin
+          cp -f client/build/bin/*.dylib bin
           mv -f dist/firmware firmware/
           mv -f client/include include/
           tar -zcvf assets.tar.gz firmware include lib bin

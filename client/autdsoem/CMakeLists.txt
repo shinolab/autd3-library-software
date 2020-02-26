@@ -73,31 +73,6 @@ if(WIN32)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd26451 /wd6385  /wd6386 /wd6011 /wd26495 /wd4996 /wd6001 /wd4200")
 endif()
 
-if(UNIX AND NOT APPLE)
-	add_library(autdsoem_shared SHARED
-		libsoem.cpp
-		../lib/libsoem.hpp
-
-		${SOEM_PATH}/soem/ethercatbase.c
-		${SOEM_PATH}/soem/ethercatcoe.c
-		${SOEM_PATH}/soem/ethercatconfig.c
-		${SOEM_PATH}/soem/ethercatdc.c
-		${SOEM_PATH}/soem/ethercateoe.c
-		${SOEM_PATH}/soem/ethercatfoe.c
-		${SOEM_PATH}/soem/ethercatmain.c
-		${SOEM_PATH}/soem/ethercatprint.c
-		${SOEM_PATH}/soem/ethercatsoe.c
-		
-		${SOEM_PATH}/osal/${OS}/osal.c
-		${SOEM_PATH}/oshw/${OS}/nicdrv.c
-		${SOEM_PATH}/oshw/${OS}/oshw.c
-	)
-  set_property(TARGET autdsoem_shared PROPERTY POSITION_INDEPENDENT_CODE ON)
-  set_target_properties(autdsoem_shared PROPERTIES OUTPUT_NAME autdsoem)
-  set_target_properties(autdsoem_shared
-    PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-  )
+if(NOT WIN32)
+  set_target_properties(autdsoem PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
