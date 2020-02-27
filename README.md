@@ -1,11 +1,11 @@
-![Windows](https://github.com/shinolab/autd3-library-software/workflows/Windows/badge.svg?branch=v0.3)
-![Linux](https://github.com/shinolab/autd3-library-software/workflows/Linux/badge.svg?branch=v0.3)
-![MacOS](https://github.com/shinolab/autd3-library-software/workflows/MacOS/badge.svg?branch=v0.3)
-[![Upload Release Asset](https://github.com/shinolab/autd3-library-software/workflows/Upload%20Release%20Asset/badge.svg?branch=v0.3)](https://github.com/shinolab/autd3-library-software/releases)
+![Windows](https://github.com/shinolab/autd3-library-software/workflows/Windows/badge.svg?branch=dev)
+![Linux](https://github.com/shinolab/autd3-library-software/workflows/Linux/badge.svg?branch=dev)
+![MacOS](https://github.com/shinolab/autd3-library-software/workflows/MacOS/badge.svg?branch=dev)
+[![Upload Release Asset](https://github.com/shinolab/autd3-library-software/workflows/Upload%20Release%20Asset/badge.svg?branch=dev)](https://github.com/shinolab/autd3-library-software/releases)
 
 # autd3 #
 
-Version: 0.3.0
+Version: 0.3.1
 
 * This repository is forked from [old version](https://github.com/shinolab/autd)
 
