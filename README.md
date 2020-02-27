@@ -5,9 +5,9 @@
 
 # autd3 #
 
-Version: 3.0.3.0
+Version: 0.3.0
 
-* Old stable ver is [v3.0.0](https://github.com/shinolab/autd3-library-software/tree/v3.0.0)
+* This repository is forked from [old version](https://github.com/shinolab/autd)
 
 * There is also [version 3.1-rc](https://github.com/shinolab/autd3.1) which is equipped with the a high-speed amp/phase switching feature up to 1.28MHz.
 
@@ -15,18 +15,18 @@ Version: 3.0.3.0
 
 ## Versioning ##
 
-The meanings of version number 3.x.y.z are
+The meanings of version number x.y.z are
 * x: Architecture version.
-* y: Firmware version. 
+* y: Firmware version.
 * z: Software version.
 
 If the number of x or y changes, the firmware of FPGA or CPU must be upgraded.
 
-This versioning was introduced after version 3.0.3.0.
+This versioning was introduced after version 0.3.0.
 
 ## CAUTION ##
 
-Before using, be sure to write the v3.0.3 firmwares in `dist/firmware`
+Before using, be sure to write the v0.3 firmwares in `dist/firmware`
 
 See [readme](/dist/firmware/readme.md)
 
@@ -44,6 +44,12 @@ See [readme](/dist/firmware/readme.md)
         cmake ..
         make
     ```
+
+## Exmaple
+
+Run `simple_soem`.
+
+If you are using Linux/Mac, you may need to run as root.
 
 ## For other programming languages ##
 
