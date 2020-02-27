@@ -29,36 +29,15 @@ set(INCLUDE_LIST
   ${EIGEN_PATH}
 )
 
-set(SOURCE_LIST 
-  soem_link.cpp
- 
-  gain.cpp
-  matlabgain.cpp
-  holo_gain.cpp
-  groupedgain.cpp
- 
-  modulation.cpp
- 
-  controller.cpp
-  geometry.cpp
-  ethercat_link.cpp
- 
-  ${OS}/timer.cpp
- 
-  link.hpp
+file(GLOB cpp_files *.cpp)
+file(GLOB hpp_files *.hpp)
+file(GLOB include_files  ../include/*.hpp)
 
-  ethercat_link.hpp
-  timer.hpp
-  soem_link.hpp
-  privdef.hpp
-  ec_config.hpp
-  
-  ../include/core.hpp
-  ../include/controller.hpp
-  ../include/gain.hpp
-  ../include/modulation.hpp
-  ../include/geometry.hpp
-  ../include/autd3.hpp
+set(SOURCE_LIST 
+  ${cpp_files}
+  ${hpp_files}
+  ${OS}/timer.cpp
+  ${include_files}
 )
 
 list(APPEND INCLUDE_LIST

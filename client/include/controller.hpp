@@ -3,24 +3,13 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/02/2020
+// Last Modified: 27/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
 //
 
 #pragma once
-
-#if WIN32
-#include <codeanalysis\warnings.h>
-#pragma warning(push)
-#pragma warning(disable : ALL_CODE_ANALYSIS_WARNINGS)
-#endif
-#include <Eigen/Core>
-#include <Eigen/Geometry>
-#if WIN32
-#pragma warning(pop)
-#endif
 
 #include <memory>
 #include <string>
@@ -30,6 +19,7 @@
 #include "gain.hpp"
 #include "geometry.hpp"
 #include "modulation.hpp"
+#include "vector3.hpp"
 
 namespace autd {
 
@@ -81,8 +71,7 @@ class Controller {
   virtual void FinishSTModulation() = 0;
   virtual void Flush() = 0;
 
-  virtual void LateralModulationAT(Eigen::Vector3d point, Eigen::Vector3d dir = Eigen::Vector3d::UnitY(), double lm_amp = 2.5,
-                                   double lm_freq = 100) = 0;
+  virtual void LateralModulationAT(Vector3 point, Vector3 dir = Vector3::unit_y(), double lm_amp = 2.5, double lm_freq = 100) = 0;
 
   [[deprecated("AppendLateralGain is deprecated. Please use AppendSTMGain()")]] virtual void AppendLateralGain(GainPtr gain) = 0;
   [[deprecated("AppendLateralGain is deprecated. Please use AppendSTMGain()")]] virtual void AppendLateralGain(

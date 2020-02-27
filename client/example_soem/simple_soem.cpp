@@ -34,22 +34,27 @@ string GetAdapterName() {
 int main() {
   auto autd = autd::Controller::Create();
 
-  // AddDevice() must be called before Open(), and be called as many times as for the number of AUTDs connected.
-  autd->geometry()->AddDevice(Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0, 0));
-  // autd->geometry()->AddDevice(Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0, 0));
+  // AddDevice() must be called before Open(), and be called as many times as
+  // for the number of AUTDs connected.
+  autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+  // autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
 
   auto ifname = GetAdapterName();
   autd->Open(autd::LinkType::SOEM, ifname);
-  // If you have already recognized the EtherCAT adapter name, you can write it directly like below.
-  // autd->Open(autd::LinkType::SOEM, "\\Device\\NPF_{B5B631C6-ED16-4780-9C4C-3941AE8120A6}");
+  // If you have already recognized the EtherCAT adapter name, you can write it
+  // directly like below. autd->Open(autd::LinkType::SOEM,
+  // "\\Device\\NPF_{B5B631C6-ED16-4780-9C4C-3941AE8120A6}");
 
   if (!autd->is_open()) return ENXIO;
 
-  // If you use more than one AUTD, call CalibrateModulation only once after Open.
-  // It takes several seconds proportional to the number of AUTD you use.
+  // If you use more than one AUTD, call CalibrateModulation only once after
+  // Open. It takes several seconds proportional to the number of AUTD you use.
   // autd->CalibrateModulation();
 
-  autd->AppendGainSync(autd::FocalPointGain::Create(Eigen::Vector3d(90, 70, 150)));
+  auto g = autd::HoloGain::Create(std::vector<autd::Vector3>{autd::Vector3(70, 70, 150), autd::Vector3(110, 70, 150)}, std::vector<double>{1, 1});
+  // auto g = autd::FocalPointGain::Create(autd::Vector3(90, 70, 150));
+
+  autd->AppendGainSync(g);
   autd->AppendModulationSync(autd::SineModulation::Create(150));  // 150Hz AM
 
   cout << "press any key to finish..." << endl;

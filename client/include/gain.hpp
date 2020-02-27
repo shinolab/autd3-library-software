@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/02/2020
+// Last Modified: 27/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -20,18 +20,9 @@
 #include <string>
 #include <vector>
 
-#if WIN32
-#include <codeanalysis\warnings.h>
-#pragma warning(push)
-#pragma warning(disable : ALL_CODE_ANALYSIS_WARNINGS)
-#endif
-#include <Eigen/Core>
-#if WIN32
-#pragma warning(pop)
-#endif
-
 #include "core.hpp"
 #include "geometry.hpp"
+#include "vector3.hpp"
 
 namespace autd {
 class Gain;
@@ -72,35 +63,35 @@ using NullGain = Gain;
 
 class PlaneWaveGain : public Gain {
  public:
-  static GainPtr Create(Eigen::Vector3d direction);
-  static GainPtr Create(Eigen::Vector3d direction, uint8_t amp);
+  static GainPtr Create(Vector3 direction);
+  static GainPtr Create(Vector3 direction, uint8_t amp);
   void Build() override;
 
  private:
-  Eigen::Vector3d _direction;
+  Vector3 _direction;
   uint8_t _amp;
 };
 
 class FocalPointGain : public Gain {
  public:
-  static GainPtr Create(Eigen::Vector3d point);
-  static GainPtr Create(Eigen::Vector3d point, uint8_t amp);
+  static GainPtr Create(Vector3 point);
+  static GainPtr Create(Vector3 point, uint8_t amp);
   void Build() override;
 
  private:
-  Eigen::Vector3d _point;
+  Vector3 _point;
   uint8_t _amp = 0xff;
 };
 
 class BesselBeamGain : public Gain {
  public:
-  static GainPtr Create(Eigen::Vector3d point, Eigen::Vector3d vec_n, double theta_z);
-  static GainPtr Create(Eigen::Vector3d point, Eigen::Vector3d vec_n, double theta_z, uint8_t amp);
+  static GainPtr Create(Vector3 point, Vector3 vec_n, double theta_z);
+  static GainPtr Create(Vector3 point, Vector3 vec_n, double theta_z, uint8_t amp);
   void Build() override;
 
  private:
-  Eigen::Vector3d _point;
-  Eigen::Vector3d _vec_n;
+  Vector3 _point;
+  Vector3 _vec_n;
   double _theta_z = 0;
   uint8_t _amp = 0xff;
 };
@@ -125,12 +116,12 @@ class GroupedGain : public Gain {
 
 class HoloGainSdp : public Gain {
  public:
-  static GainPtr Create(Eigen::MatrixX3d foci, Eigen::VectorXd amp);
+  static GainPtr Create(std::vector<Vector3> foci, std::vector<double> amps);
   void Build() override;
 
  protected:
-  Eigen::MatrixX3d _foci;
-  Eigen::VectorXd _amp;
+  std::vector<Vector3> _foci;
+  std::vector<double> _amps;
 };
 
 using HoloGain = HoloGainSdp;

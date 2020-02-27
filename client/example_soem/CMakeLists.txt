@@ -1,10 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 
-set (CMAKE_CXX_STANDARD 11)
-set(EIGEN_PATH ../deps/Eigen3)
-
-# Eigen3
-include_directories( ${EIGEN_PATH} )
+set (CMAKE_CXX_STANDARD 17)
 
 add_executable(simple_soem simple_soem.cpp)
 include_directories(../include)

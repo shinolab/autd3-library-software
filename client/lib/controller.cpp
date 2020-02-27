@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 22/02/2020
+// Last Modified: 27/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -81,7 +81,7 @@ class AUTDController : public Controller {
   void FinishSTModulation() final;
   void Flush() final;
 
-  void LateralModulationAT(Eigen::Vector3d point, Eigen::Vector3d dir = Eigen::Vector3d::UnitY(), double lm_amp = 2.5, double lm_freq = 100) final;
+  void LateralModulationAT(Vector3 point, Vector3 dir, double lm_amp = 2.5, double lm_freq = 100) final;
   void AppendLateralGain(GainPtr gain) final;
   void AppendLateralGain(const std::vector<GainPtr> &gain_list) final;
   void StartLateralModulation(double freq) final;
@@ -304,7 +304,7 @@ void AUTDController::Flush() {
   std::queue<ModulationPtr>().swap(_send_mod_q);
 }
 
-void AUTDController::LateralModulationAT(Eigen::Vector3d point, Eigen::Vector3d dir, double lm_amp, double lm_freq) {
+void AUTDController::LateralModulationAT(Vector3 point, Vector3 dir, double lm_amp, double lm_freq) {
   auto p1 = point + lm_amp * dir;
   auto p2 = point - lm_amp * dir;
   this->FinishSTModulation();

@@ -3,7 +3,7 @@
 // Created Date: 11/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 22/02/2020
+// Last Modified: 27/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -14,6 +14,7 @@
 #include <math.h>
 
 #include <algorithm>
+#include <cassert>
 #include <cmath>
 #include <fstream>
 #include <limits>

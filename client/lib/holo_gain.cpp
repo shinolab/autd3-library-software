@@ -3,7 +3,7 @@
 // Created Date: 06/07/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 22/02/2020
+// Last Modified: 27/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -71,7 +71,7 @@ static double directivity_t4010a1(double theta_deg) {
   }
 }
 
-complex<double> transfer(Vector3d trans_pos, Vector3d trans_norm, Vector3d target_pos) {
+complex<double> transfer(Eigen::Vector3d trans_pos, Eigen::Vector3d trans_norm, Eigen::Vector3d target_pos) {
   const auto diff = target_pos - trans_pos;
   const auto dist = diff.norm();
   const auto theta = atan2(diff.dot(trans_norm), dist * trans_norm.norm()) * 180.0 / M_PI;
@@ -103,10 +103,10 @@ void removeColumn(MatrixXcd* const matrix, size_t col_to_remove) {
 
 namespace autd {
 
-autd::GainPtr autd::HoloGainSdp::Create(Eigen::MatrixX3d foci, Eigen::VectorXd amp) {
+autd::GainPtr autd::HoloGainSdp::Create(std::vector<Vector3> foci, std::vector<double> amps) {
   auto ptr = CreateHelper<HoloGainSdp>();
   ptr->_foci = foci;
-  ptr->_amp = amp;
+  ptr->_amps = amps;
   return ptr;
 }
 
@@ -119,7 +119,17 @@ void autd::HoloGainSdp::Build() {
 
   const auto alpha = 1e-3;
 
-  const size_t M = _foci.rows();
+  const size_t M = _foci.size();
+  Eigen::MatrixX3d foci(M, 3);
+  Eigen::VectorXd amps(M);
+
+  for (size_t i = 0; i < M; i++) {
+    foci(i, 0) = _foci[i].x();
+    foci(i, 1) = _foci[i].y();
+    foci(i, 2) = _foci[i].z();
+    amps(i) = _amps[i];
+  }
+
   const auto N = static_cast<int>(geo->numTransducers());
 
   Eigen::MatrixXcd P = Eigen::MatrixXcd::Zero(M, M);
@@ -130,11 +140,13 @@ void autd::HoloGainSdp::Build() {
   std::uniform_real_distribution<double> range(0, 1);
 
   for (size_t i = 0; i < M; i++) {
-    P(i, i) = _amp(i);
+    P(i, i) = amps(i);
 
-    const auto tp = _foci.row(i);
+    const auto tp = foci.row(i);
     for (int j = 0; j < N; j++) {
-      B(i, j) = hologainimpl::transfer(geo->position(j), geo->direction(j), tp);
+      const auto pos = geo->position(j);
+      const auto dir = geo->direction(j);
+      B(i, j) = hologainimpl::transfer(Eigen::Vector3d(pos.x(), pos.y(), pos.z()), Eigen::Vector3d(dir.x(), dir.y(), dir.z()), tp);
     }
   }
 
@@ -204,5 +216,5 @@ void autd::HoloGainSdp::Build() {
     SignalDesign(amp, phase, &D, &S);
     this->_data[geo->deviceIdForTransIdx(j)].at(j % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(D) << 8) + S;
   }
-}
+}  // namespace autd
 }  // namespace autd

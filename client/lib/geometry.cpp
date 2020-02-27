@@ -3,7 +3,7 @@
 // Created Date: 08/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 22/02/2020
+// Last Modified: 27/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -26,6 +26,7 @@
 #include "autd3.hpp"
 #include "controller.hpp"
 #include "privdef.hpp"
+#include "vector3.hpp"
 
 class Device {
  public:
@@ -66,15 +67,15 @@ class Device {
 namespace autd {
 class AUTDGeometry : public Geometry {
  public:
-  int AddDevice(Eigen::Vector3d position, Eigen::Vector3d euler_angles, int group = 0) final;
-  int AddDeviceQuaternion(Eigen::Vector3d position, Eigen::Quaterniond quaternion, int group = 0) final;
+  int AddDevice(Vector3 position, Vector3 euler_angles, int group = 0) final;
+  int AddDeviceQuaternion(Vector3 position, Quaternion quaternion, int group = 0) final;
 
   void DelDevice(int device_id) final;
   const int numDevices() noexcept final;
   const int numTransducers() noexcept final;
   int GroupIDForDeviceID(int device_id) final;
-  const Eigen::Vector3d position(int transducer_idx) final;
-  const Eigen::Vector3d &direction(int transducer_id) final;
+  const Vector3 position(int transducer_idx) final;
+  const Vector3 direction(int transducer_id) final;
   const int deviceIdForTransIdx(int transducer_idx) final;
   const int deviceIdForDeviceIdx(int device_index) final;
 
@@ -85,20 +86,27 @@ class AUTDGeometry : public Geometry {
     const auto eid = transducer_id / NUM_TRANS_IN_UNIT;
     return this->_devices.at(eid);
   }
+
+  const Vector3 _position(int transducer_idx);
+  const Vector3 _direction(int transducer_id);
 };
 
 GeometryPtr Geometry::Create() { return std::make_shared<AUTDGeometry>(); }
 
-int AUTDGeometry::AddDevice(Eigen::Vector3d position, Eigen::Vector3d euler_angles, int group) {
+int AUTDGeometry::AddDevice(Vector3 position, Vector3 euler_angles, int group) {
   const auto device_id = static_cast<int>(this->_devices.size());
-  this->_devices.push_back(Device::Create(device_id, position, euler_angles));
+  const auto pos = Eigen::Vector3d(position.x(), position.y(), position.z());
+  const auto ea = Eigen::Vector3d(euler_angles.x(), euler_angles.y(), euler_angles.z());
+  this->_devices.push_back(Device::Create(device_id, pos, ea));
   this->_group_map[device_id] = group;
   return device_id;
 }
 
-int AUTDGeometry::AddDeviceQuaternion(Eigen::Vector3d position, Eigen::Quaterniond quaternion, int group) {
+int AUTDGeometry::AddDeviceQuaternion(Vector3 position, Quaternion quaternion, int group) {
   const auto device_id = static_cast<int>(this->_devices.size());
-  this->_devices.push_back(Device::Create(device_id, position, quaternion));
+  const auto pos = Eigen::Vector3d(position.x(), position.y(), position.z());
+  const auto qua = Eigen::Quaterniond(quaternion.w(), quaternion.x(), quaternion.y(), quaternion.z());
+  this->_devices.push_back(Device::Create(device_id, pos, qua));
   this->_group_map[device_id] = group;
   return device_id;
 }
@@ -119,13 +127,17 @@ const int AUTDGeometry::numTransducers() noexcept { return this->numDevices() * 
 
 int AUTDGeometry::GroupIDForDeviceID(int device_id) { return this->_group_map[device_id]; }
 
-const Eigen::Vector3d AUTDGeometry::position(int transducer_id) {
+const Vector3 AUTDGeometry::position(int transducer_id) {
   const auto local_trans_id = transducer_id % NUM_TRANS_IN_UNIT;
   auto device = this->device(transducer_id);
-  return device->global_trans_positions.col(local_trans_id);
+  const auto pos = device->global_trans_positions.col(local_trans_id);
+  return Vector3(pos.x(), pos.y(), pos.z());
 }
 
-const Eigen::Vector3d &AUTDGeometry::direction(int transducer_id) { return this->_devices.at(this->deviceIdForTransIdx(transducer_id))->z_direction; }
+const Vector3 AUTDGeometry::direction(int transducer_id) {
+  const auto dir = this->_devices.at(this->deviceIdForTransIdx(transducer_id))->z_direction;
+  return Vector3(dir.x(), dir.y(), dir.z());
+}
 
 const int AUTDGeometry::deviceIdForDeviceIdx(int device_idx) { return this->_devices.at(device_idx)->device_id; }
 

@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/02/2020
+// Last Modified: 27/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -12,16 +12,9 @@
 #pragma once
 
 #include <memory>
-#if WIN32
-#include <codeanalysis\warnings.h>
-#pragma warning(push)
-#pragma warning(disable : ALL_CODE_ANALYSIS_WARNINGS)
-#endif
-#include <Eigen/Core>
-#include <Eigen/Geometry>
-#if WIN32
-#pragma warning(pop)
-#endif
+
+#include "quaternion.hpp"
+#include "vector3.hpp"
 
 namespace autd {
 using GeometryPtr = std::shared_ptr<Geometry>;
@@ -40,8 +33,8 @@ class Geometry {
    *
    * @return an id of added device, which is used to delete or do other device specific controls.
    */
-  virtual int AddDevice(Eigen::Vector3d position, Eigen::Vector3d euler_angles, int group = 0) = 0;
-  virtual int AddDeviceQuaternion(Eigen::Vector3d position, Eigen::Quaterniond quaternion, int group = 0) = 0;
+  virtual int AddDevice(Vector3 position, Vector3 euler_angles, int group = 0) = 0;
+  virtual int AddDeviceQuaternion(Vector3 position, Quaternion quaternion, int group = 0) = 0;
   /**
    * @brief Remove device from the geometry.
    */
@@ -49,11 +42,11 @@ class Geometry {
   virtual const int numDevices() noexcept = 0;
   virtual const int numTransducers() noexcept = 0;
   virtual int GroupIDForDeviceID(int device_iD) = 0;
-  virtual const Eigen::Vector3d position(int transducer_idx) = 0;
+  virtual const Vector3 position(int transducer_idx) = 0;
   /**
    * @brief Normalized direction of a transducer specified by id
    */
-  virtual const Eigen::Vector3d &direction(int transducer_id) = 0;
+  virtual const Vector3 direction(int transducer_id) = 0;
   virtual const int deviceIdForTransIdx(int transducer_idx) = 0;
   virtual const int deviceIdForDeviceIdx(int device_index) = 0;
 };

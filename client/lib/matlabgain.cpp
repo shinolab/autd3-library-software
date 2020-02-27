@@ -3,7 +3,7 @@
 // Created Date: 20/09/2016
 // Author:Seki Inoue
 // -----
-// Last Modified: 20/02/2020
+// Last Modified: 27/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -81,9 +81,9 @@ void autd::MatlabGain::Build() {
       double x = posarr[i * 3 + 0];
       double y = posarr[i * 3 + 1];
       double z = posarr[i * 3 + 2];
-      Eigen::Vector3d mtp = Eigen::Vector3d(x, y, z) * 10.0;
-      Eigen::Vector3d trp = this->geometry()->position(i);
-      if ((mtp - trp).norm() > 10) {
+      Vector3 mtp = Vector3(x, y, z) * 10.0;
+      Vector3 trp = this->geometry()->position(i);
+      if ((mtp - trp).l2_norm() > 10) {
         std::cout << "Warning: position mismatch at " << i << std::endl << mtp << std::endl << trp << std::endl;
       }
     }

@@ -3,16 +3,13 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/02/2020
+// Last Modified: 27/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
 //
 
 #include <errno.h>
-
-#include "autd3.hpp"
-#include "autd3_c_api.h"
 
 #if WIN32
 #include <codeanalysis\warnings.h>
@@ -23,6 +20,11 @@
 #if WIN32
 #pragma warning(pop)
 #endif
+
+#include "autd3.hpp"
+#include "autd3_c_api.h"
+#include "quaternion.hpp"
+#include "vector3.hpp"
 
 #pragma region Controller
 void AUTDCreateController(AUTDControllerHandle *out) {
@@ -54,12 +56,12 @@ void AUTDFreeAdapterPointer(void *p_adapter) {
 }
 int AUTDAddDevice(AUTDControllerHandle handle, double x, double y, double z, double rz1, double ry, double rz2, int group_id) {
   auto *cnt = static_cast<autd::Controller *>(handle);
-  return cnt->geometry()->AddDevice(Eigen::Vector3d(x, y, z), Eigen::Vector3d(rz1, ry, rz2), group_id);
+  return cnt->geometry()->AddDevice(autd::Vector3(x, y, z), autd::Vector3(rz1, ry, rz2), group_id);
 }
 int AUTDAddDeviceQuaternion(AUTDControllerHandle handle, double x, double y, double z, double qua_w, double qua_x, double qua_y, double qua_z,
                             int group_id) {
   auto *cnt = static_cast<autd::Controller *>(handle);
-  return cnt->geometry()->AddDeviceQuaternion(Eigen::Vector3d(x, y, z), Eigen::Quaterniond(qua_w, qua_x, qua_y, qua_z), group_id);
+  return cnt->geometry()->AddDeviceQuaternion(autd::Vector3(x, y, z), autd::Quaternion(qua_w, qua_x, qua_y, qua_z), group_id);
 }
 void AUTDDelDevice(AUTDControllerHandle handle, int devId) {
   auto *cnt = static_cast<autd::Controller *>(handle);
@@ -112,7 +114,7 @@ size_t AUTDRemainingInBuffer(AUTDControllerHandle handle) {
 
 #pragma region Gain
 void AUTDFocalPointGain(AUTDGainPtr *gain, double x, double y, double z, uint8_t amp) {
-  auto *g = autd::FocalPointGain::Create(Eigen::Vector3d(x, y, z), amp);
+  auto *g = autd::FocalPointGain::Create(autd::Vector3(x, y, z), amp);
   *gain = g;
 }
 void AUTDGroupedGain(AUTDGainPtr *gain, int *group_ids, AUTDGainPtr *gains, int size) {
@@ -130,11 +132,11 @@ void AUTDGroupedGain(AUTDGainPtr *gain, int *group_ids, AUTDGainPtr *gains, int 
   *gain = ggain;
 }
 void AUTDBesselBeamGain(AUTDGainPtr *gain, double x, double y, double z, double n_x, double n_y, double n_z, double theta_z) {
-  auto *g = autd::BesselBeamGain::Create(Eigen::Vector3d(x, y, z), Eigen::Vector3d(n_x, n_y, n_z), theta_z);
+  auto *g = autd::BesselBeamGain::Create(autd::Vector3(x, y, z), autd::Vector3(n_x, n_y, n_z), theta_z);
   *gain = g;
 }
 void AUTDPlaneWaveGain(AUTDGainPtr *gain, double n_x, double n_y, double n_z) {
-  auto *g = autd::PlaneWaveGain::Create(Eigen::Vector3d(n_x, n_y, n_z));
+  auto *g = autd::PlaneWaveGain::Create(autd::Vector3(n_x, n_y, n_z));
   *gain = g;
 }
 void AUTDCustomGain(AUTDGainPtr *gain, uint16_t *data, int data_length) {
@@ -142,16 +144,15 @@ void AUTDCustomGain(AUTDGainPtr *gain, uint16_t *data, int data_length) {
   *gain = g;
 }
 void AUTDHoloGain(AUTDGainPtr *gain, double *points, double *amps, int size) {
-  Eigen::MatrixX3d holo(size, 3);
-  Eigen::VectorXd amp(size);
+  std::vector<autd::Vector3> holo;
+  std::vector<double> amps_;
   for (int i = 0; i < size; i++) {
-    holo(i, 0) = points[3 * i];
-    holo(i, 1) = points[3 * i + 1];
-    holo(i, 2) = points[3 * i + 2];
-    amp(i) = amps[i];
+    autd::Vector3 v(points[3 * i], points[3 * i + 1], points[3 * i + 2]);
+    holo.push_back(v);
+    amps_.push_back(amps[i]);
   }
 
-  auto *g = autd::HoloGainSdp::Create(holo, amp);
+  auto *g = autd::HoloGainSdp::Create(holo, amps_);
   *gain = g;
 }
 void AUTDTransducerTestGain(AUTDGainPtr *gain, int idx, int amp, int phase) {
@@ -251,18 +252,18 @@ double *AUTDTransPosition(AUTDControllerHandle handle, int trans_idx) {
   auto *cnt = static_cast<autd::Controller *>(handle);
   auto pos = cnt->geometry()->position(trans_idx);
   auto *array = new double[3];
-  array[0] = pos[0];
-  array[1] = pos[1];
-  array[2] = pos[2];
+  array[0] = pos.x();
+  array[1] = pos.y();
+  array[2] = pos.z();
   return array;
 }
 double *AUTDTransDirection(AUTDControllerHandle handle, int trans_idx) {
   auto *cnt = static_cast<autd::Controller *>(handle);
   auto dir = cnt->geometry()->direction(trans_idx);
   auto *array = new double[3];
-  array[0] = dir[0];
-  array[1] = dir[1];
-  array[2] = dir[2];
+  array[0] = dir.x();
+  array[1] = dir.y();
+  array[2] = dir.z();
   return array;
 }
 double *GetAngleZYZ(double *rotation_matrix) {

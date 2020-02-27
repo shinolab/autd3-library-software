@@ -30,38 +30,19 @@ set(INCLUDE_LIST
   ${Ads_INCLUDE_DIR}
 )
 
+file(GLOB cpp_files ../lib/*.cpp)
+file(GLOB hpp_files ../lib/*.hpp)
+file(GLOB include_files  ../include/*.hpp)
+
 add_library(autd3capi SHARED
   c_api.cpp
+  ../include/autd3_c_api.h
   
-  ../lib/ethercat_link.cpp
-  ../lib/soem_link.cpp
-  
-  ../lib/gain.cpp
-  ../lib/matlabgain.cpp
-  ../lib/holo_gain.cpp
-  ../lib/groupedgain.cpp
-  
-  ../lib/modulation.cpp
-  
-  ../lib/controller.cpp
-  ../lib/geometry.cpp
-  
+  ${hpp_files}
+  ${cpp_files}
   ../lib/${OS}/timer.cpp
     
-  ../lib/link.hpp
-  ../lib/timer.hpp
-  ../lib/ethercat_link.hpp
-  ../lib/soem_link.hpp
-  ../lib/privdef.hpp
-  ../lib/ec_config.hpp
-  
-  ../include/core.hpp
-  ../include/controller.hpp
-  ../include/gain.hpp
-  ../include/modulation.hpp
-  ../include/geometry.hpp
-  ../include/autd3.hpp
-  ../include/autd3_c_api.h
+  ${include_files}
 )
 
 include_directories(${INCLUDE_LIST})
