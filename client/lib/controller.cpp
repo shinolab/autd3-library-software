@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <chrono>
 #include <condition_variable>
+#include <cstring>
 #include <iostream>
 #include <mutex>
 #include <queue>

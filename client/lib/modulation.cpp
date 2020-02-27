@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <cstring>
 #include <fstream>
 #include <limits>
 #include <numeric>
@@ -110,7 +111,7 @@ autd::ModulationPtr autd::RawPCMModulation::Create(std::string filename, double 
   char buf[sizeof(int)];
   while (ifs.read(buf, sizeof(int))) {
     int value;
-    memcpy(&value, buf, sizeof(int));
+    std::memcpy(&value, buf, sizeof(int));
     tmp.push_back(value);
   }
   /*
