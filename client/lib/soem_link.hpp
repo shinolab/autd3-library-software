@@ -3,7 +3,7 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/02/2020
+// Last Modified: 28/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -14,7 +14,7 @@
 #include <memory>
 #include <string>
 
-#include "libsoem.hpp"
+#include "autdsoem.hpp"
 #include "link.hpp"
 
 namespace autd {
@@ -34,7 +34,7 @@ class SOEMLink : public Link {
   int _dev_num = 0;
   std::string _ifname = "";
   uint8_t _id = 0;
-  autdsoem::ECConfig _config{0,0,0,0,0};
+  autdsoem::ECConfig _config{0, 0, 0, 0, 0};
 };
 }  // namespace internal
 }  // namespace autd

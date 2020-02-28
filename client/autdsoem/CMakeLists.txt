@@ -29,8 +29,8 @@ if(WIN32)
 endif()
 
 add_library(autdsoem STATIC
-	libsoem.cpp
-	../lib/libsoem.hpp
+	autdsoem.cpp
+	../lib/autdsoem.hpp
 
 	${SOEM_PATH}/soem/ethercatbase.c
 	${SOEM_PATH}/soem/ethercatcoe.c

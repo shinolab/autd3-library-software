@@ -1,9 +1,9 @@
-// File: libsoem.hpp
+// File: autdsoem.hpp
 // Project: include
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/02/2020
+// Last Modified: 28/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -50,4 +50,4 @@ struct EtherCATAdapterInfo {
   std::string desc;
   std::string name;
 };
-}  //  namespace libsoem
+}  // namespace autdsoem
