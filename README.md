@@ -28,7 +28,7 @@ This versioning was introduced after version 0.3.0.
 
 Before using, be sure to write the v0.3 firmwares in `dist/firmware`
 
-See [readme](/dist/firmware/readme.md)
+See [readme](/dist/firmware/Readme.md)
 
 ## Requirements
 
