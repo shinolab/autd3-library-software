@@ -34,7 +34,7 @@
 namespace autd {
 
 EtherCATAdapters Controller::EnumerateAdapters(int *const size) {
-  auto adapters = libsoem::EtherCATAdapterInfo::EnumerateAdapters();
+  auto adapters = autdsoem::EtherCATAdapterInfo::EnumerateAdapters();
   *size = static_cast<int>(adapters.size());
 #if DLL_FOR_CAPI
   EtherCATAdapters res = new EtherCATAdapter[*size];
@@ -42,7 +42,7 @@ EtherCATAdapters Controller::EnumerateAdapters(int *const size) {
 #else
   EtherCATAdapters res;
 #endif
-  for (auto adapter : libsoem::EtherCATAdapterInfo::EnumerateAdapters()) {
+  for (auto adapter : autdsoem::EtherCATAdapterInfo::EnumerateAdapters()) {
     EtherCATAdapter p;
     p.first = adapter.desc;
     p.second = adapter.name;

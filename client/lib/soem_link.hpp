@@ -29,12 +29,12 @@ class SOEMLink : public Link {
   bool CalibrateModulation();
 
  protected:
-  std::unique_ptr<libsoem::ISOEMController> _cnt;
+  std::unique_ptr<autdsoem::ISOEMController> _cnt;
   bool _is_open = false;
   int _dev_num = 0;
   std::string _ifname = "";
   uint8_t _id = 0;
-  libsoem::ECConfig _config;
+  autdsoem::ECConfig _config{0,0,0,0,0};
 };
 }  // namespace internal
 }  // namespace autd

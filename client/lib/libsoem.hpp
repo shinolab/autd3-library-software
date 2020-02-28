@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-namespace libsoem {
+namespace autdsoem {
 
 struct ECConfig {
   uint32_t ec_sm3_cyctime_ns;

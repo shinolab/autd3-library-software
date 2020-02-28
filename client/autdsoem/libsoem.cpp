@@ -48,7 +48,7 @@
 #include "../lib/libsoem.hpp"
 #include "ethercat.h"
 
-namespace libsoem {
+namespace autdsoem {
 
 static std::atomic<bool> AUTD3_LIB_SEND_COND(false);
 static std::atomic<bool> AUTD3_LIB_RTTHREAD_LOCK(false);

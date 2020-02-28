@@ -28,7 +28,7 @@
 namespace autd {
 
 void internal::SOEMLink::Open(std::string ifname) {
-  _cnt = libsoem::ISOEMController::Create();
+  _cnt = autdsoem::ISOEMController::Create();
 
   auto ifname_and_devNum = autd::split(ifname, ':');
   _dev_num = stoi(ifname_and_devNum[1]);
@@ -102,7 +102,7 @@ bool internal::SOEMLink::CalibrateModulation() {
   auto success = false;
   std::vector<CalibrationStatus> statuses;
 
-  libsoem::ECConfig calib_config = this->_config;
+  autdsoem::ECConfig calib_config = this->_config;
   calib_config.ec_sync0_cyctime_ns = MOD_PERIOD_MS * 1000 * 1000;
 
   for (size_t i = 0; i < 10; i++) {
