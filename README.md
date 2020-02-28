@@ -1,7 +1,6 @@
 ![Windows](https://github.com/shinolab/autd3-library-software/workflows/Windows/badge.svg?branch=dev)
 ![Linux](https://github.com/shinolab/autd3-library-software/workflows/Linux/badge.svg?branch=dev)
 ![MacOS](https://github.com/shinolab/autd3-library-software/workflows/MacOS/badge.svg?branch=dev)
-[![Upload Release Asset](https://github.com/shinolab/autd3-library-software/workflows/Upload%20Release%20Asset/badge.svg?branch=dev)](https://github.com/shinolab/autd3-library-software/releases)
 
 # autd3 #
 
@@ -45,7 +44,7 @@ See [readme](/dist/firmware/Readme.md)
         make
     ```
 
-## Exmaple
+## Example
 
 Run `simple_soem`.
 
