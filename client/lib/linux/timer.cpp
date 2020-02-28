@@ -3,13 +3,18 @@
 // Created Date: 04/09/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 23/02/2020
+// Last Modified: 28/02/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
 //
 
 #include "../timer.hpp"
+
+#include <signal.h>
+#include <string.h>
+#include <time.h>
+
 #include <atomic>
 #include <chrono>
 #include <cmath>
@@ -18,10 +23,6 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-
-#include <signal.h>
-#include <string.h>
-#include <time.h>
 
 namespace autd {
 

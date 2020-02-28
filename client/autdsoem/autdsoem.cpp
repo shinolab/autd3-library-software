@@ -46,7 +46,7 @@
 #include <vector>
 
 #include "../lib/autdsoem.hpp"
-#include "ethercat.h"
+#include "./ethercat.h"
 
 namespace autdsoem {
 
