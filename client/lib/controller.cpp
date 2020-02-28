@@ -83,11 +83,6 @@ class AUTDController : public Controller {
   void Flush() final;
 
   void LateralModulationAT(Vector3 point, Vector3 dir, double lm_amp = 2.5, double lm_freq = 100) final;
-  void AppendLateralGain(GainPtr gain) final;
-  void AppendLateralGain(const std::vector<GainPtr> &gain_list) final;
-  void StartLateralModulation(double freq) final;
-  void FinishLateralModulation() final;
-  void ResetLateralGain() final;
 
  private:
   GeometryPtr _geometry;
@@ -405,14 +400,5 @@ std::unique_ptr<uint8_t[]> AUTDController::MakeBody(GainPtr gain, ModulationPtr 
   return body;
 }
 
-#pragma region deprecated
-void AUTDController::AppendLateralGain(GainPtr gain) { this->AppendSTMGain(gain); }
-void AUTDController::AppendLateralGain(const std::vector<GainPtr> &gain_list) { this->AppendSTMGain(gain_list); }
-void AUTDController::StartLateralModulation(double freq) { this->StartSTModulation(freq); }
-void AUTDController::FinishLateralModulation() { this->StopSTModulation(); }
-void AUTDController::ResetLateralGain() { this->FinishSTModulation(); }
-#pragma endregion
-
 ControllerPtr Controller::Create() { return CreateHelper<AUTDController>(); }
-
 }  // namespace autd

@@ -92,11 +92,6 @@ EXPORT int AUTDDevIdForTransIdx(AUTDControllerHandle handle, int transIdx);
 EXPORT double *AUTDTransPosition(AUTDControllerHandle handle, int transIdx);
 EXPORT double *AUTDTransDirection(AUTDControllerHandle handle, int transIdx);
 EXPORT double *GetAngleZYZ(double *rotationMatrix);
-
-EXPORT void AUTDAppendLateralGain(AUTDControllerHandle handle, AUTDGainPtr gain);
-EXPORT void AUTDStartLateralModulation(AUTDControllerHandle handle, double freq);
-EXPORT void AUTDFinishLateralModulation(AUTDControllerHandle handle);
-EXPORT void AUTDResetLateralGain(AUTDControllerHandle handle);
 #pragma endregion
 
 #pragma region Debug

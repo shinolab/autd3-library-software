@@ -277,26 +277,6 @@ double *GetAngleZYZ(double *rotation_matrix) {
   return angleZYZ;
 }
 
-#pragma region deprecated
-void AUTDAppendLateralGain(AUTDControllerHandle handle, AUTDGainPtr gain) {
-  auto *cnt = static_cast<autd::Controller *>(handle);
-  auto *g = static_cast<autd::Gain *>(gain);
-  cnt->AppendLateralGain(g);
-}
-void AUTDStartLateralModulation(AUTDControllerHandle handle, double freq) {
-  auto *cnt = static_cast<autd::Controller *>(handle);
-  cnt->StartLateralModulation(freq);
-}
-void AUTDFinishLateralModulation(AUTDControllerHandle handle) {
-  auto *cnt = static_cast<autd::Controller *>(handle);
-  cnt->FinishLateralModulation();
-}
-void AUTDResetLateralGain(AUTDControllerHandle handle) {
-  auto *cnt = static_cast<autd::Controller *>(handle);
-  cnt->ResetLateralGain();
-}
-#pragma endregion
-
 #pragma endregion
 
 #pragma region Debug
