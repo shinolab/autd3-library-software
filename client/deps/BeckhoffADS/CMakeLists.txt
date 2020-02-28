@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 
-set (CMAKE_CXX_STANDARD 11)
+set (CMAKE_CXX_STANDARD 17)
 
 execute_process(COMMAND git submodule update)
 message("-- Updating git submodule done")
@@ -31,7 +31,7 @@ set (Ads_LIBRARIES ads PARENT_SCOPE)
 set (Ads_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ADS/AdsLib/ PARENT_SCOPE)
 
 if (WIN32)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4267")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4267 /wd4996 /wd4834")
 endif()
 
 #INSTALL(TARGETS ads LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
