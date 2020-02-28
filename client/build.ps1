@@ -28,12 +28,12 @@ function ColorEcho($color, $PREFIX, $message) {
     Write-Host ":", $message
 }
 
-function FindCMake() {
-    $cmake_reg = Get-ChildItem HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall | 
+function FindInstallLocation([string]$displayName) {
+    $reg = Get-ChildItem HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall | 
     ForEach-Object { Get-ItemProperty $_.PsPath } | 
-    Where-Object DisplayName -match "CMake"
-    if ($cmake_reg) {
-        return Join-Path $cmake_reg.InstallLocation \bin
+    Where-Object DisplayName -match $displayName
+    if ($reg) {
+        return Join-Path $reg.InstallLocation \bin
     }
     else {
         return "NULL"
@@ -51,6 +51,7 @@ if ($ENABLE_TEST -and ($TOOL_CHAIN -eq "")) {
     Exit
 }
 
+# Show VS info
 $IDE_NAME = "Visual Studio "
 if ($VS_VERSION -eq 2017) {
     if ( ($ARCH -eq "x86") -or ($ARCH -eq "Win32")) {
@@ -66,30 +67,10 @@ elseif ($VS_VERSION -eq 2019) {
 else {
     ColorEcho "Red" "Error" "This Library only support Visual Studio 2017 or 2019."
 }
-
 ColorEcho "Green" "INFO" "Use", $IDE_NAME, "with", $ARCH, "architecture."
 
-if (-not (Get-Command cmake -ea SilentlyContinue)) {
-    ColorEcho "Green" "INFO" "CMake not found in PATH. Looking for CMake..."
-    $cmake_path = FindCMake
-    if ($cmake_path -eq "NULL") {
-        ColorEcho "Red" "Error" "CMake not found. Install CMake or set CMake binary folder to PATH."
-        $host.UI.RawUI.ReadKey() | Out-Null
-        exit
-    }
-    else {
-        $env:Path = $env:Path + ";" + $cmake_path
-    }
-}
-$cmake_version = 0
-foreach ($line in cmake -version) {
-    $ary = $line -split " "
-    $cmake_version = $ary[2]
-    break
-}
-ColorEcho "Green" "INFO" "Find CMake", $cmake_version
-
-ColorEcho "Green" "INFO" "Create project directory if not exists."
+# Creating project dir
+ColorEcho "Green" "INFO" "Create project directory if not exists. [", $PROJECT_DIR, "]"
 if (Test-Path $PROJECT_DIR) { 
     ColorEcho "Yellow" "WARNING" "Directory", $PROJECT_DIR, "is already exists."
     $ans = Read-Host "Overwrite? (Y/[N])"
@@ -114,6 +95,47 @@ if (New-Item -Path $PROJECT_DIR -ItemType Directory) {
     ColorEcho "Green" "INFO" "Success to create project directory", $PROJECT_DIR
 }
 
+# Find CMake
+if (-not (Get-Command cmake -ea SilentlyContinue)) {
+    ColorEcho "Green" "INFO" "CMake not found in PATH. Looking for CMake..."
+    $cmake_path = FindInstallLocation "CMake"
+    if ($cmake_path -eq "NULL") {
+        ColorEcho "Red" "Error" "CMake not found. Install CMake or set CMake binary folder to PATH."
+        $host.UI.RawUI.ReadKey() | Out-Null
+        exit
+    }
+    else {
+        $env:Path = $env:Path + ";" + $cmake_path
+    }
+}
+$cmake_version = 0
+foreach ($line in cmake -version) {
+    $ary = $line -split " "
+    $cmake_version = $ary[2]
+    break
+}
+ColorEcho "Green" "INFO" "CMake is found", $cmake_version
+
+# Find Git & update submodule
+if (-not (Get-Command git -ea SilentlyContinue)) {
+    ColorEcho "Green" "INFO" "Git not found in PATH. Looking for Git..."
+    $git_path = FindInstallLocation "Git"
+    if ($git_path -eq "NULL") {
+        ColorEcho "Yellow" "WARN" "Git not found. Git submodules are not updated."
+    }
+    else {
+        $env:Path = $env:Path + ";" + $git_path
+    }
+}
+if (Get-Command git -ea SilentlyContinue) {
+    ColorEcho "Green" "INFO" "Git is found."
+    ColorEcho "Green" "INFO" "Updating git submodules..."
+    Push-Location ".."
+    Invoke-Expression "git submodule update --init --recursive"
+    Pop-Location
+}
+
+# CMake build
 ColorEcho "Green" "INFO" "Creating VS solution..."
 Push-Location $PROJECT_DIR
 $command = "cmake .. -G " + '$IDE_NAME'
@@ -134,7 +156,6 @@ if ($DISABLE_MATLAB) {
 else {
     $command += " -D DISABLE_MATLAB=OFF"
 }
-
 Invoke-Expression $command
 Pop-Location
 
