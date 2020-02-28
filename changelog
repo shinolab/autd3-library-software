@@ -1,3 +1,7 @@
+# 0.3.1
+* Delete Eigen3 from interface
+* Delete deprecated methods
+
 # 0.3.0
 * introduced versioning
     *The meanings of version number 3.x.y.z are

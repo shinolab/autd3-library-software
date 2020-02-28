@@ -1,6 +1,6 @@
-![Windows](https://github.com/shinolab/autd3-library-software/workflows/Windows/badge.svg?branch=dev)
-![Linux](https://github.com/shinolab/autd3-library-software/workflows/Linux/badge.svg?branch=dev)
-![MacOS](https://github.com/shinolab/autd3-library-software/workflows/MacOS/badge.svg?branch=dev)
+![Windows](https://github.com/shinolab/autd3-library-software/workflows/Windows/badge.svg)
+![Linux](https://github.com/shinolab/autd3-library-software/workflows/Linux/badge.svg)
+![MacOS](https://github.com/shinolab/autd3-library-software/workflows/MacOS/badge.svg)
 
 # autd3 #
 
