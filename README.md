@@ -32,7 +32,7 @@ See [readme](/dist/firmware/Readme.md)
 
 ## Requirements
 
-* If you are using Windows, install [Npcap](https://nmap.org/npcap/) with WinPcap API-compatible mode (recomennded) or [WinPcap](https://www.winpcap.org/).
+* If you are using Windows, install [Npcap](https://nmap.org/npcap/) with WinPcap API-compatible mode (recommended) or [WinPcap](https://www.winpcap.org/).
 
 ## Build ##
 
