@@ -9,7 +9,7 @@ Version: 0.3.1
 
 * This repository is forked from [old version](https://github.com/shinolab/autd)
 
-* There is also [version 3.1-rc](https://github.com/shinolab/autd3.1) which is equipped with the a high-speed amp/phase switching feature up to 1.28MHz.
+* There is also [version 3.1-rc](https://github.com/shinolab/autd3.1) which is equipped with a high-speed amp/phase switching feature up to 1.28MHz.
 
 * For more details, refer to [Wiki](https://github.com/shinolab/autd3-library-software/wiki)
 
@@ -36,18 +36,24 @@ See [readme](/dist/firmware/Readme.md)
 
 ## Build ##
 
-* Windows: run `client/build.ps1`
-* Linux/Mac: 
-    ```
-        cd client
+* Pre-built binaries and header files are on the [GitHub Release page](https://github.com/shinolab/autd3-library-software/releases). Instead, if you want to build from source, install CMake version 3.12 or higher and follow the instructions below.
+    * Windows:
+        ```
+        git clone https://github.com/shinolab/autd3-library-software.git --recursive 
+        ```
+        Then,  run `client/build.ps1` (Visual Studio 2019 is required)
+    * Linux/Mac: 
+        ```
+        git clone https://github.com/shinolab/autd3-library-software.git --recursive
+        cd autd3-library-software/client
         mkdir build && cd build
         cmake ..
         make
-    ```
+        ```
 
 ## Example
 
-Run `simple_soem`.
+See `client/example_soem/simple_soem.cpp`
 
 If you are using Linux/Mac, you may need to run as root.
 
