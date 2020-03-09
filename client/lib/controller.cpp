@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 27/02/2020
+// Last Modified: 09/03/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -25,9 +25,7 @@
 #include "geometry.hpp"
 #include "link.hpp"
 #include "privdef.hpp"
-#if WIN32
 #include "ethercat_link.hpp"
-#endif
 #include "soem_link.hpp"
 #include "timer.hpp"
 
@@ -140,17 +138,21 @@ void AUTDController::Open(LinkType type, std::string location) {
 
   switch (type) {
 #if WIN32
-    case LinkType::ETHERCAT:
-    case LinkType::TwinCAT: {
+    case LinkType::TwinCAT:
+#endif
+    case LinkType::ETHERCAT: {
+#if WIN32
       if (location == "" || location.find("localhost") == 0 || location.find("0.0.0.0") == 0 || location.find("127.0.0.1") == 0) {
         this->_link = std::make_shared<internal::LocalEthercatLink>();
       } else {
+#endif
         this->_link = std::make_shared<internal::EthercatLink>();
+#if WIN32
       }
+#endif
       this->_link->Open(location);
       break;
     }
-#endif
     case LinkType::SOEM: {
       this->_link = std::make_shared<internal::SOEMLink>();
       auto device_num = this->_geometry->numDevices();
@@ -166,7 +168,7 @@ void AUTDController::Open(LinkType type, std::string location) {
     this->InitPipeline();
   else
     this->Close();
-}
+}  // namespace autd
 void AUTDController::SetSilentMode(bool silent) noexcept { this->_silent_mode = silent; }
 void AUTDController::CalibrateModulation() { this->_link->CalibrateModulation(); }
 void AUTDController::Close() {
