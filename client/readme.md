@@ -38,10 +38,6 @@ make
 sudo exmaple_soem/simple_soem
 ```
 
-## Coding Style ##
-
-Google C++ Style Guide with LineLength = 150
-
 # Author #
 
 Shun Suzuki, 2019-2020

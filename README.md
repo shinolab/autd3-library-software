@@ -1,15 +1,15 @@
 ![Windows](https://github.com/shinolab/autd3-library-software/workflows/Windows/badge.svg)
 ![Linux](https://github.com/shinolab/autd3-library-software/workflows/Linux/badge.svg)
 ![MacOS](https://github.com/shinolab/autd3-library-software/workflows/MacOS/badge.svg)
-![Upload Release Asset](https://github.com/shinolab/autd3-library-software/workflows/Upload%20Release%20Asset/badge.svg?branch=v0.3)
+![Upload Release Asset](https://github.com/shinolab/autd3-library-software/workflows/Upload%20Release%20Asset/badge.svg)
 
 # autd3 #
 
-Version: 0.3.1
+Version: 0.3.2
 
 * This repository is forked from [old version](https://github.com/shinolab/autd)
 
-* There is also [version 3.1-rc](https://github.com/shinolab/autd3.1) which is equipped with a high-speed amp/phase switching feature up to 1.28MHz.
+* There is also [version 1.0.0-rc](https://github.com/shinolab/autd3.1) which is equipped with a high-speed amp/phase switching feature up to 1.28MHz.
 
 * For more details, refer to [Wiki](https://github.com/shinolab/autd3-library-software/wiki)
 

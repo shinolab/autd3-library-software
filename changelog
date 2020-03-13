@@ -1,3 +1,7 @@
+# 0.3.2
+* Added WavModulation
+* Delete unused methods
+
 # 0.3.1
 * Delete Eigen3 from interface
 * Delete deprecated methods
