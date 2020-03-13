@@ -3,18 +3,24 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 28/02/2020
+// Last Modified: 13/03/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
 //
 
 #if (_WIN32 || _WIN64)
+#ifndef WINDOWS
 #define WINDOWS
+#endif
 #elif defined __APPLE__
+#ifndef MACOSX
 #define MACOSX
+#endif
 #elif defined __linux__
+#ifndef LINUX
 #define LINUX
+#endif
 #else
 #error "Not supported."
 #endif
@@ -237,8 +243,8 @@ void SOEMController::CreateCopyThread(size_t header_size, size_t body_size) {
       header_size, body_size);
 }
 
-void SOEMController::Open(const char *ifname, size_t devNum, ECConfig config) {
-  _dev_num = devNum;
+void SOEMController::Open(const char *ifname, size_t dev_num, ECConfig config) {
+  _dev_num = dev_num;
   _output_frame_size = (config.header_size + config.body_size) * _dev_num;
 
   auto size = _output_frame_size + (config.input_frame_size * _dev_num);
@@ -256,87 +262,103 @@ void SOEMController::Open(const char *ifname, size_t devNum, ECConfig config) {
 
   _sync0_cyctime = config.ec_sync0_cyctime_ns;
 
-  if (ec_init(ifname)) {
-    if (ec_config(0, _io_map) > 0) {
-      ec_configdc();
+  if (ec_init(ifname) <= 0) {
+    std::cerr << "No socket connection on " << ifname << std::endl;
+    return;
+  }
 
-      ec_statecheck(0, EC_STATE_SAFE_OP, EC_TIMEOUTSTATE * 4);
+  auto wc = ec_config(0, _io_map);
+  if (wc <= 0) {
+    std::cerr << "No slaves found!" << std::endl;
+    return;
+  } else if (wc != dev_num) {
+    std::cerr << "The number of slaves you added:" << dev_num << ", but found: " << wc << std::endl;
+  }
 
-      ec_slave[0].state = EC_STATE_OPERATIONAL;
-      ec_send_processdata();
-      ec_receive_processdata(EC_TIMEOUTRET);
+  ec_configdc();
 
-      ec_writestate(0);
+  ec_statecheck(0, EC_STATE_SAFE_OP, EC_TIMEOUTSTATE * 4);
 
-      auto chk = 200;
-      do {
-        ec_statecheck(0, EC_STATE_OPERATIONAL, 50000);
-      } while (chk-- && (ec_slave[0].state != EC_STATE_OPERATIONAL));
+  ec_slave[0].state = EC_STATE_OPERATIONAL;
+  ec_send_processdata();
+  ec_receive_processdata(EC_TIMEOUTRET);
 
-      if (ec_slave[0].state == EC_STATE_OPERATIONAL) {
-        _is_open = true;
+  ec_writestate(0);
 
-        SetupSync0(true, _sync0_cyctime);
+  auto chk = 200;
+  do {
+    ec_statecheck(0, EC_STATE_OPERATIONAL, 50000);
+  } while (chk-- && (ec_slave[0].state != EC_STATE_OPERATIONAL));
+
+  if (ec_slave[0].state != EC_STATE_OPERATIONAL) {
+    std::cerr << "One ore more slaves are not responding." << std::endl;
+    return;
+  }
+
+  SetupSync0(true, _sync0_cyctime);
 
 #ifdef WINDOWS
-        _timerQueue = CreateTimerQueue();
-        if (_timerQueue == NULL) std::cerr << "CreateTimerQueue failed." << std::endl;
+  _timerQueue = CreateTimerQueue();
+  if (_timerQueue == NULL) {
+    std::cerr << "CreateTimerQueue failed." << std::endl;
+    return;
+  }
 
-        if (!CreateTimerQueueTimer(&_timer, _timerQueue, (WAITORTIMERCALLBACK)RTthread, reinterpret_cast<void *>(this), 0,
-                                   config.ec_sm3_cyctime_ns / 1000 / 1000, 0))
-          std::cerr << "CreateTimerQueueTimer failed." << std::endl;
+  if (!CreateTimerQueueTimer(&_timer, _timerQueue, (WAITORTIMERCALLBACK)RTthread, reinterpret_cast<void *>(this), 0,
+                             config.ec_sm3_cyctime_ns / 1000 / 1000, 0)) {
+    std::cerr << "CreateTimerQueueTimer failed." << std::endl;
+    return;
+  }
 
-        HANDLE hProcess = GetCurrentProcess();
-        if (!SetPriorityClass(hProcess, REALTIME_PRIORITY_CLASS)) {
-          std::cerr << "Failed to SetPriorityClass" << std::endl;
-        }
+  HANDLE hProcess = GetCurrentProcess();
+  if (!SetPriorityClass(hProcess, REALTIME_PRIORITY_CLASS)) {
+    std::cerr << "Failed to SetPriorityClass" << std::endl;
+  }
 
 #elif defined MACOSX
-        _queue = dispatch_queue_create("timerQueue", 0);
+  _queue = dispatch_queue_create("timerQueue", 0);
 
-        _timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _queue);
-        dispatch_source_set_event_handler(_timer, ^{
-          RTthread(this);
-        });
+  _timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _queue);
+  dispatch_source_set_event_handler(_timer, ^{
+    RTthread(this);
+  });
 
-        dispatch_source_set_cancel_handler(_timer, ^{
-          dispatch_release(_timer);
-          dispatch_release(_queue);
-        });
+  dispatch_source_set_cancel_handler(_timer, ^{
+    dispatch_release(_timer);
+    dispatch_release(_queue);
+  });
 
-        dispatch_time_t start = dispatch_time(DISPATCH_TIME_NOW, 0);
-        dispatch_source_set_timer(_timer, start, config.ec_sm3_cyctime_ns, 0);
-        dispatch_resume(_timer);
+  dispatch_time_t start = dispatch_time(DISPATCH_TIME_NOW, 0);
+  dispatch_source_set_timer(_timer, start, config.ec_sm3_cyctime_ns, 0);
+  dispatch_resume(_timer);
 #elif defined LINUX
-        struct itimerspec itval;
-        struct sigevent se;
+  struct itimerspec itval;
+  struct sigevent se;
 
-        itval.it_value.tv_sec = 0;
-        itval.it_value.tv_nsec = config.ec_sm3_cyctime_ns;
-        itval.it_interval.tv_sec = 0;
-        itval.it_interval.tv_nsec = config.ec_sm3_cyctime_ns;
+  itval.it_value.tv_sec = 0;
+  itval.it_value.tv_nsec = config.ec_sm3_cyctime_ns;
+  itval.it_interval.tv_sec = 0;
+  itval.it_interval.tv_nsec = config.ec_sm3_cyctime_ns;
 
-        memset(&se, 0, sizeof(se));
-        se.sigev_value.sival_ptr = this;
-        se.sigev_notify = SIGEV_THREAD;
-        se.sigev_notify_function = RTthread;
-        se.sigev_notify_attributes = NULL;
+  memset(&se, 0, sizeof(se));
+  se.sigev_value.sival_ptr = this;
+  se.sigev_notify = SIGEV_THREAD;
+  se.sigev_notify_function = RTthread;
+  se.sigev_notify_attributes = NULL;
 
-        if (timer_create(CLOCK_REALTIME, &se, &_timer_id) < 0) std::cerr << "Error: timer_create." << std::endl;
+  if (timer_create(CLOCK_REALTIME, &se, &_timer_id) < 0) {
+    std::cerr << "Error: timer_create." << std::endl;
+    return;
+  }
 
-        if (timer_settime(_timer_id, 0, &itval, NULL) < 0) std::cerr << "Error: timer_settime." << std::endl;
+  if (timer_settime(_timer_id, 0, &itval, NULL) < 0) {
+    std::cerr << "Error: timer_settime." << std::endl;
+    return;
+  }
 #endif
 
-        CreateCopyThread(config.header_size, config.body_size);
-      } else {
-        std::cerr << "One ore more slaves are not responding." << std::endl;
-      }
-    } else {
-      std::cerr << "No slaves found!" << std::endl;
-    }
-  } else {
-    std::cerr << "No socket connection on " << ifname << std::endl;
-  }
+  _is_open = true;
+  CreateCopyThread(config.header_size, config.body_size);
 }
 
 bool SOEMController::Close() {
