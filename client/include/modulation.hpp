@@ -3,7 +3,7 @@
 // Created Date: 04/11/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/02/2020
+// Last Modified: 13/03/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -53,5 +53,10 @@ class SawModulation : public Modulation {
 class RawPCMModulation : public Modulation {
  public:
   static ModulationPtr Create(std::string filename, double samplingFreq = 0.0);
+};
+
+class WavModulation : public Modulation {
+ public:
+  static ModulationPtr Create(std::string filename);
 };
 }  // namespace autd
