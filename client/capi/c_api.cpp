@@ -266,17 +266,6 @@ double *AUTDTransDirection(AUTDControllerHandle handle, int trans_idx) {
   array[2] = dir.z();
   return array;
 }
-double *GetAngleZYZ(double *rotation_matrix) {
-  Eigen::Matrix3d rot;
-  for (int i = 0; i < 9; i++) rot(i / 3, i % 3) = rotation_matrix[i];
-  auto euler = rot.eulerAngles(2, 1, 2);
-  auto *angleZYZ = new double[3];
-  angleZYZ[0] = euler[0];
-  angleZYZ[1] = euler[1];
-  angleZYZ[2] = euler[2];
-  return angleZYZ;
-}
-
 #pragma endregion
 
 #pragma region Debug
@@ -288,8 +277,6 @@ void DebugLog(const char *msg) {
 }
 
 void SetDebugLog(DebugLogFunc func) { _debugLogFunc = func; }
-
-void DebugLogTest() { DebugLog("Debug Log Test"); }
 #endif
 
 #pragma endregion

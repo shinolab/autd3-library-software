@@ -52,7 +52,6 @@ EXPORT bool AUTDIsOpen(AUTDControllerHandle handle);
 EXPORT bool AUTDIsSilentMode(AUTDControllerHandle handle);
 EXPORT int AUTDNumDevices(AUTDControllerHandle handle);
 EXPORT int AUTDNumTransducers(AUTDControllerHandle handle);
-EXPORT double AUTDFrequency(AUTDControllerHandle handle);
 EXPORT size_t AUTDRemainingInBuffer(AUTDControllerHandle handle);
 #pragma endregion
 
@@ -91,14 +90,12 @@ EXPORT int AUTDDevIdForDeviceIdx(AUTDControllerHandle handle, int devIdx);
 EXPORT int AUTDDevIdForTransIdx(AUTDControllerHandle handle, int transIdx);
 EXPORT double *AUTDTransPosition(AUTDControllerHandle handle, int transIdx);
 EXPORT double *AUTDTransDirection(AUTDControllerHandle handle, int transIdx);
-EXPORT double *GetAngleZYZ(double *rotationMatrix);
 #pragma endregion
 
 #pragma region Debug
 #ifdef UNITY_DEBUG
 EXPORT void DebugLog(const char *msg);
 EXPORT void SetDebugLog(DebugLogFunc func);
-EXPORT void DebugLogTest();
 #endif
 #pragma endregion
 }
