@@ -3,7 +3,7 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 27/02/2020
+// Last Modified: 13/03/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -42,8 +42,7 @@ int main() {
   auto ifname = GetAdapterName();
   autd->Open(autd::LinkType::SOEM, ifname);
   // If you have already recognized the EtherCAT adapter name, you can write it
-  // directly like below. autd->Open(autd::LinkType::SOEM,
-  // "\\Device\\NPF_{B5B631C6-ED16-4780-9C4C-3941AE8120A6}");
+  // directly like below. autd->Open(autd::LinkType::SOEM, "\\Device\\NPF_{B5B631C6-ED16-4780-9C4C-3941AE8120A6}");
 
   if (!autd->is_open()) return ENXIO;
 
@@ -51,11 +50,11 @@ int main() {
   // Open. It takes several seconds proportional to the number of AUTD you use.
   // autd->CalibrateModulation();
 
-  auto g = autd::HoloGain::Create(std::vector<autd::Vector3>{autd::Vector3(70, 70, 150), autd::Vector3(110, 70, 150)}, std::vector<double>{1, 1});
-  // auto g = autd::FocalPointGain::Create(autd::Vector3(90, 70, 150));
-
+  auto g = autd::FocalPointGain::Create(autd::Vector3(90, 70, 150));
   autd->AppendGainSync(g);
-  autd->AppendModulationSync(autd::SineModulation::Create(150));  // 150Hz AM
+
+  auto m = autd::SineModulation::Create(150);
+  autd->AppendModulationSync(m);  // 150Hz AM
 
   cout << "press any key to finish..." << endl;
   getchar();
