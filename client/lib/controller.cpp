@@ -138,37 +138,34 @@ void AUTDController::Open(LinkType type, std::string location) {
 
   switch (type) {
 #if WIN32
-    case LinkType::TwinCAT:
+  case LinkType::TwinCAT:
 #endif
-    case LinkType::ETHERCAT: {
-#if WIN32
-      if (location == "" || location.find("localhost") == 0 || location.find("0.0.0.0") == 0 || location.find("127.0.0.1") == 0) {
-        this->_link = std::make_shared<internal::LocalEthercatLink>();
-      } else {
-#endif
-        this->_link = std::make_shared<internal::EthercatLink>();
-#if WIN32
-      }
-#endif
-      this->_link->Open(location);
-      break;
+  case LinkType::ETHERCAT: {
+    if (location == "" || location.find("localhost") == 0 || location.find("0.0.0.0") == 0 || location.find("127.0.0.1") == 0) {
+      this->_link = std::make_shared<internal::LocalEthercatLink>();
+    } else {
+      this->_link = std::make_shared<internal::EthercatLink>();
     }
-    case LinkType::SOEM: {
-      this->_link = std::make_shared<internal::SOEMLink>();
-      auto device_num = this->_geometry->numDevices();
-      this->_link->Open(location + ":" + std::to_string(device_num));
-      break;
-    }
-    default:
-      throw std::runtime_error("This link type is not implemented yet.");
-      break;
+    this->_link->Open(location);
+    break;
+  }
+  case LinkType::SOEM: {
+    this->_link = std::make_shared<internal::SOEMLink>();
+    auto device_num = this->_geometry->numDevices();
+    this->_link->Open(location + ":" + std::to_string(device_num));
+    break;
+  }
+  default:
+    throw std::runtime_error("This link type is not implemented yet.");
+    break;
   }
 
   if (this->_link->is_open())
     this->InitPipeline();
   else
     this->Close();
-}  // namespace autd
+}
+
 void AUTDController::SetSilentMode(bool silent) noexcept { this->_silent_mode = silent; }
 void AUTDController::CalibrateModulation() {
   // this->_link->CalibrateModulation();
@@ -405,4 +402,4 @@ std::unique_ptr<uint8_t[]> AUTDController::MakeBody(GainPtr gain, ModulationPtr 
 }
 
 ControllerPtr Controller::Create() { return CreateHelper<AUTDController>(); }
-}  // namespace autd
+} // namespace autd
