@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/03/2020
+// Last Modified: 29/03/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -42,13 +42,10 @@
 #endif
 
 #include <atomic>
-#include <condition_variable>
 #include <cstdint>
 #include <iostream>
 #include <memory>
-#include <mutex>
 #include <queue>
-#include <thread>
 #include <vector>
 
 #include "../lib/autdsoem.hpp"
@@ -67,11 +64,10 @@ class SOEMController : public ISOEMController {
   bool is_open() final;
 
   void Open(const char *ifname, size_t dev_num, ECConfig config) final;
+  void Close() final;
+
   void Send(size_t size, std::unique_ptr<uint8_t[]> buf) final;
-  void SetWaitForProcessMsg(bool is_wait) final;
-  bool WaitForProcessMsg(uint8_t msg_id) final;
-  std::vector<uint16_t> Read() final;
-  bool Close() final;
+  std::vector<uint8_t> Read() final;
 
   bool _is_open = false;
 
@@ -83,25 +79,15 @@ class SOEMController : public ISOEMController {
 #elif defined LINUX
   static void RTthread(union sigval sv);
 #endif
+
   void SetupSync0(bool actiavte, uint32_t cycle_time);
-  void CreateCopyThread(size_t header_size, size_t body_size);
 
   uint8_t *_io_map;
   size_t _io_map_size = 0;
   size_t _output_frame_size = 0;
   uint32_t _sync0_cyctime = 0;
-
-  std::queue<size_t> _send_size_q;
-  std::queue<std::unique_ptr<uint8_t[]>> _send_buf_q;
-  std::thread _cpy_thread;
-  std::condition_variable _cpy_cond;
-  bool _sent = false;
-  bool _is_wait_msg_processed = true;
-  std::mutex _cpy_mtx;
-  std::mutex _send_mtx;
-  std::mutex _waitcond_mtx;
-
   size_t _dev_num = 0;
+  ECConfig _config;
 
 #ifdef WINDOWS
   HANDLE _timerQueue = NULL;
@@ -117,12 +103,32 @@ class SOEMController : public ISOEMController {
 bool SOEMController::is_open() { return _is_open; }
 
 void SOEMController::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
-  {
-    std::unique_lock<std::mutex> lk(_cpy_mtx);
-    _send_size_q.push(size);
-    _send_buf_q.push(std::move(buf));
+  if (buf != nullptr && _is_open) {
+    const auto header_size = _config.header_size;
+    const auto body_size = _config.body_size;
+    const auto includes_gain = ((size - header_size) / body_size) > 0;
+    const auto output_frame_size = header_size + body_size;
+
+    for (size_t i = 0; i < _dev_num; i++) {
+      if (includes_gain)
+        memcpy(&_io_map[output_frame_size * i], &buf[header_size + body_size * i], body_size);
+      memcpy(&_io_map[output_frame_size * i + body_size], &buf[0], header_size);
+    }
+
+    AUTD3_LIB_SEND_COND.store(false, std::memory_order_release);
+    while (!AUTD3_LIB_SEND_COND.load(std::memory_order_acquire)) {
+    }
   }
-  _cpy_cond.notify_all();
+}
+
+std::vector<uint8_t> SOEMController::Read() {
+  std::vector<uint8_t> res;
+  const auto input_frame_idx = this->_output_frame_size;
+  for (size_t i = 0; i < _dev_num; i++) {
+    res.push_back(_io_map[input_frame_idx + 2 * i]);
+    res.push_back(_io_map[input_frame_idx + 2 * i + 1]);
+  }
+  return res;
 }
 
 #ifdef WINDOWS
@@ -146,16 +152,6 @@ void SOEMController::RTthread(union sigval sv)
   }
 }
 
-std::vector<uint16_t> SOEMController::Read() {
-  std::vector<uint16_t> res;
-  const auto input_frame_idx = this->_output_frame_size;
-  for (size_t i = 0; i < _dev_num; i++) {
-    uint16_t base = ((uint16_t)_io_map[input_frame_idx + 2 * i + 1] << 8) | _io_map[input_frame_idx + 2 * i];
-    res.push_back(base);
-  }
-  return res;
-}
-
 void SOEMController::SetupSync0(bool actiavte, uint32_t cycle_time_ns) {
   auto exceed = cycle_time_ns > 100 * 1000 * 1000u;  // 100 ms
   for (uint16 slave = 1; slave <= _dev_num; slave++) {
@@ -168,83 +164,9 @@ void SOEMController::SetupSync0(bool actiavte, uint32_t cycle_time_ns) {
   }
 }
 
-void SOEMController::SetWaitForProcessMsg(bool is_wait) {
-  std::unique_lock<std::mutex> lk(_waitcond_mtx);
-  this->_is_wait_msg_processed = is_wait;
-}
-
-bool SOEMController::WaitForProcessMsg(uint8_t send_msg_id) {
-  auto chk = 10;
-  while (chk--) {
-    int processed = 0;
-    for (size_t i = 0; i < _dev_num; i++) {
-      uint8_t recv_id = _io_map[_output_frame_size + 2 * i + 1];
-      if (recv_id == send_msg_id) {
-        processed++;
-      }
-    }
-    if (processed == _dev_num) {
-      return true;
-    }
-    std::this_thread::sleep_for(std::chrono::milliseconds(1));
-  }
-  return false;
-}
-
-void SOEMController::CreateCopyThread(size_t header_size, size_t body_size) {
-  _cpy_thread = std::thread(
-      [this](size_t header_size, size_t body_size) {
-        while (_is_open) {
-          std::unique_ptr<uint8_t[]> buf = nullptr;
-          size_t size = 0;
-          {
-            std::unique_lock<std::mutex> lk(_cpy_mtx);
-            _cpy_cond.wait(lk, [&] { return _send_buf_q.size() > 0 || !_is_open; });
-            if (_send_buf_q.size() > 0) {
-              buf = move(_send_buf_q.front());
-              size = _send_size_q.front();
-            }
-          }
-
-          if (buf != nullptr && _is_open) {
-            const auto includes_gain = ((size - header_size) / body_size) > 0;
-            const auto output_frame_size = header_size + body_size;
-
-            for (size_t i = 0; i < _dev_num; i++) {
-              if (includes_gain) memcpy(&_io_map[output_frame_size * i], &buf[header_size + body_size * i], body_size);
-              memcpy(&_io_map[output_frame_size * i + body_size], &buf[0], header_size);
-            }
-
-            {
-              AUTD3_LIB_SEND_COND.store(false, std::memory_order_release);
-              while (!AUTD3_LIB_SEND_COND.load(std::memory_order_acquire)) {
-              }
-            }
-
-            bool is_wait;
-            {
-              std::unique_lock<std::mutex> lk(_waitcond_mtx);
-              is_wait = _is_wait_msg_processed;
-            }
-
-            if (is_wait) {
-              auto send_id = buf[0];
-              auto sucess = WaitForProcessMsg(send_id);
-              if (!sucess) {
-                std::cerr << "Some data may not have been transferred to AUTDs." << std::endl;
-              }
-            }
-
-            _send_size_q.pop();
-            _send_buf_q.pop();
-          }
-        }
-      },
-      header_size, body_size);
-}
-
 void SOEMController::Open(const char *ifname, size_t dev_num, ECConfig config) {
   _dev_num = dev_num;
+  _config = config;
   _output_frame_size = (config.header_size + config.body_size) * _dev_num;
 
   auto size = _output_frame_size + (config.input_frame_size * _dev_num);
@@ -358,26 +280,17 @@ void SOEMController::Open(const char *ifname, size_t dev_num, ECConfig config) {
 #endif
 
   _is_open = true;
-  CreateCopyThread(config.header_size, config.body_size);
 }
 
-bool SOEMController::Close() {
+void SOEMController::Close() {
   if (_is_open) {
     _is_open = false;
-    _cpy_cond.notify_all();
-    if (std::this_thread::get_id() != _cpy_thread.get_id() && this->_cpy_thread.joinable()) this->_cpy_thread.join();
-    {
-      std::unique_lock<std::mutex> lk(_cpy_mtx);
-      std::queue<size_t>().swap(_send_size_q);
-      std::queue<std::unique_ptr<uint8_t[]>>().swap(_send_buf_q);
-    }
-
     memset(_io_map, 0x00, _output_frame_size);
-    auto success = WaitForProcessMsg(0x00);
 
 #ifdef WINDOWS
     if (!DeleteTimerQueueTimer(_timerQueue, _timer, 0)) {
-      if (GetLastError() != ERROR_IO_PENDING) std::cerr << "DeleteTimerQueue failed." << std::endl;
+      if (GetLastError() != ERROR_IO_PENDING)
+        std::cerr << "DeleteTimerQueue failed." << std::endl;
     }
 #elif defined MACOSX
     dispatch_source_cancel(_timer);
@@ -393,10 +306,6 @@ bool SOEMController::Close() {
     ec_statecheck(0, EC_STATE_INIT, EC_TIMEOUTSTATE);
 
     ec_close();
-
-    return success;
-  } else {
-    return true;
   }
 }
 
@@ -423,4 +332,4 @@ std::vector<EtherCATAdapterInfo> EtherCATAdapterInfo::EnumerateAdapters() {
   }
   return _adapters;
 }
-}  // namespace autdsoem
+} // namespace autdsoem

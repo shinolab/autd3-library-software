@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 09/03/2020
+// Last Modified: 29/03/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -20,6 +20,7 @@
 #include <string>
 #include <vector>
 
+#include "ec_config.hpp"
 #include "privdef.hpp"
 
 // XXX: should be configuarable?
@@ -82,14 +83,23 @@ void autd::internal::EthercatLink::Send(size_t size, std::unique_ptr<uint8_t[]> 
     throw static_cast<int>(ret);
   }
 }
-bool autd::internal::EthercatLink::CalibrateModulation() {
-  // No need to call CalibrateModulation() for TwinCAT.
-  return true;
-}
 
-void autd::internal::EthercatLink::SetWaitForProcessMsg(bool is_wait) {
-  // Not implemented or no need...?
-  return;
+std::vector<uint8_t> autd::internal::EthercatLink::Read() {
+  const AmsAddr pAddr = {this->_netId, PORT};
+  const uint32_t buffer_len = (1 << 16) * EC_INPUT_FRAME_SIZE;
+  const auto buffer = std::make_unique<uint8_t[]>(buffer_len);
+  uint32_t read_bytes;
+  auto ret = AdsSyncReadReqEx2(this->_port,  // NOLINT
+                               &pAddr, INDEX_GROUP, INDEX_OFFSET_BASE,
+                               buffer_len, &buffer[0], &read_bytes);
+
+  if (ret > 0) {
+    std::cerr << "Error on reading data: " << std::hex << ret << std::endl;
+    throw static_cast<int>(ret);
+  }
+
+  std::vector<uint8_t> res(&buffer[0], &buffer[read_bytes]);
+  return res;
 }
 
 // for localhost connection
@@ -102,16 +112,18 @@ typedef long(_stdcall *TcAdsSyncWriteReqEx)(long, AmsAddr *,      // NOLINT
                                             unsigned long,        // NOLINT
                                             unsigned long,        // NOLINT
                                             void *);              // NOLINT
+typedef long(_stdcall *TcAdsSyncReadReqEx)(long, AmsAddr *,       // NOLINT
+                                           unsigned long,         // NOLINT
+                                           unsigned long,         // NOLINT
+                                           unsigned long,         // NOLINT
+                                           void *,                // NOLINT
+                                           unsigned long *);      // NOLINT
 #ifdef _WIN64
 #define TCADS_AdsPortOpenEx "AdsPortOpenEx"
 #define TCADS_AdsGetLocalAddressEx "AdsGetLocalAddressEx"
 #define TCADS_AdsPortCloseEx "AdsPortCloseEx"
 #define TCADS_AdsSyncWriteReqEx "AdsSyncWriteReqEx"
-#else
-#define TCADS_AdsPortOpenEx "_AdsPortOpenEx@0"
-#define TCADS_AdsGetLocalAddressEx "_AdsGetLocalAddressEx@8"
-#define TCADS_AdsPortCloseEx "_AdsPortCloseEx@4"
-#define TCADS_AdsSyncWriteReqEx "_AdsSyncWriteReqEx@24"
+#define TCADS_AdsSyncReadReqEx "AdsSyncReadReqEx2"
 #endif
 
 void autd::internal::LocalEthercatLink::Open(std::string location) {
@@ -151,10 +163,34 @@ void autd::internal::LocalEthercatLink::Send(size_t size, std::unique_ptr<uint8_
     throw static_cast<int>(ret);
   }
 }
+
+std::vector<uint8_t> autd::internal::LocalEthercatLink::Read() {
+  AmsAddr addr = {this->_netId, PORT};
+  TcAdsSyncReadReqEx read =
+      (TcAdsSyncReadReqEx)GetProcAddress(this->lib, TCADS_AdsSyncReadReqEx);
+
+  const uint32_t buffer_len = (1 << 16) * EC_INPUT_FRAME_SIZE;
+  const auto buffer = std::make_unique<uint8_t[]>(buffer_len);
+  unsigned long read_bytes;
+
+  long ret = read(this->_port,  // NOLINT
+                  &addr, INDEX_GROUP, INDEX_OFFSET_BASE, buffer_len, &buffer[0],
+                  &read_bytes);
+
+  if (ret > 0) {
+    std::cerr << "Error on reading data: " << std::hex << ret << std::endl;
+    throw static_cast<int>(ret);
+  }
+
+  std::vector<uint8_t> res(&buffer[0], &buffer[read_bytes]);
+  return res;
+}
+
 #else
 void autd::internal::LocalEthercatLink::Open(std::string location) {
   throw std::runtime_error("Link to localhost has not been compiled. Rebuild this library on a Twincat3 host machine with TcADS-DLL.");
 }
 void autd::internal::LocalEthercatLink::Close() {}
 void autd::internal::LocalEthercatLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {}
+std::vector<uint8_t> autd::internal::LocalEthercatLink::Read() {}
 #endif  // TC_ADS

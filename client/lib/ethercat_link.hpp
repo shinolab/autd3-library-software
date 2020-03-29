@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 09/03/2020
+// Last Modified: 29/03/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -44,9 +44,8 @@ class EthercatLink : public Link {
   virtual void Open(std::string ams_net_id, std::string ipv4addr);
   void Close() override;
   virtual void Send(size_t size, std::unique_ptr<uint8_t[]> buf);
-  void SetWaitForProcessMsg(bool is_wait) final;
+  std::vector<uint8_t> Read() override;
   bool is_open() final;
-  bool CalibrateModulation() final;
 
  protected:
   long _port = 0L;  // NOLINT
@@ -55,9 +54,10 @@ class EthercatLink : public Link {
 
 class LocalEthercatLink : public EthercatLink {
  public:
-  void Open(std::string location = "");
-  void Close();
-  void Send(size_t size, std::unique_ptr<uint8_t[]> buf);
+  void Open(std::string location = "") final;
+  void Close() final;
+  void Send(size_t size, std::unique_ptr<uint8_t[]> buf) final;
+  std::vector<uint8_t> Read() final;
 
  private:
   HMODULE lib = nullptr;

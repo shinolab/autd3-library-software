@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 09/03/2020
+// Last Modified: 29/03/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -22,10 +22,10 @@
 #include <thread>
 #include <vector>
 
+#include "ethercat_link.hpp"
 #include "geometry.hpp"
 #include "link.hpp"
 #include "privdef.hpp"
-#include "ethercat_link.hpp"
 #include "soem_link.hpp"
 #include "timer.hpp"
 
@@ -170,7 +170,9 @@ void AUTDController::Open(LinkType type, std::string location) {
     this->Close();
 }  // namespace autd
 void AUTDController::SetSilentMode(bool silent) noexcept { this->_silent_mode = silent; }
-void AUTDController::CalibrateModulation() { this->_link->CalibrateModulation(); }
+void AUTDController::CalibrateModulation() {
+  // this->_link->CalibrateModulation();
+}
 void AUTDController::Close() {
   if (this->is_open()) {
     this->FinishSTModulation();
@@ -244,7 +246,7 @@ void AUTDController::AppendSTMGain(const std::vector<GainPtr> &gain_list) {
 }
 
 void AUTDController::StartSTModulation(double freq) {
-  this->_link->SetWaitForProcessMsg(false);
+  // this->_link->SetWaitForProcessMsg(false);
 
   auto len = this->_stm_gains.size();
   auto itvl_us = static_cast<int>(1000000. / freq / len);
@@ -291,7 +293,7 @@ void AUTDController::FinishSTModulation() {
   }
   std::vector<uint8_t *>().swap(this->_stm_bodies);
   std::vector<size_t>().swap(this->_stm_body__sizes);
-  this->_link->SetWaitForProcessMsg(true);
+  // this->_link->SetWaitForProcessMsg(true);
 }
 
 void AUTDController::Flush() {

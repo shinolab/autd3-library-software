@@ -3,7 +3,7 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 28/02/2020
+// Last Modified: 29/03/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -21,20 +21,14 @@ namespace autd {
 namespace internal {
 class SOEMLink : public Link {
  public:
-  void Open(std::string location);
-  void Close();
-  void Send(size_t size, std::unique_ptr<uint8_t[]> buf);
-  void SetWaitForProcessMsg(bool is_wait);
-  bool is_open();
-  bool CalibrateModulation();
+  void Open(std::string location) final;
+  void Close() final;
+  void Send(size_t size, std::unique_ptr<uint8_t[]> buf) final;
+  virtual std::vector<uint8_t> Read() final;
+  bool is_open() final;
 
- protected:
+ private:
   std::unique_ptr<autdsoem::ISOEMController> _cnt;
-  bool _is_open = false;
-  int _dev_num = 0;
-  std::string _ifname = "";
-  uint8_t _id = 0;
-  autdsoem::ECConfig _config{0, 0, 0, 0, 0};
 };
 }  // namespace internal
 }  // namespace autd
