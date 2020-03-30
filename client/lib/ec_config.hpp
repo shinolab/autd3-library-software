@@ -30,6 +30,15 @@ constexpr uint32_t MOD_PERIOD_MS = static_cast<uint32_t>((MOD_BUF_SIZE / MOD_SAM
 constexpr uint8_t READ_MOD_IDX_BASE_HEADER = 0xE0;
 constexpr uint8_t READ_MOD_IDX_BASE_HEADER_MASK = 0xE0;
 
+constexpr uint8_t CMD_OP = 0x00;
+constexpr uint8_t CMD_BRAM_WRITE = 0x01;
+constexpr uint8_t CMD_READ_CPU_VER_LSB = 0x02;
+constexpr uint8_t CMD_READ_CPU_VER_MSB = 0x03;
+constexpr uint8_t CMD_READ_FPGA_VER_LSB = 0x04;
+constexpr uint8_t CMD_READ_FPGA_VER_MSB = 0x05;
 constexpr uint8_t CMD_READ_MOD_SYNC_BASE = 0x06;
 constexpr uint8_t CMD_SHIFT_MOD_SYNC_BASE = 0x07;
 constexpr uint8_t CMD_NEG_SYNC_FIRST_SYNC0 = 0x08;
+
+constexpr uint8_t OP_MODE_MSG_ID_MIN = 0x20;
+constexpr uint8_t OP_MODE_MSG_ID_MAX = 0xDF;

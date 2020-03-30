@@ -22,7 +22,9 @@
 #include <thread>
 #include <vector>
 
+#include "ec_config.hpp"
 #include "ethercat_link.hpp"
+#include "firmware_version.hpp"
 #include "geometry.hpp"
 #include "link.hpp"
 #include "privdef.hpp"
@@ -79,6 +81,7 @@ class AUTDController : public Controller {
   void StopSTModulation() final;
   void FinishSTModulation() final;
   void Flush() final;
+  FirmwareInfoList firmware_info_list() final;
 
   void LateralModulationAT(Vector3 point, Vector3 dir, double lm_amp = 2.5, double lm_freq = 100) final;
 
@@ -105,13 +108,14 @@ class AUTDController : public Controller {
 
   void InitPipeline();
   std::unique_ptr<uint8_t[]> MakeBody(GainPtr gain, ModulationPtr mod, size_t *size);
+  std::vector<uint8_t> WaitMsgProcessed(uint8_t msg_id, bool *success);
 
   static uint8_t get_id() {
-    static std::atomic<uint8_t> id{0};
+    static std::atomic<uint8_t> id{OP_MODE_MSG_ID_MIN - 1};
 
     id.fetch_add(0x01);
-    uint8_t expected = 0xf0;
-    id.compare_exchange_weak(expected, 0x01);
+    uint8_t expected = OP_MODE_MSG_ID_MAX + 1;
+    id.compare_exchange_weak(expected, OP_MODE_MSG_ID_MIN);
 
     return id.load();
   }
@@ -304,6 +308,74 @@ void AUTDController::Flush() {
   std::queue<ModulationPtr>().swap(_send_mod_q);
 }
 
+FirmwareInfoList AUTDController::firmware_info_list() {
+  auto size = this->_geometry->numDevices();
+
+#if DLL_FOR_CAPI
+  FirmwareInfoList res = new FirmwareInfoList[size];
+  int i = 0;
+#else
+  FirmwareInfoList res;
+#endif
+
+  auto make_header = [](uint8_t command) {
+    auto header_bytes = std::make_unique<uint8_t[]>(sizeof(RxGlobalHeader));
+    auto *header = reinterpret_cast<RxGlobalHeader *>(&header_bytes[0]);
+    header->msg_id = command;
+    header->command = command;
+    return header_bytes;
+  };
+
+  std::vector<uint16_t> cpu_versions(size);
+  std::vector<uint16_t> fpga_versions(size);
+
+  std::unique_ptr<uint8_t[]> header;
+  std::vector<uint8_t> rx;
+
+  bool success = false;
+  auto send_size = sizeof(RxGlobalHeader);
+  header = make_header(CMD_READ_CPU_VER_LSB);
+  this->_link->Send(send_size, std::move(header));
+  rx = WaitMsgProcessed(CMD_READ_CPU_VER_LSB, &success);
+  if (!success) return res;
+  for (size_t i = 0; i < size; i++) {
+    cpu_versions[i] = rx[2 * i];
+  }
+  header = make_header(CMD_READ_CPU_VER_MSB);
+  this->_link->Send(send_size, std::move(header));
+  rx = WaitMsgProcessed(CMD_READ_CPU_VER_MSB, &success);
+  if (!success) return res;
+  for (size_t i = 0; i < size; i++) {
+    cpu_versions[i] = ((uint16_t)rx[2 * i] << 8) | cpu_versions[i];
+  }
+
+  header = make_header(CMD_READ_FPGA_VER_LSB);
+  this->_link->Send(send_size, std::move(header));
+  rx = WaitMsgProcessed(CMD_READ_FPGA_VER_LSB, &success);
+  if (!success) return res;
+  for (size_t i = 0; i < size; i++) {
+    fpga_versions[i] = rx[2 * i];
+  }
+
+  header = make_header(CMD_READ_FPGA_VER_MSB);
+  this->_link->Send(send_size, std::move(header));
+  rx = WaitMsgProcessed(CMD_READ_FPGA_VER_MSB, &success);
+  if (!success) return res;
+  for (size_t i = 0; i < size; i++) {
+    fpga_versions[i] = ((uint16_t)rx[2 * i] << 8) | fpga_versions[i];
+  }
+
+  for (uint16_t i = 0; i < size; i++) {
+    FirmwareInfo info{i, cpu_versions[i], fpga_versions[i]};
+#if DLL_FOR_CAPI
+    res[i++] = info;
+#else
+    res.push_back(info);
+#endif
+  }
+  return res;
+}
+
 void AUTDController::LateralModulationAT(Vector3 point, Vector3 dir, double lm_amp, double lm_freq) {
   auto p1 = point + lm_amp * dir;
   auto p2 = point - lm_amp * dir;
@@ -379,6 +451,7 @@ std::unique_ptr<uint8_t[]> AUTDController::MakeBody(GainPtr gain, ModulationPtr 
   header->msg_id = get_id();
   header->control_flags = 0;
   header->mod_size = 0;
+  header->command = CMD_OP;
 
   if (this->_silent_mode) header->control_flags |= SILENT;
 
@@ -402,6 +475,33 @@ std::unique_ptr<uint8_t[]> AUTDController::MakeBody(GainPtr gain, ModulationPtr 
     }
   }
   return body;
+}
+
+std::vector<uint8_t> AUTDController::WaitMsgProcessed(uint8_t msg_id, bool *success) {
+  std::vector<uint8_t> rx;
+  *success = false;
+  auto num_dev = this->_geometry->numDevices();
+  auto buffer_len = num_dev * EC_INPUT_FRAME_SIZE;
+  for (size_t i = 0; i < 10; i++) {
+    rx = this->_link->Read(static_cast<uint32_t>(buffer_len));
+    size_t processed = 0;
+    for (size_t dev = 0; dev < num_dev; dev++) {
+      uint8_t proc_id = rx[dev * 2 + 1];
+      if (proc_id == msg_id) processed++;
+    }
+
+    for (size_t i = 0; i < rx.size(); i += 2) {
+      std::cout << (int)rx[i + 1] << ", " << (int)rx[i] << std::endl;
+    }
+
+    if (processed == num_dev) {
+      *success = true;
+      return rx;
+    }
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+  }
+  return rx;
 }
 
 ControllerPtr Controller::Create() { return CreateHelper<AUTDController>(); }

@@ -3,7 +3,7 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/03/2020
+// Last Modified: 30/03/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -48,13 +48,18 @@ int main() {
 
   // If you use more than one AUTD, call CalibrateModulation only once after
   // Open. It takes several seconds proportional to the number of AUTD you use.
-  // autd->CalibrateModulation();
+  //autd->CalibrateModulation();
 
   auto g = autd::FocalPointGain::Create(autd::Vector3(90, 70, 150));
   autd->AppendGainSync(g);
 
   auto m = autd::SineModulation::Create(150);
   autd->AppendModulationSync(m);  // 150Hz AM
+
+  auto firm_info_list = autd->firmware_info_list();
+  for (auto firm_info : firm_info_list) {
+    std::cout << firm_info << std::endl;
+  }
 
   cout << "press any key to finish..." << endl;
   getchar();

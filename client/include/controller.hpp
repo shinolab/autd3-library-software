@@ -16,6 +16,7 @@
 #include <utility>
 #include <vector>
 
+#include "firmware_version.hpp"
 #include "gain.hpp"
 #include "geometry.hpp"
 #include "modulation.hpp"
@@ -70,6 +71,7 @@ class Controller {
   virtual void StopSTModulation() = 0;
   virtual void FinishSTModulation() = 0;
   virtual void Flush() = 0;
+  virtual FirmwareInfoList firmware_info_list() = 0;
 
   virtual void LateralModulationAT(Vector3 point, Vector3 dir = Vector3::unit_y(), double lm_amp = 2.5, double lm_freq = 100) = 0;
 };
