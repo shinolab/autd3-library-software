@@ -312,7 +312,7 @@ FirmwareInfoList AUTDController::firmware_info_list() {
   auto size = this->_geometry->numDevices();
 
 #if DLL_FOR_CAPI
-  FirmwareInfoList res = new FirmwareInfoList[size];
+  FirmwareInfoList res = new FirmwareInfo[size];
   int i = 0;
 #else
   FirmwareInfoList res;
@@ -488,10 +488,6 @@ std::vector<uint8_t> AUTDController::WaitMsgProcessed(uint8_t msg_id, bool *succ
     for (size_t dev = 0; dev < num_dev; dev++) {
       uint8_t proc_id = rx[dev * 2 + 1];
       if (proc_id == msg_id) processed++;
-    }
-
-    for (size_t i = 0; i < rx.size(); i += 2) {
-      std::cout << (int)rx[i + 1] << ", " << (int)rx[i] << std::endl;
     }
 
     if (processed == num_dev) {

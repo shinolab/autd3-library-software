@@ -27,6 +27,7 @@ using FirmwareInfoList = std::vector<FirmwareInfo>;
 
 class FirmwareInfo {
  public:
+  FirmwareInfo() : FirmwareInfo(0, 0, 0) {}
   FirmwareInfo(uint16_t idx, uint16_t cpu_ver, uint16_t fpga_ver) {
     _idx = idx;
     _cpu_version_number = cpu_ver;
