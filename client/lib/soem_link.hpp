@@ -3,7 +3,7 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 29/03/2020
+// Last Modified: 30/03/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -13,6 +13,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "autdsoem.hpp"
 #include "link.hpp"
@@ -24,7 +25,7 @@ class SOEMLink : public Link {
   void Open(std::string location) final;
   void Close() final;
   void Send(size_t size, std::unique_ptr<uint8_t[]> buf) final;
-  virtual std::vector<uint8_t> Read() final;
+  std::vector<uint8_t> Read() final;
   bool is_open() final;
 
  private:

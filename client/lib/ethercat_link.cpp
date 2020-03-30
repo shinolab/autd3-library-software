@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 29/03/2020
+// Last Modified: 30/03/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -90,8 +90,7 @@ std::vector<uint8_t> autd::internal::EthercatLink::Read() {
   const auto buffer = std::make_unique<uint8_t[]>(buffer_len);
   uint32_t read_bytes;
   auto ret = AdsSyncReadReqEx2(this->_port,  // NOLINT
-                               &pAddr, INDEX_GROUP, INDEX_OFFSET_BASE,
-                               buffer_len, &buffer[0], &read_bytes);
+                               &pAddr, INDEX_GROUP, INDEX_OFFSET_BASE, buffer_len, &buffer[0], &read_bytes);
 
   if (ret > 0) {
     std::cerr << "Error on reading data: " << std::hex << ret << std::endl;
@@ -166,16 +165,13 @@ void autd::internal::LocalEthercatLink::Send(size_t size, std::unique_ptr<uint8_
 
 std::vector<uint8_t> autd::internal::LocalEthercatLink::Read() {
   AmsAddr addr = {this->_netId, PORT};
-  TcAdsSyncReadReqEx read =
-      (TcAdsSyncReadReqEx)GetProcAddress(this->lib, TCADS_AdsSyncReadReqEx);
+  TcAdsSyncReadReqEx read = (TcAdsSyncReadReqEx)GetProcAddress(this->lib, TCADS_AdsSyncReadReqEx);
 
   const uint32_t buffer_len = (1 << 16) * EC_INPUT_FRAME_SIZE;
   const auto buffer = std::make_unique<uint8_t[]>(buffer_len);
-  unsigned long read_bytes;
-
+  unsigned long read_bytes;     // NOLINT
   long ret = read(this->_port,  // NOLINT
-                  &addr, INDEX_GROUP, INDEX_OFFSET_BASE, buffer_len, &buffer[0],
-                  &read_bytes);
+                  &addr, INDEX_GROUP, INDEX_OFFSET_BASE, buffer_len, &buffer[0], &read_bytes);
 
   if (ret > 0) {
     std::cerr << "Error on reading data: " << std::hex << ret << std::endl;
