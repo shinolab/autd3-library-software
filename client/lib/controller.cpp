@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 29/03/2020
+// Last Modified: 30/03/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -65,7 +65,7 @@ class AUTDController : public Controller {
 
   void Open(LinkType type, std::string location = "") final;
   void SetSilentMode(bool silent) noexcept final;
-  void CalibrateModulation() final;
+  bool CalibrateModulation() final;
   void Close() final;
 
   void Stop() final;
@@ -129,8 +129,11 @@ AUTDController::~AUTDController() {
 }
 
 bool AUTDController::is_open() { return this->_link.get() && this->_link->is_open(); }
+
 GeometryPtr AUTDController::geometry() noexcept { return this->_geometry; }
+
 bool AUTDController::silent_mode() noexcept { return this->_silent_mode; }
+
 size_t AUTDController::remainingInBuffer() { return this->_send_gain_q.size() + this->_send_mod_q.size() + this->_build_q.size(); }
 
 void AUTDController::Open(LinkType type, std::string location) {
@@ -138,26 +141,26 @@ void AUTDController::Open(LinkType type, std::string location) {
 
   switch (type) {
 #if WIN32
-  case LinkType::TwinCAT:
+    case LinkType::TwinCAT:
 #endif
-  case LinkType::ETHERCAT: {
-    if (location == "" || location.find("localhost") == 0 || location.find("0.0.0.0") == 0 || location.find("127.0.0.1") == 0) {
-      this->_link = std::make_shared<internal::LocalEthercatLink>();
-    } else {
-      this->_link = std::make_shared<internal::EthercatLink>();
+    case LinkType::ETHERCAT: {
+      if (location == "" || location.find("localhost") == 0 || location.find("0.0.0.0") == 0 || location.find("127.0.0.1") == 0) {
+        this->_link = std::make_shared<internal::LocalEthercatLink>();
+      } else {
+        this->_link = std::make_shared<internal::EthercatLink>();
+      }
+      this->_link->Open(location);
+      break;
     }
-    this->_link->Open(location);
-    break;
-  }
-  case LinkType::SOEM: {
-    this->_link = std::make_shared<internal::SOEMLink>();
-    auto device_num = this->_geometry->numDevices();
-    this->_link->Open(location + ":" + std::to_string(device_num));
-    break;
-  }
-  default:
-    throw std::runtime_error("This link type is not implemented yet.");
-    break;
+    case LinkType::SOEM: {
+      this->_link = std::make_shared<internal::SOEMLink>();
+      auto device_num = this->_geometry->numDevices();
+      this->_link->Open(location + ":" + std::to_string(device_num));
+      break;
+    }
+    default:
+      throw std::runtime_error("This link type is not implemented yet.");
+      break;
   }
 
   if (this->_link->is_open())
@@ -167,9 +170,9 @@ void AUTDController::Open(LinkType type, std::string location) {
 }
 
 void AUTDController::SetSilentMode(bool silent) noexcept { this->_silent_mode = silent; }
-void AUTDController::CalibrateModulation() {
-  // this->_link->CalibrateModulation();
-}
+
+bool AUTDController::CalibrateModulation() { return this->_link->CalibrateModulation(); }
+
 void AUTDController::Close() {
   if (this->is_open()) {
     this->FinishSTModulation();
@@ -402,4 +405,4 @@ std::unique_ptr<uint8_t[]> AUTDController::MakeBody(GainPtr gain, ModulationPtr 
 }
 
 ControllerPtr Controller::Create() { return CreateHelper<AUTDController>(); }
-} // namespace autd
+}  // namespace autd

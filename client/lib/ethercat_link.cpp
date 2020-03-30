@@ -67,7 +67,11 @@ void autd::internal::EthercatLink::Close() {
   this->_port = 0;
   AdsPortCloseEx(this->_port);
 }
+
 bool autd::internal::EthercatLink::is_open() { return (this->_port > 0); }
+
+bool autd::internal::EthercatLink::CalibrateModulation() { return true; }
+
 void autd::internal::EthercatLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
   const AmsAddr pAddr = {this->_netId, PORT};
   long ret = AdsSyncWriteReqEx(this->_port,  // NOLINT
@@ -84,9 +88,8 @@ void autd::internal::EthercatLink::Send(size_t size, std::unique_ptr<uint8_t[]> 
   }
 }
 
-std::vector<uint8_t> autd::internal::EthercatLink::Read() {
+std::vector<uint8_t> autd::internal::EthercatLink::Read(uint32_t buffer_len) {
   const AmsAddr pAddr = {this->_netId, PORT};
-  const uint32_t buffer_len = (1 << 16) * EC_INPUT_FRAME_SIZE;
   const auto buffer = std::make_unique<uint8_t[]>(buffer_len);
   uint32_t read_bytes;
   auto ret = AdsSyncReadReqEx2(this->_port,  // NOLINT
@@ -163,11 +166,10 @@ void autd::internal::LocalEthercatLink::Send(size_t size, std::unique_ptr<uint8_
   }
 }
 
-std::vector<uint8_t> autd::internal::LocalEthercatLink::Read() {
+std::vector<uint8_t> autd::internal::LocalEthercatLink::Read(uint32_t buffer_len) {
   AmsAddr addr = {this->_netId, PORT};
   TcAdsSyncReadReqEx read = (TcAdsSyncReadReqEx)GetProcAddress(this->lib, TCADS_AdsSyncReadReqEx);
 
-  const uint32_t buffer_len = (1 << 16) * EC_INPUT_FRAME_SIZE;
   const auto buffer = std::make_unique<uint8_t[]>(buffer_len);
   unsigned long read_bytes;     // NOLINT
   long ret = read(this->_port,  // NOLINT

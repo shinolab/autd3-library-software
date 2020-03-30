@@ -45,8 +45,9 @@ class EthercatLink : public Link {
   virtual void Open(std::string ams_net_id, std::string ipv4addr);
   void Close() override;
   virtual void Send(size_t size, std::unique_ptr<uint8_t[]> buf);
-  std::vector<uint8_t> Read() override;
+  std::vector<uint8_t> Read(uint32_t buffer_len) override;
   bool is_open() final;
+  bool CalibrateModulation() final;
 
  protected:
   long _port = 0L;  // NOLINT
@@ -58,7 +59,7 @@ class LocalEthercatLink : public EthercatLink {
   void Open(std::string location = "") final;
   void Close() final;
   void Send(size_t size, std::unique_ptr<uint8_t[]> buf) final;
-  std::vector<uint8_t> Read() final;
+  std::vector<uint8_t> Read(uint32_t buffer_len) final;
 
  private:
   HMODULE lib = nullptr;

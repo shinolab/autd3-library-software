@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 27/02/2020
+// Last Modified: 30/03/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -56,7 +56,7 @@ class Controller {
    */
   virtual void Open(LinkType type, std::string location = "") = 0;
   virtual void SetSilentMode(bool silent) noexcept = 0;
-  virtual void CalibrateModulation() = 0;
+  virtual bool CalibrateModulation() = 0;
   virtual void Close() = 0;
 
   virtual void Stop() = 0;

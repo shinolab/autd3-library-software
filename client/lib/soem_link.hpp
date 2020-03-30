@@ -25,11 +25,16 @@ class SOEMLink : public Link {
   void Open(std::string location) final;
   void Close() final;
   void Send(size_t size, std::unique_ptr<uint8_t[]> buf) final;
-  std::vector<uint8_t> Read() final;
+  std::vector<uint8_t> Read(uint32_t buffer_len) final;
   bool is_open() final;
+  bool CalibrateModulation() final;
 
  private:
+  std::vector<uint8_t> WaitProcMsg(uint8_t id, uint8_t mask);
   std::unique_ptr<autdsoem::ISOEMController> _cnt;
+  size_t _dev_num;
+  std::string _ifname;
+  autdsoem::ECConfig _config;
 };
 }  // namespace internal
 }  // namespace autd
