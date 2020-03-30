@@ -79,6 +79,10 @@ std::vector<uint8_t> internal::SOEMLink::WaitProcMsg(uint8_t id, uint8_t mask) {
 }
 
 bool internal::SOEMLink::CalibrateModulation() {
+  if (_dev_num == 0 || _dev_num == 1) {
+    return true;
+  }
+
   struct CalibrationStatus {
     bool danger;
     uint16_t sync_base;

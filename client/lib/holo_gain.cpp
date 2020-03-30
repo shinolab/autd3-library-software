@@ -29,8 +29,6 @@
 #pragma warning(pop)
 #endif
 
-#include "autd3.hpp"
-#include "controller.hpp"
 #include "gain.hpp"
 #include "privdef.hpp"
 

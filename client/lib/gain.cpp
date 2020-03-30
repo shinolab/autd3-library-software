@@ -17,8 +17,6 @@
 #include <string>
 #include <vector>
 
-#include "autd3.hpp"
-#include "controller.hpp"
 #include "core.hpp"
 #include "privdef.hpp"
 #include "vector3.hpp"

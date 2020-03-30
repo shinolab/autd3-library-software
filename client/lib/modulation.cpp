@@ -3,7 +3,7 @@
 // Created Date: 11/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 13/03/2020
+// Last Modified: 30/03/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -18,10 +18,10 @@
 #include <cmath>
 #include <cstring>
 #include <fstream>
+#include <iostream>
 #include <limits>
 #include <numeric>
 
-#include "autd3.hpp"
 #include "modulation.hpp"
 #include "privdef.hpp"
 
