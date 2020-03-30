@@ -64,14 +64,27 @@ bool internal::SOEMLink::is_open() { return _cnt->is_open(); }
 std::vector<uint8_t> internal::SOEMLink::WaitProcMsg(uint8_t id, uint8_t mask) {
   std::vector<uint8_t> rx;
   for (size_t i = 0; i < 10; i++) {
+    std::cout << i << "***************" << std::endl;
+    
     rx = Read(0);
     size_t processed = 0;
     for (size_t dev = 0; dev < _dev_num; dev++) {
       uint8_t proc_id = rx[dev * 2 + 1] & mask;
+      std::cout << dev << ": " << (int)proc_id << " (" <<(int)id << ")" <<   std::endl;
       if (proc_id == id) processed++;
     }
 
-    if (processed == _dev_num) break;
+    for (auto r : rx) {
+      std::cout << (int)r <<  ", ";
+    }
+    std::cout << std::endl;
+
+      std::cout << processed << " == " <<  _dev_num << std::endl;
+
+    if (processed == _dev_num) return rx;
+
+    std::cout << i << "***************" << std::endl;
+
 
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
   }
@@ -152,6 +165,16 @@ bool internal::SOEMLink::CalibrateModulation() {
   // Wait for read mod idx base
   rx = WaitProcMsg(READ_MOD_IDX_BASE_HEADER, READ_MOD_IDX_BASE_HEADER_MASK);
   statuses = parse(rx);
+
+  // DEBUG
+  std::cerr << "======= Modulation Log ========" << std::endl;
+  for (size_t i = 0; i < statuses.size(); i++) {
+    auto status = statuses[i];
+    std::cerr << i << "," << static_cast<int>(status.danger) << ","
+              << static_cast<int>(status.sync_base) << std::endl;
+  }
+  std::cerr << "===============================" << std::endl;
+  // DEBUG
 
   // Check status and get maximum mod idx base (for calculating shift)
   uint16_t max_base = 0;

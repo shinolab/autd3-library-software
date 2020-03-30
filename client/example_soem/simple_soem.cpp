@@ -37,6 +37,7 @@ int main() {
   // AddDevice() must be called before Open(), and be called as many times as
   // for the number of AUTDs connected.
   autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+  autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
   // autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
 
   auto ifname = GetAdapterName();
@@ -48,7 +49,7 @@ int main() {
 
   // If you use more than one AUTD, call CalibrateModulation only once after
   // Open. It takes several seconds proportional to the number of AUTD you use.
-  //autd->CalibrateModulation();
+  autd->CalibrateModulation();
 
   auto g = autd::FocalPointGain::Create(autd::Vector3(90, 70, 150));
   autd->AppendGainSync(g);
