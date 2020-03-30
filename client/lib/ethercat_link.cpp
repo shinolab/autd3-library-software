@@ -190,5 +190,5 @@ void autd::internal::LocalEthercatLink::Open(std::string location) {
 }
 void autd::internal::LocalEthercatLink::Close() {}
 void autd::internal::LocalEthercatLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {}
-std::vector<uint8_t> autd::internal::LocalEthercatLink::Read() {}
+std::vector<uint8_t> autd::internal::LocalEthercatLink::Read(uint32_t buffer_len) {}
 #endif  // TC_ADS
