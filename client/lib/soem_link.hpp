@@ -32,9 +32,9 @@ class SOEMLink : public Link {
  private:
   std::vector<uint8_t> WaitProcMsg(uint8_t id, uint8_t mask);
   std::unique_ptr<autdsoem::ISOEMController> _cnt;
-  size_t _dev_num;
+  size_t _dev_num = 0;
   std::string _ifname;
-  autdsoem::ECConfig _config;
+  autdsoem::ECConfig _config{};
 };
 }  // namespace internal
 }  // namespace autd
