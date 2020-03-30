@@ -3,7 +3,7 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 29/03/2020
+// Last Modified: 30/03/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -34,9 +34,12 @@ void internal::SOEMLink::Open(std::string ifname_and_dev_num) {
   auto ifname = tmp[0];
   auto dev_num = stoi(tmp[1]);
 
-  auto config = autdsoem::ECConfig{EC_SM3_CYCLE_TIME_NANO_SEC,
-                                   EC_SYNC0_CYCLE_TIME_NANO_SEC, HEADER_SIZE,
-                                   NUM_TRANS_IN_UNIT * 2, EC_INPUT_FRAME_SIZE};
+  auto config = autdsoem::ECConfig{};
+  config.ec_sm3_cyctime_ns = EC_SM3_CYCLE_TIME_NANO_SEC;
+  config.ec_sync0_cyctime_ns = EC_SYNC0_CYCLE_TIME_NANO_SEC;
+  config.header_size = HEADER_SIZE;
+  config.body_size = NUM_TRANS_IN_UNIT * 2;
+  config.input_frame_size = EC_INPUT_FRAME_SIZE;
 
   _cnt->Open(ifname.c_str(), dev_num, config);
 }
@@ -53,9 +56,7 @@ void internal::SOEMLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
   }
 }
 
-std::vector<uint8_t> internal::SOEMLink::Read() {
-    return _cnt->Read();
-}
+std::vector<uint8_t> internal::SOEMLink::Read() { return _cnt->Read(); }
 
 bool internal::SOEMLink::is_open() { return _cnt->is_open(); }
 
