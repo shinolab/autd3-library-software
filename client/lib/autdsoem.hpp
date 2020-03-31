@@ -3,7 +3,7 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 29/03/2020
+// Last Modified: 31/03/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -51,4 +51,4 @@ struct EtherCATAdapterInfo {
   std::string desc;
   std::string name;
 };
-} // namespace autdsoem
+}  // namespace autdsoem

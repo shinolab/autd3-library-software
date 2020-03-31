@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 29/03/2020
+// Last Modified: 31/03/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -111,8 +111,7 @@ void SOEMController::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
     const auto output_frame_size = header_size + body_size;
 
     for (size_t i = 0; i < _dev_num; i++) {
-      if (includes_gain)
-        memcpy(&_io_map[output_frame_size * i], &buf[header_size + body_size * i], body_size);
+      if (includes_gain) memcpy(&_io_map[output_frame_size * i], &buf[header_size + body_size * i], body_size);
       memcpy(&_io_map[output_frame_size * i + body_size], &buf[0], header_size);
     }
 
@@ -132,9 +131,7 @@ std::vector<uint8_t> SOEMController::Read() {
   return res;
 }
 
-int64_t SOEMController::ec_dc_time() {
-    return ec_DCtime % _sync0_cyctime;
-}
+int64_t SOEMController::ec_dc_time() { return ec_DCtime % _sync0_cyctime; }
 
 #ifdef WINDOWS
 void CALLBACK SOEMController::RTthread(PVOID lpParam, BOOLEAN TimerOrWaitFired)
@@ -294,8 +291,7 @@ void SOEMController::Close() {
 
 #ifdef WINDOWS
     if (!DeleteTimerQueueTimer(_timerQueue, _timer, 0)) {
-      if (GetLastError() != ERROR_IO_PENDING)
-        std::cerr << "DeleteTimerQueue failed." << std::endl;
+      if (GetLastError() != ERROR_IO_PENDING) std::cerr << "DeleteTimerQueue failed." << std::endl;
     }
 #elif defined MACOSX
     dispatch_source_cancel(_timer);
@@ -337,4 +333,4 @@ std::vector<EtherCATAdapterInfo> EtherCATAdapterInfo::EnumerateAdapters() {
   }
   return _adapters;
 }
-} // namespace autdsoem
+}  // namespace autdsoem
