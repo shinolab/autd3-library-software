@@ -36,6 +36,7 @@ class ISOEMController {
 
   virtual void Send(size_t size, std::unique_ptr<uint8_t[]> buf) = 0;
   virtual std::vector<uint8_t> Read() = 0;
+  virtual int64_t ec_dc_time() = 0;
 };
 
 struct EtherCATAdapterInfo {

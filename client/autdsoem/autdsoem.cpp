@@ -68,6 +68,7 @@ class SOEMController : public ISOEMController {
 
   void Send(size_t size, std::unique_ptr<uint8_t[]> buf) final;
   std::vector<uint8_t> Read() final;
+  int64_t ec_dc_time() final;
 
   bool _is_open = false;
 
@@ -80,7 +81,7 @@ class SOEMController : public ISOEMController {
   static void RTthread(union sigval sv);
 #endif
 
-  void SetupSync0(bool actiavte, uint32_t cycle_time);
+  void SetupSync0(bool actiavte, uint32_t cycle_time_ns);
 
   uint8_t *_io_map;
   size_t _io_map_size = 0;
@@ -131,6 +132,10 @@ std::vector<uint8_t> SOEMController::Read() {
   return res;
 }
 
+int64_t SOEMController::ec_dc_time() {
+    return ec_DCtime % _sync0_cyctime;
+}
+
 #ifdef WINDOWS
 void CALLBACK SOEMController::RTthread(PVOID lpParam, BOOLEAN TimerOrWaitFired)
 #elif defined MACOSX
@@ -153,7 +158,7 @@ void SOEMController::RTthread(union sigval sv)
 }
 
 void SOEMController::SetupSync0(bool actiavte, uint32_t cycle_time_ns) {
-  auto exceed = cycle_time_ns > 100 * 1000 * 1000u;  // 100 ms
+  auto exceed = cycle_time_ns > 100 * 1000 * 1000u;  // 100 ms, todo
   for (uint16 slave = 1; slave <= _dev_num; slave++) {
     if (exceed) {
       ec_dcsync0(slave, actiavte, cycle_time_ns, 0);
