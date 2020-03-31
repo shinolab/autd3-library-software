@@ -3,7 +3,7 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/03/2020
+// Last Modified: 31/03/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -63,28 +63,15 @@ bool internal::SOEMLink::is_open() { return _cnt->is_open(); }
 
 std::vector<uint8_t> internal::SOEMLink::WaitProcMsg(uint8_t id, uint8_t mask) {
   std::vector<uint8_t> rx;
-  for (size_t i = 0; i < 10; i++) {
-    std::cout << i << "***************" << std::endl;
-    
+  for (size_t i = 0; i < 200; i++) {
     rx = Read(0);
     size_t processed = 0;
     for (size_t dev = 0; dev < _dev_num; dev++) {
       uint8_t proc_id = rx[dev * 2 + 1] & mask;
-      std::cout << dev << ": " << (int)proc_id << " (" <<(int)id << ")" <<   std::endl;
       if (proc_id == id) processed++;
     }
 
-    for (auto r : rx) {
-      std::cout << (int)r <<  ", ";
-    }
-    std::cout << std::endl;
-
-      std::cout << processed << " == " <<  _dev_num << std::endl;
-
     if (processed == _dev_num) return rx;
-
-    std::cout << i << "***************" << std::endl;
-
 
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
   }
@@ -151,7 +138,10 @@ bool internal::SOEMLink::CalibrateModulation() {
   Send(size, std::move(body));
 
   // Wait for synchronize modulation index in FPGA
-  std::this_thread::sleep_for(std::chrono::milliseconds((_dev_num / 5 + 2) * MOD_PERIOD_MS));
+  size_t t = static_cast<size_t>((_dev_num - 1) / EC_DEVICE_PER_FRAME * EC_TRAFFIC_DELAY);
+  std::this_thread::sleep_for(std::chrono::milliseconds((t + 1) * MOD_PERIOD_MS));
+  while (_cnt->ec_dc_time() > 5 * 1000 * 1000) {  // Todo. 5ms is a magic number...
+  }
 
   // Restore Sync0 interval
   _cnt->Close();
@@ -170,8 +160,7 @@ bool internal::SOEMLink::CalibrateModulation() {
   std::cerr << "======= Modulation Log ========" << std::endl;
   for (size_t i = 0; i < statuses.size(); i++) {
     auto status = statuses[i];
-    std::cerr << i << "," << static_cast<int>(status.danger) << ","
-              << static_cast<int>(status.sync_base) << std::endl;
+    std::cerr << i << "," << static_cast<int>(status.danger) << "," << static_cast<int>(status.sync_base) << std::endl;
   }
   std::cerr << "===============================" << std::endl;
   // DEBUG
@@ -200,10 +189,12 @@ bool internal::SOEMLink::CalibrateModulation() {
   for (int i = 0; i < _dev_num; i++) {
     int32_t diff = (max_base - statuses[i].sync_base) - round_multiple(max_base - statuses[i].sync_base, SYNC0_STEP);
     uint16_t shift = (MOD_BUF_SIZE + diff) % MOD_BUF_SIZE;
+    std::cout << "\t" << i << ": " << (int)shift << std::endl;
     uint8_t *src = reinterpret_cast<uint8_t *>(&shift);
     std::memcpy(cursor, src, sizeof(uint16_t));
     cursor += NUM_TRANS_IN_UNIT * sizeof(uint16_t) / sizeof(body[0]);
   }
+  Send(size, std::move(body));
 
   // Wait for shift
   WaitProcMsg(CMD_SHIFT_MOD_SYNC_BASE, 0xFF);
@@ -214,8 +205,17 @@ bool internal::SOEMLink::CalibrateModulation() {
   Send(size, std::move(body));
 
   // Wait for read mod idx base
-  rx = WaitProcMsg(READ_MOD_IDX_BASE_HEADER, READ_MOD_IDX_BASE_HEADER_MASK);
+  rx = WaitProcMsg(READ_MOD_IDX_BASE_HEADER_AFTER_SHIFT, READ_MOD_IDX_BASE_HEADER_MASK);
   statuses = parse(rx);
+
+  // DEBUG
+  std::cerr << "======= Modulation Log ========" << std::endl;
+  for (size_t i = 0; i < statuses.size(); i++) {
+    auto status = statuses[i];
+    std::cerr << i << "," << static_cast<int>(status.danger) << "," << static_cast<int>(status.sync_base) << std::endl;
+  }
+  std::cerr << "===============================" << std::endl;
+  // DEBUG
 
   auto success = succeed_calib(statuses);
   if (!success) {
@@ -229,5 +229,5 @@ bool internal::SOEMLink::CalibrateModulation() {
   }
 
   return success;
-}  // namespace autd
+}
 }  // namespace autd
