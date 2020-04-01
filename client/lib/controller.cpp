@@ -72,7 +72,7 @@ class AUTDController : public Controller {
 
   void Stop() final;
   void AppendGain(const GainPtr gain) final;
-  void AppendGainSync(const GainPtr gain) final;
+  void AppendGainSync(const GainPtr gain, bool wait_for_send = false) final;
   void AppendModulation(const ModulationPtr mod) final;
   void AppendModulationSync(const ModulationPtr mod) final;
   void AppendSTMGain(GainPtr gain) final;
@@ -81,7 +81,6 @@ class AUTDController : public Controller {
   void StopSTModulation() final;
   void FinishSTModulation() final;
   void Flush() final;
-  bool WaitMsgProcessed(uint8_t msg_id, size_t max_trial = 200) final;
   FirmwareInfoList firmware_info_list() final;
 
   void LateralModulationAT(Vector3 point, Vector3 dir, double lm_amp = 2.5, double lm_freq = 100) final;
@@ -110,7 +109,8 @@ class AUTDController : public Controller {
   bool _silent_mode = true;
 
   void InitPipeline();
-  std::unique_ptr<uint8_t[]> MakeBody(GainPtr gain, ModulationPtr mod, size_t *size);
+  std::unique_ptr<uint8_t[]> MakeBody(GainPtr gain, ModulationPtr mod, size_t &size, uint8_t &send_msg_id);
+  bool WaitMsgProcessed(uint8_t msg_id, size_t max_trial = 200);
 
   static uint8_t get_id() {
     static std::atomic<uint8_t> id{OP_MODE_MSG_ID_MIN - 1};
@@ -202,31 +202,34 @@ void AUTDController::Stop() {
 }
 void AUTDController::AppendGain(GainPtr gain) {
   this->_p_stm_timer->Stop();
+  gain->SetGeometry(this->_geometry);
   {
-    gain->SetGeometry(this->_geometry);
     std::unique_lock<std::mutex> lk(_build_mtx);
     _build_q.push(gain);
   }
   _build_cond.notify_all();
 }
-void AUTDController::AppendGainSync(GainPtr gain) {
+void AUTDController::AppendGainSync(GainPtr gain, bool wait_for_send) {
   this->_p_stm_timer->Stop();
   try {
     gain->SetGeometry(this->_geometry);
     if (!gain->built()) gain->Build();
 
     size_t body_size = 0;
-    auto body = this->MakeBody(gain, nullptr, &body_size);
-
+    uint8_t msg_id = 0;
+    auto body = this->MakeBody(gain, nullptr, body_size, msg_id);
     if (this->is_open()) this->_link->Send(body_size, move(body));
+    if (wait_for_send) WaitMsgProcessed(msg_id);
   } catch (const int errnum) {
     this->_link->Close();
     std::cerr << errnum << "Link closed." << std::endl;
   }
 }
 void AUTDController::AppendModulation(ModulationPtr mod) {
-  std::unique_lock<std::mutex> lk(_send_mtx);
-  _send_mod_q.push(mod);
+  {
+    std::unique_lock<std::mutex> lk(_send_mtx);
+    _send_mod_q.push(mod);
+  }
   _send_cond.notify_all();
 }
 void AUTDController::AppendModulationSync(ModulationPtr mod) {
@@ -234,8 +237,10 @@ void AUTDController::AppendModulationSync(ModulationPtr mod) {
     if (this->is_open()) {
       while (mod->buffer.size() > mod->_sent) {
         size_t body_size = 0;
-        auto body = this->MakeBody(nullptr, mod, &body_size);
+        uint8_t msg_id = 0;
+        auto body = this->MakeBody(nullptr, mod, body_size, msg_id);
         this->_link->Send(body_size, move(body));
+        WaitMsgProcessed(msg_id);
       }
       mod->_sent = 0;
     }
@@ -266,7 +271,8 @@ void AUTDController::StartSTModulation(double freq) {
     if (!g->built()) g->Build();
 
     size_t body_size = 0;
-    auto body = this->MakeBody(g, nullptr, &body_size);
+    uint8_t msg_id = 0;
+    auto body = this->MakeBody(g, nullptr, body_size, msg_id);
     uint8_t *b = new uint8_t[body_size];
     std::memcpy(b, body.get(), body_size);
     this->_stm_bodies[i] = b;
@@ -323,8 +329,7 @@ bool AUTDController::WaitMsgProcessed(uint8_t msg_id, size_t max_trial) {
       return true;
     }
 
-    auto wait = static_cast<size_t>(
-        std::ceil(EC_TRAFFIC_DELAY * 1000 / EC_DEVICE_PER_FRAME * num_dev));
+    auto wait = static_cast<size_t>(std::ceil(EC_TRAFFIC_DELAY * 1000 / EC_DEVICE_PER_FRAME * num_dev));
     std::this_thread::sleep_for(std::chrono::milliseconds(wait));
   }
   return false;
@@ -440,8 +445,10 @@ void AUTDController::InitPipeline() {
           if (_send_mod_q.size() > 0) mod = _send_mod_q.front();
         }
         size_t body_size = 0;
-        auto body = MakeBody(gain, mod, &body_size);
+        uint8_t msg_id = 0;
+        auto body = MakeBody(gain, mod, body_size, msg_id);
         if (this->_link->is_open()) this->_link->Send(body_size, move(body));
+        if (mod != nullptr) WaitMsgProcessed(msg_id);
 
         std::unique_lock<std::mutex> lk(_send_mtx);
         if (gain != nullptr && _send_gain_q.size() > 0) _send_gain_q.pop();
@@ -457,14 +464,15 @@ void AUTDController::InitPipeline() {
   });
 }
 
-std::unique_ptr<uint8_t[]> AUTDController::MakeBody(GainPtr gain, ModulationPtr mod, size_t *size) {
+std::unique_ptr<uint8_t[]> AUTDController::MakeBody(GainPtr gain, ModulationPtr mod, size_t &size, uint8_t &send_msg_id) {
   auto num_devices = (gain != nullptr) ? gain->geometry()->numDevices() : 0;
 
-  *size = sizeof(RxGlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;
-  auto body = std::make_unique<uint8_t[]>(*size);
+  size = sizeof(RxGlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;
+  auto body = std::make_unique<uint8_t[]>(size);
 
   auto *header = reinterpret_cast<RxGlobalHeader *>(&body[0]);
-  header->msg_id = get_id();
+  send_msg_id = get_id();
+  header->msg_id = send_msg_id;
   header->control_flags = 0;
   header->mod_size = 0;
   header->command = CMD_OP;

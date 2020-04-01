@@ -62,7 +62,7 @@ class Controller {
 
   virtual void Stop() = 0;
   virtual void AppendGain(GainPtr gain) = 0;
-  virtual void AppendGainSync(GainPtr gain) = 0;
+  virtual void AppendGainSync(GainPtr gain, bool wait_for_send = false) = 0;
   virtual void AppendModulation(ModulationPtr modulation) = 0;
   virtual void AppendModulationSync(ModulationPtr modulation) = 0;
   virtual void AppendSTMGain(GainPtr gain) = 0;
@@ -71,7 +71,6 @@ class Controller {
   virtual void StopSTModulation() = 0;
   virtual void FinishSTModulation() = 0;
   virtual void Flush() = 0;
-  virtual bool WaitMsgProcessed(uint8_t msg_id, size_t max_trial = 200) = 0;
   virtual FirmwareInfoList firmware_info_list() = 0;
 
   virtual void LateralModulationAT(Vector3 point, Vector3 dir = Vector3::unit_y(), double lm_amp = 2.5, double lm_freq = 100) = 0;
