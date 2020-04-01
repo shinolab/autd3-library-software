@@ -81,6 +81,7 @@ class AUTDController : public Controller {
   void StopSTModulation() final;
   void FinishSTModulation() final;
   void Flush() final;
+  bool WaitMsgProcessed(uint8_t msg_id, size_t max_trial = 200) final;
   FirmwareInfoList firmware_info_list() final;
 
   void LateralModulationAT(Vector3 point, Vector3 dir, double lm_amp = 2.5, double lm_freq = 100) final;
@@ -104,11 +105,12 @@ class AUTDController : public Controller {
   std::mutex _build_mtx;
   std::mutex _send_mtx;
 
+  std::vector<uint8_t> _rx_data;
+
   bool _silent_mode = true;
 
   void InitPipeline();
   std::unique_ptr<uint8_t[]> MakeBody(GainPtr gain, ModulationPtr mod, size_t *size);
-  std::vector<uint8_t> WaitMsgProcessed(uint8_t msg_id, bool *success);
 
   static uint8_t get_id() {
     static std::atomic<uint8_t> id{OP_MODE_MSG_ID_MIN - 1};
@@ -308,6 +310,29 @@ void AUTDController::Flush() {
   std::queue<ModulationPtr>().swap(_send_mod_q);
 }
 
+bool AUTDController::WaitMsgProcessed(uint8_t msg_id, size_t max_trial) {
+  auto success = false;
+  auto num_dev = this->_geometry->numDevices();
+  auto buffer_len = num_dev * EC_INPUT_FRAME_SIZE;
+  for (size_t i = 0; i < max_trial; i++) {
+    _rx_data = this->_link->Read(static_cast<uint32_t>(buffer_len));
+    size_t processed = 0;
+    for (size_t dev = 0; dev < num_dev; dev++) {
+      uint8_t proc_id = _rx_data[dev * 2 + 1];
+      if (proc_id == msg_id) processed++;
+    }
+
+    if (processed == num_dev) {
+      return true;
+    }
+
+    auto wait = static_cast<size_t>(
+        std::ceil(EC_TRAFFIC_DELAY * 1000 / EC_DEVICE_PER_FRAME * num_dev));
+    std::this_thread::sleep_for(std::chrono::milliseconds(wait));
+  }
+  return false;
+}
+
 FirmwareInfoList AUTDController::firmware_info_list() {
   auto size = this->_geometry->numDevices();
 
@@ -330,39 +355,38 @@ FirmwareInfoList AUTDController::firmware_info_list() {
   std::vector<uint16_t> fpga_versions(size);
 
   std::unique_ptr<uint8_t[]> header;
-  std::vector<uint8_t> rx;
 
   bool success = false;
   auto send_size = sizeof(RxGlobalHeader);
   header = make_header(CMD_READ_CPU_VER_LSB);
   this->_link->Send(send_size, std::move(header));
-  rx = WaitMsgProcessed(CMD_READ_CPU_VER_LSB, &success);
+  success = WaitMsgProcessed(CMD_READ_CPU_VER_LSB);
   if (!success) return res;
   for (size_t i = 0; i < size; i++) {
-    cpu_versions[i] = rx[2 * i];
+    cpu_versions[i] = _rx_data[2 * i];
   }
   header = make_header(CMD_READ_CPU_VER_MSB);
   this->_link->Send(send_size, std::move(header));
-  rx = WaitMsgProcessed(CMD_READ_CPU_VER_MSB, &success);
+  success = WaitMsgProcessed(CMD_READ_CPU_VER_MSB);
   if (!success) return res;
   for (size_t i = 0; i < size; i++) {
-    cpu_versions[i] = ((uint16_t)rx[2 * i] << 8) | cpu_versions[i];
+    cpu_versions[i] = ((uint16_t)_rx_data[2 * i] << 8) | cpu_versions[i];
   }
 
   header = make_header(CMD_READ_FPGA_VER_LSB);
   this->_link->Send(send_size, std::move(header));
-  rx = WaitMsgProcessed(CMD_READ_FPGA_VER_LSB, &success);
+  success = WaitMsgProcessed(CMD_READ_FPGA_VER_LSB);
   if (!success) return res;
   for (size_t i = 0; i < size; i++) {
-    fpga_versions[i] = rx[2 * i];
+    fpga_versions[i] = _rx_data[2 * i];
   }
 
   header = make_header(CMD_READ_FPGA_VER_MSB);
   this->_link->Send(send_size, std::move(header));
-  rx = WaitMsgProcessed(CMD_READ_FPGA_VER_MSB, &success);
+  success= WaitMsgProcessed(CMD_READ_FPGA_VER_MSB);
   if (!success) return res;
   for (size_t i = 0; i < size; i++) {
-    fpga_versions[i] = ((uint16_t)rx[2 * i] << 8) | fpga_versions[i];
+    fpga_versions[i] = ((uint16_t)_rx_data[2 * i] << 8) | fpga_versions[i];
   }
 
   for (uint16_t i = 0; i < size; i++) {
@@ -475,29 +499,6 @@ std::unique_ptr<uint8_t[]> AUTDController::MakeBody(GainPtr gain, ModulationPtr 
     }
   }
   return body;
-}
-
-std::vector<uint8_t> AUTDController::WaitMsgProcessed(uint8_t msg_id, bool *success) {
-  std::vector<uint8_t> rx;
-  *success = false;
-  auto num_dev = this->_geometry->numDevices();
-  auto buffer_len = num_dev * EC_INPUT_FRAME_SIZE;
-  for (size_t i = 0; i < 10; i++) {
-    rx = this->_link->Read(static_cast<uint32_t>(buffer_len));
-    size_t processed = 0;
-    for (size_t dev = 0; dev < num_dev; dev++) {
-      uint8_t proc_id = rx[dev * 2 + 1];
-      if (proc_id == msg_id) processed++;
-    }
-
-    if (processed == num_dev) {
-      *success = true;
-      return rx;
-    }
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(1));
-  }
-  return rx;
 }
 
 ControllerPtr Controller::Create() { return CreateHelper<AUTDController>(); }
