@@ -356,35 +356,30 @@ FirmwareInfoList AUTDController::firmware_info_list() {
 
   std::unique_ptr<uint8_t[]> header;
 
-  bool success = false;
   auto send_size = sizeof(RxGlobalHeader);
   header = make_header(CMD_READ_CPU_VER_LSB);
   this->_link->Send(send_size, std::move(header));
-  success = WaitMsgProcessed(CMD_READ_CPU_VER_LSB);
-  if (!success) return res;
+  WaitMsgProcessed(CMD_READ_CPU_VER_LSB, 50);
   for (size_t i = 0; i < size; i++) {
     cpu_versions[i] = _rx_data[2 * i];
   }
   header = make_header(CMD_READ_CPU_VER_MSB);
   this->_link->Send(send_size, std::move(header));
-  success = WaitMsgProcessed(CMD_READ_CPU_VER_MSB);
-  if (!success) return res;
+  WaitMsgProcessed(CMD_READ_CPU_VER_MSB, 50);
   for (size_t i = 0; i < size; i++) {
     cpu_versions[i] = ((uint16_t)_rx_data[2 * i] << 8) | cpu_versions[i];
   }
 
   header = make_header(CMD_READ_FPGA_VER_LSB);
   this->_link->Send(send_size, std::move(header));
-  success = WaitMsgProcessed(CMD_READ_FPGA_VER_LSB);
-  if (!success) return res;
+  WaitMsgProcessed(CMD_READ_FPGA_VER_LSB, 50);
   for (size_t i = 0; i < size; i++) {
     fpga_versions[i] = _rx_data[2 * i];
   }
 
   header = make_header(CMD_READ_FPGA_VER_MSB);
   this->_link->Send(send_size, std::move(header));
-  success= WaitMsgProcessed(CMD_READ_FPGA_VER_MSB);
-  if (!success) return res;
+  WaitMsgProcessed(CMD_READ_FPGA_VER_MSB, 50);
   for (size_t i = 0; i < size; i++) {
     fpga_versions[i] = ((uint16_t)_rx_data[2 * i] << 8) | fpga_versions[i];
   }
