@@ -139,7 +139,7 @@ bool internal::SOEMLink::CalibrateModulation() {
 
   // Wait for synchronize modulation index in FPGA
   size_t t = static_cast<size_t>((_dev_num - 1) / EC_DEVICE_PER_FRAME * EC_TRAFFIC_DELAY);
-  std::this_thread::sleep_for(std::chrono::milliseconds((t + 1) * MOD_PERIOD_MS));
+  std::this_thread::sleep_for(std::chrono::milliseconds((t + 2) * MOD_PERIOD_MS));
   while (_cnt->ec_dc_time() > 5 * 1000 * 1000) {  // Todo. 5ms is a magic number...
   }
 

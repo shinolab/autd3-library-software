@@ -154,14 +154,8 @@ void SOEMController::RTthread(union sigval sv)
 }
 
 void SOEMController::SetupSync0(bool actiavte, uint32_t cycle_time_ns) {
-  auto exceed = cycle_time_ns > 100 * 1000 * 1000u;  // 100 ms, todo
   for (uint16 slave = 1; slave <= _dev_num; slave++) {
-    if (exceed) {
-      ec_dcsync0(slave, actiavte, cycle_time_ns, 0);
-    } else {
-      int shift = static_cast<int>(_dev_num) - slave;
-      ec_dcsync0(slave, actiavte, cycle_time_ns, shift * cycle_time_ns);
-    }
+    ec_dcsync0(slave, actiavte, cycle_time_ns, 0);  // Todo: should shift...?
   }
 }
 

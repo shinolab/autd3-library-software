@@ -71,7 +71,7 @@ class Controller {
   virtual void StopSTModulation() = 0;
   virtual void FinishSTModulation() = 0;
   virtual void Flush() = 0;
-  virtual bool WaitMsgProcessed(uint8_t msg_id, size_t max_trial = 200);
+  virtual bool WaitMsgProcessed(uint8_t msg_id, size_t max_trial = 200) = 0;
   virtual FirmwareInfoList firmware_info_list() = 0;
 
   virtual void LateralModulationAT(Vector3 point, Vector3 dir = Vector3::unit_y(), double lm_amp = 2.5, double lm_freq = 100) = 0;
