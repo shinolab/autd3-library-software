@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 30/03/2020
+// Last Modified: 01/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -95,7 +95,7 @@ class AUTDController : public Controller {
 
   std::vector<GainPtr> _stm_gains;
   std::vector<uint8_t *> _stm_bodies;
-  std::vector<size_t> _stm_body__sizes;
+  std::vector<size_t> _stm_body_sizes;
   std::unique_ptr<Timer> _p_stm_timer;
 
   std::thread _build_thr;
@@ -252,15 +252,13 @@ void AUTDController::AppendSTMGain(const std::vector<GainPtr> &gain_list) {
 }
 
 void AUTDController::StartSTModulation(double freq) {
-  // this->_link->SetWaitForProcessMsg(false);
-
   auto len = this->_stm_gains.size();
   auto itvl_us = static_cast<int>(1000000. / freq / len);
   this->_p_stm_timer->SetInterval(itvl_us);
 
   auto current_size = this->_stm_bodies.size();
   this->_stm_bodies.resize(len);
-  this->_stm_body__sizes.resize(len);
+  this->_stm_body_sizes.resize(len);
 
   for (size_t i = current_size; i < len; i++) {
     auto g = this->_stm_gains[i];
@@ -272,12 +270,12 @@ void AUTDController::StartSTModulation(double freq) {
     uint8_t *b = new uint8_t[body_size];
     std::memcpy(b, body.get(), body_size);
     this->_stm_bodies[i] = b;
-    this->_stm_body__sizes[i] = body_size;
+    this->_stm_body_sizes[i] = body_size;
   }
 
   size_t idx = 0;
   this->_p_stm_timer->Start([this, idx, len]() mutable {
-    auto body_size = this->_stm_body__sizes[idx];
+    auto body_size = this->_stm_body_sizes[idx];
     auto body_copy = std::make_unique<uint8_t[]>(body_size);
     uint8_t *p = this->_stm_bodies[idx];
     std::memcpy(body_copy.get(), p, body_size);
@@ -298,8 +296,7 @@ void AUTDController::FinishSTModulation() {
     delete[] p;
   }
   std::vector<uint8_t *>().swap(this->_stm_bodies);
-  std::vector<size_t>().swap(this->_stm_body__sizes);
-  // this->_link->SetWaitForProcessMsg(true);
+  std::vector<size_t>().swap(this->_stm_body_sizes);
 }
 
 void AUTDController::Flush() {
