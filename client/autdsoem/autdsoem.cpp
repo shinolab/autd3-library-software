@@ -42,6 +42,8 @@
 #endif
 
 #include <atomic>
+#include <chrono>
+#include <climits>
 #include <condition_variable>
 #include <cstdint>
 #include <iostream>
@@ -154,8 +156,11 @@ void SOEMController::RTthread(union sigval sv)
 }
 
 void SOEMController::SetupSync0(bool actiavte, uint32_t cycle_time_ns) {
+  using std::chrono::system_clock, std::chrono::duration_cast, std::chrono::nanoseconds;
+  auto ref_time = system_clock::now();
   for (uint16 slave = 1; slave <= _dev_num; slave++) {
-    ec_dcsync0(slave, actiavte, cycle_time_ns, 0);  // Todo: should shift...?
+    auto elapsed = duration_cast<nanoseconds>(ref_time - system_clock::now()).count();
+    ec_dcsync0(slave, actiavte, cycle_time_ns, static_cast<int32>((elapsed / cycle_time_ns) * cycle_time_ns));
   }
 }
 
