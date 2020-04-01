@@ -81,7 +81,7 @@ class SOEMController : public ISOEMController {
 #ifdef WINDOWS
   static void CALLBACK RTthread(PVOID lpParam, BOOLEAN TimerOrWaitFired);
 #elif defined MACOSX
-  static void RTthread(SOEMController *pimpl);
+  static void RTthread();
 #elif defined LINUX
   static void RTthread(union sigval sv);
 #endif
@@ -137,7 +137,7 @@ int64_t SOEMController::ec_dc_time() { return ec_DCtime % _sync0_cyctime; }
 #ifdef WINDOWS
 void CALLBACK SOEMController::RTthread(PVOID lpParam, BOOLEAN TimerOrWaitFired)
 #elif defined MACOSX
-void SOEMController::RTthread(SOEMController *cnt)
+void SOEMController::RTthread()
 #elif defined LINUX
 void SOEMController::RTthread(union sigval sv)
 #endif
@@ -226,8 +226,7 @@ void SOEMController::Open(const char *ifname, size_t dev_num, ECConfig config) {
     return;
   }
 
-  if (!CreateTimerQueueTimer(&_timer, _timerQueue, (WAITORTIMERCALLBACK)RTthread, reinterpret_cast<void *>(this), 0,
-                             config.ec_sm3_cyctime_ns / 1000 / 1000, 0)) {
+  if (!CreateTimerQueueTimer(&_timer, _timerQueue, (WAITORTIMERCALLBACK)RTthread, nullptr, 0, config.ec_sm3_cyctime_ns / 1000 / 1000, 0)) {
     std::cerr << "CreateTimerQueueTimer failed." << std::endl;
     return;
   }
@@ -242,7 +241,7 @@ void SOEMController::Open(const char *ifname, size_t dev_num, ECConfig config) {
 
   _timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _queue);
   dispatch_source_set_event_handler(_timer, ^{
-    RTthread(this);
+    RTthread();
   });
 
   dispatch_source_set_cancel_handler(_timer, ^{
@@ -263,7 +262,7 @@ void SOEMController::Open(const char *ifname, size_t dev_num, ECConfig config) {
   itval.it_interval.tv_nsec = config.ec_sm3_cyctime_ns;
 
   memset(&se, 0, sizeof(se));
-  se.sigev_value.sival_ptr = this;
+  se.sigev_value.sival_ptr = NULL;
   se.sigev_notify = SIGEV_THREAD;
   se.sigev_notify_function = RTthread;
   se.sigev_notify_attributes = NULL;

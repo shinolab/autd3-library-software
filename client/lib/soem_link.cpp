@@ -189,7 +189,6 @@ bool internal::SOEMLink::CalibrateModulation() {
   for (int i = 0; i < _dev_num; i++) {
     int32_t diff = (max_base - statuses[i].sync_base) - round_multiple(max_base - statuses[i].sync_base, SYNC0_STEP);
     uint16_t shift = (MOD_BUF_SIZE + diff) % MOD_BUF_SIZE;
-    std::cout << "\t" << i << ": " << (int)shift << std::endl;
     uint8_t *src = reinterpret_cast<uint8_t *>(&shift);
     std::memcpy(cursor, src, sizeof(uint16_t));
     cursor += NUM_TRANS_IN_UNIT * sizeof(uint16_t) / sizeof(body[0]);
