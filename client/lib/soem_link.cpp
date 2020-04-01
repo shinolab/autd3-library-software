@@ -3,7 +3,7 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/04/2020
+// Last Modified: 02/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -140,7 +140,7 @@ bool internal::SOEMLink::CalibrateModulation() {
   // Wait for synchronize modulation index in FPGA
   size_t t = static_cast<size_t>((_dev_num - 1) / EC_DEVICE_PER_FRAME * EC_TRAFFIC_DELAY);
   std::this_thread::sleep_for(std::chrono::milliseconds((t + 2) * MOD_PERIOD_MS));
-  while (_cnt->ec_dc_time() > 5 * 1000 * 1000) {  // Todo. 5ms is a magic number...
+  while (_cnt->ec_dc_time() > 100 * 1000 * 1000) {  // Todo. 100ms is a magic number...
   }
 
   // Restore Sync0 interval

@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/04/2020
+// Last Modified: 02/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -338,7 +338,7 @@ void SOEMController::CreateSendThread(size_t header_size, size_t body_size) {
 
             {
               AUTD3_LIB_SEND_COND.store(false, std::memory_order_release);
-              while (!AUTD3_LIB_SEND_COND.load(std::memory_order_acquire)) {
+              while (!AUTD3_LIB_SEND_COND.load(std::memory_order_acquire) && _is_open) {
               }
             }
 
