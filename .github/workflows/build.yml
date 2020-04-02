@@ -1,0 +1,56 @@
+name: build
+
+on:
+  push:
+    tags-ignore:
+      - v*
+    branches:
+      - '*'
+
+jobs:
+  build:
+    name: build ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    
+    steps:
+    - uses: actions/checkout@v2
+    - name: Checkout submodules
+      run: git submodule update --init --force --recursive
+    - name: setup-msbuild
+      if: matrix.os == 'windows-latest'
+      uses: microsoft/setup-msbuild@v1
+    - name: build for Windows
+      if: matrix.os == 'windows-latest'
+      run: |
+        cd client
+        cmake -G "Visual Studio 16 2019" -A x64 -B "build"
+        cd build
+        msbuild autd3.sln /t:build /p:Configuration=Release
+    - name: build for Linux, macOS
+      if: matrix.os != 'windows-latest'
+      run: |
+        cd client
+        mkdir -p build && cd build
+        cmake .. -DCMAKE_BUILD_TYPE=Release
+        make
+        
+  lint:
+    name: lint
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Checkout submodules
+      run: git submodule update --init --force --recursive
+    - name: lint
+      run: |
+        cd client
+        mkdir -p build && cd build
+        cmake ..
+        make cpplint
