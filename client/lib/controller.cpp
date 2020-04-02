@@ -195,7 +195,7 @@ void AUTDController::Close() {
 
 void AUTDController::Stop() {
   auto nullgain = NullGain::Create();
-  this->AppendGainSync(nullgain);
+  this->AppendGainSync(nullgain, true);
 #if DLL_FOR_CAPI
   delete nullgain;
 #endif
@@ -209,6 +209,7 @@ void AUTDController::AppendGain(GainPtr gain) {
   }
   _build_cond.notify_all();
 }
+
 void AUTDController::AppendGainSync(GainPtr gain, bool wait_for_send) {
   this->_p_stm_timer->Stop();
   try {
@@ -249,6 +250,7 @@ void AUTDController::AppendModulationSync(ModulationPtr mod) {
     std::cerr << errnum << "Link closed." << std::endl;
   }
 }
+
 void AUTDController::AppendSTMGain(GainPtr gain) { _stm_gains.push_back(gain); }
 void AUTDController::AppendSTMGain(const std::vector<GainPtr> &gain_list) {
   for (auto g : gain_list) {
