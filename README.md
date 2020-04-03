@@ -1,8 +1,9 @@
-![build](https://github.com/shinolab/autd3-library-software/workflows/build/badge.svg?branch=dev)
+![build](https://github.com/shinolab/autd3-library-software/workflows/build/badge.svg)
+![Upload Release Asset](https://github.com/shinolab/autd3-library-software/workflows/Upload%20Release%20Asset/badge.svg)
 
 # autd3 #
 
-Version: 0.3.2
+Version: 0.4.0
 
 * This repository is forked from [old version](https://github.com/shinolab/autd)
 
@@ -23,7 +24,7 @@ This versioning was introduced after version 0.3.0.
 
 ## CAUTION ##
 
-Before using, be sure to write the v0.3 firmwares in `dist/firmware`
+Before using, be sure to write the v0.4 firmwares in `dist/firmware`
 
 See [readme](/dist/firmware/Readme.md)
 
@@ -66,7 +67,6 @@ If you are using Linux/Mac, you may need to run as root.
 If you use this SDK in your research please consider to include the following citation in your publications:
 
 S. Inoue, Y. Makino and H. Shinoda "Scalable Architecture for Airborne Ultrasound Tactile Display", Asia Haptics 2016
-
 
 # Author #
 
