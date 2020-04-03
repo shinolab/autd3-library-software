@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 30/03/2020
+// Last Modified: 03/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -26,6 +26,8 @@
 // XXX: should be configuarable?
 #define INDEX_GROUP (0x3040030)
 #define INDEX_OFFSET_BASE (0x81000000)
+#define INDEX_GROUP_READ (0x3040010)
+#define INDEX_OFFSET_BASE_READ (0x8000230A)
 #define PORT (301)
 
 void autd::internal::EthercatLink::Open(std::string location) {
@@ -93,7 +95,7 @@ std::vector<uint8_t> autd::internal::EthercatLink::Read(uint32_t buffer_len) {
   const auto buffer = std::make_unique<uint8_t[]>(buffer_len);
   uint32_t read_bytes;
   auto ret = AdsSyncReadReqEx2(this->_port,  // NOLINT
-                               &pAddr, INDEX_GROUP, INDEX_OFFSET_BASE, buffer_len, &buffer[0], &read_bytes);
+                               &pAddr, INDEX_GROUP_READ, INDEX_OFFSET_BASE_READ, buffer_len, &buffer[0], &read_bytes);
 
   if (ret > 0) {
     std::cerr << "Error on reading data: " << std::hex << ret << std::endl;
@@ -173,7 +175,7 @@ std::vector<uint8_t> autd::internal::LocalEthercatLink::Read(uint32_t buffer_len
   const auto buffer = std::make_unique<uint8_t[]>(buffer_len);
   unsigned long read_bytes;     // NOLINT
   long ret = read(this->_port,  // NOLINT
-                  &addr, INDEX_GROUP, INDEX_OFFSET_BASE, buffer_len, &buffer[0], &read_bytes);
+                  &addr, INDEX_GROUP_READ, INDEX_OFFSET_BASE_READ, buffer_len, &buffer[0], &read_bytes);
 
   if (ret > 0) {
     std::cerr << "Error on reading data: " << std::hex << ret << std::endl;
