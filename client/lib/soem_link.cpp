@@ -156,15 +156,6 @@ bool internal::SOEMLink::CalibrateModulation() {
   rx = WaitProcMsg(READ_MOD_IDX_BASE_HEADER, READ_MOD_IDX_BASE_HEADER_MASK);
   statuses = parse(rx);
 
-  // DEBUG
-  std::cerr << "======= Modulation Log ========" << std::endl;
-  for (size_t i = 0; i < statuses.size(); i++) {
-    auto status = statuses[i];
-    std::cerr << i << "," << static_cast<int>(status.danger) << "," << static_cast<int>(status.sync_base) << std::endl;
-  }
-  std::cerr << "===============================" << std::endl;
-  // DEBUG
-
   // Check status and get maximum mod idx base (for calculating shift)
   uint16_t max_base = 0;
   for (auto status : statuses) {
@@ -206,15 +197,6 @@ bool internal::SOEMLink::CalibrateModulation() {
   // Wait for read mod idx base
   rx = WaitProcMsg(READ_MOD_IDX_BASE_HEADER_AFTER_SHIFT, READ_MOD_IDX_BASE_HEADER_MASK);
   statuses = parse(rx);
-
-  // DEBUG
-  std::cerr << "======= Modulation Log ========" << std::endl;
-  for (size_t i = 0; i < statuses.size(); i++) {
-    auto status = statuses[i];
-    std::cerr << i << "," << static_cast<int>(status.danger) << "," << static_cast<int>(status.sync_base) << std::endl;
-  }
-  std::cerr << "===============================" << std::endl;
-  // DEBUG
 
   auto success = succeed_calib(statuses);
   if (!success) {
