@@ -43,10 +43,9 @@ EXPORT void AUTDSetSilentMode(AUTDControllerHandle handle, bool mode);
 EXPORT bool AUTDCalibrateModulation(AUTDControllerHandle handle);
 EXPORT void AUTDStop(AUTDControllerHandle handle);
 EXPORT int AUTDGetAdapterPointer(void **out);
-EXPORT void AUTDGetAdapter(void *p_adapter, int index, char *descs,
-                           char *names);
+EXPORT void AUTDGetAdapter(void *p_adapter, int index, char *descs, char *names);
 EXPORT void AUTDFreeAdapterPointer(void *p_adapter);
-EXPORT int AUTDGetFirmwareInfoListPointer(AUTDControllerHandle handle,void **out);
+EXPORT int AUTDGetFirmwareInfoListPointer(AUTDControllerHandle handle, void **out);
 EXPORT void AUTDGetFirmwareInfo(void *pfirminfolist, int index, char *cpu_ver, char *fpga_ver);
 EXPORT void AUTDFreeFirmwareInfoListPointer(void *pfirminfolist);
 #pragma endregion
