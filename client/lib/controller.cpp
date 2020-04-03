@@ -391,7 +391,7 @@ FirmwareInfoList AUTDController::firmware_info_list() {
   for (uint16_t i = 0; i < size; i++) {
     FirmwareInfo info{i, cpu_versions[i], fpga_versions[i]};
 #if DLL_FOR_CAPI
-    res[i++] = info;
+    res[i] = info;
 #else
     res.push_back(info);
 #endif
