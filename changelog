@@ -1,3 +1,7 @@
+# 0.4.0
+* Added firmware_info_list()
+* Improved CalibrateModulation method
+
 # 0.3.2
 * Added WavModulation
 * Delete unused methods
