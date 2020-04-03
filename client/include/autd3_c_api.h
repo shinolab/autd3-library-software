@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/02/2020
+// Last Modified: 03/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -33,9 +33,6 @@ using DebugLogFunc = void (*)(const char *);
 #pragma region Controller
 EXPORT void AUTDCreateController(AUTDControllerHandle *out);
 EXPORT int AUTDOpenController(AUTDControllerHandle handle, int linkType, const char *location);
-EXPORT int AUTDGetAdapterPointer(void **out);
-EXPORT void AUTDGetAdapter(void *p_adapter, int index, char *descs, char *names);
-EXPORT void AUTDFreeAdapterPointer(void *p_adapter);
 EXPORT int AUTDAddDevice(AUTDControllerHandle handle, double x, double y, double z, double rz1, double ry, double rz2, int groupId);
 EXPORT int AUTDAddDeviceQuaternion(AUTDControllerHandle handle, double x, double y, double z, double qua_w, double qua_x, double qua_y, double qua_z,
                                    int groupId);
@@ -43,8 +40,15 @@ EXPORT void AUTDDelDevice(AUTDControllerHandle handle, int devId);
 EXPORT void AUTDCloseController(AUTDControllerHandle handle);
 EXPORT void AUTDFreeController(AUTDControllerHandle handle);
 EXPORT void AUTDSetSilentMode(AUTDControllerHandle handle, bool mode);
-EXPORT void AUTDCalibrateModulation(AUTDControllerHandle handle);
+EXPORT bool AUTDCalibrateModulation(AUTDControllerHandle handle);
 EXPORT void AUTDStop(AUTDControllerHandle handle);
+EXPORT int AUTDGetAdapterPointer(void **out);
+EXPORT void AUTDGetAdapter(void *p_adapter, int index, char *descs,
+                           char *names);
+EXPORT void AUTDFreeAdapterPointer(void *p_adapter);
+EXPORT int AUTDGetFirmwareInfoListPointer(AUTDControllerHandle handle,void **out);
+EXPORT void AUTDGetFirmwareInfo(void *pfirminfolist, int index, char *cpu_ver, char *fpga_ver);
+EXPORT void AUTDFreeFirmwareInfoListPointer(void *pfirminfolist);
 #pragma endregion
 
 #pragma region Property
@@ -72,19 +76,19 @@ EXPORT void AUTDModulation(AUTDModulationPtr *mod, uint8_t amp);
 EXPORT void AUTDRawPCMModulation(AUTDModulationPtr *mod, const char *filename, double sampFreq);
 EXPORT void AUTDSawModulation(AUTDModulationPtr *mod, int freq);
 EXPORT void AUTDSineModulation(AUTDModulationPtr *mod, int freq, double amp, double offset);
+EXPORT void AUTDWavModulation(AUTDModulationPtr *mod, const char *filename);
 EXPORT void AUTDDeleteModulation(AUTDModulationPtr mod);
 #pragma endregion
 
 #pragma region LowLevelInterface
 EXPORT void AUTDAppendGain(AUTDControllerHandle handle, AUTDGainPtr gain);
-EXPORT void AUTDAppendGainSync(AUTDControllerHandle handle, AUTDGainPtr gain);
+EXPORT void AUTDAppendGainSync(AUTDControllerHandle handle, AUTDGainPtr gain, bool wait_for_send);
 EXPORT void AUTDAppendModulation(AUTDControllerHandle handle, AUTDModulationPtr mod);
 EXPORT void AUTDAppendModulationSync(AUTDControllerHandle handle, AUTDModulationPtr mod);
 EXPORT void AUTDAppendSTMGain(AUTDControllerHandle handle, AUTDGainPtr gain);
 EXPORT void AUTDStartSTModulation(AUTDControllerHandle handle, double freq);
 EXPORT void AUTDStopSTModulation(AUTDControllerHandle handle);
 EXPORT void AUTDFinishSTModulation(AUTDControllerHandle handle);
-EXPORT void AUTDSetGain(AUTDControllerHandle handle, int deviceIndex, int transIndex, int amp, int phase);
 EXPORT void AUTDFlush(AUTDControllerHandle handle);
 EXPORT int AUTDDevIdForDeviceIdx(AUTDControllerHandle handle, int devIdx);
 EXPORT int AUTDDevIdForTransIdx(AUTDControllerHandle handle, int transIdx);
