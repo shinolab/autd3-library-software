@@ -196,10 +196,9 @@ void AUTDController::Close() {
 void AUTDController::Stop() {
   auto nullgain = NullGain::Create();
   this->AppendGainSync(nullgain, true);
-#if DLL_FOR_CAPI
-  delete nullgain;
-#endif
+  DeleteHelper(&nullgain);
 }
+
 void AUTDController::AppendGain(GainPtr gain) {
   this->_p_stm_timer->Stop();
   gain->SetGeometry(this->_geometry);

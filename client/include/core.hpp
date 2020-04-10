@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 28/02/2020
+// Last Modified: 10/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -37,7 +37,7 @@ class Timer;
 
 template <class T>
 #if DLL_FOR_CAPI
-static T *CreateHelper() {
+static T* CreateHelper() {
   struct impl : T {
     impl() : T() {}
   };
@@ -51,5 +51,15 @@ static std::shared_ptr<T> CreateHelper() {
   auto p = std::make_shared<impl>();
   return std::move(p);
 }
+#endif
+
+template <class T>
+#if DLL_FOR_CAPI
+static void DeleteHelper(T** ptr) {
+  delete *ptr;
+  *ptr = nullptr;
+}
+#else
+static void DeleteHelper(std::shared_ptr<T>* ptr) {}
 #endif
 }  // namespace autd
