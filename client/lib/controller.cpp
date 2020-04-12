@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 02/04/2020
+// Last Modified: 13/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -146,9 +146,7 @@ void AUTDController::Open(LinkType type, std::string location) {
   this->Close();
 
   switch (type) {
-#if WIN32
     case LinkType::TwinCAT:
-#endif
     case LinkType::ETHERCAT: {
       if (location == "" || location.find("localhost") == 0 || location.find("0.0.0.0") == 0 || location.find("127.0.0.1") == 0) {
         this->_link = std::make_shared<internal::LocalEthercatLink>();

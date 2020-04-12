@@ -3,7 +3,7 @@
 // Created Date: 06/07/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 27/02/2020
+// Last Modified: 13/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -34,6 +34,7 @@
 
 static constexpr auto REPEAT_SDP = 10;
 static constexpr auto LAMBDA_SDP = 0.8;
+static constexpr auto ATTENUATION = 1.15e-4;
 
 namespace hologainimpl {
 using Eigen::MatrixXcd;
@@ -75,7 +76,7 @@ complex<double> transfer(Eigen::Vector3d trans_pos, Eigen::Vector3d trans_norm, 
   const auto theta = atan2(diff.dot(trans_norm), dist * trans_norm.norm()) * 180.0 / M_PI;
   const auto directivity = directivity_t4010a1(theta);
 
-  return directivity / dist * exp(complex<double>(-dist * 1.15e-4, -2 * M_PI / ULTRASOUND_WAVELENGTH * dist));
+  return directivity / dist * exp(complex<double>(-dist * ATTENUATION, -2 * M_PI / ULTRASOUND_WAVELENGTH * dist));
 }
 
 void removeRow(MatrixXcd* const matrix, size_t row_to_remove) {
@@ -214,5 +215,5 @@ void autd::HoloGainSdp::Build() {
     SignalDesign(amp, phase, &D, &S);
     this->_data[geo->deviceIdForTransIdx(j)].at(j % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(D) << 8) + S;
   }
-}  // namespace autd
+}
 }  // namespace autd
