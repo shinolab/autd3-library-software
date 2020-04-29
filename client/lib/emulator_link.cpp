@@ -3,7 +3,7 @@
 // Created Date: 29/04/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 29/04/2020
+// Last Modified: 30/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -26,6 +26,7 @@
 #include <utility>
 #include <vector>
 
+#include "consts.hpp"
 #include "privdef.hpp"
 
 namespace autd {
@@ -44,6 +45,9 @@ void internal::EmulatorLink::Open(std::string location) {
 
 void internal::EmulatorLink::Close() {
   if (_is_open) {
+    auto buf = std::make_unique<uint8_t[]>(1);
+    buf[0] = 0x00;
+    Send(1, std::move(buf));
     closesocket(_socket);
     WSACleanup();
     _is_open = false;
