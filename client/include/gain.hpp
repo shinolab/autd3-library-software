@@ -68,8 +68,8 @@ class PlaneWaveGain : public Gain {
   void Build() override;
 
  private:
-  Vector3 _direction;
-  uint8_t _amp;
+  Vector3 _direction = Vector3::unit_z();
+  uint8_t _amp = 0xFF;
 };
 
 class FocalPointGain : public Gain {
