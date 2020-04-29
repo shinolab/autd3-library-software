@@ -3,7 +3,7 @@
 // Created Date: 08/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 27/02/2020
+// Last Modified: 29/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -37,6 +37,8 @@ class Device {
     device->device_id = device_id;
 
     const Eigen::Affine3d transform_matrix = Eigen::Translation3d(position) * quaternion;
+    device->x_direction = quaternion * Eigen::Vector3d(1, 0, 0);
+    device->y_direction = quaternion * Eigen::Vector3d(0, 1, 0);
     device->z_direction = quaternion * Eigen::Vector3d(0, 0, 1);
 
     Eigen::Matrix<double, 3, NUM_TRANS_IN_UNIT> local_trans_positions;
@@ -61,6 +63,8 @@ class Device {
 
   int device_id = 0;
   Eigen::Matrix<double, 3, NUM_TRANS_IN_UNIT> global_trans_positions;
+  Eigen::Vector3d x_direction;
+  Eigen::Vector3d y_direction;
   Eigen::Vector3d z_direction;
 };
 
@@ -76,6 +80,9 @@ class AUTDGeometry : public Geometry {
   int GroupIDForDeviceID(int device_id) final;
   const Vector3 position(int transducer_idx) final;
   const Vector3 direction(int transducer_id) final;
+  const Vector3 x_direction(int transducer_id) final;
+  const Vector3 y_direction(int transducer_id) final;
+  const Vector3 z_direction(int transducer_id) final;
   const int deviceIdForTransIdx(int transducer_idx) final;
   const int deviceIdForDeviceIdx(int device_index) final;
 
@@ -86,9 +93,6 @@ class AUTDGeometry : public Geometry {
     const auto eid = transducer_id / NUM_TRANS_IN_UNIT;
     return this->_devices.at(eid);
   }
-
-  const Vector3 _position(int transducer_idx);
-  const Vector3 _direction(int transducer_id);
 };
 
 GeometryPtr Geometry::Create() { return std::make_shared<AUTDGeometry>(); }
@@ -134,7 +138,19 @@ const Vector3 AUTDGeometry::position(int transducer_id) {
   return Vector3(pos.x(), pos.y(), pos.z());
 }
 
-const Vector3 AUTDGeometry::direction(int transducer_id) {
+const Vector3 AUTDGeometry::direction(int transducer_id) { return z_direction(transducer_id); }
+
+const Vector3 AUTDGeometry::x_direction(int transducer_id) {
+  const auto dir = this->_devices.at(this->deviceIdForTransIdx(transducer_id))->x_direction;
+  return Vector3(dir.x(), dir.y(), dir.z());
+}
+
+const Vector3 AUTDGeometry::y_direction(int transducer_id) {
+  const auto dir = this->_devices.at(this->deviceIdForTransIdx(transducer_id))->y_direction;
+  return Vector3(dir.x(), dir.y(), dir.z());
+}
+
+const Vector3 AUTDGeometry::z_direction(int transducer_id) {
   const auto dir = this->_devices.at(this->deviceIdForTransIdx(transducer_id))->z_direction;
   return Vector3(dir.x(), dir.y(), dir.z());
 }

@@ -65,6 +65,7 @@ if(WIN32)
     link.cpp
     ethercat_link.cpp
     soem_link.cpp
+    emulator_link.cpp
   )
 
   source_group("gain" FILES

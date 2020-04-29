@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 27/02/2020
+// Last Modified: 29/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -47,6 +47,9 @@ class Geometry {
    * @brief Normalized direction of a transducer specified by id
    */
   virtual const Vector3 direction(int transducer_id) = 0;
+  virtual const Vector3 x_direction(int transducer_id) = 0;
+  virtual const Vector3 y_direction(int transducer_id) = 0;
+  virtual const Vector3 z_direction(int transducer_id) = 0;
   virtual const int deviceIdForTransIdx(int transducer_idx) = 0;
   virtual const int deviceIdForDeviceIdx(int device_index) = 0;
 };

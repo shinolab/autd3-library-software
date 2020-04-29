@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 
 project(autd3)
 set(VERSION_MAJOR   0   CACHE STRING "Project major version number.")
-set(VERSION_MINOR   3   CACHE STRING "Project minor version number.")
-set(VERSION_PATCH   1   CACHE STRING "Project patch version number.")
+set(VERSION_MINOR   4   CACHE STRING "Project minor version number.")
+set(VERSION_PATCH   0   CACHE STRING "Project patch version number.")
 mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
 
 if(WIN32)
@@ -49,6 +49,7 @@ add_subdirectory(lib)
 add_subdirectory(doc)
 if(NOT IGNORE_EXAMPLE)
     add_subdirectory(example)
+    add_subdirectory(example_emulator)
     add_subdirectory(example_soem)
 endif()
 

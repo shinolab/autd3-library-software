@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 13/04/2020
+// Last Modified: 29/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -23,6 +23,7 @@
 #include <vector>
 
 #include "ec_config.hpp"
+#include "emulator_link.hpp"
 #include "ethercat_link.hpp"
 #include "firmware_version.hpp"
 #include "geometry.hpp"
@@ -160,6 +161,14 @@ void AUTDController::Open(LinkType type, std::string location) {
       this->_link = std::make_shared<internal::SOEMLink>();
       auto device_num = this->_geometry->numDevices();
       this->_link->Open(location + ":" + std::to_string(device_num));
+      break;
+    }
+    case LinkType::EMULATOR: {
+      auto link = std::make_shared<internal::EmulatorLink>();
+      link->Open(location);
+      link->SetGeometry(this->_geometry);
+      this->_link = link;
+      this->_link->Open(location);
       break;
     }
     default:

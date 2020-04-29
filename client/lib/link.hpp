@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 30/03/2020
+// Last Modified: 29/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -16,9 +16,6 @@
 #include <memory>
 #include <string>
 #include <vector>
-
-#include "gain.hpp"
-#include "modulation.hpp"
 
 namespace autd {
 namespace internal {

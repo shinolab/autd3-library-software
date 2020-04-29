@@ -1,0 +1,16 @@
+cmake_minimum_required(VERSION 3.1)
+
+set (CMAKE_CXX_STANDARD 17)
+
+add_executable(simple_emulator simple_emulator.cpp)
+include_directories(../include)
+target_link_libraries(simple_emulator autd3)
+target_link_libraries(simple_emulator autdsoem)
+if(WIN32)
+    target_link_libraries(simple_emulator ws2_32.lib)
+    target_link_libraries(simple_emulator winmm.lib)
+elseif(APPLE)
+    target_link_libraries(simple_emulator pcap)
+else()
+    target_link_libraries(simple_emulator rt)
+endif()
