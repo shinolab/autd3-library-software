@@ -3,7 +3,7 @@
 // Created Date: 11/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 30/03/2020
+// Last Modified: 30/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -22,8 +22,12 @@
 #include <limits>
 #include <numeric>
 
+#include "consts.hpp"
 #include "modulation.hpp"
 #include "privdef.hpp"
+
+using autd::MOD_BUF_SIZE;
+using autd::MOD_SAMPLING_FREQ;
 
 #pragma region Util
 static inline double sinc(double x) noexcept {

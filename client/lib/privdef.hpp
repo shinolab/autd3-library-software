@@ -3,7 +3,7 @@
 // Created Date: 07/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 29/03/2020
+// Last Modified: 30/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -15,22 +15,7 @@
 
 #include <array>
 
-constexpr auto NUM_TRANS_IN_UNIT = 249;
-constexpr auto NUM_TRANS_X = 18;
-constexpr auto NUM_TRANS_Y = 14;
-constexpr auto TRANS_SIZE_MM = 10.18;
-template <typename T>
-constexpr auto IS_MISSING_TRANSDUCER(T X, T Y) {
-  return (Y == 1 && (X == 1 || X == 2 || X == 16));
-}
-
-constexpr auto FPGA_CLOCK = 25600000;
-
-constexpr auto ULTRASOUND_FREQUENCY = 40000;
-constexpr auto ULTRASOUND_WAVELENGTH = 8.5;
-
-constexpr auto MOD_SAMPLING_FREQ = 4000;
-constexpr auto MOD_BUF_SIZE = 4000;
+namespace autd {
 constexpr auto MOD_FRAME_SIZE = 124;
 
 enum RxGlobalControlFlags {
@@ -38,7 +23,7 @@ enum RxGlobalControlFlags {
   LOOP_END = 1 << 1,
   SILENT = 1 << 3,
   FORCE_FAN = 1 << 4,
-  IS_SYNC_FIRST_SYNC0 = 1 << 5, //  reserved, do not use
+  IS_SYNC_FIRST_SYNC0 = 1 << 5,  //  reserved, do not use
   MOD_SYNC_BASE_SHIFT = 1 << 6,
 };
 
@@ -49,3 +34,4 @@ struct RxGlobalHeader {
   uint8_t mod_size;
   uint8_t mod[MOD_FRAME_SIZE];
 };
+}  // namespace autd

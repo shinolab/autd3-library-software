@@ -3,7 +3,7 @@
 // Created Date: 08/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 29/04/2020
+// Last Modified: 30/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -27,6 +27,12 @@
 #include "controller.hpp"
 #include "privdef.hpp"
 #include "vector3.hpp"
+
+using autd::IS_MISSING_TRANSDUCER;
+using autd::NUM_TRANS_IN_UNIT;
+using autd::NUM_TRANS_X;
+using autd::NUM_TRANS_Y;
+using autd::TRANS_SIZE_MM;
 
 class Device {
  public:

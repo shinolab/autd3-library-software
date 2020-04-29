@@ -3,7 +3,7 @@
 // Created Date: 06/07/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 13/04/2020
+// Last Modified: 30/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -29,8 +29,11 @@
 #pragma warning(pop)
 #endif
 
+#include "consts.hpp"
 #include "gain.hpp"
 #include "privdef.hpp"
+
+using autd::ULTRASOUND_WAVELENGTH;
 
 static constexpr auto REPEAT_SDP = 10;
 static constexpr auto LAMBDA_SDP = 0.8;
