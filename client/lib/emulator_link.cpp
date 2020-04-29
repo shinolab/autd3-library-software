@@ -50,16 +50,13 @@ void internal::EmulatorLink::Close() {
   }
 }
 
-void internal::EmulatorLink::Send(size_t size,
-                                  std::unique_ptr<uint8_t[]> buf) {
-   std::unique_ptr<const uint8_t[]> send_buf = std::move(buf);
-   sendto(_socket, (const char *)(send_buf.get()), static_cast<int>(size), 0,
-         (struct sockaddr *)&_addr, sizeof(_addr));
+void internal::EmulatorLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
+  _last_ms_id = buf[0];
+  std::unique_ptr<const uint8_t[]> send_buf = std::move(buf);
+  sendto(_socket, (const char *)(send_buf.get()), static_cast<int>(size), 0, (struct sockaddr *)&_addr, sizeof(_addr));
 }
 
-std::vector<uint8_t> internal::EmulatorLink::Read(uint32_t buffer_len) {
-  return std::vector<uint8_t>(buffer_len);
-}
+std::vector<uint8_t> internal::EmulatorLink::Read(uint32_t buffer_len) { return std::vector<uint8_t>(buffer_len, _last_ms_id); }
 
 bool internal::EmulatorLink::is_open() { return _is_open; }
 

@@ -3,7 +3,7 @@
 // Created Date: 29/04/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 29/04/2020
+// Last Modified: 30/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -40,6 +40,7 @@ class EmulatorLink : public Link {
   std::string _ifname;
   SOCKET _socket;
   sockaddr_in _addr;
+  uint8_t _last_ms_id = 0;
 };
 }  // namespace internal
 }  // namespace autd
