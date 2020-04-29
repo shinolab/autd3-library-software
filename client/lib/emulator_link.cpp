@@ -63,34 +63,36 @@ bool internal::EmulatorLink::is_open() { return _is_open; }
 bool internal::EmulatorLink::CalibrateModulation() { return true; }
 
 void internal::EmulatorLink::SetGeometry(GeometryPtr geomrty) {
-  const auto vec_size = sizeof(float) * 3 * 3;
-  auto size = geomrty->numDevices() * vec_size + sizeof(float);
+  const auto vec_size = 3 * sizeof(Vector3) / sizeof(double) * sizeof(float);
+  const auto size = geomrty->numDevices() * vec_size + sizeof(float);
   auto buf = std::make_unique<uint8_t[]>(size);
   float header;
-  ((uint8_t *)(&header))[0] = 0xff;
-  ((uint8_t *)(&header))[1] = 0xf0;
-  ((uint8_t *)(&header))[2] = 0xff;
-  ((uint8_t *)(&header))[3] = 0xff;
+  auto uh = reinterpret_cast<uint8_t *>(&header);
+  uh[0] = 0xff;
+  uh[1] = 0xf0;
+  uh[2] = 0xff;
+  uh[3] = 0xff;
   {
-    auto fbuf = (float *)(&buf[0]);
+    auto fbuf = reinterpret_cast<float *>(&buf[0]);
     fbuf[0] = header;
   }
-  auto fbuf = (float *)(&buf[sizeof(float)]);
-   for (size_t i = 0; i < geomrty->numDevices(); i++) {
+  auto fbuf = reinterpret_cast<float *>(&buf[sizeof(float)]);
+  for (size_t i = 0; i < geomrty->numDevices(); i++) {
     auto trans_id = static_cast<int>(i * NUM_TRANS_IN_UNIT);
     auto origin = geomrty->position(trans_id);
     auto right = geomrty->x_direction(trans_id);
     auto up = geomrty->y_direction(trans_id);
-    fbuf[vec_size * i] = static_cast<float>(origin.x());
-    fbuf[vec_size * i + 1] = static_cast<float>(origin.y());
-    fbuf[vec_size * i + 2] = static_cast<float>(origin.z());
-    fbuf[vec_size * i + 3] = static_cast<float>(right.x());
-    fbuf[vec_size * i + 4] = static_cast<float>(right.y());
-    fbuf[vec_size * i + 5] = static_cast<float>(right.z());
-    fbuf[vec_size * i + 6] = static_cast<float>(up.x());
-    fbuf[vec_size * i + 7] = static_cast<float>(up.y());
-    fbuf[vec_size * i + 8] = static_cast<float>(up.z());
+    fbuf[9 * i] = static_cast<float>(origin.x());
+    fbuf[9 * i + 1] = static_cast<float>(origin.y());
+    fbuf[9 * i + 2] = static_cast<float>(origin.z());
+    fbuf[9 * i + 3] = static_cast<float>(right.x());
+    fbuf[9 * i + 4] = static_cast<float>(right.y());
+    fbuf[9 * i + 5] = static_cast<float>(right.z());
+    fbuf[9 * i + 6] = static_cast<float>(up.x());
+    fbuf[9 * i + 7] = static_cast<float>(up.y());
+    fbuf[9 * i + 8] = static_cast<float>(up.z());
   }
-   Send(size, std::move(buf));
+
+  Send(size, std::move(buf));
 }
 };  // namespace autd
