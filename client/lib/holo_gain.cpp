@@ -104,15 +104,16 @@ void removeColumn(MatrixXcd* const matrix, size_t col_to_remove) {
 }  // namespace hologainimpl
 
 namespace autd {
+namespace gain {
 
-autd::GainPtr autd::HoloGainSdp::Create(std::vector<Vector3> foci, std::vector<double> amps) {
+GainPtr HoloGainSdp::Create(std::vector<Vector3> foci, std::vector<double> amps) {
   auto ptr = CreateHelper<HoloGainSdp>();
   ptr->_foci = foci;
   ptr->_amps = amps;
   return ptr;
 }
 
-void autd::HoloGainSdp::Build() {
+void HoloGainSdp::Build() {
   if (this->built()) return;
   auto geo = this->geometry();
   if (geo == nullptr) {
@@ -219,4 +220,5 @@ void autd::HoloGainSdp::Build() {
     this->_data[geo->deviceIdForTransIdx(j)].at(j % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(D) << 8) + S;
   }
 }
+}  // namespace gain
 }  // namespace autd

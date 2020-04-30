@@ -23,6 +23,7 @@
 #include "vector3.hpp"
 
 namespace autd {
+namespace gain {
 
 inline double pos_mod(double a, double b) { return a - floor(a / b) * b; }
 
@@ -230,4 +231,5 @@ void TransducerTestGain::Build() {
 
   this->_built = true;
 }
+}  // namespace gain
 }  // namespace autd

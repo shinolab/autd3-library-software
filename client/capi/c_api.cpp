@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/04/2020
+// Last Modified: 30/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -141,7 +141,7 @@ void AUTDGroupedGain(AUTDGainPtr *gain, int *group_ids, AUTDGainPtr *gains, int 
   for (int i = 0; i < size; i++) {
     auto id = group_ids[i];
     auto gain_id = gains[i];
-    auto *g = static_cast<autd::Gain *>(gain_id);
+    auto *g = static_cast<autd::GainPtr>(gain_id);
     gainmap[id] = g;
   }
 
@@ -182,7 +182,7 @@ void AUTDNullGain(AUTDGainPtr *gain) {
   *gain = g;
 }
 void AUTDDeleteGain(AUTDGainPtr gain) {
-  auto *g = static_cast<autd::Gain *>(gain);
+  auto *g = static_cast<autd::GainPtr>(gain);
   delete g;
 }
 #pragma endregion
@@ -217,13 +217,13 @@ void AUTDDeleteModulation(AUTDModulationPtr mod) {
 #pragma region LowLevelInterface
 void AUTDAppendGain(AUTDControllerHandle handle, AUTDGainPtr gain) {
   auto *cnt = static_cast<autd::Controller *>(handle);
-  auto *g = static_cast<autd::Gain *>(gain);
+  auto *g = static_cast<autd::GainPtr>(gain);
   cnt->AppendGain(g);
 }
 
 void AUTDAppendGainSync(AUTDControllerHandle handle, AUTDGainPtr gain, bool wait_for_send) {
   auto *cnt = static_cast<autd::Controller *>(handle);
-  auto *g = static_cast<autd::Gain *>(gain);
+  auto *g = static_cast<autd::GainPtr>(gain);
   cnt->AppendGainSync(g, wait_for_send);
 }
 void AUTDAppendModulation(AUTDControllerHandle handle, AUTDModulationPtr mod) {
@@ -238,7 +238,7 @@ void AUTDAppendModulationSync(AUTDControllerHandle handle, AUTDModulationPtr mod
 }
 void AUTDAppendSTMGain(AUTDControllerHandle handle, AUTDGainPtr gain) {
   auto *cnt = static_cast<autd::Controller *>(handle);
-  auto *g = static_cast<autd::Gain *>(gain);
+  auto *g = static_cast<autd::GainPtr>(gain);
   cnt->AppendSTMGain(g);
 }
 void AUTDStartSTModulation(AUTDControllerHandle handle, double freq) {

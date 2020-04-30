@@ -25,7 +25,10 @@
 #include "gain.hpp"
 #include "privdef.hpp"
 
-autd::GainPtr autd::MatlabGain::Create(std::string filename, std::string varname) {
+namespace autd {
+namespace gain {
+
+GainPtr MatlabGain::Create(std::string filename, std::string varname) {
 #ifndef MATLAB_ENABLED
   throw new std::runtime_error(
       "MatlabGain requires Matlab libraries. Recompile with Matlab "
@@ -37,7 +40,7 @@ autd::GainPtr autd::MatlabGain::Create(std::string filename, std::string varname
   return ptr;
 }
 
-void autd::MatlabGain::Build() {
+void MatlabGain::Build() {
   if (this->built()) return;
   if (this->geometry() == nullptr) throw new std::runtime_error("Geometry is required to build Gain");
 
@@ -93,3 +96,5 @@ void autd::MatlabGain::Build() {
 
   this->_built = true;
 }
+}  // namespace gain
+}  // namespace autd

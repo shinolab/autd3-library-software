@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 29/04/2020
+// Last Modified: 30/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -409,8 +409,8 @@ void AUTDController::LateralModulationAT(Vector3 point, Vector3 dir, double lm_a
   auto p1 = point + lm_amp * dir;
   auto p2 = point - lm_amp * dir;
   this->FinishSTModulation();
-  this->AppendSTMGain(autd::FocalPointGain::Create(p1));
-  this->AppendSTMGain(autd::FocalPointGain::Create(p2));
+  this->AppendSTMGain(autd::gain::FocalPointGain::Create(p1));
+  this->AppendSTMGain(autd::gain::FocalPointGain::Create(p2));
   this->StartSTModulation(lm_freq);
 }
 

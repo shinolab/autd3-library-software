@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 27/02/2020
+// Last Modified: 30/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -25,13 +25,7 @@
 #include "vector3.hpp"
 
 namespace autd {
-class Gain;
-
-#if DLL_FOR_CAPI
-using GainPtr = Gain *;
-#else
-using GainPtr = std::shared_ptr<Gain>;
-#endif
+namespace gain {
 
 class Gain {
   friend class AUTDController;
@@ -58,8 +52,6 @@ class Gain {
   std::map<int, std::vector<uint16_t>> data();
   bool built() noexcept;
 };
-
-using NullGain = Gain;
 
 class PlaneWaveGain : public Gain {
  public:
@@ -107,11 +99,11 @@ class CustomGain : public Gain {
 
 class GroupedGain : public Gain {
  public:
-  static GainPtr Create(std::map<int, autd::GainPtr> gainmap);
+  static GainPtr Create(std::map<int, GainPtr> gainmap);
   void Build() override;
 
  private:
-  std::map<int, autd::GainPtr> _gainmap;
+  std::map<int, GainPtr> _gainmap;
 };
 
 class HoloGainSdp : public Gain {
@@ -123,8 +115,6 @@ class HoloGainSdp : public Gain {
   std::vector<Vector3> _foci;
   std::vector<double> _amps;
 };
-
-using HoloGain = HoloGainSdp;
 
 class MatlabGain : public Gain {
  public:
@@ -145,4 +135,5 @@ class TransducerTestGain : public Gain {
   uint8_t _amp = 0;
   uint8_t _phase = 0;
 };
+}  // namespace gain
 }  // namespace autd

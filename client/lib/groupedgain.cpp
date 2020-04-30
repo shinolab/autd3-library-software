@@ -18,6 +18,7 @@
 #include "privdef.hpp"
 
 namespace autd {
+namespace gain {
 
 GainPtr GroupedGain::Create(std::map<int, GainPtr> gainmap) {
   auto gain = CreateHelper<GroupedGain>();
@@ -58,4 +59,5 @@ void GroupedGain::Build() {
 
   this->_built = true;
 }
+}  // namespace gain
 }  // namespace autd

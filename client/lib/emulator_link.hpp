@@ -38,8 +38,8 @@ class EmulatorLink : public Link {
   bool _is_open = false;
   size_t _dev_num = 0;
   std::string _ifname;
-  SOCKET _socket;
-  sockaddr_in _addr;
+  SOCKET _socket = {};
+  sockaddr_in _addr = {};
   uint8_t _last_ms_id = 0;
 };
 }  // namespace internal

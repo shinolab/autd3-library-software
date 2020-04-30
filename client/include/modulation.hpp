@@ -3,7 +3,7 @@
 // Created Date: 04/11/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/03/2020
+// Last Modified: 30/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -18,14 +18,7 @@
 #include "core.hpp"
 
 namespace autd {
-class Modulation;
-
-#if DLL_FOR_CAPI
-using ModulationPtr = Modulation *;
-#else
-using ModulationPtr = std::shared_ptr<Modulation>;
-#endif
-
+namespace modulation {
 class Modulation {
   friend class AUTDController;
 
@@ -59,4 +52,5 @@ class WavModulation : public Modulation {
  public:
   static ModulationPtr Create(std::string filename);
 };
+}  // namespace modulation
 }  // namespace autd

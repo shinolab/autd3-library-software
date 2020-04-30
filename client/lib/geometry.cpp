@@ -34,6 +34,8 @@ using autd::NUM_TRANS_X;
 using autd::NUM_TRANS_Y;
 using autd::TRANS_SIZE_MM;
 
+namespace autd {
+
 class Device {
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -74,7 +76,6 @@ class Device {
   Eigen::Vector3d z_direction;
 };
 
-namespace autd {
 class AUTDGeometry : public Geometry {
  public:
   int AddDevice(Vector3 position, Vector3 euler_angles, int group = 0) final;
