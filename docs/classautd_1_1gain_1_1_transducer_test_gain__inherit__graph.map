@@ -1,4 +1,0 @@
-<map id="autd::gain::TransducerTestGain" name="autd::gain::TransducerTestGain">
-<area shape="rect" id="node1" title="Gain to test a transducer." alt="" coords="5,80,208,107"/>
-<area shape="rect" id="node2" href="$classautd_1_1gain_1_1_gain.html" title="Gain controls the amplitude and phase of each transducer in the AUTD." alt="" coords="49,5,164,32"/>
-</map>

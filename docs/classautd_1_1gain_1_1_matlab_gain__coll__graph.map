@@ -1,4 +1,0 @@
-<map id="autd::gain::MatlabGain" name="autd::gain::MatlabGain">
-<area shape="rect" id="node1" title="Gain created from Matlab mat file." alt="" coords="5,80,159,107"/>
-<area shape="rect" id="node2" href="$classautd_1_1gain_1_1_gain.html" title="Gain controls the amplitude and phase of each transducer in the AUTD." alt="" coords="25,5,139,32"/>
-</map>
