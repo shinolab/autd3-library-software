@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classautd_1_1modulation_1_1_modulation.html" title="Modulation controls the amplitude modulation." alt="" coords="5,81,195,108"/>
+<area shape="rect" id="node2" href="$classautd_1_1modulation_1_1_raw_p_c_m_modulation.html" title="Modulation created from raw pcm data." alt="" coords="243,5,485,32"/>
+<area shape="rect" id="node3" href="$classautd_1_1modulation_1_1_saw_modulation.html" title="Sawtooth wave modulation." alt="" coords="257,56,471,83"/>
+<area shape="rect" id="node4" href="$classautd_1_1modulation_1_1_sine_modulation.html" title="Sine wave modulation." alt="" coords="257,107,471,133"/>
+<area shape="rect" id="node5" href="$classautd_1_1modulation_1_1_wav_modulation.html" title="Modulation created from wav file." alt="" coords="257,157,471,184"/>
+</map>

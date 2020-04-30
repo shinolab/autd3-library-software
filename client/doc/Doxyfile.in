@@ -12,7 +12,6 @@ FILE_PATTERNS          = *.h \
 RECURSIVE              = YES
 USE_MDFILE_AS_MAINPAGE = @PROJECT_SOURCE_DIR@/doc/main_page.md
 DOT_PATH               = "@DOT_PATH@"
-
 REFERENCED_BY_RELATION = YES
 REFERENCES_RELATION    = YES
 HAVE_DOT               = YES
