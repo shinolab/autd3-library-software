@@ -37,7 +37,7 @@ inline void SignalDesign(uint8_t amp_i, uint8_t phase_i, uint8_t *const amp_o, u
  * @brief Gain controls the amplitude and phase of each transducer in the AUTD
  */
 class Gain {
-  friend class AUTDController;
+  friend class autd::AUTDController;
   friend class Geometry;
 
  public:

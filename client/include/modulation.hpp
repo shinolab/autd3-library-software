@@ -23,7 +23,7 @@ namespace modulation {
  * @brief Modulation controls the amplitude modulation
  */
 class Modulation {
-  friend class AUTDController;
+  friend class autd::AUTDController;
 
  public:
   Modulation() noexcept;
