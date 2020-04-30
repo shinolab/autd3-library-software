@@ -54,8 +54,6 @@ void Gain::SetGeometry(const GeometryPtr& geometry) noexcept { this->_geometry =
 
 std::map<int, std::vector<uint16_t>> Gain::data() { return this->_data; }
 
-GainPtr PlaneWaveGain::Create(Vector3 direction) { return PlaneWaveGain::Create(direction, 0xFF); }
-
 GainPtr PlaneWaveGain::Create(Vector3 direction, uint8_t amp) {
   auto ptr = CreateHelper<PlaneWaveGain>();
   ptr->_direction = direction;
@@ -89,8 +87,6 @@ void PlaneWaveGain::Build() {
 
   this->_built = true;
 }
-
-GainPtr FocalPointGain::Create(Vector3 point) { return FocalPointGain::Create(point, 255); }
 
 GainPtr FocalPointGain::Create(Vector3 point, uint8_t amp) {
   auto gain = CreateHelper<FocalPointGain>();
@@ -126,8 +122,6 @@ void FocalPointGain::Build() {
 
   this->_built = true;
 }
-
-GainPtr BesselBeamGain::Create(Vector3 point, Vector3 vec_n, double theta_z) { return BesselBeamGain::Create(point, vec_n, theta_z, 255); }
 
 GainPtr BesselBeamGain::Create(Vector3 point, Vector3 vec_n, double theta_z, uint8_t amp) {
   auto gain = CreateHelper<BesselBeamGain>();

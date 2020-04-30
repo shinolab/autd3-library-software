@@ -11,9 +11,11 @@
 
 #include "emulator_link.hpp"
 
+#if _WINDOWS
 #include <atlstr.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#endif
 
 #include <algorithm>
 #include <bitset>
@@ -32,6 +34,7 @@
 namespace autd {
 
 void internal::EmulatorLink::Open(std::string location) {
+#if _WINDOWS
   WSAData wsaData;
   auto tmp = autd::split(location, ':');
   WSAStartup(MAKEWORD(2, 0), &wsaData);
@@ -40,6 +43,7 @@ void internal::EmulatorLink::Open(std::string location) {
   _addr.sin_port = htons(stoi(tmp[1]));
   CString ipaddr(tmp[0].c_str());
   inet_pton(AF_INET, ipaddr, &_addr.sin_addr.S_un.S_addr);
+#endif
   _is_open = true;
 }
 
@@ -48,8 +52,10 @@ void internal::EmulatorLink::Close() {
     auto buf = std::make_unique<uint8_t[]>(1);
     buf[0] = 0x00;
     Send(1, std::move(buf));
+#if _WINDOWS
     closesocket(_socket);
     WSACleanup();
+#endif
     _is_open = false;
   }
 }
@@ -57,7 +63,9 @@ void internal::EmulatorLink::Close() {
 void internal::EmulatorLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
   _last_ms_id = buf[0];
   std::unique_ptr<const uint8_t[]> send_buf = std::move(buf);
+#if _WINDOWS
   sendto(_socket, (const char *)(send_buf.get()), static_cast<int>(size), 0, (struct sockaddr *)&_addr, sizeof(_addr));
+#endif
 }
 
 std::vector<uint8_t> internal::EmulatorLink::Read(uint32_t buffer_len) { return std::vector<uint8_t>(buffer_len, _last_ms_id); }

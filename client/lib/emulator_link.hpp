@@ -11,8 +11,10 @@
 
 #pragma once
 
+#if _WINDOWS
 #define NOMINMAX
 #include <winsock2.h>
+#endif
 
 #include <memory>
 #include <string>
@@ -38,8 +40,10 @@ class EmulatorLink : public Link {
   bool _is_open = false;
   size_t _dev_num = 0;
   std::string _ifname;
+#if _WINDOWS
   SOCKET _socket = {};
   sockaddr_in _addr = {};
+#endif
   uint8_t _last_ms_id = 0;
 };
 }  // namespace internal

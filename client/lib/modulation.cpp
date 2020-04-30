@@ -44,8 +44,6 @@ Modulation::Modulation() noexcept { this->_sent = 0; }
 
 constexpr int Modulation::samplingFrequency() { return MOD_SAMPLING_FREQ; }
 
-ModulationPtr Modulation::Create() { return CreateHelper<Modulation>(); }
-
 ModulationPtr Modulation::Create(uint8_t amp) {
   auto mod = CreateHelper<Modulation>();
   mod->buffer.resize(MOD_FRAME_SIZE, amp);
