@@ -1,0 +1,4 @@
+<map id="autd::gain::BesselBeamGain" name="autd::gain::BesselBeamGain">
+<area shape="rect" id="node1" title="Gain to produce Bessel Beam." alt="" coords="5,80,193,107"/>
+<area shape="rect" id="node2" href="$classautd_1_1gain_1_1_gain.html" title="Gain controls the amplitude and phase of each transducer in the AUTD." alt="" coords="42,5,157,32"/>
+</map>

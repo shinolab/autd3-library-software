@@ -1,0 +1,5 @@
+<map id="autd::modulation::SineModulation" name="autd::modulation::SineModulation">
+<area shape="rect" id="node1" title="Sine wave modulation." alt="" coords="5,171,220,197"/>
+<area shape="rect" id="node2" href="$classautd_1_1modulation_1_1_modulation.html" title="Modulation controls the amplitude modulation." alt="" coords="18,95,207,121"/>
+<area shape="rect" id="node3" title=" " alt="" coords="40,5,185,32"/>
+</map>

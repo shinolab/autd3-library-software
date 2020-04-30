@@ -1,0 +1,5 @@
+<map id="autd::modulation::RawPCMModulation" name="autd::modulation::RawPCMModulation">
+<area shape="rect" id="node1" title="Modulation created from raw pcm data." alt="" coords="5,171,248,197"/>
+<area shape="rect" id="node2" href="$classautd_1_1modulation_1_1_modulation.html" title="Modulation controls the amplitude modulation." alt="" coords="32,95,221,121"/>
+<area shape="rect" id="node3" title=" " alt="" coords="54,5,199,32"/>
+</map>

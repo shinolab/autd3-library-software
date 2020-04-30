@@ -3,7 +3,7 @@
 // Created Date: 11/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 30/03/2020
+// Last Modified: 30/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -22,8 +22,15 @@
 #include <limits>
 #include <numeric>
 
+#include "consts.hpp"
 #include "modulation.hpp"
 #include "privdef.hpp"
+
+using autd::MOD_BUF_SIZE;
+using autd::MOD_SAMPLING_FREQ;
+
+namespace autd {
+namespace modulation {
 
 #pragma region Util
 static inline double sinc(double x) noexcept {
@@ -33,13 +40,11 @@ static inline double sinc(double x) noexcept {
 #pragma endregion
 
 #pragma region Modulation
-autd::Modulation::Modulation() noexcept { this->_sent = 0; }
+Modulation::Modulation() noexcept { this->_sent = 0; }
 
-constexpr int autd::Modulation::samplingFrequency() { return MOD_SAMPLING_FREQ; }
+constexpr int Modulation::samplingFrequency() { return MOD_SAMPLING_FREQ; }
 
-autd::ModulationPtr autd::Modulation::Create() { return CreateHelper<Modulation>(); }
-
-autd::ModulationPtr autd::Modulation::Create(uint8_t amp) {
+ModulationPtr Modulation::Create(uint8_t amp) {
   auto mod = CreateHelper<Modulation>();
   mod->buffer.resize(MOD_FRAME_SIZE, amp);
   return mod;
@@ -47,11 +52,11 @@ autd::ModulationPtr autd::Modulation::Create(uint8_t amp) {
 #pragma endregion
 
 #pragma region SineModulation
-autd::ModulationPtr autd::SineModulation::Create(int freq, double amp, double offset) {
+ModulationPtr SineModulation::Create(int freq, double amp, double offset) {
   assert(offset + 0.5 * amp <= 1.0 && offset - 0.5 * amp >= 0.0);
 
   auto mod = CreateHelper<SineModulation>();
-  constexpr auto sf = autd::Modulation::samplingFrequency();
+  constexpr auto sf = Modulation::samplingFrequency();
   freq = std::clamp(freq, 1, sf / 2);
 
   const auto d = std::gcd(sf, freq);
@@ -73,9 +78,9 @@ autd::ModulationPtr autd::SineModulation::Create(int freq, double amp, double of
 #pragma endregion
 
 #pragma region SawModulation
-autd::ModulationPtr autd::SawModulation::Create(int freq) {
+ModulationPtr SawModulation::Create(int freq) {
   auto mod = CreateHelper<SawModulation>();
-  constexpr auto sf = autd::Modulation::samplingFrequency();
+  constexpr auto sf = Modulation::samplingFrequency();
   freq = std::clamp(freq, 1, sf / 2);
 
   const auto d = std::gcd(sf, freq);
@@ -95,7 +100,7 @@ autd::ModulationPtr autd::SawModulation::Create(int freq) {
 #pragma endregion
 
 #pragma region RawPCMModulation
-autd::ModulationPtr autd::RawPCMModulation::Create(std::string filename, double sampling_freq) {
+ModulationPtr RawPCMModulation::Create(std::string filename, double sampling_freq) {
   if (sampling_freq < std::numeric_limits<double>::epsilon()) sampling_freq = MOD_SAMPLING_FREQ;
   auto mod = CreateHelper<RawPCMModulation>();
 
@@ -117,7 +122,7 @@ autd::ModulationPtr autd::RawPCMModulation::Create(std::string filename, double 
 
   // up sampling
   std::vector<double> smpl_buf;
-  const auto freqratio = autd::Modulation::samplingFrequency() / sampling_freq;
+  const auto freqratio = Modulation::samplingFrequency() / sampling_freq;
   smpl_buf.resize(tmp.size() * static_cast<size_t>(freqratio));
   for (size_t i = 0; i < smpl_buf.size(); i++) {
     smpl_buf.at(i) = (fmod(i / freqratio, 1.0) < 1 / freqratio) ? tmp.at(static_cast<int>(i / freqratio)) : 0.0;
@@ -125,7 +130,7 @@ autd::ModulationPtr autd::RawPCMModulation::Create(std::string filename, double 
 
   // LPF
   const auto NTAP = 31;
-  const auto cutoff = sampling_freq / 2 / autd::Modulation::samplingFrequency();
+  const auto cutoff = sampling_freq / 2 / Modulation::samplingFrequency();
   std::vector<double> lpf(NTAP);
   for (int i = 0; i < NTAP; i++) {
     const auto t = i - NTAP / 2.0;
@@ -165,7 +170,7 @@ inline static T read_from_stream(std::ifstream &fsp) {
 }
 }  // namespace
 
-autd::ModulationPtr autd::WavModulation::Create(std::string filename) {
+ModulationPtr WavModulation::Create(std::string filename) {
   auto mod = CreateHelper<WavModulation>();
 
   std::ifstream fs;
@@ -241,3 +246,6 @@ autd::ModulationPtr autd::WavModulation::Create(std::string filename) {
   return mod;
 }
 #pragma endregion
+
+}  // namespace modulation
+}  // namespace autd

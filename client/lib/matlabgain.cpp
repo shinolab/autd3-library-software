@@ -3,7 +3,7 @@
 // Created Date: 20/09/2016
 // Author:Seki Inoue
 // -----
-// Last Modified: 30/03/2020
+// Last Modified: 30/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -21,10 +21,14 @@
 #include <complex>
 #include <iostream>
 
+#include "consts.hpp"
 #include "gain.hpp"
 #include "privdef.hpp"
 
-autd::GainPtr autd::MatlabGain::Create(std::string filename, std::string varname) {
+namespace autd {
+namespace gain {
+
+GainPtr MatlabGain::Create(std::string filename, std::string varname) {
 #ifndef MATLAB_ENABLED
   throw new std::runtime_error(
       "MatlabGain requires Matlab libraries. Recompile with Matlab "
@@ -36,7 +40,7 @@ autd::GainPtr autd::MatlabGain::Create(std::string filename, std::string varname
   return ptr;
 }
 
-void autd::MatlabGain::Build() {
+void MatlabGain::Build() {
   if (this->built()) return;
   if (this->geometry() == nullptr) throw new std::runtime_error("Geometry is required to build Gain");
 
@@ -92,3 +96,5 @@ void autd::MatlabGain::Build() {
 
   this->_built = true;
 }
+}  // namespace gain
+}  // namespace autd

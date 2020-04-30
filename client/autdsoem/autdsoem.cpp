@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 02/04/2020
+// Last Modified: 10/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -173,12 +173,8 @@ void SOEMController::Open(const char *ifname, size_t dev_num, ECConfig config) {
   if (size != _io_map_size) {
     _io_map_size = size;
 
-    if (_io_map != nullptr) {
-      delete[] _io_map;
-    }
-
+    delete[] _io_map;
     _io_map = new uint8_t[size];
-
     memset(_io_map, 0x00, _io_map_size);
   }
 
@@ -359,7 +355,8 @@ SOEMController::SOEMController() {
 }
 
 SOEMController::~SOEMController() {
-  if (_io_map != nullptr) delete[] _io_map;
+  delete[] _io_map;
+  _io_map = nullptr;
 }
 
 std::unique_ptr<ISOEMController> ISOEMController::Create() { return std::make_unique<SOEMController>(); }

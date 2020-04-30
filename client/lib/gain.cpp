@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 27/02/2020
+// Last Modified: 30/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -17,11 +17,13 @@
 #include <string>
 #include <vector>
 
+#include "consts.hpp"
 #include "core.hpp"
 #include "privdef.hpp"
 #include "vector3.hpp"
 
 namespace autd {
+namespace gain {
 
 inline double pos_mod(double a, double b) { return a - floor(a / b) * b; }
 
@@ -51,8 +53,6 @@ GeometryPtr Gain::geometry() noexcept { return this->_geometry; }
 void Gain::SetGeometry(const GeometryPtr& geometry) noexcept { this->_geometry = geometry; }
 
 std::map<int, std::vector<uint16_t>> Gain::data() { return this->_data; }
-
-GainPtr PlaneWaveGain::Create(Vector3 direction) { return PlaneWaveGain::Create(direction, 0xFF); }
 
 GainPtr PlaneWaveGain::Create(Vector3 direction, uint8_t amp) {
   auto ptr = CreateHelper<PlaneWaveGain>();
@@ -88,8 +88,6 @@ void PlaneWaveGain::Build() {
   this->_built = true;
 }
 
-GainPtr FocalPointGain::Create(Vector3 point) { return FocalPointGain::Create(point, 255); }
-
 GainPtr FocalPointGain::Create(Vector3 point, uint8_t amp) {
   auto gain = CreateHelper<FocalPointGain>();
   gain->_point = point;
@@ -124,8 +122,6 @@ void FocalPointGain::Build() {
 
   this->_built = true;
 }
-
-GainPtr BesselBeamGain::Create(Vector3 point, Vector3 vec_n, double theta_z) { return BesselBeamGain::Create(point, vec_n, theta_z, 255); }
 
 GainPtr BesselBeamGain::Create(Vector3 point, Vector3 vec_n, double theta_z, uint8_t amp) {
   auto gain = CreateHelper<BesselBeamGain>();
@@ -229,4 +225,5 @@ void TransducerTestGain::Build() {
 
   this->_built = true;
 }
+}  // namespace gain
 }  // namespace autd

@@ -3,7 +3,7 @@
 // Created Date: 30/03/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/03/2020
+// Last Modified: 30/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -17,16 +17,25 @@
 
 namespace autd {
 
-class FirmwareInfo;
-
-#if DLL_FOR_CAPI
-using FirmwareInfoList = FirmwareInfo*;
-#else
-using FirmwareInfoList = std::vector<FirmwareInfo>;
-#endif
-
+/**
+ * @brief Firmware information
+ */
 class FirmwareInfo {
+  friend class AUTDController;
+
  public:
+  /**
+   * @brief Get cpu firmware version
+   */
+  std::string cpu_version() const { return firmware_version_map(_cpu_version_number); }
+  /**
+   * @brief Get fpga firmware version
+   */
+  std::string fpga_version() const { return firmware_version_map(_fpga_version_number); }
+
+  friend inline std::ostream& operator<<(std::ostream&, const FirmwareInfo&);
+
+ private:
   FirmwareInfo() : FirmwareInfo(0, 0, 0) {}
   FirmwareInfo(uint16_t idx, uint16_t cpu_ver, uint16_t fpga_ver) {
     _idx = idx;
@@ -34,12 +43,6 @@ class FirmwareInfo {
     _fpga_version_number = fpga_ver;
   }
 
-  std::string cpu_version() const { return firmware_version_map(_cpu_version_number); }
-  std::string fpga_version() const { return firmware_version_map(_fpga_version_number); }
-
-  friend inline std::ostream& operator<<(std::ostream&, const FirmwareInfo&);
-
- private:
   uint16_t _idx;
   uint16_t _cpu_version_number;
   uint16_t _fpga_version_number;

@@ -3,7 +3,7 @@
 // Created Date: 27/02/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 27/02/2020
+// Last Modified: 30/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -18,6 +18,9 @@
 
 namespace autd {
 namespace _utils {
+/**
+ * @brief Simple three-dimensional vector class
+ */
 class Vector3 {
  private:
   double _x;

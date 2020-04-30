@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/04/2020
+// Last Modified: 30/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -16,7 +16,6 @@
 #include <utility>
 #include <vector>
 
-#include "firmware_version.hpp"
 #include "gain.hpp"
 #include "geometry.hpp"
 #include "modulation.hpp"
@@ -25,52 +24,131 @@
 namespace autd {
 
 class Controller;
+class FirmwareInfo;
 
 using EtherCATAdapter = std::pair<std::string, std::string>;
 #if DLL_FOR_CAPI
 using EtherCATAdapters = EtherCATAdapter *;
 using ControllerPtr = Controller *;
+using FirmwareInfoList = FirmwareInfo *;
 #else
 using EtherCATAdapters = std::vector<EtherCATAdapter>;
 using ControllerPtr = std::shared_ptr<Controller>;
+using FirmwareInfoList = std::vector<FirmwareInfo>;
 #endif
 
+/**
+ * @brief AUTD Controller
+ */
 class Controller {
  public:
+  /**
+   * @brief Create controller
+   */
   static ControllerPtr Create();
-
+  /**
+   * @brief Verify that the device is properly connected
+   */
   virtual bool is_open() = 0;
+  /**
+   * @brief Geometry of the devices
+   */
   virtual GeometryPtr geometry() noexcept = 0;
+  /**
+   * @brief Check silent mode
+   */
   virtual bool silent_mode() noexcept = 0;
+  /**
+   * @brief Count the remaining data (Gain and Modulation) in buffer
+   */
   virtual size_t remainingInBuffer() = 0;
 
+  /**
+   * @brief Enumerate Ethernet adapter of the computer.
+   */
   static EtherCATAdapters EnumerateAdapters(int *const size);
 
   /**
    * @brief Open device by link type and location.
-   * The scheme of location is as follows:
-   * ETHERCAT - <ams net id> or <ipv4 addr>:<ams net id> (ex. 192.168.1.2:192.168.1.3.1.1 ).
+   * @param[in] type LinkType
+   * @param[in] location The scheme of location is as follows:
+   * -# ETHERCAT, TwinCAT: <ams net id> or <ipv4 addr>:<ams net id> (ex. 192.168.1.2:192.168.1.3.1.1 ).
    *  The ipv4 addr will be extracted from leading 4 octets of ams net id if not specified.
-   * ETHERNET - ipv4 addr
-   * USB      - ignored
-   * SERIAL   - file discriptor
+   *  If empty, localhost
+   * -# SOEM: Network interface name (can be obtained by EnumerateAdapters())
+   * -# EMULATOR: <ipv4 addr>:<port> of the computer running emulator
    */
   virtual void Open(LinkType type, std::string location = "") = 0;
+  /**
+   * @brief Set silent mode
+   */
   virtual void SetSilentMode(bool silent) noexcept = 0;
+  /**
+   * @brief Calibrate Modulation
+   * @details If you use more than one AUTD, call this function only once after Open().
+   * It takes several seconds and blocks the thread in the meantime.
+   */
   virtual bool CalibrateModulation() = 0;
+  /**
+   * @brief Close the controller
+   */
   virtual void Close() = 0;
 
+  /**
+   * @brief Stop outputting
+   */
   virtual void Stop() = 0;
+  /**
+   * @brief Append gain to the controller (non blocking)
+   * @details Gain will be sent in another thread
+   */
   virtual void AppendGain(GainPtr gain) = 0;
+  /**
+   * @brief Append gain to the controller (blocking)
+   * @param[in] wait_for_send if true, wait for the data to arrive on devices by handshaking
+   * @details Gain will be build in this function.
+   */
   virtual void AppendGainSync(GainPtr gain, bool wait_for_send = false) = 0;
+  /**
+   * @brief Append modulation to the controller (non blocking)
+   * @details Modulation will be sent in another thread
+   */
   virtual void AppendModulation(ModulationPtr modulation) = 0;
+  /**
+   * @brief Append modulation to the controller (blocking)
+   */
   virtual void AppendModulationSync(ModulationPtr modulation) = 0;
+  /**
+   * @brief Append gain for STM
+   */
   virtual void AppendSTMGain(GainPtr gain) = 0;
+  /**
+   * @brief Append gain for STM
+   */
   virtual void AppendSTMGain(const std::vector<GainPtr> &gain_list) = 0;
+  /**
+   * @brief Start Spatio-Temporal Modulation
+   * @param[in] freq Frequency of STM modulation
+   * @details Generate STM modulation by switching gains appended by AppendSTMGain() at the freq.
+   * The accuracy depends on the computer, for example, about 1ms on Windows. Note that it is affected by interruptions, and so on.
+   */
   virtual void StartSTModulation(double freq) = 0;
+  /**
+   * @brief Suspend Spatio-Temporal Modulation
+   */
   virtual void StopSTModulation() = 0;
+  /**
+   * @brief Finish Spatio-Temporal Modulation
+   * @details Appended gains will be removed.
+   */
   virtual void FinishSTModulation() = 0;
+  /**
+   * @brief Flush the buffer
+   */
   virtual void Flush() = 0;
+  /**
+   * @brief Enumerate firmware infomations
+   */
   virtual FirmwareInfoList firmware_info_list() = 0;
 
   virtual void LateralModulationAT(Vector3 point, Vector3 dir = Vector3::unit_y(), double lm_amp = 2.5, double lm_freq = 100) = 0;

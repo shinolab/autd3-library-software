@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 02/04/2020
+// Last Modified: 30/04/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -23,6 +23,7 @@
 #include <vector>
 
 #include "ec_config.hpp"
+#include "emulator_link.hpp"
 #include "ethercat_link.hpp"
 #include "firmware_version.hpp"
 #include "geometry.hpp"
@@ -146,9 +147,7 @@ void AUTDController::Open(LinkType type, std::string location) {
   this->Close();
 
   switch (type) {
-#if WIN32
     case LinkType::TwinCAT:
-#endif
     case LinkType::ETHERCAT: {
       if (location == "" || location.find("localhost") == 0 || location.find("0.0.0.0") == 0 || location.find("127.0.0.1") == 0) {
         this->_link = std::make_shared<internal::LocalEthercatLink>();
@@ -162,6 +161,14 @@ void AUTDController::Open(LinkType type, std::string location) {
       this->_link = std::make_shared<internal::SOEMLink>();
       auto device_num = this->_geometry->numDevices();
       this->_link->Open(location + ":" + std::to_string(device_num));
+      break;
+    }
+    case LinkType::EMULATOR: {
+      auto link = std::make_shared<internal::EmulatorLink>();
+      link->Open(location);
+      link->SetGeometry(this->_geometry);
+      this->_link = link;
+      this->_link->Open(location);
       break;
     }
     default:
@@ -196,10 +203,9 @@ void AUTDController::Close() {
 void AUTDController::Stop() {
   auto nullgain = NullGain::Create();
   this->AppendGainSync(nullgain, true);
-#if DLL_FOR_CAPI
-  delete nullgain;
-#endif
+  DeleteHelper(&nullgain);
 }
+
 void AUTDController::AppendGain(GainPtr gain) {
   this->_p_stm_timer->Stop();
   gain->SetGeometry(this->_geometry);
@@ -403,8 +409,8 @@ void AUTDController::LateralModulationAT(Vector3 point, Vector3 dir, double lm_a
   auto p1 = point + lm_amp * dir;
   auto p2 = point - lm_amp * dir;
   this->FinishSTModulation();
-  this->AppendSTMGain(autd::FocalPointGain::Create(p1));
-  this->AppendSTMGain(autd::FocalPointGain::Create(p2));
+  this->AppendSTMGain(autd::gain::FocalPointGain::Create(p1));
+  this->AppendSTMGain(autd::gain::FocalPointGain::Create(p2));
   this->StartSTModulation(lm_freq);
 }
 
