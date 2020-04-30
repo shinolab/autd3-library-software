@@ -7,7 +7,7 @@ Version: 0.4.0
 
 * This repository is forked from [old version](https://github.com/shinolab/autd)
 
-* There is also [version 1.0.0-rc](https://github.com/shinolab/autd3.1) which is equipped with a high-speed amp/phase switching feature up to 1.28MHz.
+* [Here is API document](https://shinolab.github.io/autd3-library-software/index.html)
 
 * For more details, refer to [Wiki](https://github.com/shinolab/autd3-library-software/wiki)
 
@@ -67,6 +67,10 @@ If you are using Linux/Mac, you may need to run as root.
 If you use this SDK in your research please consider to include the following citation in your publications:
 
 S. Inoue, Y. Makino and H. Shinoda "Scalable Architecture for Airborne Ultrasound Tactile Display", Asia Haptics 2016
+
+## Version 1.0.0-rc
+
+* There is also [version 1.0.0-rc](https://github.com/shinolab/autd3.1) which is equipped with a high-speed amp/phase switching feature up to 1.28MHz.
 
 # Author #
 
