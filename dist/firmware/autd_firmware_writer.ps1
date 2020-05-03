@@ -158,6 +158,7 @@ if ($select -eq 1) {
 if ($select -eq 2) {
     UpdateCPU $cpu_firmware
 }
+ColorEcho "Yellow" "INFO" "Please switch AUTD's power off and on again to load new firmware."
 ColorEcho "Green" "INFO" "Press any key to exit..."
 $host.UI.RawUI.ReadKey() | Out-Null
 exit
