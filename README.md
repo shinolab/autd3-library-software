@@ -22,11 +22,11 @@ If the number of x or y changes, the firmware of FPGA or CPU must be upgraded.
 
 This versioning was introduced after version 0.3.0.
 
-## CAUTION ##
+## ⚠ CAUTION ##
 
-Before using, be sure to write the v0.4 firmwares in `dist/firmware`
+* Before using, be sure to write the v0.4 firmwares in `dist/firmware`. For more information, please see [readme](/dist/firmware/Readme.md).
 
-See [readme](/dist/firmware/Readme.md)
+* If you are using Windows, you should disable Hyper-V, otherwise, it will cause unexpected behavior.
 
 ## Requirements
 
