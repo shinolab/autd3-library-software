@@ -40,11 +40,6 @@ function FindInstallLocation([string]$displayName) {
     }
 }
 
-function ReplaceContent([string]$filepath, [string]$rep1, [string]$rep2) {
-    $file = $(Get-Content $filepath) -replace $rep1, $rep2
-    $file > $filepath
-}
-
 if ($ENABLE_TEST -and ($TOOL_CHAIN -eq "")) {
     ColorEcho "Red" "Error" "Please specify vcpkg tool chain file. ex. -TOOL_CHAIN ""-DCMAKE_TOOLCHAIN_FILE=C:[...]\vcpkg\scripts\buildsystems\vcpkg.cmake"""
     $host.UI.RawUI.ReadKey() | Out-Null
