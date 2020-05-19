@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include <stdio.h>
+
 namespace autd {
 constexpr size_t NUM_TRANS_IN_UNIT = 249;
 constexpr size_t NUM_TRANS_X = 18;
