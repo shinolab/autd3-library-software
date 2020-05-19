@@ -47,8 +47,7 @@ list(APPEND INCLUDE_LIST
 add_library(autd3 STATIC ${SOURCE_LIST})
 
 if(WIN32 AND (NOT DISABLE_MATLAB))
-  set(Matlab_INCLUDE_DIRS "")
-  find_package( MATLAB )
+  find_package( Matlab )
   list(APPEND INCLUDE_LIST
     ${Matlab_INCLUDE_DIRS}
   )
