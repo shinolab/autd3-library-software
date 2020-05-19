@@ -17,11 +17,11 @@
 #pragma warning(disable : ALL_CODE_ANALYSIS_WARNINGS)
 #endif
 #include <AdsLib.h>
+#if _WINDOWS
+#pragma warning(pop)
 #define NOMINMAX
 #include <Windows.h>
 #include <winnt.h>
-#if _WINDOWS
-#pragma warning(pop)
 #else
 typedef void *HMODULE;
 #endif
