@@ -57,7 +57,7 @@ EXPORT bool AUTDIsOpen(AUTDControllerHandle handle);
 EXPORT bool AUTDIsSilentMode(AUTDControllerHandle handle);
 EXPORT int32_t AUTDNumDevices(AUTDControllerHandle handle);
 EXPORT int32_t AUTDNumTransducers(AUTDControllerHandle handle);
-EXPORT size_t AUTDRemainingInBuffer(AUTDControllerHandle handle);
+EXPORT uint64_t AUTDRemainingInBuffer(AUTDControllerHandle handle);
 #pragma endregion
 
 #pragma region Gain

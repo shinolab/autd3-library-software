@@ -124,9 +124,9 @@ int32_t AUTDNumTransducers(AUTDControllerHandle handle) {
   auto *cnt = static_cast<autd::Controller *>(handle);
   return cnt->geometry()->numTransducers();
 }
-size_t AUTDRemainingInBuffer(AUTDControllerHandle handle) {
+uint64_t AUTDRemainingInBuffer(AUTDControllerHandle handle) {
   auto *cnt = static_cast<autd::Controller *>(handle);
-  return cnt->remainingInBuffer();
+  return static_cast<uint64_t>(cnt->remainingInBuffer());
 }
 #pragma endregion
 
