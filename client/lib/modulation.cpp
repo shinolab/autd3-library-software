@@ -3,7 +3,7 @@
 // Created Date: 11/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 30/04/2020
+// Last Modified: 19/05/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -53,8 +53,6 @@ ModulationPtr Modulation::Create(uint8_t amp) {
 
 #pragma region SineModulation
 ModulationPtr SineModulation::Create(int freq, double amp, double offset) {
-  assert(offset + 0.5 * amp <= 1.0 && offset - 0.5 * amp >= 0.0);
-
   auto mod = CreateHelper<SineModulation>();
   constexpr auto sf = Modulation::samplingFrequency();
   freq = std::clamp(freq, 1, sf / 2);
@@ -69,7 +67,7 @@ ModulationPtr SineModulation::Create(int freq, double amp, double offset) {
   for (size_t i = 0; i < N; i++) {
     auto tamp = fmod(static_cast<double>(2 * REP * i) / N, 2.0);
     tamp = tamp > 1.0 ? 2.0 - tamp : tamp;
-    tamp = offset + (tamp - 0.5) * amp;
+    tamp = std::clamp(offset + (tamp - 0.5) * amp, 0.0, 1.0);
     mod->buffer.at(i) = static_cast<uint8_t>(tamp * 255.0);
   }
 
