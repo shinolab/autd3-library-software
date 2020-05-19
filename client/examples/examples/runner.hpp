@@ -29,11 +29,12 @@ using std::string;
 using std::vector;
 
 int run(autd::ControllerPtr autd) {
-  vector<pair<function<void(autd::ControllerPtr autd)>, string>> examples = {
-      pair(simple_test, "Single Focal Point Test"),
-      pair(bessel_test, "BesselBeam Test"),
-      pair(holo_test, "Multiple Focal Points Test"),
-      pair(stm_test, "Spatio-Temporal Modulation Test"),
+  using F = function<void(autd::ControllerPtr autd)>;
+  vector<pair<F, string>> examples = {
+      pair(F{simple_test}, "Single Focal Point Test"),
+      pair(F{bessel_test}, "BesselBeam Test"),
+      pair(F{holo_test}, "Multiple Focal Points Test"),
+      pair(F{stm_test}, "Spatio-Temporal Modulation Test"),
   };
 
   auto firm_info_list = autd->firmware_info_list();
