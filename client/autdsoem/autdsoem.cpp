@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/04/2020
+// Last Modified: 19/05/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -53,8 +53,8 @@
 #include <thread>
 #include <vector>
 
+#include "./ethercat.h"
 #include "autdsoem.hpp"
-#include "ethercat.h"
 
 namespace autdsoem {
 

@@ -13,8 +13,8 @@
 
 #include <cstdint>
 
+#include "./autd3_c_api.h"
 #include "autd3.hpp"
-#include "autd3_c_api.h"
 #include "emulator_link.hpp"
 #include "ethercat_link.hpp"
 #include "soem_link.hpp"
