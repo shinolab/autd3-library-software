@@ -129,6 +129,7 @@ class AUTDController : public Controller {
 };
 
 AUTDController::AUTDController() {
+  this->_link = nullptr;
   this->_geometry = Geometry::Create();
   this->_silent_mode = true;
   this->_p_stm_timer = std::make_unique<Timer>();
