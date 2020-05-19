@@ -112,6 +112,8 @@ static std::shared_ptr<T> CreateHelper() {
   return std::move(p);
 }
 template <class T>
-static void DeleteHelper(std::shared_ptr<T>* ptr) {}
+static void DeleteHelper(std::shared_ptr<T>* ptr) {
+  *ptr = nullptr;
+}
 #endif
 }  // namespace autd

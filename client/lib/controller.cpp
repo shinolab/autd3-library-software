@@ -144,7 +144,7 @@ AUTDController::~AUTDController() {
 }
 
 bool AUTDController::is_open() {
-  return this->_link.get() && this->_link->is_open();
+  return this->_link != nullptr && this->_link->is_open();
 }
 
 GeometryPtr AUTDController::geometry() noexcept { return this->_geometry; }
@@ -220,7 +220,7 @@ void AUTDController::Close() {
     if (std::this_thread::get_id() != this->_send_thr.get_id() &&
         this->_send_thr.joinable())
       this->_send_thr.join();
-    this->_link = nullptr;
+    DeleteHelper(&this->_link);
   }
 }
 

@@ -29,7 +29,7 @@
 namespace autd {
 
 LinkPtr SOEMLink::Create(std::string ifname, int device_num) {
-  auto link = std::make_shared<SOEMLink>();
+  auto link = CreateHelper<SOEMLink>();
   link->_ifname = ifname;
   link->_device_num = device_num;
 

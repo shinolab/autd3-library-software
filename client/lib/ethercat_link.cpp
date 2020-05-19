@@ -58,7 +58,7 @@ LinkPtr EthercatLink::Create(std::string location) {
 }
 
 LinkPtr EthercatLink::Create(std::string ipv4addr, std::string ams_net_id) {
-  auto link = std::make_shared<EthercatLink>();
+  auto link = CreateHelper<EthercatLink>();
   link->_ipv4addr = ipv4addr;
   link->_ams_net_id = ams_net_id;
 
@@ -77,12 +77,8 @@ void EthercatLink::Open() {
     }
     _ipv4addr += octets[3];
   }
-  this->_netId = {static_cast<uint8_t>(std::stoi(octets[0])),
-                  static_cast<uint8_t>(std::stoi(octets[1])),
-                  static_cast<uint8_t>(std::stoi(octets[2])),
-                  static_cast<uint8_t>(std::stoi(octets[3])),
-                  static_cast<uint8_t>(std::stoi(octets[4])),
-                  static_cast<uint8_t>(std::stoi(octets[5]))};
+  this->_netId = {static_cast<uint8_t>(std::stoi(octets[0])), static_cast<uint8_t>(std::stoi(octets[1])), static_cast<uint8_t>(std::stoi(octets[2])),
+                  static_cast<uint8_t>(std::stoi(octets[3])), static_cast<uint8_t>(std::stoi(octets[4])), static_cast<uint8_t>(std::stoi(octets[5]))};
   if (AdsAddRoute(this->_netId, _ipv4addr.c_str())) {
     std::cerr << "Error: Could not connect to remote." << std::endl;
     return;
@@ -106,8 +102,7 @@ bool EthercatLink::CalibrateModulation() { return true; }
 void EthercatLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
   const AmsAddr pAddr = {this->_netId, PORT};
   long ret = AdsSyncWriteReqEx(this->_port,  // NOLINT
-                               &pAddr, INDEX_GROUP, INDEX_OFFSET_BASE,
-                               static_cast<uint32_t>(size), &buf[0]);
+                               &pAddr, INDEX_GROUP, INDEX_OFFSET_BASE, static_cast<uint32_t>(size), &buf[0]);
   if (ret > 0) {
     switch (ret) {
       case ADSERR_DEVICE_INVALIDSIZE:
@@ -125,8 +120,7 @@ std::vector<uint8_t> EthercatLink::Read(uint32_t buffer_len) {
   const auto buffer = std::make_unique<uint8_t[]>(buffer_len);
   uint32_t read_bytes;
   auto ret = AdsSyncReadReqEx2(this->_port,  // NOLINT
-                               &pAddr, INDEX_GROUP_READ, INDEX_OFFSET_BASE_READ,
-                               buffer_len, &buffer[0], &read_bytes);
+                               &pAddr, INDEX_GROUP_READ, INDEX_OFFSET_BASE_READ, buffer_len, &buffer[0], &read_bytes);
 
   if (ret > 0) {
     std::cerr << "Error on reading data: " << std::hex << ret << std::endl;
@@ -140,7 +134,7 @@ std::vector<uint8_t> EthercatLink::Read(uint32_t buffer_len) {
 // for localhost connection
 
 LinkPtr LocalEthercatLink::Create() {
-  auto link = std::make_shared<LocalEthercatLink>();
+  auto link = CreateHelper<LocalEthercatLink>();
   return link;
 }
 
@@ -174,29 +168,25 @@ void LocalEthercatLink::Open() {
     return;
   }
   // open a new ADS port
-  TcAdsPortOpenEx portOpen =
-      (TcAdsPortOpenEx)GetProcAddress(this->lib, TCADS_AdsPortOpenEx);
+  TcAdsPortOpenEx portOpen = (TcAdsPortOpenEx)GetProcAddress(this->lib, TCADS_AdsPortOpenEx);
   this->_port = (*portOpen)();
   if (!this->_port) {
     std::cerr << "Error: Failed to open a new ADS port." << std::endl;
   }
   AmsAddr addr;
-  TcAdsGetLocalAddressEx getAddr = (TcAdsGetLocalAddressEx)GetProcAddress(
-      this->lib, TCADS_AdsGetLocalAddressEx);
+  TcAdsGetLocalAddressEx getAddr = (TcAdsGetLocalAddressEx)GetProcAddress(this->lib, TCADS_AdsGetLocalAddressEx);
   long nErr = getAddr(this->_port, &addr);  // NOLINT
   if (nErr) std::cerr << "Error: AdsGetLocalAddress: " << nErr << std::endl;
   this->_netId = addr.netId;
 }
 void LocalEthercatLink::Close() {
   this->_port = 0;
-  TcAdsPortCloseEx portClose =
-      (TcAdsPortCloseEx)GetProcAddress(this->lib, TCADS_AdsPortCloseEx);
+  TcAdsPortCloseEx portClose = (TcAdsPortCloseEx)GetProcAddress(this->lib, TCADS_AdsPortCloseEx);
   (*portClose)(this->_port);
 }
 void LocalEthercatLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
   AmsAddr addr = {this->_netId, PORT};
-  TcAdsSyncWriteReqEx write =
-      (TcAdsSyncWriteReqEx)GetProcAddress(this->lib, TCADS_AdsSyncWriteReqEx);
+  TcAdsSyncWriteReqEx write = (TcAdsSyncWriteReqEx)GetProcAddress(this->lib, TCADS_AdsSyncWriteReqEx);
   long ret = write(this->_port,  // NOLINT
                    &addr, INDEX_GROUP, INDEX_OFFSET_BASE,
                    static_cast<unsigned long>(size),  // NOLINT
@@ -204,22 +194,19 @@ void LocalEthercatLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
   if (ret > 0) {
     // https://infosys.beckhoff.com/english.php?content=../content/1033/tcadscommon/html/tcadscommon_intro.htm&id=
     // 6 : target port not found
-    std::cerr << "Error on sending data (local): " << std::hex << ret
-              << std::endl;
+    std::cerr << "Error on sending data (local): " << std::hex << ret << std::endl;
     throw static_cast<int>(ret);
   }
 }
 
 std::vector<uint8_t> LocalEthercatLink::Read(uint32_t buffer_len) {
   AmsAddr addr = {this->_netId, PORT};
-  TcAdsSyncReadReqEx read =
-      (TcAdsSyncReadReqEx)GetProcAddress(this->lib, TCADS_AdsSyncReadReqEx);
+  TcAdsSyncReadReqEx read = (TcAdsSyncReadReqEx)GetProcAddress(this->lib, TCADS_AdsSyncReadReqEx);
 
   const auto buffer = std::make_unique<uint8_t[]>(buffer_len);
   unsigned long read_bytes;     // NOLINT
   long ret = read(this->_port,  // NOLINT
-                  &addr, INDEX_GROUP_READ, INDEX_OFFSET_BASE_READ, buffer_len,
-                  &buffer[0], &read_bytes);
+                  &addr, INDEX_GROUP_READ, INDEX_OFFSET_BASE_READ, buffer_len, &buffer[0], &read_bytes);
 
   if (ret > 0) {
     std::cerr << "Error on reading data: " << std::hex << ret << std::endl;

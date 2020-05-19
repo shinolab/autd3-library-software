@@ -34,7 +34,7 @@
 namespace autd {
 
 LinkPtr EmulatorLink::Create(std::string ipaddr, int32_t port, GeometryPtr geometry) {
-  auto link = std::make_shared<EmulatorLink>();
+  auto link = CreateHelper<EmulatorLink>();
   link->_ipaddr = ipaddr;
   link->_port = port;
   link->_geometry = geometry;
@@ -73,14 +73,11 @@ void EmulatorLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
   _last_ms_id = buf[0];
   std::unique_ptr<const uint8_t[]> send_buf = std::move(buf);
 #if _WINDOWS
-  sendto(_socket, (const char *)(send_buf.get()), static_cast<int>(size), 0,
-         (struct sockaddr *)&_addr, sizeof(_addr));
+  sendto(_socket, (const char *)(send_buf.get()), static_cast<int>(size), 0, (struct sockaddr *)&_addr, sizeof(_addr));
 #endif
 }
 
-std::vector<uint8_t> EmulatorLink::Read(uint32_t buffer_len) {
-  return std::vector<uint8_t>(buffer_len, _last_ms_id);
-}
+std::vector<uint8_t> EmulatorLink::Read(uint32_t buffer_len) { return std::vector<uint8_t>(buffer_len, _last_ms_id); }
 
 bool EmulatorLink::is_open() { return _is_open; }
 
