@@ -3,7 +3,7 @@
 // Created Date: 29/04/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/04/2020
+// Last Modified: 19/05/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -33,21 +33,30 @@
 
 namespace autd {
 
-void internal::EmulatorLink::Open(std::string location) {
+LinkPtr EmulatorLink::Create(std::string ipaddr, int32_t port, GeometryPtr geometry) {
+  auto link = std::make_shared<EmulatorLink>();
+  link->_ipaddr = ipaddr;
+  link->_port = port;
+  link->_geometry = geometry;
+
+  return link;
+}
+
+void EmulatorLink::Open() {
 #if _WINDOWS
   WSAData wsaData;
-  auto tmp = autd::split(location, ':');
   WSAStartup(MAKEWORD(2, 0), &wsaData);
   _socket = socket(AF_INET, SOCK_DGRAM, 0);
   _addr.sin_family = AF_INET;
-  _addr.sin_port = htons(stoi(tmp[1]));
-  CString ipaddr(tmp[0].c_str());
+  _addr.sin_port = htons(_port);
+  CString ipaddr(_ipaddr.c_str());
   inet_pton(AF_INET, ipaddr, &_addr.sin_addr.S_un.S_addr);
 #endif
+  SetGeometry();
   _is_open = true;
 }
 
-void internal::EmulatorLink::Close() {
+void EmulatorLink::Close() {
   if (_is_open) {
     auto buf = std::make_unique<uint8_t[]>(1);
     buf[0] = 0x00;
@@ -60,21 +69,25 @@ void internal::EmulatorLink::Close() {
   }
 }
 
-void internal::EmulatorLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
+void EmulatorLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
   _last_ms_id = buf[0];
   std::unique_ptr<const uint8_t[]> send_buf = std::move(buf);
 #if _WINDOWS
-  sendto(_socket, (const char *)(send_buf.get()), static_cast<int>(size), 0, (struct sockaddr *)&_addr, sizeof(_addr));
+  sendto(_socket, (const char *)(send_buf.get()), static_cast<int>(size), 0,
+         (struct sockaddr *)&_addr, sizeof(_addr));
 #endif
 }
 
-std::vector<uint8_t> internal::EmulatorLink::Read(uint32_t buffer_len) { return std::vector<uint8_t>(buffer_len, _last_ms_id); }
+std::vector<uint8_t> EmulatorLink::Read(uint32_t buffer_len) {
+  return std::vector<uint8_t>(buffer_len, _last_ms_id);
+}
 
-bool internal::EmulatorLink::is_open() { return _is_open; }
+bool EmulatorLink::is_open() { return _is_open; }
 
-bool internal::EmulatorLink::CalibrateModulation() { return true; }
+bool EmulatorLink::CalibrateModulation() { return true; }
 
-void internal::EmulatorLink::SetGeometry(GeometryPtr geomrty) {
+void EmulatorLink::SetGeometry() {
+  auto geomrty = this->_geometry;
   const auto vec_size = 3 * sizeof(Vector3) / sizeof(double) * sizeof(float);
   const auto size = geomrty->numDevices() * vec_size + sizeof(float);
   auto buf = std::make_unique<uint8_t[]>(size);

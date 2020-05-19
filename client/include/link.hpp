@@ -18,31 +18,15 @@
 #include <vector>
 
 namespace autd {
-namespace internal {
 class Link {
- public:
-  virtual void Open(std::string location) = 0;
+  friend class AUTDController;
+
+ protected:
+  virtual void Open() = 0;
   virtual void Close() = 0;
   virtual void Send(size_t size, std::unique_ptr<uint8_t[]> buf) = 0;
   virtual std::vector<uint8_t> Read(uint32_t buffer_len) = 0;
   virtual bool is_open() = 0;
   virtual bool CalibrateModulation() = 0;
 };
-}  // namespace internal
-
-static inline std::vector<std::string> split(const std::string &s, char delim) {
-  std::vector<std::string> tokens;
-  std::string token;
-  for (char ch : s) {
-    if (ch == delim) {
-      if (!token.empty()) tokens.push_back(token);
-      token.clear();
-    } else {
-      token += ch;
-    }
-  }
-  if (!token.empty()) tokens.push_back(token);
-  return tokens;
-}
-
 }  // namespace autd

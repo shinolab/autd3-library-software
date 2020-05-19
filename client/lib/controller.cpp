@@ -67,6 +67,7 @@ class AUTDController : public Controller {
   size_t remainingInBuffer() final;
 
   void Open(LinkType type, std::string location = "") final;
+  void OpenWith(LinkPtr link) final;
   void SetSilentMode(bool silent) noexcept final;
   bool CalibrateModulation() final;
   void Close() final;
@@ -84,11 +85,12 @@ class AUTDController : public Controller {
   void Flush() final;
   FirmwareInfoList firmware_info_list() final;
 
-  void LateralModulationAT(Vector3 point, Vector3 dir, double lm_amp = 2.5, double lm_freq = 100) final;
+  void LateralModulationAT(Vector3 point, Vector3 dir, double lm_amp = 2.5,
+                           double lm_freq = 100) final;
 
  private:
   GeometryPtr _geometry;
-  std::shared_ptr<internal::Link> _link;
+  LinkPtr _link;
   std::queue<GainPtr> _build_q;
   std::queue<GainPtr> _send_gain_q;
   std::queue<ModulationPtr> _send_mod_q;
@@ -110,7 +112,9 @@ class AUTDController : public Controller {
   bool _silent_mode = true;
 
   void InitPipeline();
-  std::unique_ptr<uint8_t[]> MakeBody(GainPtr gain, ModulationPtr mod, size_t *const size, uint8_t *const send_msg_id);
+  std::unique_ptr<uint8_t[]> MakeBody(GainPtr gain, ModulationPtr mod,
+                                      size_t *const size,
+                                      uint8_t *const send_msg_id);
   bool WaitMsgProcessed(uint8_t msg_id, size_t max_trial = 200);
 
   static uint8_t get_id() {
@@ -131,17 +135,26 @@ AUTDController::AUTDController() {
 }
 
 AUTDController::~AUTDController() {
-  if (std::this_thread::get_id() != this->_build_thr.get_id() && this->_build_thr.joinable()) this->_build_thr.join();
-  if (std::this_thread::get_id() != this->_send_thr.get_id() && this->_send_thr.joinable()) this->_send_thr.join();
+  if (std::this_thread::get_id() != this->_build_thr.get_id() &&
+      this->_build_thr.joinable())
+    this->_build_thr.join();
+  if (std::this_thread::get_id() != this->_send_thr.get_id() &&
+      this->_send_thr.joinable())
+    this->_send_thr.join();
 }
 
-bool AUTDController::is_open() { return this->_link.get() && this->_link->is_open(); }
+bool AUTDController::is_open() {
+  return this->_link.get() && this->_link->is_open();
+}
 
 GeometryPtr AUTDController::geometry() noexcept { return this->_geometry; }
 
 bool AUTDController::silent_mode() noexcept { return this->_silent_mode; }
 
-size_t AUTDController::remainingInBuffer() { return this->_send_gain_q.size() + this->_send_mod_q.size() + this->_build_q.size(); }
+size_t AUTDController::remainingInBuffer() {
+  return this->_send_gain_q.size() + this->_send_mod_q.size() +
+         this->_build_q.size();
+}
 
 void AUTDController::Open(LinkType type, std::string location) {
   this->Close();
@@ -149,26 +162,18 @@ void AUTDController::Open(LinkType type, std::string location) {
   switch (type) {
     case LinkType::TwinCAT:
     case LinkType::ETHERCAT: {
-      if (location == "" || location.find("localhost") == 0 || location.find("0.0.0.0") == 0 || location.find("127.0.0.1") == 0) {
-        this->_link = std::make_shared<internal::LocalEthercatLink>();
+      if (location == "" || location.find("localhost") == 0 ||
+          location.find("0.0.0.0") == 0 || location.find("127.0.0.1") == 0) {
+        this->_link = LocalEthercatLink::Create();
       } else {
-        this->_link = std::make_shared<internal::EthercatLink>();
+        this->_link = EthercatLink::Create(location);
       }
-      this->_link->Open(location);
+      this->_link->Open();
       break;
     }
     case LinkType::SOEM: {
-      this->_link = std::make_shared<internal::SOEMLink>();
-      auto device_num = this->_geometry->numDevices();
-      this->_link->Open(location + ":" + std::to_string(device_num));
-      break;
-    }
-    case LinkType::EMULATOR: {
-      auto link = std::make_shared<internal::EmulatorLink>();
-      link->Open(location);
-      link->SetGeometry(this->_geometry);
-      this->_link = link;
-      this->_link->Open(location);
+      this->_link = SOEMLink::Create(location, this->_geometry->numDevices());
+      this->_link->Open();
       break;
     }
     default:
@@ -182,9 +187,24 @@ void AUTDController::Open(LinkType type, std::string location) {
     this->Close();
 }
 
-void AUTDController::SetSilentMode(bool silent) noexcept { this->_silent_mode = silent; }
+void AUTDController::OpenWith(LinkPtr link) {
+  this->Close();
 
-bool AUTDController::CalibrateModulation() { return this->_link->CalibrateModulation(); }
+  this->_link = link;
+  this->_link->Open();
+  if (this->_link->is_open())
+    this->InitPipeline();
+  else
+    this->Close();
+}
+
+void AUTDController::SetSilentMode(bool silent) noexcept {
+  this->_silent_mode = silent;
+}
+
+bool AUTDController::CalibrateModulation() {
+  return this->_link->CalibrateModulation();
+}
 
 void AUTDController::Close() {
   if (this->is_open()) {
@@ -193,10 +213,14 @@ void AUTDController::Close() {
     this->_link->Close();
     this->Flush();
     this->_build_cond.notify_all();
-    if (std::this_thread::get_id() != this->_build_thr.get_id() && this->_build_thr.joinable()) this->_build_thr.join();
+    if (std::this_thread::get_id() != this->_build_thr.get_id() &&
+        this->_build_thr.joinable())
+      this->_build_thr.join();
     this->_send_cond.notify_all();
-    if (std::this_thread::get_id() != this->_send_thr.get_id() && this->_send_thr.joinable()) this->_send_thr.join();
-    this->_link = std::shared_ptr<internal::Link>(nullptr);
+    if (std::this_thread::get_id() != this->_send_thr.get_id() &&
+        this->_send_thr.joinable())
+      this->_send_thr.join();
+    this->_link = nullptr;
   }
 }
 
@@ -337,7 +361,8 @@ bool AUTDController::WaitMsgProcessed(uint8_t msg_id, size_t max_trial) {
       return true;
     }
 
-    auto wait = static_cast<size_t>(std::ceil(EC_TRAFFIC_DELAY * 1000 / EC_DEVICE_PER_FRAME * num_dev));
+    auto wait = static_cast<size_t>(
+        std::ceil(EC_TRAFFIC_DELAY * 1000 / EC_DEVICE_PER_FRAME * num_dev));
     std::this_thread::sleep_for(std::chrono::milliseconds(wait));
   }
   return false;
@@ -405,7 +430,8 @@ FirmwareInfoList AUTDController::firmware_info_list() {
   return res;
 }
 
-void AUTDController::LateralModulationAT(Vector3 point, Vector3 dir, double lm_amp, double lm_freq) {
+void AUTDController::LateralModulationAT(Vector3 point, Vector3 dir,
+                                         double lm_amp, double lm_freq) {
   auto p1 = point + lm_amp * dir;
   auto p2 = point - lm_amp * dir;
   this->FinishSTModulation();
@@ -421,7 +447,8 @@ void AUTDController::InitPipeline() {
       {
         std::unique_lock<std::mutex> lk(_build_mtx);
 
-        _build_cond.wait(lk, [&] { return _build_q.size() || !this->is_open(); });
+        _build_cond.wait(lk,
+                         [&] { return _build_q.size() || !this->is_open(); });
 
         if (_build_q.size() > 0) {
           gain = _build_q.front();
@@ -448,7 +475,10 @@ void AUTDController::InitPipeline() {
 
         {
           std::unique_lock<std::mutex> lk(_send_mtx);
-          _send_cond.wait(lk, [&] { return _send_gain_q.size() || _send_mod_q.size() || !this->is_open(); });
+          _send_cond.wait(lk, [&] {
+            return _send_gain_q.size() || _send_mod_q.size() ||
+                   !this->is_open();
+          });
           if (_send_gain_q.size() > 0) gain = _send_gain_q.front();
           if (_send_mod_q.size() > 0) mod = _send_mod_q.front();
         }
@@ -472,10 +502,13 @@ void AUTDController::InitPipeline() {
   });
 }
 
-std::unique_ptr<uint8_t[]> AUTDController::MakeBody(GainPtr gain, ModulationPtr mod, size_t *const size, uint8_t *const send_msg_id) {
+std::unique_ptr<uint8_t[]> AUTDController::MakeBody(
+    GainPtr gain, ModulationPtr mod, size_t *const size,
+    uint8_t *const send_msg_id) {
   auto num_devices = (gain != nullptr) ? gain->geometry()->numDevices() : 0;
 
-  *size = sizeof(RxGlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;
+  *size = sizeof(RxGlobalHeader) +
+          sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;
   auto body = std::make_unique<uint8_t[]>(*size);
 
   auto *header = reinterpret_cast<RxGlobalHeader *>(&body[0]);
@@ -488,10 +521,13 @@ std::unique_ptr<uint8_t[]> AUTDController::MakeBody(GainPtr gain, ModulationPtr 
   if (this->_silent_mode) header->control_flags |= SILENT;
 
   if (mod != nullptr) {
-    const uint8_t mod_size = std::max(0, std::min(static_cast<int>(mod->buffer.size() - mod->_sent), MOD_FRAME_SIZE));
+    const uint8_t mod_size =
+        std::max(0, std::min(static_cast<int>(mod->buffer.size() - mod->_sent),
+                             MOD_FRAME_SIZE));
     header->mod_size = mod_size;
     if (mod->_sent == 0) header->control_flags |= LOOP_BEGIN;
-    if (mod->_sent + mod_size >= mod->buffer.size()) header->control_flags |= LOOP_END;
+    if (mod->_sent + mod_size >= mod->buffer.size())
+      header->control_flags |= LOOP_END;
 
     std::memcpy(header->mod, &mod->buffer[mod->_sent], mod_size);
     mod->_sent += mod_size;

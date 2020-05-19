@@ -53,8 +53,8 @@
 #include <thread>
 #include <vector>
 
-#include "../lib/autdsoem.hpp"
-#include "./ethercat.h"
+#include "autdsoem.hpp"
+#include "ethercat.h"
 
 namespace autdsoem {
 

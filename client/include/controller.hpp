@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/04/2020
+// Last Modified: 19/05/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -22,21 +22,6 @@
 #include "vector3.hpp"
 
 namespace autd {
-
-class Controller;
-class FirmwareInfo;
-
-using EtherCATAdapter = std::pair<std::string, std::string>;
-#if DLL_FOR_CAPI
-using EtherCATAdapters = EtherCATAdapter *;
-using ControllerPtr = Controller *;
-using FirmwareInfoList = FirmwareInfo *;
-#else
-using EtherCATAdapters = std::vector<EtherCATAdapter>;
-using ControllerPtr = std::shared_ptr<Controller>;
-using FirmwareInfoList = std::vector<FirmwareInfo>;
-#endif
-
 /**
  * @brief AUTD Controller
  */
@@ -69,24 +54,31 @@ class Controller {
   static EtherCATAdapters EnumerateAdapters(int *const size);
 
   /**
-   * @brief Open device by link type and location.
+   * @brief [This method is deprecated, use OpenWith(LinkPtr) instead.] Open device by link type and location.
    * @param[in] type LinkType
    * @param[in] location The scheme of location is as follows:
-   * -# ETHERCAT, TwinCAT: <ams net id> or <ipv4 addr>:<ams net id> (ex. 192.168.1.2:192.168.1.3.1.1 ).
-   *  The ipv4 addr will be extracted from leading 4 octets of ams net id if not specified.
-   *  If empty, localhost
+   * -# ETHERCAT, TwinCAT: <ams net id> or <ipv4 addr>:<ams net id> (ex.
+   * 192.168.1.2:192.168.1.3.1.1 ). The ipv4 addr will be extracted from leading
+   * 4 octets of ams net id if not specified. If empty, localhost
    * -# SOEM: Network interface name (can be obtained by EnumerateAdapters())
    * -# EMULATOR: <ipv4 addr>:<port> of the computer running emulator
    */
-  virtual void Open(LinkType type, std::string location = "") = 0;
+  [[deprecated("Please use Controller::OpenWith(LinkPtr)")]] virtual void Open(LinkType type, std::string location = "") = 0;
+
+  /**
+   * @brief Open device with a specific link.
+   * @param[in] link Link
+   */
+  virtual void OpenWith(LinkPtr link) = 0;
+
   /**
    * @brief Set silent mode
    */
   virtual void SetSilentMode(bool silent) noexcept = 0;
   /**
    * @brief Calibrate Modulation
-   * @details If you use more than one AUTD, call this function only once after Open().
-   * It takes several seconds and blocks the thread in the meantime.
+   * @details If you use more than one AUTD, call this function only once after
+   * Open(). It takes several seconds and blocks the thread in the meantime.
    */
   virtual bool CalibrateModulation() = 0;
   /**
@@ -105,7 +97,8 @@ class Controller {
   virtual void AppendGain(GainPtr gain) = 0;
   /**
    * @brief Append gain to the controller (blocking)
-   * @param[in] wait_for_send if true, wait for the data to arrive on devices by handshaking
+   * @param[in] wait_for_send if true, wait for the data to arrive on devices by
+   * handshaking
    * @details Gain will be build in this function.
    */
   virtual void AppendGainSync(GainPtr gain, bool wait_for_send = false) = 0;
@@ -129,8 +122,10 @@ class Controller {
   /**
    * @brief Start Spatio-Temporal Modulation
    * @param[in] freq Frequency of STM modulation
-   * @details Generate STM modulation by switching gains appended by AppendSTMGain() at the freq.
-   * The accuracy depends on the computer, for example, about 1ms on Windows. Note that it is affected by interruptions, and so on.
+   * @details Generate STM modulation by switching gains appended by
+   * AppendSTMGain() at the freq. The accuracy depends on the computer, for
+   * example, about 1ms on Windows. Note that it is affected by interruptions,
+   * and so on.
    */
   virtual void StartSTModulation(double freq) = 0;
   /**

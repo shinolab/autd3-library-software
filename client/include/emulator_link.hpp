@@ -25,26 +25,29 @@
 #include "link.hpp"
 
 namespace autd {
-namespace internal {
 class EmulatorLink : public Link {
  public:
-  void Open(std::string location) final;
+  static LinkPtr Create(std::string ipaddr, int32_t port, GeometryPtr geometry);
+
+ protected:
+  void Open() final;
   void Close() final;
   void Send(size_t size, std::unique_ptr<uint8_t[]> buf) final;
   std::vector<uint8_t> Read(uint32_t buffer_len) final;
   bool is_open() final;
   bool CalibrateModulation() final;
-  void SetGeometry(GeometryPtr geometry);
+  void SetGeometry();
 
  private:
   bool _is_open = false;
   size_t _dev_num = 0;
-  std::string _ifname;
+  std::string _ipaddr;
+  GeometryPtr _geometry;
+  int32_t _port;
 #if _WINDOWS
   SOCKET _socket = {};
   sockaddr_in _addr = {};
 #endif
   uint8_t _last_ms_id = 0;
 };
-}  // namespace internal
 }  // namespace autd
