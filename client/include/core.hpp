@@ -17,18 +17,18 @@
 #include <vector>
 
 namespace autd {
-namespace internal {
-class Link;
-}
 
 namespace _utils {
 class Vector3;
 class Quaternion;
 }  // namespace _utils
+
 using _utils::Quaternion;
 using _utils::Vector3;
 
-enum class LinkType : int { ETHERCAT, TwinCAT, SOEM, EMULATOR };
+enum class LinkType : int { ETHERCAT, TwinCAT, SOEM };
+
+class Link;
 
 class Controller;
 class AUTDController;
@@ -72,25 +72,36 @@ using SawModulation = modulation::SawModulation;
 using RawPCMModulation = modulation::RawPCMModulation;
 using WavModulation = modulation::WavModulation;
 
+class FirmwareInfo;
+
+using EtherCATAdapter = std::pair<std::string, std::string>;
 #if DLL_FOR_CAPI
-using GainPtr = gain::Gain*;
-using ModulationPtr = modulation::Modulation*;
+using GainPtr = gain::Gain *;
+using ModulationPtr = modulation::Modulation *;
+using LinkPtr = Link *;
+using EtherCATAdapters = EtherCATAdapter *;
+using ControllerPtr = Controller *;
+using FirmwareInfoList = FirmwareInfo *;
 
 template <class T>
-static T* CreateHelper() {
+static T *CreateHelper() {
   struct impl : T {
     impl() : T() {}
   };
   return new impl;
 }
 template <class T>
-static void DeleteHelper(T** ptr) {
+static void DeleteHelper(T **ptr) {
   delete *ptr;
   *ptr = nullptr;
 }
 #else
 using GainPtr = std::shared_ptr<gain::Gain>;
+using LinkPtr = std::shared_ptr<Link>;
 using ModulationPtr = std::shared_ptr<modulation::Modulation>;
+using EtherCATAdapters = std::vector<EtherCATAdapter>;
+using ControllerPtr = std::shared_ptr<Controller>;
+using FirmwareInfoList = std::vector<FirmwareInfo>;
 
 template <class T>
 static std::shared_ptr<T> CreateHelper() {
@@ -101,6 +112,8 @@ static std::shared_ptr<T> CreateHelper() {
   return std::move(p);
 }
 template <class T>
-static void DeleteHelper(std::shared_ptr<T>* ptr) {}
+static void DeleteHelper(std::shared_ptr<T>* ptr) {
+  *ptr = nullptr;
+}
 #endif
 }  // namespace autd

@@ -78,6 +78,8 @@ class Device {
 
 class AUTDGeometry : public Geometry {
  public:
+  ~AUTDGeometry() override {}
+
   int AddDevice(Vector3 position, Vector3 euler_angles, int group = 0) final;
   int AddDeviceQuaternion(Vector3 position, Quaternion quaternion, int group = 0) final;
 

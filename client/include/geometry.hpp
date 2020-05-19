@@ -26,6 +26,7 @@ class Geometry {
   friend class AUTDController;
 
  public:
+  virtual ~Geometry() {}
   /**
    * @brief  Add new device with position and rotation. Note that the transform is done with order: Translate -> Rotate
    * @param position Position of transducer #0, which is the one at the lower right corner.

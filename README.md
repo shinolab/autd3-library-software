@@ -3,7 +3,7 @@
 
 # autd3 #
 
-Version: 0.4.0
+Version: 0.4.1
 
 * This repository is forked from [old version](https://github.com/shinolab/autd)
 
@@ -51,7 +51,7 @@ This versioning was introduced after version 0.3.0.
 
 ## Example
 
-See `client/example_soem/simple_soem.cpp`
+See `client/examples`
 
 If you are using Linux/Mac, you may need to run as root.
 

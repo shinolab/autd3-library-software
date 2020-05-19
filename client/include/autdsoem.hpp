@@ -28,6 +28,7 @@ struct ECConfig {
 class ISOEMController {
  public:
   static std::unique_ptr<ISOEMController> Create();
+  virtual ~ISOEMController() {}
 
   virtual void Open(const char *ifname, size_t dev_num, ECConfig config) = 0;
   virtual void Close() = 0;

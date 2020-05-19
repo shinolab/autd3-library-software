@@ -35,7 +35,7 @@ Using vcpkg, please install gtest with vcpkg.
 mkdir build && cd build
 cmake ..
 make
-sudo exmaple_soem/simple_soem
+sudo examples/example_soem
 ```
 
 # Author #

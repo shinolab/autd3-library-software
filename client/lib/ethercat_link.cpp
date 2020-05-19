@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 03/04/2020
+// Last Modified: 19/05/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -23,39 +23,63 @@
 #include "ec_config.hpp"
 #include "privdef.hpp"
 
-// XXX: should be configuarable?
 #define INDEX_GROUP (0x3040030)
 #define INDEX_OFFSET_BASE (0x81000000)
 #define INDEX_GROUP_READ (0x3040010)
 #define INDEX_OFFSET_BASE_READ (0x8000230A)
 #define PORT (301)
 
-void autd::internal::EthercatLink::Open(std::string location) {
-  auto sep = autd::split(location, ':');
+namespace autd {
 
-  if (sep.size() == 1) {
-    this->Open(sep[0], "");
-  } else if (sep.size() == 2) {
-    this->Open(sep[1], sep[0]);
+static inline std::vector<std::string> split(const std::string &s, char delim) {
+  std::vector<std::string> tokens;
+  std::string token;
+  for (char ch : s) {
+    if (ch == delim) {
+      if (!token.empty()) tokens.push_back(token);
+      token.clear();
+    } else {
+      token += ch;
+    }
+  }
+  if (!token.empty()) tokens.push_back(token);
+  return tokens;
+}
+
+LinkPtr EthercatLink::Create(std::string location) {
+  auto tmp = split(location, ':');
+  if (tmp.size() == 1) {
+    return Create("", location);
+  } else if (tmp.size() == 2) {
+    return Create(tmp[0], tmp[1]);
   } else {
     throw std::runtime_error("Invalid address");
   }
 }
-void autd::internal::EthercatLink::Open(std::string ams_net_id, std::string ipv4addr) {
-  auto octets = autd::split(ams_net_id, '.');
+
+LinkPtr EthercatLink::Create(std::string ipv4addr, std::string ams_net_id) {
+  auto link = CreateHelper<EthercatLink>();
+  link->_ipv4addr = ipv4addr;
+  link->_ams_net_id = ams_net_id;
+
+  return link;
+}
+
+void EthercatLink::Open() {
+  auto octets = split(_ams_net_id, '.');
   if (octets.size() != 6) {
     throw std::runtime_error("Ams net id must have 6 octets");
   }
-  if (ipv4addr == "") {
+  if (_ipv4addr == "") {
     // Extract ipv6 addr from leading four octets of the ams net id.
     for (int i = 0; i < 3; i++) {
-      ipv4addr += octets[i] + ".";
+      _ipv4addr += octets[i] + ".";
     }
-    ipv4addr += octets[3];
+    _ipv4addr += octets[3];
   }
   this->_netId = {static_cast<uint8_t>(std::stoi(octets[0])), static_cast<uint8_t>(std::stoi(octets[1])), static_cast<uint8_t>(std::stoi(octets[2])),
                   static_cast<uint8_t>(std::stoi(octets[3])), static_cast<uint8_t>(std::stoi(octets[4])), static_cast<uint8_t>(std::stoi(octets[5]))};
-  if (AdsAddRoute(this->_netId, ipv4addr.c_str())) {
+  if (AdsAddRoute(this->_netId, _ipv4addr.c_str())) {
     std::cerr << "Error: Could not connect to remote." << std::endl;
     return;
   }
@@ -65,16 +89,17 @@ void autd::internal::EthercatLink::Open(std::string ams_net_id, std::string ipv4
     std::cerr << "Error: Failed to open a new ADS port." << std::endl;
   }
 }
-void autd::internal::EthercatLink::Close() {
+
+void EthercatLink::Close() {
   this->_port = 0;
   AdsPortCloseEx(this->_port);
 }
 
-bool autd::internal::EthercatLink::is_open() { return (this->_port > 0); }
+bool EthercatLink::is_open() { return (this->_port > 0); }
 
-bool autd::internal::EthercatLink::CalibrateModulation() { return true; }
+bool EthercatLink::CalibrateModulation() { return true; }
 
-void autd::internal::EthercatLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
+void EthercatLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
   const AmsAddr pAddr = {this->_netId, PORT};
   long ret = AdsSyncWriteReqEx(this->_port,  // NOLINT
                                &pAddr, INDEX_GROUP, INDEX_OFFSET_BASE, static_cast<uint32_t>(size), &buf[0]);
@@ -90,7 +115,7 @@ void autd::internal::EthercatLink::Send(size_t size, std::unique_ptr<uint8_t[]> 
   }
 }
 
-std::vector<uint8_t> autd::internal::EthercatLink::Read(uint32_t buffer_len) {
+std::vector<uint8_t> EthercatLink::Read(uint32_t buffer_len) {
   const AmsAddr pAddr = {this->_netId, PORT};
   const auto buffer = std::make_unique<uint8_t[]>(buffer_len);
   uint32_t read_bytes;
@@ -107,6 +132,12 @@ std::vector<uint8_t> autd::internal::EthercatLink::Read(uint32_t buffer_len) {
 }
 
 // for localhost connection
+
+LinkPtr LocalEthercatLink::Create() {
+  auto link = CreateHelper<LocalEthercatLink>();
+  return link;
+}
+
 #ifdef _WIN32
 typedef long(_stdcall *TcAdsPortOpenEx)(void);                    // NOLINT
 typedef long(_stdcall *TcAdsPortCloseEx)(long);                   // NOLINT
@@ -130,7 +161,7 @@ typedef long(_stdcall *TcAdsSyncReadReqEx)(long, AmsAddr *,       // NOLINT
 #define TCADS_AdsSyncReadReqEx "AdsSyncReadReqEx2"
 #endif
 
-void autd::internal::LocalEthercatLink::Open(std::string location) {
+void LocalEthercatLink::Open() {
   this->lib = LoadLibrary("TcAdsDll.dll");
   if (lib == nullptr) {
     throw std::runtime_error("couldn't find TcADS-DLL.");
@@ -148,12 +179,12 @@ void autd::internal::LocalEthercatLink::Open(std::string location) {
   if (nErr) std::cerr << "Error: AdsGetLocalAddress: " << nErr << std::endl;
   this->_netId = addr.netId;
 }
-void autd::internal::LocalEthercatLink::Close() {
+void LocalEthercatLink::Close() {
   this->_port = 0;
   TcAdsPortCloseEx portClose = (TcAdsPortCloseEx)GetProcAddress(this->lib, TCADS_AdsPortCloseEx);
   (*portClose)(this->_port);
 }
-void autd::internal::LocalEthercatLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
+void LocalEthercatLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
   AmsAddr addr = {this->_netId, PORT};
   TcAdsSyncWriteReqEx write = (TcAdsSyncWriteReqEx)GetProcAddress(this->lib, TCADS_AdsSyncWriteReqEx);
   long ret = write(this->_port,  // NOLINT
@@ -168,7 +199,7 @@ void autd::internal::LocalEthercatLink::Send(size_t size, std::unique_ptr<uint8_
   }
 }
 
-std::vector<uint8_t> autd::internal::LocalEthercatLink::Read(uint32_t buffer_len) {
+std::vector<uint8_t> LocalEthercatLink::Read(uint32_t buffer_len) {
   AmsAddr addr = {this->_netId, PORT};
   TcAdsSyncReadReqEx read = (TcAdsSyncReadReqEx)GetProcAddress(this->lib, TCADS_AdsSyncReadReqEx);
 
@@ -187,10 +218,14 @@ std::vector<uint8_t> autd::internal::LocalEthercatLink::Read(uint32_t buffer_len
 }
 
 #else
-void autd::internal::LocalEthercatLink::Open(std::string location) {
-  throw std::runtime_error("Link to localhost has not been compiled. Rebuild this library on a Twincat3 host machine with TcADS-DLL.");
+void LocalEthercatLink::Open() {
+  throw std::runtime_error(
+      "Link to localhost has not been compiled. Rebuild this library on a "
+      "Twincat3 host machine with TcADS-DLL.");
 }
-void autd::internal::LocalEthercatLink::Close() {}
-void autd::internal::LocalEthercatLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {}
-std::vector<uint8_t> autd::internal::LocalEthercatLink::Read(uint32_t buffer_len) {}
+void LocalEthercatLink::Close() {}
+void LocalEthercatLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {}
+std::vector<uint8_t> LocalEthercatLink::Read(uint32_t buffer_len) {}
 #endif  // TC_ADS
+
+}  // namespace autd

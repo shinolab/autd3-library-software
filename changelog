@@ -1,3 +1,9 @@
+# 0.4.1
+* Changed the way to open link.
+    - Made Controller::Open deprecated.
+* Added EmulatorLink (experimental).
+* Added sample code
+
 # 0.4.0
 * Added firmware_info_list()
 * Improved CalibrateModulation method

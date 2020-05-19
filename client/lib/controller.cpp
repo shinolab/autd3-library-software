@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 30/04/2020
+// Last Modified: 19/05/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -59,7 +59,7 @@ EtherCATAdapters Controller::EnumerateAdapters(int *const size) {
 class AUTDController : public Controller {
  public:
   AUTDController();
-  ~AUTDController();
+  ~AUTDController() override;
 
   bool is_open() final;
   GeometryPtr geometry() noexcept final;
@@ -67,6 +67,7 @@ class AUTDController : public Controller {
   size_t remainingInBuffer() final;
 
   void Open(LinkType type, std::string location = "") final;
+  void OpenWith(LinkPtr link) final;
   void SetSilentMode(bool silent) noexcept final;
   bool CalibrateModulation() final;
   void Close() final;
@@ -88,7 +89,7 @@ class AUTDController : public Controller {
 
  private:
   GeometryPtr _geometry;
-  std::shared_ptr<internal::Link> _link;
+  LinkPtr _link;
   std::queue<GainPtr> _build_q;
   std::queue<GainPtr> _send_gain_q;
   std::queue<ModulationPtr> _send_mod_q;
@@ -125,6 +126,7 @@ class AUTDController : public Controller {
 };
 
 AUTDController::AUTDController() {
+  this->_link = nullptr;
   this->_geometry = Geometry::Create();
   this->_silent_mode = true;
   this->_p_stm_timer = std::make_unique<Timer>();
@@ -135,7 +137,7 @@ AUTDController::~AUTDController() {
   if (std::this_thread::get_id() != this->_send_thr.get_id() && this->_send_thr.joinable()) this->_send_thr.join();
 }
 
-bool AUTDController::is_open() { return this->_link.get() && this->_link->is_open(); }
+bool AUTDController::is_open() { return this->_link != nullptr && this->_link->is_open(); }
 
 GeometryPtr AUTDController::geometry() noexcept { return this->_geometry; }
 
@@ -150,25 +152,16 @@ void AUTDController::Open(LinkType type, std::string location) {
     case LinkType::TwinCAT:
     case LinkType::ETHERCAT: {
       if (location == "" || location.find("localhost") == 0 || location.find("0.0.0.0") == 0 || location.find("127.0.0.1") == 0) {
-        this->_link = std::make_shared<internal::LocalEthercatLink>();
+        this->_link = LocalEthercatLink::Create();
       } else {
-        this->_link = std::make_shared<internal::EthercatLink>();
+        this->_link = EthercatLink::Create(location);
       }
-      this->_link->Open(location);
+      this->_link->Open();
       break;
     }
     case LinkType::SOEM: {
-      this->_link = std::make_shared<internal::SOEMLink>();
-      auto device_num = this->_geometry->numDevices();
-      this->_link->Open(location + ":" + std::to_string(device_num));
-      break;
-    }
-    case LinkType::EMULATOR: {
-      auto link = std::make_shared<internal::EmulatorLink>();
-      link->Open(location);
-      link->SetGeometry(this->_geometry);
-      this->_link = link;
-      this->_link->Open(location);
+      this->_link = SOEMLink::Create(location, this->_geometry->numDevices());
+      this->_link->Open();
       break;
     }
     default:
@@ -176,6 +169,17 @@ void AUTDController::Open(LinkType type, std::string location) {
       break;
   }
 
+  if (this->_link->is_open())
+    this->InitPipeline();
+  else
+    this->Close();
+}
+
+void AUTDController::OpenWith(LinkPtr link) {
+  this->Close();
+
+  this->_link = link;
+  this->_link->Open();
   if (this->_link->is_open())
     this->InitPipeline();
   else
@@ -196,7 +200,7 @@ void AUTDController::Close() {
     if (std::this_thread::get_id() != this->_build_thr.get_id() && this->_build_thr.joinable()) this->_build_thr.join();
     this->_send_cond.notify_all();
     if (std::this_thread::get_id() != this->_send_thr.get_id() && this->_send_thr.joinable()) this->_send_thr.join();
-    this->_link = std::shared_ptr<internal::Link>(nullptr);
+    DeleteHelper(&this->_link);
   }
 }
 

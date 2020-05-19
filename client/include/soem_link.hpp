@@ -16,13 +16,17 @@
 #include <vector>
 
 #include "autdsoem.hpp"
+#include "core.hpp"
 #include "link.hpp"
 
 namespace autd {
-namespace internal {
 class SOEMLink : public Link {
  public:
-  void Open(std::string location) final;
+  static LinkPtr Create(std::string ifname, int device_num);
+  ~SOEMLink() override {}
+
+ protected:
+  void Open() final;
   void Close() final;
   void Send(size_t size, std::unique_ptr<uint8_t[]> buf) final;
   std::vector<uint8_t> Read(uint32_t buffer_len) final;
@@ -32,9 +36,8 @@ class SOEMLink : public Link {
  private:
   std::vector<uint8_t> WaitProcMsg(uint8_t id, uint8_t mask);
   std::unique_ptr<autdsoem::ISOEMController> _cnt;
-  size_t _dev_num = 0;
+  size_t _device_num = 0;
   std::string _ifname;
   autdsoem::ECConfig _config{};
 };
-}  // namespace internal
 }  // namespace autd
