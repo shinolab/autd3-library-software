@@ -21,6 +21,9 @@ namespace autd {
 class Link {
   friend class AUTDController;
 
+ public:
+  virtual ~Link() {}
+
  protected:
   virtual void Open() = 0;
   virtual void Close() = 0;

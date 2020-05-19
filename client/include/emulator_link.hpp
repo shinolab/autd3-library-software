@@ -28,6 +28,7 @@ namespace autd {
 class EmulatorLink : public Link {
  public:
   static LinkPtr Create(std::string ipaddr, int32_t port, GeometryPtr geometry);
+  ~EmulatorLink() override {};
 
  protected:
   void Open() final;

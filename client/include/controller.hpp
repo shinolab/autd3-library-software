@@ -27,6 +27,8 @@ namespace autd {
  */
 class Controller {
  public:
+  virtual ~Controller() {}
+
   /**
    * @brief Create controller
    */

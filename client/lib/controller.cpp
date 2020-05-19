@@ -59,7 +59,7 @@ EtherCATAdapters Controller::EnumerateAdapters(int *const size) {
 class AUTDController : public Controller {
  public:
   AUTDController();
-  ~AUTDController();
+  ~AUTDController() override;
 
   bool is_open() final;
   GeometryPtr geometry() noexcept final;

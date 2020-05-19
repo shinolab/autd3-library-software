@@ -44,10 +44,12 @@ class EthercatLink : public Link {
   static LinkPtr Create(std::string ipv4addr);
   static LinkPtr Create(std::string ipv4addr, std::string ams_net_id);
 
+  ~EthercatLink() override {};
+
  protected:
   void Open() override;
   void Close() override;
-  virtual void Send(size_t size, std::unique_ptr<uint8_t[]> buf) override;
+  void Send(size_t size, std::unique_ptr<uint8_t[]> buf) override;
   std::vector<uint8_t> Read(uint32_t buffer_len) override;
   bool is_open() final;
   bool CalibrateModulation() final;
@@ -62,6 +64,7 @@ class EthercatLink : public Link {
 class LocalEthercatLink : public EthercatLink {
  public:
   static LinkPtr Create();
+  ~LocalEthercatLink() override {}
 
  protected:
   void Open() final;

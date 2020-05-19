@@ -23,6 +23,7 @@ namespace autd {
 class SOEMLink : public Link {
  public:
   static LinkPtr Create(std::string ifname, int device_num);
+  ~SOEMLink() override {}
 
  protected:
   void Open() final;
