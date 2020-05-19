@@ -12,6 +12,7 @@
 #include <iostream>
 
 #include "autd3.hpp"
+#include "emulator_link.hpp"
 #include "runner.hpp"
 
 using namespace std;

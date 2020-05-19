@@ -3,19 +3,21 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/04/2020
+// Last Modified: 19/05/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
 //
 
 #include <errno.h>
+
 #include <cstdint>
 
-#include "autd3_c_api.h"
 #include "autd3.hpp"
-#include "quaternion.hpp"
-#include "vector3.hpp"
+#include "autd3_c_api.h"
+#include "emulator_link.hpp"
+#include "ethercat_link.hpp"
+#include "soem_link.hpp"
 
 #pragma region Controller
 void AUTDCreateController(AUTDControllerHandle *out) {
@@ -28,7 +30,6 @@ int32_t AUTDOpenController(AUTDControllerHandle handle, int32_t linkType, const 
   if (!cnt->is_open()) return ENXIO;
   return 0;
 }
-
 int32_t AUTDOpenControllerWith(AUTDControllerHandle handle, AUTDLinkPtr plink) {
   auto *cnt = static_cast<autd::ControllerPtr>(handle);
   auto *link = static_cast<autd::LinkPtr>(plink);
@@ -36,13 +37,12 @@ int32_t AUTDOpenControllerWith(AUTDControllerHandle handle, AUTDLinkPtr plink) {
   if (!cnt->is_open()) return ENXIO;
   return 0;
 }
-
 int32_t AUTDAddDevice(AUTDControllerHandle handle, double x, double y, double z, double rz1, double ry, double rz2, int32_t group_id) {
   auto *cnt = static_cast<autd::ControllerPtr>(handle);
   return cnt->geometry()->AddDevice(autd::Vector3(x, y, z), autd::Vector3(rz1, ry, rz2), group_id);
 }
 int32_t AUTDAddDeviceQuaternion(AUTDControllerHandle handle, double x, double y, double z, double qua_w, double qua_x, double qua_y, double qua_z,
-                            int32_t group_id) {
+                                int32_t group_id) {
   auto *cnt = static_cast<autd::Controller *>(handle);
   return cnt->geometry()->AddDeviceQuaternion(autd::Vector3(x, y, z), autd::Quaternion(qua_w, qua_x, qua_y, qua_z), group_id);
 }
@@ -219,18 +219,15 @@ void AUTDSOEMLink(AUTDLinkPtr *out, const char *ifname, int32_t device_num) {
   auto *link = autd::SOEMLink::Create(std::string(ifname), device_num);
   *out = link;
 }
-void AUTDEtherCATLink(AUTDLinkPtr *out, const char *ipv4addr,
-    const char *ams_net_id) {
-  auto *link = autd::EthercatLink::Create(std::string(ipv4addr),
-                                         std::string(ams_net_id));
+void AUTDEtherCATLink(AUTDLinkPtr *out, const char *ipv4addr, const char *ams_net_id) {
+  auto *link = autd::EthercatLink::Create(std::string(ipv4addr), std::string(ams_net_id));
   *out = link;
 }
 void AUTDLocalEtherCATLink(AUTDLinkPtr *out) {
   auto *link = autd::LocalEthercatLink::Create();
   *out = link;
 }
-void AUTDEmulatorLink(AUTDLinkPtr *out, const char *addr, int32_t port,
-                      AUTDControllerHandle handle) {
+void AUTDEmulatorLink(AUTDLinkPtr *out, const char *addr, int32_t port, AUTDControllerHandle handle) {
   auto *cnt = static_cast<autd::Controller *>(handle);
   auto *link = autd::EmulatorLink::Create(std::string(addr), port, cnt->geometry());
   *out = link;

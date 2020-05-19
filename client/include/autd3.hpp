@@ -13,12 +13,9 @@
 
 #include "consts.hpp"
 #include "controller.hpp"
-#include "emulator_link.hpp"
-#include "ethercat_link.hpp"
 #include "firmware_version.hpp"
 #include "gain.hpp"
 #include "geometry.hpp"
 #include "modulation.hpp"
 #include "quaternion.hpp"
-#include "soem_link.hpp"
 #include "vector3.hpp"
