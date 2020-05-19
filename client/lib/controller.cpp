@@ -33,29 +33,6 @@
 #include "timer.hpp"
 
 namespace autd {
-
-EtherCATAdapters Controller::EnumerateAdapters(int *const size) {
-  auto adapters = autdsoem::EtherCATAdapterInfo::EnumerateAdapters();
-  *size = static_cast<int>(adapters.size());
-#if DLL_FOR_CAPI
-  EtherCATAdapters res = new EtherCATAdapter[*size];
-  int i = 0;
-#else
-  EtherCATAdapters res;
-#endif
-  for (auto adapter : autdsoem::EtherCATAdapterInfo::EnumerateAdapters()) {
-    EtherCATAdapter p;
-    p.first = adapter.desc;
-    p.second = adapter.name;
-#if DLL_FOR_CAPI
-    res[i++] = p;
-#else
-    res.push_back(p);
-#endif
-  }
-  return res;
-}
-
 class AUTDController : public Controller {
  public:
   AUTDController();

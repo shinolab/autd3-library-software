@@ -72,7 +72,7 @@ void AUTDStop(AUTDControllerHandle handle) {
 }
 int32_t AUTDGetAdapterPointer(void **out) {
   int32_t size;
-  auto adapters = autd::Controller::EnumerateAdapters(&size);
+  auto adapters = autd::SOEMLink::EnumerateAdapters(&size);
   *out = adapters;
   return size;
 }

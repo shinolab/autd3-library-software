@@ -28,15 +28,56 @@
 
 namespace autd {
 
+EtherCATAdapters SOEMLink::EnumerateAdapters(int *const size) {
+  auto adapters = autdsoem::EtherCATAdapterInfo::EnumerateAdapters();
+  *size = static_cast<int>(adapters.size());
+#if DLL_FOR_CAPI
+  EtherCATAdapters res = new EtherCATAdapter[*size];
+  int i = 0;
+#else
+  EtherCATAdapters res;
+#endif
+  for (auto adapter : autdsoem::EtherCATAdapterInfo::EnumerateAdapters()) {
+    EtherCATAdapter p;
+    p.first = adapter.desc;
+    p.second = adapter.name;
+#if DLL_FOR_CAPI
+    res[i++] = p;
+#else
+    res.push_back(p);
+#endif
+  }
+  return res;
+}
+
+class SOEMLinkImpl : public SOEMLink {
+ public:
+  ~SOEMLinkImpl() override {}
+
+  std::vector<uint8_t> WaitProcMsg(uint8_t id, uint8_t mask);
+  std::unique_ptr<autdsoem::ISOEMController> _cnt;
+  size_t _device_num = 0;
+  std::string _ifname;
+  autdsoem::ECConfig _config{};
+
+ protected:
+  void Open() final;
+  void Close() final;
+  void Send(size_t size, std::unique_ptr<uint8_t[]> buf) final;
+  std::vector<uint8_t> Read(uint32_t buffer_len) final;
+  bool is_open() final;
+  bool CalibrateModulation() final;
+};
+
 LinkPtr SOEMLink::Create(std::string ifname, int device_num) {
-  auto link = CreateHelper<SOEMLink>();
+  auto link = CreateHelper<SOEMLinkImpl>();
   link->_ifname = ifname;
   link->_device_num = device_num;
 
   return link;
 }
 
-void SOEMLink::Open() {
+void SOEMLinkImpl::Open() {
   _cnt = autdsoem::ISOEMController::Create();
 
   _config = autdsoem::ECConfig{};
@@ -49,23 +90,23 @@ void SOEMLink::Open() {
   _cnt->Open(_ifname.c_str(), _device_num, _config);
 }
 
-void SOEMLink::Close() {
+void SOEMLinkImpl::Close() {
   if (_cnt->is_open()) {
     _cnt->Close();
   }
 }
 
-void SOEMLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
+void SOEMLinkImpl::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
   if (_cnt->is_open()) {
     _cnt->Send(size, std::move(buf));
   }
 }
 
-std::vector<uint8_t> SOEMLink::Read(uint32_t _buffer_len) { return _cnt->Read(); }
+std::vector<uint8_t> SOEMLinkImpl::Read(uint32_t _buffer_len) { return _cnt->Read(); }
 
-bool SOEMLink::is_open() { return _cnt->is_open(); }
+bool SOEMLinkImpl::is_open() { return _cnt->is_open(); }
 
-std::vector<uint8_t> SOEMLink::WaitProcMsg(uint8_t id, uint8_t mask) {
+std::vector<uint8_t> SOEMLinkImpl::WaitProcMsg(uint8_t id, uint8_t mask) {
   std::vector<uint8_t> rx;
   for (size_t i = 0; i < 200; i++) {
     rx = Read(0);
@@ -82,7 +123,7 @@ std::vector<uint8_t> SOEMLink::WaitProcMsg(uint8_t id, uint8_t mask) {
   return rx;
 }
 
-bool SOEMLink::CalibrateModulation() {
+bool SOEMLinkImpl::CalibrateModulation() {
   if (_device_num == 0 || _device_num == 1) {
     return true;
   }
