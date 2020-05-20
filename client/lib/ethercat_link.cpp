@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 19/05/2020
+// Last Modified: 20/05/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -11,7 +11,20 @@
 
 #include "ethercat_link.hpp"
 
+#if _WINDOWS
+#include <codeanalysis\warnings.h>
+#pragma warning(push)
+#pragma warning(disable : ALL_CODE_ANALYSIS_WARNINGS)
+#endif
 #include <AdsLib.h>
+#if _WINDOWS
+#pragma warning(pop)
+#define NOMINMAX
+#include <Windows.h>
+#include <winnt.h>
+#else
+typedef void *HMODULE;
+#endif
 
 #include <algorithm>
 #include <exception>
@@ -25,8 +38,7 @@
 
 #define INDEX_GROUP (0x3040030)
 #define INDEX_OFFSET_BASE (0x81000000)
-#define INDEX_GROUP_READ (0x3040010)
-#define INDEX_OFFSET_BASE_READ (0x8000230A)
+#define INDEX_OFFSET_BASE_READ (0x80000000)
 #define PORT (301)
 
 namespace autd {
@@ -46,6 +58,23 @@ static inline std::vector<std::string> split(const std::string &s, char delim) {
   return tokens;
 }
 
+class EthercatLinkImpl : public EthercatLink {
+ public:
+  ~EthercatLinkImpl() override{};
+  std::string _ams_net_id;
+  std::string _ipv4addr;
+  long _port = 0L;  // NOLINT
+  AmsNetId _netId;
+
+ protected:
+  void Open() override;
+  void Close() override;
+  void Send(size_t size, std::unique_ptr<uint8_t[]> buf) override;
+  std::vector<uint8_t> Read(uint32_t buffer_len) override;
+  bool is_open() final;
+  bool CalibrateModulation() final;
+};
+
 LinkPtr EthercatLink::Create(std::string location) {
   auto tmp = split(location, ':');
   if (tmp.size() == 1) {
@@ -58,14 +87,14 @@ LinkPtr EthercatLink::Create(std::string location) {
 }
 
 LinkPtr EthercatLink::Create(std::string ipv4addr, std::string ams_net_id) {
-  auto link = CreateHelper<EthercatLink>();
+  auto link = CreateHelper<EthercatLinkImpl>();
   link->_ipv4addr = ipv4addr;
   link->_ams_net_id = ams_net_id;
 
   return link;
 }
 
-void EthercatLink::Open() {
+void EthercatLinkImpl::Open() {
   auto octets = split(_ams_net_id, '.');
   if (octets.size() != 6) {
     throw std::runtime_error("Ams net id must have 6 octets");
@@ -90,16 +119,16 @@ void EthercatLink::Open() {
   }
 }
 
-void EthercatLink::Close() {
+void EthercatLinkImpl::Close() {
   this->_port = 0;
   AdsPortCloseEx(this->_port);
 }
 
-bool EthercatLink::is_open() { return (this->_port > 0); }
+bool EthercatLinkImpl::is_open() { return (this->_port > 0); }
 
-bool EthercatLink::CalibrateModulation() { return true; }
+bool EthercatLinkImpl::CalibrateModulation() { return true; }
 
-void EthercatLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
+void EthercatLinkImpl::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
   const AmsAddr pAddr = {this->_netId, PORT};
   long ret = AdsSyncWriteReqEx(this->_port,  // NOLINT
                                &pAddr, INDEX_GROUP, INDEX_OFFSET_BASE, static_cast<uint32_t>(size), &buf[0]);
@@ -115,12 +144,12 @@ void EthercatLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
   }
 }
 
-std::vector<uint8_t> EthercatLink::Read(uint32_t buffer_len) {
+std::vector<uint8_t> EthercatLinkImpl::Read(uint32_t buffer_len) {
   const AmsAddr pAddr = {this->_netId, PORT};
   const auto buffer = std::make_unique<uint8_t[]>(buffer_len);
   uint32_t read_bytes;
   auto ret = AdsSyncReadReqEx2(this->_port,  // NOLINT
-                               &pAddr, INDEX_GROUP_READ, INDEX_OFFSET_BASE_READ, buffer_len, &buffer[0], &read_bytes);
+                               &pAddr, INDEX_GROUP, INDEX_OFFSET_BASE_READ, buffer_len, &buffer[0], &read_bytes);
 
   if (ret > 0) {
     std::cerr << "Error on reading data: " << std::hex << ret << std::endl;
@@ -131,12 +160,34 @@ std::vector<uint8_t> EthercatLink::Read(uint32_t buffer_len) {
   return res;
 }
 
-// for localhost connection
+class LocalEthercatLinkImpl : public LocalEthercatLink {
+ public:
+  ~LocalEthercatLinkImpl() override {}
+  std::string _ams_net_id;
+  std::string _ipv4addr;
+  long _port = 0L;  // NOLINT
+  AmsNetId _netId;
+
+ protected:
+  void Open() final;
+  void Close() final;
+  void Send(size_t size, std::unique_ptr<uint8_t[]> buf) final;
+  std::vector<uint8_t> Read(uint32_t buffer_len) final;
+  bool is_open() final;
+  bool CalibrateModulation() final;
+
+ private:
+  HMODULE lib = nullptr;
+};
 
 LinkPtr LocalEthercatLink::Create() {
-  auto link = CreateHelper<LocalEthercatLink>();
+  auto link = CreateHelper<LocalEthercatLinkImpl>();
   return link;
 }
+
+bool LocalEthercatLinkImpl::is_open() { return (this->_port > 0); }
+
+bool LocalEthercatLinkImpl::CalibrateModulation() { return true; }
 
 #ifdef _WIN32
 typedef long(_stdcall *TcAdsPortOpenEx)(void);                    // NOLINT
@@ -161,7 +212,7 @@ typedef long(_stdcall *TcAdsSyncReadReqEx)(long, AmsAddr *,       // NOLINT
 #define TCADS_AdsSyncReadReqEx "AdsSyncReadReqEx2"
 #endif
 
-void LocalEthercatLink::Open() {
+void LocalEthercatLinkImpl::Open() {
   this->lib = LoadLibrary("TcAdsDll.dll");
   if (lib == nullptr) {
     throw std::runtime_error("couldn't find TcADS-DLL.");
@@ -179,12 +230,12 @@ void LocalEthercatLink::Open() {
   if (nErr) std::cerr << "Error: AdsGetLocalAddress: " << nErr << std::endl;
   this->_netId = addr.netId;
 }
-void LocalEthercatLink::Close() {
+void LocalEthercatLinkImpl::Close() {
   this->_port = 0;
   TcAdsPortCloseEx portClose = (TcAdsPortCloseEx)GetProcAddress(this->lib, TCADS_AdsPortCloseEx);
   (*portClose)(this->_port);
 }
-void LocalEthercatLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
+void LocalEthercatLinkImpl::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
   AmsAddr addr = {this->_netId, PORT};
   TcAdsSyncWriteReqEx write = (TcAdsSyncWriteReqEx)GetProcAddress(this->lib, TCADS_AdsSyncWriteReqEx);
   long ret = write(this->_port,  // NOLINT
@@ -199,14 +250,14 @@ void LocalEthercatLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
   }
 }
 
-std::vector<uint8_t> LocalEthercatLink::Read(uint32_t buffer_len) {
+std::vector<uint8_t> LocalEthercatLinkImpl::Read(uint32_t buffer_len) {
   AmsAddr addr = {this->_netId, PORT};
   TcAdsSyncReadReqEx read = (TcAdsSyncReadReqEx)GetProcAddress(this->lib, TCADS_AdsSyncReadReqEx);
 
   const auto buffer = std::make_unique<uint8_t[]>(buffer_len);
   unsigned long read_bytes;     // NOLINT
   long ret = read(this->_port,  // NOLINT
-                  &addr, INDEX_GROUP_READ, INDEX_OFFSET_BASE_READ, buffer_len, &buffer[0], &read_bytes);
+                  &addr, INDEX_GROUP, INDEX_OFFSET_BASE_READ, buffer_len, &buffer[0], &read_bytes);
 
   if (ret > 0) {
     std::cerr << "Error on reading data: " << std::hex << ret << std::endl;
@@ -218,14 +269,14 @@ std::vector<uint8_t> LocalEthercatLink::Read(uint32_t buffer_len) {
 }
 
 #else
-void LocalEthercatLink::Open() {
+void LocalEthercatLinkImpl::Open() {
   throw std::runtime_error(
       "Link to localhost has not been compiled. Rebuild this library on a "
       "Twincat3 host machine with TcADS-DLL.");
 }
-void LocalEthercatLink::Close() {}
-void LocalEthercatLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {}
-std::vector<uint8_t> LocalEthercatLink::Read(uint32_t buffer_len) {}
+void LocalEthercatLinkImpl::Close() {}
+void LocalEthercatLinkImpl::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {}
+std::vector<uint8_t> LocalEthercatLinkImpl::Read(uint32_t buffer_len) { return std::vector<uint8_t>(); }
 #endif  // TC_ADS
 
 }  // namespace autd

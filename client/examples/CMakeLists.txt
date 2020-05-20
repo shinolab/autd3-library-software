@@ -21,7 +21,6 @@ endif()
 
 if(WIN32)
     add_executable(example_twincat twincat.cpp ${hpp_files})
-    include_directories(${Ads_INCLUDE_DIR})
     target_link_libraries(example_twincat autd3)
     target_link_libraries(example_twincat autdsoem)
     target_link_libraries(example_twincat ws2_32.lib)

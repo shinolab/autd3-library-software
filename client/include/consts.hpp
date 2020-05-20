@@ -11,11 +11,13 @@
 
 #pragma once
 
+#include <stdio.h>
+
 namespace autd {
-constexpr auto NUM_TRANS_IN_UNIT = 249;
-constexpr auto NUM_TRANS_X = 18;
-constexpr auto NUM_TRANS_Y = 14;
-constexpr auto TRANS_SIZE_MM = 10.18;
+constexpr size_t NUM_TRANS_IN_UNIT = 249;
+constexpr size_t NUM_TRANS_X = 18;
+constexpr size_t NUM_TRANS_Y = 14;
+constexpr double TRANS_SIZE_MM = 10.18;
 template <typename T>
 constexpr auto IS_MISSING_TRANSDUCER(T X, T Y) {
   return (Y == 1 && (X == 1 || X == 2 || X == 16));

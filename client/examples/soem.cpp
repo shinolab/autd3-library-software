@@ -19,7 +19,7 @@ using namespace std;
 
 string GetAdapterName() {
   int size;
-  auto adapters = autd::Controller::EnumerateAdapters(&size);
+  auto adapters = autd::SOEMLink::EnumerateAdapters(&size);
   for (auto i = 0; i < size; i++) {
     auto adapter = adapters[i];
     cout << "[" << i << "]: " << adapter.first << ", " << adapter.second << endl;
