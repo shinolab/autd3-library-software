@@ -2,6 +2,8 @@
 * Changed the way to open link.
     - Made Controller::Open deprecated.
 * Added EmulatorLink (experimental).
+* Fixed bug in reading with TwinCAT
+    - Updated AUTDServer
 * Added sample code
 
 # 0.4.0
