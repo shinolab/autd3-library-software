@@ -27,11 +27,11 @@ class SOEMLink : public Link {
   ~SOEMLink() override {}
 
  protected:
-  void Open() = 0;
-  void Close() = 0;
-  void Send(size_t size, std::unique_ptr<uint8_t[]> buf) = 0;
-  std::vector<uint8_t> Read(uint32_t buffer_len) = 0;
-  bool is_open() = 0;
-  bool CalibrateModulation() = 0;
+  void Open() override = 0;
+  void Close() override = 0;
+  void Send(size_t size, std::unique_ptr<uint8_t[]> buf) override = 0;
+  std::vector<uint8_t> Read(uint32_t buffer_len) override = 0;
+  bool is_open() override = 0;
+  bool CalibrateModulation() override = 0;
 };
 }  // namespace autd
