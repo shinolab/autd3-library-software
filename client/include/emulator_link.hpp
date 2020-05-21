@@ -3,7 +3,7 @@
 // Created Date: 29/04/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/04/2020
+// Last Modified: 21/05/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -25,10 +25,13 @@
 #include "link.hpp"
 
 namespace autd {
+/**
+ * @brief Experimental: Link to connect with [Emulator](https://github.com/shinolab/autd-emulator)
+ */
 class EmulatorLink : public Link {
  public:
   static LinkPtr Create(std::string ipaddr, int32_t port, GeometryPtr geometry);
-  ~EmulatorLink() override {};
+  ~EmulatorLink() override{};
 
  protected:
   void Open() final;

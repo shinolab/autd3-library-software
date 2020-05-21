@@ -3,7 +3,7 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2020
+// Last Modified: 21/05/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -20,9 +20,24 @@
 
 namespace autd {
 
+/**
+ * @brief Link using [SOEM](https://github.com/OpenEtherCATsociety/SOEM)
+ */
 class SOEMLink : public Link {
  public:
+  /**
+   * @brief Create SOEM link.
+   * @param[in] ifname Network interface name. (e.g. eth0)
+   * @param[in] device_num The number of AUTD you connected.
+   *
+   * @details Available Network interface names are obtained by EnumerateAdapters().
+   *          The numbers of connected devices is obtained by Geometry::numDevices().
+   */
   static LinkPtr Create(std::string ifname, int device_num);
+
+  /**
+   * @brief Enumerate Ethernet adapters of the computer.
+   */
   static EtherCATAdapters EnumerateAdapters(int *const size);
   ~SOEMLink() override {}
 

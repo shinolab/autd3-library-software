@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 19/05/2020
+// Last Modified: 21/05/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -21,9 +21,26 @@
 #include "link.hpp"
 
 namespace autd {
+
+/**
+ * @brief EtherCAT Link using remote TwinCAT server
+ */
 class EthercatLink : public Link {
  public:
-  static LinkPtr Create(std::string ipv4addr);
+  /**
+   * @brief Create EtherCAT link.
+   * @param[in] ams_net_id AMS Net Id
+   *
+   * @details The ipv4 addr will be extracted from leading 4 octets of ams net id.
+   */
+  static LinkPtr Create(std::string ams_net_id);
+  /**
+   * @brief Create EtherCAT link.
+   * @param[in] ipv4addr IPv4 address
+   * @param[in] ams_net_id AMS Net Id
+   *
+   * @details The ipv4 addr will be extracted from leading 4 octets of ams net id if not specified.
+   */
   static LinkPtr Create(std::string ipv4addr, std::string ams_net_id);
 
   ~EthercatLink() override {}
@@ -37,8 +54,14 @@ class EthercatLink : public Link {
   bool CalibrateModulation() override = 0;
 };
 
+/**
+ * @brief EtherCAT Link using local TwinCAT server
+ */
 class LocalEthercatLink : public Link {
  public:
+  /**
+   * @brief Create LocalEtherCAT link.
+   */
   static LinkPtr Create();
   ~LocalEthercatLink() override {}
 
