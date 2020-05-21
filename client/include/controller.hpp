@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2020
+// Last Modified: 21/05/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -51,18 +51,13 @@ class Controller {
   virtual size_t remainingInBuffer() = 0;
 
   /**
-   * @brief Enumerate Ethernet adapter of the computer.
-   */
-  static EtherCATAdapters EnumerateAdapters(int *const size);
-
-  /**
    * @brief [This method is deprecated, use OpenWith(LinkPtr) instead.] Open device by link type and location.
    * @param[in] type LinkType
    * @param[in] location The scheme of location is as follows:
-   * -# ETHERCAT, TwinCAT: <ams net id> or <ipv4 addr>:<ams net id> (ex.
-   * 192.168.1.2:192.168.1.3.1.1 ). The ipv4 addr will be extracted from leading
+   * -# ETHERCAT, TwinCAT: <ams net id> or <ipv4 addr>:<ams net id> (ex. 192.168.1.2:192.168.1.3.1.1 ).
+   * The ipv4 addr will be extracted from leading
    * 4 octets of ams net id if not specified. If empty, localhost
-   * -# SOEM: Network interface name (can be obtained by EnumerateAdapters())
+   * -# SOEM: Network interface name (can be obtained by SOEMLink::EnumerateAdapters())
    * -# EMULATOR: <ipv4 addr>:<port> of the computer running emulator
    */
   [[deprecated("Please use Controller::OpenWith(LinkPtr)")]] virtual void Open(LinkType type, std::string location = "") = 0;

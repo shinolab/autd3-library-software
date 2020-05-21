@@ -48,12 +48,12 @@ add_library(autd3 STATIC ${SOURCE_LIST})
 
 if(WIN32 AND (NOT DISABLE_MATLAB))
   find_package( Matlab )
-  list(APPEND INCLUDE_LIST
-    ${Matlab_INCLUDE_DIRS}
-  )
   if (Matlab_FOUND AND Matlab_MX_LIBRARY)
-      add_definitions(-DMATLAB_ENABLED)
-      target_link_libraries(autd3 ${Matlab_MX_LIBRARY} ${Matlab_MAT_LIBRARY})
+    list(APPEND INCLUDE_LIST
+      ${Matlab_INCLUDE_DIRS}
+    )
+    add_definitions(-DMATLAB_ENABLED)
+    target_link_libraries(autd3 ${Matlab_MX_LIBRARY} ${Matlab_MAT_LIBRARY})
   endif()
 endif()
 
