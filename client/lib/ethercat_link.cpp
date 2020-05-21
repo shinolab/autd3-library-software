@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 20/05/2020
+// Last Modified: 21/05/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -75,16 +75,7 @@ class EthercatLinkImpl : public EthercatLink {
   bool CalibrateModulation() final;
 };
 
-LinkPtr EthercatLink::Create(std::string location) {
-  auto tmp = split(location, ':');
-  if (tmp.size() == 1) {
-    return Create("", location);
-  } else if (tmp.size() == 2) {
-    return Create(tmp[0], tmp[1]);
-  } else {
-    throw std::runtime_error("Invalid address");
-  }
-}
+LinkPtr EthercatLink::Create(std::string ams_net_id) { return Create("", ams_net_id); }
 
 LinkPtr EthercatLink::Create(std::string ipv4addr, std::string ams_net_id) {
   auto link = CreateHelper<EthercatLinkImpl>();
