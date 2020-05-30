@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 30/04/2020
+// Last Modified: 30/05/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -190,11 +190,7 @@ void CustomGain::Build() {
 
   for (int i = 0; i < ntrans; i++) {
     const auto data = this->_rawdata[i];
-    const auto amp = static_cast<uint8_t>(data >> 8);
-    const auto phase = static_cast<uint8_t>(data);
-    uint8_t D, S;
-    SignalDesign(amp, phase, &D, &S);
-    this->_data[geometry->deviceIdForTransIdx(i)].at(i % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(D) << 8) + S;
+    this->_data[geometry->deviceIdForTransIdx(i)].at(i % NUM_TRANS_IN_UNIT) = data;
   }
 
   this->_built = true;
@@ -216,12 +212,12 @@ void TransducerTestGain::Build() {
   this->_data.clear();
   const auto ndevice = geometry->numDevices();
   for (int i = 0; i < ndevice; i++) {
-    this->_data[geometry->deviceIdForDeviceIdx(i)].resize(NUM_TRANS_IN_UNIT);
+    this->_data[geometry->deviceIdForDeviceIdx(i)].resize(NUM_TRANS_IN_UNIT, 0);
   }
 
-  uint8_t D, S;
-  SignalDesign(this->_amp, this->_phase, &D, &S);
-  this->_data[geometry->deviceIdForTransIdx(_xdcr_idx)].at(_xdcr_idx % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(D) << 8) + S;
+  uint16_t d = (static_cast<uint16_t>(this->_amp) << 8) & 0xFF00;
+  uint16_t s = static_cast<uint16_t>(this->_phase) & 0x00FF;
+  this->_data[geometry->deviceIdForTransIdx(_xdcr_idx)].at(_xdcr_idx % NUM_TRANS_IN_UNIT) = d | s;
 
   this->_built = true;
 }
