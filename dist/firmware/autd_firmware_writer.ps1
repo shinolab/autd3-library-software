@@ -41,6 +41,7 @@ function UpdateCPU([string]$cpuFirmwareFile) {
         $jlink_path = FindJLink
         if ($jlink_path -eq "NULL") {
             ColorEcho "Red" "Error" "J-Link is not found. Install J-Link or add J-Link install folder to PATH."
+            Stop-Transcript | Out-Null
             $host.UI.RawUI.ReadKey() | Out-Null
             exit
         }
@@ -73,6 +74,7 @@ function UpdateFPGA([string]$fpgaFirmwareFile) {
         $xilinx_path = FindVivado
         if (($xilinx_path -eq "NULL")) {
             ColorEcho "Red" "Error" "Vivado is not found. Install Vivado."
+            Stop-Transcript | Out-Null
             $host.UI.RawUI.ReadKey() | Out-Null
             exit
         }
@@ -80,6 +82,7 @@ function UpdateFPGA([string]$fpgaFirmwareFile) {
         $vivado_path = Join-Path $xilinx_path "Vivado"
         if (-not (Test-Path $vivado_path)) {
             ColorEcho "Red" "Error" "Vivado is not found. Install Vivado."
+            Stop-Transcript | Out-Null
             $host.UI.RawUI.ReadKey() | Out-Null
             exit
         }
@@ -87,6 +90,7 @@ function UpdateFPGA([string]$fpgaFirmwareFile) {
         $vivados = Get-ChildItem $vivado_path
         if ($vivados.Length -eq 0) {
             ColorEcho "Red" "Error" "Vivado is not found. Install Vivado."
+            Stop-Transcript | Out-Null
             $host.UI.RawUI.ReadKey() | Out-Null
             exit
         }
@@ -116,6 +120,7 @@ function UpdateFPGA([string]$fpgaFirmwareFile) {
     }
 }
 
+Start-Transcript "autd_firmware_writer.log" | Out-Null
 Write-Host "AUTD3 Firmware Writer"
 ColorEcho "Green" "INFO" "Make sure that you connected configuration cabels and AUTD's power is on."
 ColorEcho "Green" "INFO" "Found firmwares are..."
@@ -160,5 +165,6 @@ if ($select -eq 2) {
 }
 ColorEcho "Yellow" "INFO" "Please switch AUTD's power off and on again to load new firmware."
 ColorEcho "Green" "INFO" "Press any key to exit..."
+Stop-Transcript | Out-Null
 $host.UI.RawUI.ReadKey() | Out-Null
 exit
