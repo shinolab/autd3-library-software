@@ -20,6 +20,7 @@ Param(
     [string]$TOOL_CHAIN = ""
 )
 
+Start-Transcript "build.log" | Out-Null
 $ROOT_DIR = $PSScriptRoot
 $PROJECT_DIR = Join-Path $ROOT_DIR $BUILD_DIR
 
@@ -42,6 +43,7 @@ function FindInstallLocation([string]$displayName) {
 
 if ($ENABLE_TEST -and ($TOOL_CHAIN -eq "")) {
     ColorEcho "Red" "Error" "Please specify vcpkg tool chain file. ex. -TOOL_CHAIN ""-DCMAKE_TOOLCHAIN_FILE=C:[...]\vcpkg\scripts\buildsystems\vcpkg.cmake"""
+    Stop-Transcript | Out-Null
     $host.UI.RawUI.ReadKey() | Out-Null
     Exit
 }
@@ -73,6 +75,7 @@ if (Test-Path $PROJECT_DIR) {
         Remove-Item $PROJECT_DIR -Recurse -Force
         if (Test-Path $PROJECT_DIR) {         
             ColorEcho "Red" "Error" "Cannot remove directory", $PROJECT_DIR
+            Stop-Transcript | Out-Null
             $host.UI.RawUI.ReadKey() | Out-Null
             exit
         }
@@ -82,6 +85,7 @@ if (Test-Path $PROJECT_DIR) {
     }
     else {
         ColorEcho "Green" "INFO" "Cancled..."
+        Stop-Transcript | Out-Null
         $host.UI.RawUI.ReadKey() | Out-Null
         exit
     }
@@ -96,6 +100,7 @@ if (-not (Get-Command cmake -ea SilentlyContinue)) {
     $cmake_path = FindInstallLocation "CMake"
     if ($cmake_path -eq "NULL") {
         ColorEcho "Red" "Error" "CMake not found. Install CMake or set CMake binary folder to PATH."
+        Stop-Transcript | Out-Null
         $host.UI.RawUI.ReadKey() | Out-Null
         exit
     }
@@ -151,9 +156,10 @@ if ($DISABLE_MATLAB) {
 else {
     $command += " -D DISABLE_MATLAB=OFF"
 }
-Invoke-Expression $command
+Invoke-Expression $command | Tee-Object -FilePath "build.log"
 Pop-Location
 
 ColorEcho "Green" "INFO" "Done."
+Stop-Transcript | Out-Null
 $host.UI.RawUI.ReadKey() | Out-Null
 exit
