@@ -1,3 +1,9 @@
+# 0.5.0
+* Delete deprecated items
+    * Controller::Open(), LinkType
+* Move gains to autd::gain namespace
+* Move modulations to autd::modulation namespace
+
 # 0.4.1
 * Changed the way to open link.
     - Made Controller::Open deprecated.

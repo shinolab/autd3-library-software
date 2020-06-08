@@ -28,9 +28,11 @@ if(WIN32)
 	)
 endif()
 
-add_library(autdsoem STATIC
+add_library(soem_link STATIC
 	autdsoem.cpp
-	../lib/autdsoem.hpp
+	autdsoem.hpp
+	soem_link.cpp
+	../include/soem_link.hpp
 
 	${SOEM_PATH}/soem/ethercatbase.c
 	${SOEM_PATH}/soem/ethercatcoe.c
@@ -64,7 +66,7 @@ source_group("soem" FILES
 )
 
 if(WIN32)
-	add_custom_command(TARGET autdsoem
+	add_custom_command(TARGET soem_link
 					POST_BUILD
 					COMMAND lib /OUT:$(OUTDIR)temp.lib $(TARGETPATH) $(SolutionDir)..\\deps\\SOEM\\oshw\\win32\\wpcap\\Lib\\x64\\*.lib /ignore:4006
 					COMMAND del $(TARGETPATH)
@@ -74,5 +76,5 @@ if(WIN32)
 endif()
 
 if(NOT WIN32)
-  set_target_properties(autdsoem PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  set_target_properties(soem_link PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

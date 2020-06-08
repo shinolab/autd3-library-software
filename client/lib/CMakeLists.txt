@@ -63,7 +63,6 @@ if(WIN32)
   source_group("link" FILES
     link.cpp
     ethercat_link.cpp
-    soem_link.cpp
     emulator_link.cpp
   )
 
