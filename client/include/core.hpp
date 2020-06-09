@@ -59,43 +59,9 @@ class WavModulation;
 
 class FirmwareInfo;
 
-#if DLL_FOR_CAPI
-using GainPtr = gain::Gain *;
-using ModulationPtr = modulation::Modulation *;
-using LinkPtr = Link *;
-using ControllerPtr = Controller *;
-using FirmwareInfoList = FirmwareInfo *;
-
-template <class T>
-static T *CreateHelper() {
-  struct impl : T {
-    impl() : T() {}
-  };
-  return new impl;
-}
-template <class T>
-static void DeleteHelper(T **ptr) {
-  delete *ptr;
-  *ptr = nullptr;
-}
-#else
 using GainPtr = std::shared_ptr<gain::Gain>;
 using LinkPtr = std::shared_ptr<link::Link>;
 using ModulationPtr = std::shared_ptr<modulation::Modulation>;
 using ControllerPtr = std::shared_ptr<Controller>;
 using FirmwareInfoList = std::vector<FirmwareInfo>;
-
-template <class T>
-static std::shared_ptr<T> CreateHelper() {
-  struct impl : T {
-    impl() : T() {}
-  };
-  auto p = std::make_shared<impl>();
-  return std::move(p);
-}
-template <class T>
-static void DeleteHelper(std::shared_ptr<T>* ptr) {
-  *ptr = nullptr;
-}
-#endif
 }  // namespace autd

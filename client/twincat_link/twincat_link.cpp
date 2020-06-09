@@ -78,7 +78,7 @@ class TwinCATLinkImpl : public TwinCATLink {
 LinkPtr TwinCATLink::Create(std::string ams_net_id) { return Create("", ams_net_id); }
 
 LinkPtr TwinCATLink::Create(std::string ipv4addr, std::string ams_net_id) {
-  auto link = CreateHelper<TwinCATLinkImpl>();
+  auto link = std::make_shared<TwinCATLinkImpl>();
   link->_ipv4addr = ipv4addr;
   link->_ams_net_id = ams_net_id;
 
@@ -172,7 +172,7 @@ class LocalTwinCATLinkImpl : public LocalTwinCATLink {
 };
 
 LinkPtr LocalTwinCATLink::Create() {
-  auto link = CreateHelper<LocalTwinCATLinkImpl>();
+  auto link = std::make_shared<LocalTwinCATLinkImpl>();
   return link;
 }
 

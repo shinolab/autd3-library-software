@@ -31,21 +31,12 @@ namespace autd::link {
 EtherCATAdapters SOEMLink::EnumerateAdapters(int *const size) {
   auto adapters = autdsoem::EtherCATAdapterInfo::EnumerateAdapters();
   *size = static_cast<int>(adapters.size());
-#if DLL_FOR_CAPI
-  EtherCATAdapters res = new EtherCATAdapter[*size];
-  int i = 0;
-#else
   EtherCATAdapters res;
-#endif
   for (auto adapter : autdsoem::EtherCATAdapterInfo::EnumerateAdapters()) {
     EtherCATAdapter p;
     p.first = adapter.desc;
     p.second = adapter.name;
-#if DLL_FOR_CAPI
-    res[i++] = p;
-#else
     res.push_back(p);
-#endif
   }
   return res;
 }
@@ -70,7 +61,7 @@ class SOEMLinkImpl : public SOEMLink {
 };
 
 LinkPtr SOEMLink::Create(std::string ifname, int device_num) {
-  auto link = CreateHelper<SOEMLinkImpl>();
+  auto link = std::make_shared<SOEMLinkImpl>();
   link->_ifname = ifname;
   link->_device_num = device_num;
 

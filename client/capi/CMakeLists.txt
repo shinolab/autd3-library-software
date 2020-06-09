@@ -37,7 +37,8 @@ file(GLOB include_files  ../include/*.hpp)
 add_library(autd3capi SHARED
   c_api.cpp
   ../include/autd3_c_api.h
-  
+  wrapper.hpp
+
   ${hpp_files}
   ${cpp_files}
   ../lib/${OS}/timer.cpp
@@ -49,7 +50,7 @@ include_directories(${INCLUDE_LIST})
 
 target_link_libraries(autd3capi ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(autd3capi soem_link)
-target_link_libraries(autd3capi ${Ads_LIBRARIES})
+target_link_libraries(autd3capi twincat_link)
 if(WIN32)
     target_link_libraries(autd3capi ws2_32.lib)
     target_link_libraries(autd3capi winmm.lib)
@@ -73,5 +74,3 @@ endif()
 if(NOT WIN32)
   set_target_properties(autd3capi PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-
-add_compile_definitions(DLL_FOR_CAPI)

@@ -106,7 +106,7 @@ void removeColumn(MatrixXcd* const matrix, size_t col_to_remove) {
 namespace autd::gain {
 
 GainPtr HoloGainSdp::Create(std::vector<Vector3> foci, std::vector<double> amps) {
-  auto ptr = CreateHelper<HoloGainSdp>();
+  auto ptr = std::make_shared<HoloGainSdp>();
   ptr->_foci = foci;
   ptr->_amps = amps;
   return ptr;
