@@ -48,7 +48,7 @@ add_library(autd3capi SHARED
 include_directories(${INCLUDE_LIST})
 
 target_link_libraries(autd3capi ${CMAKE_THREAD_LIBS_INIT})
-target_link_libraries(autd3capi autdsoem)
+target_link_libraries(autd3capi soem_link)
 target_link_libraries(autd3capi ${Ads_LIBRARIES})
 if(WIN32)
     target_link_libraries(autd3capi ws2_32.lib)

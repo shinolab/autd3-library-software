@@ -3,7 +3,7 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2020
+// Last Modified: 09/06/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -22,9 +22,9 @@
 #include <utility>
 #include <vector>
 
+#include "../lib/ec_config.hpp"
+#include "../lib/privdef.hpp"
 #include "autdsoem.hpp"
-#include "ec_config.hpp"
-#include "privdef.hpp"
 
 namespace autd {
 

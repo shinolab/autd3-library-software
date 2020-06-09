@@ -16,7 +16,7 @@ using autd::NUM_TRANS_Y;
 using autd::TRANS_SIZE_MM;
 
 void holo_test(autd::ControllerPtr autd) {
-  auto m = autd::SineModulation::Create(150);  // 150Hz AM
+  auto m = autd::modulation::SineModulation::Create(150);  // 150Hz AM
   autd->AppendModulationSync(m);
 
   auto center = autd::Vector3(TRANS_SIZE_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SIZE_MM * ((NUM_TRANS_Y - 1) / 2.0), 150);
@@ -25,6 +25,6 @@ void holo_test(autd::ControllerPtr autd) {
       center + autd::Vector3::unit_x() * 20.0,
   };
   auto amps = {1.0, 1.0};
-  auto g = autd::HoloGain::Create(foci, amps);
+  auto g = autd::gain::HoloGain::Create(foci, amps);
   autd->AppendGainSync(g);
 }

@@ -16,10 +16,10 @@ using autd::NUM_TRANS_Y;
 using autd::TRANS_SIZE_MM;
 
 void simple_test(autd::ControllerPtr autd) {
-  auto m = autd::SineModulation::Create(150);  // 150Hz AM
+  auto m = autd::modulation::SineModulation::Create(150);  // 150Hz AM
   autd->AppendModulationSync(m);
 
   auto center = autd::Vector3(TRANS_SIZE_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SIZE_MM * ((NUM_TRANS_Y - 1) / 2.0), 150);
-  auto g = autd::FocalPointGain::Create(center);
+  auto g = autd::gain::FocalPointGain::Create(center);
   autd->AppendGainSync(g);
 }

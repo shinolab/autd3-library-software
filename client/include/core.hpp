@@ -43,6 +43,8 @@ class GroupedGain;
 class HoloGainSdp;
 class MatlabGain;
 class TransducerTestGain;
+using NullGain = Gain;
+using HoloGain = HoloGainSdp;
 }  // namespace gain
 
 namespace modulation {

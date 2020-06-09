@@ -12,7 +12,7 @@
 #pragma once
 
 #include "consts.hpp"
-#include "privdef.hpp"
+#include "../lib/privdef.hpp"
 
 constexpr auto HEADER_SIZE = sizeof(autd::RxGlobalHeader);
 

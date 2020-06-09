@@ -16,7 +16,7 @@ using autd::NUM_TRANS_Y;
 using autd::TRANS_SIZE_MM;
 
 void stm_test(autd::ControllerPtr autd) {
-  auto m = autd::Modulation::Create(255);
+  auto m = autd::modulation::Modulation::Create(255);
   autd->AppendModulationSync(m);
 
   auto center = autd::Vector3(TRANS_SIZE_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SIZE_MM * ((NUM_TRANS_Y - 1) / 2.0), 150);
@@ -25,7 +25,7 @@ void stm_test(autd::ControllerPtr autd) {
   for (int i = 0; i < point_num; i++) {
     auto theta = 2 * M_PI * i / point_num;
     auto pos = center + radius * autd::Vector3(cos(theta), sin(theta), 0.0);
-    auto g = autd::FocalPointGain::Create(pos);
+    auto g = autd::gain::FocalPointGain::Create(pos);
     autd->AppendSTMGain(g);
   }
 

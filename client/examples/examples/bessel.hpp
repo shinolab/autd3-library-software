@@ -16,10 +16,10 @@ using autd::NUM_TRANS_Y;
 using autd::TRANS_SIZE_MM;
 
 void bessel_test(autd::ControllerPtr autd) {
-  auto m = autd::SineModulation::Create(150);  // 150Hz AM
+  auto m = autd::modulation::SineModulation::Create(150);  // 150Hz AM
   autd->AppendModulationSync(m);
 
   auto center = autd::Vector3(TRANS_SIZE_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SIZE_MM * ((NUM_TRANS_Y - 1) / 2.0), 0);
-  auto g = autd::BesselBeamGain::Create(center, autd::Vector3::unit_z(), 13.0 / 180.0 * M_PI);
+  auto g = autd::gain::BesselBeamGain::Create(center, autd::Vector3::unit_z(), 13.0 / 180.0 * M_PI);
   autd->AppendGainSync(g);
 }

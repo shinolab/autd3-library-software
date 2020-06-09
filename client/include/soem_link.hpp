@@ -11,6 +11,10 @@
 
 #pragma once
 
+#ifndef __STDC_LIMIT_MACROS
+#define __STDC_LIMIT_MACROS
+#endif
+
 #include <memory>
 #include <string>
 #include <vector>
