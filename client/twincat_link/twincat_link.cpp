@@ -3,13 +3,13 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 21/05/2020
+// Last Modified: 09/06/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
 //
 
-#include "ethercat_link.hpp"
+#include "twincat_link.hpp"
 
 #if _WINDOWS
 #include <codeanalysis\warnings.h>
@@ -33,15 +33,15 @@ typedef void *HMODULE;
 #include <string>
 #include <vector>
 
-#include "ec_config.hpp"
-#include "privdef.hpp"
+#include "../lib/ec_config.hpp"
+#include "../lib/privdef.hpp"
 
-#define INDEX_GROUP (0x3040030)
-#define INDEX_OFFSET_BASE (0x81000000)
-#define INDEX_OFFSET_BASE_READ (0x80000000)
-#define PORT (301)
+constexpr uint32_t INDEX_GROUP = 0x3040030;
+constexpr uint32_t INDEX_OFFSET_BASE = 0x81000000;
+constexpr uint32_t INDEX_OFFSET_BASE_READ = 0x80000000;
+constexpr uint16_t PORT = 301;
 
-namespace autd {
+namespace autd::link {
 
 static inline std::vector<std::string> split(const std::string &s, char delim) {
   std::vector<std::string> tokens;
@@ -58,9 +58,9 @@ static inline std::vector<std::string> split(const std::string &s, char delim) {
   return tokens;
 }
 
-class EthercatLinkImpl : public EthercatLink {
+class TwinCATLinkImpl : public TwinCATLink {
  public:
-  ~EthercatLinkImpl() override{};
+  ~TwinCATLinkImpl() override{};
   std::string _ams_net_id;
   std::string _ipv4addr;
   long _port = 0L;  // NOLINT
@@ -75,17 +75,17 @@ class EthercatLinkImpl : public EthercatLink {
   bool CalibrateModulation() final;
 };
 
-LinkPtr EthercatLink::Create(std::string ams_net_id) { return Create("", ams_net_id); }
+LinkPtr TwinCATLink::Create(std::string ams_net_id) { return Create("", ams_net_id); }
 
-LinkPtr EthercatLink::Create(std::string ipv4addr, std::string ams_net_id) {
-  auto link = CreateHelper<EthercatLinkImpl>();
+LinkPtr TwinCATLink::Create(std::string ipv4addr, std::string ams_net_id) {
+  auto link = CreateHelper<TwinCATLinkImpl>();
   link->_ipv4addr = ipv4addr;
   link->_ams_net_id = ams_net_id;
 
   return link;
 }
 
-void EthercatLinkImpl::Open() {
+void TwinCATLinkImpl::Open() {
   auto octets = split(_ams_net_id, '.');
   if (octets.size() != 6) {
     throw std::runtime_error("Ams net id must have 6 octets");
@@ -110,16 +110,16 @@ void EthercatLinkImpl::Open() {
   }
 }
 
-void EthercatLinkImpl::Close() {
+void TwinCATLinkImpl::Close() {
   this->_port = 0;
   AdsPortCloseEx(this->_port);
 }
 
-bool EthercatLinkImpl::is_open() { return (this->_port > 0); }
+bool TwinCATLinkImpl::is_open() { return (this->_port > 0); }
 
-bool EthercatLinkImpl::CalibrateModulation() { return true; }
+bool TwinCATLinkImpl::CalibrateModulation() { return true; }
 
-void EthercatLinkImpl::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
+void TwinCATLinkImpl::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
   const AmsAddr pAddr = {this->_netId, PORT};
   long ret = AdsSyncWriteReqEx(this->_port,  // NOLINT
                                &pAddr, INDEX_GROUP, INDEX_OFFSET_BASE, static_cast<uint32_t>(size), &buf[0]);
@@ -135,7 +135,7 @@ void EthercatLinkImpl::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
   }
 }
 
-std::vector<uint8_t> EthercatLinkImpl::Read(uint32_t buffer_len) {
+std::vector<uint8_t> TwinCATLinkImpl::Read(uint32_t buffer_len) {
   const AmsAddr pAddr = {this->_netId, PORT};
   const auto buffer = std::make_unique<uint8_t[]>(buffer_len);
   uint32_t read_bytes;
@@ -151,9 +151,9 @@ std::vector<uint8_t> EthercatLinkImpl::Read(uint32_t buffer_len) {
   return res;
 }
 
-class LocalEthercatLinkImpl : public LocalEthercatLink {
+class LocalTwinCATLinkImpl : public LocalTwinCATLink {
  public:
-  ~LocalEthercatLinkImpl() override {}
+  ~LocalTwinCATLinkImpl() override {}
   std::string _ams_net_id;
   std::string _ipv4addr;
   long _port = 0L;  // NOLINT
@@ -171,14 +171,14 @@ class LocalEthercatLinkImpl : public LocalEthercatLink {
   HMODULE lib = nullptr;
 };
 
-LinkPtr LocalEthercatLink::Create() {
-  auto link = CreateHelper<LocalEthercatLinkImpl>();
+LinkPtr LocalTwinCATLink::Create() {
+  auto link = CreateHelper<LocalTwinCATLinkImpl>();
   return link;
 }
 
-bool LocalEthercatLinkImpl::is_open() { return (this->_port > 0); }
+bool LocalTwinCATLinkImpl::is_open() { return (this->_port > 0); }
 
-bool LocalEthercatLinkImpl::CalibrateModulation() { return true; }
+bool LocalTwinCATLinkImpl::CalibrateModulation() { return true; }
 
 #ifdef _WIN32
 typedef long(_stdcall *TcAdsPortOpenEx)(void);                    // NOLINT
@@ -203,7 +203,7 @@ typedef long(_stdcall *TcAdsSyncReadReqEx)(long, AmsAddr *,       // NOLINT
 #define TCADS_AdsSyncReadReqEx "AdsSyncReadReqEx2"
 #endif
 
-void LocalEthercatLinkImpl::Open() {
+void LocalTwinCATLinkImpl::Open() {
   this->lib = LoadLibrary("TcAdsDll.dll");
   if (lib == nullptr) {
     throw std::runtime_error("couldn't find TcADS-DLL.");
@@ -221,12 +221,12 @@ void LocalEthercatLinkImpl::Open() {
   if (nErr) std::cerr << "Error: AdsGetLocalAddress: " << nErr << std::endl;
   this->_netId = addr.netId;
 }
-void LocalEthercatLinkImpl::Close() {
+void LocalTwinCATLinkImpl::Close() {
   this->_port = 0;
   TcAdsPortCloseEx portClose = (TcAdsPortCloseEx)GetProcAddress(this->lib, TCADS_AdsPortCloseEx);
   (*portClose)(this->_port);
 }
-void LocalEthercatLinkImpl::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
+void LocalTwinCATLinkImpl::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
   AmsAddr addr = {this->_netId, PORT};
   TcAdsSyncWriteReqEx write = (TcAdsSyncWriteReqEx)GetProcAddress(this->lib, TCADS_AdsSyncWriteReqEx);
   long ret = write(this->_port,  // NOLINT
@@ -241,7 +241,7 @@ void LocalEthercatLinkImpl::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
   }
 }
 
-std::vector<uint8_t> LocalEthercatLinkImpl::Read(uint32_t buffer_len) {
+std::vector<uint8_t> LocalTwinCATLinkImpl::Read(uint32_t buffer_len) {
   AmsAddr addr = {this->_netId, PORT};
   TcAdsSyncReadReqEx read = (TcAdsSyncReadReqEx)GetProcAddress(this->lib, TCADS_AdsSyncReadReqEx);
 
@@ -260,14 +260,14 @@ std::vector<uint8_t> LocalEthercatLinkImpl::Read(uint32_t buffer_len) {
 }
 
 #else
-void LocalEthercatLinkImpl::Open() {
+void LocalTwinCATLinkImpl::Open() {
   throw std::runtime_error(
       "Link to localhost has not been compiled. Rebuild this library on a "
       "Twincat3 host machine with TcADS-DLL.");
 }
-void LocalEthercatLinkImpl::Close() {}
-void LocalEthercatLinkImpl::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {}
-std::vector<uint8_t> LocalEthercatLinkImpl::Read(uint32_t buffer_len) { return std::vector<uint8_t>(); }
+void LocalTwinCATLinkImpl::Close() {}
+void LocalTwinCATLinkImpl::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {}
+std::vector<uint8_t> LocalTwinCATLinkImpl::Read(uint32_t buffer_len) { return std::vector<uint8_t>(); }
 #endif  // TC_ADS
 
-}  // namespace autd
+}  // namespace autd::link

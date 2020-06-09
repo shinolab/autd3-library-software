@@ -3,7 +3,7 @@
 // Created Date: 29/04/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2020
+// Last Modified: 09/06/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -31,7 +31,7 @@
 #include "consts.hpp"
 #include "privdef.hpp"
 
-namespace autd {
+namespace autd::link {
 
 LinkPtr EmulatorLink::Create(std::string ipaddr, int32_t port, GeometryPtr geometry) {
   auto link = CreateHelper<EmulatorLink>();
@@ -117,4 +117,4 @@ void EmulatorLink::SetGeometry() {
 
   Send(size, std::move(buf));
 }
-};  // namespace autd
+};  // namespace autd::link

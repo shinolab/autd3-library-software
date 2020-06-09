@@ -3,7 +3,7 @@
 // Created Date: 07/09/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/04/2020
+// Last Modified: 09/06/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -17,8 +17,7 @@
 #include "gain.hpp"
 #include "privdef.hpp"
 
-namespace autd {
-namespace gain {
+namespace autd::gain {
 
 GainPtr GroupedGain::Create(std::map<int, GainPtr> gainmap) {
   auto gain = CreateHelper<GroupedGain>();
@@ -59,5 +58,4 @@ void GroupedGain::Build() {
 
   this->_built = true;
 }
-}  // namespace gain
-}  // namespace autd
+}  // namespace autd::gain

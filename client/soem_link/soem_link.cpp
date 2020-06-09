@@ -26,7 +26,7 @@
 #include "../lib/privdef.hpp"
 #include "autdsoem.hpp"
 
-namespace autd {
+namespace autd::link {
 
 EtherCATAdapters SOEMLink::EnumerateAdapters(int *const size) {
   auto adapters = autdsoem::EtherCATAdapterInfo::EnumerateAdapters();
@@ -256,4 +256,4 @@ bool SOEMLinkImpl::CalibrateModulation() {
 
   return success;
 }
-}  // namespace autd
+}  // namespace autd::link

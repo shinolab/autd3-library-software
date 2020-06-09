@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 21/05/2020
+// Last Modified: 09/06/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -17,7 +17,7 @@
 #include <string>
 #include <vector>
 
-namespace autd {
+namespace autd::link {
 /**
  * @brief Link is the interface to the AUTD device
  */
@@ -35,4 +35,4 @@ class Link {
   virtual bool is_open() = 0;
   virtual bool CalibrateModulation() = 0;
 };
-}  // namespace autd
+}  // namespace autd::link

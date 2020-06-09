@@ -27,8 +27,8 @@ ADD_CUSTOM_TARGET(cpplint
 # ADS
 add_subdirectory(deps/BeckhoffADS)
 
-#SOEM
 add_subdirectory(soem_link)
+add_subdirectory(twincat_link)
 
 if(WIN32)
     include(cmakes/win_vs.cmake)
@@ -42,7 +42,7 @@ else()
     include(cmakes/linux.cmake)
 endif()
 
-add_subdirectory(capi)
+# add_subdirectory(capi)
 add_subdirectory(lib)
 add_subdirectory(doc)
 if(NOT IGNORE_EXAMPLE)

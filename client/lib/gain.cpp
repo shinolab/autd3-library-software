@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 30/05/2020
+// Last Modified: 09/06/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -22,8 +22,7 @@
 #include "privdef.hpp"
 #include "vector3.hpp"
 
-namespace autd {
-namespace gain {
+namespace autd::gain {
 
 inline double pos_mod(double a, double b) { return a - floor(a / b) * b; }
 
@@ -221,5 +220,4 @@ void TransducerTestGain::Build() {
 
   this->_built = true;
 }
-}  // namespace gain
-}  // namespace autd
+}  // namespace autd::gain

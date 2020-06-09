@@ -24,6 +24,7 @@ if(WIN32)
     target_link_libraries(example_twincat autd3)
     target_link_libraries(example_twincat ws2_32.lib)
     target_link_libraries(example_twincat winmm.lib)
+    target_link_libraries(example_twincat twincat_link)
 
     add_executable(example_emulator emulator.cpp ${hpp_files})
     target_link_libraries(example_emulator autd3)
