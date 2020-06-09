@@ -73,4 +73,4 @@ class LocalTwinCATLink : public Link {
   bool is_open() override = 0;
   bool CalibrateModulation() override = 0;
 };
-}  // namespace autd
+}  // namespace autd::link
