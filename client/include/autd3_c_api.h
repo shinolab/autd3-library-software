@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2020
+// Last Modified: 09/06/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -33,7 +33,6 @@ using DebugLogFunc = void (*)(const char *);
 
 #pragma region Controller
 EXPORT void AUTDCreateController(AUTDControllerHandle *out);
-EXPORT int32_t AUTDOpenController(AUTDControllerHandle handle, int32_t linkType, const char *location);
 EXPORT int32_t AUTDOpenControllerWith(AUTDControllerHandle handle, AUTDLinkPtr link);
 EXPORT int32_t AUTDAddDevice(AUTDControllerHandle handle, double x, double y, double z, double rz1, double ry, double rz2, int32_t groupId);
 EXPORT int32_t AUTDAddDeviceQuaternion(AUTDControllerHandle handle, double x, double y, double z, double qua_w, double qua_x, double qua_y,
@@ -83,8 +82,8 @@ EXPORT void AUTDDeleteModulation(AUTDModulationPtr mod);
 
 #pragma region Link
 EXPORT void AUTDSOEMLink(AUTDLinkPtr *out, const char *ifname, int32_t device_num);
-EXPORT void AUTDEtherCATLink(AUTDLinkPtr *out, const char *ipv4addr, const char *ams_net_id);
-EXPORT void AUTDLocalEtherCATLink(AUTDLinkPtr *out);
+EXPORT void AUTDTwinCATLink(AUTDLinkPtr *out, const char *ipv4addr, const char *ams_net_id);
+EXPORT void AUTDLocalTwinCATLink(AUTDLinkPtr *out);
 EXPORT void AUTDEmulatorLink(AUTDLinkPtr *out, const char *addr, int32_t port, AUTDControllerHandle handle);
 #pragma endregion
 

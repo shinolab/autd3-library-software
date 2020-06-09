@@ -33,7 +33,7 @@ GainPtr MatlabGain::Create(std::string filename, std::string varname) {
       "MatlabGain requires Matlab libraries. Recompile with Matlab "
       "Environment.");
 #endif
-  auto ptr = CreateHelper<MatlabGain>();
+  auto ptr = std::make_shared<MatlabGain>();
   ptr->_filename = filename;
   ptr->_varname = varname;
   return ptr;

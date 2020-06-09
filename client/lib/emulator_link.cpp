@@ -34,7 +34,7 @@
 namespace autd::link {
 
 LinkPtr EmulatorLink::Create(std::string ipaddr, int32_t port, GeometryPtr geometry) {
-  auto link = CreateHelper<EmulatorLink>();
+  auto link = std::make_shared<EmulatorLink>();
   link->_ipaddr = ipaddr;
   link->_port = port;
   link->_geometry = geometry;

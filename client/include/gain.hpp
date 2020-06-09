@@ -59,8 +59,9 @@ class Gain {
    */
   std::map<int, std::vector<uint16_t>> data();
 
- protected:
   Gain() noexcept;
+
+ protected:
   bool _built;
   GeometryPtr _geometry;
   std::map<int, std::vector<uint16_t>> _data;

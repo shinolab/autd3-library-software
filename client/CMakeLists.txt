@@ -42,7 +42,7 @@ else()
     include(cmakes/linux.cmake)
 endif()
 
-# add_subdirectory(capi)
+add_subdirectory(capi)
 add_subdirectory(lib)
 add_subdirectory(doc)
 if(NOT IGNORE_EXAMPLE)

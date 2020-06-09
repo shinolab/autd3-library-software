@@ -20,7 +20,7 @@
 namespace autd::gain {
 
 GainPtr GroupedGain::Create(std::map<int, GainPtr> gainmap) {
-  auto gain = CreateHelper<GroupedGain>();
+  auto gain = std::make_shared<GroupedGain>();
   gain->_gainmap = gainmap;
   gain->_geometry = nullptr;
   return gain;

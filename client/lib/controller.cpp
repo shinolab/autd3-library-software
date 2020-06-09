@@ -144,14 +144,13 @@ void AUTDController::Close() {
     if (std::this_thread::get_id() != this->_build_thr.get_id() && this->_build_thr.joinable()) this->_build_thr.join();
     this->_send_cond.notify_all();
     if (std::this_thread::get_id() != this->_send_thr.get_id() && this->_send_thr.joinable()) this->_send_thr.join();
-    DeleteHelper(&this->_link);
+    this->_link = nullptr;
   }
 }
 
 void AUTDController::Stop() {
   auto nullgain = autd::gain::NullGain::Create();
   this->AppendGainSync(nullgain, true);
-  DeleteHelper(&nullgain);
 }
 
 void AUTDController::AppendGain(GainPtr gain) {
@@ -294,13 +293,7 @@ bool AUTDController::WaitMsgProcessed(uint8_t msg_id, size_t max_trial) {
 FirmwareInfoList AUTDController::firmware_info_list() {
   auto size = this->_geometry->numDevices();
 
-#if DLL_FOR_CAPI
-  FirmwareInfoList res = new FirmwareInfo[size];
-  int i = 0;
-#else
   FirmwareInfoList res;
-#endif
-
   auto make_header = [](uint8_t command) {
     auto header_bytes = std::make_unique<uint8_t[]>(sizeof(RxGlobalHeader));
     auto *header = reinterpret_cast<RxGlobalHeader *>(&header_bytes[0]);
@@ -344,11 +337,7 @@ FirmwareInfoList AUTDController::firmware_info_list() {
 
   for (uint16_t i = 0; i < size; i++) {
     FirmwareInfo info{i, cpu_versions[i], fpga_versions[i]};
-#if DLL_FOR_CAPI
-    res[i] = info;
-#else
     res.push_back(info);
-#endif
   }
   return res;
 }
@@ -457,5 +446,5 @@ std::unique_ptr<uint8_t[]> AUTDController::MakeBody(GainPtr gain, ModulationPtr 
   return body;
 }
 
-ControllerPtr Controller::Create() { return CreateHelper<AUTDController>(); }
+ControllerPtr Controller::Create() { return std::make_shared<AUTDController>(); }
 }  // namespace autd
