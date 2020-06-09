@@ -3,6 +3,9 @@
     * Controller::Open(), LinkType
 * Move gains to autd::gain namespace
 * Move modulations to autd::modulation namespace
+* Move soem_link to external static library
+* Move ethercat_link to external static library
+    * And rename EtherCATLink to TwinCATLink
 
 # 0.4.1
 * Changed the way to open link.

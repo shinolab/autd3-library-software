@@ -20,22 +20,22 @@
 #include "core.hpp"
 #include "link.hpp"
 
-namespace autd {
+namespace autd::link {
 
 /**
- * @brief EtherCAT Link using remote TwinCAT server
+ * @brief TwinCATLink using remote TwinCAT server
  */
-class EthercatLink : public Link {
+class TwinCATLink : public Link {
  public:
   /**
-   * @brief Create EtherCAT link.
+   * @brief Create TwinCATLink.
    * @param[in] ams_net_id AMS Net Id
    *
    * @details The ipv4 addr will be extracted from leading 4 octets of ams net id.
    */
   static LinkPtr Create(std::string ams_net_id);
   /**
-   * @brief Create EtherCAT link.
+   * @brief Create TwinCATLink.
    * @param[in] ipv4addr IPv4 address
    * @param[in] ams_net_id AMS Net Id
    *
@@ -43,7 +43,7 @@ class EthercatLink : public Link {
    */
   static LinkPtr Create(std::string ipv4addr, std::string ams_net_id);
 
-  ~EthercatLink() override {}
+  ~TwinCATLink() override {}
 
  protected:
   void Open() override = 0;
@@ -55,15 +55,15 @@ class EthercatLink : public Link {
 };
 
 /**
- * @brief EtherCAT Link using local TwinCAT server
+ * @brief TwinCATLink using local TwinCAT server
  */
-class LocalEthercatLink : public Link {
+class LocalTwinCATLink : public Link {
  public:
   /**
-   * @brief Create LocalEtherCAT link.
+   * @brief Create LocalTwinCATLink.
    */
   static LinkPtr Create();
-  ~LocalEthercatLink() override {}
+  ~LocalTwinCATLink() override {}
 
  protected:
   void Open() override = 0;
@@ -73,4 +73,4 @@ class LocalEthercatLink : public Link {
   bool is_open() override = 0;
   bool CalibrateModulation() override = 0;
 };
-}  // namespace autd
+}  // namespace autd::link

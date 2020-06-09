@@ -3,7 +3,7 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/05/2020
+// Last Modified: 09/06/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -18,11 +18,14 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <utility>
 
 #include "core.hpp"
 #include "link.hpp"
 
-namespace autd {
+namespace autd::link {
+using EtherCATAdapter = std::pair<std::string, std::string>;
+using EtherCATAdapters = std::vector<EtherCATAdapter>;
 
 /**
  * @brief Link using [SOEM](https://github.com/OpenEtherCATsociety/SOEM)
@@ -42,7 +45,7 @@ class SOEMLink : public Link {
   /**
    * @brief Enumerate Ethernet adapters of the computer.
    */
-  static EtherCATAdapters EnumerateAdapters(int *const size);
+  static EtherCATAdapters EnumerateAdapters(int* const size);
   ~SOEMLink() override {}
 
  protected:
@@ -53,4 +56,4 @@ class SOEMLink : public Link {
   bool is_open() override = 0;
   bool CalibrateModulation() override = 0;
 };
-}  // namespace autd
+}  // namespace autd::link

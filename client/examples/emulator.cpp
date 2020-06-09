@@ -3,7 +3,7 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2020
+// Last Modified: 09/06/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -21,7 +21,7 @@ int main() {
   auto autd = autd::Controller::Create();
   autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
 
-  auto link = autd::EmulatorLink::Create("127.0.0.1", 50632, autd->geometry());
+  auto link = autd::link::EmulatorLink::Create("127.0.0.1", 50632, autd->geometry());
 
   autd->OpenWith(link);
   if (!autd->is_open()) return ENXIO;

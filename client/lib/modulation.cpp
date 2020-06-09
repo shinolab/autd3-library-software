@@ -3,7 +3,7 @@
 // Created Date: 11/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 19/05/2020
+// Last Modified: 09/06/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -29,8 +29,7 @@
 using autd::MOD_BUF_SIZE;
 using autd::MOD_SAMPLING_FREQ;
 
-namespace autd {
-namespace modulation {
+namespace autd::modulation {
 
 #pragma region Util
 static inline double sinc(double x) noexcept {
@@ -245,5 +244,4 @@ ModulationPtr WavModulation::Create(std::string filename) {
 }
 #pragma endregion
 
-}  // namespace modulation
-}  // namespace autd
+}  // namespace autd::modulation

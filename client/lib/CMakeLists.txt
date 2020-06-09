@@ -40,10 +40,6 @@ set(SOURCE_LIST
   ${include_files}
 )
 
-list(APPEND INCLUDE_LIST
-  ${Ads_INCLUDE_DIR}
-)
-
 add_library(autd3 STATIC ${SOURCE_LIST})
 
 if(WIN32 AND (NOT DISABLE_MATLAB))
@@ -62,7 +58,6 @@ include_directories(${INCLUDE_LIST})
 if(WIN32)
   source_group("link" FILES
     link.cpp
-    ethercat_link.cpp
     emulator_link.cpp
   )
 
@@ -87,7 +82,7 @@ if(WIN32)
   )
 endif()
 
-target_link_libraries(autd3 ${Ads_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(autd3 ${CMAKE_THREAD_LIBS_INIT})
 
 if (WIN32)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4068 /wd4819 /D _SILENCE_CXX17_RESULT_OF_DEPRECATION_WARNING")

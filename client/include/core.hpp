@@ -26,12 +26,14 @@ class Quaternion;
 using _utils::Quaternion;
 using _utils::Vector3;
 
-class Link;
-
 class Controller;
 class AUTDController;
 class Geometry;
 class Timer;
+
+namespace link {
+class Link;
+}  // namespace link
 
 namespace gain {
 class Gain;
@@ -57,12 +59,10 @@ class WavModulation;
 
 class FirmwareInfo;
 
-using EtherCATAdapter = std::pair<std::string, std::string>;
 #if DLL_FOR_CAPI
 using GainPtr = gain::Gain *;
 using ModulationPtr = modulation::Modulation *;
 using LinkPtr = Link *;
-using EtherCATAdapters = EtherCATAdapter *;
 using ControllerPtr = Controller *;
 using FirmwareInfoList = FirmwareInfo *;
 
@@ -80,9 +80,8 @@ static void DeleteHelper(T **ptr) {
 }
 #else
 using GainPtr = std::shared_ptr<gain::Gain>;
-using LinkPtr = std::shared_ptr<Link>;
+using LinkPtr = std::shared_ptr<link::Link>;
 using ModulationPtr = std::shared_ptr<modulation::Modulation>;
-using EtherCATAdapters = std::vector<EtherCATAdapter>;
 using ControllerPtr = std::shared_ptr<Controller>;
 using FirmwareInfoList = std::vector<FirmwareInfo>;
 
