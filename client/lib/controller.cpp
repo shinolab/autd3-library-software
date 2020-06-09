@@ -43,7 +43,6 @@ class AUTDController : public Controller {
   bool silent_mode() noexcept final;
   size_t remainingInBuffer() final;
 
-  void Open(LinkType type, std::string location = "") final;
   void OpenWith(LinkPtr link) final;
   void SetSilentMode(bool silent) noexcept final;
   bool CalibrateModulation() final;
@@ -122,36 +121,6 @@ bool AUTDController::silent_mode() noexcept { return this->_silent_mode; }
 
 size_t AUTDController::remainingInBuffer() { return this->_send_gain_q.size() + this->_send_mod_q.size() + this->_build_q.size(); }
 
-void AUTDController::Open(LinkType type, std::string location) {
-  this->Close();
-
-  switch (type) {
-    case LinkType::TwinCAT:
-    case LinkType::ETHERCAT: {
-      if (location == "" || location.find("localhost") == 0 || location.find("0.0.0.0") == 0 || location.find("127.0.0.1") == 0) {
-        this->_link = LocalEthercatLink::Create();
-      } else {
-        this->_link = EthercatLink::Create(location);
-      }
-      this->_link->Open();
-      break;
-    }
-    case LinkType::SOEM: {
-      this->_link = SOEMLink::Create(location, this->_geometry->numDevices());
-      this->_link->Open();
-      break;
-    }
-    default:
-      throw std::runtime_error("This link type is not implemented yet.");
-      break;
-  }
-
-  if (this->_link->is_open())
-    this->InitPipeline();
-  else
-    this->Close();
-}
-
 void AUTDController::OpenWith(LinkPtr link) {
   this->Close();
 
@@ -182,7 +151,7 @@ void AUTDController::Close() {
 }
 
 void AUTDController::Stop() {
-  auto nullgain = NullGain::Create();
+  auto nullgain = autd::gain::NullGain::Create();
   this->AppendGainSync(nullgain, true);
   DeleteHelper(&nullgain);
 }

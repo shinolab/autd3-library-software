@@ -52,8 +52,9 @@
 #include <queue>
 #include <thread>
 #include <vector>
+#include <utility>
 
-#include "../lib/autdsoem.hpp"
+#include "autdsoem.hpp"
 #include "./ethercat.h"
 
 namespace autdsoem {

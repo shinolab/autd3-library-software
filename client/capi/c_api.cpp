@@ -24,12 +24,6 @@ void AUTDCreateController(AUTDControllerHandle *out) {
   auto *cnt = autd::Controller::Create();
   *out = cnt;
 }
-int32_t AUTDOpenController(AUTDControllerHandle handle, int32_t linkType, const char *location) {
-  auto *cnt = static_cast<autd::ControllerPtr>(handle);
-  cnt->Open(static_cast<autd::LinkType>(linkType), std::string(location));
-  if (!cnt->is_open()) return ENXIO;
-  return 0;
-}
 int32_t AUTDOpenControllerWith(AUTDControllerHandle handle, AUTDLinkPtr plink) {
   auto *cnt = static_cast<autd::ControllerPtr>(handle);
   auto *link = static_cast<autd::LinkPtr>(plink);
@@ -132,7 +126,7 @@ uint64_t AUTDRemainingInBuffer(AUTDControllerHandle handle) {
 
 #pragma region Gain
 void AUTDFocalPointGain(AUTDGainPtr *gain, double x, double y, double z, uint8_t amp) {
-  auto *g = autd::FocalPointGain::Create(autd::Vector3(x, y, z), amp);
+  auto *g = autd::gain::FocalPointGain::Create(autd::Vector3(x, y, z), amp);
   *gain = g;
 }
 void AUTDGroupedGain(AUTDGainPtr *gain, int32_t *group_ids, AUTDGainPtr *gains, int32_t size) {
@@ -145,20 +139,20 @@ void AUTDGroupedGain(AUTDGainPtr *gain, int32_t *group_ids, AUTDGainPtr *gains, 
     gainmap[id] = g;
   }
 
-  auto *ggain = autd::GroupedGain::Create(gainmap);
+  auto *ggain = autd::gain::GroupedGain::Create(gainmap);
 
   *gain = ggain;
 }
 void AUTDBesselBeamGain(AUTDGainPtr *gain, double x, double y, double z, double n_x, double n_y, double n_z, double theta_z) {
-  auto *g = autd::BesselBeamGain::Create(autd::Vector3(x, y, z), autd::Vector3(n_x, n_y, n_z), theta_z);
+  auto *g = autd::gain::BesselBeamGain::Create(autd::Vector3(x, y, z), autd::Vector3(n_x, n_y, n_z), theta_z);
   *gain = g;
 }
 void AUTDPlaneWaveGain(AUTDGainPtr *gain, double n_x, double n_y, double n_z) {
-  auto *g = autd::PlaneWaveGain::Create(autd::Vector3(n_x, n_y, n_z));
+  auto *g = autd::gain::PlaneWaveGain::Create(autd::Vector3(n_x, n_y, n_z));
   *gain = g;
 }
 void AUTDCustomGain(AUTDGainPtr *gain, uint16_t *data, int32_t data_length) {
-  auto *g = autd::CustomGain::Create(data, data_length);
+  auto *g = autd::gain::CustomGain::Create(data, data_length);
   *gain = g;
 }
 void AUTDHoloGain(AUTDGainPtr *gain, double *points, double *amps, int32_t size) {
@@ -170,15 +164,15 @@ void AUTDHoloGain(AUTDGainPtr *gain, double *points, double *amps, int32_t size)
     amps_.push_back(amps[i]);
   }
 
-  auto *g = autd::HoloGainSdp::Create(holo, amps_);
+  auto *g = autd::gain::HoloGainSdp::Create(holo, amps_);
   *gain = g;
 }
 void AUTDTransducerTestGain(AUTDGainPtr *gain, int32_t idx, int32_t amp, int32_t phase) {
-  auto *g = autd::TransducerTestGain::Create(idx, amp, phase);
+  auto *g = autd::gain::TransducerTestGain::Create(idx, amp, phase);
   *gain = g;
 }
 void AUTDNullGain(AUTDGainPtr *gain) {
-  auto *g = autd::NullGain::Create();
+  auto *g = autd::gain::NullGain::Create();
   *gain = g;
 }
 void AUTDDeleteGain(AUTDGainPtr gain) {
@@ -189,27 +183,27 @@ void AUTDDeleteGain(AUTDGainPtr gain) {
 
 #pragma region Modulation
 void AUTDModulation(AUTDModulationPtr *mod, uint8_t amp) {
-  auto *m = autd::Modulation::Create(amp);
+  auto *m = autd::modulation::Modulation::Create(amp);
   *mod = m;
 }
 void AUTDRawPCMModulation(AUTDModulationPtr *mod, const char *filename, double samp_freq) {
-  auto *m = autd::RawPCMModulation::Create(std::string(filename), samp_freq);
+  auto *m = autd::modulation::RawPCMModulation::Create(std::string(filename), samp_freq);
   *mod = m;
 }
 void AUTDSawModulation(AUTDModulationPtr *mod, int32_t freq) {
-  auto *m = autd::SawModulation::Create(freq);
+  auto *m = autd::modulation::SawModulation::Create(freq);
   *mod = m;
 }
 void AUTDSineModulation(AUTDModulationPtr *mod, int32_t freq, double amp, double offset) {
-  auto *m = autd::SineModulation::Create(freq, amp, offset);
+  auto *m = autd::modulation::SineModulation::Create(freq, amp, offset);
   *mod = m;
 }
 void AUTDWavModulation(AUTDModulationPtr *mod, const char *filename) {
-  auto *m = autd::WavModulation::Create(std::string(filename));
+  auto *m = autd::modulation::WavModulation::Create(std::string(filename));
   *mod = m;
 }
 void AUTDDeleteModulation(AUTDModulationPtr mod) {
-  auto *m = static_cast<autd::Modulation *>(mod);
+  auto *m = static_cast<autd::modulation::Modulation *>(mod);
   delete m;
 }
 #pragma endregion
@@ -248,12 +242,12 @@ void AUTDAppendGainSync(AUTDControllerHandle handle, AUTDGainPtr gain, bool wait
 }
 void AUTDAppendModulation(AUTDControllerHandle handle, AUTDModulationPtr mod) {
   auto *cnt = static_cast<autd::Controller *>(handle);
-  auto *m = static_cast<autd::Modulation *>(mod);
+  auto *m = static_cast<autd::modulation::Modulation *>(mod);
   cnt->AppendModulation(m);
 }
 void AUTDAppendModulationSync(AUTDControllerHandle handle, AUTDModulationPtr mod) {
   auto *cnt = static_cast<autd::Controller *>(handle);
-  auto *m = static_cast<autd::Modulation *>(mod);
+  auto *m = static_cast<autd::modulation::Modulation *>(mod);
   cnt->AppendModulationSync(m);
 }
 void AUTDAppendSTMGain(AUTDControllerHandle handle, AUTDGainPtr gain) {

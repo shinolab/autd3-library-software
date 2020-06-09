@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/04/2020
+// Last Modified: 09/06/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -26,8 +26,6 @@ class Quaternion;
 using _utils::Quaternion;
 using _utils::Vector3;
 
-enum class LinkType : int { ETHERCAT, TwinCAT, SOEM };
-
 class Link;
 
 class Controller;
@@ -45,18 +43,9 @@ class GroupedGain;
 class HoloGainSdp;
 class MatlabGain;
 class TransducerTestGain;
+using NullGain = Gain;
+using HoloGain = HoloGainSdp;
 }  // namespace gain
-// For Backward compatibility
-using NullGain = gain::Gain;
-using HoloGain = gain::HoloGainSdp;
-using PlaneWaveGain = gain::PlaneWaveGain;
-using FocalPointGain = gain::FocalPointGain;
-using BesselBeamGain = gain::BesselBeamGain;
-using CustomGain = gain::CustomGain;
-using GroupedGain = gain::GroupedGain;
-using HoloGainSdp = gain::HoloGainSdp;
-using MatlabGain = gain::MatlabGain;
-using TransducerTestGain = gain::TransducerTestGain;
 
 namespace modulation {
 class Modulation;
@@ -65,12 +54,6 @@ class SawModulation;
 class RawPCMModulation;
 class WavModulation;
 }  // namespace modulation
-// For Backward compatibility
-using Modulation = modulation::Modulation;
-using SineModulation = modulation::SineModulation;
-using SawModulation = modulation::SawModulation;
-using RawPCMModulation = modulation::RawPCMModulation;
-using WavModulation = modulation::WavModulation;
 
 class FirmwareInfo;
 
