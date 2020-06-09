@@ -33,6 +33,10 @@ typedef struct {
   autd::link::EtherCATAdapters adapters;
 } EtherCATAdaptersWrapper;
 
+typedef struct {
+  autd::FirmwareInfoList list;
+} FirmwareInfoListWrapper;
+
 GainWrapper* GainCreate(autd::GainPtr ptr) { return new GainWrapper{ptr = ptr}; }
 void GainDelete(GainWrapper* ptr) { delete ptr; }
 
@@ -47,3 +51,6 @@ void ControllerDelete(ControllerWrapper* ptr) { delete ptr; }
 
 EtherCATAdaptersWrapper* EtherCATAdaptersCreate(autd::link::EtherCATAdapters adapters) { return new EtherCATAdaptersWrapper{adapters = adapters}; }
 void EtherCATAdaptersDelete(EtherCATAdaptersWrapper* ptr) { delete ptr; }
+
+FirmwareInfoListWrapper* FirmwareInfoListCreate(autd::FirmwareInfoList list) { return new FirmwareInfoListWrapper{list = list}; }
+void FirmwareInfoListDelete(FirmwareInfoListWrapper* ptr) { delete ptr; }

@@ -82,8 +82,8 @@ EXPORT void AUTDDeleteModulation(AUTDModulationPtr mod);
 
 #pragma region Link
 EXPORT void AUTDSOEMLink(AUTDLinkPtr *out, const char *ifname, int32_t device_num);
-EXPORT void AUTDEtherCATLink(AUTDLinkPtr *out, const char *ipv4addr, const char *ams_net_id);
-EXPORT void AUTDLocalEtherCATLink(AUTDLinkPtr *out);
+EXPORT void AUTDTwinCATLink(AUTDLinkPtr *out, const char *ipv4addr, const char *ams_net_id);
+EXPORT void AUTDLocalTwinCATLink(AUTDLinkPtr *out);
 EXPORT void AUTDEmulatorLink(AUTDLinkPtr *out, const char *addr, int32_t port, AUTDControllerHandle handle);
 #pragma endregion
 
