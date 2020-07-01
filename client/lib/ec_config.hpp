@@ -3,7 +3,7 @@
 // Created Date: 21/02/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/04/2020
+// Last Modified: 01/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -11,8 +11,8 @@
 
 #pragma once
 
-#include "consts.hpp"
 #include "../lib/privdef.hpp"
+#include "consts.hpp"
 
 constexpr auto HEADER_SIZE = sizeof(autd::RxGlobalHeader);
 
@@ -20,7 +20,7 @@ constexpr size_t EC_OUTPUT_FRAME_SIZE = autd::NUM_TRANS_IN_UNIT * 2 + HEADER_SIZ
 constexpr size_t EC_INPUT_FRAME_SIZE = 2;
 
 constexpr uint32_t EC_SM3_CYCLE_TIME_MICRO_SEC = 1000;
-constexpr uint32_t EC_SYNC0_CYCLE_TIME_MICRO_SEC = 2000;
+constexpr uint32_t EC_SYNC0_CYCLE_TIME_MICRO_SEC = 1000;
 
 constexpr uint32_t EC_SM3_CYCLE_TIME_NANO_SEC = EC_SM3_CYCLE_TIME_MICRO_SEC * 1000;
 constexpr uint32_t EC_SYNC0_CYCLE_TIME_NANO_SEC = EC_SYNC0_CYCLE_TIME_MICRO_SEC * 1000;
@@ -38,9 +38,10 @@ constexpr uint8_t CMD_READ_CPU_VER_LSB = 0x02;
 constexpr uint8_t CMD_READ_CPU_VER_MSB = 0x03;
 constexpr uint8_t CMD_READ_FPGA_VER_LSB = 0x04;
 constexpr uint8_t CMD_READ_FPGA_VER_MSB = 0x05;
-constexpr uint8_t CMD_READ_MOD_SYNC_BASE = 0x06;
-constexpr uint8_t CMD_SHIFT_MOD_SYNC_BASE = 0x07;
-constexpr uint8_t CMD_NEG_SYNC_FIRST_SYNC0 = 0x08;
+constexpr uint8_t CMD_SEQ_MODE = 0x06;
+constexpr uint8_t CMD_INIT_REF_CLOCK = 0x07;
+constexpr uint8_t CMD_CALIB_SEQ_CLOCK = 0x08;
+constexpr uint8_t CMD_CLEAR = 0x09;
 
 constexpr uint8_t OP_MODE_MSG_ID_MIN = 0x20;
 constexpr uint8_t OP_MODE_MSG_ID_MAX = 0xBF;

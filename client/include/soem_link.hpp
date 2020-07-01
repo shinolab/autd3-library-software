@@ -3,7 +3,7 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/06/2020
+// Last Modified: 01/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -54,6 +54,5 @@ class SOEMLink : public Link {
   void Send(size_t size, std::unique_ptr<uint8_t[]> buf) override = 0;
   std::vector<uint8_t> Read(uint32_t buffer_len) override = 0;
   bool is_open() override = 0;
-  bool CalibrateModulation() override = 0;
 };
 }  // namespace autd::link

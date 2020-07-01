@@ -3,7 +3,7 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 31/03/2020
+// Last Modified: 01/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -37,7 +37,6 @@ class ISOEMController {
 
   virtual void Send(size_t size, std::unique_ptr<uint8_t[]> buf) = 0;
   virtual std::vector<uint8_t> Read() = 0;
-  virtual int64_t ec_dc_time() = 0;
 };
 
 struct EtherCATAdapterInfo {

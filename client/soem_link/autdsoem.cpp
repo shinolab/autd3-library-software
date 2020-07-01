@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2020
+// Last Modified: 01/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -51,11 +51,11 @@
 #include <mutex>
 #include <queue>
 #include <thread>
-#include <vector>
 #include <utility>
+#include <vector>
 
-#include "autdsoem.hpp"
 #include "./ethercat.h"
+#include "autdsoem.hpp"
 
 namespace autdsoem {
 
@@ -74,7 +74,6 @@ class SOEMController : public ISOEMController {
 
   void Send(size_t size, std::unique_ptr<uint8_t[]> buf) final;
   std::vector<uint8_t> Read() final;
-  int64_t ec_dc_time() final;
 
   bool _is_open = false;
 
@@ -132,8 +131,6 @@ std::vector<uint8_t> SOEMController::Read() {
   }
   return res;
 }
-
-int64_t SOEMController::ec_dc_time() { return ec_DCtime % _sync0_cyctime; }
 
 #ifdef WINDOWS
 void CALLBACK SOEMController::RTthread(PVOID lpParam, BOOLEAN TimerOrWaitFired)

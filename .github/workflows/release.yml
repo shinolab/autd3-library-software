@@ -58,7 +58,8 @@ jobs:
           mkdir publish/bin
           cd ../..
           copy client/build/lib/Release/autd3.lib client/build/publish/lib
-          copy client/build/autdsoem/Release/autdsoem.lib client/build/publish/lib
+          copy client/build/soem_link/Release/soem_link.lib client/build/publish/lib
+          copy client/build/twincat_link/Release/twincat_link.lib client/build/publish/lib
           copy client/build/deps/BeckhoffADS/Release/ads.lib client/build/publish/lib
           copy client/build/bin/Release/*.dll client/build/publish/bin
           Compress-Archive -Path dist/AUTDServer, dist/firmware, client/include, client/build/publish/lib, client/build/publish/bin -DestinationPath assets.zip
@@ -110,7 +111,8 @@ jobs:
           mkdir lib
           mkdir bin
           cp -f client/build/lib/libautd3.a lib
-          cp -f client/build/autdsoem/libautdsoem.a lib
+          cp -f client/build/soem_link/libsoem_link.a lib
+          cp -f client/build/twincat_link/libtwincat_link.a lib
           cp -f client/build/deps/BeckhoffADS/libads.a lib
           cp -f client/build/bin/*.so bin
           mv -f dist/firmware firmware/
@@ -164,7 +166,8 @@ jobs:
           mkdir -p lib
           mkdir -p bin
           cp -f client/build/lib/libautd3.a lib
-          cp -f client/build/autdsoem/libautdsoem.a lib
+          cp -f client/build/soem_link/libsoem_link.a lib
+          cp -f client/build/twincat_link/libtwincat_link.a lib
           cp -f client/build/deps/BeckhoffADS/libads.a lib
           cp -f client/build/bin/*.dylib bin
           mv -f dist/firmware firmware/

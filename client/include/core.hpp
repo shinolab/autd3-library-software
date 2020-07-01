@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/06/2020
+// Last Modified: 01/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -57,11 +57,17 @@ class RawPCMModulation;
 class WavModulation;
 }  // namespace modulation
 
+namespace sequence {
+class PointSequence;
+class CircumSeq;
+}  // namespace sequence
+
 class FirmwareInfo;
 
 using GainPtr = std::shared_ptr<gain::Gain>;
 using LinkPtr = std::shared_ptr<link::Link>;
 using ModulationPtr = std::shared_ptr<modulation::Modulation>;
+using SequencePtr = std::shared_ptr<sequence::PointSequence>;
 using ControllerPtr = std::shared_ptr<Controller>;
 using FirmwareInfoList = std::vector<FirmwareInfo>;
 }  // namespace autd

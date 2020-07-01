@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 09/06/2020
+// Last Modified: 01/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -72,7 +72,6 @@ class TwinCATLinkImpl : public TwinCATLink {
   void Send(size_t size, std::unique_ptr<uint8_t[]> buf) override;
   std::vector<uint8_t> Read(uint32_t buffer_len) override;
   bool is_open() final;
-  bool CalibrateModulation() final;
 };
 
 LinkPtr TwinCATLink::Create(std::string ams_net_id) { return Create("", ams_net_id); }
@@ -116,8 +115,6 @@ void TwinCATLinkImpl::Close() {
 }
 
 bool TwinCATLinkImpl::is_open() { return (this->_port > 0); }
-
-bool TwinCATLinkImpl::CalibrateModulation() { return true; }
 
 void TwinCATLinkImpl::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
   const AmsAddr pAddr = {this->_netId, PORT};
@@ -165,7 +162,6 @@ class LocalTwinCATLinkImpl : public LocalTwinCATLink {
   void Send(size_t size, std::unique_ptr<uint8_t[]> buf) final;
   std::vector<uint8_t> Read(uint32_t buffer_len) final;
   bool is_open() final;
-  bool CalibrateModulation() final;
 
  private:
   HMODULE lib = nullptr;
@@ -177,8 +173,6 @@ LinkPtr LocalTwinCATLink::Create() {
 }
 
 bool LocalTwinCATLinkImpl::is_open() { return (this->_port > 0); }
-
-bool LocalTwinCATLinkImpl::CalibrateModulation() { return true; }
 
 #ifdef _WIN32
 typedef long(_stdcall *TcAdsPortOpenEx)(void);                    // NOLINT

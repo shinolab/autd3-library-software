@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/06/2020
+// Last Modified: 01/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -41,7 +41,6 @@ EXPORT void AUTDDelDevice(AUTDControllerHandle handle, int32_t devId);
 EXPORT void AUTDCloseController(AUTDControllerHandle handle);
 EXPORT void AUTDFreeController(AUTDControllerHandle handle);
 EXPORT void AUTDSetSilentMode(AUTDControllerHandle handle, bool mode);
-EXPORT bool AUTDCalibrateModulation(AUTDControllerHandle handle);
 EXPORT void AUTDStop(AUTDControllerHandle handle);
 EXPORT int32_t AUTDGetAdapterPointer(void **out);
 EXPORT void AUTDGetAdapter(void *p_adapter, int32_t index, char *descs, char *names);

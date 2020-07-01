@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/06/2020
+// Last Modified: 01/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -48,7 +48,7 @@ class Controller {
   /**
    * @brief Count the remaining data (Gain and Modulation) in buffer
    */
-  virtual size_t remainingInBuffer() = 0;
+  virtual size_t remaining_in_buffer() = 0;
 
   /**
    * @brief Open device with a specific link.
@@ -61,11 +61,16 @@ class Controller {
    */
   virtual void SetSilentMode(bool silent) noexcept = 0;
   /**
-   * @brief Calibrate Modulation
+   * @brief Calibrate
    * @details If you use more than one AUTD, call this function only once after
-   * Open(). It takes several seconds and blocks the thread in the meantime.
+   * OpenWith().
+   * It takes several seconds and blocks the thread in the meantime.
    */
-  virtual bool CalibrateModulation() = 0;
+  virtual bool Calibrate() = 0;
+  /**
+   * @brief Clear all data in hardware
+   */
+  virtual bool Clear() = 0;
   /**
    * @brief Close the controller
    */
@@ -122,6 +127,12 @@ class Controller {
    * @details Appended gains will be removed.
    */
   virtual void FinishSTModulation() = 0;
+
+  /**
+   * @brief Append sequence to the controller (blocking)
+   */
+  virtual void AppendSequence(SequencePtr seq) = 0;
+
   /**
    * @brief Flush the buffer
    */

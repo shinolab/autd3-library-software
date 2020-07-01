@@ -3,7 +3,7 @@
 // Created Date: 29/04/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/06/2020
+// Last Modified: 01/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -80,8 +80,6 @@ void EmulatorLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
 std::vector<uint8_t> EmulatorLink::Read(uint32_t buffer_len) { return std::vector<uint8_t>(buffer_len, _last_ms_id); }
 
 bool EmulatorLink::is_open() { return _is_open; }
-
-bool EmulatorLink::CalibrateModulation() { return true; }
 
 void EmulatorLink::SetGeometry() {
   auto geomrty = this->_geometry;

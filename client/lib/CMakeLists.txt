@@ -72,6 +72,10 @@ if(WIN32)
     modulation.cpp
   )
 
+  source_group("sequence" FILES
+    sequence.cpp
+  )
+ 
   source_group("controller" FILES
     controller.cpp
     geometry.cpp

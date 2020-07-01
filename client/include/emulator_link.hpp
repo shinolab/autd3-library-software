@@ -3,7 +3,7 @@
 // Created Date: 29/04/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/06/2020
+// Last Modified: 01/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -39,7 +39,6 @@ class EmulatorLink : public Link {
   void Send(size_t size, std::unique_ptr<uint8_t[]> buf) final;
   std::vector<uint8_t> Read(uint32_t buffer_len) final;
   bool is_open() final;
-  bool CalibrateModulation() final;
   void SetGeometry();
 
  private:

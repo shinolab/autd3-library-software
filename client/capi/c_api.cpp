@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/06/2020
+// Last Modified: 01/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -57,10 +57,6 @@ void AUTDFreeController(AUTDControllerHandle handle) {
 void AUTDSetSilentMode(AUTDControllerHandle handle, bool mode) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   cnt->ptr->SetSilentMode(mode);
-}
-bool AUTDCalibrateModulation(AUTDControllerHandle handle) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  return cnt->ptr->CalibrateModulation();
 }
 void AUTDStop(AUTDControllerHandle handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
@@ -122,7 +118,7 @@ int32_t AUTDNumTransducers(AUTDControllerHandle handle) {
 }
 uint64_t AUTDRemainingInBuffer(AUTDControllerHandle handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
-  return static_cast<uint64_t>(cnt->ptr->remainingInBuffer());
+  return static_cast<uint64_t>(cnt->ptr->remaining_in_buffer());
 }
 #pragma endregion
 
