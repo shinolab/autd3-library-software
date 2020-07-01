@@ -552,7 +552,7 @@ std::unique_ptr<uint8_t[]> AUTDController::MakeSeqBody(SequencePtr seq, size_t *
   auto *cursor = &body[0] + sizeof(RxGlobalHeader) / sizeof(body[0]);
   for (int device = 0; device < num_devices; device++) {
     std::vector<float> local_points;
-    local_points.reserve(send_size * 3);
+    local_points.reserve(static_cast<size_t>(send_size) * 3);
 
     for (int i = 0; i < send_size; i++) {
       auto v64 = this->geometry()->local_position(device, seq->control_points()[seq->_sent + i]);
