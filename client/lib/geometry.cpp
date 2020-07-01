@@ -149,7 +149,7 @@ const Vector3 AUTDGeometry::position(int transducer_id) {
 }
 
 const Vector3 AUTDGeometry::local_position(int device_id, Vector3 global_position) {
-  auto device = this->device(device_id);
+  auto device = this->_devices.at(device_id);
   auto local_origin = device->global_trans_positions.col(0);
   auto x_dir = device->x_direction;
   auto y_dir = device->y_direction;

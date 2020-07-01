@@ -14,6 +14,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+#include <algorithm>
 #include <stdexcept>
 
 #include "consts.hpp"
@@ -52,7 +53,7 @@ void PointSequence::AppendPoints(std::vector<Vector3> points) {
 std::vector<Vector3> PointSequence::control_points() { return this->_control_points; }
 
 double PointSequence::SetFrequency(double freq) {
-  auto sample_freq = this->_control_points.size() * freq;
+  auto sample_freq = std::min(this->_control_points.size() * freq, POINT_SEQ_BASE_FREQ);
   auto div = static_cast<size_t>(POINT_SEQ_BASE_FREQ / sample_freq);
   auto lm_cycle = this->_control_points.size() * div;
 
