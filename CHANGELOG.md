@@ -1,13 +1,15 @@
 # 0.5.0
 * Delete deprecated items
     * Controller::Open(), LinkType
+* Rename CalibrateModulation to Calibrate
 * Move gains to autd::gain namespace
 * Move modulations to autd::modulation namespace
 * Move soem_link to external static library
 * Move ethercat_link to external static library
     * And rename EtherCATLink to TwinCATLink
-* Fixed internal pointer type to a smart pointer
+* Unify internal pointer type to a smart pointer
     * In c-api, these are wrapped by struct.
+* Implement Point Sequence Mode
 
 # 0.4.1
 * Changed the way to open link.
