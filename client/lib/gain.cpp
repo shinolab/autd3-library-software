@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 30/05/2020
+// Last Modified: 09/06/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -22,12 +22,11 @@
 #include "privdef.hpp"
 #include "vector3.hpp"
 
-namespace autd {
-namespace gain {
+namespace autd::gain {
 
 inline double pos_mod(double a, double b) { return a - floor(a / b) * b; }
 
-GainPtr Gain::Create() { return CreateHelper<Gain>(); }
+GainPtr Gain::Create() { return std::make_shared<Gain>(); }
 
 Gain::Gain() noexcept {
   this->_built = false;
@@ -55,7 +54,7 @@ void Gain::SetGeometry(const GeometryPtr& geometry) noexcept { this->_geometry =
 std::map<int, std::vector<uint16_t>> Gain::data() { return this->_data; }
 
 GainPtr PlaneWaveGain::Create(Vector3 direction, uint8_t amp) {
-  auto ptr = CreateHelper<PlaneWaveGain>();
+  auto ptr = std::make_shared<PlaneWaveGain>();
   ptr->_direction = direction;
   ptr->_amp = amp;
   return ptr;
@@ -89,7 +88,7 @@ void PlaneWaveGain::Build() {
 }
 
 GainPtr FocalPointGain::Create(Vector3 point, uint8_t amp) {
-  auto gain = CreateHelper<FocalPointGain>();
+  auto gain = std::make_shared<FocalPointGain>();
   gain->_point = point;
   gain->_geometry = nullptr;
   gain->_amp = amp;
@@ -124,7 +123,7 @@ void FocalPointGain::Build() {
 }
 
 GainPtr BesselBeamGain::Create(Vector3 point, Vector3 vec_n, double theta_z, uint8_t amp) {
-  auto gain = CreateHelper<BesselBeamGain>();
+  auto gain = std::make_shared<BesselBeamGain>();
   gain->_point = point;
   gain->_vec_n = vec_n;
   gain->_theta_z = theta_z;
@@ -169,7 +168,7 @@ void BesselBeamGain::Build() {
 }
 
 GainPtr CustomGain::Create(uint16_t* data, int data_length) {
-  auto gain = CreateHelper<CustomGain>();
+  auto gain = std::make_shared<CustomGain>();
   gain->_rawdata.resize(data_length);
   for (int i = 0; i < data_length; i++) gain->_rawdata.at(i) = data[i];
   gain->_geometry = nullptr;
@@ -197,7 +196,7 @@ void CustomGain::Build() {
 }
 
 GainPtr TransducerTestGain::Create(int idx, int amp, int phase) {
-  auto gain = CreateHelper<TransducerTestGain>();
+  auto gain = std::make_shared<TransducerTestGain>();
   gain->_xdcr_idx = idx;
   gain->_amp = amp;
   gain->_phase = phase;
@@ -221,5 +220,4 @@ void TransducerTestGain::Build() {
 
   this->_built = true;
 }
-}  // namespace gain
-}  // namespace autd
+}  // namespace autd::gain

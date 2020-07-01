@@ -3,7 +3,7 @@
 // Created Date: 06/07/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 30/04/2020
+// Last Modified: 09/06/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -103,11 +103,10 @@ void removeColumn(MatrixXcd* const matrix, size_t col_to_remove) {
 }
 }  // namespace hologainimpl
 
-namespace autd {
-namespace gain {
+namespace autd::gain {
 
 GainPtr HoloGainSdp::Create(std::vector<Vector3> foci, std::vector<double> amps) {
-  auto ptr = CreateHelper<HoloGainSdp>();
+  auto ptr = std::make_shared<HoloGainSdp>();
   ptr->_foci = foci;
   ptr->_amps = amps;
   return ptr;
@@ -220,5 +219,4 @@ void HoloGainSdp::Build() {
     this->_data[geo->deviceIdForTransIdx(j)].at(j % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(D) << 8) + S;
   }
 }
-}  // namespace gain
-}  // namespace autd
+}  // namespace autd::gain

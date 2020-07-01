@@ -3,7 +3,7 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2020
+// Last Modified: 01/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -17,6 +17,7 @@
 #include "autd3.hpp"
 #include "bessel.hpp"
 #include "holo.hpp"
+#include "seq.hpp"
 #include "simple.hpp"
 #include "stm.hpp"
 
@@ -31,10 +32,9 @@ using std::vector;
 int run(autd::ControllerPtr autd) {
   using F = function<void(autd::ControllerPtr autd)>;
   vector<pair<F, string>> examples = {
-      pair(F{simple_test}, "Single Focal Point Test"),
-      pair(F{bessel_test}, "BesselBeam Test"),
-      pair(F{holo_test}, "Multiple Focal Points Test"),
-      pair(F{stm_test}, "Spatio-Temporal Modulation Test"),
+      pair(F{simple_test}, "Single Focal Point Test"),         pair(F{bessel_test}, "BesselBeam Test"),
+      pair(F{holo_test}, "Multiple Focal Points Test"),        pair(F{stm_test}, "Spatio-Temporal Modulation Test"),
+      pair(F{seq_test}, "Point Sequence Test (Hardware STM)"),
   };
 
   auto firm_info_list = autd->firmware_info_list();
@@ -64,7 +64,10 @@ int run(autd::ControllerPtr autd) {
 
     cout << "finish." << endl;
     autd->Stop();
+    autd->Clear();
   }
+
+  autd->Clear();
 
   autd->Close();
 

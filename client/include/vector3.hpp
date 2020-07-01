@@ -3,13 +3,16 @@
 // Created Date: 27/02/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/04/2020
+// Last Modified: 01/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
 //
 
 #pragma once
+
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 #include <cmath>
 #include <iostream>
@@ -48,6 +51,17 @@ class Vector3 {
 
   double dot(const Vector3& rhs) const { return _x * rhs._x + _y * rhs._y + _z * rhs._z; }
   Vector3 cross(const Vector3& rhs) const { return Vector3(_y * rhs._z - _z * rhs._y, _z * rhs._x - _x * rhs._z, _x * rhs._y - _y * rhs._x); }
+
+  double angle(const Vector3& v) const {
+    auto cos = this->dot(v) / (this->l2_norm() * v.l2_norm());
+    if (cos > 1) {
+      return 0.0;
+    } else if (cos < -1) {
+      return M_PI;
+    } else {
+      return acos(cos);
+    }
+  }
 
   friend inline std::ostream& operator<<(std::ostream&, const Vector3&);
   friend inline bool operator==(const Vector3& lhs, const Vector3& rhs);

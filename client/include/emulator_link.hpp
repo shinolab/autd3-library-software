@@ -3,7 +3,7 @@
 // Created Date: 29/04/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/05/2020
+// Last Modified: 01/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -24,7 +24,7 @@
 #include "geometry.hpp"
 #include "link.hpp"
 
-namespace autd {
+namespace autd::link {
 /**
  * @brief Experimental: Link to connect with [Emulator](https://github.com/shinolab/autd-emulator)
  */
@@ -39,7 +39,6 @@ class EmulatorLink : public Link {
   void Send(size_t size, std::unique_ptr<uint8_t[]> buf) final;
   std::vector<uint8_t> Read(uint32_t buffer_len) final;
   bool is_open() final;
-  bool CalibrateModulation() final;
   void SetGeometry();
 
  private:
@@ -54,4 +53,4 @@ class EmulatorLink : public Link {
 #endif
   uint8_t _last_ms_id = 0;
 };
-}  // namespace autd
+}  // namespace autd::link

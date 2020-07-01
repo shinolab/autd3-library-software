@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 
 project(autd3)
 set(VERSION_MAJOR   0   CACHE STRING "Project major version number.")
-set(VERSION_MINOR   4   CACHE STRING "Project minor version number.")
-set(VERSION_PATCH   1   CACHE STRING "Project patch version number.")
+set(VERSION_MINOR   5   CACHE STRING "Project minor version number.")
+set(VERSION_PATCH   0   CACHE STRING "Project patch version number.")
 mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
 
 if(WIN32)
@@ -14,23 +14,21 @@ else()
 	set(OS linux)
 endif()
 
+file(GLOB_RECURSE lint_files lib/*.cpp lib/*.hpp include/*.hpp capi/*.cpp capi/*.cpp soem_link/*.cpp soem_link/*.hpp)
+
 ADD_CUSTOM_TARGET(cpplint
   python
   ${PROJECT_SOURCE_DIR}/deps/cpplint.py
   --filter=-runtime/rtti,-build/c++11,-whitespace/comments
   --linelength=150
-  ${PROJECT_SOURCE_DIR}/lib/*
-  ${PROJECT_SOURCE_DIR}/lib/${OS}/*
-  ${PROJECT_SOURCE_DIR}/include/*
-  ${PROJECT_SOURCE_DIR}/capi/*
-  ${PROJECT_SOURCE_DIR}/autdsoem/*
+  ${lint_files}
   )
 
 # ADS
 add_subdirectory(deps/BeckhoffADS)
 
-#SOEM
-add_subdirectory(autdsoem)
+add_subdirectory(soem_link)
+add_subdirectory(twincat_link)
 
 if(WIN32)
     include(cmakes/win_vs.cmake)

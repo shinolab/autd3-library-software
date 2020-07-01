@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/04/2020
+// Last Modified: 01/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -26,14 +26,14 @@ class Quaternion;
 using _utils::Quaternion;
 using _utils::Vector3;
 
-enum class LinkType : int { ETHERCAT, TwinCAT, SOEM };
-
-class Link;
-
 class Controller;
 class AUTDController;
 class Geometry;
 class Timer;
+
+namespace link {
+class Link;
+}  // namespace link
 
 namespace gain {
 class Gain;
@@ -45,18 +45,9 @@ class GroupedGain;
 class HoloGainSdp;
 class MatlabGain;
 class TransducerTestGain;
+using NullGain = Gain;
+using HoloGain = HoloGainSdp;
 }  // namespace gain
-// For Backward compatibility
-using NullGain = gain::Gain;
-using HoloGain = gain::HoloGainSdp;
-using PlaneWaveGain = gain::PlaneWaveGain;
-using FocalPointGain = gain::FocalPointGain;
-using BesselBeamGain = gain::BesselBeamGain;
-using CustomGain = gain::CustomGain;
-using GroupedGain = gain::GroupedGain;
-using HoloGainSdp = gain::HoloGainSdp;
-using MatlabGain = gain::MatlabGain;
-using TransducerTestGain = gain::TransducerTestGain;
 
 namespace modulation {
 class Modulation;
@@ -65,55 +56,18 @@ class SawModulation;
 class RawPCMModulation;
 class WavModulation;
 }  // namespace modulation
-// For Backward compatibility
-using Modulation = modulation::Modulation;
-using SineModulation = modulation::SineModulation;
-using SawModulation = modulation::SawModulation;
-using RawPCMModulation = modulation::RawPCMModulation;
-using WavModulation = modulation::WavModulation;
+
+namespace sequence {
+class PointSequence;
+class CircumSeq;
+}  // namespace sequence
 
 class FirmwareInfo;
 
-using EtherCATAdapter = std::pair<std::string, std::string>;
-#if DLL_FOR_CAPI
-using GainPtr = gain::Gain *;
-using ModulationPtr = modulation::Modulation *;
-using LinkPtr = Link *;
-using EtherCATAdapters = EtherCATAdapter *;
-using ControllerPtr = Controller *;
-using FirmwareInfoList = FirmwareInfo *;
-
-template <class T>
-static T *CreateHelper() {
-  struct impl : T {
-    impl() : T() {}
-  };
-  return new impl;
-}
-template <class T>
-static void DeleteHelper(T **ptr) {
-  delete *ptr;
-  *ptr = nullptr;
-}
-#else
 using GainPtr = std::shared_ptr<gain::Gain>;
-using LinkPtr = std::shared_ptr<Link>;
+using LinkPtr = std::shared_ptr<link::Link>;
 using ModulationPtr = std::shared_ptr<modulation::Modulation>;
-using EtherCATAdapters = std::vector<EtherCATAdapter>;
+using SequencePtr = std::shared_ptr<sequence::PointSequence>;
 using ControllerPtr = std::shared_ptr<Controller>;
 using FirmwareInfoList = std::vector<FirmwareInfo>;
-
-template <class T>
-static std::shared_ptr<T> CreateHelper() {
-  struct impl : T {
-    impl() : T() {}
-  };
-  auto p = std::make_shared<impl>();
-  return std::move(p);
-}
-template <class T>
-static void DeleteHelper(std::shared_ptr<T>* ptr) {
-  *ptr = nullptr;
-}
-#endif
 }  // namespace autd

@@ -3,7 +3,7 @@
 // Created Date: 11/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 19/05/2020
+// Last Modified: 09/06/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -29,8 +29,7 @@
 using autd::MOD_BUF_SIZE;
 using autd::MOD_SAMPLING_FREQ;
 
-namespace autd {
-namespace modulation {
+namespace autd::modulation {
 
 #pragma region Util
 static inline double sinc(double x) noexcept {
@@ -45,7 +44,7 @@ Modulation::Modulation() noexcept { this->_sent = 0; }
 constexpr int Modulation::samplingFrequency() { return MOD_SAMPLING_FREQ; }
 
 ModulationPtr Modulation::Create(uint8_t amp) {
-  auto mod = CreateHelper<Modulation>();
+  auto mod = std::make_shared<Modulation>();
   mod->buffer.resize(MOD_FRAME_SIZE, amp);
   return mod;
 }
@@ -53,7 +52,7 @@ ModulationPtr Modulation::Create(uint8_t amp) {
 
 #pragma region SineModulation
 ModulationPtr SineModulation::Create(int freq, double amp, double offset) {
-  auto mod = CreateHelper<SineModulation>();
+  auto mod = std::make_shared<SineModulation>();
   constexpr auto sf = Modulation::samplingFrequency();
   freq = std::clamp(freq, 1, sf / 2);
 
@@ -77,7 +76,7 @@ ModulationPtr SineModulation::Create(int freq, double amp, double offset) {
 
 #pragma region SawModulation
 ModulationPtr SawModulation::Create(int freq) {
-  auto mod = CreateHelper<SawModulation>();
+  auto mod = std::make_shared<SawModulation>();
   constexpr auto sf = Modulation::samplingFrequency();
   freq = std::clamp(freq, 1, sf / 2);
 
@@ -100,7 +99,7 @@ ModulationPtr SawModulation::Create(int freq) {
 #pragma region RawPCMModulation
 ModulationPtr RawPCMModulation::Create(std::string filename, double sampling_freq) {
   if (sampling_freq < std::numeric_limits<double>::epsilon()) sampling_freq = MOD_SAMPLING_FREQ;
-  auto mod = CreateHelper<RawPCMModulation>();
+  auto mod = std::make_shared<RawPCMModulation>();
 
   std::ifstream ifs;
   ifs.open(filename, std::ios::binary);
@@ -169,7 +168,7 @@ inline static T read_from_stream(std::ifstream &fsp) {
 }  // namespace
 
 ModulationPtr WavModulation::Create(std::string filename) {
-  auto mod = CreateHelper<WavModulation>();
+  auto mod = std::make_shared<WavModulation>();
 
   std::ifstream fs;
   fs.open(filename, std::ios::binary);
@@ -245,5 +244,4 @@ ModulationPtr WavModulation::Create(std::string filename) {
 }
 #pragma endregion
 
-}  // namespace modulation
-}  // namespace autd
+}  // namespace autd::modulation

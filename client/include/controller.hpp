@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/05/2020
+// Last Modified: 01/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -48,19 +48,7 @@ class Controller {
   /**
    * @brief Count the remaining data (Gain and Modulation) in buffer
    */
-  virtual size_t remainingInBuffer() = 0;
-
-  /**
-   * @brief [This method is deprecated, use OpenWith(LinkPtr) instead.] Open device by link type and location.
-   * @param[in] type LinkType
-   * @param[in] location The scheme of location is as follows:
-   * -# ETHERCAT, TwinCAT: <ams net id> or <ipv4 addr>:<ams net id> (ex. 192.168.1.2:192.168.1.3.1.1 ).
-   * The ipv4 addr will be extracted from leading
-   * 4 octets of ams net id if not specified. If empty, localhost
-   * -# SOEM: Network interface name (can be obtained by SOEMLink::EnumerateAdapters())
-   * -# EMULATOR: <ipv4 addr>:<port> of the computer running emulator
-   */
-  [[deprecated("Please use Controller::OpenWith(LinkPtr)")]] virtual void Open(LinkType type, std::string location = "") = 0;
+  virtual size_t remaining_in_buffer() = 0;
 
   /**
    * @brief Open device with a specific link.
@@ -73,11 +61,16 @@ class Controller {
    */
   virtual void SetSilentMode(bool silent) noexcept = 0;
   /**
-   * @brief Calibrate Modulation
+   * @brief Calibrate
    * @details If you use more than one AUTD, call this function only once after
-   * Open(). It takes several seconds and blocks the thread in the meantime.
+   * OpenWith().
+   * It takes several seconds and blocks the thread in the meantime.
    */
-  virtual bool CalibrateModulation() = 0;
+  virtual bool Calibrate() = 0;
+  /**
+   * @brief Clear all data in hardware
+   */
+  virtual bool Clear() = 0;
   /**
    * @brief Close the controller
    */
@@ -89,13 +82,14 @@ class Controller {
   virtual void Stop() = 0;
   /**
    * @brief Append gain to the controller (non blocking)
+   * @param[in] gain Gain to display
    * @details Gain will be sent in another thread
    */
   virtual void AppendGain(GainPtr gain) = 0;
   /**
    * @brief Append gain to the controller (blocking)
-   * @param[in] wait_for_send if true, wait for the data to arrive on devices by
-   * handshaking
+   * @param[in] gain Gain to display
+   * @param[in] wait_for_send if true, wait for the data to arrive on devices by handshaking
    * @details Gain will be build in this function.
    */
   virtual void AppendGainSync(GainPtr gain, bool wait_for_send = false) = 0;
@@ -134,6 +128,12 @@ class Controller {
    * @details Appended gains will be removed.
    */
   virtual void FinishSTModulation() = 0;
+
+  /**
+   * @brief Append sequence to the controller (blocking)
+   */
+  virtual void AppendSequence(SequencePtr seq) = 0;
+
   /**
    * @brief Flush the buffer
    */

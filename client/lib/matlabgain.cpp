@@ -3,7 +3,7 @@
 // Created Date: 20/09/2016
 // Author:Seki Inoue
 // -----
-// Last Modified: 30/04/2020
+// Last Modified: 09/06/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -25,8 +25,7 @@
 #include "gain.hpp"
 #include "privdef.hpp"
 
-namespace autd {
-namespace gain {
+namespace autd::gain {
 
 GainPtr MatlabGain::Create(std::string filename, std::string varname) {
 #ifndef MATLAB_ENABLED
@@ -34,7 +33,7 @@ GainPtr MatlabGain::Create(std::string filename, std::string varname) {
       "MatlabGain requires Matlab libraries. Recompile with Matlab "
       "Environment.");
 #endif
-  auto ptr = CreateHelper<MatlabGain>();
+  auto ptr = std::make_shared<MatlabGain>();
   ptr->_filename = filename;
   ptr->_varname = varname;
   return ptr;
@@ -96,5 +95,4 @@ void MatlabGain::Build() {
 
   this->_built = true;
 }
-}  // namespace gain
-}  // namespace autd
+}  // namespace autd::gain

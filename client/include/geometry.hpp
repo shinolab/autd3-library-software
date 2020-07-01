@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/04/2020
+// Last Modified: 01/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -65,6 +65,10 @@ class Geometry {
    * @brief Position of a transducer specified by id
    */
   virtual const Vector3 position(int transducer_idx) = 0;
+  /**
+   * @brief Convert a global position to a local position
+   */
+  virtual const Vector3 local_position(int device, Vector3 global_position) = 0;
   /**
    * @brief Normalized direction of a transducer specified by id
    */

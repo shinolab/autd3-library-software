@@ -3,7 +3,7 @@
 // Created Date: 08/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 30/04/2020
+// Last Modified: 01/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -88,6 +88,7 @@ class AUTDGeometry : public Geometry {
   const int numTransducers() noexcept final;
   int GroupIDForDeviceID(int device_id) final;
   const Vector3 position(int transducer_idx) final;
+  const Vector3 local_position(int device, Vector3 global_position) final;
   const Vector3 direction(int transducer_id) final;
   const Vector3 x_direction(int transducer_id) final;
   const Vector3 y_direction(int transducer_id) final;
@@ -145,6 +146,17 @@ const Vector3 AUTDGeometry::position(int transducer_id) {
   auto device = this->device(transducer_id);
   const auto pos = device->global_trans_positions.col(local_trans_id);
   return Vector3(pos.x(), pos.y(), pos.z());
+}
+
+const Vector3 AUTDGeometry::local_position(int device_id, Vector3 global_position) {
+  auto device = this->device(device_id);
+  auto local_origin = device->global_trans_positions.col(0);
+  auto x_dir = device->x_direction;
+  auto y_dir = device->y_direction;
+  auto z_dir = device->z_direction;
+  auto _global_position = Eigen::Vector3d(global_position.x(), global_position.y(), global_position.z());
+  auto rv = _global_position - local_origin;
+  return Vector3(rv.dot(x_dir), rv.dot(y_dir), rv.dot(z_dir));
 }
 
 const Vector3 AUTDGeometry::direction(int transducer_id) { return z_direction(transducer_id); }
