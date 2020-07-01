@@ -170,7 +170,7 @@ class HoloGainSdp : public Gain {
  public:
   /**
    * @brief Generate function
-   * @param[in] point focal points
+   * @param[in] foci focal points
    * @param[in] amps amplitudes of the foci
    */
   static GainPtr Create(std::vector<Vector3> foci, std::vector<double> amps);

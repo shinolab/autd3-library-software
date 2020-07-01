@@ -82,13 +82,14 @@ class Controller {
   virtual void Stop() = 0;
   /**
    * @brief Append gain to the controller (non blocking)
+   * @param[in] gain Gain to display
    * @details Gain will be sent in another thread
    */
   virtual void AppendGain(GainPtr gain) = 0;
   /**
    * @brief Append gain to the controller (blocking)
-   * @param[in] wait_for_send if true, wait for the data to arrive on devices by
-   * handshaking
+   * @param[in] gain Gain to display
+   * @param[in] wait_for_send if true, wait for the data to arrive on devices by handshaking
    * @details Gain will be build in this function.
    */
   virtual void AppendGainSync(GainPtr gain, bool wait_for_send = false) = 0;
