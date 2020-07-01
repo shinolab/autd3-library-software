@@ -1,4 +1,7 @@
-# 0.5.0
+# 0.5.0-rc2
+* Fix bug in AM
+
+# 0.5.0-rc1
 * Delete deprecated items
     * Controller::Open(), LinkType
 * Rename CalibrateModulation to Calibrate
