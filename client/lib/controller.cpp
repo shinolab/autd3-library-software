@@ -140,8 +140,6 @@ void AUTDController::OpenWith(LinkPtr link) {
 void AUTDController::SetSilentMode(bool silent) noexcept { this->_silent_mode = silent; }
 
 bool AUTDController::Calibrate() {
-  if (this->geometry()->numDevices() <= 1) return true;
-
   auto size = sizeof(RxGlobalHeader);
   auto body = std::make_unique<uint8_t[]>(size);
 
