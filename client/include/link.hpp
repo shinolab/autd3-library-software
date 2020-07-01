@@ -22,7 +22,7 @@ namespace autd::link {
  * @brief Link is the interface to the AUTD device
  */
 class Link {
-  friend class AUTDController;
+  friend AUTDController;
 
  public:
   virtual ~Link() {}
