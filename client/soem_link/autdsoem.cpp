@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/07/2020
+// Last Modified: 02/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -87,7 +87,7 @@ class SOEMController : public ISOEMController {
 #endif
 
   void CreateSendThread(size_t header_size, size_t body_size);
-  void SetupSync0(bool actiavte, uint32_t cycle_time_ns);
+  void SetupSync0(bool activate, uint32_t cycle_time_ns);
 
   uint8_t *_io_map;
   size_t _io_map_size = 0;
@@ -153,12 +153,12 @@ void SOEMController::RTthread(union sigval sv)
   }
 }
 
-void SOEMController::SetupSync0(bool actiavte, uint32_t cycle_time_ns) {
+void SOEMController::SetupSync0(bool activate, uint32_t cycle_time_ns) {
   using std::chrono::system_clock, std::chrono::duration_cast, std::chrono::nanoseconds;
   auto ref_time = system_clock::now();
   for (uint16 slave = 1; slave <= _dev_num; slave++) {
     auto elapsed = duration_cast<nanoseconds>(ref_time - system_clock::now()).count();
-    ec_dcsync0(slave, actiavte, cycle_time_ns, static_cast<int32>((elapsed / cycle_time_ns) * cycle_time_ns));
+    ec_dcsync0(slave, activate, cycle_time_ns, static_cast<int32>((elapsed / cycle_time_ns) * cycle_time_ns));
   }
 }
 
