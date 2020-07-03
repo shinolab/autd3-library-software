@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/07/2020
+// Last Modified: 03/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -25,6 +25,7 @@ extern "C" {
 using AUTDControllerHandle = void *;
 using AUTDGainPtr = void *;
 using AUTDModulationPtr = void *;
+using AUTDSequencePtr = void *;
 using AUTDLinkPtr = void *;
 
 #ifdef UNITY_DEBUG
@@ -38,7 +39,9 @@ EXPORT int32_t AUTDAddDevice(AUTDControllerHandle handle, double x, double y, do
 EXPORT int32_t AUTDAddDeviceQuaternion(AUTDControllerHandle handle, double x, double y, double z, double qua_w, double qua_x, double qua_y,
                                        double qua_z, int32_t groupId);
 EXPORT void AUTDDelDevice(AUTDControllerHandle handle, int32_t devId);
+EXPORT void AUTDCalibrate(AUTDControllerHandle handle);
 EXPORT void AUTDCloseController(AUTDControllerHandle handle);
+EXPORT void AUTDClear(AUTDControllerHandle handle);
 EXPORT void AUTDFreeController(AUTDControllerHandle handle);
 EXPORT void AUTDSetSilentMode(AUTDControllerHandle handle, bool mode);
 EXPORT void AUTDStop(AUTDControllerHandle handle);
@@ -79,6 +82,18 @@ EXPORT void AUTDWavModulation(AUTDModulationPtr *mod, const char *filename);
 EXPORT void AUTDDeleteModulation(AUTDModulationPtr mod);
 #pragma endregion
 
+#pragma region Sequence
+EXPORT void AUTDSequence(AUTDSequencePtr *out);
+EXPORT void AUTDSequenceAppnedPoint(AUTDSequencePtr seq, double x, double y, double z);
+EXPORT void AUTDSequenceAppnedPoints(AUTDSequencePtr seq, double *points, uint64_t size);
+EXPORT double AUTDSequenceSetFreq(AUTDSequencePtr seq, double freq);
+EXPORT double AUTDSequenceFreq(AUTDSequencePtr seq);
+EXPORT double AUTDSequenceSamplingFreq(AUTDSequencePtr seq);
+EXPORT uint16_t AUTDSequenceSamplingFreqDiv(AUTDSequencePtr seq);
+EXPORT void AUTDCircumSequence(AUTDSequencePtr *out, double x, double y, double z, double nx, double ny, double nz, double radius, uint64_t n);
+EXPORT void AUTDDeleteSequence(AUTDSequencePtr seq);
+#pragma endredion
+
 #pragma region Link
 EXPORT void AUTDSOEMLink(AUTDLinkPtr *out, const char *ifname, int32_t device_num);
 EXPORT void AUTDTwinCATLink(AUTDLinkPtr *out, const char *ipv4addr, const char *ams_net_id);
@@ -95,6 +110,7 @@ EXPORT void AUTDAppendSTMGain(AUTDControllerHandle handle, AUTDGainPtr gain);
 EXPORT void AUTDStartSTModulation(AUTDControllerHandle handle, double freq);
 EXPORT void AUTDStopSTModulation(AUTDControllerHandle handle);
 EXPORT void AUTDFinishSTModulation(AUTDControllerHandle handle);
+EXPORT void AUTDAppendSequence(AUTDControllerHandle handle, AUTDSequencePtr seq);
 EXPORT void AUTDFlush(AUTDControllerHandle handle);
 EXPORT int32_t AUTDDevIdForDeviceIdx(AUTDControllerHandle handle, int32_t devIdx);
 EXPORT int32_t AUTDDevIdForTransIdx(AUTDControllerHandle handle, int32_t transIdx);

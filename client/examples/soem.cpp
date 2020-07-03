@@ -46,8 +46,5 @@ int main() {
   autd->OpenWith(link);
   if (!autd->is_open()) return ENXIO;
 
-  autd->Calibrate();
-  autd->Clear();
-
   return run(autd);
 }

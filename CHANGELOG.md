@@ -1,3 +1,7 @@
+# 0.5.0
+* Fix some bugs
+* Add Sequence in CAPI
+
 # 0.5.0-rc2
 * Fix bug in AM
 

@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/07/2020
+// Last Modified: 03/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -46,9 +46,17 @@ void AUTDDelDevice(AUTDControllerHandle handle, int32_t devId) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   cnt->ptr->geometry()->DelDevice(devId);
 }
+void AUTDCalibrate(AUTDControllerHandle handle) {
+  auto* cnt = static_cast<ControllerWrapper*>(handle);
+  cnt->ptr->Calibrate();
+}
 void AUTDCloseController(AUTDControllerHandle handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   cnt->ptr->Close();
+}
+void AUTDClear(AUTDControllerHandle handle) {
+  auto* cnt = static_cast<ControllerWrapper*>(handle);
+  cnt->ptr->Clear();
 }
 void AUTDFreeController(AUTDControllerHandle handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
@@ -206,6 +214,49 @@ void AUTDDeleteModulation(AUTDModulationPtr mod) {
 }
 #pragma endregion
 
+#pragma region Sequence
+void AUTDSequence(AUTDSequencePtr* out) {
+  auto* s = SequencePtrCreate(autd::sequence::PointSequence::Create());
+  *out = s;
+}
+void AUTDSequenceAppnedPoint(AUTDSequencePtr handle, double x, double y, double z) {
+  auto* seq = static_cast<SequenceWrapper*>(handle);
+  seq->ptr->AppendPoint(autd::Vector3(x, y, z));
+}
+void AUTDSequenceAppnedPoints(AUTDSequencePtr handle, double* points, uint64_t size) {
+  auto* seq = static_cast<SequenceWrapper*>(handle);
+  std::vector<autd::Vector3> p;
+  for (size_t i = 0; i < size; i++) {
+    p.push_back(autd::Vector3(points[3 * i], points[3 * i + 1], points[3 * i + 2]));
+  }
+  seq->ptr->AppendPoints(p);
+}
+double AUTDSequenceSetFreq(AUTDSequencePtr handle, double freq) {
+  auto* seq = static_cast<SequenceWrapper*>(handle);
+  return seq->ptr->SetFrequency(freq);
+}
+double AUTDSequenceFreq(AUTDSequencePtr handle) {
+  auto* seq = static_cast<SequenceWrapper*>(handle);
+  return seq->ptr->frequency();
+}
+double AUTDSequenceSamplingFreq(AUTDSequencePtr handle) {
+  auto* seq = static_cast<SequenceWrapper*>(handle);
+  return seq->ptr->sampling_frequency();
+}
+uint16_t AUTDSequenceSamplingFreqDiv(AUTDSequencePtr handle) {
+  auto* seq = static_cast<SequenceWrapper*>(handle);
+  return seq->ptr->sampling_frequency_division();
+}
+void AUTDCircumSequence(AUTDSequencePtr* out, double x, double y, double z, double nx, double ny, double nz, double radius, uint64_t n) {
+  auto* s = SequencePtrCreate(autd::sequence::CircumSeq::Create(autd::Vector3(x, y, z), autd::Vector3(nx, ny, nz), radius, n));
+  *out = s;
+}
+void AUTDDeleteSequence(AUTDSequencePtr handle) {
+  auto* seq = static_cast<SequenceWrapper*>(handle);
+  SequenceDelete(seq);
+}
+#pragma endredion
+
 #pragma region Link
 void AUTDSOEMLink(AUTDLinkPtr* out, const char* ifname, int32_t device_num) {
   auto* link = LinkCreate(autd::link::SOEMLink::Create(std::string(ifname), device_num));
@@ -264,6 +315,11 @@ void AUTDStopSTModulation(AUTDControllerHandle handle) {
 void AUTDFinishSTModulation(AUTDControllerHandle handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   cnt->ptr->FinishSTModulation();
+}
+void AUTDAppendSequence(AUTDControllerHandle handle, AUTDSequencePtr seq) {
+  auto* cnt = static_cast<ControllerWrapper*>(handle);
+  auto* s = static_cast<SequenceWrapper*>(seq);
+  cnt->ptr->AppendSequence(s->ptr);
 }
 void AUTDFlush(AUTDControllerHandle handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);

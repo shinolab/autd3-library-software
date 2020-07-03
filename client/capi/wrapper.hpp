@@ -3,7 +3,7 @@
 // Created Date: 09/06/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/06/2020
+// Last Modified: 03/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -20,6 +20,10 @@ typedef struct {
 typedef struct {
   autd::ModulationPtr ptr;
 } ModulationWrapper;
+
+typedef struct {
+  autd::SequencePtr ptr;
+} SequenceWrapper;
 
 typedef struct {
   autd::LinkPtr ptr;
@@ -42,6 +46,9 @@ void GainDelete(GainWrapper* ptr) { delete ptr; }
 
 ModulationWrapper* ModulationCreate(autd::ModulationPtr ptr) { return new ModulationWrapper{ptr = ptr}; }
 void ModulationDelete(ModulationWrapper* ptr) { delete ptr; }
+
+SequenceWrapper* SequencePtrCreate(autd::SequencePtr ptr) { return new SequenceWrapper{ptr = ptr}; }
+void SequenceDelete(SequenceWrapper* ptr) { delete ptr; }
 
 LinkWrapper* LinkCreate(autd::LinkPtr ptr) { return new LinkWrapper{ptr = ptr}; }
 void LinkDelete(LinkWrapper* ptr) { delete ptr; }

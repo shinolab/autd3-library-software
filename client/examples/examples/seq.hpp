@@ -27,6 +27,6 @@ void seq_test(autd::ControllerPtr autd) {
   auto actual_freq = circum->SetFrequency(freq);
   std::cout << "Actual frequency is " << actual_freq << "." << std::endl;
 
-  autd->SetSilentMode(false);
+  //autd->SetSilentMode(false);
   autd->AppendSequence(circum);
 }

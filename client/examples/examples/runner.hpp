@@ -37,6 +37,9 @@ int run(autd::ControllerPtr autd) {
       pair(F{seq_test}, "Point Sequence Test (Hardware STM)"),
   };
 
+  autd->Clear();
+  autd->Calibrate();
+
   auto firm_info_list = autd->firmware_info_list();
   for (auto firm_info : firm_info_list) cout << firm_info << endl;
 

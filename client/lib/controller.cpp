@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 01/07/2020
+// Last Modified: 03/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -166,9 +166,10 @@ bool AUTDController::Clear() {
 void AUTDController::Close() {
   if (this->is_open()) {
     this->FinishSTModulation();
-    this->Stop();
-    this->_link->Close();
     this->Flush();
+    this->Stop();
+    this->Clear();
+    this->_link->Close();
     this->_build_cond.notify_all();
     if (std::this_thread::get_id() != this->_build_thr.get_id() && this->_build_thr.joinable()) this->_build_thr.join();
     this->_send_cond.notify_all();
