@@ -297,7 +297,7 @@ void AUTDController::AppendSequence(SequencePtr seq) {
     auto body = this->MakeSeqBody(seq, &body_size, &msg_id);
     this->_link->Send(body_size, move(body));
     if (seq->_sent == seq->control_points().size()) {
-      this->WaitMsgProcessed(0xC0, 200, 0xE0);
+      this->WaitMsgProcessed(0xC0, 2000, 0xE0);
     } else {
       this->WaitMsgProcessed(msg_id, 200);
     }
