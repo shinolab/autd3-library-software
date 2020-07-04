@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/07/2020
+// Last Modified: 04/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -62,13 +62,14 @@ class Controller {
   virtual void SetSilentMode(bool silent) noexcept = 0;
   /**
    * @brief Calibrate
-   * @details If you use more than one AUTD, call this function only once after
-   * OpenWith().
+   * @details Call this function only once after OpenWith().
    * It takes several seconds and blocks the thread in the meantime.
+   * @return true if success to calibrate
    */
   virtual bool Calibrate() = 0;
   /**
    * @brief Clear all data in hardware
+   * @return true if success to clear
    */
   virtual bool Clear() = 0;
   /**
