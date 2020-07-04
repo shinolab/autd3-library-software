@@ -3,7 +3,7 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/07/2020
+// Last Modified: 04/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -11,6 +11,7 @@
 
 #include <functional>
 #include <sstream>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -66,6 +67,7 @@ int run(autd::ControllerPtr autd) {
     getchar();
 
     cout << "finish." << endl;
+    autd->FinishSTModulation();
     autd->Stop();
     autd->Clear();
   }

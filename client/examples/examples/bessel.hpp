@@ -3,7 +3,7 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2020
+// Last Modified: 04/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -16,6 +16,8 @@ using autd::NUM_TRANS_Y;
 using autd::TRANS_SIZE_MM;
 
 void bessel_test(autd::ControllerPtr autd) {
+  autd->SetSilentMode(true);
+
   auto m = autd::modulation::SineModulation::Create(150);  // 150Hz AM
   autd->AppendModulationSync(m);
 
