@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 03/07/2020
+// Last Modified: 22/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -532,7 +532,7 @@ std::unique_ptr<uint8_t[]> AUTDController::MakeSeqBody(SequencePtr seq, size_t *
   auto *header = reinterpret_cast<RxGlobalHeader *>(&body[0]);
   *send_msg_id = get_id();
   header->msg_id = *send_msg_id;
-  header->control_flags = 0;
+  header->control_flags = SEQ_MODE;
   header->command = CMD_SEQ_MODE;
   header->mod_size = 0;
   if (this->_silent_mode) header->control_flags |= SILENT;
@@ -550,16 +550,26 @@ std::unique_ptr<uint8_t[]> AUTDController::MakeSeqBody(SequencePtr seq, size_t *
 
   auto *cursor = &body[0] + sizeof(RxGlobalHeader) / sizeof(body[0]);
   for (int device = 0; device < num_devices; device++) {
-    std::vector<float> local_points;
-    local_points.reserve(static_cast<size_t>(send_size) * 3);
+    std::vector<uint8_t> foci;
+    foci.reserve(static_cast<size_t>(send_size) * 10);
 
     for (int i = 0; i < send_size; i++) {
       auto v64 = this->geometry()->local_position(device, seq->control_points()[seq->_sent + i]);
-      local_points.push_back(static_cast<float>(v64.x()));
-      local_points.push_back(static_cast<float>(v64.y()));
-      local_points.push_back(static_cast<float>(v64.z()));
+      auto x = static_cast<int32_t>(v64.x() / FIXED_NUM_UNIT);
+      auto y = static_cast<int32_t>(v64.y() / FIXED_NUM_UNIT);
+      auto z = static_cast<int32_t>(v64.z() / FIXED_NUM_UNIT);
+      foci.push_back(static_cast<uint8_t>(x & 0x000000FF));
+      foci.push_back(static_cast<uint8_t>((x & 0x0000FF00) >> 8));
+      foci.push_back(static_cast<uint8_t>(((x & 0x80000000) >> 24) | ((x & 0x007F0000) >> 16)));
+      foci.push_back(static_cast<uint8_t>(y & 0x000000FF));
+      foci.push_back(static_cast<uint8_t>((y & 0x0000FF00) >> 8));
+      foci.push_back(static_cast<uint8_t>(((y & 0x80000000) >> 24) | ((y & 0x007F0000) >> 16)));
+      foci.push_back(static_cast<uint8_t>(z & 0x000000FF));
+      foci.push_back(static_cast<uint8_t>((z & 0x0000FF00) >> 8));
+      foci.push_back(static_cast<uint8_t>(((z & 0x80000000) >> 24) | ((z & 0x007F0000) >> 16)));
+      foci.push_back(0xFF);  // amp
     }
-    std::memcpy(cursor, &local_points[0], send_size * sizeof(float) * 3);
+    std::memcpy(cursor, &foci[0], foci.size());
     cursor += NUM_TRANS_IN_UNIT * 2;
   }
 
