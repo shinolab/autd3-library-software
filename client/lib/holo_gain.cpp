@@ -18,7 +18,7 @@
 #include <random>
 #include <string>
 #include <vector>
- 
+
 #if WIN32
 #include <codeanalysis\warnings.h>
 #pragma warning(push)
