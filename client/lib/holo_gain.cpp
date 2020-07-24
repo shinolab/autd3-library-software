@@ -3,7 +3,7 @@
 // Created Date: 06/07/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 09/06/2020
+// Last Modified: 25/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -18,7 +18,7 @@
 #include <random>
 #include <string>
 #include <vector>
-
+ 
 #if WIN32
 #include <codeanalysis\warnings.h>
 #pragma warning(push)
@@ -214,8 +214,9 @@ void HoloGainSdp::Build() {
     const auto fphase = arg(q(j)) / (2 * M_PI) + 0.5;
     const auto amp = static_cast<uint8_t>(famp * 255);
     const auto phase = static_cast<uint8_t>((1 - fphase) * 255);
-    uint8_t D, S;
-    SignalDesign(amp, phase, &D, &S);
+    uint8_t D;
+    uint8_t S = phase;
+    AdjustAmp(amp, &D);
     this->_data[geo->deviceIdForTransIdx(j)].at(j % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(D) << 8) + S;
   }
 }
