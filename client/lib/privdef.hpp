@@ -3,7 +3,7 @@
 // Created Date: 07/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 01/07/2020
+// Last Modified: 22/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -24,7 +24,7 @@ enum RxGlobalControlFlags {
   //
   SILENT = 1 << 3,
   FORCE_FAN = 1 << 4,
-  //
+  SEQ_MODE = 1 << 5,
   SEQ_BEGIN = 1 << 6,
   SEQ_END = 1 << 7
 };

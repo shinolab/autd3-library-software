@@ -1,22 +1,26 @@
+# 0.6.0
+* Fixed a bug of phase discontinuity in firmware
+* Improved performance of Point Sequence Mode
+
 # 0.5.0
-* Fix some bugs
-* Add Sequence in CAPI
+* Fixed some bugs
+* Added Sequence in CAPI
 
 # 0.5.0-rc2
-* Fix bug in AM
+* Fixed bug in AM
 
 # 0.5.0-rc1
-* Delete deprecated items
+* Deleted deprecated items
     * Controller::Open(), LinkType
-* Rename CalibrateModulation to Calibrate
-* Move gains to autd::gain namespace
-* Move modulations to autd::modulation namespace
-* Move soem_link to external static library
-* Move ethercat_link to external static library
+* Renamed CalibrateModulation to Calibrate
+* Moved gains to autd::gain namespace
+* Moved modulations to autd::modulation namespace
+* Moved soem_link to external static library
+* Moved ethercat_link to external static library
     * And rename EtherCATLink to TwinCATLink
-* Unify internal pointer type to a smart pointer
+* Unified internal pointer type to a smart pointer
     * In c-api, these are wrapped by struct.
-* Implement Point Sequence Mode
+* Implemented Point Sequence Mode
 
 # 0.4.1
 * Changed the way to open link.

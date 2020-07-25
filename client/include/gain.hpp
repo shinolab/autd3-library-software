@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/07/2020
+// Last Modified: 25/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -27,10 +27,9 @@
 namespace autd {
 namespace gain {
 
-inline void SignalDesign(uint8_t amp_i, uint8_t phase_i, uint8_t *const amp_o, uint8_t *const phase_o) noexcept {
+inline void AdjustAmp(uint8_t amp_i, uint8_t *const amp_o) noexcept {
   auto d = asin(amp_i / 255.0) / M_PI;  //  duty (0 ~ 0.5)
   *amp_o = static_cast<uint8_t>(511 * d);
-  *phase_o = static_cast<uint8_t>(static_cast<int>(phase_i + 64 - 128 * d) % 256);
 }
 
 /**
