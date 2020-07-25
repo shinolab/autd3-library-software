@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 22/07/2020
+// Last Modified: 25/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -555,9 +555,9 @@ std::unique_ptr<uint8_t[]> AUTDController::MakeSeqBody(SequencePtr seq, size_t *
 
     for (int i = 0; i < send_size; i++) {
       auto v64 = this->geometry()->local_position(device, seq->control_points()[seq->_sent + i]);
-      auto x = static_cast<int32_t>(v64.x() / FIXED_NUM_UNIT);
-      auto y = static_cast<int32_t>(v64.y() / FIXED_NUM_UNIT);
-      auto z = static_cast<int32_t>(v64.z() / FIXED_NUM_UNIT);
+      auto x = static_cast<uint32_t>(static_cast<int32_t>(v64.x() / FIXED_NUM_UNIT));
+      auto y = static_cast<uint32_t>(static_cast<int32_t>(v64.y() / FIXED_NUM_UNIT));
+      auto z = static_cast<uint32_t>(static_cast<int32_t>(v64.z() / FIXED_NUM_UNIT));
       foci.push_back(static_cast<uint8_t>(x & 0x000000FF));
       foci.push_back(static_cast<uint8_t>((x & 0x0000FF00) >> 8));
       foci.push_back(static_cast<uint8_t>(((x & 0x80000000) >> 24) | ((x & 0x007F0000) >> 16)));
