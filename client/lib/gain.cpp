@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 09/06/2020
+// Last Modified: 25/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -79,8 +79,9 @@ void PlaneWaveGain::Build() {
     const auto dist = trp.dot(dir);
     const auto fphase = pos_mod(dist, ULTRASOUND_WAVELENGTH) / ULTRASOUND_WAVELENGTH;
     const auto phase = static_cast<uint8_t>(round(255.0 * (1.0 - fphase)));
-    uint8_t D, S;
-    SignalDesign(this->_amp, phase, &D, &S);
+    uint8_t D;
+    uint8_t S = phase;
+    AdjustAmp(this->_amp, &D);
     this->_data[geometry->deviceIdForTransIdx(i)].at(i % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(D) << 8) + S;
   }
 
@@ -114,8 +115,9 @@ void FocalPointGain::Build() {
     const auto dist = (trp - this->_point).l2_norm();
     const auto fphase = fmod(dist, ULTRASOUND_WAVELENGTH) / ULTRASOUND_WAVELENGTH;
     const auto phase = static_cast<uint8_t>(round(255.0 * (1.0 - fphase)));
-    uint8_t D, S;
-    SignalDesign(this->_amp, phase, &D, &S);
+    uint8_t D;
+    uint8_t S = phase;
+    AdjustAmp(this->_amp, &D);
     this->_data[geometry->deviceIdForTransIdx(i)].at(i % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(D) << 8) + S;
   }
 
@@ -159,8 +161,9 @@ void BesselBeamGain::Build() {
     const auto fphase =
         fmod(sin(_theta_z) * sqrt(_R.x() * _R.x() + _R.y() * _R.y()) - cos(_theta_z) * _R.z(), ULTRASOUND_WAVELENGTH) / ULTRASOUND_WAVELENGTH;
     const auto phase = static_cast<uint8_t>(round(255.0 * (1.0 - fphase)));
-    uint8_t D, S;
-    SignalDesign(this->_amp, phase, &D, &S);
+    uint8_t D;
+    uint8_t S = phase;
+    AdjustAmp(this->_amp, &D);
     this->_data[geometry->deviceIdForTransIdx(i)].at(i % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(D) << 8) + S;
   }
 

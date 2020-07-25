@@ -54,7 +54,9 @@ class FirmwareInfo {
       case 1:
         return "v0.4";
       case 2:
-        return "v0.5";
+          return "v0.5";
+      case 3:
+          return "v0.6";
       default:
         return "unknown: " + std::to_string(version_number);
     }
