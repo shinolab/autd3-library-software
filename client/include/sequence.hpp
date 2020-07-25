@@ -3,7 +3,7 @@
 // Created Date: 01/07/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/07/2020
+// Last Modified: 25/07/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -21,7 +21,7 @@ namespace sequence {
  * @brief PointSequence provides a function to display the focus sequentially and periodically.
  * @details PointSequence uses a timer on the FPGA to ensure that the focus is precisely timed.
  * PointSequence currently has the following four limitations.
- * 1. The maximum number of control points is 2000.
+ * 1. The maximum number of control points is 40000.
  * 2. the sampling interval of Control Points is an integer multiple of 25us.
  * 3. (number of Control Points) x (sampling interval) must be less than or equal 1 second.
  * 4. Only a single focus can be displayed at a certain moment.
@@ -61,7 +61,7 @@ class PointSequence {
    * @brief Set frequency of the sequence
    * @param[in] freq Frequency of the sequence
    * @details The Point Sequence Mode has three constraints, which determine the actual frequency of the sequence.
-   * 1. The maximum number of control points is 2000.
+   * 1. The maximum number of control points is 40000.
    * 2. the sampling interval of Control Points is an integer multiple of 25us.
    * 3. (number of Control Points) x (sampling interval) must be less than or equal 1 second.
    * @return double Actual frequency of sequence
