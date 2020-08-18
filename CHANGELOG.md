@@ -1,3 +1,6 @@
+# 0.6.1
+* Fixed a minor bug
+
 # 0.6.0
 * Fixed a bug of phase discontinuity in firmware
 * Improved performance of Point Sequence Mode
