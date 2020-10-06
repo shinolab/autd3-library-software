@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 18/08/2020
+// Last Modified: 06/10/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -412,7 +412,7 @@ FirmwareInfoList AUTDController::firmware_info_list() {
     fpga_versions[i] = ((uint16_t)_rx_data[2 * i] << 8) | fpga_versions[i];
   }
 
-  for (uint16_t i = 0; i < size; i++) {
+  for (uint16_t i = 0; i < static_cast<uint16_t>(size); i++) {
     FirmwareInfo info{i, cpu_versions[i], fpga_versions[i]};
     res.push_back(info);
   }
