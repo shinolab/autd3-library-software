@@ -32,10 +32,10 @@
 #include "timer.hpp"
 
 namespace autd {
-class AUTDController : public Controller {
+class AUTDControllerV_0_1 : public Controller {
  public:
-  AUTDController();
-  ~AUTDController() override;
+     AUTDControllerV_0_1();
+  ~AUTDControllerV_0_1() override;
 
   bool is_open() final;
   GeometryPtr geometry() noexcept final;
