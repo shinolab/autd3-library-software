@@ -34,7 +34,7 @@ string GetAdapterName() {
 }
 
 int main() {
-  auto autd = autd::Controller::Create(autd::AUTD_VERSION::V_0_6);
+  auto autd = autd::Controller::Create();
   autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
   // autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
 

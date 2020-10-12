@@ -38,7 +38,7 @@ class Controller {
   /**
    * @brief Create controller
    */
-  static ControllerPtr Create(AUTD_VERSION version);
+  static ControllerPtr Create(AUTD_VERSION version = AUTD_VERSION::V_0_6);
   /**
    * @brief Verify that the device is properly connected
    */
