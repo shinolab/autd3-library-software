@@ -3,7 +3,7 @@
 
 # autd3 #
 
-Version: 0.6.0
+Version: 0.6.2
 
 * This repository is forked from [old version](https://github.com/shinolab/autd)
 

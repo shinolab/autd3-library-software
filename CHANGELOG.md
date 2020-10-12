@@ -1,3 +1,6 @@
+# 0.6.2
+* Implemented backward compatibility
+
 # 0.6.1
 * Fixed a minor bug
 
