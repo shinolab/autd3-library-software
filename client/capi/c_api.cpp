@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/07/2020
+// Last Modified: 12/10/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -21,8 +21,8 @@
 #include "wrapper.hpp"
 
 #pragma region Controller
-void AUTDCreateController(AUTDControllerHandle* out) {
-  auto ptr = autd::Controller::Create();
+void AUTDCreateController(AUTDControllerHandle* out, int32_t version) {
+  auto ptr = autd::Controller::Create(static_cast<autd::AUTD_VERSION>(version));
   auto* cnt = ControllerCreate(ptr);
   *out = cnt;
 }

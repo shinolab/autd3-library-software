@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/07/2020
+// Last Modified: 12/10/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -53,6 +53,10 @@ class Gain {
    */
   void SetGeometry(const GeometryPtr &geometry) noexcept;
   /**
+   * @brief Get AUTD Geometry
+   */
+  GeometryPtr geometry() noexcept;
+  /**
    * @brief Getter function for the data of amplitude and phase of each transducers
    * @details Each data is 16 bit unsigned integer, where MSB represents amplitude and LSB represents phase
    */
@@ -64,7 +68,6 @@ class Gain {
   bool _built;
   GeometryPtr _geometry;
   std::map<int, std::vector<uint16_t>> _data;
-  GeometryPtr geometry() noexcept;
   bool built() noexcept;
 };
 

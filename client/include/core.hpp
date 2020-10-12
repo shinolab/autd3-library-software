@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/07/2020
+// Last Modified: 12/10/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -28,6 +28,10 @@ using _utils::Vector3;
 
 class Controller;
 class AUTDController;
+namespace _internal {
+class AUTDControllerV_0_1;
+class AUTDControllerV_0_6;
+}  // namespace _internal
 class Geometry;
 class Timer;
 

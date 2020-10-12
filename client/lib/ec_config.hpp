@@ -3,7 +3,7 @@
 // Created Date: 21/02/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/07/2020
+// Last Modified: 12/10/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -14,8 +14,7 @@
 #include "../lib/privdef.hpp"
 #include "consts.hpp"
 
-constexpr auto HEADER_SIZE = sizeof(autd::RxGlobalHeader);
-
+constexpr size_t HEADER_SIZE = 128;
 constexpr size_t EC_OUTPUT_FRAME_SIZE = autd::NUM_TRANS_IN_UNIT * 2 + HEADER_SIZE;
 constexpr size_t EC_INPUT_FRAME_SIZE = 2;
 

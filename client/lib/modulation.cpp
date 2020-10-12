@@ -3,7 +3,7 @@
 // Created Date: 11/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 09/06/2020
+// Last Modified: 12/10/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -45,7 +45,7 @@ constexpr int Modulation::samplingFrequency() { return MOD_SAMPLING_FREQ; }
 
 ModulationPtr Modulation::Create(uint8_t amp) {
   auto mod = std::make_shared<Modulation>();
-  mod->buffer.resize(MOD_FRAME_SIZE, amp);
+  mod->buffer.resize(1, amp);
   return mod;
 }
 #pragma endregion
