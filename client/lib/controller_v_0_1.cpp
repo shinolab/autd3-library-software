@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 11/10/2020
+// Last Modified: 12/10/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "controller.hpp"
+#include "controller_impl.hpp"
 #include "ec_config.hpp"
 #include "emulator_link.hpp"
 #include "firmware_version.hpp"
@@ -30,70 +31,29 @@
 #include "sequence.hpp"
 #include "timer.hpp"
 
-AUTDController::AUTDController() {
-  this->_link = nullptr;
-  this->_geometry = Geometry::Create();
-  this->_silent_mode = true;
-  this->_p_stm_timer = std::make_unique<Timer>();
+namespace autd {
+namespace _internal {
+
+AUTDControllerV_0_1::AUTDControllerV_0_1() : AUTDController() {}
+
+AUTDControllerV_0_1::~AUTDControllerV_0_1() {}
+
+bool AUTDControllerV_0_1::Calibrate() {
+  std::cerr << "The function 'Calibrate' does not work in this version." << std::endl;
+  return false;
 }
 
-AUTDController::~AUTDController() {
-  if (std::this_thread::get_id() != this->_build_thr.get_id() && this->_build_thr.joinable()) this->_build_thr.join();
-  if (std::this_thread::get_id() != this->_send_thr.get_id() && this->_send_thr.joinable()) this->_send_thr.join();
+bool AUTDControllerV_0_1::Clear() {
+  std::cerr << "The function 'Clear' does not work in this version." << std::endl;
+  return false;
 }
 
-bool AUTDController::is_open() { return this->_link != nullptr && this->_link->is_open(); }
-
-GeometryPtr AUTDController::geometry() noexcept { return this->_geometry; }
-
-bool AUTDController::silent_mode() noexcept { return this->_silent_mode; }
-
-size_t AUTDController::remaining_in_buffer() { return this->_send_gain_q.size() + this->_send_mod_q.size() + this->_build_q.size(); }
-
-void AUTDController::OpenWith(LinkPtr link) {
-  this->Close();
-
-  this->_link = link;
-  this->_link->Open();
-  if (this->_link->is_open())
-    this->InitPipeline();
-  else
-    this->Close();
-}
-
-void AUTDController::SetSilentMode(bool silent) noexcept { this->_silent_mode = silent; }
-
-bool AUTDController::Calibrate() {
-  auto size = sizeof(RxGlobalHeader);
-  auto body = std::make_unique<uint8_t[]>(size);
-
-  auto *header = reinterpret_cast<RxGlobalHeader *>(&body[0]);
-  header->msg_id = CMD_INIT_REF_CLOCK;
-  header->command = CMD_INIT_REF_CLOCK;
-
-  this->_link->Send(size, std::move(body));
-  return this->WaitMsgProcessed(CMD_INIT_REF_CLOCK, 5000);
-}
-
-bool AUTDController::Clear() {
-  auto size = sizeof(RxGlobalHeader);
-  auto body = std::make_unique<uint8_t[]>(size);
-
-  auto *header = reinterpret_cast<RxGlobalHeader *>(&body[0]);
-  header->msg_id = CMD_CLEAR;
-  header->command = CMD_CLEAR;
-
-  this->_link->Send(size, std::move(body));
-  return this->WaitMsgProcessed(CMD_CLEAR, 200);
-}
-
-void AUTDController::Close() {
+void AUTDControllerV_0_1::Close() {
   if (this->is_open()) {
     this->FinishSTModulation();
     this->Flush();
     this->Stop();
-    this->Clear();
-    this->_link->Close();
+    this->CloseLink();
     this->_build_cond.notify_all();
     if (std::this_thread::get_id() != this->_build_thr.get_id() && this->_build_thr.joinable()) this->_build_thr.join();
     this->_send_cond.notify_all();
@@ -102,12 +62,12 @@ void AUTDController::Close() {
   }
 }
 
-void AUTDController::Stop() {
+void AUTDControllerV_0_1::Stop() {
   auto nullgain = autd::gain::NullGain::Create();
   this->AppendGainSync(nullgain, true);
 }
 
-void AUTDController::AppendGain(GainPtr gain) {
+void AUTDControllerV_0_1::AppendGain(GainPtr gain) {
   this->_p_stm_timer->Stop();
   gain->SetGeometry(this->_geometry);
   {
@@ -117,40 +77,40 @@ void AUTDController::AppendGain(GainPtr gain) {
   _build_cond.notify_all();
 }
 
-void AUTDController::AppendGainSync(GainPtr gain, bool wait_for_send) {
+void AUTDControllerV_0_1::AppendGainSync(GainPtr gain, bool _wait_for_send) {
   this->_p_stm_timer->Stop();
   try {
     gain->SetGeometry(this->_geometry);
-    if (!gain->built()) gain->Build();
+    gain->Build();
 
     size_t body_size = 0;
     uint8_t msg_id = 0;
     auto body = this->MakeBody(gain, nullptr, &body_size, &msg_id);
-    if (this->is_open()) this->_link->Send(body_size, move(body));
-    if (wait_for_send) WaitMsgProcessed(msg_id);
+    if (this->is_open()) this->SendData(body_size, move(body));
   } catch (const int errnum) {
-    this->_link->Close();
+    this->CloseLink();
     std::cerr << errnum << "Link closed." << std::endl;
   }
 }
-void AUTDController::AppendModulation(ModulationPtr mod) {
+
+void AUTDControllerV_0_1::AppendModulation(ModulationPtr mod) {
   {
     std::unique_lock<std::mutex> lk(_send_mtx);
     _send_mod_q.push(mod);
   }
   _send_cond.notify_all();
 }
-void AUTDController::AppendModulationSync(ModulationPtr mod) {
+
+void AUTDControllerV_0_1::AppendModulationSync(ModulationPtr mod) {
   try {
     if (this->is_open()) {
-      while (mod->buffer.size() > mod->_sent) {
+      while (mod->buffer.size() > this->mod_sent(mod)) {
         size_t body_size = 0;
         uint8_t msg_id = 0;
         auto body = this->MakeBody(nullptr, mod, &body_size, &msg_id);
-        this->_link->Send(body_size, move(body));
-        WaitMsgProcessed(msg_id);
+        this->SendData(body_size, move(body));
       }
-      mod->_sent = 0;
+      this->mod_sent(mod) = 0;
     }
   } catch (const int errnum) {
     this->Close();
@@ -158,14 +118,14 @@ void AUTDController::AppendModulationSync(ModulationPtr mod) {
   }
 }
 
-void AUTDController::AppendSTMGain(GainPtr gain) { _stm_gains.push_back(gain); }
-void AUTDController::AppendSTMGain(const std::vector<GainPtr> &gain_list) {
+void AUTDControllerV_0_1::AppendSTMGain(GainPtr gain) { _stm_gains.push_back(gain); }
+void AUTDControllerV_0_1::AppendSTMGain(const std::vector<GainPtr> &gain_list) {
   for (auto g : gain_list) {
     this->AppendSTMGain(g);
   }
 }
 
-void AUTDController::StartSTModulation(double freq) {
+void AUTDControllerV_0_1::StartSTModulation(double freq) {
   auto len = this->_stm_gains.size();
   auto itvl_us = static_cast<int>(1000000. / freq / len);
   this->_p_stm_timer->SetInterval(itvl_us);
@@ -177,7 +137,7 @@ void AUTDController::StartSTModulation(double freq) {
   for (size_t i = current_size; i < len; i++) {
     auto g = this->_stm_gains[i];
     g->SetGeometry(this->_geometry);
-    if (!g->built()) g->Build();
+    g->Build();
 
     size_t body_size = 0;
     uint8_t msg_id = 0;
@@ -194,17 +154,17 @@ void AUTDController::StartSTModulation(double freq) {
     auto body_copy = std::make_unique<uint8_t[]>(body_size);
     uint8_t *p = this->_stm_bodies[idx];
     std::memcpy(body_copy.get(), p, body_size);
-    if (this->is_open()) this->_link->Send(body_size, std::move(body_copy));
+    if (this->is_open()) this->SendData(body_size, std::move(body_copy));
     idx = (idx + 1) % len;
   });
 }
 
-void AUTDController::StopSTModulation() {
+void AUTDControllerV_0_1::StopSTModulation() {
   this->_p_stm_timer->Stop();
   this->Stop();
 }
 
-void AUTDController::FinishSTModulation() {
+void AUTDControllerV_0_1::FinishSTModulation() {
   this->StopSTModulation();
   std::vector<GainPtr>().swap(this->_stm_gains);
   for (uint8_t *p : this->_stm_bodies) {
@@ -214,54 +174,9 @@ void AUTDController::FinishSTModulation() {
   std::vector<size_t>().swap(this->_stm_body_sizes);
 }
 
-void AUTDController::AppendSequence(SequencePtr seq) {
-  while (seq->_sent < seq->control_points().size()) {
-    size_t body_size = 0;
-    uint8_t msg_id = 0;
-    auto body = this->MakeSeqBody(seq, &body_size, &msg_id);
-    this->_link->Send(body_size, move(body));
-    if (seq->_sent == seq->control_points().size()) {
-      this->WaitMsgProcessed(0xC0, 2000, 0xE0);
-    } else {
-      this->WaitMsgProcessed(msg_id, 200);
-    }
-  }
-  this->CalibrateSeq();
-}
+void AUTDControllerV_0_1::AppendSequence(SequencePtr seq) { throw "Sequence is not implemented yet and is available since v0.6."; }
 
-void AUTDController::CalibrateSeq() {
-  std::vector<uint16_t> laps;
-  for (size_t i = 0; i < _rx_data.size() / 2; i++) {
-    auto lap_raw = (static_cast<uint16_t>(_rx_data[2 * i + 1]) << 8) | _rx_data[2 * i];
-    laps.push_back(lap_raw & 0x03FF);
-  }
-
-  std::vector<uint16_t> diffs;
-  auto minimum = *std::min_element(laps.begin(), laps.end());
-  for (size_t i = 0; i < laps.size(); i++) {
-    diffs.push_back(laps[i] - minimum);
-  }
-
-  auto diff_max = *std::max_element(diffs.begin(), diffs.end());
-  if (diff_max == 0) {
-    return;
-  } else if (diff_max > 500) {
-    for (size_t i = 0; i < laps.size(); i++) {
-      laps[i] = laps[i] < 500 ? laps[i] + 1000 : laps[i];
-    }
-    minimum = *std::min_element(laps.begin(), laps.end());
-    for (size_t i = 0; i < laps.size(); i++) {
-      diffs[i] = laps[i] - minimum;
-    }
-  }
-
-  size_t body_size = 0;
-  auto calib_body = this->MakeCalibBody(diffs, &body_size);
-  this->_link->Send(body_size, std::move(calib_body));
-  this->WaitMsgProcessed(0xE0, 200, 0xE0);
-}
-
-void AUTDController::Flush() {
+void AUTDControllerV_0_1::Flush() {
   std::unique_lock<std::mutex> lk0(_send_mtx);
   std::unique_lock<std::mutex> lk1(_build_mtx);
   std::queue<GainPtr>().swap(_build_q);
@@ -269,81 +184,18 @@ void AUTDController::Flush() {
   std::queue<ModulationPtr>().swap(_send_mod_q);
 }
 
-bool AUTDController::WaitMsgProcessed(uint8_t msg_id, size_t max_trial, uint8_t mask) {
-  auto success = false;
-  auto num_dev = this->_geometry->numDevices();
-  auto buffer_len = num_dev * EC_INPUT_FRAME_SIZE;
-  for (size_t i = 0; i < max_trial; i++) {
-    _rx_data = this->_link->Read(static_cast<uint32_t>(buffer_len));
-    size_t processed = 0;
-    for (size_t dev = 0; dev < num_dev; dev++) {
-      uint8_t proc_id = _rx_data[dev * 2 + 1] & mask;
-      if (proc_id == msg_id) processed++;
-    }
-
-    if (processed == num_dev) {
-      return true;
-    }
-
-    auto wait = static_cast<size_t>(std::ceil(EC_TRAFFIC_DELAY * 1000 / EC_DEVICE_PER_FRAME * num_dev));
-    std::this_thread::sleep_for(std::chrono::milliseconds(wait));
-  }
-  return false;
-}
-
-FirmwareInfoList AUTDController::firmware_info_list() {
+FirmwareInfoList AUTDControllerV_0_1::firmware_info_list() {
+  std::cerr << "The function 'firmware_info_list' does not work in this version." << std::endl;
   auto size = this->_geometry->numDevices();
-
   FirmwareInfoList res;
-  auto make_header = [](uint8_t command) {
-    auto header_bytes = std::make_unique<uint8_t[]>(sizeof(RxGlobalHeader));
-    auto *header = reinterpret_cast<RxGlobalHeader *>(&header_bytes[0]);
-    header->msg_id = command;
-    header->command = command;
-    return header_bytes;
-  };
-
-  std::vector<uint16_t> cpu_versions(size);
-  std::vector<uint16_t> fpga_versions(size);
-
-  std::unique_ptr<uint8_t[]> header;
-
-  auto send_size = sizeof(RxGlobalHeader);
-  header = make_header(CMD_READ_CPU_VER_LSB);
-  this->_link->Send(send_size, std::move(header));
-  WaitMsgProcessed(CMD_READ_CPU_VER_LSB, 50);
-  for (size_t i = 0; i < size; i++) {
-    cpu_versions[i] = _rx_data[2 * i];
-  }
-  header = make_header(CMD_READ_CPU_VER_MSB);
-  this->_link->Send(send_size, std::move(header));
-  WaitMsgProcessed(CMD_READ_CPU_VER_MSB, 50);
-  for (size_t i = 0; i < size; i++) {
-    cpu_versions[i] = ((uint16_t)_rx_data[2 * i] << 8) | cpu_versions[i];
-  }
-
-  header = make_header(CMD_READ_FPGA_VER_LSB);
-  this->_link->Send(send_size, std::move(header));
-  WaitMsgProcessed(CMD_READ_FPGA_VER_LSB, 50);
-  for (size_t i = 0; i < size; i++) {
-    fpga_versions[i] = _rx_data[2 * i];
-  }
-
-  header = make_header(CMD_READ_FPGA_VER_MSB);
-  this->_link->Send(send_size, std::move(header));
-  WaitMsgProcessed(CMD_READ_FPGA_VER_MSB, 50);
-  for (size_t i = 0; i < size; i++) {
-    fpga_versions[i] = ((uint16_t)_rx_data[2 * i] << 8) | fpga_versions[i];
-  }
-
   for (uint16_t i = 0; i < static_cast<uint16_t>(size); i++) {
-    FirmwareInfo info{i, cpu_versions[i], fpga_versions[i]};
+    auto info = AUTDController::FirmwareInfoCreate(i, 0, 0);
     res.push_back(info);
   }
   return res;
 }
 
-void AUTDController::LateralModulationAT(Vector3 point, Vector3 dir, double lm_amp, double lm_freq) {
+void AUTDControllerV_0_1::LateralModulationAT(Vector3 point, Vector3 dir, double lm_amp, double lm_freq) {
   auto p1 = point + lm_amp * dir;
   auto p2 = point - lm_amp * dir;
   this->FinishSTModulation();
@@ -352,7 +204,7 @@ void AUTDController::LateralModulationAT(Vector3 point, Vector3 dir, double lm_a
   this->StartSTModulation(lm_freq);
 }
 
-void AUTDController::InitPipeline() {
+void AUTDControllerV_0_1::InitPipeline() {
   this->_build_thr = std::thread([&] {
     while (this->is_open()) {
       GainPtr gain = nullptr;
@@ -368,7 +220,7 @@ void AUTDController::InitPipeline() {
       }
 
       if (gain != nullptr) {
-        if (!gain->built()) gain->Build();
+        gain->Build();
         {
           std::unique_lock<std::mutex> lk(_send_mtx);
           _send_gain_q.push(gain);
@@ -393,13 +245,12 @@ void AUTDController::InitPipeline() {
         size_t body_size = 0;
         uint8_t msg_id = 0;
         auto body = MakeBody(gain, mod, &body_size, &msg_id);
-        if (this->_link->is_open()) this->_link->Send(body_size, move(body));
-        if (mod != nullptr) WaitMsgProcessed(msg_id);
+        if (this->is_open()) this->SendData(body_size, move(body));
 
         std::unique_lock<std::mutex> lk(_send_mtx);
         if (gain != nullptr && _send_gain_q.size() > 0) _send_gain_q.pop();
-        if (mod != nullptr && mod->buffer.size() <= mod->_sent) {
-          mod->_sent = 0;
+        if (mod != nullptr && mod->buffer.size() <= this->mod_sent(mod)) {
+          this->mod_sent(mod) = 0;
           if (_send_mod_q.size() > 0) _send_mod_q.pop();
         }
       }
@@ -410,114 +261,40 @@ void AUTDController::InitPipeline() {
   });
 }
 
-std::unique_ptr<uint8_t[]> AUTDController::MakeBody(GainPtr gain, ModulationPtr mod, size_t *const size, uint8_t *const send_msg_id) {
+std::unique_ptr<uint8_t[]> AUTDControllerV_0_1::MakeBody(GainPtr gain, ModulationPtr mod, size_t *const size, uint8_t *const send_msg_id) {
   auto num_devices = (gain != nullptr) ? gain->geometry()->numDevices() : 0;
 
-  *size = sizeof(RxGlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;
+  *size = sizeof(RxGlobalHeaderV_0_1) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;
   auto body = std::make_unique<uint8_t[]>(*size);
 
-  auto *header = reinterpret_cast<RxGlobalHeader *>(&body[0]);
+  auto *header = reinterpret_cast<RxGlobalHeaderV_0_1 *>(&body[0]);
   *send_msg_id = get_id();
   header->msg_id = *send_msg_id;
   header->control_flags = 0;
   header->mod_size = 0;
-  header->command = CMD_OP;
 
   if (this->_silent_mode) header->control_flags |= SILENT;
 
   if (mod != nullptr) {
-    const uint8_t mod_size = std::max(0, std::min(static_cast<int>(mod->buffer.size() - mod->_sent), MOD_FRAME_SIZE));
+    const uint8_t mod_size = std::max(0, std::min(static_cast<int>(mod->buffer.size() - this->mod_sent(mod)), MOD_FRAME_SIZE_V_0_1));
     header->mod_size = mod_size;
-    if (mod->_sent == 0) header->control_flags |= LOOP_BEGIN;
-    if (mod->_sent + mod_size >= mod->buffer.size()) header->control_flags |= LOOP_END;
+    if (this->mod_sent(mod) == 0) header->control_flags |= MOD_BEGIN | LOOP_BEGIN;
+    if (this->mod_sent(mod) + mod_size >= mod->buffer.size()) header->control_flags |= LOOP_END;
 
-    std::memcpy(header->mod, &mod->buffer[mod->_sent], mod_size);
-    mod->_sent += mod_size;
+    std::memcpy(header->mod, &mod->buffer[this->mod_sent(mod)], mod_size);
+    this->mod_sent(mod) += mod_size;
   }
 
-  auto *cursor = &body[0] + sizeof(RxGlobalHeader) / sizeof(body[0]);
+  auto *cursor = &body[0] + sizeof(RxGlobalHeaderV_0_1) / sizeof(body[0]);
   if (gain != nullptr) {
     for (int i = 0; i < gain->geometry()->numDevices(); i++) {
       auto deviceId = gain->geometry()->deviceIdForDeviceIdx(i);
       auto byteSize = NUM_TRANS_IN_UNIT * sizeof(uint16_t);
-      std::memcpy(cursor, &gain->_data[deviceId].at(0), byteSize);
+      std::memcpy(cursor, this->gain_data_addr(gain, deviceId), byteSize);
       cursor += byteSize / sizeof(body[0]);
     }
   }
   return body;
 }
-
-std::unique_ptr<uint8_t[]> AUTDController::MakeSeqBody(SequencePtr seq, size_t *const size, uint8_t *const send_msg_id) {
-  auto num_devices = this->geometry()->numDevices();
-
-  *size = sizeof(RxGlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;
-  auto body = std::make_unique<uint8_t[]>(*size);
-
-  auto *header = reinterpret_cast<RxGlobalHeader *>(&body[0]);
-  *send_msg_id = get_id();
-  header->msg_id = *send_msg_id;
-  header->control_flags = SEQ_MODE;
-  header->command = CMD_SEQ_MODE;
-  header->mod_size = 0;
-  if (this->_silent_mode) header->control_flags |= SILENT;
-
-  uint16_t send_size = std::max(0, std::min(static_cast<int>(seq->control_points().size() - seq->_sent), 40));
-  header->seq_size = send_size;
-  header->seq_div = seq->_sampl_freq_div;
-
-  if (seq->_sent == 0) {
-    header->control_flags |= SEQ_BEGIN;
-  }
-  if (seq->_sent + send_size >= seq->control_points().size()) {
-    header->control_flags |= SEQ_END;
-  }
-
-  auto *cursor = &body[0] + sizeof(RxGlobalHeader) / sizeof(body[0]);
-  for (int device = 0; device < num_devices; device++) {
-    std::vector<uint8_t> foci;
-    foci.reserve(static_cast<size_t>(send_size) * 10);
-
-    for (int i = 0; i < send_size; i++) {
-      auto v64 = this->geometry()->local_position(device, seq->control_points()[seq->_sent + i]);
-      auto x = static_cast<uint32_t>(static_cast<int32_t>(v64.x() / FIXED_NUM_UNIT));
-      auto y = static_cast<uint32_t>(static_cast<int32_t>(v64.y() / FIXED_NUM_UNIT));
-      auto z = static_cast<uint32_t>(static_cast<int32_t>(v64.z() / FIXED_NUM_UNIT));
-      foci.push_back(static_cast<uint8_t>(x & 0x000000FF));
-      foci.push_back(static_cast<uint8_t>((x & 0x0000FF00) >> 8));
-      foci.push_back(static_cast<uint8_t>(((x & 0x80000000) >> 24) | ((x & 0x007F0000) >> 16)));
-      foci.push_back(static_cast<uint8_t>(y & 0x000000FF));
-      foci.push_back(static_cast<uint8_t>((y & 0x0000FF00) >> 8));
-      foci.push_back(static_cast<uint8_t>(((y & 0x80000000) >> 24) | ((y & 0x007F0000) >> 16)));
-      foci.push_back(static_cast<uint8_t>(z & 0x000000FF));
-      foci.push_back(static_cast<uint8_t>((z & 0x0000FF00) >> 8));
-      foci.push_back(static_cast<uint8_t>(((z & 0x80000000) >> 24) | ((z & 0x007F0000) >> 16)));
-      foci.push_back(0xFF);  // amp
-    }
-    std::memcpy(cursor, &foci[0], foci.size());
-    cursor += NUM_TRANS_IN_UNIT * 2;
-  }
-
-  seq->_sent += send_size;
-  return body;
-}
-
-std::unique_ptr<uint8_t[]> AUTDController::MakeCalibBody(std::vector<uint16_t> diffs, size_t *const size) {
-  *size = sizeof(RxGlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * diffs.size();
-  auto body = std::make_unique<uint8_t[]>(*size);
-
-  auto *header = reinterpret_cast<RxGlobalHeader *>(&body[0]);
-  header->msg_id = CMD_CALIB_SEQ_CLOCK;
-  header->control_flags = 0;
-  header->command = CMD_CALIB_SEQ_CLOCK;
-
-  uint16_t *cursor = reinterpret_cast<uint16_t *>(&body[sizeof(RxGlobalHeader)]);
-  for (size_t i = 0; i < diffs.size(); i++) {
-    *cursor = diffs[i];
-    cursor += NUM_TRANS_IN_UNIT;
-  }
-
-  return body;
-}
-
-ControllerPtr Controller::Create() { return std::make_shared<AUTDController>(); }
+}  // namespace _internal
 }  // namespace autd

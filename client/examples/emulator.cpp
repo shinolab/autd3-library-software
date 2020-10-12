@@ -3,7 +3,7 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/06/2020
+// Last Modified: 12/10/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -18,7 +18,7 @@
 using namespace std;
 
 int main() {
-  auto autd = autd::Controller::Create();
+  auto autd = autd::Controller::Create(autd::AUTD_VERSION::V_0_6);
   autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
 
   auto link = autd::link::EmulatorLink::Create("127.0.0.1", 50632, autd->geometry());
