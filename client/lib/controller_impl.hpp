@@ -11,6 +11,11 @@
 
 #pragma once
 
+#include <atomic>
+#include <memory>
+#include <queue>
+#include <vector>
+
 #include "controller.hpp"
 #include "ec_config.hpp"
 #include "firmware_version.hpp"
