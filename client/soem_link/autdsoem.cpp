@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/10/2020
+// Last Modified: 14/10/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -156,7 +156,7 @@ void SOEMController::RTthread(union sigval sv)
 void SOEMController::SetupSync0(bool activate, uint32_t cycle_time_ns) {
   using std::chrono::system_clock, std::chrono::duration_cast, std::chrono::nanoseconds;
   auto ref_time = system_clock::now();
-  for (uint16_t slave = 1; slave <= static_cast<uint16_t>(_dev_num); slave++) {
+  for (size_t slave = 1; slave <= _dev_num; slave++) {
     auto elapsed = duration_cast<nanoseconds>(ref_time - system_clock::now()).count();
     ec_dcsync0(slave, activate, cycle_time_ns, static_cast<int32>((elapsed / cycle_time_ns) * cycle_time_ns));
   }
