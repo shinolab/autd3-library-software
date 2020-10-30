@@ -1,3 +1,8 @@
+# 0.7
+* Add `SquareModulation`
+* Add `CustomModulation` in capi
+* Modulation buffer size and sampling frequency become mutable
+
 # 0.6.2
 * Implemented backward compatibility
 

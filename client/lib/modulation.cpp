@@ -3,7 +3,7 @@
 // Created Date: 11/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 12/10/2020
+// Last Modified: 30/10/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -22,6 +22,7 @@
 #include <limits>
 #include <numeric>
 
+#include "configuration.hpp"
 #include "consts.hpp"
 #include "modulation.hpp"
 #include "privdef.hpp"
@@ -41,99 +42,143 @@ static inline double sinc(double x) noexcept {
 #pragma region Modulation
 Modulation::Modulation() noexcept { this->_sent = 0; }
 
-constexpr int Modulation::samplingFrequency() { return MOD_SAMPLING_FREQ; }
-
 ModulationPtr Modulation::Create(uint8_t amp) {
   auto mod = std::make_shared<Modulation>();
   mod->buffer.resize(1, amp);
   return mod;
 }
+
+void Modulation::Build(Configuration config) {}
 #pragma endregion
 
 #pragma region SineModulation
 ModulationPtr SineModulation::Create(int freq, double amp, double offset) {
   auto mod = std::make_shared<SineModulation>();
-  constexpr auto sf = Modulation::samplingFrequency();
-  freq = std::clamp(freq, 1, sf / 2);
+  mod->_freq = freq;
+  mod->_amp = amp;
+  mod->_offset = offset;
+  return mod;
+}
+
+void SineModulation::Build(Configuration config) {
+  const auto sf = static_cast<int32_t>(config.mod_sampling_freq());
+  const auto mod_buf_size = static_cast<int32_t>(config.mod_buf_size());
+
+  const auto freq = std::clamp(this->_freq, 1, sf / 2);
 
   const auto d = std::gcd(sf, freq);
 
-  const size_t N = MOD_BUF_SIZE / d;
+  const size_t N = mod_buf_size / d;
   const size_t REP = freq / d;
 
-  mod->buffer.resize(N, 0);
+  this->buffer.resize(N, 0);
 
   for (size_t i = 0; i < N; i++) {
     auto tamp = fmod(static_cast<double>(2 * REP * i) / N, 2.0);
     tamp = tamp > 1.0 ? 2.0 - tamp : tamp;
-    tamp = std::clamp(offset + (tamp - 0.5) * amp, 0.0, 1.0);
-    mod->buffer.at(i) = static_cast<uint8_t>(tamp * 255.0);
+    tamp = std::clamp(this->_offset + (tamp - 0.5) * this->_amp, 0.0, 1.0);
+    this->buffer.at(i) = static_cast<uint8_t>(tamp * 255.0);
   }
+}
+#pragma endregion
 
+#pragma region SquareModulation
+ModulationPtr SquareModulation::Create(int freq, uint8_t low, uint8_t high) {
+  auto mod = std::make_shared<SquareModulation>();
+  mod->_freq = freq;
+  mod->_low = low;
+  mod->_high = high;
   return mod;
+}
+
+void SquareModulation::Build(Configuration config) {
+  const auto sf = static_cast<int32_t>(config.mod_sampling_freq());
+  const auto mod_buf_size = static_cast<int32_t>(config.mod_buf_size());
+
+  const auto freq = std::clamp(this->_freq, 1, sf / 2);
+
+  const auto d = std::gcd(sf, freq);
+
+  const size_t N = mod_buf_size / d;
+
+  this->buffer.resize(N, this->_high);
+  std::memset(&this->buffer[0], this->_low, N / 2);
 }
 #pragma endregion
 
 #pragma region SawModulation
 ModulationPtr SawModulation::Create(int freq) {
   auto mod = std::make_shared<SawModulation>();
-  constexpr auto sf = Modulation::samplingFrequency();
-  freq = std::clamp(freq, 1, sf / 2);
+  mod->_freq = freq;
+  return mod;
+}
+
+void SawModulation::Build(Configuration config) {
+  const auto sf = static_cast<int32_t>(config.mod_sampling_freq());
+  const auto mod_buf_size = static_cast<int32_t>(config.mod_buf_size());
+
+  const auto freq = std::clamp(this->_freq, 1, sf / 2);
 
   const auto d = std::gcd(sf, freq);
 
-  const size_t N = MOD_BUF_SIZE / d;
+  const size_t N = mod_buf_size / d;
   const auto REP = freq / d;
 
-  mod->buffer.resize(N, 0);
+  this->buffer.resize(N, 0);
 
   for (size_t i = 0; i < N; i++) {
     auto tamp = fmod(static_cast<double>(REP * i) / N, 1.0);
-    mod->buffer.at(i) = static_cast<uint8_t>(asin(tamp) / M_PI * 510.0);
+    this->buffer.at(i) = static_cast<uint8_t>(asin(tamp) / M_PI * 510.0);
   }
-
-  return mod;
 }
 #pragma endregion
 
 #pragma region RawPCMModulation
 ModulationPtr RawPCMModulation::Create(std::string filename, double sampling_freq) {
-  if (sampling_freq < std::numeric_limits<double>::epsilon()) sampling_freq = MOD_SAMPLING_FREQ;
   auto mod = std::make_shared<RawPCMModulation>();
+  mod->_sampling_freq = sampling_freq;
 
   std::ifstream ifs;
   ifs.open(filename, std::ios::binary);
 
   if (ifs.fail()) throw new std::runtime_error("Error on opening file.");
 
-  auto max_v = std::numeric_limits<double>::min();
-  auto min_v = std::numeric_limits<double>::max();
-
-  std::vector<int> tmp;
-  char buf[sizeof(int)];
-  while (ifs.read(buf, sizeof(int))) {
+  std::vector<int32_t> tmp;
+  char buf[sizeof(int32_t)];
+  while (ifs.read(buf, sizeof(int32_t))) {
     int value;
-    std::memcpy(&value, buf, sizeof(int));
+    std::memcpy(&value, buf, sizeof(int32_t));
     tmp.push_back(value);
   }
 
+  mod->_buf = tmp;
+
+  return mod;
+}
+
+void RawPCMModulation::Build(Configuration config) {
+  const auto mod_sf = static_cast<int32_t>(config.mod_sampling_freq());
+  if (this->_sampling_freq < std::numeric_limits<double>::epsilon()) this->_sampling_freq = static_cast<double>(mod_sf);
+
   // up sampling
   std::vector<double> smpl_buf;
-  const auto freqratio = Modulation::samplingFrequency() / sampling_freq;
-  smpl_buf.resize(tmp.size() * static_cast<size_t>(freqratio));
+  const auto freqratio = mod_sf / _sampling_freq;
+  smpl_buf.resize(this->_buf.size() * static_cast<size_t>(freqratio));
   for (size_t i = 0; i < smpl_buf.size(); i++) {
-    smpl_buf.at(i) = (fmod(i / freqratio, 1.0) < 1 / freqratio) ? tmp.at(static_cast<int>(i / freqratio)) : 0.0;
+    smpl_buf.at(i) = (fmod(i / freqratio, 1.0) < 1 / freqratio) ? this->_buf.at(static_cast<int>(i / freqratio)) : 0.0;
   }
 
   // LPF
   const auto NTAP = 31;
-  const auto cutoff = sampling_freq / 2 / Modulation::samplingFrequency();
+  const auto cutoff = _sampling_freq / 2 / mod_sf;
   std::vector<double> lpf(NTAP);
   for (int i = 0; i < NTAP; i++) {
     const auto t = i - NTAP / 2.0;
     lpf.at(i) = sinc(t * cutoff * 2.0);
   }
 
+  auto max_v = std::numeric_limits<double>::min();
+  auto min_v = std::numeric_limits<double>::max();
   std::vector<double> lpf_buf;
   lpf_buf.resize(smpl_buf.size(), 0);
   for (size_t i = 0; i < lpf_buf.size(); i++) {
@@ -145,12 +190,10 @@ ModulationPtr RawPCMModulation::Create(std::string filename, double sampling_fre
   }
 
   if (max_v == min_v) max_v = min_v + 1;
-  mod->buffer.resize(lpf_buf.size(), 0);
+  this->buffer.resize(lpf_buf.size(), 0);
   for (size_t i = 0; i < lpf_buf.size(); i++) {
-    mod->buffer.at(i) = static_cast<uint8_t>(round(255.0 * (lpf_buf.at(i) - min_v) / (max_v - min_v)));
+    this->buffer.at(i) = static_cast<uint8_t>(round(255.0 * (lpf_buf.at(i) - min_v) / (max_v - min_v)));
   }
-
-  return mod;
 }
 #pragma endregion
 
@@ -221,27 +264,34 @@ ModulationPtr WavModulation::Create(std::string filename) {
     }
   }
 
+  mod->_buf = tmp;
+  mod->_sampl_freq = sampl_freq;
+
+  return mod;
+}
+
+void WavModulation::Build(Configuration config) {
+  const auto mod_sf = static_cast<int32_t>(config.mod_sampling_freq());
+  const auto mod_buf_size = static_cast<int32_t>(config.mod_buf_size());
+
   // down sampling
   std::vector<uint8_t> smpl_buf;
-  const double freq_ratio = static_cast<double>(MOD_SAMPLING_FREQ) / sampl_freq;
-  auto buffer_size = static_cast<size_t>(tmp.size() * freq_ratio);
-  if (buffer_size > MOD_BUF_SIZE) {
-    constexpr auto mod_play_length_max = MOD_BUF_SIZE / MOD_SAMPLING_FREQ;
+  const double freq_ratio = static_cast<double>(mod_sf) / _sampl_freq;
+  auto buffer_size = static_cast<size_t>(this->_buf.size() * freq_ratio);
+  if (buffer_size > mod_buf_size) {
+    const auto mod_play_length_max = mod_buf_size / mod_sf;
     std::cerr << "Wave data length is too long. The data is truncated to the first " << mod_play_length_max
               << ((mod_play_length_max == 1) ? " second." : " seconds.") << std::endl;
-    buffer_size = MOD_BUF_SIZE;
+    buffer_size = mod_buf_size;
   }
 
   smpl_buf.resize(buffer_size);
   for (size_t i = 0; i < smpl_buf.size(); i++) {
     auto idx = static_cast<size_t>(i / freq_ratio);
-    smpl_buf.at(i) = tmp.at(idx);
+    smpl_buf.at(i) = _buf.at(idx);
   }
 
-  mod->buffer = smpl_buf;
-
-  return mod;
+  this->buffer = smpl_buf;
 }
 #pragma endregion
-
 }  // namespace autd::modulation

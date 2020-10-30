@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 12/10/2020
+// Last Modified: 30/10/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -38,7 +38,7 @@ AUTDControllerV_0_1::AUTDControllerV_0_1() : AUTDController() {}
 
 AUTDControllerV_0_1::~AUTDControllerV_0_1() {}
 
-bool AUTDControllerV_0_1::Calibrate() {
+bool AUTDControllerV_0_1::Calibrate(Configuration config) {
   std::cerr << "The function 'Calibrate' does not work in this version." << std::endl;
   return false;
 }
@@ -54,8 +54,10 @@ void AUTDControllerV_0_1::Close() {
     this->Flush();
     this->Stop();
     this->CloseLink();
-    this->_build_cond.notify_all();
-    if (std::this_thread::get_id() != this->_build_thr.get_id() && this->_build_thr.joinable()) this->_build_thr.join();
+    this->_build_gain_cond.notify_all();
+    if (std::this_thread::get_id() != this->_build_gain_thr.get_id() && this->_build_gain_thr.joinable()) this->_build_gain_thr.join();
+    this->_build_mod_cond.notify_all();
+    if (std::this_thread::get_id() != this->_build_mod_thr.get_id() && this->_build_mod_thr.joinable()) this->_build_mod_thr.join();
     this->_send_cond.notify_all();
     if (std::this_thread::get_id() != this->_send_thr.get_id() && this->_send_thr.joinable()) this->_send_thr.join();
     this->_link = nullptr;
@@ -71,10 +73,10 @@ void AUTDControllerV_0_1::AppendGain(GainPtr gain) {
   this->_p_stm_timer->Stop();
   gain->SetGeometry(this->_geometry);
   {
-    std::unique_lock<std::mutex> lk(_build_mtx);
-    _build_q.push(gain);
+    std::unique_lock<std::mutex> lk(_build_gain_mtx);
+    _build_gain_q.push(gain);
   }
-  _build_cond.notify_all();
+  _build_gain_cond.notify_all();
 }
 
 void AUTDControllerV_0_1::AppendGainSync(GainPtr gain, bool _wait_for_send) {
@@ -95,14 +97,15 @@ void AUTDControllerV_0_1::AppendGainSync(GainPtr gain, bool _wait_for_send) {
 
 void AUTDControllerV_0_1::AppendModulation(ModulationPtr mod) {
   {
-    std::unique_lock<std::mutex> lk(_send_mtx);
-    _send_mod_q.push(mod);
+    std::unique_lock<std::mutex> lk(_build_mod_mtx);
+    _build_mod_q.push(mod);
   }
-  _send_cond.notify_all();
+  _build_mod_cond.notify_all();
 }
 
 void AUTDControllerV_0_1::AppendModulationSync(ModulationPtr mod) {
   try {
+    mod->Build(this->_config);
     if (this->is_open()) {
       while (mod->buffer.size() > this->mod_sent(mod)) {
         size_t body_size = 0;
@@ -178,8 +181,10 @@ void AUTDControllerV_0_1::AppendSequence(SequencePtr seq) { throw "Sequence is n
 
 void AUTDControllerV_0_1::Flush() {
   std::unique_lock<std::mutex> lk0(_send_mtx);
-  std::unique_lock<std::mutex> lk1(_build_mtx);
-  std::queue<GainPtr>().swap(_build_q);
+  std::unique_lock<std::mutex> lk1(_build_gain_mtx);
+  std::unique_lock<std::mutex> lk2(_build_mod_mtx);
+  std::queue<GainPtr>().swap(_build_gain_q);
+  std::queue<ModulationPtr>().swap(_build_mod_q);
   std::queue<GainPtr>().swap(_send_gain_q);
   std::queue<ModulationPtr>().swap(_send_mod_q);
 }
@@ -205,17 +210,17 @@ void AUTDControllerV_0_1::LateralModulationAT(Vector3 point, Vector3 dir, double
 }
 
 void AUTDControllerV_0_1::InitPipeline() {
-  this->_build_thr = std::thread([&] {
+  this->_build_gain_thr = std::thread([&] {
     while (this->is_open()) {
       GainPtr gain = nullptr;
       {
-        std::unique_lock<std::mutex> lk(_build_mtx);
+        std::unique_lock<std::mutex> lk(_build_gain_mtx);
 
-        _build_cond.wait(lk, [&] { return _build_q.size() || !this->is_open(); });
+        _build_gain_cond.wait(lk, [&] { return _build_gain_q.size() || !this->is_open(); });
 
-        if (_build_q.size() > 0) {
-          gain = _build_q.front();
-          _build_q.pop();
+        if (_build_gain_q.size() > 0) {
+          gain = _build_gain_q.front();
+          _build_gain_q.pop();
         }
       }
 
@@ -224,6 +229,31 @@ void AUTDControllerV_0_1::InitPipeline() {
         {
           std::unique_lock<std::mutex> lk(_send_mtx);
           _send_gain_q.push(gain);
+          _send_cond.notify_all();
+        }
+      }
+    }
+  });
+
+  this->_build_mod_thr = std::thread([&] {
+    while (this->is_open()) {
+      ModulationPtr mod = nullptr;
+      {
+        std::unique_lock<std::mutex> lk(_build_mod_mtx);
+
+        _build_mod_cond.wait(lk, [&] { return _build_mod_q.size() || !this->is_open(); });
+
+        if (_build_mod_q.size() > 0) {
+          mod = _build_mod_q.front();
+          _build_mod_q.pop();
+        }
+      }
+
+      if (mod != nullptr) {
+        mod->Build(_config);
+        {
+          std::unique_lock<std::mutex> lk(_send_mtx);
+          _send_mod_q.push(mod);
           _send_cond.notify_all();
         }
       }

@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 12/10/2020
+// Last Modified: 30/10/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -192,8 +192,18 @@ void AUTDModulation(AUTDModulationPtr* mod, uint8_t amp) {
   auto* m = ModulationCreate(autd::modulation::Modulation::Create(amp));
   *mod = m;
 }
+void AUTDCustomModulation(AUTDModulationPtr* mod, uint8_t* buf, uint64_t size) {
+    auto* m = ModulationCreate(autd::modulation::Modulation::Create(0));
+    m->ptr->buffer.resize(size, 0);
+    std::memcpy(&m->ptr->buffer[0], buf, size);
+    *mod = m;
+}
 void AUTDRawPCMModulation(AUTDModulationPtr* mod, const char* filename, double samp_freq) {
   auto* m = ModulationCreate(autd::modulation::RawPCMModulation::Create(std::string(filename), samp_freq));
+  *mod = m;
+}
+void AUTDSquareModulation(AUTDModulationPtr* mod, int32_t freq, uint8_t low, uint8_t high) {
+  auto* m = ModulationCreate(autd::modulation::SquareModulation::Create(freq, low, high));
   *mod = m;
 }
 void AUTDSawModulation(AUTDModulationPtr* mod, int32_t freq) {

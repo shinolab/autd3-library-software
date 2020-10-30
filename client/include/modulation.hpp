@@ -3,7 +3,7 @@
 // Created Date: 04/11/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/04/2020
+// Last Modified: 30/10/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 
+#include "configuration.hpp"
 #include "core.hpp"
 
 namespace autd {
@@ -31,10 +32,7 @@ class Modulation {
    * @brief Genrate empty modulation, which produce static pressure
    */
   static ModulationPtr Create(uint8_t amp = 0xff);
-  /**
-   * @return int Sampling frequency of modulation
-   */
-  constexpr static int samplingFrequency();
+  virtual void Build(Configuration config);
   std::vector<uint8_t> buffer;
 
  private:
@@ -54,6 +52,33 @@ class SineModulation : public Modulation {
    * @details The sine wave oscillate from offset-amp/2 to offset+amp/2
    */
   static ModulationPtr Create(int freq, double amp = 1.0, double offset = 0.5);
+
+  void Build(Configuration config) override;
+
+ private:
+  int _freq;
+  double _amp;
+  double _offset;
+};
+
+/**
+ * @brief Square wave modulation
+ */
+class SquareModulation : public Modulation {
+ public:
+  /**
+   * @brief Generate function
+   * @param[in] freq Frequency of the square wave
+   * @param[in] low low level
+   * @param[in] high high level
+   */
+  static ModulationPtr Create(int freq, uint8_t low = 0, uint8_t high = 0xff);
+  void Build(Configuration config) override;
+
+ private:
+  int _freq;
+  uint8_t _low;
+  uint8_t _high;
 };
 
 /**
@@ -66,6 +91,10 @@ class SawModulation : public Modulation {
    * @param[in] freq Frequency of the sawtooth wave
    */
   static ModulationPtr Create(int freq);
+  void Build(Configuration config) override;
+
+ private:
+  int _freq;
 };
 
 /**
@@ -83,6 +112,11 @@ class RawPCMModulation : public Modulation {
    * The maximum modulation buffer size is shown in autd::MOD_BUF_SIZE. Only the data up to MOD_BUF_SIZE/MOD_SAMPLING_FREQ seconds can be output.
    */
   static ModulationPtr Create(std::string filename, double samplingFreq = 0.0);
+  void Build(Configuration config) override;
+
+ private:
+  double _sampling_freq;
+  std::vector<int32_t> _buf;
 };
 
 /**
@@ -99,6 +133,11 @@ class WavModulation : public Modulation {
    * The maximum modulation buffer size is shown in autd::MOD_BUF_SIZE. Only the data up to MOD_BUF_SIZE/MOD_SAMPLING_FREQ seconds can be output.
    */
   static ModulationPtr Create(std::string filename);
+  void Build(Configuration config) override;
+
+ private:
+  std::vector<uint8_t> _buf;
+  uint32_t _sampl_freq;
 };
 }  // namespace modulation
 }  // namespace autd

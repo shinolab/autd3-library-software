@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 12/10/2020
+// Last Modified: 30/10/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -40,6 +40,8 @@ ControllerPtr Controller::Create(AUTD_VERSION version) {
       return std::make_shared<_internal::AUTDControllerV_0_1>();
     case AUTD_VERSION::V_0_6:
       return std::make_shared<_internal::AUTDControllerV_0_6>();
+    case AUTD_VERSION::V_0_7:
+      return std::make_shared<_internal::AUTDControllerV_0_7>();
   }
   return nullptr;
 }
@@ -52,7 +54,8 @@ AUTDController::AUTDController() {
 }
 
 AUTDController::~AUTDController() {
-  if (std::this_thread::get_id() != this->_build_thr.get_id() && this->_build_thr.joinable()) this->_build_thr.join();
+  if (std::this_thread::get_id() != this->_build_gain_thr.get_id() && this->_build_gain_thr.joinable()) this->_build_gain_thr.join();
+  if (std::this_thread::get_id() != this->_build_mod_thr.get_id() && this->_build_mod_thr.joinable()) this->_build_mod_thr.join();
   if (std::this_thread::get_id() != this->_send_thr.get_id() && this->_send_thr.joinable()) this->_send_thr.join();
 }
 
@@ -62,7 +65,9 @@ GeometryPtr AUTDController::geometry() noexcept { return this->_geometry; }
 
 bool AUTDController::silent_mode() noexcept { return this->_silent_mode; }
 
-size_t AUTDController::remaining_in_buffer() { return this->_send_gain_q.size() + this->_send_mod_q.size() + this->_build_q.size(); }
+size_t AUTDController::remaining_in_buffer() {
+  return this->_send_gain_q.size() + this->_send_mod_q.size() + this->_build_gain_q.size() + this->_build_mod_q.size();
+}
 
 void AUTDController::SetSilentMode(bool silent) noexcept { this->_silent_mode = silent; }
 

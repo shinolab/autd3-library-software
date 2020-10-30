@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 14/10/2020
+// Last Modified: 30/10/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -20,6 +20,7 @@
 #include <thread>
 #include <vector>
 
+#include "configuration.hpp"
 #include "controller.hpp"
 #include "controller_impl.hpp"
 #include "ec_config.hpp"
@@ -39,7 +40,11 @@ AUTDControllerV_0_6::AUTDControllerV_0_6() : AUTDControllerV_0_1() {}
 
 AUTDControllerV_0_6::~AUTDControllerV_0_6() {}
 
-bool AUTDControllerV_0_6::Calibrate() {
+bool AUTDControllerV_0_6::Calibrate(Configuration config) {
+  if ((config.mod_sampling_freq() != MOD_SAMPLING_FREQ::SMPL_4_KHZ) || (config.mod_buf_size() != MOD_BUF_SIZE::BUF_4000)) {
+    std::cerr << "Configurations are not available in this version." << std::endl;
+  }
+
   auto size = sizeof(RxGlobalHeaderV_0_6);
   auto body = std::make_unique<uint8_t[]>(size);
 
@@ -70,8 +75,10 @@ void AUTDControllerV_0_6::Close() {
     this->Stop();
     this->Clear();
     this->CloseLink();
-    this->_build_cond.notify_all();
-    if (std::this_thread::get_id() != this->_build_thr.get_id() && this->_build_thr.joinable()) this->_build_thr.join();
+    this->_build_gain_cond.notify_all();
+    if (std::this_thread::get_id() != this->_build_gain_thr.get_id() && this->_build_gain_thr.joinable()) this->_build_gain_thr.join();
+    this->_build_mod_cond.notify_all();
+    if (std::this_thread::get_id() != this->_build_mod_thr.get_id() && this->_build_mod_thr.joinable()) this->_build_mod_thr.join();
     this->_send_cond.notify_all();
     if (std::this_thread::get_id() != this->_send_thr.get_id() && this->_send_thr.joinable()) this->_send_thr.join();
     this->_link = nullptr;
@@ -97,6 +104,7 @@ void AUTDControllerV_0_6::AppendGainSync(GainPtr gain, bool wait_for_send) {
 
 void AUTDControllerV_0_6::AppendModulationSync(ModulationPtr mod) {
   try {
+    mod->Build(this->_config);
     if (this->is_open()) {
       while (mod->buffer.size() > this->mod_sent(mod)) {
         size_t body_size = 0;
@@ -235,17 +243,17 @@ FirmwareInfoList AUTDControllerV_0_6::firmware_info_list() {
 }
 
 void AUTDControllerV_0_6::InitPipeline() {
-  this->_build_thr = std::thread([&] {
+  this->_build_gain_thr = std::thread([&] {
     while (this->is_open()) {
       GainPtr gain = nullptr;
       {
-        std::unique_lock<std::mutex> lk(_build_mtx);
+        std::unique_lock<std::mutex> lk(_build_gain_mtx);
 
-        _build_cond.wait(lk, [&] { return _build_q.size() || !this->is_open(); });
+        _build_gain_cond.wait(lk, [&] { return _build_gain_q.size() || !this->is_open(); });
 
-        if (_build_q.size() > 0) {
-          gain = _build_q.front();
-          _build_q.pop();
+        if (_build_gain_q.size() > 0) {
+          gain = _build_gain_q.front();
+          _build_gain_q.pop();
         }
       }
 
@@ -254,6 +262,31 @@ void AUTDControllerV_0_6::InitPipeline() {
         {
           std::unique_lock<std::mutex> lk(_send_mtx);
           _send_gain_q.push(gain);
+          _send_cond.notify_all();
+        }
+      }
+    }
+  });
+
+  this->_build_mod_thr = std::thread([&] {
+    while (this->is_open()) {
+      ModulationPtr mod = nullptr;
+      {
+        std::unique_lock<std::mutex> lk(_build_mod_mtx);
+
+        _build_mod_cond.wait(lk, [&] { return _build_mod_q.size() || !this->is_open(); });
+
+        if (_build_mod_q.size() > 0) {
+          mod = _build_mod_q.front();
+          _build_mod_q.pop();
+        }
+      }
+
+      if (mod != nullptr) {
+        mod->Build(_config);
+        {
+          std::unique_lock<std::mutex> lk(_send_mtx);
+          _send_mod_q.push(mod);
           _send_cond.notify_all();
         }
       }
@@ -318,10 +351,10 @@ std::unique_ptr<uint8_t[]> AUTDControllerV_0_6::MakeBody(GainPtr gain, Modulatio
   }
 
   auto *cursor = &body[0] + sizeof(RxGlobalHeaderV_0_6) / sizeof(body[0]);
+  auto byteSize = NUM_TRANS_IN_UNIT * sizeof(uint16_t);
   if (gain != nullptr) {
     for (int i = 0; i < gain->geometry()->numDevices(); i++) {
       auto deviceId = gain->geometry()->deviceIdForDeviceIdx(i);
-      auto byteSize = NUM_TRANS_IN_UNIT * sizeof(uint16_t);
       std::memcpy(cursor, this->gain_data_addr(gain, deviceId), byteSize);
       cursor += byteSize / sizeof(body[0]);
     }
