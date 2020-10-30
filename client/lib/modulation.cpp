@@ -49,7 +49,6 @@ ModulationPtr Modulation::Create(uint8_t amp) {
 }
 
 void Modulation::Build(Configuration config) {}
-
 #pragma endregion
 
 #pragma region SineModulation
@@ -80,6 +79,30 @@ void SineModulation::Build(Configuration config) {
     tamp = std::clamp(this->_offset + (tamp - 0.5) * this->_amp, 0.0, 1.0);
     this->buffer.at(i) = static_cast<uint8_t>(tamp * 255.0);
   }
+}
+#pragma endregion
+
+#pragma region SquareModulation
+ModulationPtr SquareModulation::Create(int freq, uint8_t low, uint8_t high) {
+  auto mod = std::make_shared<SquareModulation>();
+  mod->_freq = freq;
+  mod->_low = low;
+  mod->_high = high;
+  return mod;
+}
+
+void SquareModulation::Build(Configuration config) {
+  const auto sf = static_cast<int32_t>(config.mod_sampling_freq());
+  const auto mod_buf_size = static_cast<int32_t>(config.mod_buf_size());
+
+  const auto freq = std::clamp(this->_freq, 1, sf / 2);
+
+  const auto d = std::gcd(sf, freq);
+
+  const size_t N = mod_buf_size / d;
+
+  this->buffer.resize(N, this->_high);
+  std::memset(&this->buffer[0], this->_low, N / 2);
 }
 #pragma endregion
 

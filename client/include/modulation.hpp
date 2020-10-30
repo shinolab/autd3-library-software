@@ -62,6 +62,26 @@ class SineModulation : public Modulation {
 };
 
 /**
+ * @brief Square wave modulation
+ */
+class SquareModulation : public Modulation {
+ public:
+  /**
+   * @brief Generate function
+   * @param[in] freq Frequency of the square wave
+   * @param[in] low low level
+   * @param[in] high high level
+   */
+  static ModulationPtr Create(int freq, uint8_t low = 0, uint8_t high = 0xff);
+  void Build(Configuration config) override;
+
+ private:
+  int _freq;
+  uint8_t _low;
+  uint8_t _high;
+};
+
+/**
  * @brief Sawtooth wave modulation
  */
 class SawModulation : public Modulation {

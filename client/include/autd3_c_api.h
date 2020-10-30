@@ -1,4 +1,4 @@
-﻿// File: autd3_c_api.h
+// File: autd3_c_api.h
 // Project: include
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
@@ -78,6 +78,7 @@ EXPORT void AUTDModulation(AUTDModulationPtr *mod, uint8_t amp);
 EXPORT void AUTDRawPCMModulation(AUTDModulationPtr *mod, const char *filename, double sampFreq);
 EXPORT void AUTDSawModulation(AUTDModulationPtr *mod, int32_t freq);
 EXPORT void AUTDSineModulation(AUTDModulationPtr *mod, int32_t freq, double amp, double offset);
+EXPORT void AUTDSquareModulation(AUTDModulationPtr *mod, int32_t freq, uint8_t low, uint8_t high);
 EXPORT void AUTDWavModulation(AUTDModulationPtr *mod, const char *filename);
 EXPORT void AUTDDeleteModulation(AUTDModulationPtr mod);
 #pragma endregion
