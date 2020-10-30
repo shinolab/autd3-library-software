@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 12/10/2020
+// Last Modified: 30/10/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -165,22 +165,38 @@ class GroupedGain : public Gain {
   std::map<int, GainPtr> _gainmap;
 };
 
+enum class OptMethod { SDP, EVD, GS, GS_PAT, LM };
+
+struct SDPParams {
+  double regularization;
+  size_t repeat;
+  double lambda;
+  bool normalize_amp;
+};
+
+struct EVDParams {
+  double regularization;
+  bool normalize_amp;
+};
+
 /**
  * @brief Gain to produce multiple focal points
  */
-class HoloGainSdp : public Gain {
+class HoloGain : public Gain {
  public:
   /**
    * @brief Generate function
    * @param[in] foci focal points
    * @param[in] amps amplitudes of the foci
    */
-  static GainPtr Create(std::vector<Vector3> foci, std::vector<double> amps);
+  static GainPtr Create(std::vector<Vector3> foci, std::vector<double> amps, OptMethod method = OptMethod::SDP, void *params = nullptr);
   void Build() override;
 
  protected:
   std::vector<Vector3> _foci;
   std::vector<double> _amps;
+  OptMethod _method;
+  void *_params;
 };
 
 /**
