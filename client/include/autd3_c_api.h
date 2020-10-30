@@ -1,9 +1,9 @@
-// File: autd3_c_api.h
+﻿// File: autd3_c_api.h
 // Project: include
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/07/2020
+// Last Modified: 30/10/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -75,6 +75,7 @@ EXPORT void AUTDDeleteGain(AUTDGainPtr gain);
 
 #pragma region Modulation
 EXPORT void AUTDModulation(AUTDModulationPtr *mod, uint8_t amp);
+EXPORT void AUTDCustomModulation(AUTDModulationPtr *mod, uint8_t *buf, uint32_t size);
 EXPORT void AUTDRawPCMModulation(AUTDModulationPtr *mod, const char *filename, double sampFreq);
 EXPORT void AUTDSawModulation(AUTDModulationPtr *mod, int32_t freq);
 EXPORT void AUTDSineModulation(AUTDModulationPtr *mod, int32_t freq, double amp, double offset);

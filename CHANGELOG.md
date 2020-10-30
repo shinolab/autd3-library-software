@@ -1,5 +1,6 @@
 # 0.7
-* Add `SquareWaveModulation`
+* Add `SquareModulation`
+* Add `CustomModulation` in capi
 * Modulation buffer size and sampling frequency become mutable
 
 # 0.6.2
