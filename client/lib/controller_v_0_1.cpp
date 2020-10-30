@@ -193,8 +193,8 @@ FirmwareInfoList AUTDControllerV_0_1::firmware_info_list() {
   std::cerr << "The function 'firmware_info_list' does not work in this version." << std::endl;
   auto size = this->_geometry->numDevices();
   FirmwareInfoList res;
-  for (uint16_t i = 0; i < static_cast<uint16_t>(size); i++) {
-    auto info = AUTDController::FirmwareInfoCreate(i, 0, 0);
+  for (auto i = 0; i < size; i++) {
+    auto info = AUTDController::FirmwareInfoCreate(static_cast<uint16_t>(i), 0, 0);
     res.push_back(info);
   }
   return res;

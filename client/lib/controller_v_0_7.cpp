@@ -36,11 +36,12 @@ namespace autd {
 namespace _internal {
 
 static inline uint16_t log2u(const uint32_t x) {
-  unsigned long n;
 #ifdef _MSC_VER
+  unsigned long n; // NOLINT
   _BitScanReverse(&n, x);
 #else
-  n = 31 - __builtin_clz(x)
+  uint32_t n;
+  n = 31 - __builtin_clz(x);
 #endif
   return static_cast<uint16_t>(n);
 }

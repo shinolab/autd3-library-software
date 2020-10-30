@@ -235,8 +235,8 @@ FirmwareInfoList AUTDControllerV_0_6::firmware_info_list() {
     fpga_versions[i] = ((uint16_t)_rx_data[2 * i] << 8) | fpga_versions[i];
   }
 
-  for (int i = 0; i < size; i++) {
-    auto info = AUTDController::FirmwareInfoCreate(i, cpu_versions[i], fpga_versions[i]);
+  for (auto i = 0; i < size; i++) {
+    auto info = AUTDController::FirmwareInfoCreate(static_cast<uint16_t>(i), cpu_versions[i], fpga_versions[i]);
     res.push_back(info);
   }
   return res;
