@@ -12,6 +12,7 @@
 #include <errno.h>
 
 #include <cstdint>
+#include <cstring>
 
 #include "./autd3_c_api.h"
 #include "autd3.hpp"
@@ -193,10 +194,10 @@ void AUTDModulation(AUTDModulationPtr* mod, uint8_t amp) {
   *mod = m;
 }
 void AUTDCustomModulation(AUTDModulationPtr* mod, uint8_t* buf, uint64_t size) {
-    auto* m = ModulationCreate(autd::modulation::Modulation::Create(0));
-    m->ptr->buffer.resize(size, 0);
-    std::memcpy(&m->ptr->buffer[0], buf, size);
-    *mod = m;
+  auto* m = ModulationCreate(autd::modulation::Modulation::Create(0));
+  m->ptr->buffer.resize(size, 0);
+  std::memcpy(&m->ptr->buffer[0], buf, size);
+  *mod = m;
 }
 void AUTDRawPCMModulation(AUTDModulationPtr* mod, const char* filename, double samp_freq) {
   auto* m = ModulationCreate(autd::modulation::RawPCMModulation::Create(std::string(filename), samp_freq));
