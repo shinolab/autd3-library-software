@@ -70,10 +70,7 @@ bool AUTDControllerV_0_7::Calibrate(Configuration config) {
   }
 
   auto mod_idx_shift = log2u(MOD_SAMPLING_FREQ_BASE / mod_smpl_freq);
-  std::cout << "MOD_IDX_SHIFT" << static_cast<int>(mod_idx_shift) << std::endl;
-
   auto ref_clk_cyc_shift = log2u(mod_buf_size / mod_smpl_freq);
-  std::cout << "REF_CLK_SHIFT" << static_cast<int>(ref_clk_cyc_shift) << std::endl;
 
   auto *cursor = reinterpret_cast<uint16_t *>(&body[0] + sizeof(RxGlobalHeaderV_0_6) / sizeof(body[0]));
   for (int i = 0; i < this->_geometry->numDevices(); i++) {
