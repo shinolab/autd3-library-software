@@ -3,7 +3,7 @@
 // Created Date: 11/10/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 12/10/2020
+// Last Modified: 30/10/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -16,6 +16,7 @@
 #include <queue>
 #include <vector>
 
+#include "configuration.hpp"
 #include "controller.hpp"
 #include "ec_config.hpp"
 #include "firmware_version.hpp"
@@ -33,7 +34,7 @@ class AUTDController : public Controller {
   void SetSilentMode(bool silent) noexcept final;
 
   void OpenWith(LinkPtr link) final;
-  bool Calibrate() = 0;
+  bool Calibrate(Configuration config) = 0;
   bool Clear() = 0;
   void Close() = 0;
 
@@ -69,7 +70,8 @@ class AUTDController : public Controller {
   GeometryPtr _geometry;
   LinkPtr _link;
 
-  std::queue<GainPtr> _build_q;
+  std::queue<GainPtr> _build_gain_q;
+  std::queue<ModulationPtr> _build_mod_q;
   std::queue<GainPtr> _send_gain_q;
   std::queue<ModulationPtr> _send_mod_q;
 
@@ -78,14 +80,18 @@ class AUTDController : public Controller {
   std::vector<size_t> _stm_body_sizes;
   std::unique_ptr<Timer> _p_stm_timer;
 
-  std::thread _build_thr;
+  std::thread _build_gain_thr;
+  std::thread _build_mod_thr;
   std::thread _send_thr;
-  std::condition_variable _build_cond;
+  std::condition_variable _build_gain_cond;
+  std::condition_variable _build_mod_cond;
   std::condition_variable _send_cond;
-  std::mutex _build_mtx;
+  std::mutex _build_gain_mtx;
+  std::mutex _build_mod_mtx;
   std::mutex _send_mtx;
 
   bool _silent_mode = true;
+  Configuration _config = Configuration::GetDefaultConfiguration();
 };
 
 namespace _internal {
@@ -95,7 +101,7 @@ class AUTDControllerV_0_1 : public AUTDController {
   AUTDControllerV_0_1();
   virtual ~AUTDControllerV_0_1();
 
-  bool Calibrate() override;
+  bool Calibrate(Configuration config) override;
   bool Clear() override;
   void Close() override;
 
@@ -135,7 +141,7 @@ class AUTDControllerV_0_6 : public AUTDControllerV_0_1 {
   AUTDControllerV_0_6();
   virtual ~AUTDControllerV_0_6();
 
-  bool Calibrate() override;
+  bool Calibrate(Configuration config) override;
   bool Clear() override;
   void Close() override;
 
@@ -153,6 +159,14 @@ class AUTDControllerV_0_6 : public AUTDControllerV_0_1 {
   std::unique_ptr<uint8_t[]> MakeCalibBody(std::vector<uint16_t> diffs, size_t *const size);
 
   std::vector<uint8_t> _rx_data;
+};
+
+class AUTDControllerV_0_7 : public AUTDControllerV_0_6 {
+ public:
+  AUTDControllerV_0_7();
+  virtual ~AUTDControllerV_0_7();
+
+  bool Calibrate(Configuration config) override;
 };
 }  // namespace _internal
 }  // namespace autd
