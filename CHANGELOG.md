@@ -2,6 +2,7 @@
 * Add `SquareModulation`
 * Add `CustomModulation` in capi
 * Modulation buffer size and sampling frequency become mutable
+* Implemented some methods of generating multi foci
 
 # 0.6.2
 * Implemented backward compatibility
