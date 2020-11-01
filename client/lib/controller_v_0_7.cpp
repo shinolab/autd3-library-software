@@ -3,7 +3,7 @@
 // Created Date: 30/10/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/10/2020
+// Last Modified: 01/11/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -37,7 +37,7 @@ namespace _internal {
 
 static inline uint16_t log2u(const uint32_t x) {
 #ifdef _MSC_VER
-  unsigned long n; // NOLINT
+  unsigned long n;  // NOLINT
   _BitScanReverse(&n, x);
 #else
   uint32_t n;
@@ -75,8 +75,8 @@ bool AUTDControllerV_0_7::Calibrate(Configuration config) {
 
   auto *cursor = reinterpret_cast<uint16_t *>(&body[0] + sizeof(RxGlobalHeaderV_0_6) / sizeof(body[0]));
   for (int i = 0; i < this->_geometry->numDevices(); i++) {
-    cursor[i] = mod_idx_shift;
-    cursor[i + 1] = ref_clk_cyc_shift;
+    cursor[0] = mod_idx_shift;
+    cursor[1] = ref_clk_cyc_shift;
     cursor += NUM_TRANS_IN_UNIT;
   }
 
