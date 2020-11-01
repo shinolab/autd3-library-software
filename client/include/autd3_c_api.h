@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/10/2020
+// Last Modified: 01/11/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -67,7 +67,7 @@ EXPORT void AUTDGroupedGain(AUTDGainPtr *gain, int32_t *groupIDs, AUTDGainPtr *g
 EXPORT void AUTDBesselBeamGain(AUTDGainPtr *gain, double x, double y, double z, double n_x, double n_y, double n_z, double theta_z);
 EXPORT void AUTDPlaneWaveGain(AUTDGainPtr *gain, double n_x, double n_y, double n_z);
 EXPORT void AUTDCustomGain(AUTDGainPtr *gain, uint16_t *data, int32_t dataLength);
-EXPORT void AUTDHoloGain(AUTDGainPtr *gain, double *points, double *amps, int32_t size);
+EXPORT void AUTDHoloGain(AUTDGainPtr *gain, double *points, double *amps, int32_t size, int32_t method, void *params);
 EXPORT void AUTDTransducerTestGain(AUTDGainPtr *gain, int32_t idx, int32_t amp, int32_t phase);
 EXPORT void AUTDNullGain(AUTDGainPtr *gain);
 EXPORT void AUTDDeleteGain(AUTDGainPtr gain);

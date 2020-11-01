@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 31/10/2020
+// Last Modified: 01/11/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -165,7 +165,7 @@ class GroupedGain : public Gain {
   std::map<int, GainPtr> _gainmap;
 };
 
-enum class OptMethod { SDP, EVD, GS, GS_PAT, NAIVE, LM };
+enum class OptMethod { SDP = 0, EVD = 1, GS = 2, GS_PAT = 3, NAIVE = 4, LM = 5 };
 
 struct SDPParams {
   double regularization;
