@@ -73,8 +73,6 @@ void SineModulation::Build(Configuration config) {
 
   this->buffer.resize(N, 0);
 
-  std::cout << N << std::endl;
-
   for (size_t i = 0; i < N; i++) {
     auto tamp = fmod(static_cast<double>(2 * REP * i) / N, 2.0);
     tamp = tamp > 1.0 ? 2.0 - tamp : tamp;
