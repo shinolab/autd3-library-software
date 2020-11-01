@@ -68,10 +68,12 @@ void SineModulation::Build(Configuration config) {
 
   const auto d = std::gcd(sf, freq);
 
-  const size_t N = mod_buf_size / d;
+  const size_t N = (mod_buf_size / d) / (mod_buf_size / sf);
   const size_t REP = freq / d;
 
   this->buffer.resize(N, 0);
+
+  std::cout << N << std::endl;
 
   for (size_t i = 0; i < N; i++) {
     auto tamp = fmod(static_cast<double>(2 * REP * i) / N, 2.0);
@@ -99,7 +101,7 @@ void SquareModulation::Build(Configuration config) {
 
   const auto d = std::gcd(sf, freq);
 
-  const size_t N = mod_buf_size / d;
+  const size_t N = (mod_buf_size / d) / (mod_buf_size / sf);
 
   this->buffer.resize(N, this->_high);
   std::memset(&this->buffer[0], this->_low, N / 2);
@@ -121,7 +123,7 @@ void SawModulation::Build(Configuration config) {
 
   const auto d = std::gcd(sf, freq);
 
-  const size_t N = mod_buf_size / d;
+  const size_t N = (mod_buf_size / d) / (mod_buf_size / sf);
   const auto REP = freq / d;
 
   this->buffer.resize(N, 0);
