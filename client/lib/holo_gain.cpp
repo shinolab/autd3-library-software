@@ -3,7 +3,7 @@
 // Created Date: 06/07/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 31/10/2020
+// Last Modified: 01/11/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -102,7 +102,7 @@ void removeColumn(MatrixXcd* const matrix, size_t col_to_remove) {
   matrix->conservativeResize(num_rows, num_cols);
 }
 
-MatrixXcd TrnasferMatrix(GeometryPtr geometry, MatrixX3d& foci, size_t M, size_t N) {
+MatrixXcd TrnasferMatrix(GeometryPtr geometry, const MatrixX3d& foci, size_t M, size_t N) {
   MatrixXcd G = MatrixXcd(M, N);
 
   for (size_t i = 0; i < M; i++) {
@@ -117,7 +117,7 @@ MatrixXcd TrnasferMatrix(GeometryPtr geometry, MatrixX3d& foci, size_t M, size_t
   return G;
 }
 
-void HoloGainImplSDP(map<int, vector<uint16_t>>* data, MatrixX3d& foci, VectorXd& amps, autd::GeometryPtr geometry, void* params) {
+void HoloGainImplSDP(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, autd::GeometryPtr geometry, void* params) {
   double alpha, lambda;
   size_t repeat;
   bool normalize;
@@ -212,7 +212,7 @@ void HoloGainImplSDP(map<int, vector<uint16_t>>* data, MatrixX3d& foci, VectorXd
   }
 }
 
-void HoloGainImplEVD(map<int, vector<uint16_t>>* data, MatrixX3d& foci, VectorXd& amps, GeometryPtr geometry, void* params) {
+void HoloGainImplEVD(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, GeometryPtr geometry, void* params) {
   double gamma;
   bool normalize;
 
@@ -301,7 +301,7 @@ void HoloGainImplEVD(map<int, vector<uint16_t>>* data, MatrixX3d& foci, VectorXd
   }
 }
 
-void HoloGainImplNaive(map<int, vector<uint16_t>>* data, MatrixX3d& foci, VectorXd& amps, GeometryPtr geometry, void* params) {
+void HoloGainImplNaive(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, GeometryPtr geometry, void* params) {
   const size_t repeat = (params == nullptr) ? 100 : *reinterpret_cast<size_t*>(params);
 
   const size_t M = foci.rows();
@@ -323,7 +323,7 @@ void HoloGainImplNaive(map<int, vector<uint16_t>>* data, MatrixX3d& foci, Vector
   }
 }
 
-void HoloGainImplGS(map<int, vector<uint16_t>>* data, MatrixX3d& foci, VectorXd& amps, GeometryPtr geometry, void* params) {
+void HoloGainImplGS(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, GeometryPtr geometry, void* params) {
   const size_t repeat = (params == nullptr) ? 100 : *reinterpret_cast<size_t*>(params);
 
   const size_t M = foci.rows();
@@ -357,7 +357,7 @@ void HoloGainImplGS(map<int, vector<uint16_t>>* data, MatrixX3d& foci, VectorXd&
   }
 }
 
-void HoloGainImplGSPAT(map<int, vector<uint16_t>>* data, MatrixX3d& foci, VectorXd& amps, GeometryPtr geometry, void* params) {
+void HoloGainImplGSPAT(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, GeometryPtr geometry, void* params) {
   const size_t repeat = (params == nullptr) ? 100 : *reinterpret_cast<size_t*>(params);
 
   const size_t M = foci.rows();
@@ -405,7 +405,7 @@ void HoloGainImplGSPAT(map<int, vector<uint16_t>>* data, MatrixX3d& foci, Vector
   }
 }
 
-void HoloGainImplLM(map<int, vector<uint16_t>>* data, MatrixX3d& foci, VectorXd& amps, GeometryPtr geometry, void* params) {
+void HoloGainImplLM(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, GeometryPtr geometry, void* params) {
   double eps_1, eps_2, tau;
   size_t k_max;
 

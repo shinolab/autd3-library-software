@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/10/2020
+// Last Modified: 01/11/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -162,7 +162,7 @@ void AUTDCustomGain(AUTDGainPtr* gain, uint16_t* data, int32_t data_length) {
   auto* g = GainCreate(autd::gain::CustomGain::Create(data, data_length));
   *gain = g;
 }
-void AUTDHoloGain(AUTDGainPtr* gain, double* points, double* amps, int32_t size) {
+void AUTDHoloGain(AUTDGainPtr* gain, double* points, double* amps, int32_t size, int32_t method, void* params) {
   std::vector<autd::Vector3> holo;
   std::vector<double> amps_;
   for (int32_t i = 0; i < size; i++) {
@@ -171,7 +171,8 @@ void AUTDHoloGain(AUTDGainPtr* gain, double* points, double* amps, int32_t size)
     amps_.push_back(amps[i]);
   }
 
-  auto* g = GainCreate(autd::gain::HoloGainSdp::Create(holo, amps_));
+  auto method_ = static_cast<autd::gain::OptMethod>(method);
+  auto* g = GainCreate(autd::gain::HoloGain::Create(holo, amps_, method_, params));
   *gain = g;
 }
 void AUTDTransducerTestGain(AUTDGainPtr* gain, int32_t idx, int32_t amp, int32_t phase) {
