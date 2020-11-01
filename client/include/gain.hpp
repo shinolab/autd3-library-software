@@ -165,7 +165,30 @@ class GroupedGain : public Gain {
   std::map<int, GainPtr> _gainmap;
 };
 
-enum class OptMethod { SDP = 0, EVD = 1, GS = 2, GS_PAT = 3, NAIVE = 4, LM = 5 };
+/**
+ * @brief Optimization method for generating multiple foci.
+ */
+enum class OptMethod {
+  //! Inoue, Seki, Yasutoshi Makino, and Hiroyuki Shinoda. "Active touch perception produced by airborne ultrasonic haptic hologram." 2015 IEEE World
+  //! Haptics Conference (WHC). IEEE, 2015.
+  SDP = 0,
+  //! Long, Benjamin, et al. "Rendering volumetric haptic shapes in mid-air using ultrasound." ACM Transactions on Graphics (TOG) 33.6 (2014): 1-10.
+  EVD = 1,
+  //! Asier Marzo and Bruce W Drinkwater. Holographic acoustic tweezers.Proceedings of theNational Academy of Sciences, 116(1):84–89, 2019.
+  GS = 2,
+  //! Diego Martinez Plasencia et al. "Gs-pat: high-speed multi-point sound-fields for phased arrays of transducers," ACMTrans-actions on Graphics
+  //! (TOG), 39(4):138–1, 2020.
+  //! Not yet been implemented with GPU.
+  GS_PAT = 3,
+  //! Naive linear synthesis method.
+  NAIVE = 4,
+  //! K.Levenberg, “A method for the solution of certain non-linear problems in least squares,” Quarterly of applied mathematics, vol.2, no.2,
+  //! pp.164–168, 1944.
+  //! D.W.Marquardt, “An algorithm for least-squares estimation of non-linear parameters,” Journal of the society for Industrial and
+  //! AppliedMathematics, vol.11, no.2, pp.431–441, 1963.
+  //! K.Madsen, H.Nielsen, and O.Tingleff, “Methods for non-linear least squares problems (2nd ed.),” 2004.
+  LM = 5
+};
 
 struct SDPParams {
   double regularization;
@@ -195,6 +218,8 @@ class HoloGain : public Gain {
    * @brief Generate function
    * @param[in] foci focal points
    * @param[in] amps amplitudes of the foci
+   * @param[in] method optimization method. see also @ref OptMethod
+   * @param[in] params pointer to optimization parameters
    */
   static GainPtr Create(std::vector<Vector3> foci, std::vector<double> amps, OptMethod method = OptMethod::SDP, void *params = nullptr);
   void Build() override;
