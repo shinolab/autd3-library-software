@@ -57,6 +57,8 @@ bool AUTDControllerV_0_6::Calibrate(Configuration config) {
 }
 
 bool AUTDControllerV_0_6::Clear() {
+  this->_config = Configuration::GetDefaultConfiguration();
+
   auto size = sizeof(RxGlobalHeaderV_0_6);
   auto body = std::make_unique<uint8_t[]>(size);
 

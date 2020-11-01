@@ -73,11 +73,9 @@ int run(autd::ControllerPtr autd) {
     cout << "finish." << endl;
     autd->FinishSTModulation();
     autd->Stop();
-    autd->Clear();
   }
 
   autd->Clear();
-
   autd->Close();
 
   return 0;
