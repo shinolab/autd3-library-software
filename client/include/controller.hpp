@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2020
+// Last Modified: 01/11/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -16,12 +16,20 @@
 #include <utility>
 #include <vector>
 
+#include "configuration.hpp"
 #include "gain.hpp"
 #include "geometry.hpp"
 #include "modulation.hpp"
 #include "vector3.hpp"
 
 namespace autd {
+
+enum class AUTD_VERSION {
+  V_0_1 = 0,
+  V_0_6 = 1,
+  V_0_7 = 2,
+};
+
 /**
  * @brief AUTD Controller
  */
@@ -32,7 +40,7 @@ class Controller {
   /**
    * @brief Create controller
    */
-  static ControllerPtr Create();
+  static ControllerPtr Create(AUTD_VERSION version = AUTD_VERSION::V_0_7);
   /**
    * @brief Verify that the device is properly connected
    */
@@ -62,11 +70,11 @@ class Controller {
   virtual void SetSilentMode(bool silent) noexcept = 0;
   /**
    * @brief Calibrate
-   * @details Call this function only once after OpenWith().
-   * It takes several seconds and blocks the thread in the meantime.
+   * @details Call this function only once after OpenWith(). It takes several seconds and blocks the thread in the meantime.
+   * @param[in] config configration
    * @return true if success to calibrate
    */
-  virtual bool Calibrate() = 0;
+  virtual bool Calibrate(Configuration config = Configuration::GetDefaultConfiguration()) = 0;
   /**
    * @brief Clear all data in hardware
    * @return true if success to clear

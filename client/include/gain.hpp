@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/07/2020
+// Last Modified: 01/11/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -53,6 +53,10 @@ class Gain {
    */
   void SetGeometry(const GeometryPtr &geometry) noexcept;
   /**
+   * @brief Get AUTD Geometry
+   */
+  GeometryPtr geometry() noexcept;
+  /**
    * @brief Getter function for the data of amplitude and phase of each transducers
    * @details Each data is 16 bit unsigned integer, where MSB represents amplitude and LSB represents phase
    */
@@ -64,7 +68,6 @@ class Gain {
   bool _built;
   GeometryPtr _geometry;
   std::map<int, std::vector<uint16_t>> _data;
-  GeometryPtr geometry() noexcept;
   bool built() noexcept;
 };
 
@@ -163,21 +166,69 @@ class GroupedGain : public Gain {
 };
 
 /**
+ * @brief Optimization method for generating multiple foci.
+ */
+enum class OptMethod {
+  //! Inoue, Seki, Yasutoshi Makino, and Hiroyuki Shinoda. "Active touch perception produced by airborne ultrasonic haptic hologram." 2015 IEEE World
+  //! Haptics Conference (WHC). IEEE, 2015.
+  SDP = 0,
+  //! Long, Benjamin, et al. "Rendering volumetric haptic shapes in mid-air using ultrasound." ACM Transactions on Graphics (TOG) 33.6 (2014): 1-10.
+  EVD = 1,
+  //! Asier Marzo and Bruce W Drinkwater. Holographic acoustic tweezers.Proceedings of theNational Academy of Sciences, 116(1):84–89, 2019.
+  GS = 2,
+  //! Diego Martinez Plasencia et al. "Gs-pat: high-speed multi-point sound-fields for phased arrays of transducers," ACMTrans-actions on Graphics
+  //! (TOG), 39(4):138–1, 2020.
+  //! Not yet been implemented with GPU.
+  GS_PAT = 3,
+  //! Naive linear synthesis method.
+  NAIVE = 4,
+  //! K.Levenberg, “A method for the solution of certain non-linear problems in least squares,” Quarterly of applied mathematics, vol.2, no.2,
+  //! pp.164–168, 1944.
+  //! D.W.Marquardt, “An algorithm for least-squares estimation of non-linear parameters,” Journal of the society for Industrial and
+  //! AppliedMathematics, vol.11, no.2, pp.431–441, 1963.
+  //! K.Madsen, H.Nielsen, and O.Tingleff, “Methods for non-linear least squares problems (2nd ed.),” 2004.
+  LM = 5
+};
+
+struct SDPParams {
+  double regularization;
+  size_t repeat;
+  double lambda;
+  bool normalize_amp;
+};
+
+struct EVDParams {
+  double regularization;
+  bool normalize_amp;
+};
+
+struct NLSParams {
+  double eps_1;
+  double eps_2;
+  size_t k_max;
+  double tau;
+};
+
+/**
  * @brief Gain to produce multiple focal points
  */
-class HoloGainSdp : public Gain {
+class HoloGain : public Gain {
  public:
   /**
    * @brief Generate function
    * @param[in] foci focal points
    * @param[in] amps amplitudes of the foci
+   * @param[in] method optimization method. see also @ref OptMethod
+   * @param[in] params pointer to optimization parameters
    */
-  static GainPtr Create(std::vector<Vector3> foci, std::vector<double> amps);
+  static GainPtr Create(std::vector<Vector3> foci, std::vector<double> amps, OptMethod method = OptMethod::SDP, void *params = nullptr);
   void Build() override;
 
  protected:
   std::vector<Vector3> _foci;
   std::vector<double> _amps;
+  OptMethod _method;
+  void *_params;
 };
 
 /**

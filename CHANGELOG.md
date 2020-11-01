@@ -1,3 +1,13 @@
+# 0.7
+* Add `SquareModulation`
+* Add `CustomModulation` in capi
+* Extended modulation buffer size to maximum 32000
+* Sampling frequency become mutable
+* Implemented some new methods of generating multi foci
+
+# 0.6.2
+* Implemented backward compatibility
+
 # 0.6.1
 * Fixed a minor bug
 

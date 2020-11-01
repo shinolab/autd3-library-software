@@ -11,8 +11,7 @@
 [Dd]ebug/
 [Rr]elease/
 x64/
-build/
-build_x86/
+build*/
 [Bb]in/
 [Oo]bj/
 
@@ -153,3 +152,4 @@ $RECYCLE.BIN/
 *.jou
 *.log
 .Xil/
+.vscode/

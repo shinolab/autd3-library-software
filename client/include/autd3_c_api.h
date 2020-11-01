@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/07/2020
+// Last Modified: 01/11/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -67,7 +67,7 @@ EXPORT void AUTDGroupedGain(AUTDGainPtr *gain, int32_t *groupIDs, AUTDGainPtr *g
 EXPORT void AUTDBesselBeamGain(AUTDGainPtr *gain, double x, double y, double z, double n_x, double n_y, double n_z, double theta_z);
 EXPORT void AUTDPlaneWaveGain(AUTDGainPtr *gain, double n_x, double n_y, double n_z);
 EXPORT void AUTDCustomGain(AUTDGainPtr *gain, uint16_t *data, int32_t dataLength);
-EXPORT void AUTDHoloGain(AUTDGainPtr *gain, double *points, double *amps, int32_t size);
+EXPORT void AUTDHoloGain(AUTDGainPtr *gain, double *points, double *amps, int32_t size, int32_t method, void *params);
 EXPORT void AUTDTransducerTestGain(AUTDGainPtr *gain, int32_t idx, int32_t amp, int32_t phase);
 EXPORT void AUTDNullGain(AUTDGainPtr *gain);
 EXPORT void AUTDDeleteGain(AUTDGainPtr gain);
@@ -75,9 +75,11 @@ EXPORT void AUTDDeleteGain(AUTDGainPtr gain);
 
 #pragma region Modulation
 EXPORT void AUTDModulation(AUTDModulationPtr *mod, uint8_t amp);
+EXPORT void AUTDCustomModulation(AUTDModulationPtr *mod, uint8_t *buf, uint32_t size);
 EXPORT void AUTDRawPCMModulation(AUTDModulationPtr *mod, const char *filename, double sampFreq);
 EXPORT void AUTDSawModulation(AUTDModulationPtr *mod, int32_t freq);
 EXPORT void AUTDSineModulation(AUTDModulationPtr *mod, int32_t freq, double amp, double offset);
+EXPORT void AUTDSquareModulation(AUTDModulationPtr *mod, int32_t freq, uint8_t low, uint8_t high);
 EXPORT void AUTDWavModulation(AUTDModulationPtr *mod, const char *filename);
 EXPORT void AUTDDeleteModulation(AUTDModulationPtr mod);
 #pragma endregion

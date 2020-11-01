@@ -3,7 +3,7 @@
 // Created Date: 21/02/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/07/2020
+// Last Modified: 30/10/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -14,8 +14,7 @@
 #include "../lib/privdef.hpp"
 #include "consts.hpp"
 
-constexpr auto HEADER_SIZE = sizeof(autd::RxGlobalHeader);
-
+constexpr size_t HEADER_SIZE = 128;
 constexpr size_t EC_OUTPUT_FRAME_SIZE = autd::NUM_TRANS_IN_UNIT * 2 + HEADER_SIZE;
 constexpr size_t EC_INPUT_FRAME_SIZE = 2;
 
@@ -24,9 +23,6 @@ constexpr uint32_t EC_SYNC0_CYCLE_TIME_MICRO_SEC = 1000;
 
 constexpr uint32_t EC_SM3_CYCLE_TIME_NANO_SEC = EC_SM3_CYCLE_TIME_MICRO_SEC * 1000;
 constexpr uint32_t EC_SYNC0_CYCLE_TIME_NANO_SEC = EC_SYNC0_CYCLE_TIME_MICRO_SEC * 1000;
-
-constexpr uint16_t SYNC0_STEP = EC_SYNC0_CYCLE_TIME_MICRO_SEC * autd::MOD_SAMPLING_FREQ / (1000 * 1000);
-constexpr uint32_t MOD_PERIOD_MS = static_cast<uint32_t>((autd::MOD_BUF_SIZE / autd::MOD_SAMPLING_FREQ) * 1000);
 
 constexpr uint8_t READ_MOD_IDX_BASE_HEADER = 0xC0;
 constexpr uint8_t READ_MOD_IDX_BASE_HEADER_AFTER_SHIFT = 0xE0;

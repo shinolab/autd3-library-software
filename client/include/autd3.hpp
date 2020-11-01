@@ -12,6 +12,7 @@
 #pragma once
 
 #include "consts.hpp"
+#include "configuration.hpp"
 #include "controller.hpp"
 #include "firmware_version.hpp"
 #include "gain.hpp"

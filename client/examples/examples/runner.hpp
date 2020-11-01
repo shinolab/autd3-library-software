@@ -39,7 +39,11 @@ int run(autd::ControllerPtr autd) {
   };
 
   autd->Clear();
-  autd->Calibrate();
+
+  auto config = autd::Configuration::GetDefaultConfiguration();
+  config.set_mod_buf_size(autd::MOD_BUF_SIZE::BUF_4000);
+  config.set_mod_sampling_freq(autd::MOD_SAMPLING_FREQ::SMPL_4_KHZ);
+  autd->Calibrate(config);
 
   auto firm_info_list = autd->firmware_info_list();
   for (auto firm_info : firm_info_list) cout << firm_info << endl;
@@ -69,11 +73,9 @@ int run(autd::ControllerPtr autd) {
     cout << "finish." << endl;
     autd->FinishSTModulation();
     autd->Stop();
-    autd->Clear();
   }
 
   autd->Clear();
-
   autd->Close();
 
   return 0;

@@ -3,7 +3,7 @@
 // Created Date: 30/03/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/07/2020
+// Last Modified: 30/10/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -54,9 +54,11 @@ class FirmwareInfo {
       case 1:
         return "v0.4";
       case 2:
-          return "v0.5";
+        return "v0.5";
       case 3:
-          return "v0.6";
+        return "v0.6";
+      case 4:
+        return "v0.7";
       default:
         return "unknown: " + std::to_string(version_number);
     }
