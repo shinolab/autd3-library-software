@@ -80,6 +80,7 @@ if(WIN32)
     controller.cpp
     controller_v_0_1.cpp
     controller_v_0_6.cpp
+    controller_v_0_7.cpp
     geometry.cpp
   )
 
