@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/11/2020
+// Last Modified: 05/11/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -132,8 +132,8 @@ uint64_t AUTDRemainingInBuffer(AUTDControllerHandle handle) {
 #pragma endregion
 
 #pragma region Gain
-void AUTDFocalPointGain(AUTDGainPtr* gain, double x, double y, double z, uint8_t amp) {
-  auto* g = GainCreate(autd::gain::FocalPointGain::Create(autd::Vector3(x, y, z), amp));
+void AUTDFocalPointGain(AUTDGainPtr* gain, double x, double y, double z, uint8_t duty) {
+  auto* g = GainCreate(autd::gain::FocalPointGain::Create(autd::Vector3(x, y, z), duty));
   *gain = g;
 }
 void AUTDGroupedGain(AUTDGainPtr* gain, int32_t* group_ids, AUTDGainPtr* gains, int32_t size) {
@@ -150,12 +150,12 @@ void AUTDGroupedGain(AUTDGainPtr* gain, int32_t* group_ids, AUTDGainPtr* gains, 
 
   *gain = ggain;
 }
-void AUTDBesselBeamGain(AUTDGainPtr* gain, double x, double y, double z, double n_x, double n_y, double n_z, double theta_z) {
-  auto* g = GainCreate(autd::gain::BesselBeamGain::Create(autd::Vector3(x, y, z), autd::Vector3(n_x, n_y, n_z), theta_z));
+void AUTDBesselBeamGain(AUTDGainPtr* gain, double x, double y, double z, double n_x, double n_y, double n_z, double theta_z, uint8_t duty) {
+  auto* g = GainCreate(autd::gain::BesselBeamGain::Create(autd::Vector3(x, y, z), autd::Vector3(n_x, n_y, n_z), theta_z, duty));
   *gain = g;
 }
-void AUTDPlaneWaveGain(AUTDGainPtr* gain, double n_x, double n_y, double n_z) {
-  auto* g = GainCreate(autd::gain::PlaneWaveGain::Create(autd::Vector3(n_x, n_y, n_z)));
+void AUTDPlaneWaveGain(AUTDGainPtr* gain, double n_x, double n_y, double n_z, uint8_t duty) {
+  auto* g = GainCreate(autd::gain::PlaneWaveGain::Create(autd::Vector3(n_x, n_y, n_z), duty));
   *gain = g;
 }
 void AUTDCustomGain(AUTDGainPtr* gain, uint16_t* data, int32_t data_length) {
@@ -175,8 +175,8 @@ void AUTDHoloGain(AUTDGainPtr* gain, double* points, double* amps, int32_t size,
   auto* g = GainCreate(autd::gain::HoloGain::Create(holo, amps_, method_, params));
   *gain = g;
 }
-void AUTDTransducerTestGain(AUTDGainPtr* gain, int32_t idx, int32_t amp, int32_t phase) {
-  auto* g = GainCreate(autd::gain::TransducerTestGain::Create(idx, amp, phase));
+void AUTDTransducerTestGain(AUTDGainPtr* gain, int32_t idx, uint8_t duty, uint8_t phase) {
+  auto* g = GainCreate(autd::gain::TransducerTestGain::Create(idx, duty, phase));
   *gain = g;
 }
 void AUTDNullGain(AUTDGainPtr* gain) {
@@ -194,7 +194,7 @@ void AUTDModulation(AUTDModulationPtr* mod, uint8_t amp) {
   auto* m = ModulationCreate(autd::modulation::Modulation::Create(amp));
   *mod = m;
 }
-void AUTDCustomModulation(AUTDModulationPtr* mod, uint8_t* buf, uint64_t size) {
+void AUTDCustomModulation(AUTDModulationPtr* mod, uint8_t* buf, uint32_t size) {
   auto* m = ModulationCreate(autd::modulation::Modulation::Create(0));
   m->ptr->buffer.resize(size, 0);
   std::memcpy(&m->ptr->buffer[0], buf, size);
