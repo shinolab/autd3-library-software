@@ -3,7 +3,7 @@
 // Created Date: 06/07/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 01/11/2020
+// Last Modified: 05/11/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -203,11 +203,9 @@ void HoloGainImplSDP(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, co
   for (int j = 0; j < N; j++) {
     const auto famp = normalize ? 1.0 : abs(q(j)) / maxCoeff;
     const auto fphase = arg(q(j)) / (2 * M_PI) + 0.5;
-    const auto amp = static_cast<uint8_t>(famp * 255);
     const auto phase = static_cast<uint8_t>((1 - fphase) * 255);
-    uint8_t D;
     uint8_t S = phase;
-    AdjustAmp(amp, &D);
+    uint8_t D = AdjustAmp(famp);
     data->at(geometry->deviceIdForTransIdx(j)).at(j % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(D) << 8) + S;
   }
 }
@@ -292,11 +290,9 @@ void HoloGainImplEVD(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, co
   for (int j = 0; j < N; j++) {
     const auto famp = normalize ? 1.0 : abs(q(j)) / maxCoeff;
     const auto fphase = arg(q(j)) / (2 * M_PI) + 0.5;
-    const auto amp = static_cast<uint8_t>(famp * 255);
     const auto phase = static_cast<uint8_t>((1 - fphase) * 255);
-    uint8_t D;
     uint8_t S = phase;
-    AdjustAmp(amp, &D);
+    uint8_t D = AdjustAmp(famp);
     data->at(geometry->deviceIdForTransIdx(j)).at(j % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(D) << 8) + S;
   }
 }
@@ -314,11 +310,9 @@ void HoloGainImplNaive(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, 
   for (int j = 0; j < N; j++) {
     const auto famp = abs(q(j));
     const auto fphase = arg(q(j)) / (2 * M_PI) + 0.5;
-    const auto amp = static_cast<uint8_t>(famp * 255);
     const auto phase = static_cast<uint8_t>((1 - fphase) * 255);
-    uint8_t D;
     uint8_t S = phase;
-    AdjustAmp(amp, &D);
+    uint8_t D = AdjustAmp(famp);
     data->at(geometry->deviceIdForTransIdx(j)).at(j % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(D) << 8) + S;
   }
 }
@@ -348,11 +342,9 @@ void HoloGainImplGS(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, con
   for (int j = 0; j < N; j++) {
     const auto famp = abs(q(j));
     const auto fphase = arg(q(j)) / (2 * M_PI) + 0.5;
-    const auto amp = static_cast<uint8_t>(famp * 255);
     const auto phase = static_cast<uint8_t>((1 - fphase) * 255);
-    uint8_t D;
     uint8_t S = phase;
-    AdjustAmp(amp, &D);
+    uint8_t D = AdjustAmp(famp);
     data->at(geometry->deviceIdForTransIdx(j)).at(j % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(D) << 8) + S;
   }
 }
@@ -396,11 +388,9 @@ void HoloGainImplGSPAT(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, 
   for (int j = 0; j < N; j++) {
     const auto famp = abs(q(j));
     const auto fphase = arg(q(j)) / (2 * M_PI) + 0.5;
-    const auto amp = static_cast<uint8_t>(famp * 255);
     const auto phase = static_cast<uint8_t>((1 - fphase) * 255);
-    uint8_t D;
     uint8_t S = phase;
-    AdjustAmp(amp, &D);
+    uint8_t D = AdjustAmp(famp);
     data->at(geometry->deviceIdForTransIdx(j)).at(j % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(D) << 8) + S;
   }
 }
@@ -498,13 +488,11 @@ void HoloGainImplLM(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, con
     }
   }
 
-  const auto amp = 255;
-  uint8_t D;
-  AdjustAmp(amp, &D);
+  const auto duty = 0xFF;
   for (int j = 0; j < N; j++) {
     const auto fphase = fmod(x(j), 2 * M_PI) / (2 * M_PI);
     const auto S = static_cast<uint8_t>((1 - fphase) * 255);
-    data->at(geometry->deviceIdForTransIdx(j)).at(j % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(D) << 8) + S;
+    data->at(geometry->deviceIdForTransIdx(j)).at(j % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(duty) << 8) + S;
   }
 }
 }  // namespace hologainimpl

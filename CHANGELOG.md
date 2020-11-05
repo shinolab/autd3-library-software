@@ -4,6 +4,7 @@
 * Extended modulation buffer size to maximum 32000
 * Sampling frequency become mutable
 * Implemented some new methods of generating multi foci
+* Some Gain amplitude arguments become duty ratio. If you want to specify the output in sound pressure as before, use an overload of double type.
 
 # 0.6.2
 * Implemented backward compatibility
