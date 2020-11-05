@@ -39,7 +39,7 @@ EXPORT int32_t AUTDAddDevice(AUTDControllerHandle handle, double x, double y, do
 EXPORT int32_t AUTDAddDeviceQuaternion(AUTDControllerHandle handle, double x, double y, double z, double qua_w, double qua_x, double qua_y,
                                        double qua_z, int32_t groupId);
 EXPORT void AUTDDelDevice(AUTDControllerHandle handle, int32_t devId);
-EXPORT void AUTDCalibrate(AUTDControllerHandle handle);
+EXPORT bool AUTDCalibrate(AUTDControllerHandle handle, int32_t smpl_freq, int32_t buf_size);
 EXPORT void AUTDCloseController(AUTDControllerHandle handle);
 EXPORT void AUTDClear(AUTDControllerHandle handle);
 EXPORT void AUTDFreeController(AUTDControllerHandle handle);

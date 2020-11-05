@@ -119,7 +119,7 @@ MatrixXcd TrnasferMatrix(GeometryPtr geometry, const MatrixX3d& foci, size_t M, 
 
 void HoloGainImplSDP(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, autd::GeometryPtr geometry, void* params) {
   double alpha, lambda;
-  size_t repeat;
+  int32_t repeat;
   bool normalize;
 
   if (params != nullptr) {
@@ -158,7 +158,7 @@ void HoloGainImplSDP(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, co
 
   MatrixXcd MM = P * (MatrixXcd::Identity(M, M) - B * pinvB) * P;
   MatrixXcd X = MatrixXcd::Identity(M, M);
-  for (size_t i = 0; i < repeat; i++) {
+  for (int32_t i = 0; i < repeat; i++) {
     auto ii = static_cast<size_t>(M * static_cast<double>(range(mt)));
 
     auto Xc = X;
@@ -298,8 +298,6 @@ void HoloGainImplEVD(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, co
 }
 
 void HoloGainImplNaive(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, GeometryPtr geometry, void* params) {
-  const size_t repeat = (params == nullptr) ? 100 : *reinterpret_cast<size_t*>(params);
-
   const size_t M = foci.rows();
   const auto N = static_cast<int>(geometry->numTransducers());
 
@@ -318,7 +316,7 @@ void HoloGainImplNaive(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, 
 }
 
 void HoloGainImplGS(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, GeometryPtr geometry, void* params) {
-  const size_t repeat = (params == nullptr) ? 100 : *reinterpret_cast<size_t*>(params);
+  const int32_t repeat = (params == nullptr) ? 100 : *reinterpret_cast<uint32_t*>(params);
 
   const size_t M = foci.rows();
   const auto N = static_cast<int>(geometry->numTransducers());
@@ -331,7 +329,7 @@ void HoloGainImplGS(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, con
   VectorXcd q0 = VectorXcd::Ones(N);
 
   VectorXcd q = q0;
-  for (size_t k = 0; k < repeat; k++) {
+  for (int32_t k = 0; k < repeat; k++) {
     auto gamma = G * q;
     VectorXcd p(M);
     for (size_t i = 0; i < M; i++) p(i) = gamma(i) / abs(gamma(i)) * p0(i);
@@ -350,7 +348,7 @@ void HoloGainImplGS(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, con
 }
 
 void HoloGainImplGSPAT(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, GeometryPtr geometry, void* params) {
-  const size_t repeat = (params == nullptr) ? 100 : *reinterpret_cast<size_t*>(params);
+  const int32_t repeat = (params == nullptr) ? 100 : *reinterpret_cast<uint32_t*>(params);
 
   const size_t M = foci.rows();
   const auto N = static_cast<int>(geometry->numTransducers());
@@ -377,7 +375,7 @@ void HoloGainImplGSPAT(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, 
   VectorXcd p0 = amps;
   VectorXcd p = p0;
   VectorXcd gamma = R * p;
-  for (size_t k = 0; k < repeat; k++) {
+  for (int32_t k = 0; k < repeat; k++) {
     for (size_t i = 0; i < M; i++) p(i) = gamma(i) / abs(gamma(i)) * p0(i);
     gamma = R * p;
   }
@@ -397,7 +395,7 @@ void HoloGainImplGSPAT(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, 
 
 void HoloGainImplLM(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, GeometryPtr geometry, void* params) {
   double eps_1, eps_2, tau;
-  size_t k_max;
+  int32_t k_max;
 
   if (params != nullptr) {
     auto nlp_params = reinterpret_cast<autd::gain::NLSParams*>(params);
@@ -453,7 +451,7 @@ void HoloGainImplLM(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, con
   for (size_t i = 0; i < n_param; i++) t(i) = exp(complex<double>(0, x(i)));
   double Fx = (t.adjoint() * BhB * t)[0, 0].real();
 
-  for (size_t k = 0; k < k_max; k++) {
+  for (int32_t k = 0; k < k_max; k++) {
     if (is_found) break;
 
     Eigen::FullPivHouseholderQR<MatrixXd> qr(A + mu * I);

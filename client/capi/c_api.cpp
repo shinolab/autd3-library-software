@@ -47,9 +47,12 @@ void AUTDDelDevice(AUTDControllerHandle handle, int32_t devId) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   cnt->ptr->geometry()->DelDevice(devId);
 }
-void AUTDCalibrate(AUTDControllerHandle handle) {
+bool AUTDCalibrate(AUTDControllerHandle handle, int32_t smpl_freq, int32_t buf_size) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
-  cnt->ptr->Calibrate();
+  auto config = autd::Configuration::GetDefaultConfiguration();
+  config.set_mod_sampling_freq(static_cast<autd::MOD_SAMPLING_FREQ>(smpl_freq));
+  config.set_mod_buf_size(static_cast<autd::MOD_BUF_SIZE>(buf_size));
+  return cnt->ptr->Calibrate(config);
 }
 void AUTDCloseController(AUTDControllerHandle handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);

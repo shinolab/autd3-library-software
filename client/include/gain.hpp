@@ -212,7 +212,7 @@ enum class OptMethod {
 
 struct SDPParams {
   double regularization;
-  size_t repeat;
+  int32_t repeat;
   double lambda;
   bool normalize_amp;
 };
@@ -225,7 +225,7 @@ struct EVDParams {
 struct NLSParams {
   double eps_1;
   double eps_2;
-  size_t k_max;
+  int32_t k_max;
   double tau;
 };
 
