@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/11/2020
+// Last Modified: 05/11/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -33,13 +33,13 @@ using DebugLogFunc = void (*)(const char *);
 #endif
 
 #pragma region Controller
-EXPORT void AUTDCreateController(AUTDControllerHandle *out);
+EXPORT void AUTDCreateController(AUTDControllerHandle *out, int32_t version);
 EXPORT int32_t AUTDOpenControllerWith(AUTDControllerHandle handle, AUTDLinkPtr link);
 EXPORT int32_t AUTDAddDevice(AUTDControllerHandle handle, double x, double y, double z, double rz1, double ry, double rz2, int32_t groupId);
 EXPORT int32_t AUTDAddDeviceQuaternion(AUTDControllerHandle handle, double x, double y, double z, double qua_w, double qua_x, double qua_y,
                                        double qua_z, int32_t groupId);
 EXPORT void AUTDDelDevice(AUTDControllerHandle handle, int32_t devId);
-EXPORT void AUTDCalibrate(AUTDControllerHandle handle);
+EXPORT bool AUTDCalibrate(AUTDControllerHandle handle, int32_t smpl_freq, int32_t buf_size);
 EXPORT void AUTDCloseController(AUTDControllerHandle handle);
 EXPORT void AUTDClear(AUTDControllerHandle handle);
 EXPORT void AUTDFreeController(AUTDControllerHandle handle);
@@ -62,13 +62,13 @@ EXPORT uint64_t AUTDRemainingInBuffer(AUTDControllerHandle handle);
 #pragma endregion
 
 #pragma region Gain
-EXPORT void AUTDFocalPointGain(AUTDGainPtr *gain, double x, double y, double z, uint8_t amp);
+EXPORT void AUTDFocalPointGain(AUTDGainPtr *gain, double x, double y, double z, uint8_t duty);
 EXPORT void AUTDGroupedGain(AUTDGainPtr *gain, int32_t *groupIDs, AUTDGainPtr *gains, int32_t size);
-EXPORT void AUTDBesselBeamGain(AUTDGainPtr *gain, double x, double y, double z, double n_x, double n_y, double n_z, double theta_z);
-EXPORT void AUTDPlaneWaveGain(AUTDGainPtr *gain, double n_x, double n_y, double n_z);
+EXPORT void AUTDBesselBeamGain(AUTDGainPtr *gain, double x, double y, double z, double n_x, double n_y, double n_z, double theta_z, uint8_t duty);
+EXPORT void AUTDPlaneWaveGain(AUTDGainPtr *gain, double n_x, double n_y, double n_z, uint8_t duty);
 EXPORT void AUTDCustomGain(AUTDGainPtr *gain, uint16_t *data, int32_t dataLength);
 EXPORT void AUTDHoloGain(AUTDGainPtr *gain, double *points, double *amps, int32_t size, int32_t method, void *params);
-EXPORT void AUTDTransducerTestGain(AUTDGainPtr *gain, int32_t idx, int32_t amp, int32_t phase);
+EXPORT void AUTDTransducerTestGain(AUTDGainPtr *gain, int32_t idx, uint8_t duty, uint8_t phase);
 EXPORT void AUTDNullGain(AUTDGainPtr *gain);
 EXPORT void AUTDDeleteGain(AUTDGainPtr gain);
 #pragma endregion

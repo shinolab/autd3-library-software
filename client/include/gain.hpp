@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/11/2020
+// Last Modified: 05/11/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -27,9 +27,9 @@
 namespace autd {
 namespace gain {
 
-inline void AdjustAmp(uint8_t amp_i, uint8_t *const amp_o) noexcept {
-  auto d = asin(amp_i / 255.0) / M_PI;  //  duty (0 ~ 0.5)
-  *amp_o = static_cast<uint8_t>(511 * d);
+inline uint8_t AdjustAmp(double amp) noexcept {
+  auto d = asin(amp) / M_PI;  //  duty (0 ~ 0.5)
+  return static_cast<uint8_t>(511 * d);
 }
 
 /**
@@ -79,14 +79,20 @@ class PlaneWaveGain : public Gain {
   /**
    * @brief Generate function
    * @param[in] direction wave direction
-   * @param[in] amp amplitude of the wave
+   * @param[in] duty duty ratio of driving signal
    */
-  static GainPtr Create(Vector3 direction, uint8_t amp = 0xff);
+  static GainPtr Create(Vector3 direction, uint8_t duty = 0xff);
+  /**
+   * @brief Generate function
+   * @param[in] direction wave direction
+   * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
+   */
+  static GainPtr Create(Vector3 direction, double amp);
   void Build() override;
 
  private:
   Vector3 _direction = Vector3::unit_z();
-  uint8_t _amp = 0xFF;
+  uint8_t _duty = 0xFF;
 };
 
 /**
@@ -97,14 +103,20 @@ class FocalPointGain : public Gain {
   /**
    * @brief Generate function
    * @param[in] point focal point
-   * @param[in] amp amplitude of the focus
+   * @param[in] duty duty ratio of driving signal
    */
-  static GainPtr Create(Vector3 point, uint8_t amp = 0xff);
+  static GainPtr Create(Vector3 point, uint8_t duty = 0xff);
+  /**
+   * @brief Generate function
+   * @param[in] direction wave direction
+   * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
+   */
+  static GainPtr Create(Vector3 point, double amp);
   void Build() override;
 
  private:
   Vector3 _point = Vector3::zero();
-  uint8_t _amp = 0xff;
+  uint8_t _duty = 0xff;
 };
 
 /**
@@ -117,16 +129,24 @@ class BesselBeamGain : public Gain {
    * @param[in] point start point of the beam
    * @param[in] vec_n direction of the beam
    * @param[in] theta_z angle between the conical wavefront of the beam and the direction
-   * @param[in] amp amplitude of the beam
+   * @param[in] duty duty ratio of driving signal
    */
-  static GainPtr Create(Vector3 point, Vector3 vec_n, double theta_z, uint8_t amp = 0xff);
+  static GainPtr Create(Vector3 point, Vector3 vec_n, double theta_z, uint8_t duty = 0xff);
+  /**
+   * @brief Generate function
+   * @param[in] point start point of the beam
+   * @param[in] vec_n direction of the beam
+   * @param[in] theta_z angle between the conical wavefront of the beam and the direction
+   * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
+   */
+  static GainPtr Create(Vector3 point, Vector3 vec_n, double theta_z, double amp);
   void Build() override;
 
  private:
   Vector3 _point = Vector3::zero();
   Vector3 _vec_n = Vector3::unit_z();
   double _theta_z = 0;
-  uint8_t _amp = 0xff;
+  uint8_t _duty = 0xff;
 };
 
 /**
@@ -192,7 +212,7 @@ enum class OptMethod {
 
 struct SDPParams {
   double regularization;
-  size_t repeat;
+  int32_t repeat;
   double lambda;
   bool normalize_amp;
 };
@@ -205,7 +225,7 @@ struct EVDParams {
 struct NLSParams {
   double eps_1;
   double eps_2;
-  size_t k_max;
+  int32_t k_max;
   double tau;
 };
 
@@ -256,15 +276,15 @@ class TransducerTestGain : public Gain {
   /**
    * @brief Generate function
    * @param[in] transducer_index index of the transducer
-   * @param[in] amp amplitude of the transducer
+   * @param[in] duty duty ratio of driving signal
    * @param[in] phase phase of the phase
    */
-  static GainPtr Create(int transducer_index, int amp, int phase);
+  static GainPtr Create(int transducer_index, int duty, int phase);
   void Build() override;
 
  protected:
   int _xdcr_idx = 0;
-  uint8_t _amp = 0;
+  uint8_t _duty = 0;
   uint8_t _phase = 0;
 };
 }  // namespace gain
