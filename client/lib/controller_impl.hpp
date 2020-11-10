@@ -3,7 +3,7 @@
 // Created Date: 11/10/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/10/2020
+// Last Modified: 10/11/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -145,6 +145,7 @@ class AUTDControllerV_0_6 : public AUTDControllerV_0_1 {
   bool Clear() override;
   void Close() override;
 
+  void AppendGain(const GainPtr gain) override;
   void AppendGainSync(const GainPtr gain, bool wait_for_send = false) override;
   void AppendModulationSync(const ModulationPtr mod) override;
   void AppendSequence(SequencePtr seq) override;
@@ -159,6 +160,7 @@ class AUTDControllerV_0_6 : public AUTDControllerV_0_1 {
   std::unique_ptr<uint8_t[]> MakeCalibBody(std::vector<uint16_t> diffs, size_t *const size);
 
   std::vector<uint8_t> _rx_data;
+  bool _seq_mode;
 };
 
 class AUTDControllerV_0_7 : public AUTDControllerV_0_6 {
