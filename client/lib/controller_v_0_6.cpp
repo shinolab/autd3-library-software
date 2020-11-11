@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 30/10/2020
+// Last Modified: 10/11/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -36,7 +36,7 @@ namespace autd {
 
 namespace _internal {
 
-AUTDControllerV_0_6::AUTDControllerV_0_6() : AUTDControllerV_0_1() {}
+AUTDControllerV_0_6::AUTDControllerV_0_6() : AUTDControllerV_0_1() { this->_seq_mode = false; }
 
 AUTDControllerV_0_6::~AUTDControllerV_0_6() {}
 
@@ -87,8 +87,20 @@ void AUTDControllerV_0_6::Close() {
   }
 }
 
+void AUTDControllerV_0_6::AppendGain(GainPtr gain) {
+  this->_p_stm_timer->Stop();
+  this->_seq_mode = false;
+  gain->SetGeometry(this->_geometry);
+  {
+    std::unique_lock<std::mutex> lk(_build_gain_mtx);
+    _build_gain_q.push(gain);
+  }
+  _build_gain_cond.notify_all();
+}
+
 void AUTDControllerV_0_6::AppendGainSync(GainPtr gain, bool wait_for_send) {
   this->_p_stm_timer->Stop();
+  this->_seq_mode = false;
   try {
     gain->SetGeometry(this->_geometry);
     gain->Build();
@@ -124,6 +136,7 @@ void AUTDControllerV_0_6::AppendModulationSync(ModulationPtr mod) {
 }
 
 void AUTDControllerV_0_6::AppendSequence(SequencePtr seq) {
+  this->_seq_mode = true;
   while (this->seq_sent(seq) < seq->control_points().size()) {
     size_t body_size = 0;
     uint8_t msg_id = 0;
@@ -340,6 +353,7 @@ std::unique_ptr<uint8_t[]> AUTDControllerV_0_6::MakeBody(GainPtr gain, Modulatio
   header->mod_size = 0;
   header->command = CMD_OP;
 
+  if (this->_seq_mode) header->control_flags |= SEQ_MODE;
   if (this->_silent_mode) header->control_flags |= SILENT;
 
   if (mod != nullptr) {
