@@ -1,3 +1,8 @@
+# 0.7.1
+* Changed Timer implementation from TimerQueue to timeSetEvent (Windows)
+    * Because TimerQueue  does not work with the resolution of 16ms or less
+* Improved speed of HoloGain with OptMethod::LM
+
 # 0.7
 * Add `SquareModulation`
 * Add `CustomModulation` in capi

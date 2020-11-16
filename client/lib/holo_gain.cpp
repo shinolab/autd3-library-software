@@ -401,12 +401,12 @@ void HoloGainImplLM(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, con
     auto nlp_params = reinterpret_cast<autd::gain::NLSParams*>(params);
     eps_1 = nlp_params->eps_1 < 0 ? 1e-8 : nlp_params->eps_1;
     eps_2 = nlp_params->eps_2 < 0 ? 1e-8 : nlp_params->eps_2;
-    k_max = nlp_params->k_max < 0 ? 200 : nlp_params->k_max;
+    k_max = nlp_params->k_max < 0 ? 5 : nlp_params->k_max;
     tau = nlp_params->tau < 0 ? 1e-3 : nlp_params->tau;
   } else {
     eps_1 = 1e-8;
     eps_2 = 1e-8;
-    k_max = 200;
+    k_max = 5;
     tau = 1e-3;
   }
 
@@ -454,7 +454,7 @@ void HoloGainImplLM(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, con
   for (int32_t k = 0; k < k_max; k++) {
     if (is_found) break;
 
-    Eigen::FullPivHouseholderQR<MatrixXd> qr(A + mu * I);
+    Eigen::HouseholderQR<MatrixXd> qr(A + mu * I);
     auto h_lm = -qr.solve(g);
     if (h_lm.norm() <= eps_2 * (x.norm() + eps_2)) {
       is_found = true;

@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/10/2020
+// Last Modified: 16/11/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -79,7 +79,7 @@ class SOEMController : public ISOEMController {
 
  private:
 #ifdef WINDOWS
-  static void CALLBACK RTthread(PVOID lpParam, BOOLEAN TimerOrWaitFired);
+  static void CALLBACK RTthread(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2);
 #elif defined MACOSX
   static void RTthread();
 #elif defined LINUX
@@ -102,8 +102,7 @@ class SOEMController : public ISOEMController {
   std::mutex _send_mtx;
 
 #ifdef WINDOWS
-  HANDLE _timerQueue = NULL;
-  HANDLE _timer = NULL;
+  uint32_t _timer_id = 0;
 #elif defined MACOSX
   dispatch_queue_t _queue;
   dispatch_source_t _timer;
@@ -133,7 +132,7 @@ std::vector<uint8_t> SOEMController::Read() {
 }
 
 #ifdef WINDOWS
-void CALLBACK SOEMController::RTthread(PVOID lpParam, BOOLEAN TimerOrWaitFired)
+void CALLBACK SOEMController::RTthread(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2)
 #elif defined MACOSX
 void SOEMController::RTthread()
 #elif defined LINUX
@@ -214,14 +213,12 @@ void SOEMController::Open(const char *ifname, size_t dev_num, ECConfig config) {
   SetupSync0(true, _sync0_cyctime);
 
 #ifdef WINDOWS
-  _timerQueue = CreateTimerQueue();
-  if (_timerQueue == NULL) {
-    std::cerr << "CreateTimerQueue failed." << std::endl;
-    return;
-  }
+  uint32_t uResolution = 1;
+  timeBeginPeriod(uResolution);
+  _timer_id = timeSetEvent(config.ec_sm3_cyctime_ns / 1000 / 1000, uResolution, (LPTIMECALLBACK)RTthread, NULL, TIME_PERIODIC);
 
-  if (!CreateTimerQueueTimer(&_timer, _timerQueue, (WAITORTIMERCALLBACK)RTthread, nullptr, 0, config.ec_sm3_cyctime_ns / 1000 / 1000, 0)) {
-    std::cerr << "CreateTimerQueueTimer failed." << std::endl;
+  if (_timer_id == 0) {
+    std::cerr << "timeSetEvent failed." << std::endl;
     return;
   }
 
@@ -289,8 +286,10 @@ void SOEMController::Close() {
     memset(_io_map, 0x00, _output_frame_size);
 
 #ifdef WINDOWS
-    if (!DeleteTimerQueueTimer(_timerQueue, _timer, 0)) {
-      if (GetLastError() != ERROR_IO_PENDING) std::cerr << "DeleteTimerQueue failed." << std::endl;
+    if (_timer_id != 0) {
+      uint32_t uResolution = 1;
+      timeKillEvent(_timer_id);
+      timeEndPeriod(uResolution);
     }
 #elif defined MACOSX
     dispatch_source_cancel(_timer);
