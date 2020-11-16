@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki and Saya Mizutani
 // -----
-// Last Modified: 22/02/2020
+// Last Modified: 16/11/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -54,12 +54,12 @@ void Timer::Start(const std::function<void()> &callback) {
   if (this->_high_resolusion) {
     this->InitTimer();
   } else {
-    this->_timerQueue = CreateTimerQueue();
-    if (this->_timerQueue == NULL) std::cerr << "CreateTimerQueue failed." << std::endl;
-
-    if (!CreateTimerQueueTimer(&this->_timer, this->_timerQueue, (WAITORTIMERCALLBACK)TimerThread, reinterpret_cast<void *>(this), 0,
-                               this->_interval_us / 1000, 0))
-      std::cerr << "CreateTimerQueueTimer failed." << std::endl;
+    uint32_t uResolution = 1;
+    timeBeginPeriod(uResolution);
+    _timer_id = timeSetEvent(this->_interval_us / 1000, uResolution, (LPTIMECALLBACK)TimerThread, reinterpret_cast<DWORD_PTR>(this), TIME_PERIODIC);
+    if (_timer_id == 0) {
+      std::cerr << "timeSetEvent failed." << std::endl;
+    }
   }
 }
 
@@ -71,8 +71,10 @@ void Timer::Stop() {
       this->_mainThread.join();
 
     } else {
-      if (!DeleteTimerQueueTimer(_timerQueue, _timer, 0)) {
-        if (GetLastError() != ERROR_IO_PENDING) std::cerr << "DeleteTimerQueue failed." << std::endl;
+      if (_timer_id != 0) {
+        uint32_t uResolution = 1;
+        timeKillEvent(_timer_id);
+        timeEndPeriod(uResolution);
       }
     }
   }
@@ -127,10 +129,10 @@ void Timer::MainLoop() {
   }
 }
 
-void Timer::TimerThread(PVOID lpParam, BOOLEAN TimerOrWaitFired) {
+void Timer::TimerThread(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2) {
   bool expected = false;
   if (AUTD3_LIB_TIMER_LOCK.compare_exchange_weak(expected, true)) {
-    Timer *_ptimer = reinterpret_cast<Timer *>(lpParam);
+    Timer *_ptimer = reinterpret_cast<Timer *>(dwUser);
     _ptimer->_cb();
     AUTD3_LIB_TIMER_LOCK.store(false, std::memory_order_release);
   }

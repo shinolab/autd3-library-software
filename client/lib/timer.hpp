@@ -3,7 +3,7 @@
 // Created Date:02/07/2018
 // Author: Shun Suzuki and Saya Mizutani
 // -----
-// Last Modified: 22/02/2020
+// Last Modified: 16/11/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -41,8 +41,7 @@ class Timer {
   std::function<void()> _cb;
 
 #if WIN32
-  HANDLE _timerQueue = NULL;
-  HANDLE _timer = NULL;
+  uint32_t _timer_id = 0;
 #elif __APPLE__
   dispatch_queue_t _queue;
   dispatch_source_t _timer;
@@ -55,7 +54,7 @@ class Timer {
 #if WIN32
   bool _high_resolusion;
   void MainLoop();
-  static void CALLBACK TimerThread(PVOID lpParam, BOOLEAN TimerOrWaitFired);
+  static void CALLBACK TimerThread(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2);
 #elif __APPLE__
   static void MainLoop(Timer *ptr);
 #else
