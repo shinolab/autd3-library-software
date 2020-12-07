@@ -1,9 +1,9 @@
 ![build](https://github.com/shinolab/autd3-library-software/workflows/build/badge.svg)
 ![Upload Release Asset](https://github.com/shinolab/autd3-library-software/workflows/Upload%20Release%20Asset/badge.svg)
 
-# autd3 #
+# [AUTD3](https://hapislab.org/airborne-ultrasound-tactile-display?lang=en) #
 
-Version: 0.7.0
+Version: 0.7.1
 
 * This repository is forked from [old version](https://github.com/shinolab/autd)
 
