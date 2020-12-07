@@ -11,6 +11,8 @@ Version: 0.7.0
 
 * For more details, refer to [Wiki](https://github.com/shinolab/autd3-library-software/wiki)
 
+* The firmware codes are available at [here](https://github.com/shinolab/autd3-library-firmware).
+
 ## Versioning ##
 
 The meanings of version number x.y.z are
