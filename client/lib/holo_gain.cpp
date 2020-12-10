@@ -3,7 +3,7 @@
 // Created Date: 06/07/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 05/11/2020
+// Last Modified: 10/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -449,7 +449,7 @@ void HoloGainImplLM(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, con
 
   VectorXcd t(n_param);
   for (size_t i = 0; i < n_param; i++) t(i) = exp(complex<double>(0, x(i)));
-  double Fx = (t.adjoint() * BhB * t)[0, 0].real();
+  double Fx = (t.adjoint() * BhB * t)[0].real();
 
   for (int32_t k = 0; k < k_max; k++) {
     if (is_found) break;
@@ -461,7 +461,7 @@ void HoloGainImplLM(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, con
     } else {
       auto x_new = x + h_lm;
       for (size_t i = 0; i < n_param; i++) t(i) = exp(complex<double>(0, x_new(i)));
-      double Fx_new = (t.adjoint() * BhB * t)[0, 0].real();
+      double Fx_new = (t.adjoint() * BhB * t)[0].real();
       auto L0_Lhlm = 0.5 * h_lm.dot(mu * h_lm - g);
       auto rho = (Fx - Fx_new) / L0_Lhlm;
       Fx = Fx_new;
