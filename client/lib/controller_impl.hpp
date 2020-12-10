@@ -3,7 +3,7 @@
 // Created Date: 11/10/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/11/2020
+// Last Modified: 10/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -153,7 +153,7 @@ class AUTDControllerV_0_6 : public AUTDControllerV_0_1 {
 
  protected:
   void InitPipeline() override;
-  virtual std::unique_ptr<uint8_t[]> MakeBody(GainPtr gain, ModulationPtr mod, size_t *const size, uint8_t *const send_msg_id);
+  std::unique_ptr<uint8_t[]> MakeBody(GainPtr gain, ModulationPtr mod, size_t *const size, uint8_t *const send_msg_id) override;
   bool WaitMsgProcessed(uint8_t msg_id, size_t max_trial = 200, uint8_t mask = 0xFF);
   std::unique_ptr<uint8_t[]> MakeSeqBody(SequencePtr seq, size_t *const size, uint8_t *const send_msg_id);
   void CalibrateSeq();
