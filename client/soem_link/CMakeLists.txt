@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-set(SOEM_PATH ../deps/SOEM)
+set(SOEM_PATH ../deps/SOEM/SOEM)
 
 set (CMAKE_CXX_STANDARD 17)
 
@@ -33,42 +33,13 @@ add_library(soem_link STATIC
 	autdsoem.hpp
 	soem_link.cpp
 	../include/soem_link.hpp
-
-	${SOEM_PATH}/soem/ethercatbase.c
-	${SOEM_PATH}/soem/ethercatcoe.c
-	${SOEM_PATH}/soem/ethercatconfig.c
-	${SOEM_PATH}/soem/ethercatdc.c
-	${SOEM_PATH}/soem/ethercateoe.c
-	${SOEM_PATH}/soem/ethercatfoe.c
-	${SOEM_PATH}/soem/ethercatmain.c
-	${SOEM_PATH}/soem/ethercatprint.c
-	${SOEM_PATH}/soem/ethercatsoe.c
-	
-	${SOEM_PATH}/osal/${OS}/osal.c
-	${SOEM_PATH}/oshw/${OS}/nicdrv.c
-	${SOEM_PATH}/oshw/${OS}/oshw.c
 )
-
-source_group("soem" FILES
-	${SOEM_PATH}/soem/ethercatbase.c
-	${SOEM_PATH}/soem/ethercatcoe.c
-	${SOEM_PATH}/soem/ethercatconfig.c
-	${SOEM_PATH}/soem/ethercatdc.c
-	${SOEM_PATH}/soem/ethercateoe.c
-	${SOEM_PATH}/soem/ethercatfoe.c
-	${SOEM_PATH}/soem/ethercatmain.c
-	${SOEM_PATH}/soem/ethercatprint.c
-	${SOEM_PATH}/soem/ethercatsoe.c
-	
-	${SOEM_PATH}/osal/${OS}/osal.c
-	${SOEM_PATH}/oshw/${OS}/nicdrv.c
-	${SOEM_PATH}/oshw/${OS}/oshw.c
-)
+target_link_libraries(soem_link soem)
 
 if(WIN32)
 	add_custom_command(TARGET soem_link
 					POST_BUILD
-					COMMAND lib /OUT:$(OUTDIR)temp.lib $(TARGETPATH) $(SolutionDir)..\\deps\\SOEM\\oshw\\win32\\wpcap\\Lib\\x64\\*.lib /ignore:4006
+					COMMAND lib /OUT:$(OUTDIR)temp.lib $(TARGETPATH) $(SolutionDir)..\\deps\\SOEM\\SOEM\\oshw\\win32\\wpcap\\Lib\\x64\\*.lib /ignore:4006
 					COMMAND del $(TARGETPATH)
 					COMMAND rename $(OUTDIR)temp.lib $(TargetFileName)
 	)
