@@ -37,5 +37,5 @@ file(GLOB_RECURSE SRC_FILES ${SOEM_PATH}/soem/*.c ${SOEM_PATH}/osal/${OS}/*.c ${
 add_library(soem STATIC ${SRC_FILES})
 
 if(NOT WIN32)
-  set_target_properties(ads PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  set_target_properties(soem PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
