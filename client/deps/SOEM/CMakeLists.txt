@@ -1,12 +1,16 @@
 cmake_minimum_required(VERSION 3.10)
 
-set(SOEM_PATH ./SOEM)
-
 set (CMAKE_CXX_STANDARD 17)
+
+execute_process(COMMAND git submodule update)
+message("-- Updating git submodule done")
+
+set(SOEM_PATH ./SOEM)
 
 if(WIN32)
 	set(OS win32)
 elseif(APPLE)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -arch arm64 -arch x86_64")
 	set(OS macosx)
 else()
 	set(OS linux)
@@ -27,18 +31,11 @@ if(WIN32)
 	)
 endif()
 
-add_library(soem STATIC
-	${SOEM_PATH}/soem/ethercatbase.c
-	${SOEM_PATH}/soem/ethercatcoe.c
-	${SOEM_PATH}/soem/ethercatconfig.c
-	${SOEM_PATH}/soem/ethercatdc.c
-	${SOEM_PATH}/soem/ethercateoe.c
-	${SOEM_PATH}/soem/ethercatfoe.c
-	${SOEM_PATH}/soem/ethercatmain.c
-	${SOEM_PATH}/soem/ethercatprint.c
-	${SOEM_PATH}/soem/ethercatsoe.c
-	
-	${SOEM_PATH}/osal/${OS}/osal.c
-	${SOEM_PATH}/oshw/${OS}/nicdrv.c
-	${SOEM_PATH}/oshw/${OS}/oshw.c
-)
+file(GLOB_RECURSE SRC_FILES ${SOEM_PATH}/soem/*.c ${SOEM_PATH}/osal/${OS}/*.c ${SOEM_PATH}/oshw/${OS}/*.c)
+#SET_SOURCE_FILES_PROPERTIES(${SRC_FILES} PROPERTIES LANGUAGE CXX)
+
+add_library(soem STATIC ${SRC_FILES})
+
+if(NOT WIN32)
+  set_target_properties(ads PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
