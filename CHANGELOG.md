@@ -1,3 +1,6 @@
+# 0.7.2
+* Support Apple Silicon mac
+
 # 0.7.1
 * Changed Timer implementation from TimerQueue to timeSetEvent (Windows)
     * Because TimerQueue  does not work with the resolution of 16ms or less

@@ -34,6 +34,8 @@ endif()
 
 # ADS
 add_subdirectory(deps/BeckhoffADS)
+# SOEM
+add_subdirectory(deps/SOEM)
 
 add_subdirectory(soem_link)
 add_subdirectory(twincat_link)
