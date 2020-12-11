@@ -7,7 +7,7 @@ message("-- Updating git submodule done")
 
 include_directories(./ADS/AdsLib ./ADS/AdsLib/standalone)
 
-set (CMAKE_C_FLAGS "-pedantic -Wall")
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pedantic -Wall")
 
 file(GLOB src_files ADS/AdsLib/*.cpp ADS/AdsLib/standalone/*.cpp)
 
