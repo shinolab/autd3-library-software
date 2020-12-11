@@ -5,21 +5,13 @@ set (CMAKE_CXX_STANDARD 17)
 execute_process(COMMAND git submodule update)
 message("-- Updating git submodule done")
 
-include_directories(./ADS/AdsLib)
+include_directories(./ADS/AdsLib ./ADS/AdsLib/standalone)
 
 set (CMAKE_C_FLAGS "-pedantic -Wall")
 
-add_library(ads STATIC
-  ADS/AdsLib/AdsDef.cpp
-  ADS/AdsLib/AdsLib.cpp
-  ADS/AdsLib/AmsConnection.cpp
-  ADS/AdsLib/AmsPort.cpp
-  ADS/AdsLib/AmsRouter.cpp
-  ADS/AdsLib/Log.cpp
-  ADS/AdsLib/NotificationDispatcher.cpp
-  ADS/AdsLib/Sockets.cpp
-  ADS/AdsLib/Frame.cpp
-)
+file(GLOB src_files ADS/AdsLib/*.cpp ADS/AdsLib/standalone/*.cpp)
+
+add_library(ads STATIC ${src_files})
 
 if(APPLE)
   set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -lc++")
