@@ -3,7 +3,7 @@
 // Created Date: 11/10/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/12/2020
+// Last Modified: 21/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -54,7 +54,17 @@ class AUTDController : public Controller {
 
   void LateralModulationAT(Vector3 point, Vector3 dir, double lm_amp = 2.5, double lm_freq = 100) = 0;
 
- protected:
+ private:
+  static uint8_t get_id() {
+    static std::atomic<uint8_t> id{OP_MODE_MSG_ID_MIN - 1};
+
+    id.fetch_add(0x01);
+    uint8_t expected = OP_MODE_MSG_ID_MAX + 1;
+    id.compare_exchange_weak(expected, OP_MODE_MSG_ID_MIN);
+
+    return id.load();
+  }
+
   void CloseLink();
   void SendData(size_t size, std::unique_ptr<uint8_t[]> buf);
   std::vector<uint8_t> ReadData(uint32_t buffer_len);
@@ -63,7 +73,12 @@ class AUTDController : public Controller {
   uint16_t seq_div(SequencePtr seq);
   const uint16_t *gain_data_addr(GainPtr gain, int device_id);
 
-  virtual void InitPipeline() = 0;
+  void InitPipeline();
+  std::unique_ptr<uint8_t[]> MakeBody(GainPtr gain, ModulationPtr mod, size_t *const size, uint8_t *const send_msg_id);
+  bool WaitMsgProcessed(uint8_t msg_id, size_t max_trial = 200, uint8_t mask = 0xFF);
+  std::unique_ptr<uint8_t[]> MakeSeqBody(SequencePtr seq, size_t *const size, uint8_t *const send_msg_id);
+  void CalibrateSeq();
+  std::unique_ptr<uint8_t[]> MakeCalibBody(std::vector<uint16_t> diffs, size_t *const size);
 
   static FirmwareInfo FirmwareInfoCreate(uint16_t idx, uint16_t cpu_ver, uint16_t fpga_ver) { return FirmwareInfo{idx, cpu_ver, fpga_ver}; }
 
@@ -90,85 +105,10 @@ class AUTDController : public Controller {
   std::mutex _build_mod_mtx;
   std::mutex _send_mtx;
 
+  std::vector<uint8_t> _rx_data;
+  bool _seq_mode;
+
   bool _silent_mode = true;
   Configuration _config = Configuration::GetDefaultConfiguration();
 };
-
-namespace _internal {
-
-class AUTDControllerV_0_1 : public AUTDController {
- public:
-  AUTDControllerV_0_1();
-  virtual ~AUTDControllerV_0_1();
-
-  bool Calibrate(Configuration config) override;
-  bool Clear() override;
-  void Close() override;
-
-  void Stop() override;
-  void AppendGain(const GainPtr gain) override;
-  void AppendGainSync(const GainPtr gain, bool wait_for_send = false) override;
-  void AppendModulation(const ModulationPtr mod) override;
-  void AppendModulationSync(const ModulationPtr mod) override;
-  void AppendSTMGain(GainPtr gain) override;
-  void AppendSTMGain(const std::vector<GainPtr> &gain_list) override;
-  void StartSTModulation(double freq) override;
-  void StopSTModulation() override;
-  void FinishSTModulation() override;
-  void AppendSequence(SequencePtr seq) override;
-  void Flush() override;
-  FirmwareInfoList firmware_info_list() override;
-
-  void LateralModulationAT(Vector3 point, Vector3 dir, double lm_amp = 2.5, double lm_freq = 100) override;
-
- protected:
-  static uint8_t get_id() {
-    static std::atomic<uint8_t> id{OP_MODE_MSG_ID_MIN - 1};
-
-    id.fetch_add(0x01);
-    uint8_t expected = OP_MODE_MSG_ID_MAX + 1;
-    id.compare_exchange_weak(expected, OP_MODE_MSG_ID_MIN);
-
-    return id.load();
-  }
-
-  void InitPipeline() override;
-  virtual std::unique_ptr<uint8_t[]> MakeBody(GainPtr gain, ModulationPtr mod, size_t *const size, uint8_t *const send_msg_id);
-};
-
-class AUTDControllerV_0_6 : public AUTDControllerV_0_1 {
- public:
-  AUTDControllerV_0_6();
-  virtual ~AUTDControllerV_0_6();
-
-  bool Calibrate(Configuration config) override;
-  bool Clear() override;
-  void Close() override;
-
-  void AppendGain(const GainPtr gain) override;
-  void AppendGainSync(const GainPtr gain, bool wait_for_send = false) override;
-  void AppendModulationSync(const ModulationPtr mod) override;
-  void AppendSequence(SequencePtr seq) override;
-  FirmwareInfoList firmware_info_list() override;
-
- protected:
-  void InitPipeline() override;
-  std::unique_ptr<uint8_t[]> MakeBody(GainPtr gain, ModulationPtr mod, size_t *const size, uint8_t *const send_msg_id) override;
-  bool WaitMsgProcessed(uint8_t msg_id, size_t max_trial = 200, uint8_t mask = 0xFF);
-  std::unique_ptr<uint8_t[]> MakeSeqBody(SequencePtr seq, size_t *const size, uint8_t *const send_msg_id);
-  void CalibrateSeq();
-  std::unique_ptr<uint8_t[]> MakeCalibBody(std::vector<uint16_t> diffs, size_t *const size);
-
-  std::vector<uint8_t> _rx_data;
-  bool _seq_mode;
-};
-
-class AUTDControllerV_0_7 : public AUTDControllerV_0_6 {
- public:
-  AUTDControllerV_0_7();
-  virtual ~AUTDControllerV_0_7();
-
-  bool Calibrate(Configuration config) override;
-};
-}  // namespace _internal
 }  // namespace autd

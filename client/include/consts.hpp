@@ -3,7 +3,7 @@
 // Created Date: 07/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 30/10/2020
+// Last Modified: 21/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -17,7 +17,7 @@ namespace autd {
 constexpr size_t NUM_TRANS_IN_UNIT = 249;
 constexpr size_t NUM_TRANS_X = 18;
 constexpr size_t NUM_TRANS_Y = 14;
-constexpr double TRANS_SIZE_MM = 10.18;
+constexpr double TRANS_SIZE_MM = 10.16;
 constexpr double AUTD_WIDTH = 192.0;
 constexpr double AUTD_HEIGHT = 151.4;
 template <typename T>
