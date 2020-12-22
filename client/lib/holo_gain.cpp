@@ -3,7 +3,7 @@
 // Created Date: 06/07/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 10/12/2020
+// Last Modified: 22/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -315,7 +315,7 @@ void HoloGainImplNaive(vector<vector<uint16_t>>* data, const MatrixX3d& foci, co
   }
 }
 
-void HoloGainImplGS(vector< vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, GeometryPtr geometry, void* params) {
+void HoloGainImplGS(vector<vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, GeometryPtr geometry, void* params) {
   const int32_t repeat = (params == nullptr) ? 100 : *reinterpret_cast<uint32_t*>(params);
 
   const size_t M = foci.rows();
@@ -393,7 +393,7 @@ void HoloGainImplGSPAT(vector<vector<uint16_t>>* data, const MatrixX3d& foci, co
   }
 }
 
-void HoloGainImplLM(vector< vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, GeometryPtr geometry, void* params) {
+void HoloGainImplLM(vector<vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, GeometryPtr geometry, void* params) {
   double eps_1, eps_2, tau;
   int32_t k_max;
 
@@ -509,9 +509,8 @@ GainPtr HoloGain::Create(std::vector<Vector3> foci, std::vector<double> amps, Op
 void HoloGain::Build() {
   if (this->built()) return;
   auto geo = this->geometry();
-  if (geo == nullptr) {
-    throw std::runtime_error("Geometry is required to build Gain");
-  }
+
+  CheckAndInit(geo, &this->_data);
 
   auto M = _foci.size();
 
@@ -523,12 +522,6 @@ void HoloGain::Build() {
     foci(i, 1) = _foci[i].y();
     foci(i, 2) = _foci[i].z();
     amps(i) = _amps[i];
-  }
-
-  _data.clear();
-  const int ndevice = geo->numDevices();
-  for (int i = 0; i < ndevice; i++) {
-    _data[i].resize(NUM_TRANS_IN_UNIT);
   }
 
   switch (this->_method) {

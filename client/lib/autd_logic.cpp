@@ -67,7 +67,7 @@ bool AUTDLogic::SendBlocking(size_t size, unique_ptr<uint8_t[]> data, size_t tri
 
 void AUTDLogic::SendData(size_t size, unique_ptr<uint8_t[]> data) {
   if (this->_link == nullptr || !this->_link->is_open()) {
-    std::cerr << "Link is closed." << std::endl;
+    return;
   }
 
   try {
@@ -159,9 +159,11 @@ bool AUTDLogic::Clear() {
 }
 
 void AUTDLogic::Close() {
-  this->Clear();
-  this->_link->Close();
-  this->_link = nullptr;
+  if (this->_link != nullptr) {
+    this->Clear();
+    this->_link->Close();
+    this->_link = nullptr;
+  }
 }
 
 FirmwareInfoList AUTDLogic::firmware_info_list() {
