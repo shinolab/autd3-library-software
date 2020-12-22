@@ -341,7 +341,7 @@ void AUTDController::AppendGainSync(GainPtr gain, bool wait_for_send) {
   this->_sync_cnt->AppendGain(gain, wait_for_send);
 }
 
-void AUTDController::AppendModulation(ModulationPtr mod) {}
+void AUTDController::AppendModulation(ModulationPtr mod) { this->_sync_cnt->AppendModulation(mod); }
 void AUTDController::AppendModulationSync(ModulationPtr mod) { this->_sync_cnt->AppendModulation(mod); }
 
 void AUTDController::AppendSTMGain(GainPtr gain) { this->_stm_cnt->AppendGain(gain); }
