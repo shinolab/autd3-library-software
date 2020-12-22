@@ -60,14 +60,14 @@ class Gain {
    * @brief Getter function for the data of amplitude and phase of each transducers
    * @details Each data is 16 bit unsigned integer, where MSB represents amplitude and LSB represents phase
    */
-  std::map<int, std::vector<uint16_t>> data();
+  std::vector<std::vector<uint16_t>> &data();
 
   Gain() noexcept;
 
  protected:
   bool _built;
   GeometryPtr _geometry;
-  std::map<int, std::vector<uint16_t>> _data;
+  std::vector<std::vector<uint16_t>> _data;
   bool built() noexcept;
 };
 

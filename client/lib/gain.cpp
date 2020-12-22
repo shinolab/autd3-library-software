@@ -1,9 +1,9 @@
-﻿// File: gain.cpp
+// File: gain.cpp
 // Project: lib
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 05/11/2020
+// Last Modified: 22/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -51,7 +51,7 @@ GeometryPtr Gain::geometry() noexcept { return this->_geometry; }
 
 void Gain::SetGeometry(const GeometryPtr& geometry) noexcept { this->_geometry = geometry; }
 
-std::map<int, std::vector<uint16_t>> Gain::data() { return this->_data; }
+std::vector<std::vector<uint16_t>>& Gain::data() { return this->_data; }
 
 GainPtr PlaneWaveGain::Create(Vector3 direction, double amp) {
   uint8_t D = AdjustAmp(amp);
