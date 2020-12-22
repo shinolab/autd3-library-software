@@ -56,7 +56,7 @@ class Geometry {
   /**
    * @brief Convert device ID into group ID
    */
-  virtual int GroupIDForDeviceID(int device_iD) = 0;
+  virtual int GroupIDForDeviceIdx(int device_iD) = 0;
   /**
    * @brief Position of a transducer specified by id
    */
@@ -84,11 +84,7 @@ class Geometry {
   /**
    * @brief Convert transducer index into device ID
    */
-  virtual const int deviceIdForTransIdx(int transducer_idx) = 0;
-  /**
-   * @brief Convert device index into device ID
-   */
-  virtual const int deviceIdForDeviceIdx(int device_index) = 0;
+  virtual const int deviceIdxForTransIdx(int transducer_idx) = 0;
 
  private:
   static GeometryPtr Create();

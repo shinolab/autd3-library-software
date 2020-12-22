@@ -1,4 +1,4 @@
-// File: gain.cpp
+﻿// File: gain.cpp
 // Project: lib
 // Created Date: 01/06/2016
 // Author: Seki Inoue
@@ -39,7 +39,7 @@ void Gain::Build() {
   assert(geometry != nullptr);
 
   for (int i = 0; i < geometry->numDevices(); i++) {
-    this->_data[geometry->deviceIdForDeviceIdx(i)] = std::vector<uint16_t>(NUM_TRANS_IN_UNIT, 0x0000);
+    this->_data[i] = std::vector<uint16_t>(NUM_TRANS_IN_UNIT, 0x0000);
   }
 
   this->_built = true;
@@ -73,7 +73,7 @@ void PlaneWaveGain::Build() {
   this->_data.clear();
   const auto ndevice = geometry->numDevices();
   for (int i = 0; i < ndevice; i++) {
-    this->_data[geometry->deviceIdForDeviceIdx(i)].resize(NUM_TRANS_IN_UNIT);
+    this->_data[i].resize(NUM_TRANS_IN_UNIT);
   }
 
   const auto ntrans = geometry->numTransducers();
@@ -85,7 +85,7 @@ void PlaneWaveGain::Build() {
     const auto dist = trp.dot(dir);
     const auto fphase = pos_mod(dist, ULTRASOUND_WAVELENGTH) / ULTRASOUND_WAVELENGTH;
     const uint8_t phase = static_cast<uint8_t>(round(255.0 * (1.0 - fphase)));
-    this->_data[geometry->deviceIdForTransIdx(i)].at(i % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(duty) << 8) + phase;
+    this->_data[geometry->deviceIdxForTransIdx(i)].at(i % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(duty) << 8) + phase;
   }
 
   this->_built = true;
@@ -114,7 +114,7 @@ void FocalPointGain::Build() {
 
   const auto ndevice = geometry->numDevices();
   for (int i = 0; i < ndevice; i++) {
-    this->_data[geometry->deviceIdForDeviceIdx(i)].resize(NUM_TRANS_IN_UNIT);
+    this->_data[i].resize(NUM_TRANS_IN_UNIT);
   }
 
   const uint8_t duty = this->_duty;
@@ -124,7 +124,7 @@ void FocalPointGain::Build() {
     const auto dist = (trp - this->_point).l2_norm();
     const auto fphase = fmod(dist, ULTRASOUND_WAVELENGTH) / ULTRASOUND_WAVELENGTH;
     const uint8_t phase = static_cast<uint8_t>(round(255.0 * (1.0 - fphase)));
-    this->_data[geometry->deviceIdForTransIdx(i)].at(i % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(duty) << 8) + phase;
+    this->_data[geometry->deviceIdxForTransIdx(i)].at(i % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(duty) << 8) + phase;
   }
 
   this->_built = true;
@@ -154,7 +154,7 @@ void BesselBeamGain::Build() {
   this->_data.clear();
   const auto ndevice = geometry->numDevices();
   for (int i = 0; i < ndevice; i++) {
-    this->_data[geometry->deviceIdForDeviceIdx(i)].resize(NUM_TRANS_IN_UNIT);
+    this->_data[i].resize(NUM_TRANS_IN_UNIT);
   }
   const auto ntrans = geometry->numTransducers();
 
@@ -174,7 +174,7 @@ void BesselBeamGain::Build() {
     const auto fphase =
         fmod(sin(_theta_z) * sqrt(_R.x() * _R.x() + _R.y() * _R.y()) - cos(_theta_z) * _R.z(), ULTRASOUND_WAVELENGTH) / ULTRASOUND_WAVELENGTH;
     const uint8_t phase = static_cast<uint8_t>(round(255.0 * (1.0 - fphase)));
-    this->_data[geometry->deviceIdForTransIdx(i)].at(i % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(duty) << 8) + phase;
+    this->_data[geometry->deviceIdxForTransIdx(i)].at(i % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(duty) << 8) + phase;
   }
 
   this->_built = true;
@@ -196,13 +196,13 @@ void CustomGain::Build() {
   this->_data.clear();
   const auto ndevice = geometry->numDevices();
   for (int i = 0; i < ndevice; i++) {
-    this->_data[geometry->deviceIdForDeviceIdx(i)].resize(NUM_TRANS_IN_UNIT);
+    this->_data[i].resize(NUM_TRANS_IN_UNIT);
   }
   const auto ntrans = geometry->numTransducers();
 
   for (int i = 0; i < ntrans; i++) {
     const auto data = this->_rawdata[i];
-    this->_data[geometry->deviceIdForTransIdx(i)].at(i % NUM_TRANS_IN_UNIT) = data;
+    this->_data[geometry->deviceIdxForTransIdx(i)].at(i % NUM_TRANS_IN_UNIT) = data;
   }
 
   this->_built = true;
@@ -224,12 +224,12 @@ void TransducerTestGain::Build() {
   this->_data.clear();
   const auto ndevice = geometry->numDevices();
   for (int i = 0; i < ndevice; i++) {
-    this->_data[geometry->deviceIdForDeviceIdx(i)].resize(NUM_TRANS_IN_UNIT, 0);
+    this->_data[i].resize(NUM_TRANS_IN_UNIT, 0);
   }
 
   uint16_t d = (static_cast<uint16_t>(this->_duty) << 8) & 0xFF00;
   uint16_t s = static_cast<uint16_t>(this->_phase) & 0x00FF;
-  this->_data[geometry->deviceIdForTransIdx(_xdcr_idx)].at(_xdcr_idx % NUM_TRANS_IN_UNIT) = d | s;
+  this->_data[geometry->deviceIdxForTransIdx(_xdcr_idx)].at(_xdcr_idx % NUM_TRANS_IN_UNIT) = d | s;
 
   this->_built = true;
 }

@@ -69,7 +69,7 @@ void MatlabGain::Build() {
   this->_data.clear();
   const int ndevice = this->geometry()->numDevices();
   for (int i = 0; i < ndevice; i++) {
-    this->_data[this->geometry()->deviceIdForDeviceIdx(i)].resize(NUM_TRANS_IN_UNIT);
+    this->_data[i].resize(NUM_TRANS_IN_UNIT);
   }
   for (int i = 0; i < nelems; i++) {
     double famp = sqrt(array[i].real * array[i].real + array[i].imag * array[i].imag);
@@ -89,7 +89,7 @@ void MatlabGain::Build() {
       }
     }
 
-    this->_data[this->geometry()->deviceIdForTransIdx(i)][i % NUM_TRANS_IN_UNIT] = ((uint16_t)amp << 8) + phase;
+    this->_data[this->geometry()->deviceIdxForTransIdx(i)][i % NUM_TRANS_IN_UNIT] = ((uint16_t)amp << 8) + phase;
   }
 #endif
 
