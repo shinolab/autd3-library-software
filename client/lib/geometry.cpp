@@ -3,7 +3,7 @@
 // Created Date: 08/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 01/07/2020
+// Last Modified: 22/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -83,7 +83,6 @@ class AUTDGeometry : public Geometry {
   int AddDevice(Vector3 position, Vector3 euler_angles, int group = 0) final;
   int AddDeviceQuaternion(Vector3 position, Quaternion quaternion, int group = 0) final;
 
-  void DelDevice(int device_id) final;
   const int numDevices() noexcept final;
   const int numTransducers() noexcept final;
   int GroupIDForDeviceID(int device_id) final;
@@ -123,16 +122,6 @@ int AUTDGeometry::AddDeviceQuaternion(Vector3 position, Quaternion quaternion, i
   this->_devices.push_back(Device::Create(device_id, pos, qua));
   this->_group_map[device_id] = group;
   return device_id;
-}
-
-void AUTDGeometry::DelDevice(int device_id) {
-  auto itr = this->_devices.begin();
-  while (itr != this->_devices.end()) {
-    if ((*itr)->device_id == device_id)
-      itr = this->_devices.erase(itr);
-    else
-      itr++;
-  }
 }
 
 const int AUTDGeometry::numDevices() noexcept { return static_cast<int>(this->_devices.size()); }

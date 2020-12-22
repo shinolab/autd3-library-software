@@ -46,10 +46,6 @@ class Geometry {
    */
   virtual int AddDeviceQuaternion(Vector3 position, Quaternion quaternion, int group = 0) = 0;
   /**
-   * @brief Remove device from the geometry.
-   */
-  virtual void DelDevice(int device_id) = 0;
-  /**
    * @brief Number of devices
    */
   virtual const int numDevices() noexcept = 0;
