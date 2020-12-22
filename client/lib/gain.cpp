@@ -38,6 +38,7 @@ void Gain::Build() {
   auto geometry = this->geometry();
   assert(geometry != nullptr);
 
+  this->_data.resize(geometry->numDevices());
   for (int i = 0; i < geometry->numDevices(); i++) {
     this->_data[i] = std::vector<uint16_t>(NUM_TRANS_IN_UNIT, 0x0000);
   }
@@ -67,14 +68,10 @@ GainPtr PlaneWaveGain::Create(Vector3 direction, uint8_t duty) {
 
 void PlaneWaveGain::Build() {
   if (this->built()) return;
-  auto geometry = this->geometry();
-  assert(geometry != nullptr);
 
-  this->_data.clear();
-  const auto ndevice = geometry->numDevices();
-  for (int i = 0; i < ndevice; i++) {
-    this->_data[i].resize(NUM_TRANS_IN_UNIT);
-  }
+  auto geometry = this->geometry();
+
+  CheckAndInit(geometry, &this->_data);
 
   const auto ntrans = geometry->numTransducers();
   const auto dir = this->_direction.normalized();
@@ -108,14 +105,8 @@ void FocalPointGain::Build() {
   if (this->built()) return;
 
   auto geometry = this->geometry();
-  assert(geometry != nullptr);
 
-  this->_data.clear();
-
-  const auto ndevice = geometry->numDevices();
-  for (int i = 0; i < ndevice; i++) {
-    this->_data[i].resize(NUM_TRANS_IN_UNIT);
-  }
+  CheckAndInit(geometry, &this->_data);
 
   const uint8_t duty = this->_duty;
   const auto ntrans = geometry->numTransducers();
@@ -149,13 +140,9 @@ GainPtr BesselBeamGain::Create(Vector3 point, Vector3 vec_n, double theta_z, uin
 void BesselBeamGain::Build() {
   if (this->built()) return;
   auto geometry = this->geometry();
-  assert(geometry != nullptr);
 
-  this->_data.clear();
-  const auto ndevice = geometry->numDevices();
-  for (int i = 0; i < ndevice; i++) {
-    this->_data[i].resize(NUM_TRANS_IN_UNIT);
-  }
+  CheckAndInit(geometry, &this->_data);
+
   const auto ntrans = geometry->numTransducers();
 
   const Vector3 _ez(0., 0., 1.0);
@@ -191,13 +178,9 @@ GainPtr CustomGain::Create(uint16_t* data, int data_length) {
 void CustomGain::Build() {
   if (this->built()) return;
   auto geometry = this->geometry();
-  assert(geometry != nullptr);
 
-  this->_data.clear();
-  const auto ndevice = geometry->numDevices();
-  for (int i = 0; i < ndevice; i++) {
-    this->_data[i].resize(NUM_TRANS_IN_UNIT);
-  }
+  CheckAndInit(geometry, &this->_data);
+
   const auto ntrans = geometry->numTransducers();
 
   for (int i = 0; i < ntrans; i++) {
@@ -219,13 +202,8 @@ GainPtr TransducerTestGain::Create(int idx, int duty, int phase) {
 void TransducerTestGain::Build() {
   if (this->built()) return;
   auto geometry = this->geometry();
-  assert(geometry != nullptr);
 
-  this->_data.clear();
-  const auto ndevice = geometry->numDevices();
-  for (int i = 0; i < ndevice; i++) {
-    this->_data[i].resize(NUM_TRANS_IN_UNIT, 0);
-  }
+  CheckAndInit(geometry, &this->_data);
 
   uint16_t d = (static_cast<uint16_t>(this->_duty) << 8) & 0xFF00;
   uint16_t s = static_cast<uint16_t>(this->_phase) & 0x00FF;
