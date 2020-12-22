@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/11/2020
+// Last Modified: 21/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -24,12 +24,6 @@
 
 namespace autd {
 
-enum class AUTD_VERSION {
-  V_0_1 = 0,
-  V_0_6 = 1,
-  V_0_7 = 2,
-};
-
 /**
  * @brief AUTD Controller
  */
@@ -40,7 +34,7 @@ class Controller {
   /**
    * @brief Create controller
    */
-  static ControllerPtr Create(AUTD_VERSION version = AUTD_VERSION::V_0_7);
+  static ControllerPtr Create();
   /**
    * @brief Verify that the device is properly connected
    */
