@@ -246,8 +246,7 @@ unique_ptr<uint8_t[]> AUTDLogic::MakeBody(GainPtr gain, ModulationPtr mod, size_
   auto byteSize = NUM_TRANS_IN_UNIT * sizeof(uint16_t);
   if (gain != nullptr) {
     for (int i = 0; i < gain->geometry()->numDevices(); i++) {
-      auto deviceId = gain->geometry()->deviceIdForDeviceIdx(i);
-      std::memcpy(cursor, &gain->_data[deviceId].at(0), byteSize);
+      std::memcpy(cursor, &gain->_data[i].at(0), byteSize);
       cursor += byteSize / sizeof(body[0]);
     }
   }

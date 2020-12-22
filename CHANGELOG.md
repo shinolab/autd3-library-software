@@ -1,5 +1,7 @@
 # 0.8.0
-* Delete `Geometry::DelDevice()`
+* Delete `Geometry::DelDevice()` and `Geometry::deviceIdForDeviceIdx()`
+* Rename `deviceIdForTransIdx()` to `deviceIdxForTransIdx()`
+* Rename `GroupIDForDeviceID()` to `GroupIDForDeviceIdx()`
 
 # 0.7.2
 * Support Apple Silicon mac

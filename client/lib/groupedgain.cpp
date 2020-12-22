@@ -37,19 +37,19 @@ void GroupedGain::Build() {
 
   const auto ndevice = geo->numDevices();
   for (int i = 0; i < ndevice; i++) {
-    this->_data[geo->deviceIdForDeviceIdx(i)].resize(NUM_TRANS_IN_UNIT);
+    this->_data[i].resize(NUM_TRANS_IN_UNIT);
   }
 
   for (std::pair<int, GainPtr> p : this->_gainmap) {
-    auto g = p.second;
+    GainPtr g = p.second;
     g->SetGeometry(geo);
     g->Build();
   }
 
   for (int i = 0; i < ndevice; i++) {
-    auto groupId = geo->GroupIDForDeviceID(i);
+    auto groupId = geo->GroupIDForDeviceIdx(i);
     if (_gainmap.count(groupId)) {
-      auto data = _gainmap[groupId]->data();
+      std::vector<std::vector<uint16_t>>& data = _gainmap[groupId]->data();
       this->_data[i] = data[i];
     } else {
       this->_data[i] = std::vector<uint16_t>(NUM_TRANS_IN_UNIT, 0x0000);
