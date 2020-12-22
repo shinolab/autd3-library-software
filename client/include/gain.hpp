@@ -14,12 +14,14 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+#include <cassert>
 #include <map>
 #include <memory>
 #include <mutex>
 #include <string>
 #include <vector>
 
+#include "consts.hpp"
 #include "core.hpp"
 #include "geometry.hpp"
 #include "vector3.hpp"
@@ -30,6 +32,18 @@ namespace gain {
 inline uint8_t AdjustAmp(double amp) noexcept {
   auto d = asin(amp) / M_PI;  //  duty (0 ~ 0.5)
   return static_cast<uint8_t>(511 * d);
+}
+
+inline void CheckAndInit(GeometryPtr geometry, std::vector<std::vector<uint16_t>> *data) {
+  assert(geometry != nullptr);
+
+  data->clear();
+
+  const auto ndevice = geometry->numDevices();
+  data->resize(ndevice);
+  for (int i = 0; i < ndevice; i++) {
+    data->at(i).resize(NUM_TRANS_IN_UNIT);
+  }
 }
 
 /**

@@ -57,8 +57,8 @@ include_directories(${INCLUDE_LIST})
 
 if(WIN32)
   source_group("link" FILES
-    link.cpp
     emulator_link.cpp
+    debug_link.cpp
   )
 
   source_group("gain" FILES

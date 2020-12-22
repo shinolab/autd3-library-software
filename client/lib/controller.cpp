@@ -108,6 +108,7 @@ class AUTDControllerAsync {
   }
 
   void AppendGain(GainPtr gain) {
+    gain->SetGeometry(this->_autd_logic->_geometry);
     {
       std::unique_lock<std::mutex> lk(_build_gain_mtx);
       _build_gain_q.push(gain);
@@ -333,16 +334,14 @@ void AUTDController::Stop() {
 
 void AUTDController::AppendGain(GainPtr gain) {
   this->_stm_cnt->Stop();
-  gain->SetGeometry(this->_autd_logic->_geometry);
   this->_async_cnt->AppendGain(gain);
 }
 void AUTDController::AppendGainSync(GainPtr gain, bool wait_for_send) {
   this->_stm_cnt->Stop();
-  gain->SetGeometry(this->_autd_logic->_geometry);
   this->_sync_cnt->AppendGain(gain, wait_for_send);
 }
 
-void AUTDController::AppendModulation(ModulationPtr mod) {}
+void AUTDController::AppendModulation(ModulationPtr mod) { this->_sync_cnt->AppendModulation(mod); }
 void AUTDController::AppendModulationSync(ModulationPtr mod) { this->_sync_cnt->AppendModulation(mod); }
 
 void AUTDController::AppendSTMGain(GainPtr gain) { this->_stm_cnt->AppendGain(gain); }
