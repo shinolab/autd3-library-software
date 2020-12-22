@@ -1,3 +1,6 @@
+# 0.8.0
+* Delete `Geometry::DelDevice()`
+
 # 0.7.2
 * Support Apple Silicon mac
 
