@@ -1,4 +1,5 @@
 # 0.8.0
+* Delete backward compatibility
 * Delete `Geometry::DelDevice()` and `Geometry::deviceIdForDeviceIdx()`
 * Rename `deviceIdForTransIdx()` to `deviceIdxForTransIdx()`
 * Rename `GroupIDForDeviceID()` to `GroupIDForDeviceIdx()`
