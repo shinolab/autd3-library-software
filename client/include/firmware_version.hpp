@@ -3,7 +3,7 @@
 // Created Date: 30/03/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/10/2020
+// Last Modified: 22/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -15,13 +15,15 @@
 #include <string>
 #include <vector>
 
+#include "core.hpp"
+
 namespace autd {
 
 /**
  * @brief Firmware information
  */
 class FirmwareInfo {
-  friend class AUTDController;
+  friend class _internal::AUTDLogic;
 
  public:
   /**
@@ -58,9 +60,9 @@ class FirmwareInfo {
       case 3:
         return "v0.6";
       case 4:
-          return "v0.7";
+        return "v0.7";
       case 5:
-          return "v0.8";
+        return "v0.8";
       default:
         return "unknown: " + std::to_string(version_number);
     }

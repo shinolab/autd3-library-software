@@ -3,7 +3,7 @@
 // Created Date: 11/10/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/12/2020
+// Last Modified: 22/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -16,18 +16,17 @@
 #include <queue>
 #include <vector>
 
+#include "autd_logic.hpp"
 #include "configuration.hpp"
 #include "controller.hpp"
 #include "ec_config.hpp"
 #include "firmware_version.hpp"
 
-namespace autd {
+namespace autd::_internal {
 
-namespace _internal {
 class AUTDControllerSync;
 class AUTDControllerAsync;
-class AUTDLinkManager;
-}  // namespace _internal
+class AUTDControllerSTM;
 
 class AUTDController : public Controller {
  public:
@@ -44,6 +43,7 @@ class AUTDController : public Controller {
   bool Calibrate(Configuration config);
   bool Clear();
   void Close();
+  void Flush();
 
   void Stop();
   void AppendGain(const GainPtr gain);
@@ -56,46 +56,14 @@ class AUTDController : public Controller {
   void StopSTModulation();
   void FinishSTModulation();
   void AppendSequence(SequencePtr seq);
-  void Flush();
   FirmwareInfoList firmware_info_list();
 
   void LateralModulationAT(Vector3 point, Vector3 dir, double lm_amp = 2.5, double lm_freq = 100);
 
  private:
-  void CloseLink();
-
-  void InitPipeline();
-
-  static FirmwareInfo FirmwareInfoCreate(uint16_t idx, uint16_t cpu_ver, uint16_t fpga_ver) { return FirmwareInfo{idx, cpu_ver, fpga_ver}; }
-
-  GeometryPtr _geometry;
-  std::unique_ptr<AUTDLinkManager> _link_manager;
-
-  // std::queue<GainPtr> _build_gain_q;
-  // std::queue<ModulationPtr> _build_mod_q;
-  // std::queue<GainPtr> _send_gain_q;
-  // std::queue<ModulationPtr> _send_mod_q;
-
-  std::vector<GainPtr> _stm_gains;
-  std::vector<uint8_t *> _stm_bodies;
-  std::vector<size_t> _stm_body_sizes;
-  std::unique_ptr<Timer> _p_stm_timer;
-
-  // std::thread _build_gain_thr;
-  // std::thread _build_mod_thr;
-  // std::thread _send_thr;
-  // std::condition_variable _build_gain_cond;
-  // std::condition_variable _build_mod_cond;
-  // std::condition_variable _send_cond;
-  // std::mutex _build_gain_mtx;
-  // std::mutex _build_mod_mtx;
-  // std::mutex _send_mtx;
-
-  std::vector<uint8_t> _rx_data;
-  bool _seq_mode;
-
-  bool _silent_mode = true;
-  Configuration _config = Configuration::GetDefaultConfiguration();
+  std::unique_ptr<_internal::AUTDControllerSync> _sync_cnt;
+  std::unique_ptr<_internal::AUTDControllerAsync> _async_cnt;
+  std::unique_ptr<_internal::AUTDControllerSTM> _stm_cnt;
+  std::shared_ptr<_internal::AUTDLogic> _autd_logic;
 };
-
-}  // namespace autd
+}  // namespace autd::_internal
