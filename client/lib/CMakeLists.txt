@@ -78,9 +78,10 @@ if(WIN32)
  
   source_group("controller" FILES
     controller.cpp
-    controller_v_0_1.cpp
-    controller_v_0_6.cpp
-    controller_v_0_7.cpp
+    autd_logic.cpp
+  )
+
+  source_group("geometry" FILES
     geometry.cpp
   )
 

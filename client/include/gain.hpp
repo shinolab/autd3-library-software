@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/11/2020
+// Last Modified: 22/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -36,7 +36,7 @@ inline uint8_t AdjustAmp(double amp) noexcept {
  * @brief Gain controls the amplitude and phase of each transducer in the AUTD
  */
 class Gain {
-  friend class autd::AUTDController;
+  friend class autd::_internal::AUTDLogic;
   friend class Geometry;
 
  public:

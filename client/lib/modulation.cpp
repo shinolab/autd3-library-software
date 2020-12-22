@@ -3,7 +3,7 @@
 // Created Date: 11/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 30/10/2020
+// Last Modified: 22/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -49,6 +49,10 @@ ModulationPtr Modulation::Create(uint8_t amp) {
 }
 
 void Modulation::Build(Configuration config) {}
+
+size_t Modulation::sent() { return _sent; }
+
+void Modulation::reset() { _sent = 0; }
 #pragma endregion
 
 #pragma region SineModulation
