@@ -26,7 +26,7 @@ class DebugLink : public Link {
  public:
   static LinkPtr Create(std::ostream& out);
 
-  DebugLink(std::ostream& out);
+  explicit DebugLink(std::ostream& out);
   ~DebugLink() override{};
 
  protected:
