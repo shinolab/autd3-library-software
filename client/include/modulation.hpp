@@ -3,7 +3,7 @@
 // Created Date: 04/11/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/10/2020
+// Last Modified: 22/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -24,7 +24,7 @@ namespace modulation {
  * @brief Modulation controls the amplitude modulation
  */
 class Modulation {
-  friend class autd::AUTDController;
+  friend class autd::_internal::AUTDLogic;
 
  public:
   Modulation() noexcept;
@@ -34,6 +34,8 @@ class Modulation {
   static ModulationPtr Create(uint8_t amp = 0xff);
   virtual void Build(Configuration config);
   std::vector<uint8_t> buffer;
+  size_t sent();
+  void reset();
 
  private:
   size_t _sent;
