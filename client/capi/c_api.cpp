@@ -22,8 +22,8 @@
 #include "wrapper.hpp"
 
 #pragma region Controller
-void AUTDCreateController(AUTDControllerHandle* out, int32_t version) {
-  auto ptr = autd::Controller::Create(static_cast<autd::AUTD_VERSION>(version));
+void AUTDCreateController(AUTDControllerHandle* out) {
+  auto ptr = autd::Controller::Create();
   auto* cnt = ControllerCreate(ptr);
   *out = cnt;
 }
@@ -42,10 +42,6 @@ int32_t AUTDAddDeviceQuaternion(AUTDControllerHandle handle, double x, double y,
                                 int32_t group_id) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   return cnt->ptr->geometry()->AddDeviceQuaternion(autd::Vector3(x, y, z), autd::Quaternion(qua_w, qua_x, qua_y, qua_z), group_id);
-}
-void AUTDDelDevice(AUTDControllerHandle handle, int32_t devId) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  cnt->ptr->geometry()->DelDevice(devId);
 }
 bool AUTDCalibrate(AUTDControllerHandle handle, int32_t smpl_freq, int32_t buf_size) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
@@ -82,8 +78,8 @@ int32_t AUTDGetAdapterPointer(void** out) {
 }
 void AUTDGetAdapter(void* p_adapter, int32_t index, char* desc, char* name) {
   auto* wrapper = static_cast<EtherCATAdaptersWrapper*>(p_adapter);
-  auto desc_ = wrapper->adapters[index].first;
-  auto name_ = wrapper->adapters[index].second;
+  std::string desc_ = wrapper->adapters[index].first;
+  std::string name_ = wrapper->adapters[index].second;
   std::char_traits<char>::copy(desc, desc_.c_str(), desc_.size() + 1);
   std::char_traits<char>::copy(name, name_.c_str(), name_.size() + 1);
 }
@@ -340,13 +336,9 @@ void AUTDFlush(AUTDControllerHandle handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   cnt->ptr->Flush();
 }
-int32_t AUTDDevIdForDeviceIdx(AUTDControllerHandle handle, int32_t dev_idx) {
+int32_t AUTDDevIdxForTransIdx(AUTDControllerHandle handle, int32_t trans_idx) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
-  return cnt->ptr->geometry()->deviceIdForDeviceIdx(dev_idx);
-}
-int32_t AUTDDevIdForTransIdx(AUTDControllerHandle handle, int32_t trans_idx) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  return cnt->ptr->geometry()->deviceIdForTransIdx(trans_idx);
+  return cnt->ptr->geometry()->deviceIdxForTransIdx(trans_idx);
 }
 double* AUTDTransPosition(AUTDControllerHandle handle, int32_t trans_idx) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
