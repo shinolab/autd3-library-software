@@ -3,7 +3,7 @@
 // Created Date: 22/12/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/12/2020
+// Last Modified: 23/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -15,6 +15,9 @@
 #include <memory>
 #include <utility>
 #include <vector>
+#include <atomic>
+#include <cstring>
+#include <thread>
 
 #include "configuration.hpp"
 #include "consts.hpp"
