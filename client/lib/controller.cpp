@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 22/12/2020
+// Last Modified: 23/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -123,7 +123,7 @@ class AUTDControllerAsync {
     _build_mod_cond.notify_all();
   }
 
-  void AUTDControllerAsync::InitPipeline() {
+  void InitPipeline() {
     this->_is_running = true;
     this->_build_gain_thr = std::thread([&] {
       while (this->_is_running) {
