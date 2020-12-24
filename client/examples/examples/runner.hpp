@@ -3,7 +3,7 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2020
+// Last Modified: 22/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -46,7 +46,7 @@ int run(autd::ControllerPtr autd) {
   autd->Calibrate(config);
 
   auto firm_info_list = autd->firmware_info_list();
-  for (auto firm_info : firm_info_list) cout << firm_info << endl;
+  for (autd::FirmwareInfo firm_info : firm_info_list) cout << firm_info << endl;
 
   while (true) {
     for (int i = 0; i < examples.size(); i++) {
@@ -64,11 +64,11 @@ int run(autd::ControllerPtr autd) {
       break;
     }
 
-    auto fn = examples[idx].first;
+    F fn = examples[idx].first;
     fn(autd);
 
     cout << "press any key to finish..." << endl;
-    getchar();
+    auto _ = getchar();
 
     cout << "finish." << endl;
     autd->FinishSTModulation();

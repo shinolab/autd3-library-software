@@ -3,7 +3,7 @@
 // Created Date: 01/07/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/07/2020
+// Last Modified: 22/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -72,6 +72,8 @@ double PointSequence::SetFrequency(double freq) {
 double PointSequence::frequency() { return this->sampling_frequency() / this->_control_points.size(); }
 
 double PointSequence::sampling_frequency() { return POINT_SEQ_BASE_FREQ / this->_sampl_freq_div; }
+
+size_t& PointSequence::sent() { return _sent; }
 
 uint16_t PointSequence::sampling_frequency_division() { return this->_sampl_freq_div; }
 

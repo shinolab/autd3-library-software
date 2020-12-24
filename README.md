@@ -28,8 +28,6 @@ This versioning was introduced after version 0.3.0.
 
 * Before using, be sure to write the latest firmwares in `dist/firmware`. For more information, please see [readme](/dist/firmware/Readme.md).
 
-* If you are using Windows, you should disable Hyper-V, otherwise, it will cause unexpected behavior.
-
 ## Requirements
 
 * If you are using Windows, install [Npcap](https://nmap.org/npcap/) with WinPcap API-compatible mode (recommended) or [WinPcap](https://www.winpcap.org/).

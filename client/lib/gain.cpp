@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 05/11/2020
+// Last Modified: 22/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -38,8 +38,9 @@ void Gain::Build() {
   auto geometry = this->geometry();
   assert(geometry != nullptr);
 
-  for (int i = 0; i < geometry->numDevices(); i++) {
-    this->_data[geometry->deviceIdForDeviceIdx(i)] = std::vector<uint16_t>(NUM_TRANS_IN_UNIT, 0x0000);
+  this->_data.resize(geometry->numDevices());
+  for (size_t i = 0; i < geometry->numDevices(); i++) {
+    this->_data[i] = std::vector<uint16_t>(NUM_TRANS_IN_UNIT, 0x0000);
   }
 
   this->_built = true;
@@ -51,7 +52,7 @@ GeometryPtr Gain::geometry() noexcept { return this->_geometry; }
 
 void Gain::SetGeometry(const GeometryPtr& geometry) noexcept { this->_geometry = geometry; }
 
-std::map<int, std::vector<uint16_t>> Gain::data() { return this->_data; }
+std::vector<std::vector<uint16_t>>& Gain::data() { return this->_data; }
 
 GainPtr PlaneWaveGain::Create(Vector3 direction, double amp) {
   uint8_t D = AdjustAmp(amp);
@@ -67,25 +68,21 @@ GainPtr PlaneWaveGain::Create(Vector3 direction, uint8_t duty) {
 
 void PlaneWaveGain::Build() {
   if (this->built()) return;
-  auto geometry = this->geometry();
-  assert(geometry != nullptr);
 
-  this->_data.clear();
-  const auto ndevice = geometry->numDevices();
-  for (int i = 0; i < ndevice; i++) {
-    this->_data[geometry->deviceIdForDeviceIdx(i)].resize(NUM_TRANS_IN_UNIT);
-  }
+  auto geometry = this->geometry();
+
+  CheckAndInit(geometry, &this->_data);
 
   const auto ntrans = geometry->numTransducers();
   const auto dir = this->_direction.normalized();
 
   const uint8_t duty = this->_duty;
-  for (int i = 0; i < ntrans; i++) {
+  for (size_t i = 0; i < ntrans; i++) {
     const auto trp = geometry->position(i);
     const auto dist = trp.dot(dir);
     const auto fphase = pos_mod(dist, ULTRASOUND_WAVELENGTH) / ULTRASOUND_WAVELENGTH;
     const uint8_t phase = static_cast<uint8_t>(round(255.0 * (1.0 - fphase)));
-    this->_data[geometry->deviceIdForTransIdx(i)].at(i % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(duty) << 8) + phase;
+    this->_data[geometry->deviceIdxForTransIdx(i)].at(i % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(duty) << 8) + phase;
   }
 
   this->_built = true;
@@ -108,23 +105,17 @@ void FocalPointGain::Build() {
   if (this->built()) return;
 
   auto geometry = this->geometry();
-  assert(geometry != nullptr);
 
-  this->_data.clear();
-
-  const auto ndevice = geometry->numDevices();
-  for (int i = 0; i < ndevice; i++) {
-    this->_data[geometry->deviceIdForDeviceIdx(i)].resize(NUM_TRANS_IN_UNIT);
-  }
+  CheckAndInit(geometry, &this->_data);
 
   const uint8_t duty = this->_duty;
   const auto ntrans = geometry->numTransducers();
-  for (int i = 0; i < ntrans; i++) {
+  for (size_t i = 0; i < ntrans; i++) {
     const auto trp = geometry->position(i);
     const auto dist = (trp - this->_point).l2_norm();
     const auto fphase = fmod(dist, ULTRASOUND_WAVELENGTH) / ULTRASOUND_WAVELENGTH;
     const uint8_t phase = static_cast<uint8_t>(round(255.0 * (1.0 - fphase)));
-    this->_data[geometry->deviceIdForTransIdx(i)].at(i % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(duty) << 8) + phase;
+    this->_data[geometry->deviceIdxForTransIdx(i)].at(i % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(duty) << 8) + phase;
   }
 
   this->_built = true;
@@ -149,13 +140,9 @@ GainPtr BesselBeamGain::Create(Vector3 point, Vector3 vec_n, double theta_z, uin
 void BesselBeamGain::Build() {
   if (this->built()) return;
   auto geometry = this->geometry();
-  assert(geometry != nullptr);
 
-  this->_data.clear();
-  const auto ndevice = geometry->numDevices();
-  for (int i = 0; i < ndevice; i++) {
-    this->_data[geometry->deviceIdForDeviceIdx(i)].resize(NUM_TRANS_IN_UNIT);
-  }
+  CheckAndInit(geometry, &this->_data);
+
   const auto ntrans = geometry->numTransducers();
 
   const Vector3 _ez(0., 0., 1.0);
@@ -166,7 +153,7 @@ void BesselBeamGain::Build() {
   auto _theta_w = asin(_v.l2_norm());
 
   const uint8_t duty = this->_duty;
-  for (int i = 0; i < ntrans; i++) {
+  for (size_t i = 0; i < ntrans; i++) {
     const auto trp = geometry->position(i);
     const auto _r = trp - this->_point;
     const Vector3 _v_x_r = _r.cross(_v);
@@ -174,16 +161,16 @@ void BesselBeamGain::Build() {
     const auto fphase =
         fmod(sin(_theta_z) * sqrt(_R.x() * _R.x() + _R.y() * _R.y()) - cos(_theta_z) * _R.z(), ULTRASOUND_WAVELENGTH) / ULTRASOUND_WAVELENGTH;
     const uint8_t phase = static_cast<uint8_t>(round(255.0 * (1.0 - fphase)));
-    this->_data[geometry->deviceIdForTransIdx(i)].at(i % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(duty) << 8) + phase;
+    this->_data[geometry->deviceIdxForTransIdx(i)].at(i % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(duty) << 8) + phase;
   }
 
   this->_built = true;
 }
 
-GainPtr CustomGain::Create(uint16_t* data, int data_length) {
+GainPtr CustomGain::Create(uint16_t* data, size_t data_length) {
   auto gain = std::make_shared<CustomGain>();
   gain->_rawdata.resize(data_length);
-  for (int i = 0; i < data_length; i++) gain->_rawdata.at(i) = data[i];
+  for (size_t i = 0; i < data_length; i++) gain->_rawdata.at(i) = data[i];
   gain->_geometry = nullptr;
   return gain;
 }
@@ -191,24 +178,20 @@ GainPtr CustomGain::Create(uint16_t* data, int data_length) {
 void CustomGain::Build() {
   if (this->built()) return;
   auto geometry = this->geometry();
-  assert(geometry != nullptr);
 
-  this->_data.clear();
-  const auto ndevice = geometry->numDevices();
-  for (int i = 0; i < ndevice; i++) {
-    this->_data[geometry->deviceIdForDeviceIdx(i)].resize(NUM_TRANS_IN_UNIT);
-  }
+  CheckAndInit(geometry, &this->_data);
+
   const auto ntrans = geometry->numTransducers();
 
-  for (int i = 0; i < ntrans; i++) {
+  for (size_t i = 0; i < ntrans; i++) {
     const auto data = this->_rawdata[i];
-    this->_data[geometry->deviceIdForTransIdx(i)].at(i % NUM_TRANS_IN_UNIT) = data;
+    this->_data[geometry->deviceIdxForTransIdx(i)].at(i % NUM_TRANS_IN_UNIT) = data;
   }
 
   this->_built = true;
 }
 
-GainPtr TransducerTestGain::Create(int idx, int duty, int phase) {
+GainPtr TransducerTestGain::Create(size_t idx, uint8_t duty, uint8_t phase) {
   auto gain = std::make_shared<TransducerTestGain>();
   gain->_xdcr_idx = idx;
   gain->_duty = duty;
@@ -219,17 +202,12 @@ GainPtr TransducerTestGain::Create(int idx, int duty, int phase) {
 void TransducerTestGain::Build() {
   if (this->built()) return;
   auto geometry = this->geometry();
-  assert(geometry != nullptr);
 
-  this->_data.clear();
-  const auto ndevice = geometry->numDevices();
-  for (int i = 0; i < ndevice; i++) {
-    this->_data[geometry->deviceIdForDeviceIdx(i)].resize(NUM_TRANS_IN_UNIT, 0);
-  }
+  CheckAndInit(geometry, &this->_data);
 
   uint16_t d = (static_cast<uint16_t>(this->_duty) << 8) & 0xFF00;
   uint16_t s = static_cast<uint16_t>(this->_phase) & 0x00FF;
-  this->_data[geometry->deviceIdForTransIdx(_xdcr_idx)].at(_xdcr_idx % NUM_TRANS_IN_UNIT) = d | s;
+  this->_data[geometry->deviceIdxForTransIdx(_xdcr_idx)].at(_xdcr_idx % NUM_TRANS_IN_UNIT) = d | s;
 
   this->_built = true;
 }

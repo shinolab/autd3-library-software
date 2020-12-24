@@ -49,7 +49,3 @@ if(NOT IGNORE_EXAMPLE)
       set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT example_soem)
     endif()
 endif()
-
-if(WIN32 AND ENABLE_TESTS)
-    add_subdirectory(tests)
-endif()

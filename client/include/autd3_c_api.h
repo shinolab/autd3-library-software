@@ -33,12 +33,11 @@ using DebugLogFunc = void (*)(const char *);
 #endif
 
 #pragma region Controller
-EXPORT void AUTDCreateController(AUTDControllerHandle *out, int32_t version);
+EXPORT void AUTDCreateController(AUTDControllerHandle *out);
 EXPORT int32_t AUTDOpenControllerWith(AUTDControllerHandle handle, AUTDLinkPtr link);
 EXPORT int32_t AUTDAddDevice(AUTDControllerHandle handle, double x, double y, double z, double rz1, double ry, double rz2, int32_t groupId);
 EXPORT int32_t AUTDAddDeviceQuaternion(AUTDControllerHandle handle, double x, double y, double z, double qua_w, double qua_x, double qua_y,
                                        double qua_z, int32_t groupId);
-EXPORT void AUTDDelDevice(AUTDControllerHandle handle, int32_t devId);
 EXPORT bool AUTDCalibrate(AUTDControllerHandle handle, int32_t smpl_freq, int32_t buf_size);
 EXPORT void AUTDCloseController(AUTDControllerHandle handle);
 EXPORT void AUTDClear(AUTDControllerHandle handle);
@@ -114,8 +113,7 @@ EXPORT void AUTDStopSTModulation(AUTDControllerHandle handle);
 EXPORT void AUTDFinishSTModulation(AUTDControllerHandle handle);
 EXPORT void AUTDAppendSequence(AUTDControllerHandle handle, AUTDSequencePtr seq);
 EXPORT void AUTDFlush(AUTDControllerHandle handle);
-EXPORT int32_t AUTDDevIdForDeviceIdx(AUTDControllerHandle handle, int32_t devIdx);
-EXPORT int32_t AUTDDevIdForTransIdx(AUTDControllerHandle handle, int32_t transIdx);
+EXPORT int32_t AUTDDevIdxForTransIdx(AUTDControllerHandle handle, int32_t transIdx);
 EXPORT double *AUTDTransPosition(AUTDControllerHandle handle, int32_t transIdx);
 EXPORT double *AUTDTransDirection(AUTDControllerHandle handle, int32_t transIdx);
 #pragma endregion

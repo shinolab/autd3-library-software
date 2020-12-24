@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/11/2020
+// Last Modified: 24/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -14,12 +14,14 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+#include <cassert>
 #include <map>
 #include <memory>
 #include <mutex>
 #include <string>
 #include <vector>
 
+#include "consts.hpp"
 #include "core.hpp"
 #include "geometry.hpp"
 #include "vector3.hpp"
@@ -32,13 +34,22 @@ inline uint8_t AdjustAmp(double amp) noexcept {
   return static_cast<uint8_t>(511 * d);
 }
 
+inline void CheckAndInit(GeometryPtr geometry, std::vector<std::vector<uint16_t>> *data) {
+  assert(geometry != nullptr);
+
+  data->clear();
+
+  const auto ndevice = geometry->numDevices();
+  data->resize(ndevice);
+  for (size_t i = 0; i < ndevice; i++) {
+    data->at(i).resize(NUM_TRANS_IN_UNIT);
+  }
+}
+
 /**
  * @brief Gain controls the amplitude and phase of each transducer in the AUTD
  */
 class Gain {
-  friend class autd::AUTDController;
-  friend class Geometry;
-
  public:
   /**
    * @brief Generate empty gain
@@ -60,14 +71,14 @@ class Gain {
    * @brief Getter function for the data of amplitude and phase of each transducers
    * @details Each data is 16 bit unsigned integer, where MSB represents amplitude and LSB represents phase
    */
-  std::map<int, std::vector<uint16_t>> data();
+  std::vector<std::vector<uint16_t>> &data();
 
   Gain() noexcept;
 
  protected:
   bool _built;
   GeometryPtr _geometry;
-  std::map<int, std::vector<uint16_t>> _data;
+  std::vector<std::vector<uint16_t>> _data;
   bool built() noexcept;
 };
 
@@ -161,7 +172,7 @@ class CustomGain : public Gain {
    * @details The data length should be the same as the number of transducers you use. The data is 16 bit unsigned integer, where MSB represents
    * amplitude and LSB represents phase
    */
-  static GainPtr Create(uint16_t *data, int data_length);
+  static GainPtr Create(uint16_t *data, size_t data_length);
   void Build() override;
 
  private:
@@ -178,11 +189,11 @@ class GroupedGain : public Gain {
    * @param[in] gainmap ｍap from group ID to gain
    * @details group ID must be specified in Geometry::AddDevice() in advance
    */
-  static GainPtr Create(std::map<int, GainPtr> gainmap);
+  static GainPtr Create(std::map<size_t, GainPtr> gainmap);
   void Build() override;
 
  private:
-  std::map<int, GainPtr> _gainmap;
+  std::map<size_t, GainPtr> _gainmap;
 };
 
 /**
@@ -247,8 +258,8 @@ class HoloGain : public Gain {
  protected:
   std::vector<Vector3> _foci;
   std::vector<double> _amps;
-  OptMethod _method;
-  void *_params;
+  OptMethod _method = OptMethod::SDP;
+  void *_params = nullptr;
 };
 
 /**
@@ -279,11 +290,11 @@ class TransducerTestGain : public Gain {
    * @param[in] duty duty ratio of driving signal
    * @param[in] phase phase of the phase
    */
-  static GainPtr Create(int transducer_index, int duty, int phase);
+  static GainPtr Create(size_t transducer_index, uint8_t duty, uint8_t phase);
   void Build() override;
 
  protected:
-  int _xdcr_idx = 0;
+  size_t _xdcr_idx = 0;
   uint8_t _duty = 0;
   uint8_t _phase = 0;
 };

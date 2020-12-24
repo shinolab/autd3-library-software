@@ -3,7 +3,7 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/07/2020
+// Last Modified: 24/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -28,9 +28,9 @@
 
 namespace autd::link {
 
-EtherCATAdapters SOEMLink::EnumerateAdapters(int *const size) {
+EtherCATAdapters SOEMLink::EnumerateAdapters(size_t *const size) {
   auto adapters = autdsoem::EtherCATAdapterInfo::EnumerateAdapters();
-  *size = static_cast<int>(adapters.size());
+  *size = adapters.size();
   EtherCATAdapters res;
   for (auto adapter : autdsoem::EtherCATAdapterInfo::EnumerateAdapters()) {
     EtherCATAdapter p;
@@ -58,7 +58,7 @@ class SOEMLinkImpl : public SOEMLink {
   bool is_open() final;
 };
 
-LinkPtr SOEMLink::Create(std::string ifname, int device_num) {
+LinkPtr SOEMLink::Create(std::string ifname, size_t device_num) {
   auto link = std::make_shared<SOEMLinkImpl>();
   link->_ifname = ifname;
   link->_device_num = device_num;
