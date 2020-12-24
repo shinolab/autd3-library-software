@@ -40,15 +40,14 @@ class SOEMLink : public Link {
    * @details Available Network interface names are obtained by EnumerateAdapters().
    *          The numbers of connected devices is obtained by Geometry::numDevices().
    */
-  static LinkPtr Create(std::string ifname, int device_num);
+  static LinkPtr Create(std::string ifname, size_t device_num);
 
   /**
    * @brief Enumerate Ethernet adapters of the computer.
    */
-  static EtherCATAdapters EnumerateAdapters(int* const size);
+  static EtherCATAdapters EnumerateAdapters(size_t* const size);
   ~SOEMLink() override {}
 
- protected:
   void Open() override = 0;
   void Close() override = 0;
   void Send(size_t size, std::unique_ptr<uint8_t[]> buf) override = 0;

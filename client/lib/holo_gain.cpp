@@ -3,7 +3,7 @@
 // Created Date: 06/07/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 22/12/2020
+// Last Modified: 24/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -136,7 +136,7 @@ void HoloGainImplSDP(vector<vector<uint16_t>>* data, const MatrixX3d& foci, cons
   }
 
   const size_t M = foci.rows();
-  const auto N = static_cast<int>(geometry->numTransducers());
+  const auto N = geometry->numTransducers();
 
   MatrixXcd P = MatrixXcd::Zero(M, M);
   for (size_t i = 0; i < M; i++) {
@@ -224,7 +224,7 @@ void HoloGainImplEVD(vector<vector<uint16_t>>* data, const MatrixX3d& foci, cons
   }
 
   const size_t M = foci.rows();
-  const auto N = static_cast<int>(geometry->numTransducers());
+  const auto N = geometry->numTransducers();
 
   auto G = TrnasferMatrix(geometry, foci, M, N);
 
@@ -299,7 +299,7 @@ void HoloGainImplEVD(vector<vector<uint16_t>>* data, const MatrixX3d& foci, cons
 
 void HoloGainImplNaive(vector<vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, GeometryPtr geometry, void* params) {
   const size_t M = foci.rows();
-  const auto N = static_cast<int>(geometry->numTransducers());
+  const auto N = geometry->numTransducers();
 
   auto G = TrnasferMatrix(geometry, foci, M, N);
   auto Gh = G.adjoint();
@@ -319,7 +319,7 @@ void HoloGainImplGS(vector<vector<uint16_t>>* data, const MatrixX3d& foci, const
   const int32_t repeat = (params == nullptr) ? 100 : *reinterpret_cast<uint32_t*>(params);
 
   const size_t M = foci.rows();
-  const auto N = static_cast<int>(geometry->numTransducers());
+  const auto N = geometry->numTransducers();
 
   auto G = TrnasferMatrix(geometry, foci, M, N);
 
@@ -351,7 +351,7 @@ void HoloGainImplGSPAT(vector<vector<uint16_t>>* data, const MatrixX3d& foci, co
   const int32_t repeat = (params == nullptr) ? 100 : *reinterpret_cast<uint32_t*>(params);
 
   const size_t M = foci.rows();
-  const auto N = static_cast<int>(geometry->numTransducers());
+  const auto N = geometry->numTransducers();
 
   auto G = TrnasferMatrix(geometry, foci, M, N);
 
@@ -411,7 +411,7 @@ void HoloGainImplLM(vector<vector<uint16_t>>* data, const MatrixX3d& foci, const
   }
 
   const size_t M = foci.rows();
-  const auto N = static_cast<int>(geometry->numTransducers());
+  const auto N = geometry->numTransducers();
   const auto n_param = N + M;
 
   MatrixXcd P = MatrixXcd::Zero(M, M);
