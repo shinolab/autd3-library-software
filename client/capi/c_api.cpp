@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/11/2020
+// Last Modified: 24/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -22,8 +22,8 @@
 #include "wrapper.hpp"
 
 #pragma region Controller
-void AUTDCreateController(AUTDControllerHandle* out, int32_t version) {
-  auto ptr = autd::Controller::Create(static_cast<autd::AUTD_VERSION>(version));
+void AUTDCreateController(AUTDControllerHandle* out) {
+  auto ptr = autd::Controller::Create();
   auto* cnt = ControllerCreate(ptr);
   *out = cnt;
 }
@@ -36,16 +36,14 @@ int32_t AUTDOpenControllerWith(AUTDControllerHandle handle, AUTDLinkPtr plink) {
 }
 int32_t AUTDAddDevice(AUTDControllerHandle handle, double x, double y, double z, double rz1, double ry, double rz2, int32_t group_id) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
-  return cnt->ptr->geometry()->AddDevice(autd::Vector3(x, y, z), autd::Vector3(rz1, ry, rz2), group_id);
+  auto res = cnt->ptr->geometry()->AddDevice(autd::Vector3(x, y, z), autd::Vector3(rz1, ry, rz2), group_id);
+  return static_cast<int32_t>(res);
 }
 int32_t AUTDAddDeviceQuaternion(AUTDControllerHandle handle, double x, double y, double z, double qua_w, double qua_x, double qua_y, double qua_z,
                                 int32_t group_id) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
-  return cnt->ptr->geometry()->AddDeviceQuaternion(autd::Vector3(x, y, z), autd::Quaternion(qua_w, qua_x, qua_y, qua_z), group_id);
-}
-void AUTDDelDevice(AUTDControllerHandle handle, int32_t devId) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  cnt->ptr->geometry()->DelDevice(devId);
+  auto res = cnt->ptr->geometry()->AddDeviceQuaternion(autd::Vector3(x, y, z), autd::Quaternion(qua_w, qua_x, qua_y, qua_z), group_id);
+  return static_cast<int32_t>(res);
 }
 bool AUTDCalibrate(AUTDControllerHandle handle, int32_t smpl_freq, int32_t buf_size) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
@@ -75,15 +73,15 @@ void AUTDStop(AUTDControllerHandle handle) {
   cnt->ptr->Stop();
 }
 int32_t AUTDGetAdapterPointer(void** out) {
-  int32_t size;
+  size_t size;
   auto adapters = autd::link::SOEMLink::EnumerateAdapters(&size);
   *out = EtherCATAdaptersCreate(adapters);
-  return size;
+  return static_cast<int32_t>(size);
 }
 void AUTDGetAdapter(void* p_adapter, int32_t index, char* desc, char* name) {
   auto* wrapper = static_cast<EtherCATAdaptersWrapper*>(p_adapter);
-  auto desc_ = wrapper->adapters[index].first;
-  auto name_ = wrapper->adapters[index].second;
+  std::string desc_ = wrapper->adapters[index].first;
+  std::string name_ = wrapper->adapters[index].second;
   std::char_traits<char>::copy(desc, desc_.c_str(), desc_.size() + 1);
   std::char_traits<char>::copy(name, name_.c_str(), name_.size() + 1);
 }
@@ -93,7 +91,7 @@ void AUTDFreeAdapterPointer(void* p_adapter) {
 }
 int32_t AUTDGetFirmwareInfoListPointer(AUTDControllerHandle handle, void** out) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
-  int32_t size = cnt->ptr->geometry()->numDevices();
+  int32_t size = static_cast<int32_t>(cnt->ptr->geometry()->numDevices());
   auto* list = FirmwareInfoListCreate(cnt->ptr->firmware_info_list());
   *out = list;
   return size;
@@ -122,11 +120,13 @@ bool AUTDIsSilentMode(AUTDControllerHandle handle) {
 }
 int32_t AUTDNumDevices(AUTDControllerHandle handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
-  return cnt->ptr->geometry()->numDevices();
+  auto res = cnt->ptr->geometry()->numDevices();
+  return static_cast<int32_t>(res);
 }
 int32_t AUTDNumTransducers(AUTDControllerHandle handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
-  return cnt->ptr->geometry()->numTransducers();
+  auto res = cnt->ptr->geometry()->numTransducers();
+  return static_cast<int32_t>(res);
 }
 uint64_t AUTDRemainingInBuffer(AUTDControllerHandle handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
@@ -140,7 +140,7 @@ void AUTDFocalPointGain(AUTDGainPtr* gain, double x, double y, double z, uint8_t
   *gain = g;
 }
 void AUTDGroupedGain(AUTDGainPtr* gain, int32_t* group_ids, AUTDGainPtr* gains, int32_t size) {
-  std::map<int, autd::GainPtr> gainmap;
+  std::map<size_t, autd::GainPtr> gainmap;
 
   for (int32_t i = 0; i < size; i++) {
     auto id = group_ids[i];
@@ -340,13 +340,10 @@ void AUTDFlush(AUTDControllerHandle handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   cnt->ptr->Flush();
 }
-int32_t AUTDDevIdForDeviceIdx(AUTDControllerHandle handle, int32_t dev_idx) {
+int32_t AUTDDevIdxForTransIdx(AUTDControllerHandle handle, int32_t trans_idx) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
-  return cnt->ptr->geometry()->deviceIdForDeviceIdx(dev_idx);
-}
-int32_t AUTDDevIdForTransIdx(AUTDControllerHandle handle, int32_t trans_idx) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  return cnt->ptr->geometry()->deviceIdForTransIdx(trans_idx);
+  auto res = cnt->ptr->geometry()->deviceIdxForTransIdx(trans_idx);
+  return static_cast<int32_t>(res);
 }
 double* AUTDTransPosition(AUTDControllerHandle handle, int32_t trans_idx) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);

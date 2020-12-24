@@ -3,7 +3,7 @@
 // Created Date: 04/11/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/10/2020
+// Last Modified: 24/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -24,8 +24,6 @@ namespace modulation {
  * @brief Modulation controls the amplitude modulation
  */
 class Modulation {
-  friend class autd::AUTDController;
-
  public:
   Modulation() noexcept;
   /**
@@ -34,6 +32,7 @@ class Modulation {
   static ModulationPtr Create(uint8_t amp = 0xff);
   virtual void Build(Configuration config);
   std::vector<uint8_t> buffer;
+  size_t& sent();
 
  private:
   size_t _sent;
@@ -56,9 +55,9 @@ class SineModulation : public Modulation {
   void Build(Configuration config) override;
 
  private:
-  int _freq;
-  double _amp;
-  double _offset;
+  int _freq = 0;
+  double _amp = 1.0;
+  double _offset = 0.5;
 };
 
 /**
@@ -76,9 +75,9 @@ class SquareModulation : public Modulation {
   void Build(Configuration config) override;
 
  private:
-  int _freq;
-  uint8_t _low;
-  uint8_t _high;
+  int _freq = 0;
+  uint8_t _low = 0x00;
+  uint8_t _high = 0xFF;
 };
 
 /**
@@ -94,7 +93,7 @@ class SawModulation : public Modulation {
   void Build(Configuration config) override;
 
  private:
-  int _freq;
+  int _freq = 0;
 };
 
 /**
@@ -115,7 +114,7 @@ class RawPCMModulation : public Modulation {
   void Build(Configuration config) override;
 
  private:
-  double _sampling_freq;
+  double _sampling_freq = 0;
   std::vector<int32_t> _buf;
 };
 
@@ -137,7 +136,7 @@ class WavModulation : public Modulation {
 
  private:
   std::vector<uint8_t> _buf;
-  uint32_t _sampl_freq;
+  uint32_t _sampl_freq = 0;
 };
 }  // namespace modulation
 }  // namespace autd

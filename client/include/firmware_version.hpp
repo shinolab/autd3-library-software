@@ -3,7 +3,7 @@
 // Created Date: 30/03/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/10/2020
+// Last Modified: 24/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -15,15 +15,17 @@
 #include <string>
 #include <vector>
 
+#include "core.hpp"
+
 namespace autd {
 
 /**
  * @brief Firmware information
  */
 class FirmwareInfo {
-  friend class AUTDController;
-
  public:
+  FirmwareInfo(uint16_t idx, uint16_t cpu_ver, uint16_t fpga_ver) : _idx(idx), _cpu_version_number(cpu_ver), _fpga_version_number(fpga_ver) {}
+
   /**
    * @brief Get cpu firmware version
    */
@@ -36,13 +38,6 @@ class FirmwareInfo {
   friend inline std::ostream& operator<<(std::ostream&, const FirmwareInfo&);
 
  private:
-  FirmwareInfo() : FirmwareInfo(0, 0, 0) {}
-  FirmwareInfo(uint16_t idx, uint16_t cpu_ver, uint16_t fpga_ver) {
-    _idx = idx;
-    _cpu_version_number = cpu_ver;
-    _fpga_version_number = fpga_ver;
-  }
-
   uint16_t _idx;
   uint16_t _cpu_version_number;
   uint16_t _fpga_version_number;
@@ -59,6 +54,8 @@ class FirmwareInfo {
         return "v0.6";
       case 4:
         return "v0.7";
+      case 5:
+        return "v0.8";
       default:
         return "unknown: " + std::to_string(version_number);
     }

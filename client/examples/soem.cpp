@@ -3,7 +3,7 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 12/10/2020
+// Last Modified: 24/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -18,10 +18,10 @@
 using namespace std;
 
 string GetAdapterName() {
-  int size;
+  size_t size;
   auto adapters = autd::link::SOEMLink::EnumerateAdapters(&size);
   for (auto i = 0; i < size; i++) {
-    auto adapter = adapters[i];
+    autd::link::EtherCATAdapter adapter = adapters[i];
     cout << "[" << i << "]: " << adapter.first << ", " << adapter.second << endl;
   }
 

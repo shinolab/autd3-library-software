@@ -3,7 +3,7 @@
 // Created Date: 20/09/2016
 // Author:Seki Inoue
 // -----
-// Last Modified: 09/06/2020
+// Last Modified: 24/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -41,11 +41,13 @@ GainPtr MatlabGain::Create(std::string filename, std::string varname) {
 
 void MatlabGain::Build() {
   if (this->built()) return;
-  if (this->geometry() == nullptr) throw new std::runtime_error("Geometry is required to build Gain");
+
+  auto geometry = this->geometry();
+
+  CheckAndInit(geometry, &this->_data);
 
 #ifdef MATLAB_ENABLED
-  this->_data.clear();
-  const int ntrans = this->geometry()->numTransducers();
+  const size_t ntrans = this->geometry()->numTransducers();
 
   MATFile *pmat = matOpen(_filename.c_str(), "r");
   if (pmat == NULL) {
@@ -66,11 +68,6 @@ void MatlabGain::Build() {
     posarr = mxGetPr(pos);
   }
 
-  this->_data.clear();
-  const int ndevice = this->geometry()->numDevices();
-  for (int i = 0; i < ndevice; i++) {
-    this->_data[this->geometry()->deviceIdForDeviceIdx(i)].resize(NUM_TRANS_IN_UNIT);
-  }
   for (int i = 0; i < nelems; i++) {
     double famp = sqrt(array[i].real * array[i].real + array[i].imag * array[i].imag);
     uint8_t amp = static_cast<uint8_t>(std::clamp<double>(famp, 0, 1) * 255.99);
@@ -89,7 +86,7 @@ void MatlabGain::Build() {
       }
     }
 
-    this->_data[this->geometry()->deviceIdForTransIdx(i)][i % NUM_TRANS_IN_UNIT] = ((uint16_t)amp << 8) + phase;
+    this->_data[this->geometry()->deviceIdxForTransIdx(i)][i % NUM_TRANS_IN_UNIT] = ((uint16_t)amp << 8) + phase;
   }
 #endif
 

@@ -3,7 +3,7 @@
 // Created Date: 06/07/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 10/12/2020
+// Last Modified: 24/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -117,7 +117,7 @@ MatrixXcd TrnasferMatrix(GeometryPtr geometry, const MatrixX3d& foci, size_t M, 
   return G;
 }
 
-void HoloGainImplSDP(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, autd::GeometryPtr geometry, void* params) {
+void HoloGainImplSDP(vector<vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, autd::GeometryPtr geometry, void* params) {
   double alpha, lambda;
   int32_t repeat;
   bool normalize;
@@ -136,7 +136,7 @@ void HoloGainImplSDP(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, co
   }
 
   const size_t M = foci.rows();
-  const auto N = static_cast<int>(geometry->numTransducers());
+  const auto N = geometry->numTransducers();
 
   MatrixXcd P = MatrixXcd::Zero(M, M);
   for (size_t i = 0; i < M; i++) {
@@ -161,7 +161,7 @@ void HoloGainImplSDP(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, co
   for (int32_t i = 0; i < repeat; i++) {
     auto ii = static_cast<size_t>(M * static_cast<double>(range(mt)));
 
-    auto Xc = X;
+    MatrixXcd Xc = X;
     removeRow(&Xc, ii);
     removeColumn(&Xc, ii);
     VectorXcd MMc = MM.col(ii);
@@ -206,11 +206,11 @@ void HoloGainImplSDP(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, co
     const auto phase = static_cast<uint8_t>((1 - fphase) * 255);
     uint8_t S = phase;
     uint8_t D = AdjustAmp(famp);
-    data->at(geometry->deviceIdForTransIdx(j)).at(j % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(D) << 8) + S;
+    data->at(geometry->deviceIdxForTransIdx(j)).at(j % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(D) << 8) + S;
   }
 }
 
-void HoloGainImplEVD(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, GeometryPtr geometry, void* params) {
+void HoloGainImplEVD(vector<vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, GeometryPtr geometry, void* params) {
   double gamma;
   bool normalize;
 
@@ -224,7 +224,7 @@ void HoloGainImplEVD(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, co
   }
 
   const size_t M = foci.rows();
-  const auto N = static_cast<int>(geometry->numTransducers());
+  const auto N = geometry->numTransducers();
 
   auto G = TrnasferMatrix(geometry, foci, M, N);
 
@@ -293,13 +293,13 @@ void HoloGainImplEVD(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, co
     const auto phase = static_cast<uint8_t>((1 - fphase) * 255);
     uint8_t S = phase;
     uint8_t D = AdjustAmp(famp);
-    data->at(geometry->deviceIdForTransIdx(j)).at(j % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(D) << 8) + S;
+    data->at(geometry->deviceIdxForTransIdx(j)).at(j % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(D) << 8) + S;
   }
 }
 
-void HoloGainImplNaive(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, GeometryPtr geometry, void* params) {
+void HoloGainImplNaive(vector<vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, GeometryPtr geometry, void* params) {
   const size_t M = foci.rows();
-  const auto N = static_cast<int>(geometry->numTransducers());
+  const auto N = geometry->numTransducers();
 
   auto G = TrnasferMatrix(geometry, foci, M, N);
   auto Gh = G.adjoint();
@@ -311,15 +311,15 @@ void HoloGainImplNaive(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, 
     const auto phase = static_cast<uint8_t>((1 - fphase) * 255);
     uint8_t S = phase;
     uint8_t D = AdjustAmp(famp);
-    data->at(geometry->deviceIdForTransIdx(j)).at(j % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(D) << 8) + S;
+    data->at(geometry->deviceIdxForTransIdx(j)).at(j % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(D) << 8) + S;
   }
 }
 
-void HoloGainImplGS(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, GeometryPtr geometry, void* params) {
+void HoloGainImplGS(vector<vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, GeometryPtr geometry, void* params) {
   const int32_t repeat = (params == nullptr) ? 100 : *reinterpret_cast<uint32_t*>(params);
 
   const size_t M = foci.rows();
-  const auto N = static_cast<int>(geometry->numTransducers());
+  const auto N = geometry->numTransducers();
 
   auto G = TrnasferMatrix(geometry, foci, M, N);
 
@@ -343,15 +343,15 @@ void HoloGainImplGS(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, con
     const auto phase = static_cast<uint8_t>((1 - fphase) * 255);
     uint8_t S = phase;
     uint8_t D = AdjustAmp(famp);
-    data->at(geometry->deviceIdForTransIdx(j)).at(j % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(D) << 8) + S;
+    data->at(geometry->deviceIdxForTransIdx(j)).at(j % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(D) << 8) + S;
   }
 }
 
-void HoloGainImplGSPAT(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, GeometryPtr geometry, void* params) {
+void HoloGainImplGSPAT(vector<vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, GeometryPtr geometry, void* params) {
   const int32_t repeat = (params == nullptr) ? 100 : *reinterpret_cast<uint32_t*>(params);
 
   const size_t M = foci.rows();
-  const auto N = static_cast<int>(geometry->numTransducers());
+  const auto N = geometry->numTransducers();
 
   auto G = TrnasferMatrix(geometry, foci, M, N);
 
@@ -389,11 +389,11 @@ void HoloGainImplGSPAT(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, 
     const auto phase = static_cast<uint8_t>((1 - fphase) * 255);
     uint8_t S = phase;
     uint8_t D = AdjustAmp(famp);
-    data->at(geometry->deviceIdForTransIdx(j)).at(j % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(D) << 8) + S;
+    data->at(geometry->deviceIdxForTransIdx(j)).at(j % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(D) << 8) + S;
   }
 }
 
-void HoloGainImplLM(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, GeometryPtr geometry, void* params) {
+void HoloGainImplLM(vector<vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, GeometryPtr geometry, void* params) {
   double eps_1, eps_2, tau;
   int32_t k_max;
 
@@ -411,7 +411,7 @@ void HoloGainImplLM(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, con
   }
 
   const size_t M = foci.rows();
-  const auto N = static_cast<int>(geometry->numTransducers());
+  const auto N = geometry->numTransducers();
   const auto n_param = N + M;
 
   MatrixXcd P = MatrixXcd::Zero(M, M);
@@ -426,7 +426,7 @@ void HoloGainImplLM(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, con
   B << G, P;
   auto BhB = B.adjoint() * B;
 
-  auto x = x0;
+  VectorXd x = x0;
   auto nu = 2.0;
 
   VectorXcd T(n_param);
@@ -490,7 +490,7 @@ void HoloGainImplLM(map<int, vector<uint16_t>>* data, const MatrixX3d& foci, con
   for (int j = 0; j < N; j++) {
     const auto fphase = fmod(x(j), 2 * M_PI) / (2 * M_PI);
     const auto S = static_cast<uint8_t>((1 - fphase) * 255);
-    data->at(geometry->deviceIdForTransIdx(j)).at(j % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(duty) << 8) + S;
+    data->at(geometry->deviceIdxForTransIdx(j)).at(j % NUM_TRANS_IN_UNIT) = (static_cast<uint16_t>(duty) << 8) + S;
   }
 }
 }  // namespace hologainimpl
@@ -509,9 +509,8 @@ GainPtr HoloGain::Create(std::vector<Vector3> foci, std::vector<double> amps, Op
 void HoloGain::Build() {
   if (this->built()) return;
   auto geo = this->geometry();
-  if (geo == nullptr) {
-    throw std::runtime_error("Geometry is required to build Gain");
-  }
+
+  CheckAndInit(geo, &this->_data);
 
   auto M = _foci.size();
 
@@ -523,12 +522,6 @@ void HoloGain::Build() {
     foci(i, 1) = _foci[i].y();
     foci(i, 2) = _foci[i].z();
     amps(i) = _amps[i];
-  }
-
-  _data.clear();
-  const int ndevice = geo->numDevices();
-  for (int i = 0; i < ndevice; i++) {
-    _data[geo->deviceIdForDeviceIdx(i)].resize(NUM_TRANS_IN_UNIT);
   }
 
   switch (this->_method) {
