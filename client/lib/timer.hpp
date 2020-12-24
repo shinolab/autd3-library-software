@@ -25,9 +25,9 @@ namespace autd {
 class Timer {
  public:
   Timer() noexcept;
-  explicit Timer(bool high_resolusion) noexcept;
+  explicit Timer(bool high_resolution) noexcept;
   ~Timer() noexcept(false);
-  void SetInterval(int interval);
+  void SetInterval(int interval_us);
   void Start(const std::function<void()> &callback);
   void Stop();
 
@@ -52,8 +52,8 @@ class Timer {
   std::thread _mainThread;
   bool _loop = false;
 #if WIN32
-  bool _high_resolusion;
-  void MainLoop();
+  bool _high_resolution;
+  void MainLoop() const;
   static void CALLBACK TimerThread(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2);
 #elif __APPLE__
   static void MainLoop(Timer *ptr);
