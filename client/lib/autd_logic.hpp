@@ -73,7 +73,7 @@ class AUTDLogic {
   void CalibrateSeq();
   bool Clear();
   void Close();
-  void SetDelay(std::vector<std::array<uint16_t, NUM_TRANS_IN_UNIT>> &delay);
+  void SetDelay(const std::vector<std::array<uint16_t, NUM_TRANS_IN_UNIT>> &delay);
   FirmwareInfoList firmware_info_list();
 
   unique_ptr<uint8_t[]> MakeBody(GainPtr gain, ModulationPtr mod, size_t *const size, uint8_t *const send_msg_id);

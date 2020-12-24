@@ -316,7 +316,7 @@ bool AUTDController::Calibrate(Configuration config) { return this->_autd_logic-
 
 bool AUTDController::Clear() { return this->_autd_logic->Clear(); }
 
-void AUTDController::SetDelay(std::vector<std::array<uint16_t, NUM_TRANS_IN_UNIT>>& delay) { this->_autd_logic->SetDelay(delay); }
+void AUTDController::SetDelay(const std::vector<std::array<uint16_t, NUM_TRANS_IN_UNIT>>& delay) { this->_autd_logic->SetDelay(delay); }
 
 void AUTDController::Close() {
   this->_stm_cnt->Close();
