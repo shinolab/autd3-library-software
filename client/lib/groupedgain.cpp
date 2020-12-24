@@ -19,7 +19,7 @@
 
 namespace autd::gain {
 
-GainPtr GroupedGain::Create(std::map<int, GainPtr> gainmap) {
+GainPtr GroupedGain::Create(std::map<size_t, GainPtr> gainmap) {
   auto gain = std::make_shared<GroupedGain>();
   gain->_gainmap = gainmap;
   gain->_geometry = nullptr;
@@ -33,7 +33,7 @@ void GroupedGain::Build() {
 
   CheckAndInit(geometry, &this->_data);
 
-  for (std::pair<int, GainPtr> p : this->_gainmap) {
+  for (std::pair<size_t, GainPtr> p : this->_gainmap) {
     GainPtr g = p.second;
     g->SetGeometry(geometry);
     g->Build();

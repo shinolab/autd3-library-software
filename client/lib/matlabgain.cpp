@@ -3,7 +3,7 @@
 // Created Date: 20/09/2016
 // Author:Seki Inoue
 // -----
-// Last Modified: 22/12/2020
+// Last Modified: 24/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -47,7 +47,7 @@ void MatlabGain::Build() {
   CheckAndInit(geometry, &this->_data);
 
 #ifdef MATLAB_ENABLED
-  const int ntrans = this->geometry()->numTransducers();
+  const size_t ntrans = this->geometry()->numTransducers();
 
   MATFile *pmat = matOpen(_filename.c_str(), "r");
   if (pmat == NULL) {

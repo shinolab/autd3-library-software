@@ -1,9 +1,9 @@
-﻿// File: gain.hpp
+// File: gain.hpp
 // Project: include
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 23/12/2020
+// Last Modified: 24/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -41,7 +41,7 @@ inline void CheckAndInit(GeometryPtr geometry, std::vector<std::vector<uint16_t>
 
   const auto ndevice = geometry->numDevices();
   data->resize(ndevice);
-  for (int i = 0; i < ndevice; i++) {
+  for (size_t i = 0; i < ndevice; i++) {
     data->at(i).resize(NUM_TRANS_IN_UNIT);
   }
 }
@@ -175,7 +175,7 @@ class CustomGain : public Gain {
    * @details The data length should be the same as the number of transducers you use. The data is 16 bit unsigned integer, where MSB represents
    * amplitude and LSB represents phase
    */
-  static GainPtr Create(uint16_t *data, int data_length);
+  static GainPtr Create(uint16_t *data, size_t data_length);
   void Build() override;
 
  private:
@@ -192,11 +192,11 @@ class GroupedGain : public Gain {
    * @param[in] gainmap ｍap from group ID to gain
    * @details group ID must be specified in Geometry::AddDevice() in advance
    */
-  static GainPtr Create(std::map<int, GainPtr> gainmap);
+  static GainPtr Create(std::map<size_t, GainPtr> gainmap);
   void Build() override;
 
  private:
-  std::map<int, GainPtr> _gainmap;
+  std::map<size_t, GainPtr> _gainmap;
 };
 
 /**
@@ -293,11 +293,11 @@ class TransducerTestGain : public Gain {
    * @param[in] duty duty ratio of driving signal
    * @param[in] phase phase of the phase
    */
-  static GainPtr Create(int transducer_index, int duty, int phase);
+  static GainPtr Create(size_t transducer_index, uint8_t duty, uint8_t phase);
   void Build() override;
 
  protected:
-  int _xdcr_idx = 0;
+     size_t _xdcr_idx = 0;
   uint8_t _duty = 0;
   uint8_t _phase = 0;
 };

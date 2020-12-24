@@ -3,7 +3,7 @@
 // Created Date: 29/04/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/07/2020
+// Last Modified: 24/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -98,7 +98,7 @@ void EmulatorLink::SetGeometry() {
   }
   auto fbuf = reinterpret_cast<float *>(&buf[sizeof(float)]);
   for (size_t i = 0; i < geomrty->numDevices(); i++) {
-    auto trans_id = static_cast<int>(i * NUM_TRANS_IN_UNIT);
+    auto trans_id = i * NUM_TRANS_IN_UNIT;
     auto origin = geomrty->position(trans_id);
     auto right = geomrty->x_direction(trans_id);
     auto up = geomrty->y_direction(trans_id);
