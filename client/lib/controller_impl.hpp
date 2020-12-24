@@ -3,7 +3,7 @@
 // Created Date: 11/10/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/12/2020
+// Last Modified: 24/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -43,6 +43,7 @@ class AUTDController : public Controller {
   bool Calibrate(Configuration config);
   bool Clear();
   void Close();
+  void SetDelay(std::vector<std::array<uint16_t, NUM_TRANS_IN_UNIT>> &delay);
   void Flush();
 
   void Stop();
