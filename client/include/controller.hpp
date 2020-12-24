@@ -79,7 +79,7 @@ class Controller {
    * @brief Set output delay
    * @param[in] delay delay for each transducer
    */
-  virtual void SetDelay(std::vector<std::array<uint16_t, NUM_TRANS_IN_UNIT>> &delay) = 0;
+  virtual void SetDelay(const std::vector<std::array<uint16_t, NUM_TRANS_IN_UNIT>> &delay) = 0;
   /**
    * @brief Close the controller
    */
