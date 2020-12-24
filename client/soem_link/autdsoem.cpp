@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 16/11/2020
+// Last Modified: 24/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -26,8 +26,8 @@
 #endif
 
 #ifdef WINDOWS
-#define __STDC_LIMIT_MACROS
-#include <WinError.h>
+#define __STDC_LIMIT_MACROS  // NOLINT
+#include <winerror.h>
 #else
 #include <signal.h>
 #include <stdio.h>
@@ -43,7 +43,6 @@
 
 #include <atomic>
 #include <chrono>
-#include <climits>
 #include <condition_variable>
 #include <cstdint>
 #include <iostream>
@@ -59,17 +58,21 @@
 
 namespace autdsoem {
 
-static std::atomic<bool> AUTD3_LIB_SEND_COND(false);
-static std::atomic<bool> AUTD3_LIB_RTTHREAD_LOCK(false);
+static std::atomic<bool> autd3_lib_send_cond(false);
+static std::atomic<bool> autd3_lib_rt_thread_lock(false);
 
-class SOEMController : public ISOEMController {
+class SOEMControllerImpl : public SOEMController {
  public:
-  SOEMController();
-  ~SOEMController();
+  SOEMControllerImpl();
+  ~SOEMControllerImpl() override;
+  SOEMControllerImpl(SOEMControllerImpl& obj) = delete;
+  SOEMControllerImpl& operator=(const SOEMControllerImpl& obj) = delete;
+  SOEMControllerImpl(SOEMControllerImpl&& obj) = delete;
+  SOEMControllerImpl& operator=(SOEMControllerImpl&& obj) = delete;
 
   bool is_open() final;
 
-  void Open(const char *ifname, size_t dev_num, ECConfig config) final;
+  void Open(const char* ifname, size_t dev_num, ECConfig config) final;
   void Close() final;
 
   void Send(size_t size, std::unique_ptr<uint8_t[]> buf) final;
@@ -79,20 +82,20 @@ class SOEMController : public ISOEMController {
 
  private:
 #ifdef WINDOWS
-  static void CALLBACK RTthread(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2);
+  static void CALLBACK rt_thread(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2);
 #elif defined MACOSX
-  static void RTthread();
+  static void rt_thread();
 #elif defined LINUX
-  static void RTthread(union sigval sv);
+  static void rt_thread(union sigval sv);
 #endif
 
   void CreateSendThread(size_t header_size, size_t body_size);
-  void SetupSync0(bool activate, uint32_t cycle_time_ns);
+  void SetupSync0(bool activate, uint32_t cycle_time_ns) const;
 
-  uint8_t *_io_map;
+  uint8_t* _io_map;
   size_t _io_map_size = 0;
   size_t _output_frame_size = 0;
-  uint32_t _sync0_cyctime = 0;
+  uint32_t _sync0_cyc_time = 0;
   size_t _dev_num = 0;
   ECConfig _config;
 
@@ -111,9 +114,9 @@ class SOEMController : public ISOEMController {
 #endif
 };
 
-bool SOEMController::is_open() { return _is_open; }
+bool SOEMControllerImpl::is_open() { return _is_open; }
 
-void SOEMController::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
+void SOEMControllerImpl::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
   {
     std::unique_lock<std::mutex> lk(_send_mtx);
     _send_q.push(std::pair(std::move(buf), size));
@@ -121,7 +124,7 @@ void SOEMController::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
   _send_cond.notify_all();
 }
 
-std::vector<uint8_t> SOEMController::Read() {
+std::vector<uint8_t> SOEMControllerImpl::Read() {
   std::vector<uint8_t> res;
   const auto input_frame_idx = this->_output_frame_size;
   for (size_t i = 0; i < _dev_num; i++) {
@@ -132,41 +135,41 @@ std::vector<uint8_t> SOEMController::Read() {
 }
 
 #ifdef WINDOWS
-void CALLBACK SOEMController::RTthread(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2)
+void CALLBACK SOEMControllerImpl::rt_thread(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2)
 #elif defined MACOSX
-void SOEMController::RTthread()
+void SOEMControllerImpl::rt_thread()
 #elif defined LINUX
-void SOEMController::RTthread(union sigval sv)
+void SOEMControllerImpl::rt_thread(union sigval sv)
 #endif
 {
-  bool expected = false;
-  if (AUTD3_LIB_RTTHREAD_LOCK.compare_exchange_weak(expected, true)) {
-    auto pre = AUTD3_LIB_SEND_COND.load(std::memory_order_acquire);
+  auto expected = false;
+  if (autd3_lib_rt_thread_lock.compare_exchange_weak(expected, true)) {
+    const auto pre = autd3_lib_send_cond.load(std::memory_order_acquire);
     ec_send_processdata();
     ec_receive_processdata(EC_TIMEOUTRET);
     if (!pre) {
-      AUTD3_LIB_SEND_COND.store(true, std::memory_order_release);
+      autd3_lib_send_cond.store(true, std::memory_order_release);
     }
 
-    AUTD3_LIB_RTTHREAD_LOCK.store(false, std::memory_order_release);
+    autd3_lib_rt_thread_lock.store(false, std::memory_order_release);
   }
 }
 
-void SOEMController::SetupSync0(bool activate, uint32_t cycle_time_ns) {
+void SOEMControllerImpl::SetupSync0(const bool activate, const uint32_t cycle_time_ns) const {
   using std::chrono::system_clock, std::chrono::duration_cast, std::chrono::nanoseconds;
-  auto ref_time = system_clock::now();
+  const auto ref_time = system_clock::now();
   for (size_t slave = 1; slave <= _dev_num; slave++) {
-    auto elapsed = duration_cast<nanoseconds>(ref_time - system_clock::now()).count();
+    const auto elapsed = duration_cast<nanoseconds>(ref_time - system_clock::now()).count();
     ec_dcsync0(static_cast<uint16_t>(slave), activate, cycle_time_ns, static_cast<int32>((elapsed / cycle_time_ns) * cycle_time_ns));
   }
 }
 
-void SOEMController::Open(const char *ifname, size_t dev_num, ECConfig config) {
+void SOEMControllerImpl::Open(const char* ifname, const size_t dev_num, const ECConfig config) {
   _dev_num = dev_num;
   _config = config;
   _output_frame_size = (config.header_size + config.body_size) * _dev_num;
 
-  auto size = _output_frame_size + (config.input_frame_size * _dev_num);
+  const auto size = _output_frame_size + (config.input_frame_size * _dev_num);
   if (size != _io_map_size) {
     _io_map_size = size;
 
@@ -175,18 +178,19 @@ void SOEMController::Open(const char *ifname, size_t dev_num, ECConfig config) {
     memset(_io_map, 0x00, _io_map_size);
   }
 
-  _sync0_cyctime = config.ec_sync0_cyctime_ns;
+  _sync0_cyc_time = config.ec_sync0_cycle_time_ns;
 
   if (ec_init(ifname) <= 0) {
     std::cerr << "No socket connection on " << ifname << std::endl;
     return;
   }
 
-  auto wc = ec_config(0, _io_map);
+  const auto wc = ec_config(0, _io_map);
   if (wc <= 0) {
     std::cerr << "No slaves found!" << std::endl;
     return;
-  } else if (wc != dev_num) {
+  }
+  if (static_cast<size_t>(wc) != dev_num) {
     std::cerr << "The number of slaves you added:" << dev_num << ", but found: " << wc << std::endl;
   }
 
@@ -210,20 +214,20 @@ void SOEMController::Open(const char *ifname, size_t dev_num, ECConfig config) {
     return;
   }
 
-  SetupSync0(true, _sync0_cyctime);
+  SetupSync0(true, _sync0_cyc_time);
 
 #ifdef WINDOWS
-  uint32_t uResolution = 1;
+  const uint32_t uResolution = 1;
   timeBeginPeriod(uResolution);
-  _timer_id = timeSetEvent(config.ec_sm3_cyctime_ns / 1000 / 1000, uResolution, (LPTIMECALLBACK)RTthread, NULL, TIME_PERIODIC);
+  _timer_id = timeSetEvent(config.ec_sm3_cycle_time_ns / 1000 / 1000, uResolution, static_cast<LPTIMECALLBACK>(rt_thread), NULL, TIME_PERIODIC);
 
   if (_timer_id == 0) {
     std::cerr << "timeSetEvent failed." << std::endl;
     return;
   }
 
-  HANDLE hProcess = GetCurrentProcess();
-  if (!SetPriorityClass(hProcess, REALTIME_PRIORITY_CLASS)) {
+  auto* const h_process = GetCurrentProcess();
+  if (!SetPriorityClass(h_process, REALTIME_PRIORITY_CLASS)) {
     std::cerr << "Failed to SetPriorityClass" << std::endl;
   }
 
@@ -232,7 +236,7 @@ void SOEMController::Open(const char *ifname, size_t dev_num, ECConfig config) {
 
   _timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _queue);
   dispatch_source_set_event_handler(_timer, ^{
-    RTthread();
+    rt_thread();
   });
 
   dispatch_source_set_cancel_handler(_timer, ^{
@@ -241,21 +245,21 @@ void SOEMController::Open(const char *ifname, size_t dev_num, ECConfig config) {
   });
 
   dispatch_time_t start = dispatch_time(DISPATCH_TIME_NOW, 0);
-  dispatch_source_set_timer(_timer, start, config.ec_sm3_cyctime_ns, 0);
+  dispatch_source_set_timer(_timer, start, config.ec_sm3_cycle_time_ns, 0);
   dispatch_resume(_timer);
 #elif defined LINUX
   struct itimerspec itval;
   struct sigevent se;
 
   itval.it_value.tv_sec = 0;
-  itval.it_value.tv_nsec = config.ec_sm3_cyctime_ns;
+  itval.it_value.tv_nsec = config.ec_sm3_cycle_time_ns;
   itval.it_interval.tv_sec = 0;
-  itval.it_interval.tv_nsec = config.ec_sm3_cyctime_ns;
+  itval.it_interval.tv_nsec = config.ec_sm3_cycle_time_ns;
 
   memset(&se, 0, sizeof(se));
   se.sigev_value.sival_ptr = NULL;
   se.sigev_notify = SIGEV_THREAD;
-  se.sigev_notify_function = RTthread;
+  se.sigev_notify_function = rt_thread;
   se.sigev_notify_attributes = NULL;
 
   if (timer_create(CLOCK_REALTIME, &se, &_timer_id) < 0) {
@@ -273,7 +277,7 @@ void SOEMController::Open(const char *ifname, size_t dev_num, ECConfig config) {
   CreateSendThread(config.header_size, config.body_size);
 }
 
-void SOEMController::Close() {
+void SOEMControllerImpl::Close() {
   if (_is_open) {
     _is_open = false;
     _send_cond.notify_all();
@@ -287,7 +291,7 @@ void SOEMController::Close() {
 
 #ifdef WINDOWS
     if (_timer_id != 0) {
-      uint32_t uResolution = 1;
+      const uint32_t uResolution = 1;
       timeKillEvent(_timer_id);
       timeEndPeriod(uResolution);
     }
@@ -297,7 +301,7 @@ void SOEMController::Close() {
     timer_delete(_timer_id);
 #endif
 
-    SetupSync0(false, _sync0_cyctime);
+    SetupSync0(false, _sync0_cyc_time);
 
     ec_slave[0].state = EC_STATE_INIT;
     ec_writestate(0);
@@ -308,66 +312,64 @@ void SOEMController::Close() {
   }
 }
 
-void SOEMController::CreateSendThread(size_t header_size, size_t body_size) {
-  _send_thread = std::thread(
-      [this](size_t header_size, size_t body_size) {
-        while (_is_open) {
-          std::unique_ptr<uint8_t[]> buf = nullptr;
-          size_t size = 0;
-          {
-            std::unique_lock<std::mutex> lk(_send_mtx);
-            _send_cond.wait(lk, [&] { return _send_q.size() > 0 || !_is_open; });
-            if (_send_q.size() > 0) {
-              auto tmp = move(_send_q.front());
-              buf = move(tmp.first);
-              size = tmp.second;
-            }
-          }
+void SOEMControllerImpl::CreateSendThread(size_t header_size, size_t body_size) {
+  _send_thread = std::thread([this, header_size, body_size]() {
+    while (_is_open) {
+      std::unique_ptr<uint8_t[]> buf = nullptr;
+      size_t size = 0;
+      {
+        std::unique_lock<std::mutex> lk(_send_mtx);
+        _send_cond.wait(lk, [&] { return !_send_q.empty() || !_is_open; });
+        if (!_send_q.empty()) {
+          auto [fst, snd] = move(_send_q.front());
+          buf = move(fst);
+          size = snd;
+        }
+      }
 
-          if (buf != nullptr && _is_open) {
-            const auto includes_gain = ((size - header_size) / body_size) > 0;
-            const auto output_frame_size = header_size + body_size;
+      if (buf != nullptr && _is_open) {
+        const auto includes_gain = ((size - header_size) / body_size) > 0;
+        const auto output_frame_size = header_size + body_size;
 
-            for (size_t i = 0; i < _dev_num; i++) {
-              if (includes_gain) memcpy(&_io_map[output_frame_size * i], &buf[header_size + body_size * i], body_size);
-              memcpy(&_io_map[output_frame_size * i + body_size], &buf[0], header_size);
-            }
+        for (size_t i = 0; i < _dev_num; i++) {
+          if (includes_gain) memcpy(&_io_map[output_frame_size * i], &buf[header_size + body_size * i], body_size);
+          memcpy(&_io_map[output_frame_size * i + body_size], &buf[0], header_size);
+        }
 
-            {
-              AUTD3_LIB_SEND_COND.store(false, std::memory_order_release);
-              while (!AUTD3_LIB_SEND_COND.load(std::memory_order_acquire) && _is_open) {
-              }
-            }
-
-            _send_q.pop();
+        {
+          autd3_lib_send_cond.store(false, std::memory_order_release);
+          while (!autd3_lib_send_cond.load(std::memory_order_acquire) && _is_open) {
           }
         }
-      },
-      header_size, body_size);
+
+        _send_q.pop();
+      }
+    }
+  });
 }
 
-SOEMController::SOEMController() {
+SOEMControllerImpl::SOEMControllerImpl() : _config() {
   this->_is_open = false;
   this->_io_map = nullptr;
 }
 
-SOEMController::~SOEMController() {
+SOEMControllerImpl::~SOEMControllerImpl() {
   delete[] _io_map;
   _io_map = nullptr;
 }
 
-std::unique_ptr<ISOEMController> ISOEMController::Create() { return std::make_unique<SOEMController>(); }
+std::unique_ptr<SOEMController> SOEMController::Create() { return std::make_unique<SOEMControllerImpl>(); }
 
 std::vector<EtherCATAdapterInfo> EtherCATAdapterInfo::EnumerateAdapters() {
-  auto adapter = ec_find_adapters();
-  auto _adapters = std::vector<EtherCATAdapterInfo>();
-  while (adapter != NULL) {
-    auto *info = new EtherCATAdapterInfo;
+  auto* adapter = ec_find_adapters();
+  auto adapters = std::vector<EtherCATAdapterInfo>();
+  while (adapter != nullptr) {
+    auto* info = new EtherCATAdapterInfo;
     info->desc = std::string(adapter->desc);
     info->name = std::string(adapter->name);
-    _adapters.push_back(*info);
+    adapters.push_back(*info);
     adapter = adapter->next;
   }
-  return _adapters;
+  return adapters;
 }
 }  // namespace autdsoem

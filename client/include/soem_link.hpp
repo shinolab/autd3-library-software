@@ -3,7 +3,7 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/07/2020
+// Last Modified: 24/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -12,7 +12,7 @@
 #pragma once
 
 #ifndef __STDC_LIMIT_MACROS
-#define __STDC_LIMIT_MACROS
+#define __STDC_LIMIT_MACROS  // NOLINT
 #endif
 
 #include <memory>
@@ -40,13 +40,18 @@ class SOEMLink : public Link {
    * @details Available Network interface names are obtained by EnumerateAdapters().
    *          The numbers of connected devices is obtained by Geometry::numDevices().
    */
-  static LinkPtr Create(std::string ifname, size_t device_num);
+  static LinkPtr Create(const std::string& ifname, size_t device_num);
 
   /**
    * @brief Enumerate Ethernet adapters of the computer.
    */
-  static EtherCATAdapters EnumerateAdapters(size_t* const size);
-  ~SOEMLink() override {}
+  static EtherCATAdapters EnumerateAdapters(size_t* size);
+  SOEMLink() = default;
+  ~SOEMLink() override = default;
+  SOEMLink(const SOEMLink& v) noexcept = delete;
+  SOEMLink& operator=(const SOEMLink& obj) = delete;
+  SOEMLink(SOEMLink&& obj) = default;
+  SOEMLink& operator=(SOEMLink&& obj) = default;
 
   void Open() override = 0;
   void Close() override = 0;
