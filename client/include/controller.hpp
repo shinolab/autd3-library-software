@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/12/2020
+// Last Modified: 24/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
@@ -74,6 +75,11 @@ class Controller {
    * @return true if success to clear
    */
   virtual bool Clear() = 0;
+  /**
+   * @brief Set output delay
+   * @param[in] delay delay for each transducer
+   */
+  virtual void SetDelay(std::vector<std::array<uint16_t, NUM_TRANS_IN_UNIT>> &delay) = 0;
   /**
    * @brief Close the controller
    */

@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 23/12/2020
+// Last Modified: 24/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -48,20 +48,22 @@ class AUTDControllerSync {
   explicit AUTDControllerSync(shared_ptr<AUTDLogic> logic) : _autd_logic(logic) {}
 
   void AppendGain(GainPtr gain, bool wait_for_send) {
-    this->_autd_logic->_seq_mode = false;
-    gain->SetGeometry(this->_autd_logic->_geometry);
-    gain->Build();
-    this->_autd_logic->SendBlocking(gain, nullptr);
+    this->_autd_logic->BuildGain(gain);
+    if (wait_for_send) {
+      this->_autd_logic->SendBlocking(gain, nullptr);
+    } else {
+      this->_autd_logic->Send(gain, nullptr);
+    }
   }
   void AppendModulation(ModulationPtr mod) {
-    mod->Build(this->_autd_logic->_config);
+    this->_autd_logic->BuildModulation(mod);
     while (mod->buffer.size() > mod->sent()) {
       _autd_logic->SendBlocking(nullptr, mod);
     }
-    mod->reset();
+    mod->sent() = 0;
   }
+
   void AppendSeq(SequencePtr seq) {
-    this->_autd_logic->_seq_mode = true;
     while (seq->sent() < seq->control_points().size()) {
       this->_autd_logic->SendBlocking(seq);
     }
@@ -108,16 +110,15 @@ class AUTDControllerAsync {
   }
 
   void AppendGain(GainPtr gain) {
-    gain->SetGeometry(this->_autd_logic->_geometry);
     {
-      std::unique_lock<std::mutex> lk(_build_gain_mtx);
+      unique_lock<mutex> lk(_build_gain_mtx);
       _build_gain_q.push(gain);
     }
     _build_gain_cond.notify_all();
   }
   void AppendModulation(ModulationPtr mod) {
     {
-      std::unique_lock<std::mutex> lk(_build_mod_mtx);
+      unique_lock<mutex> lk(_build_mod_mtx);
       _build_mod_q.push(mod);
     }
     _build_mod_cond.notify_all();
@@ -129,7 +130,7 @@ class AUTDControllerAsync {
       while (this->_is_running) {
         GainPtr gain = nullptr;
         {
-          std::unique_lock<std::mutex> lk(_build_gain_mtx);
+          unique_lock<mutex> lk(_build_gain_mtx);
 
           _build_gain_cond.wait(lk, [&] { return _build_gain_q.size() || !this->_is_running; });
 
@@ -140,8 +141,7 @@ class AUTDControllerAsync {
         }
 
         if (gain != nullptr) {
-          gain->SetGeometry(this->_autd_logic->_geometry);
-          gain->Build();
+          this->_autd_logic->BuildGain(gain);
           {
             std::unique_lock<std::mutex> lk(_send_mtx);
             _send_gain_q.push(gain);
@@ -155,7 +155,7 @@ class AUTDControllerAsync {
       while (this->_is_running) {
         ModulationPtr mod = nullptr;
         {
-          std::unique_lock<std::mutex> lk(_build_mod_mtx);
+          unique_lock<mutex> lk(_build_mod_mtx);
 
           _build_mod_cond.wait(lk, [&] { return _build_mod_q.size() || !_is_running; });
 
@@ -166,9 +166,9 @@ class AUTDControllerAsync {
         }
 
         if (mod != nullptr) {
-          mod->Build(this->_autd_logic->_config);
+          this->_autd_logic->BuildModulation(mod);
           {
-            std::unique_lock<std::mutex> lk(_send_mtx);
+            unique_lock<mutex> lk(_send_mtx);
             _send_mod_q.push(mod);
             _send_cond.notify_all();
           }
@@ -182,17 +182,17 @@ class AUTDControllerAsync {
         ModulationPtr mod = nullptr;
 
         {
-          std::unique_lock<std::mutex> lk(_send_mtx);
+          unique_lock<mutex> lk(_send_mtx);
           _send_cond.wait(lk, [&] { return _send_gain_q.size() || _send_mod_q.size() || !this->_is_running; });
           if (_send_gain_q.size() > 0) gain = _send_gain_q.front();
           if (_send_mod_q.size() > 0) mod = _send_mod_q.front();
         }
-        this->_autd_logic->SendBlocking(gain, mod);
+        this->_autd_logic->Send(gain, mod);
 
-        std::unique_lock<std::mutex> lk(_send_mtx);
-        if (gain != nullptr && _send_gain_q.size() > 0) _send_gain_q.pop();
+        unique_lock<mutex> lk(_send_mtx);
+        if (gain != nullptr) _send_gain_q.pop();
         if (mod != nullptr && mod->buffer.size() <= mod->sent()) {
-          mod->reset();
+          mod->sent() = 0;
           _send_mod_q.pop();
         }
       }
@@ -226,7 +226,7 @@ class AUTDControllerSTM {
   ~AUTDControllerSTM() {}
 
   void AppendGain(GainPtr gain) { _stm_gains.push_back(gain); }
-  void AppendGain(const std::vector<GainPtr>& gain_list) {
+  void AppendGain(const vector<GainPtr>& gain_list) {
     for (GainPtr g : gain_list) {
       this->AppendGain(g);
     }
@@ -243,8 +243,7 @@ class AUTDControllerSTM {
 
     for (size_t i = current_size; i < len; i++) {
       GainPtr g = this->_stm_gains[i];
-      g->SetGeometry(this->_autd_logic->_geometry);
-      g->Build();
+      this->_autd_logic->BuildGain(g);
 
       size_t body_size = 0;
       uint8_t msg_id = 0;
@@ -299,13 +298,13 @@ AUTDController::~AUTDController() {}
 
 bool AUTDController::is_open() { return this->_autd_logic->is_open(); }
 
-GeometryPtr AUTDController::geometry() noexcept { return this->_autd_logic->_geometry; }
+GeometryPtr AUTDController::geometry() noexcept { return this->_autd_logic->geometry(); }
 
-bool AUTDController::silent_mode() noexcept { return this->_autd_logic->_silent_mode; }
+bool AUTDController::silent_mode() noexcept { return this->_autd_logic->silent_mode(); }
 
 size_t AUTDController::remaining_in_buffer() { return this->_async_cnt->remaining_in_buffer(); }
 
-void AUTDController::SetSilentMode(bool silent) noexcept { this->_autd_logic->_silent_mode = silent; }
+void AUTDController::SetSilentMode(bool silent) noexcept { this->_autd_logic->silent_mode() = silent; }
 
 void AUTDController::OpenWith(LinkPtr link) {
   this->Close();
@@ -316,6 +315,8 @@ void AUTDController::OpenWith(LinkPtr link) {
 bool AUTDController::Calibrate(Configuration config) { return this->_autd_logic->Calibrate(config); }
 
 bool AUTDController::Clear() { return this->_autd_logic->Clear(); }
+
+void AUTDController::SetDelay(std::vector<std::array<uint16_t, NUM_TRANS_IN_UNIT>>& delay) { this->_autd_logic->SetDelay(delay); }
 
 void AUTDController::Close() {
   this->_stm_cnt->Close();

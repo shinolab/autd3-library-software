@@ -3,7 +3,7 @@
 // Created Date: 22/12/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 23/12/2020
+// Last Modified: 24/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -12,12 +12,13 @@
 #pragma once
 
 #include <algorithm>
-#include <memory>
-#include <utility>
-#include <vector>
+#include <array>
 #include <atomic>
 #include <cstring>
+#include <memory>
 #include <thread>
+#include <utility>
+#include <vector>
 
 #include "configuration.hpp"
 #include "consts.hpp"
@@ -43,6 +44,7 @@ constexpr uint8_t CMD_SEQ_MODE = 0x06;
 constexpr uint8_t CMD_INIT_REF_CLOCK = 0x07;
 constexpr uint8_t CMD_CALIB_SEQ_CLOCK = 0x08;
 constexpr uint8_t CMD_CLEAR = 0x09;
+constexpr uint8_t CMD_SET_DELAY = 0x0A;
 
 constexpr uint8_t OP_MODE_MSG_ID_MIN = 0x20;
 constexpr uint8_t OP_MODE_MSG_ID_MAX = 0xBF;
@@ -52,7 +54,13 @@ class AUTDLogic {
   AUTDLogic();
 
   bool is_open();
+  GeometryPtr geometry();
+  bool &silent_mode();
+
   void OpenWith(LinkPtr link);
+
+  void BuildGain(GainPtr gain);
+  void BuildModulation(ModulationPtr mod);
 
   void Send(GainPtr gain, ModulationPtr mod);
   void SendBlocking(GainPtr gain, ModulationPtr mod);
@@ -65,6 +73,7 @@ class AUTDLogic {
   void CalibrateSeq();
   bool Clear();
   void Close();
+  void SetDelay(std::vector<std::array<uint16_t, NUM_TRANS_IN_UNIT>> &delay);
   FirmwareInfoList firmware_info_list();
 
   unique_ptr<uint8_t[]> MakeBody(GainPtr gain, ModulationPtr mod, size_t *const size, uint8_t *const send_msg_id);
@@ -72,6 +81,7 @@ class AUTDLogic {
   unique_ptr<uint8_t[]> MakeCalibBody(Configuration config, size_t *const size);
   unique_ptr<uint8_t[]> MakeCalibSeqBody(std::vector<uint16_t> comps, size_t *const size);
 
+ private:
   static uint8_t get_id() {
     static std::atomic<uint8_t> id{OP_MODE_MSG_ID_MIN - 1};
 
