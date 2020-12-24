@@ -12,7 +12,7 @@
 #include "twincat_link.hpp"
 
 #if _WINDOWS
-#include <codeanalysis/warnings.h>
+#include <codeanalysis/warnings.h> // NOLINT
 #pragma warning(push)
 #pragma warning(disable : ALL_CODE_ANALYSIS_WARNINGS)
 #endif
@@ -242,7 +242,7 @@ void LocalTwinCATLinkImpl::Send(const size_t size, const std::unique_ptr<uint8_t
   }
 }
 
-std::vector<uint8_t> LocalTwinCATLinkImpl::Read(uint32_t buffer_len) {
+std::vector<uint8_t> LocalTwinCATLinkImpl::Read(const uint32_t buffer_len) {
   AmsAddr addr = {this->_net_id, PORT};
   const auto read = reinterpret_cast<tc_ads_sync_read_req_ex>(GetProcAddress(this->_lib, TCADS_ADS_SYNC_READ_REQ_EX));
 
