@@ -4,6 +4,7 @@
 * Rename `deviceIdForTransIdx()` to `deviceIdxForTransIdx()`
 * Rename `GroupIDForDeviceID()` to `GroupIDForDeviceIdx()`
 * Add `DebugLink`
+* Add `SetDelay`
 
 # 0.7.2
 * Support Apple Silicon mac
