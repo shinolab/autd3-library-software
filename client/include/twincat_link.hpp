@@ -11,8 +11,6 @@
 
 #pragma once
 
-#include <stdio.h>
-
 #include <memory>
 #include <string>
 #include <vector>
@@ -31,19 +29,24 @@ class TwinCATLink : public Link {
    * @brief Create TwinCATLink.
    * @param[in] ams_net_id AMS Net Id
    *
-   * @details The ipv4 addr will be extracted from leading 4 octets of ams net id.
+   * @details The ipv4 address will be extracted from leading 4 octets of ams net id.
    */
-  static LinkPtr Create(std::string ams_net_id);
+  static LinkPtr Create(const std::string& ams_net_id);
   /**
    * @brief Create TwinCATLink.
-   * @param[in] ipv4addr IPv4 address
+   * @param[in] ipv4_addr IPv4 address
    * @param[in] ams_net_id AMS Net Id
    *
    * @details The ipv4 addr will be extracted from leading 4 octets of ams net id if not specified.
    */
-  static LinkPtr Create(std::string ipv4addr, std::string ams_net_id);
+  static LinkPtr Create(const std::string& ipv4_addr, const std::string& ams_net_id);
 
-  ~TwinCATLink() override {}
+  TwinCATLink() = default;
+  ~TwinCATLink() override = default;
+  TwinCATLink(const TwinCATLink& v) noexcept = default;
+  TwinCATLink& operator=(const TwinCATLink& obj) = default;
+  TwinCATLink(TwinCATLink&& obj) = default;
+  TwinCATLink& operator=(TwinCATLink&& obj) = default;
 
   void Open() override = 0;
   void Close() override = 0;
@@ -61,7 +64,12 @@ class LocalTwinCATLink : public Link {
    * @brief Create LocalTwinCATLink.
    */
   static LinkPtr Create();
-  ~LocalTwinCATLink() override {}
+  LocalTwinCATLink() = default;
+  ~LocalTwinCATLink() override = default;
+  LocalTwinCATLink(const LocalTwinCATLink& v) noexcept = default;
+  LocalTwinCATLink& operator=(const LocalTwinCATLink& obj) = default;
+  LocalTwinCATLink(LocalTwinCATLink&& obj) = default;
+  LocalTwinCATLink& operator=(LocalTwinCATLink&& obj) = default;
 
   void Open() override = 0;
   void Close() override = 0;
