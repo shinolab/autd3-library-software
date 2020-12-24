@@ -1,4 +1,4 @@
-// File: geometry.hpp
+﻿// File: geometry.hpp
 // Project: include
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
@@ -23,8 +23,6 @@ using GeometryPtr = std::shared_ptr<Geometry>;
  * @brief AUTD Geometry
  */
 class Geometry {
-  friend class _internal::AUTDLogic;
-
  public:
   virtual ~Geometry() {}
   /**

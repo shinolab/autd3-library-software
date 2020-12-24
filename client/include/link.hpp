@@ -24,12 +24,8 @@ namespace autd::link {
  * @brief Link is the interface to the AUTD device
  */
 class Link {
-  friend autd::_internal::AUTDLogic;
-
  public:
   virtual ~Link() {}
-
- protected:
   virtual void Open() = 0;
   virtual void Close() = 0;
   virtual void Send(size_t size, std::unique_ptr<uint8_t[]> buf) = 0;

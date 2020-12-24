@@ -1,4 +1,4 @@
-// File: gain.hpp
+﻿// File: gain.hpp
 // Project: include
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
@@ -50,9 +50,6 @@ inline void CheckAndInit(GeometryPtr geometry, std::vector<std::vector<uint16_t>
  * @brief Gain controls the amplitude and phase of each transducer in the AUTD
  */
 class Gain {
-  friend class autd::_internal::AUTDLogic;
-  friend class Geometry;
-
  public:
   /**
    * @brief Generate empty gain
@@ -297,7 +294,7 @@ class TransducerTestGain : public Gain {
   void Build() override;
 
  protected:
-     size_t _xdcr_idx = 0;
+  size_t _xdcr_idx = 0;
   uint8_t _duty = 0;
   uint8_t _phase = 0;
 };

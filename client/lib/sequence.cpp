@@ -73,7 +73,7 @@ double PointSequence::frequency() { return this->sampling_frequency() / this->_c
 
 double PointSequence::sampling_frequency() { return POINT_SEQ_BASE_FREQ / this->_sampl_freq_div; }
 
-size_t PointSequence::sent() { return _sent; }
+size_t& PointSequence::sent() { return _sent; }
 
 uint16_t PointSequence::sampling_frequency_division() { return this->_sampl_freq_div; }
 
