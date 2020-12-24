@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 01/07/2020
+// Last Modified: 24/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -45,7 +45,6 @@ class TwinCATLink : public Link {
 
   ~TwinCATLink() override {}
 
- protected:
   void Open() override = 0;
   void Close() override = 0;
   void Send(size_t size, std::unique_ptr<uint8_t[]> buf) override = 0;
@@ -64,7 +63,6 @@ class LocalTwinCATLink : public Link {
   static LinkPtr Create();
   ~LocalTwinCATLink() override {}
 
- protected:
   void Open() override = 0;
   void Close() override = 0;
   void Send(size_t size, std::unique_ptr<uint8_t[]> buf) override = 0;

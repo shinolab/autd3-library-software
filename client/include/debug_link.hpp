@@ -3,7 +3,7 @@
 // Created Date: 22/12/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/12/2020
+// Last Modified: 24/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -29,7 +29,6 @@ class DebugLink : public Link {
   explicit DebugLink(std::ostream& out);
   ~DebugLink() override{};
 
- protected:
   void Open() final;
   void Close() final;
   void Send(size_t size, std::unique_ptr<uint8_t[]> buf) final;

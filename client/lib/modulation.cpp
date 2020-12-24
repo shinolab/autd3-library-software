@@ -3,7 +3,7 @@
 // Created Date: 11/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 22/12/2020
+// Last Modified: 24/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -50,9 +50,7 @@ ModulationPtr Modulation::Create(uint8_t amp) {
 
 void Modulation::Build(Configuration config) {}
 
-size_t Modulation::sent() { return _sent; }
-
-void Modulation::reset() { _sent = 0; }
+size_t& Modulation::sent() { return _sent; }
 #pragma endregion
 
 #pragma region SineModulation
@@ -205,7 +203,7 @@ void RawPCMModulation::Build(Configuration config) {
 
 namespace {
 template <class T>
-inline static T read_from_stream(std::ifstream &fsp) {
+inline static T read_from_stream(std::ifstream& fsp) {
   char buf[sizeof(T)];
   if (!fsp.read(buf, sizeof(T))) throw new std::runtime_error("Invalid data length.");
   T v{};

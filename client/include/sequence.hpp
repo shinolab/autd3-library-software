@@ -3,7 +3,7 @@
 // Created Date: 01/07/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/12/2020
+// Last Modified: 24/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -28,8 +28,6 @@ namespace sequence {
  * 4. Only a single focus can be displayed at a certain moment.
  */
 class PointSequence {
-  friend class autd::_internal::AUTDLogic;
-
  public:
   PointSequence() noexcept;
   /**
@@ -83,7 +81,7 @@ class PointSequence {
    */
   uint16_t sampling_frequency_division();
 
-  size_t sent();
+  size_t& sent();
 
  private:
   GeometryPtr _geometry;
