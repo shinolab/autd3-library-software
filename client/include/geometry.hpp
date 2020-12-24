@@ -13,7 +13,6 @@
 
 #include <memory>
 
-#include "quaternion.hpp"
 #include "vector3.hpp"
 
 namespace autd {
@@ -24,7 +23,12 @@ using GeometryPtr = std::shared_ptr<Geometry>;
  */
 class Geometry {
  public:
-  virtual ~Geometry() {}
+  Geometry() = default;
+  virtual ~Geometry() = default;
+  Geometry(const Geometry& v) noexcept = default;
+  Geometry& operator=(const Geometry& obj) = default;
+  Geometry(Geometry&& obj) = default;
+  Geometry& operator=(Geometry&& obj) = default;
   /**
    * @brief  Add new device with position and rotation. Note that the transform is done with order: Translate -> Rotate
    * @param position Position of transducer #0, which is the one at the lower right corner.
@@ -46,11 +50,11 @@ class Geometry {
   /**
    * @brief Number of devices
    */
-  virtual const size_t numDevices() noexcept = 0;
+  virtual size_t numDevices() noexcept = 0;
   /**
    * @brief Number of transducers
    */
-  virtual const size_t numTransducers() noexcept = 0;
+  virtual size_t numTransducers() noexcept = 0;
   /**
    * @brief Convert device ID into group ID
    */
@@ -58,31 +62,31 @@ class Geometry {
   /**
    * @brief Position of a transducer specified by id
    */
-  virtual const Vector3 position(size_t transducer_idx) = 0;
+  virtual Vector3 position(size_t transducer_idx) = 0;
   /**
    * @brief Convert a global position to a local position
    */
-  virtual const Vector3 local_position(size_t device, Vector3 global_position) = 0;
+  virtual Vector3 local_position(size_t device, Vector3 global_position) = 0;
   /**
    * @brief Normalized direction of a transducer specified by id
    */
-  virtual const Vector3 direction(size_t transducer_id) = 0;
+  virtual Vector3 direction(size_t transducer_id) = 0;
   /**
    * @brief Normalized long-axis direction of a device which contains a transducer specified by id
    */
-  virtual const Vector3 x_direction(size_t transducer_id) = 0;
+  virtual Vector3 x_direction(size_t transducer_id) = 0;
   /**
    * @brief Normalized short-axis direction of a device which contains a transducer specified by id
    */
-  virtual const Vector3 y_direction(size_t transducer_id) = 0;
+  virtual Vector3 y_direction(size_t transducer_id) = 0;
   /**
    * @brief Same as the direction()
    */
-  virtual const Vector3 z_direction(size_t transducer_id) = 0;
+  virtual Vector3 z_direction(size_t transducer_id) = 0;
   /**
    * @brief Convert transducer index into device ID
    */
-  virtual const size_t deviceIdxForTransIdx(size_t transducer_idx) = 0;
+  virtual size_t deviceIdxForTransIdx(size_t transducer_idx) = 0;
 
   static GeometryPtr Create();
 };
