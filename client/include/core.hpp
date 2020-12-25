@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 24/12/2020
+// Last Modified: 25/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -12,19 +12,17 @@
 #pragma once
 
 #include <memory>
-#include <string>
-#include <utility>
 #include <vector>
 
 namespace autd {
 
-namespace _utils {
+namespace utils {
 class Vector3;
 class Quaternion;
-}  // namespace _utils
+}  // namespace utils
 
-using _utils::Quaternion;
-using _utils::Vector3;
+using utils::Quaternion;
+using utils::Vector3;
 
 class Controller;
 class Geometry;
@@ -64,7 +62,7 @@ class CircumSeq;
 class FirmwareInfo;
 
 using GainPtr = std::shared_ptr<gain::Gain>;
-using LinkPtr = std::shared_ptr<link::Link>;
+using LinkPtr = std::unique_ptr<link::Link>;
 using ModulationPtr = std::shared_ptr<modulation::Modulation>;
 using SequencePtr = std::shared_ptr<sequence::PointSequence>;
 using ControllerPtr = std::shared_ptr<Controller>;

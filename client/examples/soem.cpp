@@ -3,7 +3,7 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 24/12/2020
+// Last Modified: 25/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -20,9 +20,9 @@ using namespace std;
 string GetAdapterName() {
   size_t size;
   auto adapters = autd::link::SOEMLink::EnumerateAdapters(&size);
-  for (auto i = 0; i < size; i++) {
-    autd::link::EtherCATAdapter adapter = adapters[i];
-    cout << "[" << i << "]: " << adapter.first << ", " << adapter.second << endl;
+  for (size_t i = 0; i < size; i++) {
+    auto& [fst, snd] = adapters[i];
+    cout << "[" << i << "]: " << fst << ", " << snd << endl;
   }
 
   int index;
@@ -40,11 +40,9 @@ int main() {
 
   // If you have already recognized the EtherCAT adapter name, you can write it directly like below.
   // auto ifname = "\\Device\\NPF_{B5B631C6-ED16-4780-9C4C-3941AE8120A6}";
-  auto ifname = GetAdapterName();
-  auto link = autd::link::SOEMLink::Create(ifname, autd->geometry()->numDevices());
-
-  autd->OpenWith(link);
+  const auto ifname = GetAdapterName();
+  autd->OpenWith(autd::link::SOEMLink::Create(ifname, autd->geometry()->num_devices()));
   if (!autd->is_open()) return ENXIO;
 
-  return run(autd);
+  return Run(autd);
 }

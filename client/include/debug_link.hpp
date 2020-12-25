@@ -3,7 +3,7 @@
 // Created Date: 22/12/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 24/12/2020
+// Last Modified: 25/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -13,32 +13,35 @@
 
 #include <memory>
 #include <ostream>
-#include <string>
 #include <vector>
 
+#include "core.hpp"
 #include "link.hpp"
 
 namespace autd::link {
 /**
  * @brief Link for debug
  */
-class DebugLink : public Link {
+class DebugLink final : public Link {
  public:
   static LinkPtr Create(std::ostream& out);
 
   explicit DebugLink(std::ostream& out);
-  ~DebugLink() override{};
+  ~DebugLink() override = default;
+  DebugLink(const DebugLink& v) noexcept = delete;
+  DebugLink& operator=(const DebugLink& obj) = delete;
+  DebugLink(DebugLink&& obj) = delete;
+  DebugLink& operator=(DebugLink&& obj) = delete;
 
-  void Open() final;
-  void Close() final;
-  void Send(size_t size, std::unique_ptr<uint8_t[]> buf) final;
-  std::vector<uint8_t> Read(uint32_t buffer_len) final;
-  bool is_open() final;
+  void Open() override;
+  void Close() override;
+  void Send(size_t size, std::unique_ptr<uint8_t[]> buf) override;
+  std::vector<uint8_t> Read(uint32_t buffer_len) override;
+  bool is_open() override;
 
  private:
   std::ostream& _out;
   bool _is_open = false;
-  size_t _dev_num = 0;
   uint8_t _last_msg_id = 0;
 };
 }  // namespace autd::link
