@@ -1,9 +1,9 @@
 # 0.8.0
 * Delete backward compatibility
 * Delete `Geometry::DelDevice()` and `Geometry::deviceIdForDeviceIdx()`
-* Rename `deviceIdForTransIdx()` to `deviceIdxForTransIdx()`
-* Rename `GroupIDForDeviceID()` to `GroupIDForDeviceIdx()`
+* Rename some functions to unify the naming
 * Add `DebugLink`
+* Add `SetDelay`
 
 # 0.7.2
 * Support Apple Silicon mac

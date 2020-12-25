@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 24/12/2020
+// Last Modified: 25/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -13,8 +13,6 @@
 
 #include <array>
 #include <memory>
-#include <string>
-#include <utility>
 #include <vector>
 
 #include "configuration.hpp"
@@ -30,7 +28,12 @@ namespace autd {
  */
 class Controller {
  public:
-  virtual ~Controller() {}
+  Controller() noexcept = default;
+  virtual ~Controller() = default;
+  Controller(const Controller& v) noexcept = delete;
+  Controller& operator=(const Controller& obj) = delete;
+  Controller(Controller&& obj) = delete;
+  Controller& operator=(Controller&& obj) = delete;
 
   /**
    * @brief Create controller
@@ -66,7 +69,7 @@ class Controller {
   /**
    * @brief Calibrate
    * @details Call this function only once after OpenWith(). It takes several seconds and blocks the thread in the meantime.
-   * @param[in] config configration
+   * @param[in] config configuration
    * @return true if success to calibrate
    */
   virtual bool Calibrate(Configuration config = Configuration::GetDefaultConfiguration()) = 0;
@@ -79,7 +82,7 @@ class Controller {
    * @brief Set output delay
    * @param[in] delay delay for each transducer
    */
-  virtual void SetDelay(std::vector<std::array<uint16_t, NUM_TRANS_IN_UNIT>> &delay) = 0;
+  virtual void SetDelay(const std::vector<std::array<uint16_t, NUM_TRANS_IN_UNIT>>& delay) = 0;
   /**
    * @brief Close the controller
    */
@@ -118,7 +121,7 @@ class Controller {
   /**
    * @brief Append gain for STM
    */
-  virtual void AppendSTMGain(const std::vector<GainPtr> &gain_list) = 0;
+  virtual void AppendSTMGain(const std::vector<GainPtr>& gain_list) = 0;
   /**
    * @brief Start Spatio-Temporal Modulation
    * @param[in] freq Frequency of STM modulation
@@ -148,7 +151,7 @@ class Controller {
    */
   virtual void Flush() = 0;
   /**
-   * @brief Enumerate firmware infomations
+   * @brief Enumerate firmware information
    */
   virtual FirmwareInfoList firmware_info_list() = 0;
 

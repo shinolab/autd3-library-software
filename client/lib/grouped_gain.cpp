@@ -1,28 +1,24 @@
-﻿// File: groupedgain.cpp
+﻿// File: grouped_gain.cpp
 // Project: lib
 // Created Date: 07/09/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/12/2020
+// Last Modified: 25/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
 //
 
-#include <stdio.h>
-
 #include <map>
+#include <utility>
 
 #include "consts.hpp"
 #include "gain.hpp"
-#include "privdef.hpp"
 
 namespace autd::gain {
 
-GainPtr GroupedGain::Create(std::map<size_t, GainPtr> gainmap) {
-  auto gain = std::make_shared<GroupedGain>();
-  gain->_gainmap = gainmap;
-  gain->_geometry = nullptr;
+GainPtr GroupedGain::Create(const std::map<size_t, GainPtr>& gain_map) {
+  GainPtr gain = std::make_shared<GroupedGain>(gain_map);
   return gain;
 }
 
@@ -33,16 +29,16 @@ void GroupedGain::Build() {
 
   CheckAndInit(geometry, &this->_data);
 
-  for (std::pair<size_t, GainPtr> p : this->_gainmap) {
-    GainPtr g = p.second;
+  for (const auto& [fst, snd] : this->_gain_map) {
+    auto g = snd;
     g->SetGeometry(geometry);
     g->Build();
   }
 
-  for (int i = 0; i < geometry->numDevices(); i++) {
-    auto groupId = geometry->GroupIDForDeviceIdx(i);
-    if (_gainmap.count(groupId)) {
-      std::vector<std::vector<uint16_t>>& data = _gainmap[groupId]->data();
+  for (size_t i = 0; i < geometry->num_devices(); i++) {
+    auto group_id = geometry->group_id_for_device_idx(i);
+    if (_gain_map.count(group_id)) {
+      auto& data = _gain_map[group_id]->data();
       this->_data[i] = data[i];
     } else {
       this->_data[i] = std::vector<uint16_t>(NUM_TRANS_IN_UNIT, 0x0000);
