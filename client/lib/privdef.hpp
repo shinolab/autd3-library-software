@@ -3,7 +3,7 @@
 // Created Date: 07/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 21/12/2020
+// Last Modified: 25/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -11,17 +11,15 @@
 
 #pragma once
 
-#include <stdint.h>
-
-#include <array>
+#include <cstdint>
 
 namespace autd {
 
 constexpr uint32_t MOD_SAMPLING_FREQ_BASE = 8000;
 
-constexpr auto MOD_FRAME_SIZE = 120;
+constexpr size_t MOD_FRAME_SIZE = 120;
 
-enum RxGlobalControlFlags {
+enum RX_GLOBAL_CONTROL_FLAGS {
   LOOP_BEGIN = 1 << 0,
   LOOP_END = 1 << 1,
   MOD_BEGIN = 1 << 2,

@@ -31,6 +31,10 @@ if(WIN32)
 	)
 endif()
 
+if(WIN32)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4996")
+endif()
+
 file(GLOB_RECURSE SRC_FILES ${SOEM_PATH}/soem/*.c ${SOEM_PATH}/osal/${OS}/*.c ${SOEM_PATH}/oshw/${OS}/*.c)
 #SET_SOURCE_FILES_PROPERTIES(${SRC_FILES} PROPERTIES LANGUAGE CXX)
 

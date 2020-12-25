@@ -54,7 +54,7 @@ class PointSequence {
   /**
    * @return std::vector<Vector3> Control points of the sequence
    */
-  std::vector<Vector3> control_points();
+  [[nodiscard]] std::vector<Vector3> control_points() const;
 
   /**
    * @brief Set frequency of the sequence
@@ -69,24 +69,24 @@ class PointSequence {
   /**
    * @return double Frequency of sequence
    */
-  double frequency();
+  [[nodiscard]] double frequency() const;
   /**
    * The sampling period is limited to an integer multiple of 25us. Therefore, the sampling frequency is 40kHz/N.
    * @return double Sampling frequency of sequence
    */
-  double sampling_frequency();
+  [[nodiscard]] double sampling_frequency() const;
   /**
    * The sampling frequency division means the "(sampling period)/25us".
    * @return double Sampling frequency division
    */
-  uint16_t sampling_frequency_division();
+  [[nodiscard]] uint16_t sampling_frequency_division() const;
 
   size_t& sent();
 
  private:
   GeometryPtr _geometry;
   std::vector<Vector3> _control_points;
-  uint16_t _sampl_freq_div;
+  uint16_t _sampling_freq_div;
   size_t _sent;
 };
 

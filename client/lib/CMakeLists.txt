@@ -59,34 +59,43 @@ if(WIN32)
   source_group("link" FILES
     emulator_link.cpp
     debug_link.cpp
+    ../include/emulator_link.hpp
+    ../include/debug_link.hpp
   )
 
   source_group("gain" FILES
     gain.cpp
-    matlabgain.cpp
+    matlab_gain.cpp
     holo_gain.cpp
-    groupedgain.cpp
+    grouped_gain.cpp
+    ../include/gain.hpp
   )
 
   source_group("modulation" FILES
     modulation.cpp
+    ../include/modulation.hpp
   )
 
   source_group("sequence" FILES
     sequence.cpp
+    ../include/sequence.hpp
   )
  
   source_group("controller" FILES
     controller.cpp
     autd_logic.cpp
+    ../include/controller.hpp
+    autd_logic.hpp
   )
 
   source_group("geometry" FILES
     geometry.cpp
+    ../include/geometry.hpp
   )
 
   source_group("util" FILES
     ${OS}/timer.cpp
+    timer.hpp
   )
 endif()
 

@@ -3,7 +3,7 @@
 // Created Date: 11/10/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 24/12/2020
+// Last Modified: 25/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -11,60 +11,60 @@
 
 #pragma once
 
-#include <atomic>
 #include <memory>
-#include <queue>
 #include <vector>
 
 #include "autd_logic.hpp"
 #include "configuration.hpp"
 #include "controller.hpp"
-#include "ec_config.hpp"
-#include "firmware_version.hpp"
 
-namespace autd::_internal {
+namespace autd::internal {
 
 class AUTDControllerSync;
 class AUTDControllerAsync;
-class AUTDControllerSTM;
+class AUTDControllerStm;
 
-class AUTDController : public Controller {
+class AUTDController final : public Controller {
  public:
   AUTDController();
-  virtual ~AUTDController();
+  ~AUTDController() override;
+  AUTDController(const AUTDController& v) noexcept = delete;
+  AUTDController& operator=(const AUTDController& obj) = delete;
+  AUTDController(AUTDController&& obj) = delete;
+  AUTDController& operator=(AUTDController&& obj) = delete;
 
-  bool is_open() final;
-  GeometryPtr geometry() noexcept final;
-  bool silent_mode() noexcept final;
-  size_t remaining_in_buffer() final;
-  void SetSilentMode(bool silent) noexcept final;
+  bool is_open() override;
+  GeometryPtr geometry() noexcept override;
+  bool silent_mode() noexcept override;
+  size_t remaining_in_buffer() override;
+  void SetSilentMode(bool silent) noexcept override;
 
-  void OpenWith(LinkPtr link) final;
-  bool Calibrate(Configuration config);
-  bool Clear();
-  void Close();
-  void SetDelay(const std::vector<std::array<uint16_t, NUM_TRANS_IN_UNIT>> &delay);
-  void Flush();
+  void OpenWith(LinkPtr link) override;
+  bool Calibrate(Configuration config) override;
+  bool Clear() override;
+  void Close() override;
+  void SetDelay(const std::vector<std::array<uint16_t, NUM_TRANS_IN_UNIT>>& delay) override;
+  void Flush() override;
 
-  void Stop();
-  void AppendGain(const GainPtr gain);
-  void AppendGainSync(const GainPtr gain, bool wait_for_send = false);
-  void AppendModulation(const ModulationPtr mod);
-  void AppendModulationSync(const ModulationPtr mod);
-  void AppendSTMGain(GainPtr gain);
-  void AppendSTMGain(const std::vector<GainPtr> &gain_list);
-  void StartSTModulation(double freq);
-  void StopSTModulation();
-  void FinishSTModulation();
-  void AppendSequence(SequencePtr seq);
-  FirmwareInfoList firmware_info_list();
+  void Stop() override;
+  void AppendGain(GainPtr gain) override;
+  void AppendGainSync(GainPtr gain, bool wait_for_send = false) override;
+  void AppendModulation(ModulationPtr mod) override;
+  void AppendModulationSync(ModulationPtr mod) override;
+  void AppendSTMGain(GainPtr gain) override;
+  void AppendSTMGain(const std::vector<GainPtr>& gain_list) override;
+  void StartSTModulation(double freq) override;
+  void StopSTModulation() override;
+  void FinishSTModulation() override;
+  void AppendSequence(SequencePtr seq) override;
+  FirmwareInfoList firmware_info_list() override;
 
-  void LateralModulationAT(Vector3 point, Vector3 dir, double lm_amp = 2.5, double lm_freq = 100);
+  void LateralModulationAT(Vector3 point, Vector3 dir, double lm_amp = 2.5, double lm_freq = 100) override;
 
  private:
-  std::unique_ptr<_internal::AUTDControllerSync> _sync_cnt;
-  std::unique_ptr<_internal::AUTDControllerAsync> _async_cnt;
-  std::unique_ptr<_internal::AUTDControllerSTM> _stm_cnt;
-  std::shared_ptr<_internal::AUTDLogic> _autd_logic;
+  std::unique_ptr<AUTDControllerSync> _sync_cnt;
+  std::unique_ptr<AUTDControllerAsync> _async_cnt;
+  std::unique_ptr<AUTDControllerStm> _stm_cnt;
+  std::shared_ptr<AUTDLogic> _autd_logic;
 };
-}  // namespace autd::_internal
+}  // namespace autd::internal
