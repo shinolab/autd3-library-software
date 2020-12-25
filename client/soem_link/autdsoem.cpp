@@ -160,7 +160,7 @@ void SOEMControllerImpl::SetupSync0(const bool activate, const uint32_t cycle_ti
   const auto ref_time = system_clock::now();
   for (size_t slave = 1; slave <= _dev_num; slave++) {
     const auto elapsed = duration_cast<nanoseconds>(ref_time - system_clock::now()).count();
-    ec_dcsync0(static_cast<uint16_t>(slave), activate, cycle_time_ns, static_cast<int32>((elapsed / cycle_time_ns) * cycle_time_ns));
+    ec_dcsync0(static_cast<uint16_t>(slave), activate, cycle_time_ns, static_cast<int32>(elapsed / cycle_time_ns * cycle_time_ns));
   }
 }
 
@@ -169,7 +169,7 @@ void SOEMControllerImpl::Open(const char* ifname, const size_t dev_num, const EC
   _config = config;
   _output_frame_size = (config.header_size + config.body_size) * _dev_num;
 
-  const auto size = _output_frame_size + (config.input_frame_size * _dev_num);
+  const auto size = _output_frame_size + config.input_frame_size * _dev_num;
   if (size != _io_map_size) {
     _io_map_size = size;
 
@@ -207,7 +207,7 @@ void SOEMControllerImpl::Open(const char* ifname, const size_t dev_num, const EC
   auto chk = 200;
   do {
     ec_statecheck(0, EC_STATE_OPERATIONAL, 50000);
-  } while (chk-- && (ec_slave[0].state != EC_STATE_OPERATIONAL));
+  } while (chk-- && ec_slave[0].state != EC_STATE_OPERATIONAL);
 
   if (ec_slave[0].state != EC_STATE_OPERATIONAL) {
     std::cerr << "One ore more slaves are not responding." << std::endl;
@@ -328,7 +328,7 @@ void SOEMControllerImpl::CreateSendThread(size_t header_size, size_t body_size) 
       }
 
       if (buf != nullptr && _is_open) {
-        const auto includes_gain = ((size - header_size) / body_size) > 0;
+        const auto includes_gain = (size - header_size) / body_size > 0;
         const auto output_frame_size = header_size + body_size;
 
         for (size_t i = 0; i < _dev_num; i++) {
