@@ -41,7 +41,7 @@ class TwinCATLink : public Link {
    */
   static LinkPtr Create(const std::string& ipv4_addr, const std::string& ams_net_id);
 
-  TwinCATLink() = delete;
+  TwinCATLink() = default;
   ~TwinCATLink() override = default;
   TwinCATLink(const TwinCATLink& v) noexcept = delete;
   TwinCATLink& operator=(const TwinCATLink& obj) = delete;
@@ -64,7 +64,7 @@ class LocalTwinCATLink : public Link {
    * @brief Create LocalTwinCATLink.
    */
   static LinkPtr Create();
-  LocalTwinCATLink() = delete;
+  LocalTwinCATLink() = default;
   ~LocalTwinCATLink() override = default;
   LocalTwinCATLink(const LocalTwinCATLink& v) noexcept = delete;
   LocalTwinCATLink& operator=(const LocalTwinCATLink& obj) = delete;

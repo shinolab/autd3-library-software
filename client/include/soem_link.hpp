@@ -46,6 +46,7 @@ class SOEMLink : public Link {
    * @brief Enumerate Ethernet adapters of the computer.
    */
   static EtherCATAdapters EnumerateAdapters(size_t* size);
+  SOEMLink() = default;
   ~SOEMLink() override = default;
   SOEMLink(const SOEMLink& v) noexcept = delete;
   SOEMLink& operator=(const SOEMLink& obj) = delete;

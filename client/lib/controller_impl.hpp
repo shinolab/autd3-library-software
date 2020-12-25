@@ -17,7 +17,6 @@
 #include "autd_logic.hpp"
 #include "configuration.hpp"
 #include "controller.hpp"
-#include "firmware_version.hpp"
 
 namespace autd::internal {
 

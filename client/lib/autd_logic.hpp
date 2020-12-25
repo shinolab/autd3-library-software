@@ -19,6 +19,7 @@
 
 #include "configuration.hpp"
 #include "consts.hpp"
+#include "core.hpp"
 #include "gain.hpp"
 #include "sequence.hpp"
 

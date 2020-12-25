@@ -3,18 +3,19 @@
 // Created Date: 11/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 24/12/2020
+// Last Modified: 25/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
 //
 
-#include <stdio.h>
 #define _USE_MATH_DEFINES  // NOLINT
 
+#include "modulation.hpp"
+
 #include <algorithm>
-#include <cassert>
 #include <cmath>
+#include <cstdio>
 #include <cstring>
 #include <fstream>
 #include <iostream>
@@ -22,7 +23,6 @@
 #include <numeric>
 
 #include "configuration.hpp"
-#include "modulation.hpp"
 #include "privdef.hpp"
 
 using autd::MOD_BUF_SIZE;
@@ -31,7 +31,7 @@ using autd::MOD_SAMPLING_FREQ;
 namespace autd::modulation {
 
 #pragma region Util
-inline double sinc(const double x) noexcept {
+inline double Sinc(const double x) noexcept {
   if (fabs(x) < std::numeric_limits<double>::epsilon()) return 1;
   return sin(M_PI * x) / (M_PI * x);
 }
@@ -164,7 +164,7 @@ auto RawPCMModulation::Build(const Configuration config) -> void {
   std::vector<double> lpf(num_tap);
   for (auto i = 0; i < num_tap; i++) {
     const auto t = i - num_tap / 2.0;
-    lpf.at(i) = sinc(t * cutoff * 2.0);
+    lpf.at(i) = Sinc(t * cutoff * 2.0);
   }
 
   auto max_v = std::numeric_limits<double>::min();
