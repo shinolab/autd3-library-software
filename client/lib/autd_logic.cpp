@@ -3,7 +3,7 @@
 // Created Date: 22/12/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 24/12/2020
+// Last Modified: 25/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -11,7 +11,17 @@
 
 #include "autd_logic.hpp"
 
-namespace autd::_internal {
+#include <algorithm>
+
+#include "ec_config.hpp"
+#include "firmware_version.hpp"
+#include "gain.hpp"
+#include "link.hpp"
+#include "modulation.hpp"
+#include "privdef.hpp"
+#include "sequence.hpp"
+
+namespace autd::internal {
 
 using autd::NUM_TRANS_IN_UNIT;
 using std::move;
@@ -26,17 +36,18 @@ AUTDLogic::AUTDLogic() {
   this->_config = Configuration::GetDefaultConfiguration();
 }
 
-bool AUTDLogic::is_open() { return (this->_link != nullptr) && this->_link->is_open(); }
+bool AUTDLogic::is_open() const { return (this->_link != nullptr) && this->_link->is_open(); }
 
-GeometryPtr AUTDLogic::geometry() { return this->_geometry; }
-bool &AUTDLogic::silent_mode() { return this->_silent_mode; }
+GeometryPtr AUTDLogic::geometry() const noexcept { return this->_geometry; }
+
+bool &AUTDLogic::silent_mode() noexcept { return this->_silent_mode; }
 
 void AUTDLogic::OpenWith(LinkPtr link) {
-  this->_link = link;
+  this->_link = move(link);
   this->_link->Open();
 }
 
-void AUTDLogic::BuildGain(GainPtr gain) {
+void AUTDLogic::BuildGain(const GainPtr &gain) {
   if (gain != nullptr) {
     this->_seq_mode = false;
     gain->SetGeometry(this->_geometry);
@@ -44,13 +55,13 @@ void AUTDLogic::BuildGain(GainPtr gain) {
   }
 }
 
-void AUTDLogic::BuildModulation(ModulationPtr mod) {
+void AUTDLogic::BuildModulation(const ModulationPtr &mod) const {
   if (mod != nullptr) {
     mod->Build(this->_config);
   }
 }
 
-void AUTDLogic::Send(GainPtr gain, ModulationPtr mod) {
+void AUTDLogic::Send(const GainPtr &gain, const ModulationPtr &mod) {
   if (gain != nullptr) {
     this->_seq_mode = false;
   }
@@ -61,7 +72,7 @@ void AUTDLogic::Send(GainPtr gain, ModulationPtr mod) {
   this->SendData(body_size, move(body));
 }
 
-void AUTDLogic::SendBlocking(GainPtr gain, ModulationPtr mod) {
+void AUTDLogic::SendBlocking(const GainPtr &gain, const ModulationPtr &mod) {
   if (gain != nullptr) {
     this->_seq_mode = false;
   }
@@ -73,7 +84,7 @@ void AUTDLogic::SendBlocking(GainPtr gain, ModulationPtr mod) {
   WaitMsgProcessed(msg_id);
 }
 
-void AUTDLogic::SendBlocking(SequencePtr seq) {
+void AUTDLogic::SendBlocking(const SequencePtr &seq) {
   this->_seq_mode = true;
 
   size_t body_size = 0;
@@ -87,39 +98,38 @@ void AUTDLogic::SendBlocking(SequencePtr seq) {
   }
 }
 
-bool AUTDLogic::SendBlocking(size_t size, unique_ptr<uint8_t[]> data, size_t trial) {
-  uint8_t msg_id = data[0];
+bool AUTDLogic::SendBlocking(const size_t size, unique_ptr<uint8_t[]> data, const size_t trial) {
+  const auto msg_id = data[0];
   this->SendData(size, move(data));
   return this->WaitMsgProcessed(msg_id, trial, 0xFF);
 }
 
-void AUTDLogic::SendData(size_t size, unique_ptr<uint8_t[]> data) {
+void AUTDLogic::SendData(const size_t size, unique_ptr<uint8_t[]> data) {
   if (this->_link == nullptr || !this->_link->is_open()) {
     return;
   }
 
   try {
     this->_link->Send(size, move(data));
-  } catch (const int errnum) {
+  } catch (const int err_num) {
     this->_link->Close();
     this->_link = nullptr;
-    std::cerr << errnum << "Link closed." << std::endl;
+    std::cerr << err_num << "Link closed." << std::endl;
   }
 }
 
-bool AUTDLogic::WaitMsgProcessed(uint8_t msg_id, size_t max_trial, uint8_t mask) {
+bool AUTDLogic::WaitMsgProcessed(const uint8_t msg_id, const size_t max_trial, const uint8_t mask) {
   if (this->_link == nullptr || !this->_link->is_open()) {
     return false;
   }
 
-  auto success = false;
-  auto num_dev = this->_geometry->numDevices();
-  auto buffer_len = num_dev * EC_INPUT_FRAME_SIZE;
+  const auto num_dev = this->_geometry->numDevices();
+  const auto buffer_len = num_dev * EC_INPUT_FRAME_SIZE;
   for (size_t i = 0; i < max_trial; i++) {
     _rx_data = this->_link->Read(static_cast<uint32_t>(buffer_len));
     size_t processed = 0;
     for (size_t dev = 0; dev < num_dev; dev++) {
-      uint8_t proc_id = _rx_data[dev * 2 + 1] & mask;
+      const uint8_t proc_id = _rx_data[dev * 2 + 1] & mask;
       if (proc_id == msg_id) processed++;
     }
 
@@ -127,14 +137,14 @@ bool AUTDLogic::WaitMsgProcessed(uint8_t msg_id, size_t max_trial, uint8_t mask)
       return true;
     }
 
-    auto wait = static_cast<size_t>(std::ceil(EC_TRAFFIC_DELAY * 1000 / EC_DEVICE_PER_FRAME * num_dev));
+    auto wait = static_cast<size_t>(std::ceil(EC_TRAFFIC_DELAY * 1000 / EC_DEVICE_PER_FRAME * static_cast<double>(num_dev)));
     std::this_thread::sleep_for(std::chrono::milliseconds(wait));
   }
 
   return false;
 }
 
-bool AUTDLogic::Calibrate(Configuration config) {
+bool AUTDLogic::Calibrate(const Configuration config) {
   this->_config = config;
   size_t size = 0;
   auto body = this->MakeCalibBody(config, &size);
@@ -144,22 +154,24 @@ bool AUTDLogic::Calibrate(Configuration config) {
 void AUTDLogic::CalibrateSeq() {
   std::vector<uint16_t> laps;
   for (size_t i = 0; i < this->_rx_data.size() / 2; i++) {
-    auto lap_raw = (static_cast<uint16_t>(_rx_data[2 * i + 1]) << 8) | _rx_data[2 * i];
+    const auto lap_raw = (static_cast<uint16_t>(_rx_data[2 * i + 1]) << 8) | _rx_data[2 * i];
     laps.push_back(lap_raw & 0x03FF);
   }
 
   std::vector<uint16_t> diffs;
   auto minimum = *std::min_element(laps.begin(), laps.end());
-  for (size_t i = 0; i < laps.size(); i++) {
-    diffs.push_back(laps[i] - minimum);
+  for (auto lap : laps) {
+    diffs.push_back(lap - minimum);
   }
 
-  auto diff_max = *std::max_element(diffs.begin(), diffs.end());
+  const auto diff_max = *std::max_element(diffs.begin(), diffs.end());
   if (diff_max == 0) {
     return;
-  } else if (diff_max > 500) {
-    for (size_t i = 0; i < laps.size(); i++) {
-      laps[i] = laps[i] < 500 ? laps[i] + 1000 : laps[i];
+  }
+
+  if (diff_max > 500) {
+    for (auto &lap : laps) {
+      lap = lap < 500 ? lap + 1000 : lap;
     }
     minimum = *std::min_element(laps.begin(), laps.end());
     for (size_t i = 0; i < laps.size(); i++) {
@@ -176,7 +188,7 @@ void AUTDLogic::CalibrateSeq() {
 bool AUTDLogic::Clear() {
   this->_config = Configuration::GetDefaultConfiguration();
 
-  auto size = sizeof(RxGlobalHeader);
+  const auto size = sizeof(RxGlobalHeader);
   auto body = std::make_unique<uint8_t[]>(size);
 
   auto *header = reinterpret_cast<RxGlobalHeader *>(&body[0]);
@@ -187,8 +199,8 @@ bool AUTDLogic::Clear() {
 }
 
 void AUTDLogic::SetDelay(const std::vector<std::array<uint16_t, NUM_TRANS_IN_UNIT>> &delay) {
-  auto numDev = this->_geometry->numDevices();
-  auto size = sizeof(RxGlobalHeader) + numDev * 2 * NUM_TRANS_IN_UNIT;
+  const auto num_dev = this->_geometry->numDevices();
+  const auto size = sizeof(RxGlobalHeader) + num_dev * 2 * NUM_TRANS_IN_UNIT;
   auto body = std::make_unique<uint8_t[]>(size);
 
   auto *header = reinterpret_cast<RxGlobalHeader *>(&body[0]);
@@ -196,10 +208,10 @@ void AUTDLogic::SetDelay(const std::vector<std::array<uint16_t, NUM_TRANS_IN_UNI
   header->command = CMD_SET_DELAY;
 
   auto *cursor = &body[0] + sizeof(RxGlobalHeader);
-  auto byteSize = NUM_TRANS_IN_UNIT * sizeof(uint16_t);
-  for (size_t i = 0; i < std::min(numDev, delay.size()); i++) {
-    std::memcpy(cursor, &delay[i].at(0), byteSize);
-    cursor += byteSize;
+  const auto byte_size = NUM_TRANS_IN_UNIT * sizeof(uint16_t);
+  for (size_t i = 0; i < std::min(num_dev, delay.size()); i++) {
+    std::memcpy(cursor, &delay[i].at(0), byte_size);
+    cursor += byte_size;
   }
 
   this->SendBlocking(size, move(body), 200);
@@ -213,11 +225,13 @@ void AUTDLogic::Close() {
   }
 }
 
+inline uint16_t concat_byte(const uint8_t high, const uint16_t low) { return static_cast<uint16_t>((static_cast<uint16_t>(high) << 8) | low); }
+
 FirmwareInfoList AUTDLogic::firmware_info_list() {
-  auto size = this->_geometry->numDevices();
+  const auto size = this->_geometry->numDevices();
 
   FirmwareInfoList res;
-  auto make_header = [](uint8_t command) {
+  auto make_header = [](const uint8_t command) {
     auto header_bytes = std::make_unique<uint8_t[]>(sizeof(RxGlobalHeader));
     auto *header = reinterpret_cast<RxGlobalHeader *>(&header_bytes[0]);
     header->msg_id = command;
@@ -228,20 +242,19 @@ FirmwareInfoList AUTDLogic::firmware_info_list() {
   std::vector<uint16_t> cpu_versions(size);
   std::vector<uint16_t> fpga_versions(size);
 
-  std::unique_ptr<uint8_t[]> header;
-
-  auto send_size = sizeof(RxGlobalHeader);
-  header = make_header(CMD_READ_CPU_VER_LSB);
+  const auto send_size = sizeof(RxGlobalHeader);
+  auto header = make_header(CMD_READ_CPU_VER_LSB);
   this->SendData(send_size, move(header));
   WaitMsgProcessed(CMD_READ_CPU_VER_LSB, 50);
   for (size_t i = 0; i < size; i++) {
     cpu_versions[i] = _rx_data[2 * i];
   }
+
   header = make_header(CMD_READ_CPU_VER_MSB);
   this->SendData(send_size, move(header));
   WaitMsgProcessed(CMD_READ_CPU_VER_MSB, 50);
   for (size_t i = 0; i < size; i++) {
-    cpu_versions[i] = ((uint16_t)_rx_data[2 * i] << 8) | cpu_versions[i];
+    cpu_versions[i] = concat_byte(_rx_data[2 * i], cpu_versions[i]);
   }
 
   header = make_header(CMD_READ_FPGA_VER_LSB);
@@ -255,18 +268,18 @@ FirmwareInfoList AUTDLogic::firmware_info_list() {
   this->SendData(send_size, move(header));
   WaitMsgProcessed(CMD_READ_FPGA_VER_MSB, 50);
   for (size_t i = 0; i < size; i++) {
-    fpga_versions[i] = ((uint16_t)_rx_data[2 * i] << 8) | fpga_versions[i];
+    fpga_versions[i] = concat_byte(_rx_data[2 * i], fpga_versions[i]);
   }
 
-  for (auto i = 0; i < size; i++) {
+  for (size_t i = 0; i < size; i++) {
     auto info = FirmwareInfo(static_cast<uint16_t>(i), cpu_versions[i], fpga_versions[i]);
     res.push_back(info);
   }
   return res;
 }
 
-unique_ptr<uint8_t[]> AUTDLogic::MakeBody(GainPtr gain, ModulationPtr mod, size_t *const size, uint8_t *const send_msg_id) {
-  auto num_devices = (gain != nullptr) ? gain->geometry()->numDevices() : 0;
+unique_ptr<uint8_t[]> AUTDLogic::MakeBody(const GainPtr &gain, const ModulationPtr &mod, size_t *const size, uint8_t *const send_msg_id) const {
+  const auto num_devices = (gain != nullptr) ? gain->geometry()->numDevices() : 0;
 
   *size = sizeof(RxGlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;
   auto body = std::make_unique<uint8_t[]>(*size);
@@ -282,7 +295,7 @@ unique_ptr<uint8_t[]> AUTDLogic::MakeBody(GainPtr gain, ModulationPtr mod, size_
   if (this->_silent_mode) header->control_flags |= SILENT;
 
   if (mod != nullptr) {
-    const uint8_t mod_size = std::max(0, std::min(static_cast<int>(mod->buffer.size() - mod->sent()), MOD_FRAME_SIZE));
+    const auto mod_size = static_cast<uint8_t>(std::clamp(mod->buffer.size() - mod->sent(), size_t{0}, MOD_FRAME_SIZE));
     header->mod_size = mod_size;
     if (mod->sent() == 0) header->control_flags |= LOOP_BEGIN;
     if (mod->sent() + mod_size >= mod->buffer.size()) header->control_flags |= LOOP_END;
@@ -292,18 +305,18 @@ unique_ptr<uint8_t[]> AUTDLogic::MakeBody(GainPtr gain, ModulationPtr mod, size_
   }
 
   auto *cursor = &body[0] + sizeof(RxGlobalHeader);
-  auto byteSize = NUM_TRANS_IN_UNIT * sizeof(uint16_t);
+  const auto byte_size = NUM_TRANS_IN_UNIT * sizeof(uint16_t);
   if (gain != nullptr) {
     for (size_t i = 0; i < gain->geometry()->numDevices(); i++) {
-      std::memcpy(cursor, &gain->data()[i].at(0), byteSize);
-      cursor += byteSize;
+      std::memcpy(cursor, &gain->data()[i].at(0), byte_size);
+      cursor += byte_size;
     }
   }
   return body;
 }
 
-unique_ptr<uint8_t[]> AUTDLogic::MakeBody(SequencePtr seq, size_t *const size, uint8_t *const send_msg_id) {
-  auto num_devices = this->_geometry->numDevices();
+unique_ptr<uint8_t[]> AUTDLogic::MakeBody(const SequencePtr &seq, size_t *const size, uint8_t *const send_msg_id) const {
+  const auto num_devices = this->_geometry->numDevices();
 
   *size = sizeof(RxGlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;
   auto body = std::make_unique<uint8_t[]>(*size);
@@ -317,7 +330,7 @@ unique_ptr<uint8_t[]> AUTDLogic::MakeBody(SequencePtr seq, size_t *const size, u
 
   if (this->_silent_mode) header->control_flags |= SILENT;
 
-  uint16_t send_size = std::max(0, std::min(static_cast<int>(seq->control_points().size() - seq->sent()), 40));
+  const auto send_size = static_cast<uint16_t>(std::clamp(seq->control_points().size() - seq->sent(), size_t{0}, size_t{40}));
   header->seq_size = send_size;
   header->seq_div = seq->sampling_frequency_division();
 
@@ -335,9 +348,9 @@ unique_ptr<uint8_t[]> AUTDLogic::MakeBody(SequencePtr seq, size_t *const size, u
 
     for (size_t i = 0; i < send_size; i++) {
       auto v64 = this->_geometry->local_position(device, seq->control_points()[seq->sent() + i]);
-      auto x = static_cast<uint32_t>(static_cast<int32_t>(v64.x() / FIXED_NUM_UNIT));
-      auto y = static_cast<uint32_t>(static_cast<int32_t>(v64.y() / FIXED_NUM_UNIT));
-      auto z = static_cast<uint32_t>(static_cast<int32_t>(v64.z() / FIXED_NUM_UNIT));
+      const auto x = static_cast<uint32_t>(static_cast<int32_t>(v64.x() / FIXED_NUM_UNIT));
+      const auto y = static_cast<uint32_t>(static_cast<int32_t>(v64.y() / FIXED_NUM_UNIT));
+      const auto z = static_cast<uint32_t>(static_cast<int32_t>(v64.z() / FIXED_NUM_UNIT));
       foci.push_back(static_cast<uint8_t>(x & 0x000000FF));
       foci.push_back(static_cast<uint8_t>((x & 0x0000FF00) >> 8));
       foci.push_back(static_cast<uint8_t>(((x & 0x80000000) >> 24) | ((x & 0x007F0000) >> 16)));
@@ -357,10 +370,10 @@ unique_ptr<uint8_t[]> AUTDLogic::MakeBody(SequencePtr seq, size_t *const size, u
   return body;
 }
 
-unique_ptr<uint8_t[]> AUTDLogic::MakeCalibBody(Configuration config, size_t *const size) {
+unique_ptr<uint8_t[]> AUTDLogic::MakeCalibBody(const Configuration config, size_t *const size) {
   this->_config = config;
 
-  auto num_devices = this->_geometry->numDevices();
+  const auto num_devices = this->_geometry->numDevices();
   *size = sizeof(RxGlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;
   auto body = std::make_unique<uint8_t[]>(*size);
 
@@ -368,17 +381,17 @@ unique_ptr<uint8_t[]> AUTDLogic::MakeCalibBody(Configuration config, size_t *con
   header->msg_id = CMD_INIT_REF_CLOCK;
   header->command = CMD_INIT_REF_CLOCK;
 
-  auto mod_smpl_freq = static_cast<uint32_t>(_config.mod_sampling_freq());
-  auto mod_buf_size = static_cast<uint32_t>(_config.mod_buf_size());
+  const auto mod_sampling_freq = static_cast<uint32_t>(_config.mod_sampling_freq());
+  const auto mod_buf_size = static_cast<uint32_t>(_config.mod_buf_size());
 
-  if (mod_buf_size < mod_smpl_freq) {
+  if (mod_buf_size < mod_sampling_freq) {
     std::cerr << "Modulation buffer size must be not less than sampling frequency.\n";
-    std::cerr << "Modulation buffer size is set to " << mod_smpl_freq << std::endl;
-    this->_config.set_mod_buf_size(static_cast<MOD_BUF_SIZE>(mod_smpl_freq));
+    std::cerr << "Modulation buffer size is set to " << mod_sampling_freq << std::endl;
+    this->_config.set_mod_buf_size(static_cast<MOD_BUF_SIZE>(mod_sampling_freq));
   }
 
-  auto mod_idx_shift = log2u(MOD_SAMPLING_FREQ_BASE / mod_smpl_freq);
-  auto ref_clk_cyc_shift = log2u(mod_buf_size / mod_smpl_freq);
+  const auto mod_idx_shift = log2u(MOD_SAMPLING_FREQ_BASE / mod_sampling_freq);
+  const auto ref_clk_cyc_shift = log2u(mod_buf_size / mod_sampling_freq);
 
   auto *cursor = reinterpret_cast<uint16_t *>(&body[0] + sizeof(RxGlobalHeader));
   for (size_t i = 0; i < num_devices; i++) {
@@ -390,7 +403,7 @@ unique_ptr<uint8_t[]> AUTDLogic::MakeCalibBody(Configuration config, size_t *con
   return body;
 }
 
-unique_ptr<uint8_t[]> AUTDLogic::MakeCalibSeqBody(std::vector<uint16_t> comps, size_t *const size) {
+unique_ptr<uint8_t[]> AUTDLogic::MakeCalibSeqBody(const std::vector<uint16_t> &comps, size_t *const size) const {
   *size = sizeof(RxGlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * comps.size();
   auto body = std::make_unique<uint8_t[]>(*size);
 
@@ -399,12 +412,12 @@ unique_ptr<uint8_t[]> AUTDLogic::MakeCalibSeqBody(std::vector<uint16_t> comps, s
   header->control_flags = 0;
   header->command = CMD_CALIB_SEQ_CLOCK;
 
-  uint16_t *cursor = reinterpret_cast<uint16_t *>(&body[sizeof(RxGlobalHeader)]);
-  for (size_t i = 0; i < comps.size(); i++) {
-    *cursor = comps[i];
+  auto *cursor = reinterpret_cast<uint16_t *>(&body[sizeof(RxGlobalHeader)]);
+  for (auto comp : comps) {
+    *cursor = comp;
     cursor += NUM_TRANS_IN_UNIT;
   }
 
   return body;
 }
-}  // namespace autd::_internal
+}  // namespace autd::internal
