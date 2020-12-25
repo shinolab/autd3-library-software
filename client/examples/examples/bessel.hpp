@@ -17,7 +17,7 @@ using autd::NUM_TRANS_X;
 using autd::NUM_TRANS_Y;
 using autd::TRANS_SIZE_MM;
 
-inline void bessel_test(const autd::ControllerPtr& autd) {
+inline void BesselTest(const autd::ControllerPtr& autd) {
   autd->SetSilentMode(true);
 
   const auto m = autd::modulation::SineModulation::Create(150);  // 150Hz AM

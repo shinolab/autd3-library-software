@@ -13,7 +13,7 @@
 
 #include "autd3.hpp"
 
-inline void seq_test(const autd::ControllerPtr& autd) {
+inline void SeqTest(const autd::ControllerPtr& autd) {
   autd->SetSilentMode(false);
 
   const auto m = autd::modulation::Modulation::Create(255);

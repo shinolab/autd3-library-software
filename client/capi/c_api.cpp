@@ -280,8 +280,8 @@ void AUTDSOEMLink(void** out, const char* ifname, const int32_t device_num) {
   auto* link = LinkCreate(autd::link::SOEMLink::Create(std::string(ifname), device_num));
   *out = link;
 }
-void AUTDTwinCATLink(void** out, const char* ipv4addr, const char* ams_net_id) {
-  auto* link = LinkCreate(autd::link::TwinCATLink::Create(std::string(ipv4addr), std::string(ams_net_id)));
+void AUTDTwinCATLink(void** out, const char* ipv4_addr, const char* ams_net_id) {
+  auto* link = LinkCreate(autd::link::TwinCATLink::Create(std::string(ipv4_addr), std::string(ams_net_id)));
   *out = link;
 }
 void AUTDLocalTwinCATLink(void** out) {
@@ -370,13 +370,13 @@ double* AUTDTransDirection(void* const handle, const int32_t trans_idx) {
 
 #pragma region Debug
 #ifdef UNITY_DEBUG
-DebugLogFunc _debugLogFunc = nullptr;
+DebugLogFunc DEBUG_LOG_FUNC = nullptr;
 
 void DebugLog(const char* msg) {
-  if (_debugLogFunc != nullptr) _debugLogFunc(msg);
+  if (DEBUG_LOG_FUNC != nullptr) DEBUG_LOG_FUNC(msg);
 }
 
-void SetDebugLog(const DebugLogFunc func) { _debugLogFunc = func; }
+void SetDebugLog(const DebugLogFunc func) { DEBUG_LOG_FUNC = func; }
 #endif
 
 #pragma endregion

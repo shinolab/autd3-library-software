@@ -60,7 +60,7 @@ EXPORT void AUTDFocalPointGain(void** gain, double x, double y, double z, uint8_
 EXPORT void AUTDGroupedGain(void** gain, const int32_t* group_ids, void** gains, int32_t size);
 EXPORT void AUTDBesselBeamGain(void** gain, double x, double y, double z, double n_x, double n_y, double n_z, double theta_z, uint8_t duty);
 EXPORT void AUTDPlaneWaveGain(void** gain, double n_x, double n_y, double n_z, uint8_t duty);
-EXPORT void AUTDCustomGain(void** gain, uint16_t* data, int32_t dataLength);
+EXPORT void AUTDCustomGain(void** gain, uint16_t* data, int32_t data_length);
 EXPORT void AUTDHoloGain(void** gain, double* points, double* amps, int32_t size, int32_t method, void* params);
 EXPORT void AUTDTransducerTestGain(void** gain, int32_t idx, uint8_t duty, uint8_t phase);
 EXPORT void AUTDNullGain(void** gain);
@@ -92,9 +92,9 @@ EXPORT void AUTDDeleteSequence(void* seq);
 
 #pragma region Link
 EXPORT void AUTDSOEMLink(void** out, const char* ifname, int32_t device_num);
-EXPORT void AUTDTwinCATLink(void** out, const char* ipv4addr, const char* ams_net_id);
+EXPORT void AUTDTwinCATLink(void** out, const char* ipv4_addr, const char* ams_net_id);
 EXPORT void AUTDLocalTwinCATLink(void** out);
-EXPORT void AUTDEmulatorLink(void** out, const char* addr, const uint16_t port, void* handle);
+EXPORT void AUTDEmulatorLink(void** out, const char* addr, uint16_t port, void* handle);
 #pragma endregion
 
 #pragma region LowLevelInterface

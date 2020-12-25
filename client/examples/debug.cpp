@@ -24,5 +24,5 @@ int main() {
   autd->OpenWith(autd::link::DebugLink::Create(cout));
   if (!autd->is_open()) return ENXIO;
 
-  return run(autd);
+  return Run(autd);
 }

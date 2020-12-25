@@ -42,7 +42,7 @@ constexpr uint32_t INDEX_OFFSET_BASE = 0x81000000;
 constexpr uint32_t INDEX_OFFSET_BASE_READ = 0x80000000;
 constexpr uint16_t PORT = 301;
 
-static std::vector<std::string> split(const std::string& s, const char deliminator) {
+static std::vector<std::string> Split(const std::string& s, const char deliminator) {
   std::vector<std::string> tokens;
   std::string token;
   for (auto ch : s) {
@@ -88,7 +88,7 @@ LinkPtr TwinCATLink::Create(const std::string& ipv4_addr, const std::string& ams
 }
 
 void TwinCATLinkImpl::Open() {
-  auto octets = split(_ams_net_id, '.');
+  auto octets = Split(_ams_net_id, '.');
   if (octets.size() != 6) {
     throw std::runtime_error("Ams net id must have 6 octets");
   }
@@ -118,7 +118,7 @@ void TwinCATLinkImpl::Close() {
   AdsPortCloseEx(this->_port);
 }
 
-bool TwinCATLinkImpl::is_open() { return (this->_port > 0); }
+bool TwinCATLinkImpl::is_open() { return this->_port > 0; }
 
 void TwinCATLinkImpl::Send(const size_t size, const std::unique_ptr<uint8_t[]> buf) {
   const AmsAddr p_addr = {this->_net_id, PORT};
@@ -180,23 +180,23 @@ LinkPtr LocalTwinCATLink::Create() {
   return link;
 }
 
-bool LocalTwinCATLinkImpl::is_open() { return (this->_port > 0); }
+bool LocalTwinCATLinkImpl::is_open() { return this->_port > 0; }
 
 #ifdef _WIN32
-typedef long(_stdcall* tc_ads_port_open_ex)();                        // NOLINT
-typedef long(_stdcall* tc_ads_port_close_ex)(long);                   // NOLINT
-typedef long(_stdcall* tc_ads_get_local_address_ex)(long, AmsAddr*);  // NOLINT
-typedef long(_stdcall* tc_ads_sync_write_req_ex)(long, AmsAddr*,      // NOLINT
-                                                 unsigned long,       // NOLINT
-                                                 unsigned long,       // NOLINT
-                                                 unsigned long,       // NOLINT
-                                                 void*);              // NOLINT
-typedef long(_stdcall* tc_ads_sync_read_req_ex)(long, AmsAddr*,       // NOLINT
-                                                unsigned long,        // NOLINT
-                                                unsigned long,        // NOLINT
-                                                unsigned long,        // NOLINT
-                                                void*,                // NOLINT
-                                                unsigned long*);      // NOLINT
+typedef long(_stdcall* TcAdsPortOpenEx)();                       // NOLINT
+typedef long(_stdcall* TcAdsPortCloseEx)(long);                  // NOLINT
+typedef long(_stdcall* TcAdsGetLocalAddressEx)(long, AmsAddr*);  // NOLINT
+typedef long(_stdcall* TcAdsSyncWriteReqEx)(long, AmsAddr*,      // NOLINT
+                                            unsigned long,       // NOLINT
+                                            unsigned long,       // NOLINT
+                                            unsigned long,       // NOLINT
+                                            void*);              // NOLINT
+typedef long(_stdcall* TcAdsSyncReadReqEx)(long, AmsAddr*,       // NOLINT
+                                           unsigned long,        // NOLINT
+                                           unsigned long,        // NOLINT
+                                           unsigned long,        // NOLINT
+                                           void*,                // NOLINT
+                                           unsigned long*);      // NOLINT
 #ifdef _WIN64
 constexpr auto TCADS_ADS_PORT_OPEN_EX = "AdsPortOpenEx";
 constexpr auto TCADS_ADS_GET_LOCAL_ADDRESS_EX = "AdsGetLocalAddressEx";
@@ -211,25 +211,25 @@ void LocalTwinCATLinkImpl::Open() {
     throw std::runtime_error("couldn't find TcADS-DLL.");
   }
   // open a new ADS port
-  const auto port_open = reinterpret_cast<tc_ads_port_open_ex>(GetProcAddress(this->_lib, TCADS_ADS_PORT_OPEN_EX));
+  const auto port_open = reinterpret_cast<TcAdsPortOpenEx>(GetProcAddress(this->_lib, TCADS_ADS_PORT_OPEN_EX));
   this->_port = (*port_open)();
   if (!this->_port) {
     std::cerr << "Error: Failed to open a new ADS port." << std::endl;
   }
   AmsAddr addr;
-  const auto getAddr = reinterpret_cast<tc_ads_get_local_address_ex>(GetProcAddress(this->_lib, TCADS_ADS_GET_LOCAL_ADDRESS_EX));
-  const auto n_err = getAddr(this->_port, &addr);  // NOLINT
+  const auto get_addr = reinterpret_cast<TcAdsGetLocalAddressEx>(GetProcAddress(this->_lib, TCADS_ADS_GET_LOCAL_ADDRESS_EX));
+  const auto n_err = get_addr(this->_port, &addr);  // NOLINT
   if (n_err) std::cerr << "Error: AdsGetLocalAddress: " << n_err << std::endl;
   this->_net_id = addr.netId;
 }
 void LocalTwinCATLinkImpl::Close() {
   this->_port = 0;
-  const auto port_close = reinterpret_cast<tc_ads_port_close_ex>(GetProcAddress(this->_lib, TCADS_ADS_PORT_CLOSE_EX));
+  const auto port_close = reinterpret_cast<TcAdsPortCloseEx>(GetProcAddress(this->_lib, TCADS_ADS_PORT_CLOSE_EX));
   (*port_close)(this->_port);
 }
 void LocalTwinCATLinkImpl::Send(const size_t size, const std::unique_ptr<uint8_t[]> buf) {
   AmsAddr addr = {this->_net_id, PORT};
-  const auto write = reinterpret_cast<tc_ads_sync_write_req_ex>(GetProcAddress(this->_lib, TCADS_ADS_SYNC_WRITE_REQ_EX));
+  const auto write = reinterpret_cast<TcAdsSyncWriteReqEx>(GetProcAddress(this->_lib, TCADS_ADS_SYNC_WRITE_REQ_EX));
   const auto ret = write(this->_port,  // NOLINT
                          &addr, INDEX_GROUP, INDEX_OFFSET_BASE,
                          static_cast<unsigned long>(size),  // NOLINT
@@ -244,7 +244,7 @@ void LocalTwinCATLinkImpl::Send(const size_t size, const std::unique_ptr<uint8_t
 
 std::vector<uint8_t> LocalTwinCATLinkImpl::Read(const uint32_t buffer_len) {
   AmsAddr addr = {this->_net_id, PORT};
-  const auto read = reinterpret_cast<tc_ads_sync_read_req_ex>(GetProcAddress(this->_lib, TCADS_ADS_SYNC_READ_REQ_EX));
+  const auto read = reinterpret_cast<TcAdsSyncReadReqEx>(GetProcAddress(this->_lib, TCADS_ADS_SYNC_READ_REQ_EX));
 
   const auto buffer = std::make_unique<uint8_t[]>(buffer_len);
   unsigned long read_bytes;           // NOLINT

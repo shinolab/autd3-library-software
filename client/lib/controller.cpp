@@ -131,9 +131,9 @@ class AUTDControllerAsync {
         {
           unique_lock<mutex> lk(_build_gain_mtx);
 
-          _build_gain_cond.wait(lk, [&] { return _build_gain_q.size() || !this->_is_running; });
+          _build_gain_cond.wait(lk, [&] { return !_build_gain_q.empty() || !this->_is_running; });
 
-          if (_build_gain_q.size() > 0) {
+          if (!_build_gain_q.empty()) {
             gain = _build_gain_q.front();
             _build_gain_q.pop();
           }
@@ -156,9 +156,9 @@ class AUTDControllerAsync {
         {
           unique_lock<mutex> lk(_build_mod_mtx);
 
-          _build_mod_cond.wait(lk, [&] { return _build_mod_q.size() || !_is_running; });
+          _build_mod_cond.wait(lk, [&] { return !_build_mod_q.empty() || !_is_running; });
 
-          if (_build_mod_q.size() > 0) {
+          if (!_build_mod_q.empty()) {
             mod = _build_mod_q.front();
             _build_mod_q.pop();
           }
@@ -182,9 +182,9 @@ class AUTDControllerAsync {
 
         {
           unique_lock<mutex> lk(_send_mtx);
-          _send_cond.wait(lk, [&] { return _send_gain_q.size() || _send_mod_q.size() || !this->_is_running; });
-          if (_send_gain_q.size() > 0) gain = _send_gain_q.front();
-          if (_send_mod_q.size() > 0) mod = _send_mod_q.front();
+          _send_cond.wait(lk, [&] { return !_send_gain_q.empty() || !_send_mod_q.empty() || !this->_is_running; });
+          if (!_send_gain_q.empty()) gain = _send_gain_q.front();
+          if (!_send_mod_q.empty()) mod = _send_mod_q.front();
         }
         this->_autd_logic->Send(gain, mod);
 
@@ -261,7 +261,7 @@ class AUTDControllerStm {
     this->_p_stm_timer->Start([this, idx, len]() mutable {
       const auto body_size = this->_stm_body_sizes[idx];
       auto body_copy = std::make_unique<uint8_t[]>(body_size);
-      const auto p = this->_stm_bodies[idx];
+      auto* const p = this->_stm_bodies[idx];
       std::memcpy(body_copy.get(), p, body_size);
       this->_autd_logic->SendData(body_size, move(body_copy));
       idx = (idx + 1) % len;
@@ -273,7 +273,7 @@ class AUTDControllerStm {
   void Finish() {
     this->Stop();
     vector<GainPtr>().swap(this->_stm_gains);
-    for (auto p : this->_stm_bodies) {
+    for (auto* p : this->_stm_bodies) {
       delete[] p;
     }
     vector<uint8_t*>().swap(this->_stm_bodies);

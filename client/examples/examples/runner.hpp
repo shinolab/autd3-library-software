@@ -32,12 +32,12 @@ using std::pair;
 using std::string;
 using std::vector;
 
-inline int run(autd::ControllerPtr& autd) {
+inline int Run(autd::ControllerPtr& autd) {
   using F = function<void(autd::ControllerPtr)>;
   vector<pair<F, string>> examples = {
-      pair(F{simple_test}, "Single Focal Point Test"),         pair(F{bessel_test}, "BesselBeam Test"),
-      pair(F{holo_test}, "Multiple Focal Points Test"),        pair(F{stm_test}, "Spatio-Temporal Modulation Test"),
-      pair(F{seq_test}, "Point Sequence Test (Hardware STM)"),
+      pair(F{SimpleTest}, "Single Focal Point Test"),         pair(F{BesselTest}, "BesselBeam Test"),
+      pair(F{HoloTest}, "Multiple Focal Points Test"),        pair(F{STMTest}, "Spatio-Temporal Modulation Test"),
+      pair(F{SeqTest}, "Point Sequence Test (Hardware STM)"),
   };
 
   autd->Clear();
@@ -57,7 +57,7 @@ inline int run(autd::ControllerPtr& autd) {
     cout << "[Others]: finish." << endl;
 
     cout << "Choose number: ";
-    string in = "";
+    string in;
     size_t idx = 0;
     getline(cin, in);
     std::stringstream s(in);

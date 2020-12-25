@@ -112,7 +112,7 @@ MatrixXcd TransferMatrix(const GeometryPtr& geometry, const MatrixX3d& foci, con
   return g;
 }
 
-void HoloGainImplSDP(vector<vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, const autd::GeometryPtr& geometry, void* params) {
+void HoloGainImplSDP(vector<vector<uint16_t>>* data, const MatrixX3d& foci, const VectorXd& amps, const GeometryPtr& geometry, void* params) {
   double alpha, lambda;
   int32_t repeat;
   bool normalize;
@@ -154,7 +154,7 @@ void HoloGainImplSDP(vector<vector<uint16_t>>* data, const MatrixX3d& foci, cons
   MatrixXcd mm = p * (MatrixXcd::Identity(m, m) - b * p_inv_b) * p;
   MatrixXcd x_mat = MatrixXcd::Identity(m, m);
   for (auto i = 0; i < repeat; i++) {
-    const double rnd = range(mt);
+    const auto rnd = range(mt);
     const auto ii = static_cast<size_t>(static_cast<double>(m) * rnd);
 
     auto xc = x_mat;
@@ -385,7 +385,7 @@ void HoloGainImplGSPAT(vector<vector<uint16_t>>* data, const MatrixX3d& foci, co
 }
 
 inline MatrixXcd CalcTTh(const VectorXd& x) {
-  size_t len = x.size();
+  const size_t len = x.size();
   VectorXcd t(len);
   for (size_t i = 0; i < len; i++) t(i) = exp(complex<double>(0, -x(i)));
   return t * t.adjoint();
@@ -395,7 +395,7 @@ inline MatrixXcd MakeBhB(const GeometryPtr& geometry, const MatrixX3d& foci, con
   MatrixXcd p = MatrixXcd::Zero(m, m);
   for (size_t i = 0; i < m; i++) p(i, i) = -amps(i);
 
-  auto g = TransferMatrix(geometry, foci, m, n);
+  const auto g = TransferMatrix(geometry, foci, m, n);
 
   MatrixXcd b(g.rows(), g.cols() + p.cols());
   b << g, p;
@@ -484,11 +484,11 @@ void HoloGainImplLM(vector<vector<uint16_t>>* data, const MatrixX3d& foci, const
     }
   }
 
-  const uint16_t D = 0xFF00;
+  const uint16_t duty = 0xFF00;
   for (size_t j = 0; j < n; j++) {
     const auto f_phase = fmod(x(j), 2 * M_PI) / (2 * M_PI);
-    const auto S = static_cast<uint16_t>((1 - f_phase) * 255.);
-    data->at(geometry->device_idx_for_trans_idx(j)).at(j % NUM_TRANS_IN_UNIT) = D | S;
+    const auto phase = static_cast<uint16_t>((1 - f_phase) * 255.);
+    data->at(geometry->device_idx_for_trans_idx(j)).at(j % NUM_TRANS_IN_UNIT) = duty | phase;
   }
 }
 }  // namespace hologainimpl
@@ -506,12 +506,12 @@ void HoloGain::Build() {
 
   CheckAndInit(geo, &this->_data);
 
-  const auto M = _foci.size();
+  const auto m = _foci.size();
 
-  Eigen::MatrixX3d foci(M, 3);
-  Eigen::VectorXd amps(M);
+  Eigen::MatrixX3d foci(m, 3);
+  Eigen::VectorXd amps(m);
 
-  for (size_t i = 0; i < M; i++) {
+  for (size_t i = 0; i < m; i++) {
     foci(i, 0) = _foci[i].x();
     foci(i, 1) = _foci[i].y();
     foci(i, 2) = _foci[i].z();

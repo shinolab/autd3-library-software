@@ -18,7 +18,7 @@ using autd::NUM_TRANS_Y;
 using autd::TRANS_SIZE_MM;
 using autd::gain::OPT_METHOD;
 
-inline void holo_test(const autd::ControllerPtr& autd) {
+inline void HoloTest(const autd::ControllerPtr& autd) {
   autd->SetSilentMode(true);
 
   const auto m = autd::modulation::SineModulation::Create(150);  // 150Hz AM
