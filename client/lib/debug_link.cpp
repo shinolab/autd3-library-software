@@ -3,7 +3,7 @@
 // Created Date: 22/12/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/12/2020
+// Last Modified: 25/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -11,17 +11,12 @@
 
 #include "debug_link.hpp"
 
-#include <algorithm>
 #include <bitset>
 #include <chrono>
-#include <cstring>
-#include <iostream>
 #include <memory>
 #include <ostream>
 #include <sstream>
 #include <string>
-#include <thread>
-#include <utility>
 #include <vector>
 
 #include "autd_logic.hpp"
@@ -36,7 +31,7 @@ namespace autd::link {
 
 #pragma warning(push)
 #pragma warning(disable : 26812)
-std::string ControlFlagBit2String(RxGlobalControlFlags flag) {
+std::string ControlFlagBit2String(const RxGlobalControlFlags flag) {
   switch (flag) {
     GEN_CFLAG_ARM(LOOP_BEGIN)
     GEN_CFLAG_ARM(LOOP_END)
@@ -46,14 +41,13 @@ std::string ControlFlagBit2String(RxGlobalControlFlags flag) {
     GEN_CFLAG_ARM(SEQ_MODE)
     GEN_CFLAG_ARM(SEQ_BEGIN)
     GEN_CFLAG_ARM(SEQ_END)
-    default:
-      return "Unknown flag";
   }
+  return "Unknown flag";
 }
 #pragma warning(pop)
 
-std::string Command2String(uint8_t cmd) {
-  using namespace autd::_internal;  // NOLINT
+std::string Command2String(const uint8_t cmd) {
+  using namespace autd::internal;  // NOLINT
   switch (cmd) {
     GEN_CFLAG_ARM(CMD_OP)
     GEN_CFLAG_ARM(CMD_BRAM_WRITE)
@@ -70,14 +64,14 @@ std::string Command2String(uint8_t cmd) {
   }
 }
 
-std::string ControlFlag2String(uint8_t flags) {
+std::string ControlFlag2String(const uint8_t flags) {
   if (flags == 0) {
     return "None";
   }
 
-  uint8_t index = flags;
+  auto index = flags;
   uint8_t mask = 1;
-  bool isFirst = true;
+  auto isFirst = true;
   std::ostringstream oss;
   while (index) {
     if (index % 2 != 0) {
@@ -89,13 +83,13 @@ std::string ControlFlag2String(uint8_t flags) {
     }
 
     index = index >> 1;
-    mask = mask << 1;
+    mask = static_cast<uint8_t>(mask << 1);
   }
   return oss.str();
 }
 
 LinkPtr DebugLink::Create(std::ostream &out) {
-  auto link = std::make_shared<DebugLink>(out);
+  LinkPtr link = std::make_unique<DebugLink>(out);
   return link;
 }
 DebugLink::DebugLink(std::ostream &out) : _out(out) {}
@@ -110,12 +104,12 @@ void DebugLink::Close() {
   _is_open = false;
 }
 
-void DebugLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
+void DebugLink::Send(const size_t size, const std::unique_ptr<uint8_t[]> buf) {
   this->_out << "Call: Send()" << std::endl;
 
   _last_msg_id = buf[0];
 
-  RxGlobalHeader *header = reinterpret_cast<RxGlobalHeader *>(&buf[0]);
+  auto header = reinterpret_cast<RxGlobalHeader *>(&buf[0]);
   this->_out << "Header:" << std::endl;
   this->_out << "\tmsg_id   : " << std::hex << static_cast<int>(header->msg_id) << std::endl;
   this->_out << "\tflag     : " << ControlFlag2String(header->control_flags) << std::endl;
@@ -133,12 +127,12 @@ void DebugLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
     this->_out << "\tseq_div  : " << static_cast<int>(header->seq_div) << std::endl;
   }
 
-  auto num_device = (size - sizeof(RxGlobalHeader)) / (2 * NUM_TRANS_IN_UNIT);
+  const auto num_device = (size - sizeof(RxGlobalHeader)) / (2 * NUM_TRANS_IN_UNIT);
   auto idx = sizeof(RxGlobalHeader);
   if (num_device != 0) {
-    for (auto i = 0; i < num_device; i++) {
+    for (size_t i = 0; i < num_device; i++) {
       this->_out << "Body[" << i << "]: " << std::hex;
-      for (auto j = 0; j < 2 * NUM_TRANS_IN_UNIT; j++) {
+      for (size_t j = 0; j < 2 * NUM_TRANS_IN_UNIT; j++) {
         this->_out << static_cast<int>(buf[idx + j]) << ", ";
       }
       idx += 2 * NUM_TRANS_IN_UNIT;
@@ -147,7 +141,7 @@ void DebugLink::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
   }
 }
 
-std::vector<uint8_t> DebugLink::Read(uint32_t buffer_len) { return std::vector<uint8_t>(buffer_len, _last_msg_id); }
+std::vector<uint8_t> DebugLink::Read(const uint32_t buffer_len) { return std::vector<uint8_t>(buffer_len, _last_msg_id); }
 
 bool DebugLink::is_open() { return _is_open; }
 
