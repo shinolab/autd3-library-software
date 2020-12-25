@@ -11,10 +11,9 @@
 
 #pragma once
 
-#define _USE_MATH_DEFINES  // NOLINT
-#include <math.h>
-
+#define _USE_MATH_DEFINES
 #include <cassert>
+#include <cmath>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -291,8 +290,8 @@ class HoloGain final : public Gain {
    */
   static GainPtr Create(const std::vector<Vector3>& foci, const std::vector<double>& amps, OptMethod method = OptMethod::SDP, void* params = nullptr);
   void Build() override;
-  HoloGain(const std::vector<Vector3>& foci, const std::vector<double>& amps, const OptMethod method = OptMethod::SDP, void* params = nullptr)
-      : Gain(), _foci(foci), _amps(amps), _method(method), _params(params) {}
+  HoloGain(std::vector<Vector3> foci, std::vector<double> amps, const OptMethod method = OptMethod::SDP, void* params = nullptr)
+      : Gain(), _foci(std::move(foci)), _amps(std::move(amps)), _method(method), _params(params) {}
   ~HoloGain() override = default;
   HoloGain(const HoloGain& v) noexcept = default;
   HoloGain& operator=(const HoloGain& obj) = default;

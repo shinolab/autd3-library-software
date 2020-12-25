@@ -15,6 +15,7 @@
 #include <ostream>
 #include <vector>
 
+#include "core.hpp"
 #include "link.hpp"
 
 namespace autd::link {
@@ -27,9 +28,9 @@ class DebugLink final : public Link {
 
   explicit DebugLink(std::ostream& out);
   ~DebugLink() override = default;
-  DebugLink(const DebugLink& v) noexcept = default;
+  DebugLink(const DebugLink& v) noexcept = delete;
   DebugLink& operator=(const DebugLink& obj) = delete;
-  DebugLink(DebugLink&& obj) = default;
+  DebugLink(DebugLink&& obj) = delete;
   DebugLink& operator=(DebugLink&& obj) = delete;
 
   void Open() override;

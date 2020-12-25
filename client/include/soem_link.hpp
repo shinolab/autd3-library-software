@@ -3,7 +3,7 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 24/12/2020
+// Last Modified: 25/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -46,12 +46,11 @@ class SOEMLink : public Link {
    * @brief Enumerate Ethernet adapters of the computer.
    */
   static EtherCATAdapters EnumerateAdapters(size_t* size);
-  SOEMLink() = default;
   ~SOEMLink() override = default;
   SOEMLink(const SOEMLink& v) noexcept = delete;
   SOEMLink& operator=(const SOEMLink& obj) = delete;
-  SOEMLink(SOEMLink&& obj) = default;
-  SOEMLink& operator=(SOEMLink&& obj) = default;
+  SOEMLink(SOEMLink&& obj) = delete;
+  SOEMLink& operator=(SOEMLink&& obj) = delete;
 
   void Open() override = 0;
   void Close() override = 0;

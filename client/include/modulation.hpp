@@ -3,7 +3,7 @@
 // Created Date: 04/11/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 24/12/2020
+// Last Modified: 25/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -120,7 +120,8 @@ class RawPCMModulation final : public Modulation {
    */
   static ModulationPtr Create(const std::string& filename, double sampling_freq = 0.0);
   void Build(Configuration config) override;
-  explicit RawPCMModulation(const double sampling_freq, const std::vector<int32_t>& buf) : Modulation(), _sampling_freq(sampling_freq), _buf(buf) {}
+  explicit RawPCMModulation(const double sampling_freq, std::vector<int32_t> buf)
+      : Modulation(), _sampling_freq(sampling_freq), _buf(std::move(buf)) {}
 
  private:
   double _sampling_freq = 0;
@@ -142,7 +143,8 @@ class WavModulation final : public Modulation {
    */
   static ModulationPtr Create(const std::string& filename);
   void Build(Configuration config) override;
-  explicit WavModulation(const uint32_t sampling_freq, const std::vector<uint8_t>& buf) : Modulation(), _sampling_freq(sampling_freq), _buf(buf) {}
+  explicit WavModulation(const uint32_t sampling_freq, std::vector<uint8_t> buf)
+      : Modulation(), _sampling_freq(sampling_freq), _buf(std::move(buf)) {}
 
  private:
   uint32_t _sampling_freq = 0;

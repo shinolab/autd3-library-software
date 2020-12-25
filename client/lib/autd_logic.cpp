@@ -12,6 +12,7 @@
 #include "autd_logic.hpp"
 
 #include <algorithm>
+#include <cstring>
 #include <utility>
 
 #include "ec_config.hpp"
