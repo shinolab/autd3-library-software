@@ -14,7 +14,6 @@
 #include <algorithm>
 #include <condition_variable>
 #include <cstring>
-#include <iostream>
 #include <mutex>
 #include <queue>
 #include <thread>
@@ -22,6 +21,7 @@
 #include <vector>
 
 #include "controller_impl.hpp"
+#include "firmware_version.hpp"
 #include "geometry.hpp"
 #include "link.hpp"
 #include "sequence.hpp"

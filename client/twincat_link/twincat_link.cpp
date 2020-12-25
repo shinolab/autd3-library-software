@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 24/12/2020
+// Last Modified: 25/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -12,7 +12,7 @@
 #include "twincat_link.hpp"
 
 #if _WINDOWS
-#include <codeanalysis/warnings.h> // NOLINT
+#include <codeanalysis/warnings.h>  // NOLINT
 #pragma warning(push)
 #pragma warning(disable : ALL_CODE_ANALYSIS_WARNINGS)
 #endif
@@ -62,10 +62,10 @@ class TwinCATLinkImpl final : public TwinCATLink {
   TwinCATLinkImpl(std::string ipv4_addr, std::string ams_net_id)
       : TwinCATLink(), _ams_net_id(std::move(ams_net_id)), _ipv4_addr(std::move(ipv4_addr)) {}
   ~TwinCATLinkImpl() override = default;
-  TwinCATLinkImpl(const TwinCATLinkImpl& v) noexcept = default;
-  TwinCATLinkImpl& operator=(const TwinCATLinkImpl& obj) = default;
-  TwinCATLinkImpl(TwinCATLinkImpl&& obj) = default;
-  TwinCATLinkImpl& operator=(TwinCATLinkImpl&& obj) = default;
+  TwinCATLinkImpl(const TwinCATLinkImpl& v) noexcept = delete;
+  TwinCATLinkImpl& operator=(const TwinCATLinkImpl& obj) = delete;
+  TwinCATLinkImpl(TwinCATLinkImpl&& obj) = delete;
+  TwinCATLinkImpl& operator=(TwinCATLinkImpl&& obj) = delete;
 
   void Open() override;
   void Close() override;
@@ -155,10 +155,10 @@ class LocalTwinCATLinkImpl final : public LocalTwinCATLink {
  public:
   LocalTwinCATLinkImpl() : LocalTwinCATLink() {}
   ~LocalTwinCATLinkImpl() override = default;
-  LocalTwinCATLinkImpl(const LocalTwinCATLinkImpl& v) noexcept = default;
-  LocalTwinCATLinkImpl& operator=(const LocalTwinCATLinkImpl& obj) = default;
-  LocalTwinCATLinkImpl(LocalTwinCATLinkImpl&& obj) = default;
-  LocalTwinCATLinkImpl& operator=(LocalTwinCATLinkImpl&& obj) = default;
+  LocalTwinCATLinkImpl(const LocalTwinCATLinkImpl& v) noexcept = delete;
+  LocalTwinCATLinkImpl& operator=(const LocalTwinCATLinkImpl& obj) = delete;
+  LocalTwinCATLinkImpl(LocalTwinCATLinkImpl&& obj) = delete;
+  LocalTwinCATLinkImpl& operator=(LocalTwinCATLinkImpl&& obj) = delete;
 
  protected:
   void Open() override;

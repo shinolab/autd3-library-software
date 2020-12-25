@@ -3,16 +3,13 @@
 // Created Date: 01/07/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 24/12/2020
+// Last Modified: 25/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
 //
 
 #include "sequence.hpp"
-
-#define _USE_MATH_DEFINES  // NOLINT
-#include <math.h>
 
 #include <algorithm>
 #include <stdexcept>
