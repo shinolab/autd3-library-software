@@ -3,7 +3,7 @@
 // Created Date: 30/03/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 24/12/2020
+// Last Modified: 25/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -20,7 +20,8 @@ namespace autd {
  */
 class FirmwareInfo {
  public:
-  FirmwareInfo(const uint16_t idx, const uint16_t cpu_ver, const uint16_t fpga_ver) : _idx(idx), _cpu_version_number(cpu_ver), _fpga_version_number(fpga_ver) {}
+  FirmwareInfo(const uint16_t idx, const uint16_t cpu_ver, const uint16_t fpga_ver)
+      : _idx(idx), _cpu_version_number(cpu_ver), _fpga_version_number(fpga_ver) {}
 
   /**
    * @brief Get cpu firmware version

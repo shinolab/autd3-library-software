@@ -32,7 +32,7 @@ class EmulatorLink final : public Link {
  public:
   static LinkPtr Create(const std::string& ip_addr, uint16_t port, const GeometryPtr& geometry);
   EmulatorLink(const std::string& ip_addr, const uint16_t port, const GeometryPtr& geometry)
-      : Link(), _ip_addr(ip_addr), _geometry(geometry), _port(port){};
+      : Link(), _ip_addr(ip_addr), _geometry(geometry), _port(port) {}
   ~EmulatorLink() override = default;
   EmulatorLink(const EmulatorLink& v) noexcept = default;
   EmulatorLink& operator=(const EmulatorLink& obj) = default;

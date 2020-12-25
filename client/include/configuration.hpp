@@ -3,7 +3,7 @@
 // Created Date: 30/10/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/12/2020
+// Last Modified: 25/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -46,7 +46,7 @@ class Configuration {
   }
 
   static Configuration GetDefaultConfiguration() {
-	  const Configuration config;
+    const Configuration config;
     return config;
   }
 

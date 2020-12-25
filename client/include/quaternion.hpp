@@ -3,7 +3,7 @@
 // Created Date: 27/02/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/04/2020
+// Last Modified: 25/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -33,11 +33,11 @@ class Quaternion {
   [[nodiscard]] double z() const { return _z; }
   [[nodiscard]] double w() const { return _w; }
 
-private:
-    double _x;
-    double _y;
-    double _z;
-    double _w;
+ private:
+  double _x;
+  double _y;
+  double _z;
+  double _w;
 };
-}  // namespace _utils
+}  // namespace utils
 }  // namespace autd
