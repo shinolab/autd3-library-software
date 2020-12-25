@@ -289,7 +289,7 @@ class HoloGain final : public Gain {
    * @param[in] method optimization method. see also @ref OptMethod
    * @param[in] params pointer to optimization parameters
    */
-  static GainPtr Create(std::vector<Vector3> foci, std::vector<double> amps, OptMethod method = OptMethod::SDP, void* params = nullptr);
+  static GainPtr Create(const std::vector<Vector3>& foci, const std::vector<double>& amps, OptMethod method = OptMethod::SDP, void* params = nullptr);
   void Build() override;
   HoloGain(const std::vector<Vector3>& foci, const std::vector<double>& amps, const OptMethod method = OptMethod::SDP, void* params = nullptr)
       : Gain(), _foci(foci), _amps(amps), _method(method), _params(params) {}

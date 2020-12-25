@@ -13,9 +13,11 @@
 
 #include <memory>
 
+#include "core.hpp"
 #include "vector3.hpp"
 
 namespace autd {
+
 using GeometryPtr = std::shared_ptr<Geometry>;
 
 /**

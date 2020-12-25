@@ -1,4 +1,4 @@
-﻿// File: privdef.hpp
+﻿// File: consts.hpp
 // Project: lib
 // Created Date: 07/06/2016
 // Author: Seki Inoue
@@ -10,8 +10,6 @@
 //
 
 #pragma once
-
-#include <stdio.h>
 
 namespace autd {
 constexpr size_t NUM_TRANS_IN_UNIT = 249;

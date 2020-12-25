@@ -11,15 +11,13 @@
 
 #pragma once
 
-#include <stdint.h>
-
-#include <array>
+#include <cstdint>
 
 namespace autd {
 
 constexpr uint32_t MOD_SAMPLING_FREQ_BASE = 8000;
 
-constexpr auto MOD_FRAME_SIZE = 120;
+constexpr size_t MOD_FRAME_SIZE = 120;
 
 enum RxGlobalControlFlags {
   LOOP_BEGIN = 1 << 0,

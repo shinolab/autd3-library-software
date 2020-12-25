@@ -11,37 +11,33 @@
 
 #pragma once
 
-#include <cmath>
-
-#include "core.hpp"
-
 namespace autd {
-namespace _utils {
+namespace utils {
 /**
  * @brief Simple quaternion class
  */
 class Quaternion {
- private:
-  double _x;
-  double _y;
-  double _z;
-  double _w;
-
  public:
   /**
    * @brief Create Quaternion
    */
-  Quaternion(double w, double x, double y, double z) {
+  Quaternion(const double w, const double x, const double y, const double z) {
     this->_x = x;
     this->_y = y;
     this->_z = z;
     this->_w = w;
   }
 
-  double x() { return _x; }
-  double y() { return _y; }
-  double z() { return _z; }
-  double w() { return _w; }
+  [[nodiscard]] double x() const { return _x; }
+  [[nodiscard]] double y() const { return _y; }
+  [[nodiscard]] double z() const { return _z; }
+  [[nodiscard]] double w() const { return _w; }
+
+private:
+    double _x;
+    double _y;
+    double _z;
+    double _w;
 };
 }  // namespace _utils
 }  // namespace autd
