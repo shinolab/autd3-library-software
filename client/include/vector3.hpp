@@ -14,6 +14,7 @@
 #define _USE_MATH_DEFINES  // NOLINT
 #include <math.h>
 
+#include <cmath>
 #include <iostream>
 
 namespace autd {
