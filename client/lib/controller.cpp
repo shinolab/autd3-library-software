@@ -362,8 +362,8 @@ void AUTDController::LateralModulationAT(const Vector3 point, const Vector3 dir,
   const auto p1 = point + lm_amp * dir;
   const auto p2 = point - lm_amp * dir;
   this->FinishSTModulation();
-  this->AppendSTMGain(autd::gain::FocalPointGain::Create(p1));
-  this->AppendSTMGain(autd::gain::FocalPointGain::Create(p2));
+  this->AppendSTMGain(gain::FocalPointGain::Create(p1));
+  this->AppendSTMGain(gain::FocalPointGain::Create(p2));
   this->StartSTModulation(lm_freq);
 }
 
