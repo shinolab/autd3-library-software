@@ -17,7 +17,7 @@ using autd::NUM_TRANS_X;
 using autd::NUM_TRANS_Y;
 using autd::TRANS_SIZE_MM;
 
-inline void stm_test(const autd::ControllerPtr& autd) {
+inline void STMTest(const autd::ControllerPtr& autd) {
   autd->SetSilentMode(true);
 
   const auto m = autd::modulation::Modulation::Create(255);

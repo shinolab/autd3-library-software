@@ -58,8 +58,8 @@
 
 namespace autdsoem {
 
-static std::atomic<bool> autd3_lib_send_cond(false);
-static std::atomic<bool> autd3_lib_rt_thread_lock(false);
+static std::atomic<bool> AUTD3_LIB_SEND_COND(false);
+static std::atomic<bool> AUTD3_LIB_RT_THREAD_LOCK(false);
 
 class SOEMControllerImpl final : public SOEMController {
  public:
@@ -78,11 +78,9 @@ class SOEMControllerImpl final : public SOEMController {
   void Send(size_t size, std::unique_ptr<uint8_t[]> buf) override;
   std::vector<uint8_t> Read() override;
 
-  bool _is_open = false;
-
  private:
 #ifdef WINDOWS
-  static void CALLBACK rt_thread(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2);
+  static void CALLBACK rt_thread(UINT u_timer_id, UINT u_msg, DWORD_PTR dw_user, DWORD_PTR dw1, DWORD_PTR dw2);
 #elif defined MACOSX
   static void rt_thread();
 #elif defined LINUX
@@ -98,6 +96,7 @@ class SOEMControllerImpl final : public SOEMController {
   uint32_t _sync0_cyc_time = 0;
   size_t _dev_num = 0;
   ECConfig _config;
+  bool _is_open = false;
 
   std::queue<std::pair<std::unique_ptr<uint8_t[]>, size_t>> _send_q;
   std::thread _send_thread;
@@ -135,7 +134,8 @@ std::vector<uint8_t> SOEMControllerImpl::Read() {
 }
 
 #ifdef WINDOWS
-void CALLBACK SOEMControllerImpl::rt_thread(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2)
+void CALLBACK SOEMControllerImpl::rt_thread([[maybe_unused]] UINT u_timer_id, [[maybe_unused]] UINT u_msg, [[maybe_unused]] DWORD_PTR dw_user,
+                                            [[maybe_unused]] DWORD_PTR dw1, [[maybe_unused]] DWORD_PTR dw2)
 #elif defined MACOSX
 void SOEMControllerImpl::rt_thread()
 #elif defined LINUX
@@ -143,15 +143,15 @@ void SOEMControllerImpl::rt_thread(union sigval sv)
 #endif
 {
   auto expected = false;
-  if (autd3_lib_rt_thread_lock.compare_exchange_weak(expected, true)) {
-    const auto pre = autd3_lib_send_cond.load(std::memory_order_acquire);
+  if (AUTD3_LIB_RT_THREAD_LOCK.compare_exchange_weak(expected, true)) {
+    const auto pre = AUTD3_LIB_SEND_COND.load(std::memory_order_acquire);
     ec_send_processdata();
     ec_receive_processdata(EC_TIMEOUTRET);
     if (!pre) {
-      autd3_lib_send_cond.store(true, std::memory_order_release);
+      AUTD3_LIB_SEND_COND.store(true, std::memory_order_release);
     }
 
-    autd3_lib_rt_thread_lock.store(false, std::memory_order_release);
+    AUTD3_LIB_RT_THREAD_LOCK.store(false, std::memory_order_release);
   }
 }
 
@@ -217,9 +217,9 @@ void SOEMControllerImpl::Open(const char* ifname, const size_t dev_num, const EC
   SetupSync0(true, _sync0_cyc_time);
 
 #ifdef WINDOWS
-  const uint32_t uResolution = 1;
-  timeBeginPeriod(uResolution);
-  _timer_id = timeSetEvent(config.ec_sm3_cycle_time_ns / 1000 / 1000, uResolution, static_cast<LPTIMECALLBACK>(rt_thread), NULL, TIME_PERIODIC);
+  const uint32_t u_resolution = 1;
+  timeBeginPeriod(u_resolution);
+  _timer_id = timeSetEvent(config.ec_sm3_cycle_time_ns / 1000 / 1000, u_resolution, static_cast<LPTIMECALLBACK>(rt_thread), NULL, TIME_PERIODIC);
 
   if (_timer_id == 0) {
     std::cerr << "timeSetEvent failed." << std::endl;
@@ -291,9 +291,9 @@ void SOEMControllerImpl::Close() {
 
 #ifdef WINDOWS
     if (_timer_id != 0) {
-      const uint32_t uResolution = 1;
+      const uint32_t u_resolution = 1;
       timeKillEvent(_timer_id);
-      timeEndPeriod(uResolution);
+      timeEndPeriod(u_resolution);
     }
 #elif defined MACOSX
     dispatch_source_cancel(_timer);
@@ -337,8 +337,8 @@ void SOEMControllerImpl::CreateSendThread(size_t header_size, size_t body_size) 
         }
 
         {
-          autd3_lib_send_cond.store(false, std::memory_order_release);
-          while (!autd3_lib_send_cond.load(std::memory_order_acquire) && _is_open) {
+          AUTD3_LIB_SEND_COND.store(false, std::memory_order_release);
+          while (!AUTD3_LIB_SEND_COND.load(std::memory_order_acquire) && _is_open) {
           }
         }
 

@@ -189,7 +189,7 @@ auto RawPCMModulation::Build(const Configuration config) -> void {
 
 namespace {
 template <class T>
-T read_from_stream(std::ifstream& fsp) {
+T ReadFromStream(std::ifstream& fsp) {
   char buf[sizeof(T)];
   if (!fsp.read(buf, sizeof(T))) throw std::runtime_error("Invalid data length.");
   T v{};
@@ -203,35 +203,35 @@ ModulationPtr WavModulation::Create(const std::string& filename) {
   fs.open(filename, std::ios::binary);
   if (fs.fail()) throw std::runtime_error("Error on opening file.");
 
-  const auto riff_tag = read_from_stream<uint32_t>(fs);
+  const auto riff_tag = ReadFromStream<uint32_t>(fs);
   if (riff_tag != 0x46464952u) throw std::runtime_error("Invalid data format.");
 
-  [[maybe_unused]] const auto chunk_size = read_from_stream<uint32_t>(fs);
+  [[maybe_unused]] const auto chunk_size = ReadFromStream<uint32_t>(fs);
 
-  const auto wav_desc = read_from_stream<uint32_t>(fs);
+  const auto wav_desc = ReadFromStream<uint32_t>(fs);
   if (wav_desc != 0x45564157u) throw std::runtime_error("Invalid data format.");
 
-  const auto fmt_desc = read_from_stream<uint32_t>(fs);
+  const auto fmt_desc = ReadFromStream<uint32_t>(fs);
   if (fmt_desc != 0x20746d66u) throw std::runtime_error("Invalid data format.");
 
-  const auto fmt_chunk_size = read_from_stream<uint32_t>(fs);
+  const auto fmt_chunk_size = ReadFromStream<uint32_t>(fs);
   if (fmt_chunk_size != 0x00000010u) throw std::runtime_error("Invalid data format.");
 
-  const auto wave_fmt = read_from_stream<uint16_t>(fs);
+  const auto wave_fmt = ReadFromStream<uint16_t>(fs);
   if (wave_fmt != 0x0001u) throw std::runtime_error("Invalid data format. This supports only uncompressed linear PCM data.");
 
-  const auto channel = read_from_stream<uint16_t>(fs);
+  const auto channel = ReadFromStream<uint16_t>(fs);
   if (channel != 0x0001u) throw std::runtime_error("Invalid data format. This supports only monaural audio.");
 
-  const auto sample_freq = read_from_stream<uint32_t>(fs);
-  [[maybe_unused]] const auto bytes_per_sec = read_from_stream<uint32_t>(fs);
-  [[maybe_unused]] const auto block_size = read_from_stream<uint16_t>(fs);
-  const auto bits_per_sample = read_from_stream<uint16_t>(fs);
+  const auto sample_freq = ReadFromStream<uint32_t>(fs);
+  [[maybe_unused]] const auto bytes_per_sec = ReadFromStream<uint32_t>(fs);
+  [[maybe_unused]] const auto block_size = ReadFromStream<uint16_t>(fs);
+  const auto bits_per_sample = ReadFromStream<uint16_t>(fs);
 
-  const auto data_desc = read_from_stream<uint32_t>(fs);
+  const auto data_desc = ReadFromStream<uint32_t>(fs);
   if (data_desc != 0x61746164u) throw std::runtime_error("Invalid data format.");
 
-  const auto data_chunk_size = read_from_stream<uint32_t>(fs);
+  const auto data_chunk_size = ReadFromStream<uint32_t>(fs);
 
   if (bits_per_sample != 8 && bits_per_sample != 16) {
     throw std::runtime_error("This only supports 8 or 16 bits per sampling data.");
@@ -241,10 +241,10 @@ ModulationPtr WavModulation::Create(const std::string& filename) {
   const auto data_size = data_chunk_size / (bits_per_sample / 8);
   for (size_t i = 0; i < data_size; i++) {
     if (bits_per_sample == 8) {
-      auto d = read_from_stream<uint8_t>(fs);
+      auto d = ReadFromStream<uint8_t>(fs);
       tmp.push_back(d);
     } else if (bits_per_sample == 16) {
-      const auto d32 = static_cast<int32_t>(read_from_stream<int16_t>(fs)) - std::numeric_limits<int16_t>::min();
+      const auto d32 = static_cast<int32_t>(ReadFromStream<int16_t>(fs)) - std::numeric_limits<int16_t>::min();
       auto d8 = static_cast<uint8_t>(static_cast<float>(d32) / std::numeric_limits<uint16_t>::max() * std::numeric_limits<uint8_t>::max());
       tmp.push_back(d8);
     }

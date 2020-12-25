@@ -62,7 +62,7 @@ void Timer::Stop() {
     this->_loop = false;
 
     if (this->_high_resolution) {
-      this->_mainThread.join();
+      this->_main_thread.join();
 
     } else {
       if (_timer_id != 0) {
@@ -75,7 +75,7 @@ void Timer::Stop() {
 }
 
 void Timer::InitTimer() {
-  this->_mainThread = std::thread([&] { Timer::MainLoop(); });
+  this->_main_thread = std::thread([&] { MainLoop(); });
 }
 
 inline void MicroSleep(const int micro_sec) noexcept {

@@ -31,7 +31,7 @@ namespace autd::link {
 
 #pragma warning(push)
 #pragma warning(disable : 26812)
-std::string ControlFlagBit2String(const RxGlobalControlFlags flag) {
+std::string ControlFlagBit2String(const RX_GLOBAL_CONTROL_FLAGS flag) {
   switch (flag) {
     GEN_CFLAG_ARM(LOOP_BEGIN)
     GEN_CFLAG_ARM(LOOP_END)
@@ -47,7 +47,7 @@ std::string ControlFlagBit2String(const RxGlobalControlFlags flag) {
 #pragma warning(pop)
 
 std::string Command2String(const uint8_t cmd) {
-  using namespace autd::internal;  // NOLINT
+  using namespace internal;  // NOLINT
   switch (cmd) {
     GEN_CFLAG_ARM(CMD_OP)
     GEN_CFLAG_ARM(CMD_BRAM_WRITE)
@@ -78,7 +78,7 @@ std::string ControlFlag2String(const uint8_t flags) {
       if (!is_first) {
         oss << " | ";
       }
-      oss << ControlFlagBit2String(static_cast<RxGlobalControlFlags>(flags & mask));
+      oss << ControlFlagBit2String(static_cast<RX_GLOBAL_CONTROL_FLAGS>(flags & mask));
       is_first = false;
     }
 
@@ -145,4 +145,4 @@ std::vector<uint8_t> DebugLink::Read(const uint32_t buffer_len) { return std::ve
 
 bool DebugLink::is_open() { return _is_open; }
 
-};  // namespace autd::link
+}  // namespace autd::link

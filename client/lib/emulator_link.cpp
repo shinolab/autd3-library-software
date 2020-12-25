@@ -111,4 +111,4 @@ void EmulatorLink::SetGeometry() {
 
   Send(size, std::move(buf));
 }
-};  // namespace autd::link
+}  // namespace autd::link

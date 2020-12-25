@@ -22,5 +22,5 @@ int main() {
   autd->OpenWith(autd::link::EmulatorLink::Create("127.0.0.1", 50632, autd->geometry()));
   if (!autd->is_open()) return ENXIO;
 
-  return run(autd);
+  return Run(autd);
 }

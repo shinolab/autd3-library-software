@@ -49,7 +49,7 @@ class Timer {
   timer_t _timer_id;
 #endif
 
-  std::thread _mainThread;
+  std::thread _main_thread;
   bool _loop = false;
 #if WIN32
   bool _high_resolution;

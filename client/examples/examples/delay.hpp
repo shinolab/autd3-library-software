@@ -49,7 +49,7 @@ class ConstGain final : public autd::gain::Gain {
   }
 };
 
-inline void delay_test(const autd::ControllerPtr& autd) {
+inline void DelayTest(const autd::ControllerPtr& autd) {
   autd->SetSilentMode(false);
 
   const auto m = BurstModulation::Create();

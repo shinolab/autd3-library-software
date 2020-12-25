@@ -44,5 +44,5 @@ int main() {
   autd->OpenWith(autd::link::SOEMLink::Create(ifname, autd->geometry()->num_devices()));
   if (!autd->is_open()) return ENXIO;
 
-  return run(autd);
+  return Run(autd);
 }

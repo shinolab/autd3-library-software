@@ -3,7 +3,7 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 24/12/2020
+// Last Modified: 25/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -43,8 +43,8 @@ class SOEMLinkImpl final : public SOEMLink {
   ~SOEMLinkImpl() override = default;
   SOEMLinkImpl(const SOEMLinkImpl& v) noexcept = delete;
   SOEMLinkImpl& operator=(const SOEMLinkImpl& obj) = delete;
-  SOEMLinkImpl(SOEMLinkImpl&& obj) = default;
-  SOEMLinkImpl& operator=(SOEMLinkImpl&& obj) = default;
+  SOEMLinkImpl(SOEMLinkImpl&& obj) = delete;
+  SOEMLinkImpl& operator=(SOEMLinkImpl&& obj) = delete;
 
  protected:
   void Open() override;
