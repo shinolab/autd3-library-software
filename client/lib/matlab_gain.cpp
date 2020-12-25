@@ -41,31 +41,31 @@ void MatlabGain::Build() {
 #ifdef MATLAB_ENABLED
   const auto num_trans = this->geometry()->numTransducers();
 
-  MATFile *p_mat = matOpen(_filename.c_str(), "r");
+  const auto p_mat = matOpen(_filename.c_str(), "r");
   if (p_mat == nullptr) {
-    throw new std::runtime_error("Cannot open a file " + _filename);
+    throw std::runtime_error("Cannot open a file " + _filename);
   }
 
-  mxArray *arr = matGetVariable(p_mat, _var_name.c_str());
-  size_t num_elems = mxGetNumberOfElements(arr);
+  const auto arr = matGetVariable(p_mat, _var_name.c_str());
+  const auto num_elems = mxGetNumberOfElements(arr);
   if (num_trans < num_elems) {
-    throw new std::runtime_error("Insufficient number of data in mat file");
+    throw std::runtime_error("Insufficient number of data in mat file");
   }
 
-  mxComplexDouble *array = mxGetComplexDoubles(arr);
+  const auto array = mxGetComplexDoubles(arr);
 
-  mxArray *pos = matGetVariable(p_mat, "pos");
+  const auto pos = matGetVariable(p_mat, "pos");
   double *pos_arr = nullptr;
   if (pos != nullptr) {
     pos_arr = mxGetPr(pos);
   }
 
-  for (auto i = 0; i < num_elems; i++) {
-    double f_amp = sqrt(array[i].real * array[i].real + array[i].imag * array[i].imag);
-    uint8_t amp = static_cast<uint8_t>(std::clamp<double>(f_amp, 0, 1) * 255.99);
+  for (size_t i = 0; i < num_elems; i++) {
+    auto f_amp = sqrt(array[i].real * array[i].real + array[i].imag * array[i].imag);
+    const auto amp = static_cast<uint16_t>(std::clamp<double>(f_amp, 0, 1) * 255.0);
     auto f_phase = 0.0;
     if (amp != 0) f_phase = atan2(array[i].imag, array[i].real);
-    auto phase = static_cast<uint8_t>(round((-f_phase + M_PI) / (2.0 * M_PI) * 255.0));
+    const auto phase = static_cast<uint16_t>(round((-f_phase + M_PI) / (2.0 * M_PI) * 255.0));
 
     if (pos_arr != nullptr) {
       const auto x = pos_arr[i * 3 + 0];
@@ -78,7 +78,8 @@ void MatlabGain::Build() {
       }
     }
 
-    this->_data[this->geometry()->deviceIdxForTransIdx(i)][i % NUM_TRANS_IN_UNIT] = (static_cast<uint16_t>(amp) << 8) + phase;
+    const uint16_t duty = (amp << 8) & 0xFF00;
+    this->_data[this->geometry()->deviceIdxForTransIdx(i)][i % NUM_TRANS_IN_UNIT] = duty | phase;
   }
 #endif
 
