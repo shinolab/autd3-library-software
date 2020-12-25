@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/11/2020
+// Last Modified: 25/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -22,105 +22,100 @@
 #endif
 
 extern "C" {
-using AUTDControllerHandle = void *;
-using AUTDGainPtr = void *;
-using AUTDModulationPtr = void *;
-using AUTDSequencePtr = void *;
-using AUTDLinkPtr = void *;
 
 #ifdef UNITY_DEBUG
-using DebugLogFunc = void (*)(const char *);
+using DebugLogFunc = void (*)(const char*);
 #endif
 
 #pragma region Controller
-EXPORT void AUTDCreateController(AUTDControllerHandle *out);
-EXPORT int32_t AUTDOpenControllerWith(AUTDControllerHandle handle, AUTDLinkPtr link);
-EXPORT int32_t AUTDAddDevice(AUTDControllerHandle handle, double x, double y, double z, double rz1, double ry, double rz2, int32_t groupId);
-EXPORT int32_t AUTDAddDeviceQuaternion(AUTDControllerHandle handle, double x, double y, double z, double qua_w, double qua_x, double qua_y,
-                                       double qua_z, int32_t groupId);
-EXPORT bool AUTDCalibrate(AUTDControllerHandle handle, int32_t smpl_freq, int32_t buf_size);
-EXPORT void AUTDCloseController(AUTDControllerHandle handle);
-EXPORT void AUTDClear(AUTDControllerHandle handle);
-EXPORT void AUTDFreeController(AUTDControllerHandle handle);
-EXPORT void AUTDSetSilentMode(AUTDControllerHandle handle, bool mode);
-EXPORT void AUTDStop(AUTDControllerHandle handle);
-EXPORT int32_t AUTDGetAdapterPointer(void **out);
-EXPORT void AUTDGetAdapter(void *p_adapter, int32_t index, char *descs, char *names);
-EXPORT void AUTDFreeAdapterPointer(void *p_adapter);
-EXPORT int32_t AUTDGetFirmwareInfoListPointer(AUTDControllerHandle handle, void **out);
-EXPORT void AUTDGetFirmwareInfo(void *pfirminfolist, int32_t index, char *cpu_ver, char *fpga_ver);
-EXPORT void AUTDFreeFirmwareInfoListPointer(void *pfirminfolist);
+EXPORT void AUTDCreateController(void** out);
+EXPORT int32_t AUTDOpenControllerWith(void* handle, void* p_link);
+EXPORT int32_t AUTDAddDevice(void* handle, double x, double y, double z, double rz1, double ry, double rz2, int32_t group_id);
+EXPORT int32_t AUTDAddDeviceQuaternion(void* handle, double x, double y, double z, double qua_w, double qua_x, double qua_y, double qua_z,
+                                       int32_t group_id);
+EXPORT bool AUTDCalibrate(void* handle, int32_t smpl_freq, int32_t buf_size);
+EXPORT void AUTDCloseController(void* handle);
+EXPORT void AUTDClear(void* handle);
+EXPORT void AUTDFreeController(void* handle);
+EXPORT void AUTDSetSilentMode(void* handle, bool mode);
+EXPORT void AUTDStop(void* handle);
+EXPORT int32_t AUTDGetAdapterPointer(void** out);
+EXPORT void AUTDGetAdapter(void* p_adapter, int32_t index, char* desc, char* name);
+EXPORT void AUTDFreeAdapterPointer(void* p_adapter);
+EXPORT int32_t AUTDGetFirmwareInfoListPointer(void* handle, void** out);
+EXPORT void AUTDGetFirmwareInfo(void* p_firm_info_list, int32_t index, char* cpu_ver, char* fpga_ver);
+EXPORT void AUTDFreeFirmwareInfoListPointer(void* p_firm_info_list);
 #pragma endregion
 
 #pragma region Property
-EXPORT bool AUTDIsOpen(AUTDControllerHandle handle);
-EXPORT bool AUTDIsSilentMode(AUTDControllerHandle handle);
-EXPORT int32_t AUTDNumDevices(AUTDControllerHandle handle);
-EXPORT int32_t AUTDNumTransducers(AUTDControllerHandle handle);
-EXPORT uint64_t AUTDRemainingInBuffer(AUTDControllerHandle handle);
+EXPORT bool AUTDIsOpen(void* handle);
+EXPORT bool AUTDIsSilentMode(void* handle);
+EXPORT int32_t AUTDNumDevices(void* handle);
+EXPORT int32_t AUTDNumTransducers(void* handle);
+EXPORT uint64_t AUTDRemainingInBuffer(void* handle);
 #pragma endregion
 
 #pragma region Gain
-EXPORT void AUTDFocalPointGain(AUTDGainPtr *gain, double x, double y, double z, uint8_t duty);
-EXPORT void AUTDGroupedGain(AUTDGainPtr *gain, int32_t *groupIDs, AUTDGainPtr *gains, int32_t size);
-EXPORT void AUTDBesselBeamGain(AUTDGainPtr *gain, double x, double y, double z, double n_x, double n_y, double n_z, double theta_z, uint8_t duty);
-EXPORT void AUTDPlaneWaveGain(AUTDGainPtr *gain, double n_x, double n_y, double n_z, uint8_t duty);
-EXPORT void AUTDCustomGain(AUTDGainPtr *gain, uint16_t *data, int32_t dataLength);
-EXPORT void AUTDHoloGain(AUTDGainPtr *gain, double *points, double *amps, int32_t size, int32_t method, void *params);
-EXPORT void AUTDTransducerTestGain(AUTDGainPtr *gain, int32_t idx, uint8_t duty, uint8_t phase);
-EXPORT void AUTDNullGain(AUTDGainPtr *gain);
-EXPORT void AUTDDeleteGain(AUTDGainPtr gain);
+EXPORT void AUTDFocalPointGain(void** gain, double x, double y, double z, uint8_t duty);
+EXPORT void AUTDGroupedGain(void** gain, const int32_t* group_ids, void** gains, int32_t size);
+EXPORT void AUTDBesselBeamGain(void** gain, double x, double y, double z, double n_x, double n_y, double n_z, double theta_z, uint8_t duty);
+EXPORT void AUTDPlaneWaveGain(void** gain, double n_x, double n_y, double n_z, uint8_t duty);
+EXPORT void AUTDCustomGain(void** gain, uint16_t* data, int32_t data_length);
+EXPORT void AUTDHoloGain(void** gain, double* points, double* amps, int32_t size, int32_t method, void* params);
+EXPORT void AUTDTransducerTestGain(void** gain, int32_t idx, uint8_t duty, uint8_t phase);
+EXPORT void AUTDNullGain(void** gain);
+EXPORT void AUTDDeleteGain(void* gain);
 #pragma endregion
 
 #pragma region Modulation
-EXPORT void AUTDModulation(AUTDModulationPtr *mod, uint8_t amp);
-EXPORT void AUTDCustomModulation(AUTDModulationPtr *mod, uint8_t *buf, uint32_t size);
-EXPORT void AUTDRawPCMModulation(AUTDModulationPtr *mod, const char *filename, double sampFreq);
-EXPORT void AUTDSawModulation(AUTDModulationPtr *mod, int32_t freq);
-EXPORT void AUTDSineModulation(AUTDModulationPtr *mod, int32_t freq, double amp, double offset);
-EXPORT void AUTDSquareModulation(AUTDModulationPtr *mod, int32_t freq, uint8_t low, uint8_t high);
-EXPORT void AUTDWavModulation(AUTDModulationPtr *mod, const char *filename);
-EXPORT void AUTDDeleteModulation(AUTDModulationPtr mod);
+EXPORT void AUTDModulation(void** mod, uint8_t amp);
+EXPORT void AUTDCustomModulation(void** mod, uint8_t* buf, uint32_t size);
+EXPORT void AUTDRawPCMModulation(void** mod, const char* filename, double sampling_freq);
+EXPORT void AUTDSawModulation(void** mod, int32_t freq);
+EXPORT void AUTDSineModulation(void** mod, int32_t freq, double amp, double offset);
+EXPORT void AUTDSquareModulation(void** mod, int32_t freq, uint8_t low, uint8_t high);
+EXPORT void AUTDWavModulation(void** mod, const char* filename);
+EXPORT void AUTDDeleteModulation(void* mod);
 #pragma endregion
 
 #pragma region Sequence
-EXPORT void AUTDSequence(AUTDSequencePtr *out);
-EXPORT void AUTDSequenceAppnedPoint(AUTDSequencePtr seq, double x, double y, double z);
-EXPORT void AUTDSequenceAppnedPoints(AUTDSequencePtr seq, double *points, uint64_t size);
-EXPORT double AUTDSequenceSetFreq(AUTDSequencePtr seq, double freq);
-EXPORT double AUTDSequenceFreq(AUTDSequencePtr seq);
-EXPORT double AUTDSequenceSamplingFreq(AUTDSequencePtr seq);
-EXPORT uint16_t AUTDSequenceSamplingFreqDiv(AUTDSequencePtr seq);
-EXPORT void AUTDCircumSequence(AUTDSequencePtr *out, double x, double y, double z, double nx, double ny, double nz, double radius, uint64_t n);
-EXPORT void AUTDDeleteSequence(AUTDSequencePtr seq);
+EXPORT void AUTDSequence(void** out);
+EXPORT void AUTDSequenceAppendPoint(void* seq, double x, double y, double z);
+EXPORT void AUTDSequenceAppendPoints(void* seq, double* points, uint64_t size);
+EXPORT double AUTDSequenceSetFreq(void* seq, double freq);
+EXPORT double AUTDSequenceFreq(void* seq);
+EXPORT double AUTDSequenceSamplingFreq(void* seq);
+EXPORT uint16_t AUTDSequenceSamplingFreqDiv(void* seq);
+EXPORT void AUTDCircumSequence(void** out, double x, double y, double z, double nx, double ny, double nz, double radius, uint64_t n);
+EXPORT void AUTDDeleteSequence(void* seq);
 #pragma endredion
 
 #pragma region Link
-EXPORT void AUTDSOEMLink(AUTDLinkPtr *out, const char *ifname, int32_t device_num);
-EXPORT void AUTDTwinCATLink(AUTDLinkPtr *out, const char *ipv4addr, const char *ams_net_id);
-EXPORT void AUTDLocalTwinCATLink(AUTDLinkPtr *out);
-EXPORT void AUTDEmulatorLink(AUTDLinkPtr *out, const char *addr, int32_t port, AUTDControllerHandle handle);
+EXPORT void AUTDSOEMLink(void** out, const char* ifname, int32_t device_num);
+EXPORT void AUTDTwinCATLink(void** out, const char* ipv4_addr, const char* ams_net_id);
+EXPORT void AUTDLocalTwinCATLink(void** out);
+EXPORT void AUTDEmulatorLink(void** out, const char* addr, uint16_t port, void* handle);
 #pragma endregion
 
 #pragma region LowLevelInterface
-EXPORT void AUTDAppendGain(AUTDControllerHandle handle, AUTDGainPtr gain);
-EXPORT void AUTDAppendGainSync(AUTDControllerHandle handle, AUTDGainPtr gain, bool wait_for_send);
-EXPORT void AUTDAppendModulation(AUTDControllerHandle handle, AUTDModulationPtr mod);
-EXPORT void AUTDAppendModulationSync(AUTDControllerHandle handle, AUTDModulationPtr mod);
-EXPORT void AUTDAppendSTMGain(AUTDControllerHandle handle, AUTDGainPtr gain);
-EXPORT void AUTDStartSTModulation(AUTDControllerHandle handle, double freq);
-EXPORT void AUTDStopSTModulation(AUTDControllerHandle handle);
-EXPORT void AUTDFinishSTModulation(AUTDControllerHandle handle);
-EXPORT void AUTDAppendSequence(AUTDControllerHandle handle, AUTDSequencePtr seq);
-EXPORT void AUTDFlush(AUTDControllerHandle handle);
-EXPORT int32_t AUTDDevIdxForTransIdx(AUTDControllerHandle handle, int32_t transIdx);
-EXPORT double *AUTDTransPosition(AUTDControllerHandle handle, int32_t transIdx);
-EXPORT double *AUTDTransDirection(AUTDControllerHandle handle, int32_t transIdx);
+EXPORT void AUTDAppendGain(void* handle, void* gain);
+EXPORT void AUTDAppendGainSync(void* handle, void* gain, bool wait_for_send);
+EXPORT void AUTDAppendModulation(void* handle, void* mod);
+EXPORT void AUTDAppendModulationSync(void* handle, void* mod);
+EXPORT void AUTDAppendSTMGain(void* handle, void* gain);
+EXPORT void AUTDStartSTModulation(void* handle, double freq);
+EXPORT void AUTDStopSTModulation(void* handle);
+EXPORT void AUTDFinishSTModulation(void* handle);
+EXPORT void AUTDAppendSequence(void* handle, void* seq);
+EXPORT void AUTDFlush(void* handle);
+EXPORT int32_t AUTDDevIdxForTransIdx(void* handle, int32_t trans_idx);
+EXPORT double* AUTDTransPosition(void* handle, int32_t trans_idx);
+EXPORT double* AUTDTransDirection(void* handle, int32_t trans_idx);
 #pragma endregion
 
 #pragma region Debug
 #ifdef UNITY_DEBUG
-EXPORT void DebugLog(const char *msg);
+EXPORT void DebugLog(const char* msg);
 EXPORT void SetDebugLog(DebugLogFunc func);
 #endif
 #pragma endregion

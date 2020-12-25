@@ -3,7 +3,7 @@
 // Created Date: 30/03/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 24/12/2020
+// Last Modified: 25/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -11,11 +11,7 @@
 
 #pragma once
 
-#include <iostream>
 #include <string>
-#include <vector>
-
-#include "core.hpp"
 
 namespace autd {
 
@@ -24,16 +20,17 @@ namespace autd {
  */
 class FirmwareInfo {
  public:
-  FirmwareInfo(uint16_t idx, uint16_t cpu_ver, uint16_t fpga_ver) : _idx(idx), _cpu_version_number(cpu_ver), _fpga_version_number(fpga_ver) {}
+  FirmwareInfo(const uint16_t idx, const uint16_t cpu_ver, const uint16_t fpga_ver)
+      : _idx(idx), _cpu_version_number(cpu_ver), _fpga_version_number(fpga_ver) {}
 
   /**
    * @brief Get cpu firmware version
    */
-  std::string cpu_version() const { return firmware_version_map(_cpu_version_number); }
+  [[nodiscard]] std::string cpu_version() const { return firmware_version_map(_cpu_version_number); }
   /**
    * @brief Get fpga firmware version
    */
-  std::string fpga_version() const { return firmware_version_map(_fpga_version_number); }
+  [[nodiscard]] std::string fpga_version() const { return firmware_version_map(_fpga_version_number); }
 
   friend inline std::ostream& operator<<(std::ostream&, const FirmwareInfo&);
 
@@ -42,7 +39,7 @@ class FirmwareInfo {
   uint16_t _cpu_version_number;
   uint16_t _fpga_version_number;
 
-  static std::string firmware_version_map(uint16_t version_number) {
+  static std::string firmware_version_map(const uint16_t version_number) {
     switch (version_number) {
       case 0:
         return "older than v0.4";

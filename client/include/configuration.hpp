@@ -3,17 +3,13 @@
 // Created Date: 30/10/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/12/2020
+// Last Modified: 25/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
 //
 
 #pragma once
-
-#include <iostream>
-#include <string>
-#include <vector>
 
 namespace autd {
 
@@ -45,23 +41,23 @@ enum class MOD_BUF_SIZE {
 class Configuration {
  public:
   Configuration() {
-    _mod_sampl_freq = MOD_SAMPLING_FREQ::SMPL_4_KHZ;
+    _mod_sampling_freq = MOD_SAMPLING_FREQ::SMPL_4_KHZ;
     _mod_buf_size = MOD_BUF_SIZE::BUF_4000;
   }
 
   static Configuration GetDefaultConfiguration() {
-    Configuration config;
+    const Configuration config;
     return config;
   }
 
-  void set_mod_sampling_freq(MOD_SAMPLING_FREQ f) { this->_mod_sampl_freq = f; }
-  void set_mod_buf_size(MOD_BUF_SIZE s) { this->_mod_buf_size = s; }
+  void set_mod_sampling_freq(const MOD_SAMPLING_FREQ f) { this->_mod_sampling_freq = f; }
+  void set_mod_buf_size(const MOD_BUF_SIZE s) { this->_mod_buf_size = s; }
 
-  MOD_SAMPLING_FREQ mod_sampling_freq() { return this->_mod_sampl_freq; }
-  MOD_BUF_SIZE mod_buf_size() { return this->_mod_buf_size; }
+  [[nodiscard]] MOD_SAMPLING_FREQ mod_sampling_freq() const { return this->_mod_sampling_freq; }
+  [[nodiscard]] MOD_BUF_SIZE mod_buf_size() const { return this->_mod_buf_size; }
 
  private:
-  MOD_SAMPLING_FREQ _mod_sampl_freq;
+  MOD_SAMPLING_FREQ _mod_sampling_freq;
   MOD_BUF_SIZE _mod_buf_size;
 };
 }  // namespace autd
