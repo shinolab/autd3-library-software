@@ -333,7 +333,7 @@ void AUTDController::Close() {
 void AUTDController::Flush() { this->_async_cnt->Flush(); }
 
 void AUTDController::Stop() {
-  const auto null_gain = autd::gain::NullGain::Create();
+  const auto null_gain = gain::NullGain::Create();
   this->AppendGainSync(null_gain, true);
 }
 

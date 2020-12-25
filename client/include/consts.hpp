@@ -19,8 +19,8 @@ constexpr double TRANS_SIZE_MM = 10.16;
 constexpr double AUTD_WIDTH = 192.0;
 constexpr double AUTD_HEIGHT = 151.4;
 template <typename T>
-constexpr auto IS_MISSING_TRANSDUCER(T x, T y) {
-  return (y == 1 && (x == 1 || x == 2 || x == 16));
+constexpr auto IsMissingTransducer(T x, T y) {
+  return y == 1 && (x == 1 || x == 2 || x == 16);
 }
 
 constexpr auto FPGA_CLOCK = 25600000;

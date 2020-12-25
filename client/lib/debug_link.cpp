@@ -71,15 +71,15 @@ std::string ControlFlag2String(const uint8_t flags) {
 
   auto index = flags;
   uint8_t mask = 1;
-  auto isFirst = true;
+  auto is_first = true;
   std::ostringstream oss;
   while (index) {
     if (index % 2 != 0) {
-      if (!isFirst) {
+      if (!is_first) {
         oss << " | ";
       }
       oss << ControlFlagBit2String(static_cast<RxGlobalControlFlags>(flags & mask));
-      isFirst = false;
+      is_first = false;
     }
 
     index = index >> 1;
@@ -109,7 +109,7 @@ void DebugLink::Send(const size_t size, const std::unique_ptr<uint8_t[]> buf) {
 
   _last_msg_id = buf[0];
 
-  auto header = reinterpret_cast<RxGlobalHeader *>(&buf[0]);
+  auto *header = reinterpret_cast<RxGlobalHeader *>(&buf[0]);
   this->_out << "Header:" << std::endl;
   this->_out << "\tmsg_id   : " << std::hex << static_cast<int>(header->msg_id) << std::endl;
   this->_out << "\tflag     : " << ControlFlag2String(header->control_flags) << std::endl;

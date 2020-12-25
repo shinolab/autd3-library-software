@@ -16,7 +16,7 @@
 using autd::NUM_TRANS_X;
 using autd::NUM_TRANS_Y;
 using autd::TRANS_SIZE_MM;
-using autd::gain::OptMethod;
+using autd::gain::OPT_METHOD;
 
 inline void holo_test(const autd::ControllerPtr& autd) {
   autd->SetSilentMode(true);
@@ -31,6 +31,6 @@ inline void holo_test(const autd::ControllerPtr& autd) {
   };
   const auto amps = {1.0, 1.0};
 
-  const auto g = autd::gain::HoloGain::Create(foci, amps, OptMethod::SDP);
+  const auto g = autd::gain::HoloGain::Create(foci, amps, OPT_METHOD::SDP);
   autd->AppendGainSync(g);
 }

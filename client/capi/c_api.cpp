@@ -92,7 +92,7 @@ void AUTDFreeAdapterPointer(void* p_adapter) {
 }
 int32_t AUTDGetFirmwareInfoListPointer(void* const handle, void** out) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
-  const auto size = static_cast<int32_t>(cnt->ptr->geometry()->numDevices());
+  const auto size = static_cast<int32_t>(cnt->ptr->geometry()->num_devices());
   auto* list = FirmwareInfoListCreate(cnt->ptr->firmware_info_list());
   *out = list;
   return size;
@@ -121,12 +121,12 @@ bool AUTDIsSilentMode(void* const handle) {
 }
 int32_t AUTDNumDevices(void* const handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
-  const auto res = cnt->ptr->geometry()->numDevices();
+  const auto res = cnt->ptr->geometry()->num_devices();
   return static_cast<int32_t>(res);
 }
 int32_t AUTDNumTransducers(void* const handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
-  const auto res = cnt->ptr->geometry()->numTransducers();
+  const auto res = cnt->ptr->geometry()->num_transducers();
   return static_cast<int32_t>(res);
 }
 uint64_t AUTDRemainingInBuffer(void* const handle) {
@@ -176,7 +176,7 @@ void AUTDHoloGain(void** gain, double* points, double* amps, const int32_t size,
     amps_.push_back(amps[i]);
   }
 
-  const auto method_ = static_cast<autd::gain::OptMethod>(method);
+  const auto method_ = static_cast<autd::gain::OPT_METHOD>(method);
   auto* g = GainCreate(autd::gain::HoloGain::Create(holo, amps_, method_, params));
   *gain = g;
 }
@@ -345,7 +345,7 @@ void AUTDFlush(void* const handle) {
 }
 int32_t AUTDDevIdxForTransIdx(void* const handle, const int32_t trans_idx) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
-  const auto res = cnt->ptr->geometry()->deviceIdxForTransIdx(trans_idx);
+  const auto res = cnt->ptr->geometry()->device_idx_for_trans_idx(trans_idx);
   return static_cast<int32_t>(res);
 }
 double* AUTDTransPosition(void* const handle, const int32_t trans_idx) {

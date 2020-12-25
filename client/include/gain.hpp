@@ -39,7 +39,7 @@ inline void CheckAndInit(const GeometryPtr& geometry, std::vector<std::vector<ui
 
   data->clear();
 
-  const auto num_device = geometry->numDevices();
+  const auto num_device = geometry->num_devices();
   data->resize(num_device);
   for (size_t i = 0; i < num_device; i++) {
     data->at(i).resize(NUM_TRANS_IN_UNIT);
@@ -235,7 +235,7 @@ class GroupedGain final : public Gain {
 /**
  * @brief Optimization method for generating multiple foci.
  */
-enum class OptMethod {
+enum class OPT_METHOD {
   //! Inoue, Seki, Yasutoshi Makino, and Hiroyuki Shinoda. "Active touch perception produced by airborne ultrasonic haptic hologram." 2015 IEEE World
   //! Haptics Conference (WHC). IEEE, 2015.
   SDP = 0,
@@ -288,9 +288,10 @@ class HoloGain final : public Gain {
    * @param[in] method optimization method. see also @ref OptMethod
    * @param[in] params pointer to optimization parameters
    */
-  static GainPtr Create(const std::vector<Vector3>& foci, const std::vector<double>& amps, OptMethod method = OptMethod::SDP, void* params = nullptr);
+  static GainPtr Create(const std::vector<Vector3>& foci, const std::vector<double>& amps, OPT_METHOD method = OPT_METHOD::SDP,
+                        void* params = nullptr);
   void Build() override;
-  HoloGain(std::vector<Vector3> foci, std::vector<double> amps, const OptMethod method = OptMethod::SDP, void* params = nullptr)
+  HoloGain(std::vector<Vector3> foci, std::vector<double> amps, const OPT_METHOD method = OPT_METHOD::SDP, void* params = nullptr)
       : Gain(), _foci(std::move(foci)), _amps(std::move(amps)), _method(method), _params(params) {}
   ~HoloGain() override = default;
   HoloGain(const HoloGain& v) noexcept = default;
@@ -301,7 +302,7 @@ class HoloGain final : public Gain {
  protected:
   std::vector<Vector3> _foci;
   std::vector<double> _amps;
-  OptMethod _method = OptMethod::SDP;
+  OPT_METHOD _method = OPT_METHOD::SDP;
   void* _params = nullptr;
 };
 
@@ -317,7 +318,7 @@ class MatlabGain final : public Gain {
    */
   static GainPtr Create(const std::string& filename, const std::string& var_name);
   void Build() override;
-  MatlabGain(const std::string& filename, const std::string& var_name) : Gain(), _filename(filename), _var_name(var_name) {}
+  MatlabGain(std::string filename, std::string var_name) : Gain(), _filename(std::move(filename)), _var_name(std::move(var_name)) {}
   ~MatlabGain() override = default;
   MatlabGain(const MatlabGain& v) noexcept = default;
   MatlabGain& operator=(const MatlabGain& obj) = default;

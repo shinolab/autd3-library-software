@@ -3,13 +3,12 @@
 // Created Date: 08/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 24/12/2020
+// Last Modified: 25/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
 //
 
-#include <cstdio>
 #include <map>
 
 #if WIN32
@@ -18,17 +17,15 @@
 #pragma warning(disable : ALL_CODE_ANALYSIS_WARNINGS)
 #endif
 #include <Eigen/Geometry>
-#include <utility>
 #if WIN32
 #pragma warning(pop)
 #endif
 
 #include "autd3.hpp"
 #include "controller.hpp"
-#include "privdef.hpp"
 #include "vector3.hpp"
 
-using autd::IS_MISSING_TRANSDUCER;
+using autd::IsMissingTransducer;
 using autd::NUM_TRANS_IN_UNIT;
 using autd::NUM_TRANS_X;
 using autd::NUM_TRANS_Y;
@@ -52,7 +49,7 @@ class Device {
     auto index = 0;
     for (size_t y = 0; y < NUM_TRANS_Y; y++)
       for (size_t x = 0; x < NUM_TRANS_X; x++)
-        if (!IS_MISSING_TRANSDUCER(x, y))
+        if (!IsMissingTransducer(x, y))
           local_trans_positions.col(index++) = Eigen::Vector3d(static_cast<double>(x) * TRANS_SIZE_MM, static_cast<double>(y) * TRANS_SIZE_MM, 0);
 
     device->global_trans_positions = transform_matrix * local_trans_positions;
@@ -86,16 +83,16 @@ class AUTDGeometry final : public Geometry {
   size_t AddDevice(Vector3 position, Vector3 euler_angles, size_t group = 0) override;
   size_t AddDeviceQuaternion(Vector3 position, Quaternion quaternion, size_t group = 0) override;
 
-  size_t numDevices() noexcept override;
-  size_t numTransducers() noexcept override;
-  size_t GroupIDForDeviceIdx(size_t device_idx) override;
+  size_t num_devices() noexcept override;
+  size_t num_transducers() noexcept override;
+  size_t group_id_for_device_idx(size_t device_idx) override;
   Vector3 position(size_t transducer_idx) override;
   Vector3 local_position(size_t device_idx, Vector3 global_position) override;
   Vector3 direction(size_t transducer_idx) override;
   Vector3 x_direction(size_t transducer_idx) override;
   Vector3 y_direction(size_t transducer_idx) override;
   Vector3 z_direction(size_t transducer_idx) override;
-  size_t deviceIdxForTransIdx(size_t transducer_idx) override;
+  size_t device_idx_for_trans_idx(size_t transducer_idx) override;
 
  private:
   std::vector<std::unique_ptr<Device>> _devices;
@@ -122,15 +119,15 @@ size_t AUTDGeometry::AddDeviceQuaternion(const Vector3 position, const Quaternio
   return device_id;
 }
 
-size_t AUTDGeometry::numDevices() noexcept { return this->_devices.size(); }
+size_t AUTDGeometry::num_devices() noexcept { return this->_devices.size(); }
 
-size_t AUTDGeometry::numTransducers() noexcept { return this->numDevices() * NUM_TRANS_IN_UNIT; }
+size_t AUTDGeometry::num_transducers() noexcept { return this->num_devices() * NUM_TRANS_IN_UNIT; }
 
-size_t AUTDGeometry::GroupIDForDeviceIdx(const size_t device_idx) { return this->_group_map[device_idx]; }
+size_t AUTDGeometry::group_id_for_device_idx(const size_t device_idx) { return this->_group_map[device_idx]; }
 
 Vector3 AUTDGeometry::position(const size_t transducer_idx) {
   const auto local_trans_id = transducer_idx % NUM_TRANS_IN_UNIT;
-  const auto pos = this->_devices.at(this->deviceIdxForTransIdx(transducer_idx))->global_trans_positions.col(local_trans_id);
+  const auto pos = this->_devices.at(this->device_idx_for_trans_idx(transducer_idx))->global_trans_positions.col(local_trans_id);
   return Vector3(pos.x(), pos.y(), pos.z());
 }
 
@@ -140,27 +137,27 @@ Vector3 AUTDGeometry::local_position(const size_t device_idx, const Vector3 glob
   const auto& x_dir = device->x_direction;
   const auto& y_dir = device->y_direction;
   const auto& z_dir = device->z_direction;
-  const auto _global_position = Eigen::Vector3d(global_position.x(), global_position.y(), global_position.z());
-  const auto rv = _global_position - local_origin;
+  const auto gp = Eigen::Vector3d(global_position.x(), global_position.y(), global_position.z());
+  const auto rv = gp - local_origin;
   return Vector3(rv.dot(x_dir), rv.dot(y_dir), rv.dot(z_dir));
 }
 
 Vector3 AUTDGeometry::direction(const size_t transducer_idx) { return z_direction(transducer_idx); }
 
 Vector3 AUTDGeometry::x_direction(const size_t transducer_idx) {
-  const auto& dir = this->_devices.at(this->deviceIdxForTransIdx(transducer_idx))->x_direction;
+  const auto& dir = this->_devices.at(this->device_idx_for_trans_idx(transducer_idx))->x_direction;
   return Vector3(dir.x(), dir.y(), dir.z());
 }
 
 Vector3 AUTDGeometry::y_direction(const size_t transducer_idx) {
-  const auto& dir = this->_devices.at(this->deviceIdxForTransIdx(transducer_idx))->y_direction;
+  const auto& dir = this->_devices.at(this->device_idx_for_trans_idx(transducer_idx))->y_direction;
   return Vector3(dir.x(), dir.y(), dir.z());
 }
 
 Vector3 AUTDGeometry::z_direction(const size_t transducer_idx) {
-  const auto& dir = this->_devices.at(this->deviceIdxForTransIdx(transducer_idx))->z_direction;
+  const auto& dir = this->_devices.at(this->device_idx_for_trans_idx(transducer_idx))->z_direction;
   return Vector3(dir.x(), dir.y(), dir.z());
 }
 
-size_t AUTDGeometry::deviceIdxForTransIdx(const size_t transducer_idx) { return transducer_idx / NUM_TRANS_IN_UNIT; }
+size_t AUTDGeometry::device_idx_for_trans_idx(const size_t transducer_idx) { return transducer_idx / NUM_TRANS_IN_UNIT; }
 }  // namespace autd

@@ -35,10 +35,10 @@ void GroupedGain::Build() {
     g->Build();
   }
 
-  for (size_t i = 0; i < geometry->numDevices(); i++) {
-    auto groupId = geometry->GroupIDForDeviceIdx(i);
-    if (_gain_map.count(groupId)) {
-      auto& data = _gain_map[groupId]->data();
+  for (size_t i = 0; i < geometry->num_devices(); i++) {
+    auto group_id = geometry->group_id_for_device_idx(i);
+    if (_gain_map.count(group_id)) {
+      auto& data = _gain_map[group_id]->data();
       this->_data[i] = data[i];
     } else {
       this->_data[i] = std::vector<uint16_t>(NUM_TRANS_IN_UNIT, 0x0000);
