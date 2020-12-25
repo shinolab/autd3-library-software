@@ -39,15 +39,15 @@ using std::complex, std::map, std::vector;
 
 static constexpr auto ATTENUATION = 1.15e-4;
 
-constexpr double dir_coeff_a[] = {1.0, 1.0, 1.0, 0.891250938, 0.707945784, 0.501187234, 0.354813389, 0.251188643, 0.199526231};
-constexpr double dir_coeff_b[] = {
+constexpr double DIR_COEFF_A[] = {1.0, 1.0, 1.0, 0.891250938, 0.707945784, 0.501187234, 0.354813389, 0.251188643, 0.199526231};
+constexpr double DIR_COEFF_B[] = {
     0., 0., -0.00459648054721, -0.0155520765675, -0.0208114779827, -0.0182211227016, -0.0122437497109, -0.00780345575475, -0.00312857467007};
-constexpr double dir_coeff_c[] = {
+constexpr double DIR_COEFF_C[] = {
     0., 0., -0.000787968093807, -0.000307591508224, -0.000218348633296, 0.00047738416141, 0.000120353137658, 0.000323676257958, 0.000143850511};
-constexpr double dir_coeff_d[] = {
+constexpr double DIR_COEFF_D[] = {
     0., 0., 1.60125528528e-05, 2.9747624976e-06, 2.31910931569e-05, -1.1901034125e-05, 6.77743734332e-06, -5.99548024824e-06, -4.79372835035e-06};
 
-static double directivity_t4010a1(double theta_deg) {
+static double DirectivityT4010A1(double theta_deg) {
   theta_deg = abs(theta_deg);
 
   while (theta_deg > 90.0) {
@@ -60,10 +60,10 @@ static double directivity_t4010a1(double theta_deg) {
     return 1.0;
   }
 
-  const auto a = dir_coeff_a[i - 1];
-  const auto b = dir_coeff_b[i - 1];
-  const auto c = dir_coeff_c[i - 1];
-  const auto d = dir_coeff_d[i - 1];
+  const auto a = DIR_COEFF_A[i - 1];
+  const auto b = DIR_COEFF_B[i - 1];
+  const auto c = DIR_COEFF_C[i - 1];
+  const auto d = DIR_COEFF_D[i - 1];
   const auto x = theta_deg - static_cast<double>(i - 1) * 10.0;
   return a + b * x + c * x * x + d * x * x * x;
 }
@@ -72,7 +72,7 @@ complex<double> transfer(const Vector3d& trans_pos, const Vector3d& trans_norm, 
   const auto diff = target_pos - trans_pos;
   const auto dist = diff.norm();
   const auto theta = atan2(diff.dot(trans_norm), dist * trans_norm.norm()) * 180.0 / M_PI;
-  const auto directivity = directivity_t4010a1(theta);
+  const auto directivity = DirectivityT4010A1(theta);
 
   return directivity / dist * exp(complex<double>(-dist * ATTENUATION, -2 * M_PI / ULTRASOUND_WAVELENGTH * dist));
 }
@@ -140,9 +140,9 @@ void HoloGainImplSDP(vector<vector<uint16_t>>* data, const MatrixX3d& foci, cons
 
   const auto B = TransferMatrix(geometry, foci, M, N);
 
-  std::random_device rnd;
-  std::mt19937 mt(rnd());
-  const std::uniform_real_distribution<double> range(0, 1);
+  std::random_device seed_gen;
+  std::mt19937 mt(seed_gen());
+  std::uniform_real_distribution<double> range(0, 1);
 
   const Eigen::JacobiSVD<MatrixXcd> svd(B, Eigen::ComputeThinU | Eigen::ComputeThinV);
   auto singularValues_inv = svd.singularValues();
@@ -154,7 +154,8 @@ void HoloGainImplSDP(vector<vector<uint16_t>>* data, const MatrixX3d& foci, cons
   MatrixXcd MM = P * (MatrixXcd::Identity(M, M) - B * p_inv_B) * P;
   MatrixXcd X = MatrixXcd::Identity(M, M);
   for (auto i = 0; i < repeat; i++) {
-    const auto ii = static_cast<size_t>(static_cast<double>(M) * range(mt));
+    const double rnd = range(mt);
+    const auto ii = static_cast<size_t>(static_cast<double>(M) * rnd);
 
     auto Xc = X;
     removeRow(&Xc, ii);
@@ -377,9 +378,9 @@ void HoloGainImplGSPAT(vector<vector<uint16_t>>* data, const MatrixX3d& foci, co
   for (size_t j = 0; j < N; j++) {
     const auto f_amp = abs(q(j));
     const auto f_phase = arg(q(j)) / (2 * M_PI) + 0.5;
-    const auto phase = static_cast<uint8_t>((1 - f_phase) * 255.);
-    const auto D = (static_cast<uint16_t>(AdjustAmp(f_amp)) << 8) & 0xFF00;
-    data->at(geometry->deviceIdxForTransIdx(j)).at(j % NUM_TRANS_IN_UNIT) = D | phase;
+    const auto phase = static_cast<uint16_t>((1 - f_phase) * 255.);
+    const auto duty = (static_cast<uint16_t>(AdjustAmp(f_amp)) << 8) & 0xFF00;
+    data->at(geometry->deviceIdxForTransIdx(j)).at(j % NUM_TRANS_IN_UNIT) = duty | phase;
   }
 }
 

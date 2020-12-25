@@ -14,7 +14,6 @@
 #define _USE_MATH_DEFINES  // NOLINT
 #include <math.h>
 
-#include <cmath>
 #include <iostream>
 
 namespace autd {
@@ -54,11 +53,13 @@ class Vector3 {
     const auto cos = this->dot(v) / (this->l2_norm() * v.l2_norm());
     if (cos > 1) {
       return 0.0;
-    } else if (cos < -1) {
-      return M_PI;
-    } else {
-      return acos(cos);
     }
+
+    if (cos < -1) {
+      return M_PI;
+    }
+
+    return acos(cos);
   }
 
   friend inline std::ostream& operator<<(std::ostream&, const Vector3&);

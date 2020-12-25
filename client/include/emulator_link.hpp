@@ -31,13 +31,13 @@ namespace autd::link {
 class EmulatorLink final : public Link {
  public:
   static LinkPtr Create(const std::string& ip_addr, uint16_t port, const GeometryPtr& geometry);
-  EmulatorLink(const std::string& ip_addr, const uint16_t port, const GeometryPtr& geometry)
-      : Link(), _ip_addr(ip_addr), _geometry(geometry), _port(port) {}
+  EmulatorLink(std::string ip_addr, const uint16_t port, const GeometryPtr& geometry)
+      : Link(), _ip_addr(std::move(ip_addr)), _geometry(geometry), _port(port) {}
   ~EmulatorLink() override = default;
-  EmulatorLink(const EmulatorLink& v) noexcept = default;
-  EmulatorLink& operator=(const EmulatorLink& obj) = default;
-  EmulatorLink(EmulatorLink&& obj) = default;
-  EmulatorLink& operator=(EmulatorLink&& obj) = default;
+  EmulatorLink(const EmulatorLink& v) noexcept = delete;
+  EmulatorLink& operator=(const EmulatorLink& obj) = delete;
+  EmulatorLink(EmulatorLink&& obj) = delete;
+  EmulatorLink& operator=(EmulatorLink&& obj) = delete;
 
   void Open() override;
   void Close() override;
