@@ -27,7 +27,6 @@
 
 #include "consts.hpp"
 #include "geometry.hpp"
-#include "privdef.hpp"
 
 namespace autd::link {
 
@@ -40,8 +39,8 @@ void EmulatorLink::Open() {
 #if _WINDOWS
 #pragma warning(push)
 #pragma warning(disable : 6031)
-  WSAData wsaData{};
-  WSAStartup(MAKEWORD(2, 0), &wsaData);
+  WSAData wsa_data{};
+  WSAStartup(MAKEWORD(2, 0), &wsa_data);
 #pragma warning(pop)
   _socket = socket(AF_INET, SOCK_DGRAM, 0);
   _addr.sin_family = AF_INET;
@@ -70,7 +69,7 @@ void EmulatorLink::Send(const size_t size, std::unique_ptr<uint8_t[]> buf) {
   _last_ms_id = buf[0];
   const std::unique_ptr<const uint8_t[]> send_buf = std::move(buf);
 #if _WINDOWS
-  sendto(_socket, reinterpret_cast<const char *>(send_buf.get()), static_cast<int>(size), 0, reinterpret_cast<sockaddr *>(&_addr), sizeof(_addr));
+  sendto(_socket, reinterpret_cast<const char *>(send_buf.get()), static_cast<int>(size), 0, reinterpret_cast<sockaddr *>(&_addr), sizeof _addr);
 #endif
 }
 
@@ -81,20 +80,20 @@ bool EmulatorLink::is_open() { return _is_open; }
 void EmulatorLink::SetGeometry() {
   auto geometry = this->_geometry;
   const auto vec_size = 3 * sizeof(Vector3) / sizeof(double) * sizeof(float);
-  const auto size = geometry->numDevices() * vec_size + sizeof(float);
+  const auto size = geometry->num_devices() * vec_size + sizeof(float);
   auto buf = std::make_unique<uint8_t[]>(size);
-  float header;
-  const auto uh = reinterpret_cast<uint8_t *>(&header);
+  float header{};
+  auto *const uh = reinterpret_cast<uint8_t *>(&header);
   uh[0] = 0xff;
   uh[1] = 0xf0;
   uh[2] = 0xff;
   uh[3] = 0xff;
   {
-    const auto float_buf = reinterpret_cast<float *>(&buf[0]);
+    auto *const float_buf = reinterpret_cast<float *>(&buf[0]);
     float_buf[0] = header;
   }
-  const auto float_buf = reinterpret_cast<float *>(&buf[sizeof(float)]);
-  for (size_t i = 0; i < geometry->numDevices(); i++) {
+  auto *const float_buf = reinterpret_cast<float *>(&buf[sizeof(float)]);
+  for (size_t i = 0; i < geometry->num_devices(); i++) {
     const auto trans_id = i * NUM_TRANS_IN_UNIT;
     auto origin = geometry->position(trans_id);
     auto right = geometry->x_direction(trans_id);

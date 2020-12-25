@@ -24,19 +24,16 @@ static constexpr auto TIME_SCALE = 1000 * 1000L;  // us
 
 static std::atomic<bool> AUTD3_LIB_TIMER_LOCK(false);
 
-Timer::Timer() noexcept : Timer::Timer(false) {}
+Timer::Timer() noexcept : Timer(false) {}
 
-Timer::Timer(const bool high_resolution) noexcept {
-  this->_interval_us = 1;
-  this->_high_resolution = high_resolution;
-}
+Timer::Timer(const bool high_resolution) noexcept : _interval_us(1), _high_resolution(high_resolution) {}
 
 Timer::~Timer() noexcept(false) { this->Stop(); }
 
 void Timer::SetInterval(const int interval_us) {
   if (interval_us <= 0) throw std::runtime_error("Interval must be positive integer.");
 
-  if (!this->_high_resolution && ((interval_us % 1000) != 0)) {
+  if (!this->_high_resolution && interval_us % 1000 != 0) {
     std::cerr << "The accuracy of the Windows timer is 1 ms. It may not run properly." << std::endl;
   }
 
@@ -50,9 +47,9 @@ void Timer::Start(const std::function<void()> &callback) {
   if (this->_high_resolution) {
     this->InitTimer();
   } else {
-    const uint32_t uResolution = 1;
-    timeBeginPeriod(uResolution);
-    _timer_id = timeSetEvent(this->_interval_us / 1000, uResolution, static_cast<LPTIMECALLBACK>(TimerThread), reinterpret_cast<DWORD_PTR>(this),
+    const uint32_t u_resolution = 1;
+    timeBeginPeriod(u_resolution);
+    _timer_id = timeSetEvent(this->_interval_us / 1000, u_resolution, static_cast<LPTIMECALLBACK>(TimerThread), reinterpret_cast<DWORD_PTR>(this),
                              TIME_PERIODIC);
     if (_timer_id == 0) {
       std::cerr << "timeSetEvent failed." << std::endl;
@@ -69,9 +66,9 @@ void Timer::Stop() {
 
     } else {
       if (_timer_id != 0) {
-        const uint32_t uResolution = 1;
+        const uint32_t u_resolution = 1;
         timeKillEvent(_timer_id);
-        timeEndPeriod(uResolution);
+        timeEndPeriod(u_resolution);
       }
     }
   }
@@ -123,11 +120,12 @@ void Timer::MainLoop() const {
   }
 }
 
-void Timer::TimerThread(UINT uTimerID, UINT uMsg, const DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2) {
+void Timer::TimerThread([[maybe_unused]] UINT u_timer_id, [[maybe_unused]] UINT u_msg, const DWORD_PTR dw_user, [[maybe_unused]] DWORD_PTR dw1,
+                        [[maybe_unused]] DWORD_PTR dw2) {
   auto expected = false;
   if (AUTD3_LIB_TIMER_LOCK.compare_exchange_weak(expected, true)) {
-    const auto _timer = reinterpret_cast<Timer *>(dwUser);
-    _timer->_cb();
+    auto *const timer = reinterpret_cast<Timer *>(dw_user);
+    timer->_cb();
     AUTD3_LIB_TIMER_LOCK.store(false, std::memory_order_release);
   }
 }

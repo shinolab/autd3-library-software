@@ -38,7 +38,7 @@ class SOEMLink : public Link {
    * @param[in] device_num The number of AUTD you connected.
    *
    * @details Available Network interface names are obtained by EnumerateAdapters().
-   *          The numbers of connected devices is obtained by Geometry::numDevices().
+   *          The numbers of connected devices is obtained by Geometry::num_devices().
    */
   static LinkPtr Create(const std::string& ifname, size_t device_num);
 

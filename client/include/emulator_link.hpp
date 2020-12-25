@@ -31,8 +31,8 @@ namespace autd::link {
 class EmulatorLink final : public Link {
  public:
   static LinkPtr Create(const std::string& ip_addr, uint16_t port, const GeometryPtr& geometry);
-  EmulatorLink(std::string ip_addr, const uint16_t port, const GeometryPtr& geometry)
-      : Link(), _ip_addr(std::move(ip_addr)), _geometry(geometry), _port(port) {}
+  EmulatorLink(std::string ip_addr, const uint16_t port, GeometryPtr geometry)
+      : Link(), _ip_addr(std::move(ip_addr)), _geometry(std::move(geometry)), _port(port) {}
   ~EmulatorLink() override = default;
   EmulatorLink(const EmulatorLink& v) noexcept = delete;
   EmulatorLink& operator=(const EmulatorLink& obj) = delete;

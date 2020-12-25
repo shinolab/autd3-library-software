@@ -41,7 +41,7 @@ int main() {
   // If you have already recognized the EtherCAT adapter name, you can write it directly like below.
   // auto ifname = "\\Device\\NPF_{B5B631C6-ED16-4780-9C4C-3941AE8120A6}";
   const auto ifname = GetAdapterName();
-  autd->OpenWith(autd::link::SOEMLink::Create(ifname, autd->geometry()->numDevices()));
+  autd->OpenWith(autd::link::SOEMLink::Create(ifname, autd->geometry()->num_devices()));
   if (!autd->is_open()) return ENXIO;
 
   return run(autd);

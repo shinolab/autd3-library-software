@@ -39,7 +39,7 @@ void MatlabGain::Build() {
   CheckAndInit(geometry, &this->_data);
 
 #ifdef MATLAB_ENABLED
-  const auto num_trans = this->geometry()->numTransducers();
+  const auto num_trans = this->geometry()->num_transducers();
 
   const auto p_mat = matOpen(_filename.c_str(), "r");
   if (p_mat == nullptr) {
@@ -78,8 +78,8 @@ void MatlabGain::Build() {
       }
     }
 
-    const uint16_t duty = (amp << 8) & 0xFF00;
-    this->_data[this->geometry()->deviceIdxForTransIdx(i)][i % NUM_TRANS_IN_UNIT] = duty | phase;
+    const uint16_t duty = amp << 8 & 0xFF00;
+    this->_data[this->geometry()->device_idx_for_trans_idx(i)][i % NUM_TRANS_IN_UNIT] = duty | phase;
   }
 #endif
 

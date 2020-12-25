@@ -3,7 +3,7 @@
 // Created Date:02/07/2018
 // Author: Shun Suzuki and Saya Mizutani
 // -----
-// Last Modified: 16/11/2020
+// Last Modified: 25/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -54,7 +54,7 @@ class Timer {
 #if WIN32
   bool _high_resolution;
   void MainLoop() const;
-  static void CALLBACK TimerThread(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2);
+  static void CALLBACK TimerThread(UINT u_timer_id, UINT u_msg, DWORD_PTR dw_user, DWORD_PTR dw1, DWORD_PTR dw2);
 #elif __APPLE__
   static void MainLoop(Timer *ptr);
 #else

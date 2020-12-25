@@ -85,7 +85,7 @@ class AUTDLogic {
     return id.load();
   }
 
-  static uint16_t log2u(const uint32_t x) {
+  static uint16_t Log2U(const uint32_t x) {
 #ifdef _MSC_VER
     unsigned long n;         // NOLINT
     _BitScanReverse(&n, x);  // NOLINT

@@ -41,8 +41,8 @@ class ConstGain final : public autd::gain::Gain {
 
     autd::gain::CheckAndInit(geometry, &this->_data);
 
-    for (size_t i = 0; i < geometry->numTransducers(); i++) {
-      this->_data[geometry->deviceIdxForTransIdx(i)].at(i % autd::NUM_TRANS_IN_UNIT) = 0xFF00;
+    for (size_t i = 0; i < geometry->num_transducers(); i++) {
+      this->_data[geometry->device_idx_for_trans_idx(i)].at(i % autd::NUM_TRANS_IN_UNIT) = 0xFF00;
     }
 
     this->_built = true;

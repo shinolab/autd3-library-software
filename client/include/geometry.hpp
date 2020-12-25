@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 24/12/2020
+// Last Modified: 25/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -52,15 +52,15 @@ class Geometry {
   /**
    * @brief Number of devices
    */
-  virtual size_t numDevices() noexcept = 0;
+  virtual size_t num_devices() noexcept = 0;
   /**
    * @brief Number of transducers
    */
-  virtual size_t numTransducers() noexcept = 0;
+  virtual size_t num_transducers() noexcept = 0;
   /**
    * @brief Convert device ID into group ID
    */
-  virtual size_t GroupIDForDeviceIdx(size_t device_iD) = 0;
+  virtual size_t group_id_for_device_idx(size_t device_idx) = 0;
   /**
    * @brief Position of a transducer specified by id
    */
@@ -88,7 +88,7 @@ class Geometry {
   /**
    * @brief Convert transducer index into device ID
    */
-  virtual size_t deviceIdxForTransIdx(size_t transducer_idx) = 0;
+  virtual size_t device_idx_for_trans_idx(size_t transducer_idx) = 0;
 
   static GeometryPtr Create();
 };

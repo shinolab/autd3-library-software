@@ -15,7 +15,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <cstdio>
 #include <cstring>
 #include <fstream>
 #include <iostream>
@@ -23,7 +22,6 @@
 #include <numeric>
 
 #include "configuration.hpp"
-#include "privdef.hpp"
 
 using autd::MOD_BUF_SIZE;
 using autd::MOD_SAMPLING_FREQ;
@@ -65,13 +63,13 @@ void SineModulation::Build(const Configuration config) {
 
   const auto d = std::gcd(sf, freq);
 
-  const size_t N = (mod_buf_size / d) / (mod_buf_size / sf);
-  const size_t REP = freq / d;
+  const size_t n = mod_buf_size / d / (mod_buf_size / sf);
+  const size_t rep = freq / d;
 
-  this->buffer.resize(N, 0);
+  this->buffer.resize(n, 0);
 
-  for (size_t i = 0; i < N; i++) {
-    auto tamp = fmod(static_cast<double>(2 * REP * i) / static_cast<double>(N), 2.0);
+  for (size_t i = 0; i < n; i++) {
+    auto tamp = fmod(static_cast<double>(2 * rep * i) / static_cast<double>(n), 2.0);
     tamp = tamp > 1.0 ? 2.0 - tamp : tamp;
     tamp = std::clamp(this->_offset + (tamp - 0.5) * this->_amp, 0.0, 1.0);
     this->buffer.at(i) = static_cast<uint8_t>(tamp * 255.0);
@@ -93,10 +91,10 @@ void SquareModulation::Build(const Configuration config) {
 
   const auto d = std::gcd(sf, freq);
 
-  const size_t N = (mod_buf_size / d) / (mod_buf_size / sf);
+  const size_t n = mod_buf_size / d / (mod_buf_size / sf);
 
-  this->buffer.resize(N, this->_high);
-  std::memset(&this->buffer[0], this->_low, N / 2);
+  this->buffer.resize(n, this->_high);
+  std::memset(&this->buffer[0], this->_low, n / 2);
 }
 #pragma endregion
 
@@ -114,13 +112,13 @@ void SawModulation::Build(const Configuration config) {
 
   const auto d = std::gcd(sf, freq);
 
-  const size_t N = (mod_buf_size / d) / (mod_buf_size / sf);
-  const auto REP = freq / d;
+  const size_t n = mod_buf_size / d / (mod_buf_size / sf);
+  const auto rep = freq / d;
 
-  this->buffer.resize(N, 0);
+  this->buffer.resize(n, 0);
 
-  for (size_t i = 0; i < N; i++) {
-    const auto tamp = fmod(static_cast<double>(REP * i) / static_cast<double>(N), 1.0);
+  for (size_t i = 0; i < n; i++) {
+    const auto tamp = fmod(static_cast<double>(rep * i) / static_cast<double>(n), 1.0);
     this->buffer.at(i) = static_cast<uint8_t>(asin(tamp) / M_PI * 510.0);
   }
 }
@@ -155,7 +153,7 @@ auto RawPCMModulation::Build(const Configuration config) -> void {
   sample_buf.resize(this->_buf.size() * static_cast<size_t>(freq_ratio));
   for (size_t i = 0; i < sample_buf.size(); i++) {
     const auto v = static_cast<double>(i) / freq_ratio;
-    sample_buf.at(i) = (fmod(v, 1.0) < 1 / freq_ratio) ? this->_buf.at(static_cast<int>(v)) : 0.0;
+    sample_buf.at(i) = fmod(v, 1.0) < 1 / freq_ratio ? this->_buf.at(static_cast<int>(v)) : 0.0;
   }
 
   // LPF
@@ -179,7 +177,7 @@ auto RawPCMModulation::Build(const Configuration config) -> void {
     min_v = std::min<double>(lpf_buf.at(i), min_v);
   }
 
-  if ((max_v - min_v) < std::numeric_limits<double>::epsilon()) max_v = min_v + 1;
+  if (max_v - min_v < std::numeric_limits<double>::epsilon()) max_v = min_v + 1;
   this->buffer.resize(lpf_buf.size(), 0);
   for (size_t i = 0; i < lpf_buf.size(); i++) {
     this->buffer.at(i) = static_cast<uint8_t>(round(255.0 * (lpf_buf.at(i) - min_v) / (max_v - min_v)));
@@ -235,7 +233,7 @@ ModulationPtr WavModulation::Create(const std::string& filename) {
 
   const auto data_chunk_size = read_from_stream<uint32_t>(fs);
 
-  if ((bits_per_sample != 8) && (bits_per_sample != 16)) {
+  if (bits_per_sample != 8 && bits_per_sample != 16) {
     throw std::runtime_error("This only supports 8 or 16 bits per sampling data.");
   }
 
@@ -267,7 +265,7 @@ void WavModulation::Build(const Configuration config) {
   if (buffer_size > mod_buf_size) {
     const auto mod_play_length_max = mod_buf_size / mod_sf;
     std::cerr << "Wave data length is too long. The data is truncated to the first " << mod_play_length_max
-              << ((mod_play_length_max == 1) ? " second." : " seconds.") << std::endl;
+              << (mod_play_length_max == 1 ? " second." : " seconds.") << std::endl;
     buffer_size = mod_buf_size;
   }
 
