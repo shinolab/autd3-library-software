@@ -12,6 +12,7 @@
 #include "autd_logic.hpp"
 
 #include <algorithm>
+#include <utility>
 
 #include "ec_config.hpp"
 #include "firmware_version.hpp"

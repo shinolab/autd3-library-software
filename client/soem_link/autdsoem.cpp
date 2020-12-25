@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 24/12/2020
+// Last Modified: 25/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -61,22 +61,22 @@ namespace autdsoem {
 static std::atomic<bool> autd3_lib_send_cond(false);
 static std::atomic<bool> autd3_lib_rt_thread_lock(false);
 
-class SOEMControllerImpl : public SOEMController {
+class SOEMControllerImpl final : public SOEMController {
  public:
   SOEMControllerImpl();
   ~SOEMControllerImpl() override;
-  SOEMControllerImpl(SOEMControllerImpl& obj) = delete;
+  SOEMControllerImpl(const SOEMControllerImpl& obj) = delete;
   SOEMControllerImpl& operator=(const SOEMControllerImpl& obj) = delete;
   SOEMControllerImpl(SOEMControllerImpl&& obj) = delete;
   SOEMControllerImpl& operator=(SOEMControllerImpl&& obj) = delete;
 
-  bool is_open() final;
+  bool is_open() override;
 
-  void Open(const char* ifname, size_t dev_num, ECConfig config) final;
-  void Close() final;
+  void Open(const char* ifname, size_t dev_num, ECConfig config) override;
+  void Close() override;
 
-  void Send(size_t size, std::unique_ptr<uint8_t[]> buf) final;
-  std::vector<uint8_t> Read() final;
+  void Send(size_t size, std::unique_ptr<uint8_t[]> buf) override;
+  std::vector<uint8_t> Read() override;
 
   bool _is_open = false;
 

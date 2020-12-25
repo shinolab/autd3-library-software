@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki and Saya Mizutani
 // -----
-// Last Modified: 16/11/2020
+// Last Modified: 25/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -17,7 +17,6 @@
 #include <future>
 #include <iostream>
 #include <stdexcept>
-#include <string>
 
 namespace autd {
 
@@ -51,9 +50,10 @@ void Timer::Start(const std::function<void()> &callback) {
   if (this->_high_resolution) {
     this->InitTimer();
   } else {
-	  const uint32_t uResolution = 1;
+    const uint32_t uResolution = 1;
     timeBeginPeriod(uResolution);
-    _timer_id = timeSetEvent(this->_interval_us / 1000, uResolution, static_cast<LPTIMECALLBACK>(TimerThread), reinterpret_cast<DWORD_PTR>(this), TIME_PERIODIC);
+    _timer_id = timeSetEvent(this->_interval_us / 1000, uResolution, static_cast<LPTIMECALLBACK>(TimerThread), reinterpret_cast<DWORD_PTR>(this),
+                             TIME_PERIODIC);
     if (_timer_id == 0) {
       std::cerr << "timeSetEvent failed." << std::endl;
     }
@@ -69,7 +69,7 @@ void Timer::Stop() {
 
     } else {
       if (_timer_id != 0) {
-	      const uint32_t uResolution = 1;
+        const uint32_t uResolution = 1;
         timeKillEvent(_timer_id);
         timeEndPeriod(uResolution);
       }
@@ -96,8 +96,7 @@ inline void MicroSleep(const int micro_sec) noexcept {
   }
 }
 
-void Timer::MainLoop() const
-{
+void Timer::MainLoop() const {
   LARGE_INTEGER freq;
   QueryPerformanceFrequency(&freq);
 
@@ -125,9 +124,9 @@ void Timer::MainLoop() const
 }
 
 void Timer::TimerThread(UINT uTimerID, UINT uMsg, const DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2) {
-	auto expected = false;
+  auto expected = false;
   if (AUTD3_LIB_TIMER_LOCK.compare_exchange_weak(expected, true)) {
-	  const auto _timer = reinterpret_cast<Timer *>(dwUser);
+    const auto _timer = reinterpret_cast<Timer *>(dwUser);
     _timer->_cb();
     AUTD3_LIB_TIMER_LOCK.store(false, std::memory_order_release);
   }
