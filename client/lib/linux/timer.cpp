@@ -3,7 +3,7 @@
 // Created Date: 04/09/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 28/02/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -35,10 +35,7 @@ Timer::Timer() noexcept : Timer::Timer(false) {}
 Timer::Timer(bool high_resolusion) noexcept { this->_interval_us = 1; }
 Timer::~Timer() noexcept(false) { this->Stop(); }
 
-void Timer::SetInterval(int interval_us) {
-  if (interval_us <= 0) throw new std::runtime_error("Interval must be positive integer.");
-  this->_interval_us = interval_us;
-}
+void Timer::SetInterval(uint32_t interval_us) { this->_interval_us = interval_us; }
 
 void Timer::Start(const std::function<void()> &callback) {
   this->Stop();

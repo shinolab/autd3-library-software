@@ -17,7 +17,6 @@
 #include <ostream>
 #include <sstream>
 #include <string>
-#include <vector>
 
 #include "autd_logic.hpp"
 #include "consts.hpp"

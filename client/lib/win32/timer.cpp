@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki and Saya Mizutani
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -16,7 +16,6 @@
 #include <atomic>
 #include <future>
 #include <iostream>
-#include <stdexcept>
 
 namespace autd {
 
@@ -30,9 +29,7 @@ Timer::Timer(const bool high_resolution) noexcept : _interval_us(1), _high_resol
 
 Timer::~Timer() noexcept(false) { this->Stop(); }
 
-void Timer::SetInterval(const int interval_us) {
-  if (interval_us <= 0) throw std::runtime_error("Interval must be positive integer.");
-
+void Timer::SetInterval(const uint32_t interval_us) {
   if (!this->_high_resolution && interval_us % 1000 != 0) {
     std::cerr << "The accuracy of the Windows timer is 1 ms. It may not run properly." << std::endl;
   }

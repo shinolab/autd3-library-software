@@ -13,7 +13,6 @@
 
 #include <memory>
 #include <ostream>
-#include <vector>
 
 #include "core.hpp"
 #include "link.hpp"

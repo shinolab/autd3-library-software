@@ -19,7 +19,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "emulator_link.hpp"
 #include "geometry.hpp"
