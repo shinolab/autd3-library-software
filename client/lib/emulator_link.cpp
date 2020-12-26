@@ -65,15 +65,19 @@ void EmulatorLink::Close() {
   }
 }
 
-void EmulatorLink::Send(const size_t size, std::unique_ptr<uint8_t[]> buf) {
-  _last_ms_id = buf[0];
+std::optional<int32_t> EmulatorLink::Send(const size_t size, std::unique_ptr<uint8_t[]> buf) {
+  _last_msg_id = buf[0];
   const std::unique_ptr<const uint8_t[]> send_buf = std::move(buf);
 #if _WINDOWS
   sendto(_socket, reinterpret_cast<const char *>(send_buf.get()), static_cast<int>(size), 0, reinterpret_cast<sockaddr *>(&_addr), sizeof _addr);
 #endif
+  return std::nullopt;
 }
 
-std::vector<uint8_t> EmulatorLink::Read(const uint32_t buffer_len) { return std::vector<uint8_t>(buffer_len, _last_ms_id); }
+std::optional<int32_t> EmulatorLink::Read(uint8_t *rx, const uint32_t buffer_len) {
+  std::memset(rx, _last_msg_id, buffer_len);
+  return std::nullopt;
+}
 
 bool EmulatorLink::is_open() { return _is_open; }
 
