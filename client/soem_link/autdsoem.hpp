@@ -3,7 +3,7 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 24/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -41,7 +41,7 @@ class SOEMController {
   virtual bool is_open() = 0;
 
   virtual void Send(size_t size, std::unique_ptr<uint8_t[]> buf) = 0;
-  virtual std::vector<uint8_t> Read() = 0;
+  virtual void Read(uint8_t* rx) = 0;
 };
 
 struct EtherCATAdapterInfo final {

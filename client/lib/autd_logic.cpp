@@ -107,7 +107,7 @@ bool AUTDLogic::SendBlocking(const size_t size, unique_ptr<uint8_t[]> data, cons
   return this->WaitMsgProcessed(msg_id, trial, 0xFF);
 }
 
-void AUTDLogic::SendData(const size_t size, unique_ptr<uint8_t[]> data) {
+void AUTDLogic::SendData(const size_t size, unique_ptr<uint8_t[]> data) const {
   if (this->_link == nullptr || !this->_link->is_open()) {
     return;
   }
