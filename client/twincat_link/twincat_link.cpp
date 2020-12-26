@@ -33,7 +33,7 @@ typedef void* HMODULE;
 #include <utility>
 #include <vector>
 
-#include "../lib/privdef.hpp"
+#include "../lib/pre_def.hpp"
 
 namespace autd::link {
 

@@ -11,6 +11,21 @@
 
 #pragma once
 
+#ifdef USE_EIGEN_AUTD
+#if WIN32
+#include <codeanalysis/warnings.h>  // NOLINT
+#pragma warning(push)
+#pragma warning(disable : ALL_CODE_ANALYSIS_WARNINGS)
+#endif
+#include <Eigen/Geometry>
+#if WIN32
+#pragma warning(pop)
+#endif
+#else
+#include "quaternion.hpp"
+#include "vector3.hpp"
+#endif
+
 #include <array>
 #include <memory>
 #include <vector>
@@ -19,13 +34,13 @@
 
 namespace autd {
 
-namespace utils {
-class Vector3;
-class Quaternion;
-}  // namespace utils
-
+#ifdef USE_EIGEN_AUTD
+using Vector3 = Eigen::Vector3d;
+using Quaternion = Eigen::Quaterniond;
+#else
 using utils::Quaternion;
 using utils::Vector3;
+#endif
 
 class Controller;
 class Geometry;

@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -357,15 +357,6 @@ void AUTDController::StopSTModulation() {
   this->Stop();
 }
 void AUTDController::FinishSTModulation() { this->_stm_cnt->Finish(); }
-
-void AUTDController::LateralModulationAT(const Vector3 point, const Vector3 dir, const double lm_amp, const double lm_freq) {
-  const auto p1 = point + lm_amp * dir;
-  const auto p2 = point - lm_amp * dir;
-  this->FinishSTModulation();
-  this->AppendSTMGain(gain::FocalPointGain::Create(p1));
-  this->AppendSTMGain(gain::FocalPointGain::Create(p2));
-  this->StartSTModulation(lm_freq);
-}
 
 void AUTDController::AppendSequence(const SequencePtr seq) { this->_sync_cnt->AppendSeq(seq); }
 
