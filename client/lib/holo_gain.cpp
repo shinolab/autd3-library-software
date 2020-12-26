@@ -70,7 +70,7 @@ static double DirectivityT4010A1(double theta_deg) {
   return a + b * x + c * x * x + d * x * x * x;
 }
 
-complex<double> Transfer(const Vector3d& trans_pos, const Vector3d& trans_norm, const Vector3d& target_pos) {
+complex<double> Transfer(const autd::Vector3& trans_pos, const autd::Vector3& trans_norm, const autd::Vector3& target_pos) {
   const auto diff = target_pos - trans_pos;
   const auto dist = diff.norm();
   const auto theta = atan2(diff.dot(trans_norm), dist * trans_norm.norm()) * 180.0 / M_PI;
@@ -106,15 +106,15 @@ MatrixXcd TransferMatrix(const GeometryPtr& geometry, const MatrixX3d& foci, con
     const auto tp = foci.row(i);
     for (size_t j = 0; j < n; j++) {
       const auto pos = geometry->position(j);
-      const auto dir = geometry->direction(j);
-      g(i, j) = Transfer(Vector3d(pos.x(), pos.y(), pos.z()), Vector3d(dir.x(), dir.y(), dir.z()), tp);
+      const auto dir = geometry->direction(j / NUM_TRANS_IN_UNIT);
+      g(i, j) = Transfer(autd::Convert(pos), autd::Convert(dir), autd::Convert(tp));
     }
   }
 
   return g;
 }
 
-void SetFromComplexDrive(vector<AUTDDataArray>& data, const VectorXcd drive, bool normalize, double max_coeff) {
+void SetFromComplexDrive(vector<AUTDDataArray>& data, const VectorXcd& drive, const bool normalize, const double max_coeff) {
   const size_t n = drive.size();
   size_t dev_idx = 0;
   size_t trans_idx = 0;
@@ -514,9 +514,7 @@ void HoloGain::Build() {
   Eigen::VectorXd amps(m);
 
   for (size_t i = 0; i < m; i++) {
-    foci(i, 0) = _foci[i].x();
-    foci(i, 1) = _foci[i].y();
-    foci(i, 2) = _foci[i].z();
+    foci.col(i) = ConvertToEigen(_foci[i]);
     amps(i) = _amps[i];
   }
 
