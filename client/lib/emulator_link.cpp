@@ -23,7 +23,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "consts.hpp"
 #include "geometry.hpp"

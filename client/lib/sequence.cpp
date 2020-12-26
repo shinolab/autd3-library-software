@@ -16,7 +16,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <stdexcept>
 #include <string>
 #include <utility>
 
@@ -37,32 +36,41 @@ SequencePtr PointSequence::Create(const std::vector<utils::Vector3>& control_poi
 }
 
 void PointSequence::AppendPoint(const utils::Vector3& point) {
-  if (this->_control_points.size() + 1 > POINT_SEQ_BUFFER_SIZE_MAX)
-    throw std::runtime_error("Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX) + ".");
+  if (this->_control_points.size() + 1 > POINT_SEQ_BUFFER_SIZE_MAX) {
+    std::cerr << "Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX) + ".\n";
+    return;
+  }
 
   this->_control_points.emplace_back(Convert(point));
 }
 void PointSequence::AppendPoints(const std::vector<utils::Vector3>& points) {
-  if (this->_control_points.size() + points.size() > POINT_SEQ_BUFFER_SIZE_MAX)
-    throw std::runtime_error("Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX) + ".");
+  if (this->_control_points.size() + points.size() > POINT_SEQ_BUFFER_SIZE_MAX) {
+    std::cerr << "Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX) + ".\n";
+    return;
+  }
+
   this->_control_points.reserve(this->_control_points.size() + points.size());
   for (const auto& p : points) {
     this->_control_points.emplace_back(Convert(p));
   }
-}
+}  // namespace autd::sequence
 #ifdef USE_EIGEN_AUTD
 SequencePtr PointSequence::Create(const std::vector<Vector3>& control_points) noexcept {
   auto ptr = std::make_shared<PointSequence>(control_points);
   return ptr;
 }
 void PointSequence::AppendPoint(const Vector3& point) {
-  if (this->_control_points.size() + 1 > POINT_SEQ_BUFFER_SIZE_MAX)
-    throw std::runtime_error("Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX) + ".");
+  if (this->_control_points.size() + 1 > POINT_SEQ_BUFFER_SIZE_MAX) {
+    std::cerr << "Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX) + ".\n";
+    return;
+  }
   this->_control_points.push_back(point);
 }
 void PointSequence::AppendPoints(const std::vector<Vector3>& points) {
-  if (this->_control_points.size() + points.size() > POINT_SEQ_BUFFER_SIZE_MAX)
-    throw std::runtime_error("Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX) + ".");
+  if (this->_control_points.size() + points.size() > POINT_SEQ_BUFFER_SIZE_MAX) {
+    std::cerr << "Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX) + ".\n";
+    return;
+  }
   this->_control_points.reserve(this->_control_points.size() + points.size());
   this->_control_points.insert(std::end(this->_control_points), std::begin(points), std::end(points));
 }

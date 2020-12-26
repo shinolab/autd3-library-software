@@ -11,14 +11,11 @@
 
 #pragma once
 
-#include <array>
 #include <atomic>
 #include <memory>
-#include <thread>
 #include <vector>
 
 #include "configuration.hpp"
-#include "consts.hpp"
 #include "core.hpp"
 #include "gain.hpp"
 #include "sequence.hpp"
