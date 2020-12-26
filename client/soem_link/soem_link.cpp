@@ -32,7 +32,7 @@ EtherCATAdapters SOEMLink::EnumerateAdapters(size_t* const size) {
     EtherCATAdapter p;
     p.first = adapter.desc;
     p.second = adapter.name;
-    res.push_back(p);
+    res.emplace_back(p);
   }
   return res;
 }

@@ -165,13 +165,13 @@ void AUTDLogic::CalibrateSeq() {
   std::vector<uint16_t> laps;
   for (size_t i = 0; i < this->_rx_data.size() / 2; i++) {
     const auto lap_raw = static_cast<uint16_t>(_rx_data[2 * i + 1]) << 8 | _rx_data[2 * i];
-    laps.push_back(lap_raw & 0x03FF);
+    laps.emplace_back(lap_raw & 0x03FF);
   }
 
   std::vector<uint16_t> diffs;
   auto minimum = *std::min_element(laps.begin(), laps.end());
   for (auto lap : laps) {
-    diffs.push_back(lap - minimum);
+    diffs.emplace_back(lap - minimum);
   }
 
   const auto diff_max = *std::max_element(diffs.begin(), diffs.end());
@@ -362,16 +362,16 @@ unique_ptr<uint8_t[]> AUTDLogic::MakeBody(const SequencePtr &seq, size_t *const 
       const auto x = static_cast<uint32_t>(static_cast<int32_t>(v64.x() / FIXED_NUM_UNIT));
       const auto y = static_cast<uint32_t>(static_cast<int32_t>(v64.y() / FIXED_NUM_UNIT));
       const auto z = static_cast<uint32_t>(static_cast<int32_t>(v64.z() / FIXED_NUM_UNIT));
-      foci.push_back(static_cast<uint8_t>(x & 0x000000FF));
-      foci.push_back(static_cast<uint8_t>((x & 0x0000FF00) >> 8));
-      foci.push_back(static_cast<uint8_t>((x & 0x80000000) >> 24 | (x & 0x007F0000) >> 16));
-      foci.push_back(static_cast<uint8_t>(y & 0x000000FF));
-      foci.push_back(static_cast<uint8_t>((y & 0x0000FF00) >> 8));
-      foci.push_back(static_cast<uint8_t>((y & 0x80000000) >> 24 | (y & 0x007F0000) >> 16));
-      foci.push_back(static_cast<uint8_t>(z & 0x000000FF));
-      foci.push_back(static_cast<uint8_t>((z & 0x0000FF00) >> 8));
-      foci.push_back(static_cast<uint8_t>((z & 0x80000000) >> 24 | (z & 0x007F0000) >> 16));
-      foci.push_back(0xFF);  // amp
+      foci.emplace_back(static_cast<uint8_t>(x & 0x000000FF));
+      foci.emplace_back(static_cast<uint8_t>((x & 0x0000FF00) >> 8));
+      foci.emplace_back(static_cast<uint8_t>((x & 0x80000000) >> 24 | (x & 0x007F0000) >> 16));
+      foci.emplace_back(static_cast<uint8_t>(y & 0x000000FF));
+      foci.emplace_back(static_cast<uint8_t>((y & 0x0000FF00) >> 8));
+      foci.emplace_back(static_cast<uint8_t>((y & 0x80000000) >> 24 | (y & 0x007F0000) >> 16));
+      foci.emplace_back(static_cast<uint8_t>(z & 0x000000FF));
+      foci.emplace_back(static_cast<uint8_t>((z & 0x0000FF00) >> 8));
+      foci.emplace_back(static_cast<uint8_t>((z & 0x80000000) >> 24 | (z & 0x007F0000) >> 16));
+      foci.emplace_back(0xFF);  // amp
     }
     std::memcpy(cursor, &foci[0], foci.size());
     cursor += NUM_TRANS_IN_UNIT * 2;

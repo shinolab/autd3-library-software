@@ -138,7 +138,7 @@ ModulationPtr RawPCMModulation::Create(const std::string& filename, const Float 
   while (ifs.read(buf, sizeof(int32_t))) {
     int value;
     std::memcpy(&value, buf, sizeof(int32_t));
-    tmp.push_back(value);
+    tmp.emplace_back(value);
   }
 
   ModulationPtr mod = std::make_shared<RawPCMModulation>(sampling_freq, tmp);
@@ -246,11 +246,11 @@ ModulationPtr WavModulation::Create(const std::string& filename) {
   for (size_t i = 0; i < data_size; i++) {
     if (bits_per_sample == 8) {
       auto d = ReadFromStream<uint8_t>(fs);
-      tmp.push_back(d);
+      tmp.emplace_back(d);
     } else if (bits_per_sample == 16) {
       const auto d32 = static_cast<int32_t>(ReadFromStream<int16_t>(fs)) - std::numeric_limits<int16_t>::min();
       auto d8 = static_cast<uint8_t>(static_cast<float>(d32) / std::numeric_limits<uint16_t>::max() * std::numeric_limits<uint8_t>::max());
-      tmp.push_back(d8);
+      tmp.emplace_back(d8);
     }
   }
 
