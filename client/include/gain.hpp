@@ -79,6 +79,7 @@ class Gain {
   Gain& operator=(Gain&& obj) = default;
 
  protected:
+  explicit Gain(std::vector<AUTDDataArray> data) noexcept;
   bool _built;
   GeometryPtr _geometry;
   std::vector<AUTDDataArray> _data;
@@ -240,6 +241,13 @@ class CustomGain final : public Gain {
  public:
   /**
    * @brief Generate function
+   * @param[in] data data of amplitude and phase of each transducer
+   * @details The data size should be the same as the number of devices you use. The data is 16 bit unsigned integer, where MSB represents
+   * amplitude and LSB represents phase
+   */
+  static GainPtr Create(const std::vector<AUTDDataArray>& data);
+  /**
+   * @brief Generate function
    * @param[in] data pointer to data of amplitude and phase of each transducer
    * @param[in] data_length length of the data
    * @details The data length should be the same as the number of transducers you use. The data is 16 bit unsigned integer, where MSB represents
@@ -247,15 +255,12 @@ class CustomGain final : public Gain {
    */
   static GainPtr Create(const uint16_t* data, size_t data_length);
   void Build() override;
-  explicit CustomGain(std::vector<uint16_t> raw_data) : Gain(), _raw_data(std::move(raw_data)) {}
+  explicit CustomGain(std::vector<AUTDDataArray> data) : Gain(std::move(data)) {}
   ~CustomGain() override = default;
   CustomGain(const CustomGain& v) noexcept = default;
   CustomGain& operator=(const CustomGain& obj) = default;
   CustomGain(CustomGain&& obj) = default;
   CustomGain& operator=(CustomGain&& obj) = default;
-
- private:
-  std::vector<uint16_t> _raw_data;
 };
 
 /**

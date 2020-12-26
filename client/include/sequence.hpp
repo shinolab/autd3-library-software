@@ -30,6 +30,7 @@ namespace sequence {
 class PointSequence {
  public:
   PointSequence() noexcept;
+  explicit PointSequence(std::vector<Vector3> control_points) noexcept;
   /**
    * @brief Generate empty PointSequence.
    */

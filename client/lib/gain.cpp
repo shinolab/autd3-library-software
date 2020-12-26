@@ -25,10 +25,8 @@ inline double PosMod(const double a, const double b) { return a - floor(a / b) *
 
 GainPtr Gain::Create() { return std::make_shared<Gain>(); }
 
-Gain::Gain() noexcept {
-  this->_built = false;
-  this->_geometry = nullptr;
-}
+Gain::Gain() noexcept : _built(false), _geometry(nullptr) {}
+Gain::Gain(std::vector<AUTDDataArray> data) noexcept : _built(false), _geometry(nullptr), _data(std::move(data)) {}
 
 void Gain::Build() {
   if (this->built()) return;
@@ -78,17 +76,17 @@ void PlaneWaveGain::Build() {
 
   CheckAndInit(geometry, &this->_data);
 
-  const auto num_trans = geometry->num_transducers();
   const auto dir = this->_direction.normalized();
 
   const uint16_t duty = static_cast<uint16_t>(this->_duty) << 8 & 0xFF00;
-  for (size_t i = 0; i < num_trans; i++) {
-    const auto trp = geometry->position(i);
-    const auto dist = trp.dot(dir);
-    const auto f_phase = PosMod(dist, ULTRASOUND_WAVELENGTH) / ULTRASOUND_WAVELENGTH;
-    const auto phase = static_cast<uint16_t>(round(255.0 * (1.0 - f_phase)));
-    this->_data[geometry->device_idx_for_trans_idx(i)][i % NUM_TRANS_IN_UNIT] = duty | phase;
-  }
+  for (size_t dev = 0; dev < geometry->num_devices(); dev++)
+    for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
+      const auto trp = geometry->position(dev, i);
+      const auto dist = trp.dot(dir);
+      const auto f_phase = PosMod(dist, ULTRASOUND_WAVELENGTH) / ULTRASOUND_WAVELENGTH;
+      const auto phase = static_cast<uint16_t>(round(255.0 * (1.0 - f_phase)));
+      this->_data[dev][i] = duty | phase;
+    }
 
   this->_built = true;
 }
@@ -123,13 +121,14 @@ void FocalPointGain::Build() {
   CheckAndInit(geometry, &this->_data);
 
   const uint16_t duty = static_cast<uint16_t>(this->_duty) << 8 & 0xFF00;
-  for (size_t i = 0; i < geometry->num_transducers(); i++) {
-    const auto trp = geometry->position(i);
-    const auto dist = (trp - this->_point).norm();
-    const auto f_phase = fmod(dist, ULTRASOUND_WAVELENGTH) / ULTRASOUND_WAVELENGTH;
-    const auto phase = static_cast<uint16_t>(round(255.0 * (1.0 - f_phase)));
-    this->_data[geometry->device_idx_for_trans_idx(i)][i % NUM_TRANS_IN_UNIT] = duty | phase;
-  }
+  for (size_t dev = 0; dev < geometry->num_devices(); dev++)
+    for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
+      const auto trp = geometry->position(dev, i);
+      const auto dist = (trp - this->_point).norm();
+      const auto f_phase = fmod(dist, ULTRASOUND_WAVELENGTH) / ULTRASOUND_WAVELENGTH;
+      const auto phase = static_cast<uint16_t>(round(255.0 * (1.0 - f_phase)));
+      this->_data[dev][i] = duty | phase;
+    }
 
   this->_built = true;
 }
@@ -168,40 +167,45 @@ void BesselBeamGain::Build() {
   const auto theta_w = asin(v.norm());
 
   const uint16_t duty = static_cast<uint16_t>(this->_duty) << 8 & 0xFF00;
-  for (size_t i = 0; i < geometry->num_transducers(); i++) {
-    const auto trp = geometry->position(i);
-    const auto r = trp - this->_point;
-    const auto v_x_r = r.cross(v);
-    const auto rr = cos(theta_w) * r + sin(theta_w) * v_x_r + v.dot(r) * (1.0 - cos(theta_w)) * v;
-    const auto f_phase =
-        fmod(sin(_theta_z) * sqrt(rr.x() * rr.x() + rr.y() * rr.y()) - cos(_theta_z) * rr.z(), ULTRASOUND_WAVELENGTH) / ULTRASOUND_WAVELENGTH;
-    const auto phase = static_cast<uint16_t>(round(255.0 * (1.0 - f_phase)));
-    this->_data[geometry->device_idx_for_trans_idx(i)][i % NUM_TRANS_IN_UNIT] = duty | phase;
-  }
+  for (size_t dev = 0; dev < geometry->num_devices(); dev++)
+    for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
+      const auto trp = geometry->position(dev, i);
+      const auto r = trp - this->_point;
+      const auto v_x_r = r.cross(v);
+      const auto rr = cos(theta_w) * r + sin(theta_w) * v_x_r + v.dot(r) * (1.0 - cos(theta_w)) * v;
+      const auto f_phase =
+          fmod(sin(_theta_z) * sqrt(rr.x() * rr.x() + rr.y() * rr.y()) - cos(_theta_z) * rr.z(), ULTRASOUND_WAVELENGTH) / ULTRASOUND_WAVELENGTH;
+      const auto phase = static_cast<uint16_t>(round(255.0 * (1.0 - f_phase)));
+      this->_data[dev][i] = duty | phase;
+    }
 
   this->_built = true;
 }
 
 GainPtr CustomGain::Create(const uint16_t* data, const size_t data_length) {
-  std::vector<uint16_t> raw_data(data_length);
-  for (size_t i = 0; i < data_length; i++) raw_data.at(i) = data[i];
+  const auto dev_num = data_length / NUM_TRANS_IN_UNIT;
+
+  std::vector<AUTDDataArray> raw_data(dev_num);
+  size_t dev_idx = 0;
+  size_t tran_idx = 0;
+  for (size_t i = 0; i < data_length; i++) {
+    raw_data[dev_idx][tran_idx++] = data[i];
+    if (tran_idx == NUM_TRANS_IN_UNIT) {
+      dev_idx++;
+      tran_idx = 0;
+    }
+  }
   GainPtr gain = std::make_shared<CustomGain>(raw_data);
+  return gain;
+}
+
+GainPtr CustomGain::Create(const std::vector<AUTDDataArray>& data) {
+  GainPtr gain = std::make_shared<CustomGain>(data);
   return gain;
 }
 
 void CustomGain::Build() {
   if (this->built()) return;
-  auto geometry = this->geometry();
-
-  CheckAndInit(geometry, &this->_data);
-
-  const auto num_trans = geometry->num_transducers();
-
-  for (size_t i = 0; i < num_trans; i++) {
-    const auto data = this->_raw_data[i];
-    this->_data[geometry->device_idx_for_trans_idx(i)][i % NUM_TRANS_IN_UNIT] = data;
-  }
-
   this->_built = true;
 }
 
