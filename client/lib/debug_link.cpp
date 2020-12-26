@@ -21,7 +21,7 @@
 
 #include "autd_logic.hpp"
 #include "consts.hpp"
-#include "privdef.hpp"
+#include "pre_def.hpp"
 
 namespace autd::link {
 

@@ -3,7 +3,7 @@
 // Created Date: 29/04/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -96,8 +96,8 @@ void EmulatorLink::SetGeometry() {
   for (size_t i = 0; i < geometry->num_devices(); i++) {
     const auto trans_id = i * NUM_TRANS_IN_UNIT;
     auto origin = geometry->position(trans_id);
-    auto right = geometry->x_direction(trans_id);
-    auto up = geometry->y_direction(trans_id);
+    auto right = geometry->x_direction(i);
+    auto up = geometry->y_direction(i);
     float_buf[9 * i] = static_cast<float>(origin.x());
     float_buf[9 * i + 1] = static_cast<float>(origin.y());
     float_buf[9 * i + 2] = static_cast<float>(origin.z());
