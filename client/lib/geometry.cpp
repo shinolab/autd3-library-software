@@ -70,7 +70,7 @@ struct Device {
 
 class AUTDGeometry final : public Geometry {
  public:
-  AUTDGeometry() = default;
+  AUTDGeometry() : _wavelength(8.5) {}
   ~AUTDGeometry() override = default;
   AUTDGeometry(const AUTDGeometry& v) noexcept = default;
   AUTDGeometry& operator=(const AUTDGeometry& obj) = default;
@@ -83,6 +83,9 @@ class AUTDGeometry final : public Geometry {
   size_t AddDevice(Vector3 position, Vector3 euler_angles, size_t group = 0) override;
   size_t AddDeviceQuaternion(Vector3 position, Quaternion quaternion, size_t group = 0) override;
 #endif
+
+  double wavelength() noexcept override;
+  void set_wavelength(double wavelength) noexcept override;
 
   size_t num_devices() noexcept override;
   size_t num_transducers() noexcept override;
@@ -102,6 +105,7 @@ class AUTDGeometry final : public Geometry {
  private:
   std::vector<Device> _devices;
   std::map<size_t, size_t> _group_map;
+  double _wavelength;
 };
 
 GeometryPtr Geometry::Create() { return std::make_shared<AUTDGeometry>(); }
@@ -133,6 +137,9 @@ size_t AUTDGeometry::AddDeviceQuaternion(const Vector3 position, const Quaternio
   return device_id;
 }
 #endif
+
+double AUTDGeometry::wavelength() noexcept { return this->_wavelength; }
+void AUTDGeometry::set_wavelength(const double wavelength) noexcept { this->_wavelength = wavelength; }
 
 size_t AUTDGeometry::num_devices() noexcept { return this->_devices.size(); }
 
