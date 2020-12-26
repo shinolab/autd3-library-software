@@ -19,6 +19,7 @@
 
 #include <algorithm>
 #include <bitset>
+#include <cstring>
 #include <iostream>
 #include <memory>
 #include <string>
