@@ -367,9 +367,9 @@ void AUTDFlush(void* const handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   cnt->ptr->Flush();
 }
-int32_t AUTDDeviceIdxForTransIdx(void* const handle, const int32_t trans_idx) {
+int32_t AUTDDeviceIdxForTransIdx(void* const handle, const int32_t global_trans_idx) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
-  const auto res = cnt->ptr->geometry()->device_idx_for_trans_idx(trans_idx);
+  const auto res = cnt->ptr->geometry()->device_idx_for_trans_idx(global_trans_idx);
   return static_cast<int32_t>(res);
 }
 float* AUTDTransPositionByGlobal(void* const handle, const int32_t global_trans_idx) {

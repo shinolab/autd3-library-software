@@ -237,10 +237,10 @@ void AUTDLogic::Close() {
 
 inline uint16_t ConcatByte(const uint8_t high, const uint16_t low) { return static_cast<uint16_t>(static_cast<uint16_t>(high) << 8 | low); }
 
-FirmwareInfoList AUTDLogic::firmware_info_list() {
+std::vector<FirmwareInfo> AUTDLogic::firmware_info_list() {
   const auto size = this->_geometry->num_devices();
 
-  FirmwareInfoList res;
+  std::vector<FirmwareInfo> res;
   auto make_header = [](const uint8_t command) {
     auto header_bytes = std::make_unique<uint8_t[]>(sizeof(RxGlobalHeader));
     auto *header = reinterpret_cast<RxGlobalHeader *>(&header_bytes[0]);
@@ -283,7 +283,7 @@ FirmwareInfoList AUTDLogic::firmware_info_list() {
 
   for (size_t i = 0; i < size; i++) {
     auto info = FirmwareInfo(static_cast<uint16_t>(i), cpu_versions[i], fpga_versions[i]);
-    res.push_back(info);
+    res.emplace_back(info);
   }
   return res;
 }
