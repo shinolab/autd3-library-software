@@ -63,7 +63,7 @@ class AUTDLogic {
   bool Clear();
   void Close();
   void SetDelay(const std::vector<AUTDDataArray>& delay);
-  FirmwareInfoList firmware_info_list();
+  std::vector<FirmwareInfo> firmware_info_list();
 
   unique_ptr<uint8_t[]> MakeBody(const GainPtr& gain, const ModulationPtr& mod, size_t* size, uint8_t* send_msg_id) const;
   unique_ptr<uint8_t[]> MakeBody(const SequencePtr& seq, size_t* size, uint8_t* send_msg_id) const;

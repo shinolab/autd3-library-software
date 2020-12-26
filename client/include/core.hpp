@@ -91,5 +91,4 @@ using LinkPtr = std::unique_ptr<link::Link>;
 using ModulationPtr = std::shared_ptr<modulation::Modulation>;
 using SequencePtr = std::shared_ptr<sequence::PointSequence>;
 using ControllerPtr = std::shared_ptr<Controller>;
-using FirmwareInfoList = std::vector<FirmwareInfo>;
 }  // namespace autd

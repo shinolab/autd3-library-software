@@ -150,6 +150,6 @@ class Controller {
   /**
    * @brief Enumerate firmware information
    */
-  virtual FirmwareInfoList firmware_info_list() = 0;
+  virtual std::vector<FirmwareInfo> firmware_info_list() = 0;
 };
 }  // namespace autd

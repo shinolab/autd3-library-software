@@ -360,6 +360,6 @@ void AUTDController::FinishSTModulation() { this->_stm_cnt->Finish(); }
 
 void AUTDController::AppendSequence(const SequencePtr seq) { this->_sync_cnt->AppendSeq(seq); }
 
-FirmwareInfoList AUTDController::firmware_info_list() { return this->_autd_logic->firmware_info_list(); }
+std::vector<FirmwareInfo> AUTDController::firmware_info_list() { return this->_autd_logic->firmware_info_list(); }
 
 }  // namespace autd::internal

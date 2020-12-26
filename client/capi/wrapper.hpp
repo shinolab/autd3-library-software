@@ -3,7 +3,7 @@
 // Created Date: 09/06/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -38,7 +38,7 @@ typedef struct {
 } EtherCATAdaptersWrapper;
 
 typedef struct {
-  autd::FirmwareInfoList list;
+  std::vector<autd::FirmwareInfo> list;
 } FirmwareInfoListWrapper;
 
 inline GainWrapper* GainCreate(const autd::GainPtr& ptr) { return new GainWrapper{ptr}; }
@@ -60,5 +60,5 @@ inline void ControllerDelete(ControllerWrapper* ptr) { delete ptr; }
 inline EtherCATAdaptersWrapper* EtherCATAdaptersCreate(const autd::link::EtherCATAdapters& adapters) { return new EtherCATAdaptersWrapper{adapters}; }
 inline void EtherCATAdaptersDelete(EtherCATAdaptersWrapper* ptr) { delete ptr; }
 
-inline FirmwareInfoListWrapper* FirmwareInfoListCreate(const autd::FirmwareInfoList& list) { return new FirmwareInfoListWrapper{list}; }
+inline FirmwareInfoListWrapper* FirmwareInfoListCreate(const std::vector<autd::FirmwareInfo>& list) { return new FirmwareInfoListWrapper{list}; }
 inline void FirmwareInfoListDelete(FirmwareInfoListWrapper* ptr) { delete ptr; }
