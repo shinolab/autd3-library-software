@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -76,7 +76,7 @@ class SOEMControllerImpl final : public SOEMController {
   void Close() override;
 
   void Send(size_t size, std::unique_ptr<uint8_t[]> buf) override;
-  std::vector<uint8_t> Read() override;
+  void Read(uint8_t* rx) override;
 
  private:
 #ifdef WINDOWS
@@ -123,14 +123,12 @@ void SOEMControllerImpl::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
   _send_cond.notify_all();
 }
 
-std::vector<uint8_t> SOEMControllerImpl::Read() {
-  std::vector<uint8_t> res;
+void SOEMControllerImpl::Read(uint8_t* rx) {
   const auto input_frame_idx = this->_output_frame_size;
   for (size_t i = 0; i < _dev_num; i++) {
-    res.push_back(_io_map[input_frame_idx + 2 * i]);
-    res.push_back(_io_map[input_frame_idx + 2 * i + 1]);
+    rx[2 * i] = _io_map[input_frame_idx + 2 * i];
+    rx[2 * i + 1] = _io_map[input_frame_idx + 2 * i + 1];
   }
-  return res;
 }
 
 #ifdef WINDOWS
