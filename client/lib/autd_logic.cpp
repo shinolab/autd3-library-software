@@ -147,7 +147,7 @@ bool AUTDLogic::WaitMsgProcessed(const uint8_t msg_id, const size_t max_trial, c
       return true;
     }
 
-    auto wait = static_cast<size_t>(std::ceil(EC_TRAFFIC_DELAY * 1000 / EC_DEVICE_PER_FRAME * static_cast<double>(num_dev)));
+    auto wait = static_cast<size_t>(std::ceil(static_cast<double>(EC_TRAFFIC_DELAY) * 1000 / EC_DEVICE_PER_FRAME * static_cast<double>(num_dev)));
     std::this_thread::sleep_for(std::chrono::milliseconds(wait));
   }
 
@@ -352,7 +352,7 @@ unique_ptr<uint8_t[]> AUTDLogic::MakeBody(const SequencePtr &seq, size_t *const 
   }
 
   auto *cursor = &body[0] + sizeof(RxGlobalHeader);
-  const auto FIXED_NUM_UNIT = _geometry->wavelength() / 256.0;
+  const auto FIXED_NUM_UNIT = _geometry->wavelength() / 256;
   for (size_t device = 0; device < num_devices; device++) {
     std::vector<uint8_t> foci;
     foci.reserve(static_cast<size_t>(send_size) * 10);
