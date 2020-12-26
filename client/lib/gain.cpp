@@ -78,6 +78,7 @@ void PlaneWaveGain::Build() {
 
   const auto dir = this->_direction.normalized();
 
+  const auto ULTRASOUND_WAVELENGTH = geometry->wavelength();
   const uint16_t duty = static_cast<uint16_t>(this->_duty) << 8 & 0xFF00;
   for (size_t dev = 0; dev < geometry->num_devices(); dev++)
     for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
@@ -120,6 +121,7 @@ void FocalPointGain::Build() {
 
   CheckAndInit(geometry, &this->_data);
 
+  const auto ULTRASOUND_WAVELENGTH = geometry->wavelength();
   const uint16_t duty = static_cast<uint16_t>(this->_duty) << 8 & 0xFF00;
   for (size_t dev = 0; dev < geometry->num_devices(); dev++)
     for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
@@ -166,6 +168,7 @@ void BesselBeamGain::Build() {
 
   const auto theta_w = asin(v.norm());
 
+  const auto ULTRASOUND_WAVELENGTH = geometry->wavelength();
   const uint16_t duty = static_cast<uint16_t>(this->_duty) << 8 & 0xFF00;
   for (size_t dev = 0; dev < geometry->num_devices(); dev++)
     for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {

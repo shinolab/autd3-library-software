@@ -26,10 +26,8 @@ constexpr auto IsMissingTransducer(T x, T y) {
 constexpr auto FPGA_CLOCK = 25600000;
 
 constexpr auto ULTRASOUND_FREQUENCY = 40000;
-constexpr auto ULTRASOUND_WAVELENGTH = 8.5;
 
 constexpr auto POINT_SEQ_BUFFER_SIZE_MAX = 40000;
 constexpr auto POINT_SEQ_CLK_IDX_MAX = 40000;
 constexpr double POINT_SEQ_BASE_FREQ = 40000.0;
-constexpr double FIXED_NUM_UNIT = ULTRASOUND_WAVELENGTH / 256.0;
 }  // namespace autd
