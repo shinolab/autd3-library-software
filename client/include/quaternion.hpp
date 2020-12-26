@@ -3,7 +3,7 @@
 // Created Date: 27/02/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -11,8 +11,7 @@
 
 #pragma once
 
-namespace autd {
-namespace utils {
+namespace autd::utils {
 /**
  * @brief Simple quaternion class
  */
@@ -39,5 +38,4 @@ class Quaternion {
   double _z;
   double _w;
 };
-}  // namespace utils
-}  // namespace autd
+}  // namespace autd::utils

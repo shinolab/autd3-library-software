@@ -3,7 +3,7 @@
 // Created Date: 11/10/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -58,8 +58,6 @@ class AUTDController final : public Controller {
   void FinishSTModulation() override;
   void AppendSequence(SequencePtr seq) override;
   FirmwareInfoList firmware_info_list() override;
-
-  void LateralModulationAT(Vector3 point, Vector3 dir, double lm_amp = 2.5, double lm_freq = 100) override;
 
  private:
   std::unique_ptr<AUTDControllerSync> _sync_cnt;

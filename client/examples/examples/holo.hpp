@@ -3,7 +3,7 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -26,8 +26,8 @@ inline void HoloTest(const autd::ControllerPtr& autd) {
 
   const auto center = autd::Vector3(TRANS_SIZE_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SIZE_MM * ((NUM_TRANS_Y - 1) / 2.0), 150);
   const auto foci = {
-      center - autd::Vector3::unit_x() * 30.0,
-      center + autd::Vector3::unit_x() * 30.0,
+      center - autd::Vector3::UnitX() * 30.0,
+      center + autd::Vector3::UnitX() * 30.0,
   };
   const auto amps = {1.0, 1.0};
 

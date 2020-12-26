@@ -11,7 +11,9 @@
 
 #pragma once
 
-#define _USE_MATH_DEFINES
+#define _USE_MATH_DEFINES  // NOLINT
+#include <math.h>
+
 #include <cassert>
 #include <cmath>
 #include <map>
@@ -93,15 +95,15 @@ class PlaneWaveGain final : public Gain {
    * @param[in] direction wave direction
    * @param[in] duty duty ratio of driving signal
    */
-  static GainPtr Create(Vector3 direction, uint8_t duty = 0xff);
+  static GainPtr Create(const Vector3& direction, uint8_t duty = 0xff);
   /**
    * @brief Generate function
    * @param[in] direction wave direction
    * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
    */
-  static GainPtr Create(Vector3 direction, double amp);
+  static GainPtr Create(const Vector3& direction, double amp);
   void Build() override;
-  explicit PlaneWaveGain(const Vector3 direction, const uint8_t duty) : Gain(), _direction(direction), _duty(duty) {}
+  explicit PlaneWaveGain(Vector3 direction, const uint8_t duty) : Gain(), _direction(std::move(direction)), _duty(duty) {}
   ~PlaneWaveGain() override = default;
   PlaneWaveGain(const PlaneWaveGain& v) noexcept = default;
   PlaneWaveGain& operator=(const PlaneWaveGain& obj) = default;
@@ -109,7 +111,7 @@ class PlaneWaveGain final : public Gain {
   PlaneWaveGain& operator=(PlaneWaveGain&& obj) = default;
 
  private:
-  Vector3 _direction = Vector3::unit_z();
+  Vector3 _direction = Vector3::UnitZ();
   uint8_t _duty = 0xFF;
 };
 
@@ -123,15 +125,31 @@ class FocalPointGain final : public Gain {
    * @param[in] point focal point
    * @param[in] duty duty ratio of driving signal
    */
-  static GainPtr Create(Vector3 point, uint8_t duty = 0xff);
+  static GainPtr Create(const utils::Vector3& point, uint8_t duty = 0xff);
   /**
    * @brief Generate function
    * @param[in] point focal point
    * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
    */
-  static GainPtr Create(Vector3 point, double amp);
+  static GainPtr Create(const utils::Vector3& point, double amp);
+
+#ifdef USE_EIGEN_AUTD
+  /**
+   * @brief Generate function
+   * @param[in] point focal point
+   * @param[in] duty duty ratio of driving signal
+   */
+  static GainPtr Create(const Vector3& point, uint8_t duty = 0xff);
+  /**
+   * @brief Generate function
+   * @param[in] point focal point
+   * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
+   */
+  static GainPtr Create(const Vector3& point, double amp);
+#endif
+
   void Build() override;
-  explicit FocalPointGain(const Vector3 point, const uint8_t duty) : Gain(), _point(point), _duty(duty) {}
+  explicit FocalPointGain(Vector3 point, const uint8_t duty) : Gain(), _point(std::move(point)), _duty(duty) {}
   ~FocalPointGain() override = default;
   FocalPointGain(const FocalPointGain& v) noexcept = default;
   FocalPointGain& operator=(const FocalPointGain& obj) = default;
@@ -139,7 +157,7 @@ class FocalPointGain final : public Gain {
   FocalPointGain& operator=(FocalPointGain&& obj) = default;
 
  private:
-  Vector3 _point = Vector3::zero();
+  Vector3 _point = Vector3::Zero();
   uint8_t _duty = 0xff;
 };
 
@@ -155,7 +173,7 @@ class BesselBeamGain final : public Gain {
    * @param[in] theta_z angle between the conical wavefront of the beam and the direction
    * @param[in] duty duty ratio of driving signal
    */
-  static GainPtr Create(Vector3 point, Vector3 vec_n, double theta_z, uint8_t duty = 0xff);
+  static GainPtr Create(const Vector3& point, const Vector3& vec_n, double theta_z, uint8_t duty = 0xff);
   /**
    * @brief Generate function
    * @param[in] point start point of the beam
@@ -163,10 +181,10 @@ class BesselBeamGain final : public Gain {
    * @param[in] theta_z angle between the conical wavefront of the beam and the direction
    * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
    */
-  static GainPtr Create(Vector3 point, Vector3 vec_n, double theta_z, double amp);
+  static GainPtr Create(const Vector3& point, const Vector3& vec_n, double theta_z, double amp);
   void Build() override;
-  explicit BesselBeamGain(const Vector3 point, const Vector3 vec_n, const double theta_z, const uint8_t duty)
-      : Gain(), _point(point), _vec_n(vec_n), _theta_z(theta_z), _duty(duty) {}
+  explicit BesselBeamGain(Vector3 point, Vector3 vec_n, const double theta_z, const uint8_t duty)
+      : Gain(), _point(std::move(point)), _vec_n(std::move(vec_n)), _theta_z(theta_z), _duty(duty) {}
   ~BesselBeamGain() override = default;
   BesselBeamGain(const BesselBeamGain& v) noexcept = default;
   BesselBeamGain& operator=(const BesselBeamGain& obj) = default;
@@ -174,8 +192,8 @@ class BesselBeamGain final : public Gain {
   BesselBeamGain& operator=(BesselBeamGain&& obj) = default;
 
  private:
-  Vector3 _point = Vector3::zero();
-  Vector3 _vec_n = Vector3::unit_z();
+  Vector3 _point = Vector3::Zero();
+  Vector3 _vec_n = Vector3::UnitZ();
   double _theta_z = 0;
   uint8_t _duty = 0xff;
 };

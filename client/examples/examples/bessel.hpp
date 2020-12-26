@@ -3,7 +3,7 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -24,6 +24,6 @@ inline void BesselTest(const autd::ControllerPtr& autd) {
   autd->AppendModulationSync(m);
 
   const auto center = autd::Vector3(TRANS_SIZE_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SIZE_MM * ((NUM_TRANS_Y - 1) / 2.0), 0);
-  const auto g = autd::gain::BesselBeamGain::Create(center, autd::Vector3::unit_z(), 13.0 / 180.0 * M_PI);
+  const auto g = autd::gain::BesselBeamGain::Create(center, autd::Vector3::UnitZ(), 13.0 / 180.0 * M_PI);
   autd->AppendGainSync(g);
 }

@@ -3,7 +3,7 @@
 // Created Date: 01/07/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 24/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -44,7 +44,7 @@ class PointSequence {
    * @param[in] point control point
    * @details The maximum number of control points is 2000.
    */
-  void AppendPoint(Vector3 point);
+  void AppendPoint(const Vector3& point);
   /**
    * @brief Append control points
    * @param[in] points control points
@@ -102,7 +102,7 @@ class CircumSeq : PointSequence {
    * @param[in] radius Radius of the circumference
    * @param[in] n Number of the control points
    */
-  static SequencePtr Create(Vector3 center, Vector3 normal, double radius, size_t n);
+  static SequencePtr Create(const Vector3& center, Vector3 normal, double radius, size_t n);
 };
 }  // namespace sequence
 }  // namespace autd

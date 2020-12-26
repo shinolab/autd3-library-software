@@ -182,7 +182,7 @@ void HoloGainImplSDP(vector<AUTDDataArray>* data, const MatrixX3d& foci, const V
   }
 
   const Eigen::ComplexEigenSolver<MatrixXcd> ces(x_mat);
-  auto& evs = ces.eigenvalues();
+  const auto& evs = ces.eigenvalues();
   double abs_eiv = 0;
   auto idx = 0;
   for (auto j = 0; j < evs.rows(); j++) {
@@ -243,7 +243,7 @@ void HoloGainImplEVD(vector<AUTDDataArray>* data, const MatrixX3d& foci, const V
   auto r = g * x;
 
   Eigen::ComplexEigenSolver<MatrixXcd> ces(r);
-  auto& evs = ces.eigenvalues();
+  const auto& evs = ces.eigenvalues();
   double abs_eiv = 0;
   auto idx = 0;
   for (auto j = 0; j < evs.rows(); j++) {
