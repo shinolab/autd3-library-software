@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <cstring>
 #include <iostream>
+#include <thread>
 #include <utility>
 
 #include "ec_config.hpp"

@@ -267,7 +267,7 @@ void LocalTwinCATLinkImpl::Open() {
   return;
 }
 void LocalTwinCATLinkImpl::Close() {}
-std::optional<int32_t> LocalTwinCATLinkImpl::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {}
+std::optional<int32_t> LocalTwinCATLinkImpl::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {return std::nullopt;}
 std::optional<int32_t> LocalTwinCATLinkImpl::Read(uint8_t* rx, uint32_t buffer_len) { return std::nullopt; }
 #endif  // TC_ADS
 
