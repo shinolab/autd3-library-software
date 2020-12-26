@@ -204,10 +204,7 @@ GainPtr CustomGain::Create(const std::vector<AUTDDataArray>& data) {
   return gain;
 }
 
-void CustomGain::Build() {
-  if (this->built()) return;
-  this->_built = true;
-}
+void CustomGain::Build() { this->_built = true; }
 
 GainPtr TransducerTestGain::Create(const size_t transducer_index, const uint8_t duty, const uint8_t phase) {
   GainPtr gain = std::make_shared<TransducerTestGain>(transducer_index, duty, phase);
