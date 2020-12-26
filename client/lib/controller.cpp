@@ -320,7 +320,7 @@ bool AUTDController::Calibrate(const Configuration config) { return this->_autd_
 
 bool AUTDController::Clear() { return this->_autd_logic->Clear(); }
 
-void AUTDController::SetDelay(const std::vector<std::array<uint16_t, NUM_TRANS_IN_UNIT>>& delay) { this->_autd_logic->SetDelay(delay); }
+void AUTDController::SetDelay(const std::vector<AUTDDataArray>& delay) { this->_autd_logic->SetDelay(delay); }
 
 void AUTDController::Close() {
   this->_stm_cnt->Close();

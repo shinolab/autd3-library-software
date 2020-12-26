@@ -43,7 +43,7 @@ class AUTDController final : public Controller {
   bool Calibrate(Configuration config) override;
   bool Clear() override;
   void Close() override;
-  void SetDelay(const std::vector<std::array<uint16_t, NUM_TRANS_IN_UNIT>>& delay) override;
+  void SetDelay(const std::vector<AUTDDataArray>& delay) override;
   void Flush() override;
 
   void Stop() override;

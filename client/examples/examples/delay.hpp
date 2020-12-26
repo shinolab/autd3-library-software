@@ -3,7 +3,7 @@
 // Created Date: 24/12/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -58,11 +58,11 @@ inline void DelayTest(const autd::ControllerPtr& autd) {
   const auto g = ConstGain::Create();
   autd->AppendGainSync(g);
 
-  std::vector<std::array<uint16_t, autd::NUM_TRANS_IN_UNIT>> delay;
-  std::array<uint16_t, autd::NUM_TRANS_IN_UNIT> ar{};
+  std::vector<AUTDDataArray> delay;
+  AUTDDataArray ar{};
   ar.fill(0);
   ar[17] = 1;
-  delay.push_back(ar);
+  delay.emplace_back(ar);
 
   autd->SetDelay(delay);
 }

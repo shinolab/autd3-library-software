@@ -201,7 +201,7 @@ bool AUTDLogic::Clear() {
   return this->SendBlocking(size, move(body), 200);
 }
 
-void AUTDLogic::SetDelay(const std::vector<std::array<uint16_t, NUM_TRANS_IN_UNIT>> &delay) {
+void AUTDLogic::SetDelay(const std::vector<AUTDDataArray> &delay) {
   const auto num_dev = this->_geometry->num_devices();
   const auto size = sizeof(RxGlobalHeader) + num_dev * 2 * NUM_TRANS_IN_UNIT;
   auto body = std::make_unique<uint8_t[]>(size);
