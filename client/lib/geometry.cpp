@@ -121,27 +121,27 @@ GeometryPtr Geometry::Create() { return std::make_shared<AUTDGeometry>(); }
 
 size_t AUTDGeometry::AddDevice(const utils::Vector3 position, const utils::Vector3 euler_angles, const size_t group) {
   const auto device_id = this->_devices.size();
-  this->_devices.push_back(Device::Create(ConvertToEigen(position), ConvertToEigen(euler_angles)));
+  this->_devices.emplace_back(Device::Create(ConvertToEigen(position), ConvertToEigen(euler_angles)));
   this->_group_map[device_id] = group;
   return device_id;
 }
 
 size_t AUTDGeometry::AddDeviceQuaternion(const utils::Vector3 position, const utils::Quaternion quaternion, const size_t group) {
   const auto device_id = this->_devices.size();
-  this->_devices.push_back(Device::Create(ConvertToEigen(position), ConvertToEigen(quaternion)));
+  this->_devices.emplace_back(Device::Create(ConvertToEigen(position), ConvertToEigen(quaternion)));
   this->_group_map[device_id] = group;
   return device_id;
 }
 #ifdef USE_EIGEN_AUTD
 size_t AUTDGeometry::AddDevice(const Vector3 position, const Vector3 euler_angles, const size_t group) {
   const auto device_id = this->_devices.size();
-  this->_devices.push_back(Device::Create(position, euler_angles));
+  this->_devices.emplace_back(Device::Create(position, euler_angles));
   this->_group_map[device_id] = group;
   return device_id;
 }
 size_t AUTDGeometry::AddDeviceQuaternion(const Vector3 position, const Quaternion quaternion, const size_t group) {
   const auto device_id = this->_devices.size();
-  this->_devices.push_back(Device::Create(position, quaternion));
+  this->_devices.emplace_back(Device::Create(position, quaternion));
   this->_group_map[device_id] = group;
   return device_id;
 }

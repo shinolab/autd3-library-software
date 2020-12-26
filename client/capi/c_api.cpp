@@ -196,8 +196,8 @@ void AUTDHoloGain(void** gain, float* points, float* amps, const int32_t size, i
   std::vector<float> amps_;
   for (auto i = 0; i < size; i++) {
     autd::Vector3 v(points[3 * i], points[3 * i + 1], points[3 * i + 2]);
-    holo.push_back(v);
-    amps_.push_back(amps[i]);
+    holo.emplace_back(v);
+    amps_.emplace_back(amps[i]);
   }
 
   const auto method_ = static_cast<autd::gain::OPT_METHOD>(method);

@@ -228,7 +228,7 @@ class AUTDControllerStm {
 
   ~AUTDControllerStm() = default;
 
-  void AppendGain(const GainPtr& gain) { _stm_gains.push_back(gain); }
+  void AppendGain(const GainPtr& gain) { _stm_gains.emplace_back(gain); }
   void AppendGain(const vector<GainPtr>& gain_list) {
     for (const auto& g : gain_list) {
       this->AppendGain(g);

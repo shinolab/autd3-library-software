@@ -61,7 +61,7 @@ void PointSequence::AppendPoint(const Vector3& point) {
     std::cerr << "Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX) + ".\n";
     return;
   }
-  this->_control_points.push_back(point);
+  this->_control_points.emplace_back(point);
 }
 void PointSequence::AppendPoints(const std::vector<Vector3>& points) {
   if (this->_control_points.size() + points.size() > POINT_SEQ_BUFFER_SIZE_MAX) {
