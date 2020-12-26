@@ -3,7 +3,7 @@
 // Created Date:02/07/2018
 // Author: Shun Suzuki and Saya Mizutani
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -27,7 +27,7 @@ class Timer {
   Timer() noexcept;
   explicit Timer(bool high_resolution) noexcept;
   ~Timer() noexcept(false);
-  void SetInterval(int interval_us);
+  void SetInterval(uint32_t interval_us);
   void Start(const std::function<void()> &callback);
   void Stop();
 
@@ -37,7 +37,7 @@ class Timer {
   Timer &operator=(Timer &&) = delete;
 
  private:
-  int _interval_us;
+  uint32_t _interval_us;
   std::function<void()> _cb;
 
 #if WIN32

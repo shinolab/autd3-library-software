@@ -3,7 +3,7 @@
 // Created Date: 01/07/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -23,7 +23,7 @@ inline void SeqTest(const autd::ControllerPtr& autd) {
   const auto radius = 30.0;
   const auto point_num = 200;
 
-  auto circum = autd::sequence::CircumSeq::Create(center, autd::Vector3::unit_z(), radius, point_num);
+  auto circum = autd::sequence::CircumSeq::Create(center, autd::Vector3::UnitZ(), radius, point_num);
   const auto freq = 200.0;
   // For some reasons, the frequency may differ from the specified frequency.
   // See the documentation for details.

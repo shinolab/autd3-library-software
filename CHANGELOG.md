@@ -1,9 +1,12 @@
 # 0.8.0
 * Delete backward compatibility
 * Delete `Geometry::DelDevice()` and `Geometry::deviceIdForDeviceIdx()`
+* Delete `Controller::LateralModulationAT()`
 * Rename some functions to unify the naming
 * Add `DebugLink`
 * Add `SetDelay`
+* Add Eigen3 api when `USE_EIGEN_AUTD` is defined 
+* Add `Geometry::wavelength()` and `Geometry::set_wavelength()`
 
 # 0.7.2
 * Support Apple Silicon mac
