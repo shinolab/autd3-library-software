@@ -3,7 +3,7 @@
 // Created Date: 07/09/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -12,7 +12,6 @@
 #include <map>
 #include <utility>
 
-#include "consts.hpp"
 #include "gain.hpp"
 
 namespace autd::gain {
@@ -29,8 +28,7 @@ void GroupedGain::Build() {
 
   CheckAndInit(geometry, &this->_data);
 
-  for (const auto& [fst, snd] : this->_gain_map) {
-    auto g = snd;
+  for (const auto& [fst, g] : this->_gain_map) {
     g->SetGeometry(geometry);
     g->Build();
   }
@@ -41,7 +39,7 @@ void GroupedGain::Build() {
       auto& data = _gain_map[group_id]->data();
       this->_data[i] = data[i];
     } else {
-      this->_data[i] = std::vector<uint16_t>(NUM_TRANS_IN_UNIT, 0x0000);
+      this->_data[i] = AUTDDataArray{0x0000};
     }
   }
 

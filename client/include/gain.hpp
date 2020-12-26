@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -21,7 +21,6 @@
 #include <utility>
 #include <vector>
 
-#include "consts.hpp"
 #include "core.hpp"
 #include "geometry.hpp"
 #include "vector3.hpp"
@@ -34,16 +33,13 @@ inline uint8_t AdjustAmp(const double amp) noexcept {
   return static_cast<uint8_t>(511 * d);
 }
 
-inline void CheckAndInit(const GeometryPtr& geometry, std::vector<std::vector<uint16_t>>* data) {
+inline void CheckAndInit(const GeometryPtr& geometry, std::vector<AUTDDataArray>* data) {
   assert(geometry != nullptr);
 
   data->clear();
 
   const auto num_device = geometry->num_devices();
   data->resize(num_device);
-  for (size_t i = 0; i < num_device; i++) {
-    data->at(i).resize(NUM_TRANS_IN_UNIT);
-  }
 }
 
 /**
@@ -71,7 +67,7 @@ class Gain {
    * @brief Getter function for the data of amplitude and phase of each transducers
    * @details Each data is 16 bit unsigned integer, where MSB represents amplitude and LSB represents phase
    */
-  std::vector<std::vector<uint16_t>>& data();
+  std::vector<AUTDDataArray>& data();
 
   Gain() noexcept;
   virtual ~Gain() = default;
@@ -83,7 +79,7 @@ class Gain {
  protected:
   bool _built;
   GeometryPtr _geometry;
-  std::vector<std::vector<uint16_t>> _data;
+  std::vector<AUTDDataArray> _data;
   [[nodiscard]] bool built() const noexcept;
 };
 
