@@ -3,7 +3,7 @@
 // Created Date: 22/12/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -11,14 +11,11 @@
 
 #pragma once
 
-#include <array>
 #include <atomic>
 #include <memory>
-#include <thread>
 #include <vector>
 
 #include "configuration.hpp"
-#include "consts.hpp"
 #include "core.hpp"
 #include "gain.hpp"
 #include "sequence.hpp"
@@ -59,7 +56,7 @@ class AUTDLogic {
   void SendBlocking(const GainPtr& gain, const ModulationPtr& mod);
   void SendBlocking(const SequencePtr& seq);
   bool SendBlocking(size_t size, unique_ptr<uint8_t[]> data, size_t trial);
-  void SendData(size_t size, unique_ptr<uint8_t[]> data);
+  void SendData(size_t size, unique_ptr<uint8_t[]> data) const;
 
   bool WaitMsgProcessed(uint8_t msg_id, size_t max_trial = 200, uint8_t mask = 0xFF);
   bool Calibrate(Configuration config);

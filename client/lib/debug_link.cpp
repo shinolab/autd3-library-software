@@ -3,7 +3,7 @@
 // Created Date: 22/12/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -17,7 +17,6 @@
 #include <ostream>
 #include <sstream>
 #include <string>
-#include <vector>
 
 #include "autd_logic.hpp"
 #include "consts.hpp"
@@ -104,7 +103,7 @@ void DebugLink::Close() {
   _is_open = false;
 }
 
-void DebugLink::Send(const size_t size, const std::unique_ptr<uint8_t[]> buf) {
+std::optional<int32_t> DebugLink::Send(const size_t size, const std::unique_ptr<uint8_t[]> buf) {
   this->_out << "Call: Send()" << std::endl;
 
   _last_msg_id = buf[0];
@@ -139,9 +138,14 @@ void DebugLink::Send(const size_t size, const std::unique_ptr<uint8_t[]> buf) {
       this->_out << std::endl;
     }
   }
+
+  return std::nullopt;
 }
 
-std::vector<uint8_t> DebugLink::Read(const uint32_t buffer_len) { return std::vector<uint8_t>(buffer_len, _last_msg_id); }
+std::optional<int32_t> DebugLink::Read(uint8_t *rx, const uint32_t buffer_len) {
+  std::memset(rx, _last_msg_id, buffer_len);
+  return std::nullopt;
+}
 
 bool DebugLink::is_open() { return _is_open; }
 
