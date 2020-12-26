@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include "autd_types.hpp"
+
 namespace autd::utils {
 /**
  * @brief Simple quaternion class
@@ -20,22 +22,22 @@ class Quaternion {
   /**
    * @brief Create Quaternion
    */
-  Quaternion(const double w, const double x, const double y, const double z) {
+  Quaternion(const Float w, const Float x, const Float y, const Float z) {
     this->_x = x;
     this->_y = y;
     this->_z = z;
     this->_w = w;
   }
 
-  [[nodiscard]] double x() const { return _x; }
-  [[nodiscard]] double y() const { return _y; }
-  [[nodiscard]] double z() const { return _z; }
-  [[nodiscard]] double w() const { return _w; }
+  [[nodiscard]] Float x() const { return _x; }
+  [[nodiscard]] Float y() const { return _y; }
+  [[nodiscard]] Float z() const { return _z; }
+  [[nodiscard]] Float w() const { return _w; }
 
  private:
-  double _x;
-  double _y;
-  double _z;
-  double _w;
+  Float _x;
+  Float _y;
+  Float _z;
+  Float _w;
 };
 }  // namespace autd::utils

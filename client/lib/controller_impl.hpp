@@ -53,7 +53,7 @@ class AUTDController final : public Controller {
   void AppendModulationSync(ModulationPtr mod) override;
   void AppendSTMGain(GainPtr gain) override;
   void AppendSTMGain(const std::vector<GainPtr>& gain_list) override;
-  void StartSTModulation(double freq) override;
+  void StartSTModulation(Float freq) override;
   void StopSTModulation() override;
   void FinishSTModulation() override;
   void AppendSequence(SequencePtr seq) override;

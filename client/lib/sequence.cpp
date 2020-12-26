@@ -11,9 +11,6 @@
 
 #include "sequence.hpp"
 
-#define _USE_MATH_DEFINES  // NOLINT
-#include <math.h>
-
 #include <algorithm>
 #include <cmath>
 #include <string>
@@ -78,8 +75,8 @@ void PointSequence::AppendPoints(const std::vector<Vector3>& points) {
 
 std::vector<Vector3> PointSequence::control_points() const { return this->_control_points; }
 
-double PointSequence::SetFrequency(const double freq) {
-  const auto sample_freq = std::min(static_cast<double>(this->_control_points.size()) * freq, POINT_SEQ_BASE_FREQ);
+Float PointSequence::SetFrequency(const Float freq) {
+  const auto sample_freq = std::min(static_cast<Float>(this->_control_points.size()) * freq, POINT_SEQ_BASE_FREQ);
   const auto div = static_cast<size_t>(POINT_SEQ_BASE_FREQ / sample_freq);
   const auto lm_cycle = this->_control_points.size() * div;
 
@@ -95,9 +92,9 @@ double PointSequence::SetFrequency(const double freq) {
   return this->frequency();
 }
 
-double PointSequence::frequency() const { return this->sampling_frequency() / static_cast<double>(this->_control_points.size()); }
+Float PointSequence::frequency() const { return this->sampling_frequency() / static_cast<Float>(this->_control_points.size()); }
 
-double PointSequence::sampling_frequency() const { return POINT_SEQ_BASE_FREQ / this->_sampling_freq_div; }
+Float PointSequence::sampling_frequency() const { return POINT_SEQ_BASE_FREQ / static_cast<Float>(this->_sampling_freq_div); }
 
 size_t& PointSequence::sent() { return _sent; }
 
@@ -105,7 +102,7 @@ uint16_t PointSequence::sampling_frequency_division() const { return this->_samp
 
 static Vector3 GetOrthogonal(const Vector3& v) {
   const auto a = Vector3::UnitX();
-  if (acos(v.dot(a)) < M_PI / 2.0) {
+  if (acos(v.dot(a)) < PI / 2) {
     const auto b = Vector3::UnitY();
     return v.cross(b);
   }
@@ -113,14 +110,14 @@ static Vector3 GetOrthogonal(const Vector3& v) {
   return v.cross(a);
 }
 
-SequencePtr CreateImpl(const Vector3& center, const Vector3& normal, const double radius, const size_t n) {
+SequencePtr CreateImpl(const Vector3& center, const Vector3& normal, const Float radius, const size_t n) {
   const auto normal_ = normal.normalized();
   const auto n1 = GetOrthogonal(normal_).normalized();
   const auto n2 = normal_.cross(n1).normalized();
 
   std::vector<Vector3> control_points;
   for (size_t i = 0; i < n; i++) {
-    const auto theta = 2.0 * M_PI / static_cast<double>(n) * static_cast<double>(i);
+    const auto theta = 2 * PI / static_cast<Float>(n) * static_cast<Float>(i);
     auto x = n1 * radius * cos(theta);
     auto y = n2 * radius * sin(theta);
     control_points.emplace_back(center + x + y);
@@ -128,12 +125,12 @@ SequencePtr CreateImpl(const Vector3& center, const Vector3& normal, const doubl
   return PointSequence::Create(control_points);
 }
 
-SequencePtr CircumSeq::Create(const utils::Vector3& center, const utils::Vector3& normal, const double radius, const size_t n) {
+SequencePtr CircumSeq::Create(const utils::Vector3& center, const utils::Vector3& normal, const Float radius, const size_t n) {
   return CreateImpl(Convert(center), Convert(normal), radius, n);
 }
 
 #ifdef USE_EIGEN_AUTD
-SequencePtr CircumSeq::Create(const Vector3& center, const Vector3& normal, const double radius, const size_t n) {
+SequencePtr CircumSeq::Create(const Vector3& center, const Vector3& normal, const Float radius, const size_t n) {
   return CreateImpl(center, normal, radius, n);
 }
 #endif

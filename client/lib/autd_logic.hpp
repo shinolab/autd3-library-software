@@ -18,7 +18,6 @@
 #include "configuration.hpp"
 #include "core.hpp"
 #include "gain.hpp"
-#include "sequence.hpp"
 
 namespace autd::internal {
 

@@ -3,7 +3,7 @@
 // Created Date: 20/09/2016
 // Author:Seki Inoue
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -52,17 +52,17 @@ void MatlabGain::Build() {
     throw std::runtime_error("Insufficient number of data in mat file");
   }
 
-  const auto array = mxGetComplexDoubles(arr);
+  const auto array = mxGetComplexFloats(arr);
 
   const auto pos = matGetVariable(p_mat, "pos");
-  double *pos_arr = nullptr;
+  Float *pos_arr = nullptr;
   if (pos != nullptr) {
     pos_arr = mxGetPr(pos);
   }
 
   for (size_t i = 0; i < num_elems; i++) {
     auto f_amp = sqrt(array[i].real * array[i].real + array[i].imag * array[i].imag);
-    const auto amp = static_cast<uint16_t>(std::clamp<double>(f_amp, 0, 1) * 255.0);
+    const auto amp = static_cast<uint16_t>(std::clamp<Float>(f_amp, 0, 1) * 255.0);
     auto f_phase = 0.0;
     if (amp != 0) f_phase = atan2(array[i].imag, array[i].real);
     const auto phase = static_cast<uint16_t>(round((-f_phase + M_PI) / (2.0 * M_PI) * 255.0));

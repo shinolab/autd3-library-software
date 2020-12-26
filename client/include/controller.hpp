@@ -127,7 +127,7 @@ class Controller {
    * example, about 1ms on Windows. Note that it is affected by interruptions,
    * and so on.
    */
-  virtual void StartSTModulation(double freq) = 0;
+  virtual void StartSTModulation(Float freq) = 0;
   /**
    * @brief Suspend Spatio-Temporal Modulation
    */
