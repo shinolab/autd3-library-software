@@ -3,7 +3,7 @@
 // Created Date: 22/12/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -13,6 +13,8 @@
 
 #include <algorithm>
 #include <cstring>
+#include <iostream>
+#include <thread>
 #include <utility>
 
 #include "ec_config.hpp"
@@ -20,7 +22,7 @@
 #include "gain.hpp"
 #include "link.hpp"
 #include "modulation.hpp"
-#include "privdef.hpp"
+#include "pre_def.hpp"
 #include "sequence.hpp"
 
 namespace autd::internal {
@@ -106,17 +108,16 @@ bool AUTDLogic::SendBlocking(const size_t size, unique_ptr<uint8_t[]> data, cons
   return this->WaitMsgProcessed(msg_id, trial, 0xFF);
 }
 
-void AUTDLogic::SendData(const size_t size, unique_ptr<uint8_t[]> data) {
+void AUTDLogic::SendData(const size_t size, unique_ptr<uint8_t[]> data) const {
   if (this->_link == nullptr || !this->_link->is_open()) {
     return;
   }
 
-  try {
-    this->_link->Send(size, move(data));
-  } catch (const int err_num) {
+  auto res = this->_link->Send(size, move(data));
+  if (res.has_value()) {
+    const auto err = res.value();
     this->_link->Close();
-    this->_link = nullptr;
-    std::cerr << err_num << "Link closed." << std::endl;
+    std::cerr << "can't send data. Link closed (" << err << ")\n";
   }
 }
 
@@ -127,8 +128,15 @@ bool AUTDLogic::WaitMsgProcessed(const uint8_t msg_id, const size_t max_trial, c
 
   const auto num_dev = this->_geometry->num_devices();
   const auto buffer_len = num_dev * EC_INPUT_FRAME_SIZE;
+  _rx_data.resize(buffer_len);
   for (size_t i = 0; i < max_trial; i++) {
-    _rx_data = this->_link->Read(static_cast<uint32_t>(buffer_len));
+    auto res = this->_link->Read(&_rx_data[0], static_cast<uint32_t>(buffer_len));
+    if (res.has_value()) {
+      this->Close();
+      const auto err = res.value();
+      std::cerr << "can't read data. Link closed (" << err << ")\n";
+      return false;
+    }
     size_t processed = 0;
     for (size_t dev = 0; dev < num_dev; dev++) {
       const uint8_t proc_id = _rx_data[dev * 2 + 1] & mask;
@@ -200,7 +208,7 @@ bool AUTDLogic::Clear() {
   return this->SendBlocking(size, move(body), 200);
 }
 
-void AUTDLogic::SetDelay(const std::vector<std::array<uint16_t, NUM_TRANS_IN_UNIT>> &delay) {
+void AUTDLogic::SetDelay(const std::vector<AUTDDataArray> &delay) {
   const auto num_dev = this->_geometry->num_devices();
   const auto size = sizeof(RxGlobalHeader) + num_dev * 2 * NUM_TRANS_IN_UNIT;
   auto body = std::make_unique<uint8_t[]>(size);
@@ -344,6 +352,7 @@ unique_ptr<uint8_t[]> AUTDLogic::MakeBody(const SequencePtr &seq, size_t *const 
   }
 
   auto *cursor = &body[0] + sizeof(RxGlobalHeader);
+  const auto FIXED_NUM_UNIT = _geometry->wavelength() / 256.0;
   for (size_t device = 0; device < num_devices; device++) {
     std::vector<uint8_t> foci;
     foci.reserve(static_cast<size_t>(send_size) * 10);

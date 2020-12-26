@@ -3,7 +3,7 @@
 // Created Date: 29/04/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -23,7 +23,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "consts.hpp"
 #include "geometry.hpp"
@@ -65,15 +64,19 @@ void EmulatorLink::Close() {
   }
 }
 
-void EmulatorLink::Send(const size_t size, std::unique_ptr<uint8_t[]> buf) {
-  _last_ms_id = buf[0];
+std::optional<int32_t> EmulatorLink::Send(const size_t size, std::unique_ptr<uint8_t[]> buf) {
+  _last_msg_id = buf[0];
   const std::unique_ptr<const uint8_t[]> send_buf = std::move(buf);
 #if _WINDOWS
   sendto(_socket, reinterpret_cast<const char *>(send_buf.get()), static_cast<int>(size), 0, reinterpret_cast<sockaddr *>(&_addr), sizeof _addr);
 #endif
+  return std::nullopt;
 }
 
-std::vector<uint8_t> EmulatorLink::Read(const uint32_t buffer_len) { return std::vector<uint8_t>(buffer_len, _last_ms_id); }
+std::optional<int32_t> EmulatorLink::Read(uint8_t *rx, const uint32_t buffer_len) {
+  std::memset(rx, _last_msg_id, buffer_len);
+  return std::nullopt;
+}
 
 bool EmulatorLink::is_open() { return _is_open; }
 
@@ -96,8 +99,8 @@ void EmulatorLink::SetGeometry() {
   for (size_t i = 0; i < geometry->num_devices(); i++) {
     const auto trans_id = i * NUM_TRANS_IN_UNIT;
     auto origin = geometry->position(trans_id);
-    auto right = geometry->x_direction(trans_id);
-    auto up = geometry->y_direction(trans_id);
+    auto right = geometry->x_direction(i);
+    auto up = geometry->y_direction(i);
     float_buf[9 * i] = static_cast<float>(origin.x());
     float_buf[9 * i + 1] = static_cast<float>(origin.y());
     float_buf[9 * i + 2] = static_cast<float>(origin.z());

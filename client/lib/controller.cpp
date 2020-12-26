@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -245,7 +245,7 @@ class AUTDControllerStm {
     this->_stm_body_sizes.resize(len);
 
     for (auto i = current_size; i < len; i++) {
-      auto g = this->_stm_gains[i];
+      auto& g = this->_stm_gains[i];
       this->_autd_logic->BuildGain(g);
 
       size_t body_size = 0;
@@ -320,7 +320,7 @@ bool AUTDController::Calibrate(const Configuration config) { return this->_autd_
 
 bool AUTDController::Clear() { return this->_autd_logic->Clear(); }
 
-void AUTDController::SetDelay(const std::vector<std::array<uint16_t, NUM_TRANS_IN_UNIT>>& delay) { this->_autd_logic->SetDelay(delay); }
+void AUTDController::SetDelay(const std::vector<AUTDDataArray>& delay) { this->_autd_logic->SetDelay(delay); }
 
 void AUTDController::Close() {
   this->_stm_cnt->Close();
@@ -357,15 +357,6 @@ void AUTDController::StopSTModulation() {
   this->Stop();
 }
 void AUTDController::FinishSTModulation() { this->_stm_cnt->Finish(); }
-
-void AUTDController::LateralModulationAT(const Vector3 point, const Vector3 dir, const double lm_amp, const double lm_freq) {
-  const auto p1 = point + lm_amp * dir;
-  const auto p2 = point - lm_amp * dir;
-  this->FinishSTModulation();
-  this->AppendSTMGain(gain::FocalPointGain::Create(p1));
-  this->AppendSTMGain(gain::FocalPointGain::Create(p2));
-  this->StartSTModulation(lm_freq);
-}
 
 void AUTDController::AppendSequence(const SequencePtr seq) { this->_sync_cnt->AppendSeq(seq); }
 

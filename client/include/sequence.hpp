@@ -3,7 +3,7 @@
 // Created Date: 01/07/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 24/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -30,6 +30,7 @@ namespace sequence {
 class PointSequence {
  public:
   PointSequence() noexcept;
+  explicit PointSequence(std::vector<Vector3> control_points) noexcept;
   /**
    * @brief Generate empty PointSequence.
    */
@@ -37,20 +38,39 @@ class PointSequence {
   /**
    * @brief Generate PointSequence with control points.
    */
-  static SequencePtr Create(std::vector<Vector3> control_points) noexcept;
-
+  static SequencePtr Create(const std::vector<utils::Vector3>& control_points) noexcept;
   /**
    * @brief Append control point
    * @param[in] point control point
    * @details The maximum number of control points is 2000.
    */
-  void AppendPoint(Vector3 point);
+  void AppendPoint(const utils::Vector3& point);
   /**
    * @brief Append control points
    * @param[in] points control points
    * @details The maximum number of control points is 2000.
    */
-  void AppendPoints(std::vector<Vector3> points);
+  void AppendPoints(const std::vector<utils::Vector3>& points);
+
+#ifdef USE_EIGEN_AUTD
+  /**
+   * @brief Generate PointSequence with control points.
+   */
+  static SequencePtr Create(const std::vector<Vector3>& control_points) noexcept;
+  /**
+   * @brief Append control point
+   * @param[in] point control point
+   * @details The maximum number of control points is 2000.
+   */
+  void AppendPoint(const Vector3& point);
+  /**
+   * @brief Append control points
+   * @param[in] points control points
+   * @details The maximum number of control points is 2000.
+   */
+  void AppendPoints(const std::vector<Vector3>& points);
+#endif
+
   /**
    * @return std::vector<Vector3> Control points of the sequence
    */
@@ -102,7 +122,17 @@ class CircumSeq : PointSequence {
    * @param[in] radius Radius of the circumference
    * @param[in] n Number of the control points
    */
-  static SequencePtr Create(Vector3 center, Vector3 normal, double radius, size_t n);
+  static SequencePtr Create(const utils::Vector3& center, const utils::Vector3& normal, double radius, size_t n);
+#ifdef USE_EIGEN_AUTD
+  /**
+   * @brief Generate PointSequence with control points on a circumference.
+   * @param[in] center Center of the circumference
+   * @param[in] normal Normal vector of the circumference
+   * @param[in] radius Radius of the circumference
+   * @param[in] n Number of the control points
+   */
+  static SequencePtr Create(const Vector3& center, const Vector3& normal, double radius, size_t n);
+#endif
 };
 }  // namespace sequence
 }  // namespace autd

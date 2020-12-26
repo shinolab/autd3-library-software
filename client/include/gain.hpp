@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -11,7 +11,9 @@
 
 #pragma once
 
-#define _USE_MATH_DEFINES
+#define _USE_MATH_DEFINES  // NOLINT
+#include <math.h>
+
 #include <cassert>
 #include <cmath>
 #include <map>
@@ -21,7 +23,6 @@
 #include <utility>
 #include <vector>
 
-#include "consts.hpp"
 #include "core.hpp"
 #include "geometry.hpp"
 #include "vector3.hpp"
@@ -34,16 +35,13 @@ inline uint8_t AdjustAmp(const double amp) noexcept {
   return static_cast<uint8_t>(511 * d);
 }
 
-inline void CheckAndInit(const GeometryPtr& geometry, std::vector<std::vector<uint16_t>>* data) {
+inline void CheckAndInit(const GeometryPtr& geometry, std::vector<AUTDDataArray>* data) {
   assert(geometry != nullptr);
 
   data->clear();
 
   const auto num_device = geometry->num_devices();
   data->resize(num_device);
-  for (size_t i = 0; i < num_device; i++) {
-    data->at(i).resize(NUM_TRANS_IN_UNIT);
-  }
 }
 
 /**
@@ -71,7 +69,7 @@ class Gain {
    * @brief Getter function for the data of amplitude and phase of each transducers
    * @details Each data is 16 bit unsigned integer, where MSB represents amplitude and LSB represents phase
    */
-  std::vector<std::vector<uint16_t>>& data();
+  std::vector<AUTDDataArray>& data();
 
   Gain() noexcept;
   virtual ~Gain() = default;
@@ -81,9 +79,10 @@ class Gain {
   Gain& operator=(Gain&& obj) = default;
 
  protected:
+  explicit Gain(std::vector<AUTDDataArray> data) noexcept;
   bool _built;
   GeometryPtr _geometry;
-  std::vector<std::vector<uint16_t>> _data;
+  std::vector<AUTDDataArray> _data;
   [[nodiscard]] bool built() const noexcept;
 };
 
@@ -97,15 +96,30 @@ class PlaneWaveGain final : public Gain {
    * @param[in] direction wave direction
    * @param[in] duty duty ratio of driving signal
    */
-  static GainPtr Create(Vector3 direction, uint8_t duty = 0xff);
+  static GainPtr Create(const utils::Vector3& direction, uint8_t duty = 0xff);
   /**
    * @brief Generate function
    * @param[in] direction wave direction
    * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
    */
-  static GainPtr Create(Vector3 direction, double amp);
+  static GainPtr Create(const utils::Vector3& direction, double amp);
+#ifdef USE_EIGEN_AUTD
+  /**
+   * @brief Generate function
+   * @param[in] direction wave direction
+   * @param[in] duty duty ratio of driving signal
+   */
+  static GainPtr Create(const Vector3& direction, uint8_t duty = 0xff);
+  /**
+   * @brief Generate function
+   * @param[in] direction wave direction
+   * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
+   */
+  static GainPtr Create(const Vector3& direction, double amp);
+#endif
+
   void Build() override;
-  explicit PlaneWaveGain(const Vector3 direction, const uint8_t duty) : Gain(), _direction(direction), _duty(duty) {}
+  explicit PlaneWaveGain(Vector3 direction, const uint8_t duty) : Gain(), _direction(std::move(direction)), _duty(duty) {}
   ~PlaneWaveGain() override = default;
   PlaneWaveGain(const PlaneWaveGain& v) noexcept = default;
   PlaneWaveGain& operator=(const PlaneWaveGain& obj) = default;
@@ -113,7 +127,7 @@ class PlaneWaveGain final : public Gain {
   PlaneWaveGain& operator=(PlaneWaveGain&& obj) = default;
 
  private:
-  Vector3 _direction = Vector3::unit_z();
+  Vector3 _direction = Vector3::UnitZ();
   uint8_t _duty = 0xFF;
 };
 
@@ -127,15 +141,31 @@ class FocalPointGain final : public Gain {
    * @param[in] point focal point
    * @param[in] duty duty ratio of driving signal
    */
-  static GainPtr Create(Vector3 point, uint8_t duty = 0xff);
+  static GainPtr Create(const utils::Vector3& point, uint8_t duty = 0xff);
   /**
    * @brief Generate function
    * @param[in] point focal point
    * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
    */
-  static GainPtr Create(Vector3 point, double amp);
+  static GainPtr Create(const utils::Vector3& point, double amp);
+
+#ifdef USE_EIGEN_AUTD
+  /**
+   * @brief Generate function
+   * @param[in] point focal point
+   * @param[in] duty duty ratio of driving signal
+   */
+  static GainPtr Create(const Vector3& point, uint8_t duty = 0xff);
+  /**
+   * @brief Generate function
+   * @param[in] point focal point
+   * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
+   */
+  static GainPtr Create(const Vector3& point, double amp);
+#endif
+
   void Build() override;
-  explicit FocalPointGain(const Vector3 point, const uint8_t duty) : Gain(), _point(point), _duty(duty) {}
+  explicit FocalPointGain(Vector3 point, const uint8_t duty) : Gain(), _point(std::move(point)), _duty(duty) {}
   ~FocalPointGain() override = default;
   FocalPointGain(const FocalPointGain& v) noexcept = default;
   FocalPointGain& operator=(const FocalPointGain& obj) = default;
@@ -143,7 +173,7 @@ class FocalPointGain final : public Gain {
   FocalPointGain& operator=(FocalPointGain&& obj) = default;
 
  private:
-  Vector3 _point = Vector3::zero();
+  Vector3 _point = Vector3::Zero();
   uint8_t _duty = 0xff;
 };
 
@@ -159,7 +189,7 @@ class BesselBeamGain final : public Gain {
    * @param[in] theta_z angle between the conical wavefront of the beam and the direction
    * @param[in] duty duty ratio of driving signal
    */
-  static GainPtr Create(Vector3 point, Vector3 vec_n, double theta_z, uint8_t duty = 0xff);
+  static GainPtr Create(const utils::Vector3& point, const utils::Vector3& vec_n, double theta_z, uint8_t duty = 0xff);
   /**
    * @brief Generate function
    * @param[in] point start point of the beam
@@ -167,10 +197,30 @@ class BesselBeamGain final : public Gain {
    * @param[in] theta_z angle between the conical wavefront of the beam and the direction
    * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
    */
-  static GainPtr Create(Vector3 point, Vector3 vec_n, double theta_z, double amp);
+  static GainPtr Create(const utils::Vector3& point, const utils::Vector3& vec_n, double theta_z, double amp);
+
+#ifdef USE_EIGEN_AUTD
+  /**
+   * @brief Generate function
+   * @param[in] point start point of the beam
+   * @param[in] vec_n direction of the beam
+   * @param[in] theta_z angle between the conical wavefront of the beam and the direction
+   * @param[in] duty duty ratio of driving signal
+   */
+  static GainPtr Create(const Vector3& point, const Vector3& vec_n, double theta_z, uint8_t duty = 0xff);
+  /**
+   * @brief Generate function
+   * @param[in] point start point of the beam
+   * @param[in] vec_n direction of the beam
+   * @param[in] theta_z angle between the conical wavefront of the beam and the direction
+   * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
+   */
+  static GainPtr Create(const Vector3& point, const Vector3& vec_n, double theta_z, double amp);
+#endif
+
   void Build() override;
-  explicit BesselBeamGain(const Vector3 point, const Vector3 vec_n, const double theta_z, const uint8_t duty)
-      : Gain(), _point(point), _vec_n(vec_n), _theta_z(theta_z), _duty(duty) {}
+  explicit BesselBeamGain(Vector3 point, Vector3 vec_n, const double theta_z, const uint8_t duty)
+      : Gain(), _point(std::move(point)), _vec_n(std::move(vec_n)), _theta_z(theta_z), _duty(duty) {}
   ~BesselBeamGain() override = default;
   BesselBeamGain(const BesselBeamGain& v) noexcept = default;
   BesselBeamGain& operator=(const BesselBeamGain& obj) = default;
@@ -178,8 +228,8 @@ class BesselBeamGain final : public Gain {
   BesselBeamGain& operator=(BesselBeamGain&& obj) = default;
 
  private:
-  Vector3 _point = Vector3::zero();
-  Vector3 _vec_n = Vector3::unit_z();
+  Vector3 _point = Vector3::Zero();
+  Vector3 _vec_n = Vector3::UnitZ();
   double _theta_z = 0;
   uint8_t _duty = 0xff;
 };
@@ -191,6 +241,13 @@ class CustomGain final : public Gain {
  public:
   /**
    * @brief Generate function
+   * @param[in] data data of amplitude and phase of each transducer
+   * @details The data size should be the same as the number of devices you use. The data is 16 bit unsigned integer, where MSB represents
+   * amplitude and LSB represents phase
+   */
+  static GainPtr Create(const std::vector<AUTDDataArray>& data);
+  /**
+   * @brief Generate function
    * @param[in] data pointer to data of amplitude and phase of each transducer
    * @param[in] data_length length of the data
    * @details The data length should be the same as the number of transducers you use. The data is 16 bit unsigned integer, where MSB represents
@@ -198,15 +255,12 @@ class CustomGain final : public Gain {
    */
   static GainPtr Create(const uint16_t* data, size_t data_length);
   void Build() override;
-  explicit CustomGain(std::vector<uint16_t> raw_data) : Gain(), _raw_data(std::move(raw_data)) {}
+  explicit CustomGain(std::vector<AUTDDataArray> data) : Gain(std::move(data)) {}
   ~CustomGain() override = default;
   CustomGain(const CustomGain& v) noexcept = default;
   CustomGain& operator=(const CustomGain& obj) = default;
   CustomGain(CustomGain&& obj) = default;
   CustomGain& operator=(CustomGain&& obj) = default;
-
- private:
-  std::vector<uint16_t> _raw_data;
 };
 
 /**
@@ -288,8 +342,20 @@ class HoloGain final : public Gain {
    * @param[in] method optimization method. see also @ref OptMethod
    * @param[in] params pointer to optimization parameters
    */
+  static GainPtr Create(const std::vector<utils::Vector3>& foci, const std::vector<double>& amps, OPT_METHOD method = OPT_METHOD::SDP,
+                        void* params = nullptr);
+#ifdef USE_EIGEN_AUTD
+  /**
+   * @brief Generate function
+   * @param[in] foci focal points
+   * @param[in] amps amplitudes of the foci
+   * @param[in] method optimization method. see also @ref OptMethod
+   * @param[in] params pointer to optimization parameters
+   */
   static GainPtr Create(const std::vector<Vector3>& foci, const std::vector<double>& amps, OPT_METHOD method = OPT_METHOD::SDP,
                         void* params = nullptr);
+#endif
+
   void Build() override;
   HoloGain(std::vector<Vector3> foci, std::vector<double> amps, const OPT_METHOD method = OPT_METHOD::SDP, void* params = nullptr)
       : Gain(), _foci(std::move(foci)), _amps(std::move(amps)), _method(method), _params(params) {}
