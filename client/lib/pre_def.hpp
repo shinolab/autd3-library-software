@@ -1,4 +1,4 @@
-﻿// File: privdef.hpp
+﻿// File: pre_def.hpp
 // Project: lib
 // Created Date: 07/06/2016
 // Author: Seki Inoue
