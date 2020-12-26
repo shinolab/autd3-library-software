@@ -123,7 +123,7 @@ void SetFromComplexDrive(vector<AUTDDataArray>& data, const VectorXcd& drive, co
     const auto f_phase = arg(drive(j)) / (2 * M_PI) + 0.5;
     const auto phase = static_cast<uint16_t>((1 - f_phase) * 255.);
     const uint16_t duty = static_cast<uint16_t>(AdjustAmp(f_amp)) << 8 & 0xFF00;
-    data[dev_idx][trans_idx] = duty | phase;
+    data[dev_idx][trans_idx++] = duty | phase;
     if (trans_idx == NUM_TRANS_IN_UNIT) {
       dev_idx++;
       trans_idx = 0;
@@ -176,7 +176,7 @@ void HoloGainImplSDP(vector<AUTDDataArray>& data, const MatrixX3d& foci, const V
     const auto rnd = range(mt);
     const auto ii = static_cast<size_t>(static_cast<double>(m) * rnd);
 
-    auto& xc = x_mat;
+    auto xc = x_mat;
     RemoveRow(&xc, ii);
     RemoveColumn(&xc, ii);
     VectorXcd mmc = mm.col(ii);
@@ -480,7 +480,7 @@ void HoloGainImplLM(vector<AUTDDataArray>& data, const MatrixX3d& foci, const Ve
   for (size_t j = 0; j < n; j++) {
     const auto f_phase = fmod(x(j), 2 * M_PI) / (2 * M_PI);
     const auto phase = static_cast<uint16_t>((1 - f_phase) * 255.);
-    data[dev_idx][trans_idx] = duty | phase;
+    data[dev_idx][trans_idx++] = duty | phase;
     if (trans_idx == NUM_TRANS_IN_UNIT) {
       dev_idx++;
       trans_idx = 0;
@@ -514,7 +514,7 @@ void HoloGain::Build() {
   Eigen::VectorXd amps(m);
 
   for (size_t i = 0; i < m; i++) {
-    foci.col(i) = ConvertToEigen(_foci[i]);
+    foci.row(i) = ConvertToEigen(_foci[i]);
     amps(i) = _amps[i];
   }
 

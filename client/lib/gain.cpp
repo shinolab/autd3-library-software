@@ -178,7 +178,6 @@ void BesselBeamGain::Build() {
       const auto phase = static_cast<uint16_t>(round(255.0 * (1.0 - f_phase)));
       this->_data[dev][i] = duty | phase;
     }
-
   this->_built = true;
 }
 

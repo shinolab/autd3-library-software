@@ -33,7 +33,7 @@ inline const Vector3& Convert(const Vector3& v) { return v; }
 inline Vector3 Convert(const utils::Vector3& v) { return Vector3(v.x(), v.y(), v.z()); }
 inline std::vector<Vector3> Convert(const std::vector<utils::Vector3>& vin) {
   std::vector<Vector3> vs;
-  vs.resize(vin.size());
+  vs.reserve(vin.size());
   for (const auto& v : vin) vs.emplace_back(Vector3(v.x(), v.y(), v.z()));
   return vs;
 }
