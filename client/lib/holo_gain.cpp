@@ -114,7 +114,24 @@ MatrixXcd TransferMatrix(const GeometryPtr& geometry, const MatrixX3d& foci, con
   return g;
 }
 
-void HoloGainImplSDP(vector<AUTDDataArray>* data, const MatrixX3d& foci, const VectorXd& amps, const GeometryPtr& geometry, void* params) {
+void SetFromComplexDrive(vector<AUTDDataArray>& data, const VectorXcd drive, bool normalize, double max_coeff) {
+  const size_t n = drive.size();
+  size_t dev_idx = 0;
+  size_t trans_idx = 0;
+  for (size_t j = 0; j < n; j++) {
+    const auto f_amp = normalize ? 1.0 : abs(drive(j)) / max_coeff;
+    const auto f_phase = arg(drive(j)) / (2 * M_PI) + 0.5;
+    const auto phase = static_cast<uint16_t>((1 - f_phase) * 255.);
+    const uint16_t duty = static_cast<uint16_t>(AdjustAmp(f_amp)) << 8 & 0xFF00;
+    data[dev_idx][trans_idx] = duty | phase;
+    if (trans_idx == NUM_TRANS_IN_UNIT) {
+      dev_idx++;
+      trans_idx = 0;
+    }
+  }
+}
+
+void HoloGainImplSDP(vector<AUTDDataArray>& data, const MatrixX3d& foci, const VectorXd& amps, const GeometryPtr& geometry, void* params) {
   double alpha, lambda;
   int32_t repeat;
   bool normalize;
@@ -196,18 +213,12 @@ void HoloGainImplSDP(vector<AUTDDataArray>* data, const MatrixX3d& foci, const V
 
   const VectorXcd u = ces.eigenvectors().col(idx);
   const auto q = p_inv_b * p * u;
-
   const auto max_coeff = sqrt(q.cwiseAbs2().maxCoeff());
-  for (size_t j = 0; j < n; j++) {
-    const auto f_amp = normalize ? 1.0 : abs(q(j)) / max_coeff;
-    const auto f_phase = arg(q(j)) / (2 * M_PI) + 0.5;
-    const auto phase = static_cast<uint16_t>((1 - f_phase) * 255.);
-    const uint16_t duty = static_cast<uint16_t>(AdjustAmp(f_amp)) << 8 & 0xFF00;
-    data->at(geometry->device_idx_for_trans_idx(j))[j % NUM_TRANS_IN_UNIT] = duty | phase;
-  }
+
+  SetFromComplexDrive(data, q, normalize, max_coeff);
 }
 
-void HoloGainImplEVD(vector<AUTDDataArray>* data, const MatrixX3d& foci, const VectorXd& amps, const GeometryPtr& geometry, void* params) {
+void HoloGainImplEVD(vector<AUTDDataArray>& data, const MatrixX3d& foci, const VectorXd& amps, const GeometryPtr& geometry, void* params) {
   double gamma;
   bool normalize;
 
@@ -284,16 +295,11 @@ void HoloGainImplEVD(vector<AUTDDataArray>* data, const MatrixX3d& foci, const V
   auto q = qr.solve(gtf);
 
   auto max_coeff = sqrt(q.cwiseAbs2().maxCoeff());
-  for (size_t j = 0; j < n; j++) {
-    const auto f_amp = normalize ? 1.0 : abs(q(j)) / max_coeff;
-    const auto f_phase = arg(q(j)) / (2 * M_PI) + 0.5;
-    const auto phase = static_cast<uint16_t>((1 - f_phase) * 255.);
-    const uint16_t duty = static_cast<uint16_t>(AdjustAmp(f_amp)) << 8 & 0xFF00;
-    data->at(geometry->device_idx_for_trans_idx(j))[j % NUM_TRANS_IN_UNIT] = duty | phase;
-  }
+
+  SetFromComplexDrive(data, q, normalize, max_coeff);
 }
 
-void HoloGainImplNaive(vector<AUTDDataArray>* data, const MatrixX3d& foci, const VectorXd& amps, const GeometryPtr& geometry) {
+void HoloGainImplNaive(vector<AUTDDataArray>& data, const MatrixX3d& foci, const VectorXd& amps, const GeometryPtr& geometry) {
   const size_t m = foci.rows();
   const auto n = geometry->num_transducers();
 
@@ -301,16 +307,10 @@ void HoloGainImplNaive(vector<AUTDDataArray>* data, const MatrixX3d& foci, const
   const auto gh = g.adjoint();
   const VectorXcd p = amps;
   const auto q = gh * p;
-  for (size_t j = 0; j < n; j++) {
-    const auto f_amp = abs(q(j));
-    const auto f_phase = arg(q(j)) / (2 * M_PI) + 0.5;
-    const auto phase = static_cast<uint8_t>((1 - f_phase) * 255.);
-    const uint16_t duty = static_cast<uint16_t>(AdjustAmp(f_amp)) << 8 & 0xFF00;
-    data->at(geometry->device_idx_for_trans_idx(j))[j % NUM_TRANS_IN_UNIT] = duty | phase;
-  }
+  SetFromComplexDrive(data, q, true, 1.0);
 }
 
-void HoloGainImplGS(vector<AUTDDataArray>* data, const MatrixX3d& foci, const VectorXd& amps, const GeometryPtr& geometry, void* params) {
+void HoloGainImplGS(vector<AUTDDataArray>& data, const MatrixX3d& foci, const VectorXd& amps, const GeometryPtr& geometry, void* params) {
   const int32_t repeat = params == nullptr ? 100 : *static_cast<uint32_t*>(params);
 
   const size_t m = foci.rows();
@@ -332,16 +332,10 @@ void HoloGainImplGS(vector<AUTDDataArray>* data, const MatrixX3d& foci, const Ve
     for (size_t j = 0; j < n; j++) q(j) = xi(j) / abs(xi(j)) * q0(j);
   }
 
-  for (size_t j = 0; j < n; j++) {
-    const auto f_amp = abs(q(j));
-    const auto f_phase = arg(q(j)) / (2 * M_PI) + 0.5;
-    const auto phase = static_cast<uint8_t>((1 - f_phase) * 255.);
-    const uint16_t duty = static_cast<uint16_t>(AdjustAmp(f_amp)) << 8 & 0xFF00;
-    data->at(geometry->device_idx_for_trans_idx(j))[j % NUM_TRANS_IN_UNIT] = duty | phase;
-  }
+  SetFromComplexDrive(data, q, true, 1.0);
 }
 
-void HoloGainImplGSPAT(vector<AUTDDataArray>* data, const MatrixX3d& foci, const VectorXd& amps, const GeometryPtr& geometry, void* params) {
+void HoloGainImplGSPAT(vector<AUTDDataArray>& data, const MatrixX3d& foci, const VectorXd& amps, const GeometryPtr& geometry, void* params) {
   const int32_t repeat = params == nullptr ? 100 : *static_cast<uint32_t*>(params);
 
   const size_t m = foci.rows();
@@ -377,13 +371,7 @@ void HoloGainImplGSPAT(vector<AUTDDataArray>* data, const MatrixX3d& foci, const
   for (size_t i = 0; i < m; i++) p(i) = gamma(i) / (abs(gamma(i)) * abs(gamma(i))) * p0(i) * p0(i);
   const auto q = b * p;
 
-  for (size_t j = 0; j < n; j++) {
-    const auto f_amp = abs(q(j));
-    const auto f_phase = arg(q(j)) / (2 * M_PI) + 0.5;
-    const auto phase = static_cast<uint16_t>((1 - f_phase) * 255.);
-    const uint16_t duty = static_cast<uint16_t>(AdjustAmp(f_amp)) << 8 & 0xFF00;
-    data->at(geometry->device_idx_for_trans_idx(j))[j % NUM_TRANS_IN_UNIT] = duty | phase;
-  }
+  SetFromComplexDrive(data, q, true, 1.0);
 }
 
 inline MatrixXcd CalcTTh(const VectorXd& x) {
@@ -404,7 +392,7 @@ inline MatrixXcd MakeBhB(const GeometryPtr& geometry, const MatrixX3d& foci, con
   return b.adjoint() * b;
 }
 
-void HoloGainImplLM(vector<AUTDDataArray>* data, const MatrixX3d& foci, const VectorXd& amps, const GeometryPtr& geometry, void* params) {
+void HoloGainImplLM(vector<AUTDDataArray>& data, const MatrixX3d& foci, const VectorXd& amps, const GeometryPtr& geometry, void* params) {
   double eps_1, eps_2, tau;
   int32_t k_max;
 
@@ -487,10 +475,16 @@ void HoloGainImplLM(vector<AUTDDataArray>* data, const MatrixX3d& foci, const Ve
   }
 
   const uint16_t duty = 0xFF00;
+  size_t dev_idx = 0;
+  size_t trans_idx = 0;
   for (size_t j = 0; j < n; j++) {
     const auto f_phase = fmod(x(j), 2 * M_PI) / (2 * M_PI);
     const auto phase = static_cast<uint16_t>((1 - f_phase) * 255.);
-    data->at(geometry->device_idx_for_trans_idx(j))[j % NUM_TRANS_IN_UNIT] = duty | phase;
+    data[dev_idx][trans_idx] = duty | phase;
+    if (trans_idx == NUM_TRANS_IN_UNIT) {
+      dev_idx++;
+      trans_idx = 0;
+    }
   }
 }
 }  // namespace hologainimpl
@@ -528,22 +522,22 @@ void HoloGain::Build() {
 
   switch (this->_method) {
     case OPT_METHOD::SDP:
-      hologainimpl::HoloGainImplSDP(&_data, foci, amps, geo, _params);
+      hologainimpl::HoloGainImplSDP(_data, foci, amps, geo, _params);
       break;
     case OPT_METHOD::EVD:
-      hologainimpl::HoloGainImplEVD(&_data, foci, amps, geo, _params);
+      hologainimpl::HoloGainImplEVD(_data, foci, amps, geo, _params);
       break;
     case OPT_METHOD::NAIVE:
-      hologainimpl::HoloGainImplNaive(&_data, foci, amps, geo);
+      hologainimpl::HoloGainImplNaive(_data, foci, amps, geo);
       break;
     case OPT_METHOD::GS:
-      hologainimpl::HoloGainImplGS(&_data, foci, amps, geo, _params);
+      hologainimpl::HoloGainImplGS(_data, foci, amps, geo, _params);
       break;
     case OPT_METHOD::GS_PAT:
-      hologainimpl::HoloGainImplGSPAT(&_data, foci, amps, geo, _params);
+      hologainimpl::HoloGainImplGSPAT(_data, foci, amps, geo, _params);
       break;
     case OPT_METHOD::LM:
-      hologainimpl::HoloGainImplLM(&_data, foci, amps, geo, _params);
+      hologainimpl::HoloGainImplLM(_data, foci, amps, geo, _params);
       break;
   }
 }
