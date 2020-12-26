@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -34,14 +34,14 @@ int32_t AUTDOpenControllerWith(void* const handle, void* const p_link) {
   if (!cnt->ptr->is_open()) return ENXIO;
   return 0;
 }
-int32_t AUTDAddDevice(void* const handle, const double x, const double y, const double z, const double rz1, const double ry, const double rz2,
+int32_t AUTDAddDevice(void* const handle, const float x, const float y, const float z, const float rz1, const float ry, const float rz2,
                       const int32_t group_id) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   const auto res = cnt->ptr->geometry()->AddDevice(autd::Vector3(x, y, z), autd::Vector3(rz1, ry, rz2), group_id);
   return static_cast<int32_t>(res);
 }
-int32_t AUTDAddDeviceQuaternion(void* const handle, const double x, const double y, const double z, const double qua_w, const double qua_x,
-                                const double qua_y, const double qua_z, const int32_t group_id) {
+int32_t AUTDAddDeviceQuaternion(void* const handle, const float x, const float y, const float z, const float qua_w, const float qua_x,
+                                const float qua_y, const float qua_z, const int32_t group_id) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   const auto res = cnt->ptr->geometry()->AddDeviceQuaternion(autd::Vector3(x, y, z), autd::Quaternion(qua_w, qua_x, qua_y, qua_z), group_id);
   return static_cast<int32_t>(res);
@@ -119,6 +119,30 @@ bool AUTDIsSilentMode(void* const handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   return cnt->ptr->silent_mode();
 }
+float AUTDWavelength(void* const handle) {
+  auto* cnt = static_cast<ControllerWrapper*>(handle);
+  return cnt->ptr->geometry()->wavelength();
+}
+void AUTDSetWavelength(void* const handle, const float wavelength) {
+  auto* cnt = static_cast<ControllerWrapper*>(handle);
+  return cnt->ptr->geometry()->set_wavelength(wavelength);
+}
+void AUTDSetDelay(void* handle, const uint16_t* delay, const int32_t data_length) {
+  auto* cnt = static_cast<ControllerWrapper*>(handle);
+
+  const int32_t dev_num = data_length / autd::NUM_TRANS_IN_UNIT;
+  std::vector<autd::AUTDDataArray> delay_(dev_num);
+  auto dev_idx = 0;
+  auto tran_idx = 0;
+  for (auto i = 0; i < data_length; i++) {
+    delay_[dev_idx][tran_idx++] = delay[i];
+    if (tran_idx == autd::NUM_TRANS_IN_UNIT) {
+      dev_idx++;
+      tran_idx = 0;
+    }
+  }
+  cnt->ptr->SetDelay(delay_);
+}
 int32_t AUTDNumDevices(void* const handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   const auto res = cnt->ptr->geometry()->num_devices();
@@ -136,7 +160,7 @@ uint64_t AUTDRemainingInBuffer(void* const handle) {
 #pragma endregion
 
 #pragma region Gain
-void AUTDFocalPointGain(void** gain, const double x, const double y, const double z, const uint8_t duty) {
+void AUTDFocalPointGain(void** gain, const float x, const float y, const float z, const uint8_t duty) {
   auto* g = GainCreate(autd::gain::FocalPointGain::Create(autd::Vector3(x, y, z), duty));
   *gain = g;
 }
@@ -154,12 +178,12 @@ void AUTDGroupedGain(void** gain, const int32_t* group_ids, void** gains, const 
 
   *gain = g_gain;
 }
-void AUTDBesselBeamGain(void** gain, const double x, const double y, const double z, const double n_x, const double n_y, const double n_z,
-                        const double theta_z, const uint8_t duty) {
+void AUTDBesselBeamGain(void** gain, const float x, const float y, const float z, const float n_x, const float n_y, const float n_z,
+                        const float theta_z, const uint8_t duty) {
   auto* g = GainCreate(autd::gain::BesselBeamGain::Create(autd::Vector3(x, y, z), autd::Vector3(n_x, n_y, n_z), theta_z, duty));
   *gain = g;
 }
-void AUTDPlaneWaveGain(void** gain, const double n_x, const double n_y, const double n_z, const uint8_t duty) {
+void AUTDPlaneWaveGain(void** gain, const float n_x, const float n_y, const float n_z, const uint8_t duty) {
   auto* g = GainCreate(autd::gain::PlaneWaveGain::Create(autd::Vector3(n_x, n_y, n_z), duty));
   *gain = g;
 }
@@ -167,9 +191,9 @@ void AUTDCustomGain(void** gain, uint16_t* data, const int32_t data_length) {
   auto* g = GainCreate(autd::gain::CustomGain::Create(data, data_length));
   *gain = g;
 }
-void AUTDHoloGain(void** gain, double* points, double* amps, const int32_t size, int32_t method, void* params) {
+void AUTDHoloGain(void** gain, float* points, float* amps, const int32_t size, int32_t method, void* params) {
   std::vector<autd::Vector3> holo;
-  std::vector<double> amps_;
+  std::vector<float> amps_;
   for (auto i = 0; i < size; i++) {
     autd::Vector3 v(points[3 * i], points[3 * i + 1], points[3 * i + 2]);
     holo.push_back(v);
@@ -205,7 +229,7 @@ void AUTDCustomModulation(void** mod, uint8_t* buf, const uint32_t size) {
   std::memcpy(&m->ptr->buffer[0], buf, size);
   *mod = m;
 }
-void AUTDRawPCMModulation(void** mod, const char* filename, const double sampling_freq) {
+void AUTDRawPCMModulation(void** mod, const char* filename, const float sampling_freq) {
   auto* m = ModulationCreate(autd::modulation::RawPCMModulation::Create(std::string(filename), sampling_freq));
   *mod = m;
 }
@@ -217,7 +241,7 @@ void AUTDSawModulation(void** mod, const int32_t freq) {
   auto* m = ModulationCreate(autd::modulation::SawModulation::Create(freq));
   *mod = m;
 }
-void AUTDSineModulation(void** mod, const int32_t freq, const double amp, const double offset) {
+void AUTDSineModulation(void** mod, const int32_t freq, const float amp, const float offset) {
   auto* m = ModulationCreate(autd::modulation::SineModulation::Create(freq, amp, offset));
   *mod = m;
 }
@@ -236,11 +260,11 @@ void AUTDSequence(void** out) {
   auto* s = SequencePtrCreate(autd::sequence::PointSequence::Create());
   *out = s;
 }
-void AUTDSequenceAppendPoint(void* const seq, const double x, const double y, const double z) {
+void AUTDSequenceAppendPoint(void* const seq, const float x, const float y, const float z) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
   seq_w->ptr->AppendPoint(autd::Vector3(x, y, z));
 }
-void AUTDSequenceAppendPoints(void* const seq, double* points, const uint64_t size) {
+void AUTDSequenceAppendPoints(void* const seq, float* points, const uint64_t size) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
   std::vector<autd::Vector3> p;
   for (size_t i = 0; i < size; i++) {
@@ -248,15 +272,15 @@ void AUTDSequenceAppendPoints(void* const seq, double* points, const uint64_t si
   }
   seq_w->ptr->AppendPoints(p);
 }
-double AUTDSequenceSetFreq(void* const seq, const double freq) {
+float AUTDSequenceSetFreq(void* const seq, const float freq) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
   return seq_w->ptr->SetFrequency(freq);
 }
-double AUTDSequenceFreq(void* const seq) {
+float AUTDSequenceFreq(void* const seq) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
   return seq_w->ptr->frequency();
 }
-double AUTDSequenceSamplingFreq(void* const seq) {
+float AUTDSequenceSamplingFreq(void* const seq) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
   return seq_w->ptr->sampling_frequency();
 }
@@ -264,8 +288,8 @@ uint16_t AUTDSequenceSamplingFreqDiv(void* const seq) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
   return seq_w->ptr->sampling_frequency_division();
 }
-void AUTDCircumSequence(void** out, const double x, const double y, const double z, const double nx, const double ny, const double nz,
-                        const double radius, const uint64_t n) {
+void AUTDCircumSequence(void** out, const float x, const float y, const float z, const float nx, const float ny, const float nz, const float radius,
+                        const uint64_t n) {
   auto* s = SequencePtrCreate(autd::sequence::CircumSeq::Create(autd::Vector3(x, y, z), autd::Vector3(nx, ny, nz), radius, n));
   *out = s;
 }
@@ -322,7 +346,7 @@ void AUTDAppendSTMGain(void* const handle, void* const gain) {
   auto* g = static_cast<GainWrapper*>(gain);
   cnt->ptr->AppendSTMGain(g->ptr);
 }
-void AUTDStartSTModulation(void* const handle, const double freq) {
+void AUTDStartSTModulation(void* const handle, const float freq) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   cnt->ptr->StartSTModulation(freq);
 }
@@ -343,24 +367,33 @@ void AUTDFlush(void* const handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   cnt->ptr->Flush();
 }
-int32_t AUTDDevIdxForTransIdx(void* const handle, const int32_t trans_idx) {
+int32_t AUTDDeviceIdxForTransIdx(void* const handle, const int32_t trans_idx) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   const auto res = cnt->ptr->geometry()->device_idx_for_trans_idx(trans_idx);
   return static_cast<int32_t>(res);
 }
-double* AUTDTransPosition(void* const handle, const int32_t trans_idx) {
+float* AUTDTransPositionByGlobal(void* const handle, const int32_t global_trans_idx) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
-  const auto pos = cnt->ptr->geometry()->position(trans_idx);
-  auto* array = new double[3];
+  const auto pos = cnt->ptr->geometry()->position(global_trans_idx);
+  auto* array = new float[3];
   array[0] = pos.x();
   array[1] = pos.y();
   array[2] = pos.z();
   return array;
 }
-double* AUTDTransDirection(void* const handle, const int32_t trans_idx) {
+float* AUTDTransPositionByLocal(void* const handle, const int32_t device_idx, const int32_t local_trans_idx) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
-  const auto dir = cnt->ptr->geometry()->direction(trans_idx);
-  auto* array = new double[3];
+  const auto pos = cnt->ptr->geometry()->position(device_idx, local_trans_idx);
+  auto* array = new float[3];
+  array[0] = pos.x();
+  array[1] = pos.y();
+  array[2] = pos.z();
+  return array;
+}
+float* AUTDDeviceDirection(void* const handle, const int32_t device_idx) {
+  auto* cnt = static_cast<ControllerWrapper*>(handle);
+  const auto dir = cnt->ptr->geometry()->direction(device_idx);
+  auto* array = new float[3];
   array[0] = dir.x();
   array[1] = dir.y();
   array[2] = dir.z();
