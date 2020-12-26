@@ -245,7 +245,7 @@ class AUTDControllerStm {
     this->_stm_body_sizes.resize(len);
 
     for (auto i = current_size; i < len; i++) {
-      auto g = this->_stm_gains[i];
+      auto& g = this->_stm_gains[i];
       this->_autd_logic->BuildGain(g);
 
       size_t body_size = 0;

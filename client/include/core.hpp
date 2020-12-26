@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -11,8 +11,11 @@
 
 #pragma once
 
+#include <array>
 #include <memory>
 #include <vector>
+
+#include "consts.hpp"
 
 namespace autd {
 
@@ -60,6 +63,8 @@ class CircumSeq;
 }  // namespace sequence
 
 class FirmwareInfo;
+
+using AUTDDataArray = std::array<uint16_t, NUM_TRANS_IN_UNIT>;
 
 using GainPtr = std::shared_ptr<gain::Gain>;
 using LinkPtr = std::unique_ptr<link::Link>;
