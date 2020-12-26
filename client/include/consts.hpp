@@ -11,13 +11,21 @@
 
 #pragma once
 
+#define _USE_MATH_DEFINES  // NOLINT
+#include <math.h>
+
+#include "autd_types.hpp"
+
 namespace autd {
 constexpr size_t NUM_TRANS_IN_UNIT = 249;
 constexpr size_t NUM_TRANS_X = 18;
 constexpr size_t NUM_TRANS_Y = 14;
-constexpr double TRANS_SIZE_MM = 10.16;
-constexpr double AUTD_WIDTH = 192.0;
-constexpr double AUTD_HEIGHT = 151.4;
+constexpr Float TRANS_SIZE_MM = ToFloat(10.16);
+constexpr Float AUTD_WIDTH = ToFloat(192.0);
+constexpr Float AUTD_HEIGHT = ToFloat(151.4);
+
+constexpr Float PI = ToFloat(M_PI);
+
 template <typename T>
 constexpr auto IsMissingTransducer(T x, T y) {
   return y == 1 && (x == 1 || x == 2 || x == 16);
@@ -29,5 +37,5 @@ constexpr auto ULTRASOUND_FREQUENCY = 40000;
 
 constexpr auto POINT_SEQ_BUFFER_SIZE_MAX = 40000;
 constexpr auto POINT_SEQ_CLK_IDX_MAX = 40000;
-constexpr double POINT_SEQ_BASE_FREQ = 40000.0;
+constexpr Float POINT_SEQ_BASE_FREQ = ToFloat(40000.0);
 }  // namespace autd

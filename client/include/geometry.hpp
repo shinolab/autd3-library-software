@@ -74,11 +74,11 @@ class Geometry {
   /**
    * @brief ultrasound wavelength
    */
-  virtual double wavelength() noexcept = 0;
+  virtual Float wavelength() noexcept = 0;
   /**
    * @brief set ultrasound wavelength
    */
-  virtual void set_wavelength(double wavelength) noexcept = 0;
+  virtual void set_wavelength(Float wavelength) noexcept = 0;
 
   /**
    * @brief Number of devices

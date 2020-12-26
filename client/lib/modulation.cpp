@@ -3,7 +3,7 @@
 // Created Date: 11/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -50,7 +50,7 @@ size_t& Modulation::sent() { return _sent; }
 #pragma endregion
 
 #pragma region SineModulation
-ModulationPtr SineModulation::Create(const int freq, const double amp, const double offset) {
+ModulationPtr SineModulation::Create(const int freq, const Float amp, const Float offset) {
   ModulationPtr mod = std::make_shared<SineModulation>(freq, amp, offset);
   return mod;
 }
@@ -68,10 +68,12 @@ void SineModulation::Build(const Configuration config) {
 
   this->buffer.resize(n, 0);
 
+  const auto offset = static_cast<double>(this->_offset);
+  const auto amp = static_cast<double>(this->_amp);
   for (size_t i = 0; i < n; i++) {
-    auto tamp = fmod(static_cast<double>(2 * rep * i) / static_cast<double>(n), 2.0);
+    auto tamp = fmod(static_cast<Float>(2 * rep * i) / static_cast<Float>(n), 2.0);
     tamp = tamp > 1.0 ? 2.0 - tamp : tamp;
-    tamp = std::clamp(this->_offset + (tamp - 0.5) * this->_amp, 0.0, 1.0);
+    tamp = std::clamp(offset + (tamp - 0.5) * amp, 0.0, 1.0);
     this->buffer.at(i) = static_cast<uint8_t>(tamp * 255.0);
   }
 }
@@ -125,7 +127,7 @@ void SawModulation::Build(const Configuration config) {
 #pragma endregion
 
 #pragma region RawPCMModulation
-ModulationPtr RawPCMModulation::Create(const std::string& filename, const double sampling_freq) {
+ModulationPtr RawPCMModulation::Create(const std::string& filename, const Float sampling_freq) {
   std::ifstream ifs;
   ifs.open(filename, std::ios::binary);
 
@@ -145,24 +147,26 @@ ModulationPtr RawPCMModulation::Create(const std::string& filename, const double
 
 auto RawPCMModulation::Build(const Configuration config) -> void {
   const auto mod_sf = static_cast<int32_t>(config.mod_sampling_freq());
-  if (this->_sampling_freq < std::numeric_limits<double>::epsilon()) this->_sampling_freq = static_cast<double>(mod_sf);
+  if (this->_sampling_freq < std::numeric_limits<Float>::epsilon()) this->_sampling_freq = static_cast<Float>(mod_sf);
 
+  const auto sampling_freq = static_cast<double>(this->_sampling_freq);
   // up sampling
   std::vector<double> sample_buf;
-  const auto freq_ratio = mod_sf / _sampling_freq;
+  const auto freq_ratio = mod_sf / sampling_freq;
   sample_buf.resize(this->_buf.size() * static_cast<size_t>(freq_ratio));
   for (size_t i = 0; i < sample_buf.size(); i++) {
     const auto v = static_cast<double>(i) / freq_ratio;
-    sample_buf.at(i) = fmod(v, 1.0) < 1 / freq_ratio ? this->_buf.at(static_cast<int>(v)) : 0.0;
+    const auto tmp = fmod(v, 1.0) < 1.0 / freq_ratio ? this->_buf.at(static_cast<int>(v)) : 0;
+    sample_buf.at(i) = static_cast<double>(tmp);
   }
 
   // LPF
   const auto num_tap = 31;
-  const auto cutoff = _sampling_freq / 2 / mod_sf;
+  const auto cutoff = sampling_freq / 2.0 / mod_sf;
   std::vector<double> lpf(num_tap);
   for (auto i = 0; i < num_tap; i++) {
-    const auto t = i - num_tap / 2.0;
-    lpf.at(i) = Sinc(t * cutoff * 2.0);
+    const auto t = i - num_tap / 2;
+    lpf.at(i) = Sinc(t * cutoff * 2);
   }
 
   auto max_v = std::numeric_limits<double>::min();
@@ -180,7 +184,7 @@ auto RawPCMModulation::Build(const Configuration config) -> void {
   if (max_v - min_v < std::numeric_limits<double>::epsilon()) max_v = min_v + 1;
   this->buffer.resize(lpf_buf.size(), 0);
   for (size_t i = 0; i < lpf_buf.size(); i++) {
-    this->buffer.at(i) = static_cast<uint8_t>(round(255.0 * (lpf_buf.at(i) - min_v) / (max_v - min_v)));
+    this->buffer.at(i) = static_cast<uint8_t>(round(255 * ((lpf_buf.at(i) - min_v) / (max_v - min_v))));
   }
 }
 #pragma endregion
@@ -260,7 +264,7 @@ void WavModulation::Build(const Configuration config) {
 
   // down sampling
   std::vector<uint8_t> sample_buf;
-  const auto freq_ratio = static_cast<double>(mod_sf) / _sampling_freq;
+  const auto freq_ratio = mod_sf / static_cast<double>(_sampling_freq);
   auto buffer_size = static_cast<size_t>(static_cast<double>(this->_buf.size()) * freq_ratio);
   if (buffer_size > mod_buf_size) {
     const auto mod_play_length_max = mod_buf_size / mod_sf;

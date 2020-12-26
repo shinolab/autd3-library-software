@@ -35,8 +35,13 @@
 namespace autd {
 
 #ifdef USE_EIGEN_AUTD
+#ifdef USE_DOUBLE_AUTD
 using Vector3 = Eigen::Vector3d;
 using Quaternion = Eigen::Quaterniond;
+#else
+using Vector3 = Eigen::Vector3f;
+using Quaternion = Eigen::Quaternionf;
+#endif
 #else
 using utils::Quaternion;
 using utils::Vector3;
