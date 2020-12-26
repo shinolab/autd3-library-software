@@ -21,8 +21,8 @@
 #include <vector>
 
 #include "controller_impl.hpp"
+#include "core.hpp"
 #include "firmware_version.hpp"
-#include "geometry.hpp"
 #include "link.hpp"
 #include "sequence.hpp"
 #include "timer.hpp"
@@ -235,9 +235,9 @@ class AUTDControllerStm {
     }
   }
 
-  void Start(const double freq) {
+  void Start(const Float freq) {
     auto len = this->_stm_gains.size();
-    const auto interval_us = static_cast<int>(1000000. / freq / static_cast<double>(len));
+    const auto interval_us = static_cast<int>(1000000. / static_cast<double>(freq) / static_cast<double>(len));
     this->_p_stm_timer->SetInterval(interval_us);
 
     const auto current_size = this->_stm_bodies.size();
@@ -351,7 +351,7 @@ void AUTDController::AppendModulationSync(const ModulationPtr mod) { this->_sync
 
 void AUTDController::AppendSTMGain(const GainPtr gain) { this->_stm_cnt->AppendGain(gain); }
 void AUTDController::AppendSTMGain(const std::vector<GainPtr>& gain_list) { this->_stm_cnt->AppendGain(gain_list); }
-void AUTDController::StartSTModulation(const double freq) { this->_stm_cnt->Start(freq); }
+void AUTDController::StartSTModulation(const Float freq) { this->_stm_cnt->Start(freq); }
 void AUTDController::StopSTModulation() {
   this->_stm_cnt->Stop();
   this->Stop();

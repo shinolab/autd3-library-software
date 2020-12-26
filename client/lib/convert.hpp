@@ -11,17 +11,17 @@
 
 #pragma once
 
-#include <vector>
-
 #if WIN32
 #include <codeanalysis/warnings.h>  // NOLINT
 #pragma warning(push)
 #pragma warning(disable : ALL_CODE_ANALYSIS_WARNINGS)
 #endif
-#include <Eigen/Geometry>
+#include <Eigen/Eigen>
 #if WIN32
 #pragma warning(pop)
 #endif
+
+#include <vector>
 
 #include "core.hpp"
 #include "quaternion.hpp"
@@ -41,10 +41,19 @@ inline const Vector3& ConvertToEigen(const Vector3& v) { return v; }
 inline Vector3 ConvertToEigen(const utils::Vector3& v) { return Vector3(v.x(), v.y(), v.z()); }
 inline Quaternion ConvertToEigen(const utils::Quaternion& q) { return Quaternion(q.w(), q.x(), q.y(), q.z()); }
 #else
+#if WIN32
+#include <codeanalysis/warnings.h>  // NOLINT
+#pragma warning(push)
+#pragma warning(disable : ALL_CODE_ANALYSIS_WARNINGS)
+#endif
+#include <Eigen/Eigen>
+#if WIN32
+#pragma warning(pop)
+#endif
 inline const Vector3& Convert(const Vector3& v) { return v; }
-inline Vector3 Convert(Eigen::Vector3d v) { return Vector3(v.x(), v.y(), v.z()); }
+inline Vector3 Convert(Eigen::Matrix<Float, 3, 1> v) { return Vector3(v.x(), v.y(), v.z()); }
 inline std::vector<Vector3> Convert(const std::vector<Vector3>& vin) { return vin; }
-inline Eigen::Vector3d ConvertToEigen(const Vector3& v) { return Eigen::Vector3d(v.x(), v.y(), v.z()); }
-inline Eigen::Quaterniond ConvertToEigen(const Quaternion& q) { return Eigen::Quaterniond(q.w(), q.x(), q.y(), q.z()); }
+inline Eigen::Matrix<Float, 3, 1> ConvertToEigen(const Vector3& v) { return Eigen::Matrix<Float, 3, 1>(v.x(), v.y(), v.z()); }
+inline Eigen::Quaternion<Float> ConvertToEigen(const Quaternion& q) { return Eigen::Quaternion<Float>(q.w(), q.x(), q.y(), q.z()); }
 #endif
 }  // namespace autd

@@ -9,21 +9,22 @@
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
 //
 
-#include <map>
-
 #if WIN32
 #include <codeanalysis/warnings.h>  // NOLINT
 #pragma warning(push)
 #pragma warning(disable : ALL_CODE_ANALYSIS_WARNINGS)
 #endif
-#include <Eigen/Geometry>
+#include <Eigen/Eigen>
 #if WIN32
 #pragma warning(pop)
 #endif
 
+#include <map>
+
 #include "autd3.hpp"
 #include "autd_logic.hpp"
 #include "convert.hpp"
+#include "geometry.hpp"
 #include "vector3.hpp"
 
 using autd::IsMissingTransducer;
@@ -33,39 +34,47 @@ using autd::NUM_TRANS_Y;
 using autd::TRANS_SIZE_MM;
 
 namespace autd {
+#ifdef USE_DOUBLE_AUTD
+using EVector3 = Eigen::Vector3d;
+using EQuaternion = Eigen::Quaterniond;
+#else
+using EVector3 = Eigen::Vector3f;
+using EQuaternion = Eigen::Quaternionf;
+#endif
+
 struct Device {
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  static Device Create(const Eigen::Vector3d& position, const Eigen::Quaterniond& quaternion) {
-    const Eigen::Affine3d transform_matrix = Eigen::Translation3d(position) * quaternion;
-    const auto x_direction = quaternion * Eigen::Vector3d(1, 0, 0);
-    const auto y_direction = quaternion * Eigen::Vector3d(0, 1, 0);
-    const auto z_direction = quaternion * Eigen::Vector3d(0, 0, 1);
+  static Device Create(const EVector3& position, const EQuaternion& quaternion) {
+    const Eigen::Transform<Float, 3, Eigen::Affine> transform_matrix = Eigen::Translation<Float, 3>(position) * quaternion;
+    const auto x_direction = quaternion * EVector3(1, 0, 0);
+    const auto y_direction = quaternion * EVector3(0, 1, 0);
+    const auto z_direction = quaternion * EVector3(0, 0, 1);
 
-    Eigen::Matrix<double, 3, NUM_TRANS_IN_UNIT> local_trans_positions;
+    Eigen::Matrix<Float, 3, NUM_TRANS_IN_UNIT> local_trans_positions;
 
     auto index = 0;
     for (size_t y = 0; y < NUM_TRANS_Y; y++)
       for (size_t x = 0; x < NUM_TRANS_X; x++)
         if (!IsMissingTransducer(x, y))
-          local_trans_positions.col(index++) = Eigen::Vector3d(static_cast<double>(x) * TRANS_SIZE_MM, static_cast<double>(y) * TRANS_SIZE_MM, 0);
+          local_trans_positions.col(index++) = EVector3(static_cast<Float>(x) * TRANS_SIZE_MM, static_cast<Float>(y) * TRANS_SIZE_MM, 0);
 
     const auto global_trans_positions = transform_matrix * local_trans_positions;
 
     return Device{x_direction, y_direction, z_direction, global_trans_positions};
   }
 
-  static Device Create(const Eigen::Vector3d& position, Eigen::Vector3d euler_angles) {
-    const auto quaternion = Eigen::AngleAxis<double>(euler_angles.x(), Eigen::Vector3d::UnitZ()) *
-                            Eigen::AngleAxis<double>(euler_angles.y(), Eigen::Vector3d::UnitY()) *
-                            Eigen::AngleAxis<double>(euler_angles.z(), Eigen::Vector3d::UnitZ());
+  static Device Create(const EVector3& position, const EVector3& euler_angles) {
+    const auto quaternion = Eigen::AngleAxis<Float>(euler_angles.x(), EVector3::UnitZ()) *
+                            Eigen::AngleAxis<Float>(euler_angles.y(), EVector3::UnitY()) *
+                            Eigen::AngleAxis<Float>(euler_angles.z(), EVector3::UnitZ());
 
     return Create(position, quaternion);
   }
 
-  Eigen::Vector3d x_direction;
-  Eigen::Vector3d y_direction;
-  Eigen::Vector3d z_direction;
-  Eigen::Matrix<double, 3, NUM_TRANS_IN_UNIT> global_trans_positions;
+  EVector3 x_direction;
+  EVector3 y_direction;
+  EVector3 z_direction;
+  Eigen::Matrix<Float, 3, NUM_TRANS_IN_UNIT> global_trans_positions;
 };
 
 class AUTDGeometry final : public Geometry {
@@ -84,8 +93,8 @@ class AUTDGeometry final : public Geometry {
   size_t AddDeviceQuaternion(Vector3 position, Quaternion quaternion, size_t group = 0) override;
 #endif
 
-  double wavelength() noexcept override;
-  void set_wavelength(double wavelength) noexcept override;
+  Float wavelength() noexcept override;
+  void set_wavelength(Float wavelength) noexcept override;
 
   size_t num_devices() noexcept override;
   size_t num_transducers() noexcept override;
@@ -105,7 +114,7 @@ class AUTDGeometry final : public Geometry {
  private:
   std::vector<Device> _devices;
   std::map<size_t, size_t> _group_map;
-  double _wavelength;
+  Float _wavelength;
 };
 
 GeometryPtr Geometry::Create() { return std::make_shared<AUTDGeometry>(); }
@@ -138,8 +147,8 @@ size_t AUTDGeometry::AddDeviceQuaternion(const Vector3 position, const Quaternio
 }
 #endif
 
-double AUTDGeometry::wavelength() noexcept { return this->_wavelength; }
-void AUTDGeometry::set_wavelength(const double wavelength) noexcept { this->_wavelength = wavelength; }
+Float AUTDGeometry::wavelength() noexcept { return this->_wavelength; }
+void AUTDGeometry::set_wavelength(const Float wavelength) noexcept { this->_wavelength = wavelength; }
 
 size_t AUTDGeometry::num_devices() noexcept { return this->_devices.size(); }
 
@@ -154,7 +163,7 @@ Vector3 AUTDGeometry::position(const size_t global_transducer_idx) {
 
 Vector3 AUTDGeometry::position(const size_t device, const size_t local_transducer_idx) {
   const auto& dev = this->_devices[device];
-  const Eigen::Vector3d pos = dev.global_trans_positions.col(local_transducer_idx);
+  const auto pos = dev.global_trans_positions.col(local_transducer_idx);
   return Convert(pos);
 }
 

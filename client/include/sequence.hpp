@@ -83,21 +83,21 @@ class PointSequence {
    * 1. The maximum number of control points is 40000.
    * 2. the sampling interval of Control Points is an integer multiple of 25us.
    * 3. (number of Control Points) x (sampling interval) must be less than or equal 1 second.
-   * @return double Actual frequency of sequence
+   * @return Float Actual frequency of sequence
    */
-  double SetFrequency(double freq);
+  Float SetFrequency(Float freq);
   /**
-   * @return double Frequency of sequence
+   * @return Float Frequency of sequence
    */
-  [[nodiscard]] double frequency() const;
+  [[nodiscard]] Float frequency() const;
   /**
    * The sampling period is limited to an integer multiple of 25us. Therefore, the sampling frequency is 40kHz/N.
-   * @return double Sampling frequency of sequence
+   * @return Float Sampling frequency of sequence
    */
-  [[nodiscard]] double sampling_frequency() const;
+  [[nodiscard]] Float sampling_frequency() const;
   /**
    * The sampling frequency division means the "(sampling period)/25us".
-   * @return double Sampling frequency division
+   * @return Float Sampling frequency division
    */
   [[nodiscard]] uint16_t sampling_frequency_division() const;
 
@@ -122,7 +122,7 @@ class CircumSeq : PointSequence {
    * @param[in] radius Radius of the circumference
    * @param[in] n Number of the control points
    */
-  static SequencePtr Create(const utils::Vector3& center, const utils::Vector3& normal, double radius, size_t n);
+  static SequencePtr Create(const utils::Vector3& center, const utils::Vector3& normal, Float radius, size_t n);
 #ifdef USE_EIGEN_AUTD
   /**
    * @brief Generate PointSequence with control points on a circumference.
@@ -131,7 +131,7 @@ class CircumSeq : PointSequence {
    * @param[in] radius Radius of the circumference
    * @param[in] n Number of the control points
    */
-  static SequencePtr Create(const Vector3& center, const Vector3& normal, double radius, size_t n);
+  static SequencePtr Create(const Vector3& center, const Vector3& normal, Float radius, size_t n);
 #endif
 };
 }  // namespace sequence

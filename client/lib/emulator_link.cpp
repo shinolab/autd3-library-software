@@ -83,7 +83,7 @@ bool EmulatorLink::is_open() { return _is_open; }
 
 void EmulatorLink::SetGeometry() {
   auto geometry = this->_geometry;
-  const auto vec_size = 3 * sizeof(Vector3) / sizeof(double) * sizeof(float);
+  const auto vec_size = 3 * sizeof(Vector3) / sizeof(Float) * sizeof(float);
   const auto size = geometry->num_devices() * vec_size + sizeof(float);
   auto buf = std::make_unique<uint8_t[]>(size);
   float header{};
