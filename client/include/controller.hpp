@@ -11,12 +11,10 @@
 
 #pragma once
 
-#include <array>
 #include <memory>
 #include <vector>
 
 #include "configuration.hpp"
-#include "gain.hpp"
 #include "geometry.hpp"
 #include "modulation.hpp"
 

@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -13,7 +13,6 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "core.hpp"
 #include "link.hpp"
@@ -50,8 +49,8 @@ class TwinCATLink : public Link {
 
   void Open() override = 0;
   void Close() override = 0;
-  void Send(size_t size, std::unique_ptr<uint8_t[]> buf) override = 0;
-  std::vector<uint8_t> Read(uint32_t buffer_len) override = 0;
+  std::optional<int32_t> Send(size_t size, std::unique_ptr<uint8_t[]> buf) override = 0;
+  std::optional<int32_t> Read(uint8_t* rx, uint32_t buffer_len) override = 0;
   bool is_open() override = 0;
 };
 
@@ -73,8 +72,8 @@ class LocalTwinCATLink : public Link {
 
   void Open() override = 0;
   void Close() override = 0;
-  void Send(size_t size, std::unique_ptr<uint8_t[]> buf) override = 0;
-  std::vector<uint8_t> Read(uint32_t buffer_len) override = 0;
+  std::optional<int32_t> Send(size_t size, std::unique_ptr<uint8_t[]> buf) override = 0;
+  std::optional<int32_t> Read(uint8_t* rx, uint32_t buffer_len) override = 0;
   bool is_open() override = 0;
 };
 }  // namespace autd::link

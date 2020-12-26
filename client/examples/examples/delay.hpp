@@ -16,6 +16,7 @@
 using autd::NUM_TRANS_X;
 using autd::NUM_TRANS_Y;
 using autd::TRANS_SIZE_MM;
+using autd::AUTDDataArray;
 
 class BurstModulation final : public autd::modulation::Modulation {
  public:

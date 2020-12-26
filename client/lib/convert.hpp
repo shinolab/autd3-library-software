@@ -41,10 +41,10 @@ inline const Vector3& ConvertToEigen(const Vector3& v) { return v; }
 inline Vector3 ConvertToEigen(const utils::Vector3& v) { return Vector3(v.x(), v.y(), v.z()); }
 inline Quaternion ConvertToEigen(const utils::Quaternion& q) { return Quaternion(q.w(), q.x(), q.y(), q.z()); }
 #else
-inline Vector3 Convert(utils::Vector3 v) { return v; }
+inline const Vector3& Convert(const Vector3& v) { return v; }
 inline Vector3 Convert(Eigen::Vector3d v) { return Vector3(v.x(), v.y(), v.z()); }
-inline std::vector<Vector3> Convert(const std::vector<utils::Vector3>& vin) { return vin; }
-inline Eigen::Vector3d ConvertToEigen(const utils::Vector3& v) { return Eigen::Vector3d(v.x(), v.y(), v.z()); }
-inline Eigen::Quaterniond ConvertToEigen(const utils::Quaternion& q) { return Eigen::Quaterniond(q.w(), q.x(), q.y(), q.z()); }
+inline std::vector<Vector3> Convert(const std::vector<Vector3>& vin) { return vin; }
+inline Eigen::Vector3d ConvertToEigen(const Vector3& v) { return Eigen::Vector3d(v.x(), v.y(), v.z()); }
+inline Eigen::Quaterniond ConvertToEigen(const Quaternion& q) { return Eigen::Quaterniond(q.w(), q.x(), q.y(), q.z()); }
 #endif
 }  // namespace autd

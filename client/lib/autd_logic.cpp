@@ -107,17 +107,16 @@ bool AUTDLogic::SendBlocking(const size_t size, unique_ptr<uint8_t[]> data, cons
   return this->WaitMsgProcessed(msg_id, trial, 0xFF);
 }
 
-void AUTDLogic::SendData(const size_t size, unique_ptr<uint8_t[]> data) {
+void AUTDLogic::SendData(const size_t size, unique_ptr<uint8_t[]> data) const {
   if (this->_link == nullptr || !this->_link->is_open()) {
     return;
   }
 
-  try {
-    this->_link->Send(size, move(data));
-  } catch (const int err_num) {
+  auto res = this->_link->Send(size, move(data));
+  if (res.has_value()) {
+    const auto err = res.value();
     this->_link->Close();
-    this->_link = nullptr;
-    std::cerr << err_num << "Link closed." << std::endl;
+    std::cerr << "can't send data. Link closed (" << err << ")\n";
   }
 }
 
@@ -128,8 +127,15 @@ bool AUTDLogic::WaitMsgProcessed(const uint8_t msg_id, const size_t max_trial, c
 
   const auto num_dev = this->_geometry->num_devices();
   const auto buffer_len = num_dev * EC_INPUT_FRAME_SIZE;
+  _rx_data.resize(buffer_len);
   for (size_t i = 0; i < max_trial; i++) {
-    _rx_data = this->_link->Read(static_cast<uint32_t>(buffer_len));
+    auto res = this->_link->Read(&_rx_data[0], static_cast<uint32_t>(buffer_len));
+    if (res.has_value()) {
+      this->Close();
+      const auto err = res.value();
+      std::cerr << "can't read data. Link closed (" << err << ")\n";
+      return false;
+    }
     size_t processed = 0;
     for (size_t dev = 0; dev < num_dev; dev++) {
       const uint8_t proc_id = _rx_data[dev * 2 + 1] & mask;
