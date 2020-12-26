@@ -3,7 +3,7 @@
 // Created Date: 27/02/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -35,15 +35,15 @@ class Vector3 {
   [[nodiscard]] double x() const noexcept { return _x; }
   [[nodiscard]] double y() const noexcept { return _y; }
   [[nodiscard]] double z() const noexcept { return _z; }
-  [[nodiscard]] double l2_norm_squared() const { return _x * _x + _y * _y + _z * _z; }
-  [[nodiscard]] double l2_norm() const { return std::sqrt(l2_norm_squared()); }
+  [[nodiscard]] double norm_squared() const { return _x * _x + _y * _y + _z * _z; }
+  [[nodiscard]] double norm() const { return std::sqrt(norm_squared()); }
 
-  static Vector3 unit_x() noexcept { return Vector3(1, 0, 0); }
-  static Vector3 unit_y() noexcept { return Vector3(0, 1, 0); }
-  static Vector3 unit_z() noexcept { return Vector3(0, 0, 1); }
-  static Vector3 zero() noexcept { return Vector3(0, 0, 0); }
+  static Vector3 UnitX() noexcept { return Vector3(1, 0, 0); }
+  static Vector3 UnitY() noexcept { return Vector3(0, 1, 0); }
+  static Vector3 UnitZ() noexcept { return Vector3(0, 0, 1); }
+  static Vector3 Zero() noexcept { return Vector3(0, 0, 0); }
 
-  [[nodiscard]] Vector3 normalized() const { return *this / this->l2_norm(); }
+  [[nodiscard]] Vector3 normalized() const { return *this / this->norm(); }
 
   [[nodiscard]] double dot(const Vector3& rhs) const { return _x * rhs._x + _y * rhs._y + _z * rhs._z; }
   [[nodiscard]] Vector3 cross(const Vector3& rhs) const {
@@ -51,7 +51,7 @@ class Vector3 {
   }
 
   [[nodiscard]] double angle(const Vector3& v) const {
-    const auto cos = this->dot(v) / (this->l2_norm() * v.l2_norm());
+    const auto cos = this->dot(v) / (this->norm() * v.norm());
     if (cos > 1) {
       return 0.0;
     }

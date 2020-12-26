@@ -11,7 +11,7 @@
 
 #include "gain.hpp"
 
-#include <cassert>
+//#include <cassert>
 #include <iostream>
 #include <vector>
 
@@ -49,12 +49,12 @@ void Gain::SetGeometry(const GeometryPtr& geometry) noexcept { this->_geometry =
 
 std::vector<AUTDDataArray>& Gain::data() { return this->_data; }
 
-GainPtr PlaneWaveGain::Create(const Vector3 direction, const double amp) {
+GainPtr PlaneWaveGain::Create(const Vector3& direction, const double amp) {
   const auto d = AdjustAmp(amp);
   return Create(direction, d);
 }
 
-GainPtr PlaneWaveGain::Create(const Vector3 direction, const uint8_t duty) {
+GainPtr PlaneWaveGain::Create(const Vector3& direction, uint8_t duty) {
   GainPtr ptr = std::make_shared<PlaneWaveGain>(direction, duty);
   return ptr;
 }
@@ -81,12 +81,22 @@ void PlaneWaveGain::Build() {
   this->_built = true;
 }
 
-GainPtr FocalPointGain::Create(const Vector3 point, const double amp) {
+GainPtr FocalPointGain::Create(const utils::Vector3& point, const double amp) {
   const auto d = AdjustAmp(amp);
   return Create(point, d);
 }
 
-GainPtr FocalPointGain::Create(Vector3 point, uint8_t duty) {
+GainPtr FocalPointGain::Create(const utils::Vector3& point, uint8_t duty) {
+  GainPtr gain = std::make_shared<FocalPointGain>(point, duty);
+  return gain;
+}
+
+GainPtr FocalPointGain::Create(const Vector3& point, const double amp) {
+  const auto d = AdjustAmp(amp);
+  return Create(point, d);
+}
+
+GainPtr FocalPointGain::Create(const Vector3& point, uint8_t duty) {
   GainPtr gain = std::make_shared<FocalPointGain>(point, duty);
   return gain;
 }
@@ -101,7 +111,7 @@ void FocalPointGain::Build() {
   const uint16_t duty = static_cast<uint16_t>(this->_duty) << 8 & 0xFF00;
   for (size_t i = 0; i < geometry->num_transducers(); i++) {
     const auto trp = geometry->position(i);
-    const auto dist = (trp - this->_point).l2_norm();
+    const auto dist = (trp - this->_point).norm();
     const auto f_phase = fmod(dist, ULTRASOUND_WAVELENGTH) / ULTRASOUND_WAVELENGTH;
     const auto phase = static_cast<uint16_t>(round(255.0 * (1.0 - f_phase)));
     this->_data[geometry->device_idx_for_trans_idx(i)][i % NUM_TRANS_IN_UNIT] = duty | phase;
@@ -110,12 +120,12 @@ void FocalPointGain::Build() {
   this->_built = true;
 }
 
-GainPtr BesselBeamGain::Create(const Vector3 point, const Vector3 vec_n, const double theta_z, const double amp) {
+GainPtr BesselBeamGain::Create(const Vector3& point, const Vector3& vec_n, const double theta_z, const double amp) {
   const auto duty = AdjustAmp(amp);
   return Create(point, vec_n, theta_z, duty);
 }
 
-GainPtr BesselBeamGain::Create(Vector3 point, Vector3 vec_n, double theta_z, uint8_t duty) {
+GainPtr BesselBeamGain::Create(const Vector3& point, const Vector3& vec_n, double theta_z, uint8_t duty) {
   GainPtr gain = std::make_shared<BesselBeamGain>(point, vec_n, theta_z, duty);
   return gain;
 }
@@ -126,10 +136,10 @@ void BesselBeamGain::Build() {
 
   CheckAndInit(geometry, &this->_data);
 
-  if (_vec_n.l2_norm() > 0) _vec_n = _vec_n.normalized();
+  if (_vec_n.norm() > 0) _vec_n = _vec_n.normalized();
   const Vector3 v(_vec_n.y(), -_vec_n.x(), 0.);
 
-  const auto theta_w = asin(v.l2_norm());
+  const auto theta_w = asin(v.norm());
 
   const uint16_t duty = static_cast<uint16_t>(this->_duty) << 8 & 0xFF00;
   for (size_t i = 0; i < geometry->num_transducers(); i++) {

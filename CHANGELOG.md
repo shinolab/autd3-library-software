@@ -1,6 +1,7 @@
 # 0.8.0
 * Delete backward compatibility
 * Delete `Geometry::DelDevice()` and `Geometry::deviceIdForDeviceIdx()`
+* Delete `Controller::LateralModulationAT()`
 * Rename some functions to unify the naming
 * Add `DebugLink`
 * Add `SetDelay`

@@ -3,7 +3,7 @@
 // Created Date: 01/07/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -11,7 +11,11 @@
 
 #include "sequence.hpp"
 
+#define _USE_MATH_DEFINES  // NOLINT
+#include <math.h>
+
 #include <algorithm>
+#include <cmath>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -33,7 +37,7 @@ SequencePtr PointSequence::Create(std::vector<Vector3> control_points) noexcept 
   return ptr;
 }
 
-void PointSequence::AppendPoint(const Vector3 point) {
+void PointSequence::AppendPoint(const Vector3& point) {
   if (this->_control_points.size() + 1 > POINT_SEQ_BUFFER_SIZE_MAX)
     throw std::runtime_error("Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX) + ".");
 
@@ -74,15 +78,17 @@ size_t& PointSequence::sent() { return _sent; }
 
 uint16_t PointSequence::sampling_frequency_division() const { return this->_sampling_freq_div; }
 
-static Vector3 GetOrthogonal(const Vector3 v) {
-  auto a = Vector3::unit_x();
-  if (v.angle(a) < M_PI / 2.0) {
-    a = Vector3::unit_y();
+static Vector3 GetOrthogonal(const Vector3& v) {
+  const auto a = Vector3::UnitX();
+  if (acos(v.dot(a)) < M_PI / 2.0) {
+    const auto b = Vector3::UnitY();
+    return v.cross(b);
   }
+
   return v.cross(a);
 }
 
-SequencePtr CircumSeq::Create(const Vector3 center, Vector3 normal, const double radius, const size_t n) {
+SequencePtr CircumSeq::Create(const Vector3& center, Vector3 normal, const double radius, const size_t n) {
   normal = normal.normalized();
   const auto n1 = GetOrthogonal(normal).normalized();
   const auto n2 = normal.cross(n1).normalized();
@@ -92,7 +98,7 @@ SequencePtr CircumSeq::Create(const Vector3 center, Vector3 normal, const double
     const auto theta = 2.0 * M_PI / static_cast<double>(n) * static_cast<double>(i);
     auto x = n1 * radius * cos(theta);
     auto y = n2 * radius * sin(theta);
-    control_points.push_back(center + x + y);
+    control_points.emplace_back(center + x + y);
   }
   return PointSequence::Create(control_points);
 }

@@ -3,7 +3,7 @@
 // Created Date: 07/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -32,5 +32,4 @@ constexpr auto POINT_SEQ_BUFFER_SIZE_MAX = 40000;
 constexpr auto POINT_SEQ_CLK_IDX_MAX = 40000;
 constexpr double POINT_SEQ_BASE_FREQ = 40000.0;
 constexpr double FIXED_NUM_UNIT = ULTRASOUND_WAVELENGTH / 256.0;
-
 }  // namespace autd
