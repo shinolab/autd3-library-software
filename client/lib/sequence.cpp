@@ -21,6 +21,7 @@
 #include <utility>
 
 #include "consts.hpp"
+#include "convert.hpp"
 #include "vector3.hpp"
 
 namespace autd::sequence {
@@ -31,25 +32,44 @@ PointSequence::PointSequence() noexcept {
 
 SequencePtr PointSequence::Create() noexcept { return std::make_shared<PointSequence>(); }
 
-SequencePtr PointSequence::Create(std::vector<Vector3> control_points) noexcept {
+SequencePtr PointSequence::Create(const std::vector<utils::Vector3>& control_points) noexcept {
+  auto ptr = std::make_shared<PointSequence>();
+  ptr->_control_points = Convert(control_points);
+  return ptr;
+}
+
+void PointSequence::AppendPoint(const utils::Vector3& point) {
+  if (this->_control_points.size() + 1 > POINT_SEQ_BUFFER_SIZE_MAX)
+    throw std::runtime_error("Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX) + ".");
+
+  this->_control_points.emplace_back(Convert(point));
+}
+void PointSequence::AppendPoints(const std::vector<utils::Vector3>& points) {
+  if (this->_control_points.size() + points.size() > POINT_SEQ_BUFFER_SIZE_MAX)
+    throw std::runtime_error("Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX) + ".");
+  this->_control_points.reserve(this->_control_points.size() + points.size());
+  for (auto& p : points) {
+    this->_control_points.emplace_back(Convert(p));
+  }
+}
+#ifdef USE_EIGEN_AUTD
+SequencePtr PointSequence::Create(const std::vector<Vector3>& control_points) noexcept {
   auto ptr = std::make_shared<PointSequence>();
   ptr->_control_points = std::move(control_points);
   return ptr;
 }
-
 void PointSequence::AppendPoint(const Vector3& point) {
   if (this->_control_points.size() + 1 > POINT_SEQ_BUFFER_SIZE_MAX)
     throw std::runtime_error("Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX) + ".");
-
   this->_control_points.push_back(point);
 }
-
-void PointSequence::AppendPoints(std::vector<Vector3> points) {
+void PointSequence::AppendPoints(const std::vector<Vector3>& points) {
   if (this->_control_points.size() + points.size() > POINT_SEQ_BUFFER_SIZE_MAX)
     throw std::runtime_error("Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX) + ".");
   this->_control_points.reserve(this->_control_points.size() + points.size());
   this->_control_points.insert(std::end(this->_control_points), std::begin(points), std::end(points));
 }
+#endif
 
 std::vector<Vector3> PointSequence::control_points() const { return this->_control_points; }
 
@@ -88,10 +108,10 @@ static Vector3 GetOrthogonal(const Vector3& v) {
   return v.cross(a);
 }
 
-SequencePtr CircumSeq::Create(const Vector3& center, Vector3 normal, const double radius, const size_t n) {
-  normal = normal.normalized();
-  const auto n1 = GetOrthogonal(normal).normalized();
-  const auto n2 = normal.cross(n1).normalized();
+SequencePtr CreateImpl(const Vector3& center, const Vector3& normal, const double radius, const size_t n) {
+  const auto normal_ = normal.normalized();
+  const auto n1 = GetOrthogonal(normal_).normalized();
+  const auto n2 = normal_.cross(n1).normalized();
 
   std::vector<Vector3> control_points;
   for (size_t i = 0; i < n; i++) {
@@ -102,4 +122,14 @@ SequencePtr CircumSeq::Create(const Vector3& center, Vector3 normal, const doubl
   }
   return PointSequence::Create(control_points);
 }
+
+SequencePtr CircumSeq::Create(const utils::Vector3& center, const utils::Vector3& normal, const double radius, const size_t n) {
+  return CreateImpl(Convert(center), Convert(normal), radius, n);
+}
+
+#ifdef USE_EIGEN_AUTD
+SequencePtr CircumSeq::Create(const Vector3& center, const Vector3& normal, const double radius, const size_t n) {
+  return CreateImpl(center, normal, radius, n);
+}
+#endif
 }  // namespace autd::sequence

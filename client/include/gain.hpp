@@ -95,6 +95,19 @@ class PlaneWaveGain final : public Gain {
    * @param[in] direction wave direction
    * @param[in] duty duty ratio of driving signal
    */
+  static GainPtr Create(const utils::Vector3& direction, uint8_t duty = 0xff);
+  /**
+   * @brief Generate function
+   * @param[in] direction wave direction
+   * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
+   */
+  static GainPtr Create(const utils::Vector3& direction, double amp);
+#ifdef USE_EIGEN_AUTD
+  /**
+   * @brief Generate function
+   * @param[in] direction wave direction
+   * @param[in] duty duty ratio of driving signal
+   */
   static GainPtr Create(const Vector3& direction, uint8_t duty = 0xff);
   /**
    * @brief Generate function
@@ -102,6 +115,8 @@ class PlaneWaveGain final : public Gain {
    * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
    */
   static GainPtr Create(const Vector3& direction, double amp);
+#endif
+
   void Build() override;
   explicit PlaneWaveGain(Vector3 direction, const uint8_t duty) : Gain(), _direction(std::move(direction)), _duty(duty) {}
   ~PlaneWaveGain() override = default;
@@ -173,6 +188,24 @@ class BesselBeamGain final : public Gain {
    * @param[in] theta_z angle between the conical wavefront of the beam and the direction
    * @param[in] duty duty ratio of driving signal
    */
+  static GainPtr Create(const utils::Vector3& point, const utils::Vector3& vec_n, double theta_z, uint8_t duty = 0xff);
+  /**
+   * @brief Generate function
+   * @param[in] point start point of the beam
+   * @param[in] vec_n direction of the beam
+   * @param[in] theta_z angle between the conical wavefront of the beam and the direction
+   * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
+   */
+  static GainPtr Create(const utils::Vector3& point, const utils::Vector3& vec_n, double theta_z, double amp);
+
+#ifdef USE_EIGEN_AUTD
+  /**
+   * @brief Generate function
+   * @param[in] point start point of the beam
+   * @param[in] vec_n direction of the beam
+   * @param[in] theta_z angle between the conical wavefront of the beam and the direction
+   * @param[in] duty duty ratio of driving signal
+   */
   static GainPtr Create(const Vector3& point, const Vector3& vec_n, double theta_z, uint8_t duty = 0xff);
   /**
    * @brief Generate function
@@ -182,6 +215,8 @@ class BesselBeamGain final : public Gain {
    * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
    */
   static GainPtr Create(const Vector3& point, const Vector3& vec_n, double theta_z, double amp);
+#endif
+
   void Build() override;
   explicit BesselBeamGain(Vector3 point, Vector3 vec_n, const double theta_z, const uint8_t duty)
       : Gain(), _point(std::move(point)), _vec_n(std::move(vec_n)), _theta_z(theta_z), _duty(duty) {}
@@ -302,8 +337,20 @@ class HoloGain final : public Gain {
    * @param[in] method optimization method. see also @ref OptMethod
    * @param[in] params pointer to optimization parameters
    */
+  static GainPtr Create(const std::vector<utils::Vector3>& foci, const std::vector<double>& amps, OPT_METHOD method = OPT_METHOD::SDP,
+                        void* params = nullptr);
+#ifdef USE_EIGEN_AUTD
+  /**
+   * @brief Generate function
+   * @param[in] foci focal points
+   * @param[in] amps amplitudes of the foci
+   * @param[in] method optimization method. see also @ref OptMethod
+   * @param[in] params pointer to optimization parameters
+   */
   static GainPtr Create(const std::vector<Vector3>& foci, const std::vector<double>& amps, OPT_METHOD method = OPT_METHOD::SDP,
                         void* params = nullptr);
+#endif
+
   void Build() override;
   HoloGain(std::vector<Vector3> foci, std::vector<double> amps, const OPT_METHOD method = OPT_METHOD::SDP, void* params = nullptr)
       : Gain(), _foci(std::move(foci)), _amps(std::move(amps)), _method(method), _params(params) {}
