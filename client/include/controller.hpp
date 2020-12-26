@@ -79,7 +79,7 @@ class Controller {
   virtual bool Clear() = 0;
   /**
    * @brief Set output delay
-   * @param[in] delay delay for each transducer
+   * @param[in] delay delay for each transducer in units of ultrasound period (i.e. 25us)
    */
   virtual void SetDelay(const std::vector<AUTDDataArray>& delay) = 0;
   /**
