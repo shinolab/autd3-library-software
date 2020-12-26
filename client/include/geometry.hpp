@@ -70,6 +70,16 @@ class Geometry {
    */
   virtual size_t AddDeviceQuaternion(Vector3 position, Quaternion quaternion, size_t group = 0) = 0;
 #endif
+
+  /**
+   * @brief ultrasound wavelength
+   */
+  virtual double wavelength() noexcept = 0;
+  /**
+   * @brief set ultrasound wavelength
+   */
+  virtual void set_wavelength(double wavelength) noexcept = 0;
+
   /**
    * @brief Number of devices
    */
