@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -19,7 +19,6 @@
 #include "gain.hpp"
 #include "geometry.hpp"
 #include "modulation.hpp"
-#include "vector3.hpp"
 
 namespace autd {
 
@@ -154,7 +153,5 @@ class Controller {
    * @brief Enumerate firmware information
    */
   virtual FirmwareInfoList firmware_info_list() = 0;
-
-  virtual void LateralModulationAT(Vector3 point, Vector3 dir = Vector3::unit_y(), double lm_amp = 2.5, double lm_freq = 100) = 0;
 };
 }  // namespace autd
