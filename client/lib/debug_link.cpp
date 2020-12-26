@@ -13,6 +13,7 @@
 
 #include <bitset>
 #include <chrono>
+#include <cstring>
 #include <memory>
 #include <ostream>
 #include <sstream>
