@@ -21,7 +21,7 @@
 #include "gain.hpp"
 #include "link.hpp"
 #include "modulation.hpp"
-#include "privdef.hpp"
+#include "pre_def.hpp"
 #include "sequence.hpp"
 
 namespace autd::internal {
