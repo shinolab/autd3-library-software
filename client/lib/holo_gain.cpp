@@ -29,8 +29,6 @@
 #include "convert.hpp"
 #include "gain.hpp"
 
-using autd::ULTRASOUND_WAVELENGTH;
-
 namespace hologainimpl {
 using autd::AUTDDataArray;
 using autd::GeometryPtr;
@@ -70,13 +68,13 @@ static double DirectivityT4010A1(double theta_deg) {
   return a + b * x + c * x * x + d * x * x * x;
 }
 
-complex<double> Transfer(const autd::Vector3& trans_pos, const autd::Vector3& trans_norm, const autd::Vector3& target_pos) {
+complex<double> Transfer(const autd::Vector3& trans_pos, const autd::Vector3& trans_norm, const autd::Vector3& target_pos, const double wave_number) {
   const auto diff = target_pos - trans_pos;
   const auto dist = diff.norm();
   const auto theta = atan2(diff.dot(trans_norm), dist * trans_norm.norm()) * 180.0 / M_PI;
   const auto directivity = DirectivityT4010A1(theta);
 
-  return directivity / dist * exp(complex<double>(-dist * ATTENUATION, -2 * M_PI / ULTRASOUND_WAVELENGTH * dist));
+  return directivity / dist * exp(complex<double>(-dist * ATTENUATION, -wave_number * dist));
 }
 
 void RemoveRow(MatrixXcd* const matrix, const size_t row_to_remove) {
@@ -102,12 +100,13 @@ void RemoveColumn(MatrixXcd* const matrix, const size_t col_to_remove) {
 MatrixXcd TransferMatrix(const GeometryPtr& geometry, const MatrixX3d& foci, const size_t m, const size_t n) {
   auto g = MatrixXcd(m, n);
 
+  const auto wave_number = 2 * M_PI / geometry->wavelength();
   for (size_t i = 0; i < m; i++) {
     const auto tp = foci.row(i);
     for (size_t j = 0; j < n; j++) {
       const auto pos = geometry->position(j);
       const auto dir = geometry->direction(j / NUM_TRANS_IN_UNIT);
-      g(i, j) = Transfer(autd::Convert(pos), autd::Convert(dir), autd::Convert(tp));
+      g(i, j) = Transfer(autd::Convert(pos), autd::Convert(dir), autd::Convert(tp), wave_number);
     }
   }
 

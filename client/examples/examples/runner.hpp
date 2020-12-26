@@ -3,7 +3,7 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -32,6 +32,8 @@ using std::pair;
 using std::string;
 using std::vector;
 
+constexpr auto ULTRASOUND_WAVELENGTH = 8.5;
+
 inline int Run(autd::ControllerPtr& autd) {
   using F = function<void(autd::ControllerPtr)>;
   vector<pair<F, string>> examples = {
@@ -39,6 +41,8 @@ inline int Run(autd::ControllerPtr& autd) {
       pair(F{HoloTest}, "Multiple Focal Points Test"),        pair(F{STMTest}, "Spatio-Temporal Modulation Test"),
       pair(F{SeqTest}, "Point Sequence Test (Hardware STM)"),
   };
+
+  autd->geometry()->set_wavelength(ULTRASOUND_WAVELENGTH);
 
   autd->Clear();
 
