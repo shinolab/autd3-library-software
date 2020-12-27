@@ -14,6 +14,8 @@
 #define _USE_MATH_DEFINES  // NOLINT
 #include <math.h>
 
+#include <array>
+
 #include "autd_types.hpp"
 
 namespace autd {

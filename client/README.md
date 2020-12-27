@@ -12,6 +12,7 @@ run `build.ps1`
 * -VS_VERSION = 2017, [2019]
 * -ARCH = [x64]
 * -DISABLE_MATLAB = [False]
+* -USE_DOUBLE = [False]
 
 ## Mac/Linux ##
 

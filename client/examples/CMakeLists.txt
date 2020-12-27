@@ -7,6 +7,10 @@ include_directories(../include ${EIGEN_PATH} examples)
 
 file(GLOB hpp_files examples/*.hpp)
 
+if(USE_DOUBLE)
+add_definitions(-DUSE_DOUBLE_AUTD)
+endif()
+
 add_executable(example_soem soem.cpp ${hpp_files})
 target_link_libraries(example_soem autd3)
 target_link_libraries(example_soem soem_link)

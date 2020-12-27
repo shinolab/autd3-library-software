@@ -11,8 +11,6 @@
 
 #pragma once
 
-#include <array>
-
 #if WIN32
 #include <codeanalysis/warnings.h>  // NOLINT
 #pragma warning(push)
