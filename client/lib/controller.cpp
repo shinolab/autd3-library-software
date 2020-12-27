@@ -20,7 +20,6 @@
 #include <utility>
 #include <vector>
 
-#include "controller.hpp"
 #include "controller_impl.hpp"
 #include "firmware_version.hpp"
 #include "link.hpp"

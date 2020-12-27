@@ -132,8 +132,7 @@ Vector3 AUTDGeometry::position(const size_t global_transducer_idx) {
 
 Vector3 AUTDGeometry::position(const size_t device, const size_t local_transducer_idx) {
   const auto& dev = this->_devices[device];
-  const Eigen::Vector3f& pos = dev.global_trans_positions.col(local_transducer_idx);
-  return pos;
+  return dev.global_trans_positions.col(local_transducer_idx);
 }
 
 Vector3 AUTDGeometry::local_position(const size_t device_idx, const Vector3 global_position) {
@@ -142,8 +141,7 @@ Vector3 AUTDGeometry::local_position(const size_t device_idx, const Vector3 glob
   const auto& x_dir = device.x_direction;
   const auto& y_dir = device.y_direction;
   const auto& z_dir = device.z_direction;
-  const auto gp = global_position;
-  const auto rv = gp - local_origin;
+  const auto rv = global_position - local_origin;
   return Vector3(rv.dot(x_dir), rv.dot(y_dir), rv.dot(z_dir));
 }
 

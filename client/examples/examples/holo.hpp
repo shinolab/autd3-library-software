@@ -27,7 +27,7 @@ inline void HoloTest(const autd::ControllerPtr& autd) {
       center - autd::Vector3::UnitX() * 30.0f,
       center + autd::Vector3::UnitX() * 30.0f,
   };
-  const auto amps = {1.0f, 1.0f};
+  const std::vector<autd::Float> amps = {1, 1};
 
   const auto g = autd::gain::HoloGain::Create(foci, amps, OPT_METHOD::SDP);
   autd->AppendGainSync(g);
