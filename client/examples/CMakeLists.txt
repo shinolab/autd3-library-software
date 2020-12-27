@@ -2,10 +2,12 @@ cmake_minimum_required(VERSION 3.1)
 
 set (CMAKE_CXX_STANDARD 17)
 
+set(EIGEN_PATH ../deps/Eigen3)
+
 file(GLOB hpp_files examples/*.hpp)
 
 add_executable(example_soem soem.cpp ${hpp_files})
-include_directories(../include)
+include_directories(../include ${EIGEN_PATH})
 include_directories(examples)
 target_link_libraries(example_soem autd3)
 target_link_libraries(example_soem soem_link)

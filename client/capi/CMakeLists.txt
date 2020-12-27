@@ -47,7 +47,6 @@ add_library(autd3capi SHARED
 )
 
 include_directories(${INCLUDE_LIST})
-add_definitions(-DUSE_EIGEN_AUTD)
 
 target_link_libraries(autd3capi ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(autd3capi soem_link)

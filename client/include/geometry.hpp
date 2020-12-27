@@ -40,25 +40,6 @@ class Geometry {
    * @param group Grouping ID of the device used in gain::GroupedGain
    * @return an id of added device, which is used to delete or do other device specific controls.
    */
-  virtual size_t AddDevice(utils::Vector3 position, utils::Vector3 euler_angles, size_t group = 0) = 0;
-  /**
-   * @brief  Add new device with position and rotation. Note that the transform is done with order: Translate -> Rotate
-   * @param position Position of transducer #0, which is the one at the lower right corner.
-   * (The corner with two lacks of the transducer is the lower left.)
-   * @param quaternion rotation quaternion of the device.
-   * @param group Grouping ID of the device used in gain::GroupedGain
-   * @return an id of added device, which is used to delete or do other device specific controls.
-   */
-  virtual size_t AddDeviceQuaternion(utils::Vector3 position, utils::Quaternion quaternion, size_t group = 0) = 0;
-#ifdef USE_EIGEN_AUTD
-  /**
-   * @brief  Add new device with position and rotation. Note that the transform is done with order: Translate -> Rotate
-   * @param position Position of transducer #0, which is the one at the lower right corner.
-   * (The corner with two lacks of the transducer is the lower left.)
-   * @param euler_angles ZYZ convention Euler angle of the device.
-   * @param group Grouping ID of the device used in gain::GroupedGain
-   * @return an id of added device, which is used to delete or do other device specific controls.
-   */
   virtual size_t AddDevice(Vector3 position, Vector3 euler_angles, size_t group = 0) = 0;
   /**
    * @brief  Add new device with position and rotation. Note that the transform is done with order: Translate -> Rotate
@@ -69,7 +50,6 @@ class Geometry {
    * @return an id of added device, which is used to delete or do other device specific controls.
    */
   virtual size_t AddDeviceQuaternion(Vector3 position, Quaternion quaternion, size_t group = 0) = 0;
-#endif
 
   /**
    * @brief ultrasound wavelength
@@ -79,7 +59,6 @@ class Geometry {
    * @brief set ultrasound wavelength
    */
   virtual void set_wavelength(Float wavelength) noexcept = 0;
-
   /**
    * @brief Number of devices
    */
@@ -103,14 +82,7 @@ class Geometry {
   /**
    * @brief Convert a global position to a local position
    */
-  virtual Vector3 local_position(size_t device_idx, utils::Vector3 global_position) = 0;
-#ifdef USE_EIGEN_AUTD
-  /**
-   * @brief Convert a global position to a local position
-   */
   virtual Vector3 local_position(size_t device_idx, Vector3 global_position) = 0;
-#endif
-
   /**
    * @brief Normalized direction of a device
    */

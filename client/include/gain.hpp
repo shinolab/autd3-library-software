@@ -95,19 +95,6 @@ class PlaneWaveGain final : public Gain {
    * @param[in] direction wave direction
    * @param[in] duty duty ratio of driving signal
    */
-  static GainPtr Create(const utils::Vector3& direction, uint8_t duty = 0xff);
-  /**
-   * @brief Generate function
-   * @param[in] direction wave direction
-   * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
-   */
-  static GainPtr Create(const utils::Vector3& direction, Float amp);
-#ifdef USE_EIGEN_AUTD
-  /**
-   * @brief Generate function
-   * @param[in] direction wave direction
-   * @param[in] duty duty ratio of driving signal
-   */
   static GainPtr Create(const Vector3& direction, uint8_t duty = 0xff);
   /**
    * @brief Generate function
@@ -115,7 +102,6 @@ class PlaneWaveGain final : public Gain {
    * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
    */
   static GainPtr Create(const Vector3& direction, Float amp);
-#endif
 
   void Build() override;
   explicit PlaneWaveGain(Vector3 direction, const uint8_t duty) : Gain(), _direction(std::move(direction)), _duty(duty) {}
@@ -140,20 +126,6 @@ class FocalPointGain final : public Gain {
    * @param[in] point focal point
    * @param[in] duty duty ratio of driving signal
    */
-  static GainPtr Create(const utils::Vector3& point, uint8_t duty = 0xff);
-  /**
-   * @brief Generate function
-   * @param[in] point focal point
-   * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
-   */
-  static GainPtr Create(const utils::Vector3& point, Float amp);
-
-#ifdef USE_EIGEN_AUTD
-  /**
-   * @brief Generate function
-   * @param[in] point focal point
-   * @param[in] duty duty ratio of driving signal
-   */
   static GainPtr Create(const Vector3& point, uint8_t duty = 0xff);
   /**
    * @brief Generate function
@@ -161,7 +133,6 @@ class FocalPointGain final : public Gain {
    * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
    */
   static GainPtr Create(const Vector3& point, Float amp);
-#endif
 
   void Build() override;
   explicit FocalPointGain(Vector3 point, const uint8_t duty) : Gain(), _point(std::move(point)), _duty(duty) {}
@@ -188,24 +159,6 @@ class BesselBeamGain final : public Gain {
    * @param[in] theta_z angle between the conical wavefront of the beam and the direction
    * @param[in] duty duty ratio of driving signal
    */
-  static GainPtr Create(const utils::Vector3& point, const utils::Vector3& vec_n, Float theta_z, uint8_t duty = 0xff);
-  /**
-   * @brief Generate function
-   * @param[in] point start point of the beam
-   * @param[in] vec_n direction of the beam
-   * @param[in] theta_z angle between the conical wavefront of the beam and the direction
-   * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
-   */
-  static GainPtr Create(const utils::Vector3& point, const utils::Vector3& vec_n, Float theta_z, Float amp);
-
-#ifdef USE_EIGEN_AUTD
-  /**
-   * @brief Generate function
-   * @param[in] point start point of the beam
-   * @param[in] vec_n direction of the beam
-   * @param[in] theta_z angle between the conical wavefront of the beam and the direction
-   * @param[in] duty duty ratio of driving signal
-   */
   static GainPtr Create(const Vector3& point, const Vector3& vec_n, Float theta_z, uint8_t duty = 0xff);
   /**
    * @brief Generate function
@@ -215,7 +168,6 @@ class BesselBeamGain final : public Gain {
    * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
    */
   static GainPtr Create(const Vector3& point, const Vector3& vec_n, Float theta_z, Float amp);
-#endif
 
   void Build() override;
   explicit BesselBeamGain(Vector3 point, Vector3 vec_n, const Float theta_z, const uint8_t duty)
@@ -341,19 +293,8 @@ class HoloGain final : public Gain {
    * @param[in] method optimization method. see also @ref OptMethod
    * @param[in] params pointer to optimization parameters
    */
-  static GainPtr Create(const std::vector<utils::Vector3>& foci, const std::vector<Float>& amps, OPT_METHOD method = OPT_METHOD::SDP,
-                        void* params = nullptr);
-#ifdef USE_EIGEN_AUTD
-  /**
-   * @brief Generate function
-   * @param[in] foci focal points
-   * @param[in] amps amplitudes of the foci
-   * @param[in] method optimization method. see also @ref OptMethod
-   * @param[in] params pointer to optimization parameters
-   */
   static GainPtr Create(const std::vector<Vector3>& foci, const std::vector<Float>& amps, OPT_METHOD method = OPT_METHOD::SDP,
                         void* params = nullptr);
-#endif
 
   void Build() override;
   HoloGain(std::vector<Vector3> foci, std::vector<Float> amps, const OPT_METHOD method = OPT_METHOD::SDP, void* params = nullptr)
