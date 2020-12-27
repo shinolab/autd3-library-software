@@ -12,6 +12,7 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
 #include "autd_types.hpp"
 #include "geometry.hpp"
