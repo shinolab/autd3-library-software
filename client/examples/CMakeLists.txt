@@ -3,12 +3,11 @@ cmake_minimum_required(VERSION 3.1)
 set (CMAKE_CXX_STANDARD 17)
 
 set(EIGEN_PATH ../deps/Eigen3)
+include_directories(../include ${EIGEN_PATH} examples)
 
 file(GLOB hpp_files examples/*.hpp)
 
 add_executable(example_soem soem.cpp ${hpp_files})
-include_directories(../include ${EIGEN_PATH})
-include_directories(examples)
 target_link_libraries(example_soem autd3)
 target_link_libraries(example_soem soem_link)
 
@@ -22,8 +21,6 @@ else()
 endif()
 
 add_executable(example_debug debug.cpp ${hpp_files})
-include_directories(../include)
-include_directories(examples)
 target_link_libraries(example_debug autd3)
 if(WIN32)
     target_link_libraries(example_debug ws2_32.lib)

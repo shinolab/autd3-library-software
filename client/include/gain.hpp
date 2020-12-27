@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 26/12/2020
+// Last Modified: 27/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -22,12 +22,16 @@
 
 #include "autd_types.hpp"
 #include "consts.hpp"
-#include "core.hpp"
 #include "geometry.hpp"
-#include "vector3.hpp"
 
 namespace autd {
 namespace gain {
+class Gain;
+}
+using GainPtr = std::shared_ptr<gain::Gain>;
+}  // namespace autd
+
+namespace autd::gain {
 
 inline uint8_t AdjustAmp(const Float amp) noexcept {
   const auto d = asin(amp) / PI;  //  duty (0 ~ 0.5)
@@ -84,6 +88,8 @@ class Gain {
   std::vector<AUTDDataArray> _data;
   [[nodiscard]] bool built() const noexcept;
 };
+
+using NullGain = Gain;
 
 /**
  * @brief Gain to create plane wave
@@ -361,5 +367,4 @@ class TransducerTestGain final : public Gain {
   uint8_t _duty = 0;
   uint8_t _phase = 0;
 };
-}  // namespace gain
-}  // namespace autd
+}  // namespace autd::gain
