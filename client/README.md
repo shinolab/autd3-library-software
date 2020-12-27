@@ -2,7 +2,7 @@
 
 ## Windows ##
 
-run `build.ps1`
+run `build.ps1`, then open `autd3.sln` in `BUILD_DIR` (default `build`)
 
 ### Option ###
 
