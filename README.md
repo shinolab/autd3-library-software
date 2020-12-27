@@ -32,6 +32,8 @@ This versioning was introduced after version 0.3.0.
 
 * If you are using Windows, install [Npcap](https://nmap.org/npcap/) with WinPcap API-compatible mode (recommended) or [WinPcap](https://www.winpcap.org/).
 
+* This library depends on [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page) library.
+
 ## Build ##
 
 * Pre-built binaries and header files are on the [GitHub Release page](https://github.com/shinolab/autd3-library-software/releases). Instead, if you want to build from source, install CMake version 3.12 or higher and follow the instructions below.
@@ -66,7 +68,7 @@ If you are using Linux/macOS, you may need to run as root.
 
 If you use this SDK in your research please consider to include the following citation in your publications:
 
-S. Inoue, Y. Makino and H. Shinoda "Scalable Architecture for Airborne Ultrasound Tactile Display", Asia Haptics 2016
+* S. Inoue, Y. Makino and H. Shinoda "Scalable Architecture for Airborne Ultrasound Tactile Display", Asia Haptics 2016
 
 # Author #
 
