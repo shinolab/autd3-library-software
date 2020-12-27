@@ -3,7 +3,7 @@
 // Created Date: 09/06/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 26/12/2020
+// Last Modified: 27/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -54,7 +54,7 @@ inline LinkWrapper* LinkCreate(autd::LinkPtr ptr) { return new LinkWrapper{std::
 
 inline void LinkDelete(LinkWrapper* ptr) { delete ptr; }
 
-inline ControllerWrapper* ControllerCreate(const autd::ControllerPtr& ptr) { return new ControllerWrapper{ptr}; }
+inline ControllerWrapper* ControllerCreate(autd::ControllerPtr ptr) { return new ControllerWrapper{std::move(ptr)}; }
 inline void ControllerDelete(ControllerWrapper* ptr) { delete ptr; }
 
 inline EtherCATAdaptersWrapper* EtherCATAdaptersCreate(const autd::link::EtherCATAdapters& adapters) { return new EtherCATAdaptersWrapper{adapters}; }

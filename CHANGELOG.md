@@ -2,11 +2,11 @@
 * Delete backward compatibility
 * Delete `Geometry::DelDevice()` and `Geometry::deviceIdForDeviceIdx()`
 * Delete `Controller::LateralModulationAT()`
+* Delete `vector3.hpp` and `quaternion.hpp`
 * Rename some functions to unify the naming
 * Add `DebugLink`
 * Add `SetDelay`
 * Add `Geometry::wavelength()` and `Geometry::set_wavelength()`
-* Add Eigen3 api when `USE_EIGEN_AUTD` macro is defined 
 * Add `USE_DOUBLE_AUTD` macro to switch float type 
     * Set default float type to `float`
     * Also, change float type in capi from `double` to `float`

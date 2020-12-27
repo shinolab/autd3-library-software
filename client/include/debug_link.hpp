@@ -3,7 +3,7 @@
 // Created Date: 22/12/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 26/12/2020
+// Last Modified: 27/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -14,7 +14,6 @@
 #include <memory>
 #include <ostream>
 
-#include "core.hpp"
 #include "link.hpp"
 
 namespace autd::link {

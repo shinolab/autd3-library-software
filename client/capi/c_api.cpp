@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 26/12/2020
+// Last Modified: 27/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -12,6 +12,7 @@
 #include <cerrno>
 #include <cstdint>
 #include <cstring>
+#include <utility>
 
 #include "./autd3_c_api.h"
 #include "autd3.hpp"
@@ -22,8 +23,8 @@
 
 #pragma region Controller
 void AUTDCreateController(void** out) {
-  const auto ptr = autd::Controller::Create();
-  auto* cnt = ControllerCreate(ptr);
+  auto ptr = autd::Controller::Create();
+  auto* cnt = ControllerCreate(std::move(ptr));
   *out = cnt;
 }
 int32_t AUTDOpenControllerWith(void* const handle, void* const p_link) {

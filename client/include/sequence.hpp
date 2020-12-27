@@ -3,7 +3,7 @@
 // Created Date: 01/07/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 26/12/2020
+// Last Modified: 27/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -13,10 +13,17 @@
 
 #include <vector>
 
-#include "core.hpp"
+#include "autd_types.hpp"
 #include "geometry.hpp"
 
 namespace autd {
+
+namespace sequence {
+class PointSequence;
+}
+
+using SequencePtr = std::shared_ptr<sequence::PointSequence>;
+
 namespace sequence {
 /**
  * @brief PointSequence provides a function to display the focus sequentially and periodically.
@@ -38,24 +45,6 @@ class PointSequence {
   /**
    * @brief Generate PointSequence with control points.
    */
-  static SequencePtr Create(const std::vector<utils::Vector3>& control_points) noexcept;
-  /**
-   * @brief Append control point
-   * @param[in] point control point
-   * @details The maximum number of control points is 2000.
-   */
-  void AppendPoint(const utils::Vector3& point);
-  /**
-   * @brief Append control points
-   * @param[in] points control points
-   * @details The maximum number of control points is 2000.
-   */
-  void AppendPoints(const std::vector<utils::Vector3>& points);
-
-#ifdef USE_EIGEN_AUTD
-  /**
-   * @brief Generate PointSequence with control points.
-   */
   static SequencePtr Create(const std::vector<Vector3>& control_points) noexcept;
   /**
    * @brief Append control point
@@ -69,7 +58,6 @@ class PointSequence {
    * @details The maximum number of control points is 2000.
    */
   void AppendPoints(const std::vector<Vector3>& points);
-#endif
 
   /**
    * @return std::vector<Vector3> Control points of the sequence
@@ -122,17 +110,7 @@ class CircumSeq : PointSequence {
    * @param[in] radius Radius of the circumference
    * @param[in] n Number of the control points
    */
-  static SequencePtr Create(const utils::Vector3& center, const utils::Vector3& normal, Float radius, size_t n);
-#ifdef USE_EIGEN_AUTD
-  /**
-   * @brief Generate PointSequence with control points on a circumference.
-   * @param[in] center Center of the circumference
-   * @param[in] normal Normal vector of the circumference
-   * @param[in] radius Radius of the circumference
-   * @param[in] n Number of the control points
-   */
   static SequencePtr Create(const Vector3& center, const Vector3& normal, Float radius, size_t n);
-#endif
 };
 }  // namespace sequence
 }  // namespace autd
