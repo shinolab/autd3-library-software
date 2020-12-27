@@ -41,7 +41,6 @@ set(SOURCE_LIST
 )
 
 add_library(autd3 STATIC ${SOURCE_LIST})
-add_definitions(-DUSE_EIGEN_AUTD)
 #add_definitions(-DUSE_DOUBLE_AUTD)
 
 if(WIN32 AND (NOT DISABLE_MATLAB))

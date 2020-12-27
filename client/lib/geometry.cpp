@@ -86,12 +86,8 @@ class AUTDGeometry final : public Geometry {
   AUTDGeometry(AUTDGeometry&& obj) = default;
   AUTDGeometry& operator=(AUTDGeometry&& obj) = default;
 
-  size_t AddDevice(utils::Vector3 position, utils::Vector3 euler_angles, size_t group = 0) override;
-  size_t AddDeviceQuaternion(utils::Vector3 position, utils::Quaternion quaternion, size_t group = 0) override;
-#ifdef USE_EIGEN_AUTD
   size_t AddDevice(Vector3 position, Vector3 euler_angles, size_t group = 0) override;
   size_t AddDeviceQuaternion(Vector3 position, Quaternion quaternion, size_t group = 0) override;
-#endif
 
   Float wavelength() noexcept override;
   void set_wavelength(Float wavelength) noexcept override;
@@ -101,10 +97,8 @@ class AUTDGeometry final : public Geometry {
   size_t group_id_for_device_idx(size_t device_idx) override;
   Vector3 position(size_t global_transducer_idx) override;
   Vector3 position(size_t device, size_t local_transducer_idx) override;
-  Vector3 local_position(size_t device_idx, utils::Vector3 global_position) override;
-#ifdef USE_EIGEN_AUTD
   Vector3 local_position(size_t device_idx, Vector3 global_position) override;
-#endif
+
   Vector3 direction(size_t device_idx) override;
   Vector3 x_direction(size_t device_idx) override;
   Vector3 y_direction(size_t device_idx) override;
@@ -119,33 +113,19 @@ class AUTDGeometry final : public Geometry {
 
 GeometryPtr Geometry::Create() { return std::make_shared<AUTDGeometry>(); }
 
-size_t AUTDGeometry::AddDevice(const utils::Vector3 position, const utils::Vector3 euler_angles, const size_t group) {
+size_t AUTDGeometry::AddDevice(const Vector3 position, const Vector3 euler_angles, const size_t group) {
   const auto device_id = this->_devices.size();
   this->_devices.emplace_back(Device::Create(ConvertToEigen(position), ConvertToEigen(euler_angles)));
   this->_group_map[device_id] = group;
   return device_id;
 }
 
-size_t AUTDGeometry::AddDeviceQuaternion(const utils::Vector3 position, const utils::Quaternion quaternion, const size_t group) {
+size_t AUTDGeometry::AddDeviceQuaternion(const Vector3 position, const Quaternion quaternion, const size_t group) {
   const auto device_id = this->_devices.size();
   this->_devices.emplace_back(Device::Create(ConvertToEigen(position), ConvertToEigen(quaternion)));
   this->_group_map[device_id] = group;
   return device_id;
 }
-#ifdef USE_EIGEN_AUTD
-size_t AUTDGeometry::AddDevice(const Vector3 position, const Vector3 euler_angles, const size_t group) {
-  const auto device_id = this->_devices.size();
-  this->_devices.emplace_back(Device::Create(position, euler_angles));
-  this->_group_map[device_id] = group;
-  return device_id;
-}
-size_t AUTDGeometry::AddDeviceQuaternion(const Vector3 position, const Quaternion quaternion, const size_t group) {
-  const auto device_id = this->_devices.size();
-  this->_devices.emplace_back(Device::Create(position, quaternion));
-  this->_group_map[device_id] = group;
-  return device_id;
-}
-#endif
 
 Float AUTDGeometry::wavelength() noexcept { return this->_wavelength; }
 void AUTDGeometry::set_wavelength(const Float wavelength) noexcept { this->_wavelength = wavelength; }
@@ -163,11 +143,11 @@ Vector3 AUTDGeometry::position(const size_t global_transducer_idx) {
 
 Vector3 AUTDGeometry::position(const size_t device, const size_t local_transducer_idx) {
   const auto& dev = this->_devices[device];
-  const auto pos = dev.global_trans_positions.col(local_transducer_idx);
-  return Convert(pos);
+  const Eigen::Vector3f& pos = dev.global_trans_positions.col(local_transducer_idx);
+  return pos;
 }
 
-Vector3 AUTDGeometry::local_position(const size_t device_idx, const utils::Vector3 global_position) {
+Vector3 AUTDGeometry::local_position(const size_t device_idx, const Vector3 global_position) {
   const auto& device = this->_devices[device_idx];
   const auto& local_origin = device.global_trans_positions.col(0);
   const auto& x_dir = device.x_direction;
@@ -177,18 +157,6 @@ Vector3 AUTDGeometry::local_position(const size_t device_idx, const utils::Vecto
   const auto rv = gp - local_origin;
   return Vector3(rv.dot(x_dir), rv.dot(y_dir), rv.dot(z_dir));
 }
-
-#ifdef USE_EIGEN_AUTD
-Vector3 AUTDGeometry::local_position(const size_t device_idx, const Vector3 global_position) {
-  const auto& device = this->_devices[device_idx];
-  const auto local_origin = device.global_trans_positions.col(0);
-  const auto& x_dir = device.x_direction;
-  const auto& y_dir = device.y_direction;
-  const auto& z_dir = device.z_direction;
-  const auto rv = global_position - local_origin;
-  return Vector3(rv.dot(x_dir), rv.dot(y_dir), rv.dot(z_dir));
-}
-#endif
 
 Vector3 AUTDGeometry::direction(const size_t device_idx) { return z_direction(device_idx); }
 

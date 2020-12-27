@@ -47,27 +47,15 @@ void Gain::SetGeometry(const GeometryPtr& geometry) noexcept { this->_geometry =
 
 std::vector<AUTDDataArray>& Gain::data() { return this->_data; }
 
-GainPtr PlaneWaveGain::Create(const utils::Vector3& direction, const Float amp) {
-  const auto d = AdjustAmp(amp);
-  return Create(direction, d);
-}
-
-GainPtr PlaneWaveGain::Create(const utils::Vector3& direction, uint8_t duty) {
-  GainPtr ptr = std::make_shared<PlaneWaveGain>(Convert(direction), duty);
-  return ptr;
-}
-
-#ifdef USE_EIGEN_AUTD
 GainPtr PlaneWaveGain::Create(const Vector3& direction, const Float amp) {
   const auto d = AdjustAmp(amp);
   return Create(direction, d);
 }
 
 GainPtr PlaneWaveGain::Create(const Vector3& direction, uint8_t duty) {
-  GainPtr ptr = std::make_shared<PlaneWaveGain>(direction, duty);
+  GainPtr ptr = std::make_shared<PlaneWaveGain>(Convert(direction), duty);
   return ptr;
 }
-#endif
 
 void PlaneWaveGain::Build() {
   if (this->built()) return;
@@ -92,27 +80,15 @@ void PlaneWaveGain::Build() {
   this->_built = true;
 }
 
-GainPtr FocalPointGain::Create(const utils::Vector3& point, const Float amp) {
-  const auto d = AdjustAmp(amp);
-  return Create(point, d);
-}
-
-GainPtr FocalPointGain::Create(const utils::Vector3& point, uint8_t duty) {
-  GainPtr gain = std::make_shared<FocalPointGain>(Convert(point), duty);
-  return gain;
-}
-
-#ifdef USE_EIGEN_AUTD
 GainPtr FocalPointGain::Create(const Vector3& point, const Float amp) {
   const auto d = AdjustAmp(amp);
   return Create(point, d);
 }
 
 GainPtr FocalPointGain::Create(const Vector3& point, uint8_t duty) {
-  GainPtr gain = std::make_shared<FocalPointGain>(point, duty);
+  GainPtr gain = std::make_shared<FocalPointGain>(Convert(point), duty);
   return gain;
 }
-#endif
 
 void FocalPointGain::Build() {
   if (this->built()) return;
@@ -135,27 +111,15 @@ void FocalPointGain::Build() {
   this->_built = true;
 }
 
-GainPtr BesselBeamGain::Create(const utils::Vector3& point, const utils::Vector3& vec_n, const Float theta_z, const Float amp) {
-  const auto duty = AdjustAmp(amp);
-  return Create(point, vec_n, theta_z, duty);
-}
-
-GainPtr BesselBeamGain::Create(const utils::Vector3& point, const utils::Vector3& vec_n, Float theta_z, uint8_t duty) {
-  GainPtr gain = std::make_shared<BesselBeamGain>(Convert(point), Convert(vec_n), theta_z, duty);
-  return gain;
-}
-
-#ifdef USE_EIGEN_AUTD
 GainPtr BesselBeamGain::Create(const Vector3& point, const Vector3& vec_n, const Float theta_z, const Float amp) {
   const auto duty = AdjustAmp(amp);
   return Create(point, vec_n, theta_z, duty);
 }
 
 GainPtr BesselBeamGain::Create(const Vector3& point, const Vector3& vec_n, Float theta_z, uint8_t duty) {
-  GainPtr gain = std::make_shared<BesselBeamGain>(point, vec_n, theta_z, duty);
+  GainPtr gain = std::make_shared<BesselBeamGain>(Convert(point), Convert(vec_n), theta_z, duty);
   return gain;
 }
-#endif
 
 void BesselBeamGain::Build() {
   if (this->built()) return;

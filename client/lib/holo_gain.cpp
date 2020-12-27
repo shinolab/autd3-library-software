@@ -509,16 +509,10 @@ void HoloGainImplLM(vector<AUTDDataArray>& data, const MatrixX3& foci, const Vec
 
 namespace autd::gain {
 
-GainPtr HoloGain::Create(const std::vector<utils::Vector3>& foci, const std::vector<Float>& amps, const OPT_METHOD method, void* params) {
+GainPtr HoloGain::Create(const std::vector<Vector3>& foci, const std::vector<Float>& amps, const OPT_METHOD method, void* params) {
   GainPtr ptr = std::make_shared<HoloGain>(Convert(foci), amps, method, params);
   return ptr;
 }
-#ifdef USE_EIGEN_AUTD
-GainPtr HoloGain::Create(const std::vector<Vector3>& foci, const std::vector<Float>& amps, const OPT_METHOD method, void* params) {
-  GainPtr ptr = std::make_shared<HoloGain>(foci, amps, method, params);
-  return ptr;
-}
-#endif
 
 void HoloGain::Build() {
   if (this->built()) return;
