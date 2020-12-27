@@ -3,7 +3,7 @@
 // Created Date: 07/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 26/12/2020
+// Last Modified: 27/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -13,6 +13,8 @@
 
 #define _USE_MATH_DEFINES  // NOLINT
 #include <math.h>
+
+#include <array>
 
 #include "autd_types.hpp"
 
@@ -38,4 +40,6 @@ constexpr auto ULTRASOUND_FREQUENCY = 40000;
 constexpr auto POINT_SEQ_BUFFER_SIZE_MAX = 40000;
 constexpr auto POINT_SEQ_CLK_IDX_MAX = 40000;
 constexpr Float POINT_SEQ_BASE_FREQ = ToFloat(40000.0);
+
+using AUTDDataArray = std::array<uint16_t, NUM_TRANS_IN_UNIT>;
 }  // namespace autd
