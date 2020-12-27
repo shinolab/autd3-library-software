@@ -3,7 +3,7 @@
 // Created Date: 06/07/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 26/12/2020
+// Last Modified: 27/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -17,8 +17,6 @@
 
 #include "autd_types.hpp"
 #include "consts.hpp"
-#include "convert.hpp"
-#include "core.hpp"
 #include "gain.hpp"
 
 namespace hologainimpl {
@@ -137,7 +135,7 @@ MatrixXc TransferMatrix(const GeometryPtr& geometry, const MatrixX3& foci, const
     for (size_t j = 0; j < n; j++) {
       const auto pos = geometry->position(j);
       const auto dir = geometry->direction(j / NUM_TRANS_IN_UNIT);
-      g(i, j) = Transfer(autd::Convert(pos), autd::Convert(dir), autd::Convert(tp), wave_number);
+      g(i, j) = Transfer(pos, dir, tp, wave_number);
     }
   }
 
@@ -510,7 +508,7 @@ void HoloGainImplLM(vector<AUTDDataArray>& data, const MatrixX3& foci, const Vec
 namespace autd::gain {
 
 GainPtr HoloGain::Create(const std::vector<Vector3>& foci, const std::vector<Float>& amps, const OPT_METHOD method, void* params) {
-  GainPtr ptr = std::make_shared<HoloGain>(Convert(foci), amps, method, params);
+  GainPtr ptr = std::make_shared<HoloGain>(foci, amps, method, params);
   return ptr;
 }
 
@@ -526,7 +524,7 @@ void HoloGain::Build() {
   hologainimpl::VectorX amps(m);
 
   for (size_t i = 0; i < m; i++) {
-    foci.row(i) = ConvertToEigen(_foci[i]);
+    foci.row(i) = _foci[i];
     amps(i) = _amps[i];
   }
 

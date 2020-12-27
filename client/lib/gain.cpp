@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 26/12/2020
+// Last Modified: 27/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -15,9 +15,6 @@
 #include <vector>
 
 #include "consts.hpp"
-#include "convert.hpp"
-#include "core.hpp"
-#include "vector3.hpp"
 
 namespace autd::gain {
 
@@ -53,7 +50,7 @@ GainPtr PlaneWaveGain::Create(const Vector3& direction, const Float amp) {
 }
 
 GainPtr PlaneWaveGain::Create(const Vector3& direction, uint8_t duty) {
-  GainPtr ptr = std::make_shared<PlaneWaveGain>(Convert(direction), duty);
+  GainPtr ptr = std::make_shared<PlaneWaveGain>(direction, duty);
   return ptr;
 }
 
@@ -86,7 +83,7 @@ GainPtr FocalPointGain::Create(const Vector3& point, const Float amp) {
 }
 
 GainPtr FocalPointGain::Create(const Vector3& point, uint8_t duty) {
-  GainPtr gain = std::make_shared<FocalPointGain>(Convert(point), duty);
+  GainPtr gain = std::make_shared<FocalPointGain>(point, duty);
   return gain;
 }
 
@@ -117,7 +114,7 @@ GainPtr BesselBeamGain::Create(const Vector3& point, const Vector3& vec_n, const
 }
 
 GainPtr BesselBeamGain::Create(const Vector3& point, const Vector3& vec_n, Float theta_z, uint8_t duty) {
-  GainPtr gain = std::make_shared<BesselBeamGain>(Convert(point), Convert(vec_n), theta_z, duty);
+  GainPtr gain = std::make_shared<BesselBeamGain>(point, vec_n, theta_z, duty);
   return gain;
 }
 

@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 26/12/2020
+// Last Modified: 27/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -20,18 +20,15 @@
 #include <utility>
 #include <vector>
 
+#include "controller.hpp"
 #include "controller_impl.hpp"
-#include "core.hpp"
 #include "firmware_version.hpp"
 #include "link.hpp"
 #include "sequence.hpp"
 #include "timer.hpp"
 
 namespace autd {
-ControllerPtr Controller::Create() { return std::make_shared<internal::AUTDController>(); }
-}  // namespace autd
-
-namespace autd::internal {
+namespace internal {
 
 using std::move;
 using std::thread, std::queue;
@@ -361,5 +358,8 @@ void AUTDController::FinishSTModulation() { this->_stm_cnt->Finish(); }
 void AUTDController::AppendSequence(const SequencePtr seq) { this->_sync_cnt->AppendSeq(seq); }
 
 std::vector<FirmwareInfo> AUTDController::firmware_info_list() { return this->_autd_logic->firmware_info_list(); }
+}  // namespace internal
 
-}  // namespace autd::internal
+ControllerPtr Controller::Create() { return std::make_unique<internal::AUTDController>(); }
+
+}  // namespace autd
