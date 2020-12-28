@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 26/12/2020
+// Last Modified: 27/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -22,16 +22,12 @@
 
 #include "controller_impl.hpp"
 #include "firmware_version.hpp"
-#include "geometry.hpp"
 #include "link.hpp"
 #include "sequence.hpp"
 #include "timer.hpp"
 
 namespace autd {
-ControllerPtr Controller::Create() { return std::make_shared<internal::AUTDController>(); }
-}  // namespace autd
-
-namespace autd::internal {
+namespace internal {
 
 using std::move;
 using std::thread, std::queue;
@@ -228,16 +224,16 @@ class AUTDControllerStm {
 
   ~AUTDControllerStm() = default;
 
-  void AppendGain(const GainPtr& gain) { _stm_gains.push_back(gain); }
+  void AppendGain(const GainPtr& gain) { _stm_gains.emplace_back(gain); }
   void AppendGain(const vector<GainPtr>& gain_list) {
     for (const auto& g : gain_list) {
       this->AppendGain(g);
     }
   }
 
-  void Start(const double freq) {
+  void Start(const Float freq) {
     auto len = this->_stm_gains.size();
-    const auto interval_us = static_cast<int>(1000000. / freq / static_cast<double>(len));
+    const auto interval_us = static_cast<int>(1000000. / static_cast<double>(freq) / static_cast<double>(len));
     this->_p_stm_timer->SetInterval(interval_us);
 
     const auto current_size = this->_stm_bodies.size();
@@ -351,7 +347,7 @@ void AUTDController::AppendModulationSync(const ModulationPtr mod) { this->_sync
 
 void AUTDController::AppendSTMGain(const GainPtr gain) { this->_stm_cnt->AppendGain(gain); }
 void AUTDController::AppendSTMGain(const std::vector<GainPtr>& gain_list) { this->_stm_cnt->AppendGain(gain_list); }
-void AUTDController::StartSTModulation(const double freq) { this->_stm_cnt->Start(freq); }
+void AUTDController::StartSTModulation(const Float freq) { this->_stm_cnt->Start(freq); }
 void AUTDController::StopSTModulation() {
   this->_stm_cnt->Stop();
   this->Stop();
@@ -360,6 +356,9 @@ void AUTDController::FinishSTModulation() { this->_stm_cnt->Finish(); }
 
 void AUTDController::AppendSequence(const SequencePtr seq) { this->_sync_cnt->AppendSeq(seq); }
 
-FirmwareInfoList AUTDController::firmware_info_list() { return this->_autd_logic->firmware_info_list(); }
+std::vector<FirmwareInfo> AUTDController::firmware_info_list() { return this->_autd_logic->firmware_info_list(); }
+}  // namespace internal
 
-}  // namespace autd::internal
+ControllerPtr Controller::Create() { return std::make_unique<internal::AUTDController>(); }
+
+}  // namespace autd

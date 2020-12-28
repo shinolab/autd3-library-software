@@ -15,7 +15,8 @@ Param(
     [string]$BUILD_DIR = "\build",
     [ValidateSet(2017 , 2019)]$VS_VERSION = 2019,
     [string]$ARCH = "x64",
-    [switch]$DISABLE_MATLAB = $FALSE
+    [switch]$DISABLE_MATLAB = $FALSE,
+    [switch]$USE_DOUBLE = $FALSE
 )
 
 Start-Transcript "build.log" | Out-Null
@@ -140,6 +141,14 @@ if ($DISABLE_MATLAB) {
 else {
     $command += " -D DISABLE_MATLAB=OFF"
 }
+
+if ($USE_DOUBLE) {
+    $command += " -D USE_DOUBLE=ON"
+}
+else {
+    $command += " -D USE_DOUBLE=OFF"
+}
+
 Invoke-Expression $command | Tee-Object -FilePath "build.log"
 Pop-Location
 

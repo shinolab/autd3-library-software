@@ -365,7 +365,7 @@ std::vector<EtherCATAdapterInfo> EtherCATAdapterInfo::EnumerateAdapters() {
     auto* info = new EtherCATAdapterInfo;
     info->desc = std::string(adapter->desc);
     info->name = std::string(adapter->name);
-    adapters.push_back(*info);
+    adapters.emplace_back(*info);
     adapter = adapter->next;
   }
   return adapters;

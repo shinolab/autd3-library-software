@@ -6,6 +6,17 @@ set(VERSION_MINOR   7   CACHE STRING "Project minor version number.")
 set(VERSION_PATCH   2   CACHE STRING "Project patch version number.")
 mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
 
+option(DISABLE_MATLAB "DISABLE_MATLAB" OFF)
+option(USE_DOUBLE "USE_DOUBLE" OFF)
+
+if(DISABLE_MATLAB)
+  message(STATUS "Disabled Matlab")
+endif()
+
+if(USE_DOUBLE)
+  message(STATUS "Use double precision floating point number")
+endif()
+
 if(WIN32)
 	set(OS win32)
 elseif(APPLE)

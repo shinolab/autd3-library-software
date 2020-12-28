@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 26/12/2020
+// Last Modified: 27/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -15,10 +15,18 @@
 #include <vector>
 
 #include "configuration.hpp"
+#include "consts.hpp"
+#include "firmware_version.hpp"
+#include "gain.hpp"
 #include "geometry.hpp"
+#include "link.hpp"
 #include "modulation.hpp"
+#include "sequence.hpp"
 
 namespace autd {
+
+class Controller;
+using ControllerPtr = std::unique_ptr<Controller>;
 
 /**
  * @brief AUTD Controller
@@ -127,7 +135,7 @@ class Controller {
    * example, about 1ms on Windows. Note that it is affected by interruptions,
    * and so on.
    */
-  virtual void StartSTModulation(double freq) = 0;
+  virtual void StartSTModulation(Float freq) = 0;
   /**
    * @brief Suspend Spatio-Temporal Modulation
    */
@@ -150,6 +158,6 @@ class Controller {
   /**
    * @brief Enumerate firmware information
    */
-  virtual FirmwareInfoList firmware_info_list() = 0;
+  virtual std::vector<FirmwareInfo> firmware_info_list() = 0;
 };
 }  // namespace autd
