@@ -32,9 +32,9 @@ class BurstModulation final : public autd::modulation::Modulation {
   }
 };
 
-class ConstGain final : public autd::gain::Gain {
+class UniformGain final : public autd::gain::Gain {
  public:
-  static autd::GainPtr Create() { return std::make_shared<ConstGain>(); }
+  static autd::GainPtr Create() { return std::make_shared<UniformGain>(); }
   void Build() override {
     if (this->built()) return;
 
@@ -56,13 +56,13 @@ inline void DelayTest(const autd::ControllerPtr& autd) {
   const auto m = BurstModulation::Create();
   autd->AppendModulationSync(m);
 
-  const auto g = ConstGain::Create();
+  const auto g = UniformGain::Create();
   autd->AppendGainSync(g);
 
   std::vector<AUTDDataArray> delay;
   AUTDDataArray ar{};
   ar.fill(0);
-  ar[17] = 1;
+  ar[17] = 4; // 4 cycle = 100 us delay in 17-th transducer
   delay.emplace_back(ar);
 
   autd->SetDelay(delay);
