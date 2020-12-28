@@ -3,7 +3,7 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 26/12/2020
+// Last Modified: 27/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -32,7 +32,7 @@ EtherCATAdapters SOEMLink::EnumerateAdapters(size_t* const size) {
     EtherCATAdapter p;
     p.first = adapter.desc;
     p.second = adapter.name;
-    res.push_back(p);
+    res.emplace_back(p);
   }
   return res;
 }
@@ -72,7 +72,7 @@ void SOEMLinkImpl::Open() {
   _config.ec_sm3_cycle_time_ns = EC_SM3_CYCLE_TIME_NANO_SEC;
   _config.ec_sync0_cycle_time_ns = EC_SYNC0_CYCLE_TIME_NANO_SEC;
   _config.header_size = HEADER_SIZE;
-  _config.body_size = NUM_TRANS_IN_UNIT * 2;
+  _config.body_size = 498;
   _config.input_frame_size = EC_INPUT_FRAME_SIZE;
 
   _cnt->Open(_ifname.c_str(), _device_num, _config);

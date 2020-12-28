@@ -3,7 +3,7 @@
 // Created Date: 22/12/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 26/12/2020
+// Last Modified: 27/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -16,8 +16,10 @@
 #include <vector>
 
 #include "configuration.hpp"
-#include "core.hpp"
+#include "firmware_version.hpp"
 #include "gain.hpp"
+#include "link.hpp"
+#include "modulation.hpp"
 #include "sequence.hpp"
 
 namespace autd::internal {
@@ -64,7 +66,7 @@ class AUTDLogic {
   bool Clear();
   void Close();
   void SetDelay(const std::vector<AUTDDataArray>& delay);
-  FirmwareInfoList firmware_info_list();
+  std::vector<FirmwareInfo> firmware_info_list();
 
   unique_ptr<uint8_t[]> MakeBody(const GainPtr& gain, const ModulationPtr& mod, size_t* size, uint8_t* send_msg_id) const;
   unique_ptr<uint8_t[]> MakeBody(const SequencePtr& seq, size_t* size, uint8_t* send_msg_id) const;

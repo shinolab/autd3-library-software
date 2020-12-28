@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 26/12/2020
+// Last Modified: 27/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -11,17 +11,14 @@
 
 #include "gain.hpp"
 
-#include <iostream>
+#include <memory>
 #include <vector>
 
 #include "consts.hpp"
-#include "convert.hpp"
-#include "core.hpp"
-#include "vector3.hpp"
 
 namespace autd::gain {
 
-inline double PosMod(const double a, const double b) { return a - floor(a / b) * b; }
+inline Float PosMod(const Float a, const Float b) { return a - floor(a / b) * b; }
 
 GainPtr Gain::Create() { return std::make_shared<Gain>(); }
 
@@ -47,18 +44,7 @@ void Gain::SetGeometry(const GeometryPtr& geometry) noexcept { this->_geometry =
 
 std::vector<AUTDDataArray>& Gain::data() { return this->_data; }
 
-GainPtr PlaneWaveGain::Create(const utils::Vector3& direction, const double amp) {
-  const auto d = AdjustAmp(amp);
-  return Create(direction, d);
-}
-
-GainPtr PlaneWaveGain::Create(const utils::Vector3& direction, uint8_t duty) {
-  GainPtr ptr = std::make_shared<PlaneWaveGain>(Convert(direction), duty);
-  return ptr;
-}
-
-#ifdef USE_EIGEN_AUTD
-GainPtr PlaneWaveGain::Create(const Vector3& direction, const double amp) {
+GainPtr PlaneWaveGain::Create(const Vector3& direction, const Float amp) {
   const auto d = AdjustAmp(amp);
   return Create(direction, d);
 }
@@ -67,7 +53,6 @@ GainPtr PlaneWaveGain::Create(const Vector3& direction, uint8_t duty) {
   GainPtr ptr = std::make_shared<PlaneWaveGain>(direction, duty);
   return ptr;
 }
-#endif
 
 void PlaneWaveGain::Build() {
   if (this->built()) return;
@@ -85,25 +70,14 @@ void PlaneWaveGain::Build() {
       const auto trp = geometry->position(dev, i);
       const auto dist = trp.dot(dir);
       const auto f_phase = PosMod(dist, ULTRASOUND_WAVELENGTH) / ULTRASOUND_WAVELENGTH;
-      const auto phase = static_cast<uint16_t>(round(255.0 * (1.0 - f_phase)));
+      const auto phase = static_cast<uint16_t>(round(255 * (1 - f_phase)));
       this->_data[dev][i] = duty | phase;
     }
 
   this->_built = true;
 }
 
-GainPtr FocalPointGain::Create(const utils::Vector3& point, const double amp) {
-  const auto d = AdjustAmp(amp);
-  return Create(point, d);
-}
-
-GainPtr FocalPointGain::Create(const utils::Vector3& point, uint8_t duty) {
-  GainPtr gain = std::make_shared<FocalPointGain>(Convert(point), duty);
-  return gain;
-}
-
-#ifdef USE_EIGEN_AUTD
-GainPtr FocalPointGain::Create(const Vector3& point, const double amp) {
+GainPtr FocalPointGain::Create(const Vector3& point, const Float amp) {
   const auto d = AdjustAmp(amp);
   return Create(point, d);
 }
@@ -112,7 +86,6 @@ GainPtr FocalPointGain::Create(const Vector3& point, uint8_t duty) {
   GainPtr gain = std::make_shared<FocalPointGain>(point, duty);
   return gain;
 }
-#endif
 
 void FocalPointGain::Build() {
   if (this->built()) return;
@@ -128,34 +101,22 @@ void FocalPointGain::Build() {
       const auto trp = geometry->position(dev, i);
       const auto dist = (trp - this->_point).norm();
       const auto f_phase = fmod(dist, ULTRASOUND_WAVELENGTH) / ULTRASOUND_WAVELENGTH;
-      const auto phase = static_cast<uint16_t>(round(255.0 * (1.0 - f_phase)));
+      const auto phase = static_cast<uint16_t>(round(255 * (1 - f_phase)));
       this->_data[dev][i] = duty | phase;
     }
 
   this->_built = true;
 }
 
-GainPtr BesselBeamGain::Create(const utils::Vector3& point, const utils::Vector3& vec_n, const double theta_z, const double amp) {
+GainPtr BesselBeamGain::Create(const Vector3& point, const Vector3& vec_n, const Float theta_z, const Float amp) {
   const auto duty = AdjustAmp(amp);
   return Create(point, vec_n, theta_z, duty);
 }
 
-GainPtr BesselBeamGain::Create(const utils::Vector3& point, const utils::Vector3& vec_n, double theta_z, uint8_t duty) {
-  GainPtr gain = std::make_shared<BesselBeamGain>(Convert(point), Convert(vec_n), theta_z, duty);
-  return gain;
-}
-
-#ifdef USE_EIGEN_AUTD
-GainPtr BesselBeamGain::Create(const Vector3& point, const Vector3& vec_n, const double theta_z, const double amp) {
-  const auto duty = AdjustAmp(amp);
-  return Create(point, vec_n, theta_z, duty);
-}
-
-GainPtr BesselBeamGain::Create(const Vector3& point, const Vector3& vec_n, double theta_z, uint8_t duty) {
+GainPtr BesselBeamGain::Create(const Vector3& point, const Vector3& vec_n, Float theta_z, uint8_t duty) {
   GainPtr gain = std::make_shared<BesselBeamGain>(point, vec_n, theta_z, duty);
   return gain;
 }
-#endif
 
 void BesselBeamGain::Build() {
   if (this->built()) return;
@@ -175,10 +136,10 @@ void BesselBeamGain::Build() {
       const auto trp = geometry->position(dev, i);
       const auto r = trp - this->_point;
       const auto v_x_r = r.cross(v);
-      const auto rr = cos(theta_w) * r + sin(theta_w) * v_x_r + v.dot(r) * (1.0 - cos(theta_w)) * v;
+      const auto rr = cos(theta_w) * r + sin(theta_w) * v_x_r + v.dot(r) * (1 - cos(theta_w)) * v;
       const auto f_phase =
           fmod(sin(_theta_z) * sqrt(rr.x() * rr.x() + rr.y() * rr.y()) - cos(_theta_z) * rr.z(), ULTRASOUND_WAVELENGTH) / ULTRASOUND_WAVELENGTH;
-      const auto phase = static_cast<uint16_t>(round(255.0 * (1.0 - f_phase)));
+      const auto phase = static_cast<uint16_t>(round(255 * (1 - f_phase)));
       this->_data[dev][i] = duty | phase;
     }
   this->_built = true;

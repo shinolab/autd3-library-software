@@ -147,7 +147,7 @@ bool AUTDLogic::WaitMsgProcessed(const uint8_t msg_id, const size_t max_trial, c
       return true;
     }
 
-    auto wait = static_cast<size_t>(std::ceil(EC_TRAFFIC_DELAY * 1000 / EC_DEVICE_PER_FRAME * static_cast<double>(num_dev)));
+    auto wait = static_cast<size_t>(std::ceil(static_cast<double>(EC_TRAFFIC_DELAY) * 1000 / EC_DEVICE_PER_FRAME * static_cast<double>(num_dev)));
     std::this_thread::sleep_for(std::chrono::milliseconds(wait));
   }
 
@@ -165,13 +165,13 @@ void AUTDLogic::CalibrateSeq() {
   std::vector<uint16_t> laps;
   for (size_t i = 0; i < this->_rx_data.size() / 2; i++) {
     const auto lap_raw = static_cast<uint16_t>(_rx_data[2 * i + 1]) << 8 | _rx_data[2 * i];
-    laps.push_back(lap_raw & 0x03FF);
+    laps.emplace_back(lap_raw & 0x03FF);
   }
 
   std::vector<uint16_t> diffs;
   auto minimum = *std::min_element(laps.begin(), laps.end());
   for (auto lap : laps) {
-    diffs.push_back(lap - minimum);
+    diffs.emplace_back(lap - minimum);
   }
 
   const auto diff_max = *std::max_element(diffs.begin(), diffs.end());
@@ -237,10 +237,10 @@ void AUTDLogic::Close() {
 
 inline uint16_t ConcatByte(const uint8_t high, const uint16_t low) { return static_cast<uint16_t>(static_cast<uint16_t>(high) << 8 | low); }
 
-FirmwareInfoList AUTDLogic::firmware_info_list() {
+std::vector<FirmwareInfo> AUTDLogic::firmware_info_list() {
   const auto size = this->_geometry->num_devices();
 
-  FirmwareInfoList res;
+  std::vector<FirmwareInfo> res;
   auto make_header = [](const uint8_t command) {
     auto header_bytes = std::make_unique<uint8_t[]>(sizeof(RxGlobalHeader));
     auto *header = reinterpret_cast<RxGlobalHeader *>(&header_bytes[0]);
@@ -283,7 +283,7 @@ FirmwareInfoList AUTDLogic::firmware_info_list() {
 
   for (size_t i = 0; i < size; i++) {
     auto info = FirmwareInfo(static_cast<uint16_t>(i), cpu_versions[i], fpga_versions[i]);
-    res.push_back(info);
+    res.emplace_back(info);
   }
   return res;
 }
@@ -352,7 +352,7 @@ unique_ptr<uint8_t[]> AUTDLogic::MakeBody(const SequencePtr &seq, size_t *const 
   }
 
   auto *cursor = &body[0] + sizeof(RxGlobalHeader);
-  const auto FIXED_NUM_UNIT = _geometry->wavelength() / 256.0;
+  const auto FIXED_NUM_UNIT = _geometry->wavelength() / 256;
   for (size_t device = 0; device < num_devices; device++) {
     std::vector<uint8_t> foci;
     foci.reserve(static_cast<size_t>(send_size) * 10);
@@ -362,16 +362,16 @@ unique_ptr<uint8_t[]> AUTDLogic::MakeBody(const SequencePtr &seq, size_t *const 
       const auto x = static_cast<uint32_t>(static_cast<int32_t>(v64.x() / FIXED_NUM_UNIT));
       const auto y = static_cast<uint32_t>(static_cast<int32_t>(v64.y() / FIXED_NUM_UNIT));
       const auto z = static_cast<uint32_t>(static_cast<int32_t>(v64.z() / FIXED_NUM_UNIT));
-      foci.push_back(static_cast<uint8_t>(x & 0x000000FF));
-      foci.push_back(static_cast<uint8_t>((x & 0x0000FF00) >> 8));
-      foci.push_back(static_cast<uint8_t>((x & 0x80000000) >> 24 | (x & 0x007F0000) >> 16));
-      foci.push_back(static_cast<uint8_t>(y & 0x000000FF));
-      foci.push_back(static_cast<uint8_t>((y & 0x0000FF00) >> 8));
-      foci.push_back(static_cast<uint8_t>((y & 0x80000000) >> 24 | (y & 0x007F0000) >> 16));
-      foci.push_back(static_cast<uint8_t>(z & 0x000000FF));
-      foci.push_back(static_cast<uint8_t>((z & 0x0000FF00) >> 8));
-      foci.push_back(static_cast<uint8_t>((z & 0x80000000) >> 24 | (z & 0x007F0000) >> 16));
-      foci.push_back(0xFF);  // amp
+      foci.emplace_back(static_cast<uint8_t>(x & 0x000000FF));
+      foci.emplace_back(static_cast<uint8_t>((x & 0x0000FF00) >> 8));
+      foci.emplace_back(static_cast<uint8_t>((x & 0x80000000) >> 24 | (x & 0x007F0000) >> 16));
+      foci.emplace_back(static_cast<uint8_t>(y & 0x000000FF));
+      foci.emplace_back(static_cast<uint8_t>((y & 0x0000FF00) >> 8));
+      foci.emplace_back(static_cast<uint8_t>((y & 0x80000000) >> 24 | (y & 0x007F0000) >> 16));
+      foci.emplace_back(static_cast<uint8_t>(z & 0x000000FF));
+      foci.emplace_back(static_cast<uint8_t>((z & 0x0000FF00) >> 8));
+      foci.emplace_back(static_cast<uint8_t>((z & 0x80000000) >> 24 | (z & 0x007F0000) >> 16));
+      foci.emplace_back(0xFF);  // amp
     }
     std::memcpy(cursor, &foci[0], foci.size());
     cursor += NUM_TRANS_IN_UNIT * 2;

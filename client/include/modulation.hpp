@@ -3,7 +3,7 @@
 // Created Date: 04/11/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 27/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -16,10 +16,17 @@
 #include <utility>
 #include <vector>
 
+#include "autd_types.hpp"
 #include "configuration.hpp"
-#include "core.hpp"
 
 namespace autd {
+
+namespace modulation {
+class Modulation;
+}
+
+using ModulationPtr = std::shared_ptr<modulation::Modulation>;
+
 namespace modulation {
 /**
  * @brief Modulation controls the amplitude modulation
@@ -57,14 +64,14 @@ class SineModulation final : public Modulation {
    * @param[in] offset offset of the wave
    * @details The sine wave oscillate from offset-amp/2 to offset+amp/2
    */
-  static ModulationPtr Create(int freq, double amp = 1.0, double offset = 0.5);
+  static ModulationPtr Create(int freq, Float amp = 1.0, Float offset = 0.5);
   void Build(Configuration config) override;
-  SineModulation(const int freq, const double amp, const double offset) : Modulation(), _freq(freq), _amp(amp), _offset(offset) {}
+  SineModulation(const int freq, const Float amp, const Float offset) : Modulation(), _freq(freq), _amp(amp), _offset(offset) {}
 
  private:
   int _freq = 0;
-  double _amp = 1.0;
-  double _offset = 0.5;
+  Float _amp = 1.0;
+  Float _offset = 0.5;
 };
 
 /**
@@ -119,13 +126,13 @@ class RawPCMModulation final : public Modulation {
    * If samplingFreq is less than the Nyquist frequency, the data will be upsampled.
    * The maximum modulation buffer size is shown in autd::MOD_BUF_SIZE. Only the data up to MOD_BUF_SIZE/MOD_SAMPLING_FREQ seconds can be output.
    */
-  static ModulationPtr Create(const std::string& filename, double sampling_freq = 0.0);
+  static ModulationPtr Create(const std::string& filename, Float sampling_freq = 0.0);
   void Build(Configuration config) override;
-  explicit RawPCMModulation(const double sampling_freq, std::vector<int32_t> buf)
+  explicit RawPCMModulation(const Float sampling_freq, std::vector<int32_t> buf)
       : Modulation(), _sampling_freq(sampling_freq), _buf(std::move(buf)) {}
 
  private:
-  double _sampling_freq = 0;
+  Float _sampling_freq = 0;
   std::vector<int32_t> _buf;
 };
 

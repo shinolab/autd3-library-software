@@ -45,13 +45,13 @@ static std::vector<std::string> Split(const std::string& s, const char deliminat
   std::string token;
   for (auto ch : s) {
     if (ch == deliminator) {
-      if (!token.empty()) tokens.push_back(token);
+      if (!token.empty()) tokens.emplace_back(token);
       token.clear();
     } else {
       token += ch;
     }
   }
-  if (!token.empty()) tokens.push_back(token);
+  if (!token.empty()) tokens.emplace_back(token);
   return tokens;
 }
 
@@ -267,7 +267,7 @@ void LocalTwinCATLinkImpl::Open() {
   return;
 }
 void LocalTwinCATLinkImpl::Close() {}
-std::optional<int32_t> LocalTwinCATLinkImpl::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {return std::nullopt;}
+std::optional<int32_t> LocalTwinCATLinkImpl::Send(size_t size, std::unique_ptr<uint8_t[]> buf) { return std::nullopt; }
 std::optional<int32_t> LocalTwinCATLinkImpl::Read(uint8_t* rx, uint32_t buffer_len) { return std::nullopt; }
 #endif  // TC_ADS
 

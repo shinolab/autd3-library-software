@@ -3,7 +3,7 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 26/12/2020
+// Last Modified: 27/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -12,6 +12,7 @@
 #pragma once
 
 #include <functional>
+#include <iostream>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -35,7 +36,7 @@ using std::vector;
 constexpr auto ULTRASOUND_WAVELENGTH = 8.5;
 
 inline int Run(autd::ControllerPtr& autd) {
-  using F = function<void(autd::ControllerPtr)>;
+  using F = function<void(autd::ControllerPtr&)>;
   vector<pair<F, string>> examples = {
       pair(F{SimpleTest}, "Single Focal Point Test"),         pair(F{BesselTest}, "BesselBeam Test"),
       pair(F{HoloTest}, "Multiple Focal Points Test"),        pair(F{STMTest}, "Spatio-Temporal Modulation Test"),
