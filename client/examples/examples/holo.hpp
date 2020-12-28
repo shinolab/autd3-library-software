@@ -11,10 +11,33 @@
 
 #pragma once
 
+#include <iostream>
+#include <string>
+
 #include "autd3.hpp"
 
 using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SIZE_MM;
 using autd::gain::OPT_METHOD;
+
+inline OPT_METHOD SelectOpt() {
+    std::cout << "Select Optimization Method (default is SDP)" << std::endl;
+    const std::vector<std::string> opts = {"SDP", "EVD", "GS", "GS-PAT", "NAIVE", "LM"};
+    for (size_t i = 0; i < opts.size(); i++) {
+        const auto& name = opts[i];
+        std::cout << "[" << i << "]: " << name << std::endl;
+    }
+
+    std::string in;
+    size_t idx = 0;
+    getline(std::cin, in);
+    std::stringstream s(in);
+    const auto empty = in == "\n";
+    if (!(s >> idx) || idx >= opts.size() || empty) {
+        idx = 0;
+    }
+
+    return static_cast<OPT_METHOD>(idx);
+}
 
 inline void HoloTest(const autd::ControllerPtr& autd) {
   autd->SetSilentMode(true);
@@ -29,6 +52,8 @@ inline void HoloTest(const autd::ControllerPtr& autd) {
   };
   const std::vector<autd::Float> amps = {1, 1};
 
-  const auto g = autd::gain::HoloGain::Create(foci, amps, OPT_METHOD::SDP);
+  const auto opt = SelectOpt();
+  const auto g = autd::gain::HoloGain::Create(foci, amps, opt);
+	
   autd->AppendGainSync(g);
 }
