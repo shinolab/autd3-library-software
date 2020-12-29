@@ -3,7 +3,7 @@
 
 # [AUTD3](https://hapislab.org/airborne-ultrasound-tactile-display?lang=en) #
 
-Version: 0.7.1
+Version: 0.8.0
 
 * This repository is forked from [old version](https://github.com/shinolab/autd)
 
@@ -30,7 +30,9 @@ This versioning was introduced after version 0.3.0.
 
 ## Requirements
 
-* If you are using Windows, install [Npcap](https://nmap.org/npcap/) with WinPcap API-compatible mode (recommended) or [WinPcap](https://www.winpcap.org/).
+* If you use `SOEMLink` on Windows, install [Npcap](https://nmap.org/npcap/) with WinPcap API-compatible mode (recommended) or [WinPcap](https://www.winpcap.org/).
+
+* If you use `TwinCAT`, please see [how to install AUTDServer](https://github.com/shinolab/autd3-library-software/wiki/How-to-install-AUTDServer).
 
 * This library depends on [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page) library.
 
