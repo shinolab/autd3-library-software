@@ -24,11 +24,11 @@ If the number of x or y changes, the firmware of FPGA or CPU must be upgraded.
 
 This versioning was introduced after version 0.3.0.
 
-## ⚠ CAUTION ##
+## :fire: CAUTION
 
 * Before using, be sure to write the latest firmwares in `dist/firmware`. For more information, please see [readme](/dist/firmware/Readme.md).
 
-## Requirements
+## :ballot_box_with_check: Requirements
 
 * If you use `SOEMLink` on Windows, install [Npcap](https://nmap.org/npcap/) with WinPcap API-compatible mode (recommended) or [WinPcap](https://www.winpcap.org/).
 
@@ -36,7 +36,7 @@ This versioning was introduced after version 0.3.0.
 
 * This library depends on [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page) library.
 
-## Build ##
+## :hammer_and_wrench: Build
 
 * Pre-built binaries and header files are on the [GitHub Release page](https://github.com/shinolab/autd3-library-software/releases). Instead, if you want to build from source, install CMake version 3.12 or higher and follow the instructions below.
     * Windows:
