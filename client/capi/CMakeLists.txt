@@ -36,7 +36,7 @@ file(GLOB include_files  ../include/*.hpp)
 
 add_library(autd3capi SHARED
   c_api.cpp
-  ../include/autd3_c_api.h
+  autd3_c_api.h
   wrapper.hpp
 
   ${hpp_files}

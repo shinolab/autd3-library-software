@@ -24,6 +24,7 @@
 #include "seq.hpp"
 #include "simple.hpp"
 #include "stm.hpp"
+#include "delay.hpp"
 
 using std::cin;
 using std::cout;
@@ -40,7 +41,7 @@ inline int Run(autd::ControllerPtr& autd) {
   vector<pair<F, string>> examples = {
       pair(F{SimpleTest}, "Single Focal Point Test"),         pair(F{BesselTest}, "BesselBeam Test"),
       pair(F{HoloTest}, "Multiple Focal Points Test"),        pair(F{STMTest}, "Spatio-Temporal Modulation Test"),
-      pair(F{SeqTest}, "Point Sequence Test (Hardware STM)"),
+      pair(F{SeqTest}, "Point Sequence Test (Hardware STM)"), pair(F{DelayTest}, "(Advanced) Delay test")
   };
 
   autd->geometry()->set_wavelength(ULTRASOUND_WAVELENGTH);
