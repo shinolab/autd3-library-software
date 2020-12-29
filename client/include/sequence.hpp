@@ -3,7 +3,7 @@
 // Created Date: 01/07/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/07/2020
+// Last Modified: 27/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -12,10 +12,19 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
-#include "core.hpp"
+#include "autd_types.hpp"
+#include "geometry.hpp"
 
 namespace autd {
+
+namespace sequence {
+class PointSequence;
+}
+
+using SequencePtr = std::shared_ptr<sequence::PointSequence>;
+
 namespace sequence {
 /**
  * @brief PointSequence provides a function to display the focus sequentially and periodically.
@@ -27,10 +36,9 @@ namespace sequence {
  * 4. Only a single focus can be displayed at a certain moment.
  */
 class PointSequence {
-  friend class autd::AUTDController;
-
  public:
   PointSequence() noexcept;
+  explicit PointSequence(std::vector<Vector3> control_points) noexcept;
   /**
    * @brief Generate empty PointSequence.
    */
@@ -38,24 +46,24 @@ class PointSequence {
   /**
    * @brief Generate PointSequence with control points.
    */
-  static SequencePtr Create(std::vector<Vector3> control_points) noexcept;
-
+  static SequencePtr Create(const std::vector<Vector3>& control_points) noexcept;
   /**
    * @brief Append control point
    * @param[in] point control point
    * @details The maximum number of control points is 2000.
    */
-  void AppendPoint(Vector3 point);
+  void AppendPoint(const Vector3& point);
   /**
    * @brief Append control points
    * @param[in] points control points
    * @details The maximum number of control points is 2000.
    */
-  void AppendPoints(std::vector<Vector3> points);
+  void AppendPoints(const std::vector<Vector3>& points);
+
   /**
    * @return std::vector<Vector3> Control points of the sequence
    */
-  std::vector<Vector3> control_points();
+  [[nodiscard]] std::vector<Vector3> control_points() const;
 
   /**
    * @brief Set frequency of the sequence
@@ -64,27 +72,30 @@ class PointSequence {
    * 1. The maximum number of control points is 40000.
    * 2. the sampling interval of Control Points is an integer multiple of 25us.
    * 3. (number of Control Points) x (sampling interval) must be less than or equal 1 second.
-   * @return double Actual frequency of sequence
+   * @return Float Actual frequency of sequence
    */
-  double SetFrequency(double freq);
+  Float SetFrequency(Float freq);
   /**
-   * @return double Frequency of sequence
+   * @return Float Frequency of sequence
    */
-  double frequency();
+  [[nodiscard]] Float frequency() const;
   /**
    * The sampling period is limited to an integer multiple of 25us. Therefore, the sampling frequency is 40kHz/N.
-   * @return double Sampling frequency of sequence
+   * @return Float Sampling frequency of sequence
    */
-  double sampling_frequency();
+  [[nodiscard]] Float sampling_frequency() const;
   /**
    * The sampling frequency division means the "(sampling period)/25us".
-   * @return double Sampling frequency division
+   * @return Float Sampling frequency division
    */
-  uint16_t sampling_frequency_division();
+  [[nodiscard]] uint16_t sampling_frequency_division() const;
+
+  size_t& sent();
 
  private:
+  GeometryPtr _geometry;
   std::vector<Vector3> _control_points;
-  uint16_t _sampl_freq_div;
+  uint16_t _sampling_freq_div;
   size_t _sent;
 };
 
@@ -100,7 +111,7 @@ class CircumSeq : PointSequence {
    * @param[in] radius Radius of the circumference
    * @param[in] n Number of the control points
    */
-  static SequencePtr Create(Vector3 center, Vector3 normal, double radius, size_t n);
+  static SequencePtr Create(const Vector3& center, const Vector3& normal, Float radius, size_t n);
 };
 }  // namespace sequence
 }  // namespace autd

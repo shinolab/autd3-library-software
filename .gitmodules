@@ -1,9 +1,9 @@
 [submodule "client/deps/BeckhoffADS/ADS"]
 	path = client/deps/BeckhoffADS/ADS
 	url = https://github.com/Beckhoff/ADS.git
-[submodule "client/deps/SOEM"]
-	path = client/deps/SOEM
-	url = https://github.com/OpenEtherCATsociety/SOEM
 [submodule "client/deps/Eigen3"]
 	path = client/deps/Eigen3
 	url = https://gitlab.com/libeigen/eigen.git
+[submodule "client/deps/SOEM/SOEM"]
+	path = client/deps/SOEM/SOEM
+	url = https://github.com/OpenEtherCATsociety/SOEM.git

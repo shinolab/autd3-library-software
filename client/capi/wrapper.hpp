@@ -3,7 +3,7 @@
 // Created Date: 09/06/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/07/2020
+// Last Modified: 27/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -38,26 +38,27 @@ typedef struct {
 } EtherCATAdaptersWrapper;
 
 typedef struct {
-  autd::FirmwareInfoList list;
+  std::vector<autd::FirmwareInfo> list;
 } FirmwareInfoListWrapper;
 
-GainWrapper* GainCreate(autd::GainPtr ptr) { return new GainWrapper{ptr = ptr}; }
-void GainDelete(GainWrapper* ptr) { delete ptr; }
+inline GainWrapper* GainCreate(const autd::GainPtr& ptr) { return new GainWrapper{ptr}; }
+inline void GainDelete(GainWrapper* ptr) { delete ptr; }
 
-ModulationWrapper* ModulationCreate(autd::ModulationPtr ptr) { return new ModulationWrapper{ptr = ptr}; }
-void ModulationDelete(ModulationWrapper* ptr) { delete ptr; }
+inline ModulationWrapper* ModulationCreate(const autd::ModulationPtr& ptr) { return new ModulationWrapper{ptr}; }
+inline void ModulationDelete(ModulationWrapper* ptr) { delete ptr; }
 
-SequenceWrapper* SequencePtrCreate(autd::SequencePtr ptr) { return new SequenceWrapper{ptr = ptr}; }
-void SequenceDelete(SequenceWrapper* ptr) { delete ptr; }
+inline SequenceWrapper* SequencePtrCreate(const autd::SequencePtr& ptr) { return new SequenceWrapper{ptr}; }
+inline void SequenceDelete(SequenceWrapper* ptr) { delete ptr; }
 
-LinkWrapper* LinkCreate(autd::LinkPtr ptr) { return new LinkWrapper{ptr = ptr}; }
-void LinkDelete(LinkWrapper* ptr) { delete ptr; }
+inline LinkWrapper* LinkCreate(autd::LinkPtr ptr) { return new LinkWrapper{std::move(ptr)}; }
 
-ControllerWrapper* ControllerCreate(autd::ControllerPtr ptr) { return new ControllerWrapper{ptr = ptr}; }
-void ControllerDelete(ControllerWrapper* ptr) { delete ptr; }
+inline void LinkDelete(LinkWrapper* ptr) { delete ptr; }
 
-EtherCATAdaptersWrapper* EtherCATAdaptersCreate(autd::link::EtherCATAdapters adapters) { return new EtherCATAdaptersWrapper{adapters = adapters}; }
-void EtherCATAdaptersDelete(EtherCATAdaptersWrapper* ptr) { delete ptr; }
+inline ControllerWrapper* ControllerCreate(autd::ControllerPtr ptr) { return new ControllerWrapper{std::move(ptr)}; }
+inline void ControllerDelete(ControllerWrapper* ptr) { delete ptr; }
 
-FirmwareInfoListWrapper* FirmwareInfoListCreate(autd::FirmwareInfoList list) { return new FirmwareInfoListWrapper{list = list}; }
-void FirmwareInfoListDelete(FirmwareInfoListWrapper* ptr) { delete ptr; }
+inline EtherCATAdaptersWrapper* EtherCATAdaptersCreate(const autd::link::EtherCATAdapters& adapters) { return new EtherCATAdaptersWrapper{adapters}; }
+inline void EtherCATAdaptersDelete(EtherCATAdaptersWrapper* ptr) { delete ptr; }
+
+inline FirmwareInfoListWrapper* FirmwareInfoListCreate(const std::vector<autd::FirmwareInfo>& list) { return new FirmwareInfoListWrapper{list}; }
+inline void FirmwareInfoListDelete(FirmwareInfoListWrapper* ptr) { delete ptr; }

@@ -3,29 +3,33 @@
 // Created Date: 01/07/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2020
+// Last Modified: 27/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
 //
 
+#pragma once
+
+#include <iostream>
+
 #include "autd3.hpp"
 
-void seq_test(autd::ControllerPtr autd) {
+inline void SeqTest(const autd::ControllerPtr& autd) {
   autd->SetSilentMode(false);
 
-  auto m = autd::modulation::Modulation::Create(255);
+  const auto m = autd::modulation::Modulation::Create(255);
   autd->AppendModulationSync(m);
 
-  auto center = autd::Vector3(autd::AUTD_WIDTH / 2, autd::AUTD_HEIGHT / 2, 150);
-  auto radius = 30.0;
-  auto point_num = 200;
+  const auto center = autd::Vector3(autd::AUTD_WIDTH / 2, autd::AUTD_HEIGHT / 2, 150);
+  const auto radius = 30.0;
+  const auto point_num = 200;
 
-  auto circum = autd::sequence::CircumSeq::Create(center, autd::Vector3::unit_z(), radius, point_num);
-  auto freq = 200.0;
+  auto circum = autd::sequence::CircumSeq::Create(center, autd::Vector3::UnitZ(), radius, point_num);
+  const auto freq = 200.0;
   // For some reasons, the frequency may differ from the specified frequency.
   // See the documentation for details.
-  auto actual_freq = circum->SetFrequency(freq);
+  const auto actual_freq = circum->SetFrequency(freq);
   std::cout << "Actual frequency is " << actual_freq << "." << std::endl;
 
   autd->AppendSequence(circum);

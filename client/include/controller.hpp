@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/11/2020
+// Last Modified: 27/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -12,35 +12,38 @@
 #pragma once
 
 #include <memory>
-#include <string>
-#include <utility>
 #include <vector>
 
 #include "configuration.hpp"
+#include "consts.hpp"
+#include "firmware_version.hpp"
 #include "gain.hpp"
 #include "geometry.hpp"
+#include "link.hpp"
 #include "modulation.hpp"
-#include "vector3.hpp"
+#include "sequence.hpp"
 
 namespace autd {
 
-enum class AUTD_VERSION {
-  V_0_1 = 0,
-  V_0_6 = 1,
-  V_0_7 = 2,
-};
+class Controller;
+using ControllerPtr = std::unique_ptr<Controller>;
 
 /**
  * @brief AUTD Controller
  */
 class Controller {
  public:
-  virtual ~Controller() {}
+  Controller() noexcept = default;
+  virtual ~Controller() = default;
+  Controller(const Controller& v) noexcept = delete;
+  Controller& operator=(const Controller& obj) = delete;
+  Controller(Controller&& obj) = delete;
+  Controller& operator=(Controller&& obj) = delete;
 
   /**
    * @brief Create controller
    */
-  static ControllerPtr Create(AUTD_VERSION version = AUTD_VERSION::V_0_7);
+  static ControllerPtr Create();
   /**
    * @brief Verify that the device is properly connected
    */
@@ -71,7 +74,7 @@ class Controller {
   /**
    * @brief Calibrate
    * @details Call this function only once after OpenWith(). It takes several seconds and blocks the thread in the meantime.
-   * @param[in] config configration
+   * @param[in] config configuration
    * @return true if success to calibrate
    */
   virtual bool Calibrate(Configuration config = Configuration::GetDefaultConfiguration()) = 0;
@@ -80,6 +83,11 @@ class Controller {
    * @return true if success to clear
    */
   virtual bool Clear() = 0;
+  /**
+   * @brief Set output delay
+   * @param[in] delay delay for each transducer in units of ultrasound period (i.e. 25us)
+   */
+  virtual void SetDelay(const std::vector<AUTDDataArray>& delay) = 0;
   /**
    * @brief Close the controller
    */
@@ -118,7 +126,7 @@ class Controller {
   /**
    * @brief Append gain for STM
    */
-  virtual void AppendSTMGain(const std::vector<GainPtr> &gain_list) = 0;
+  virtual void AppendSTMGain(const std::vector<GainPtr>& gain_list) = 0;
   /**
    * @brief Start Spatio-Temporal Modulation
    * @param[in] freq Frequency of STM modulation
@@ -127,7 +135,7 @@ class Controller {
    * example, about 1ms on Windows. Note that it is affected by interruptions,
    * and so on.
    */
-  virtual void StartSTModulation(double freq) = 0;
+  virtual void StartSTModulation(Float freq) = 0;
   /**
    * @brief Suspend Spatio-Temporal Modulation
    */
@@ -148,10 +156,8 @@ class Controller {
    */
   virtual void Flush() = 0;
   /**
-   * @brief Enumerate firmware infomations
+   * @brief Enumerate firmware information
    */
-  virtual FirmwareInfoList firmware_info_list() = 0;
-
-  virtual void LateralModulationAT(Vector3 point, Vector3 dir = Vector3::unit_y(), double lm_amp = 2.5, double lm_freq = 100) = 0;
+  virtual std::vector<FirmwareInfo> firmware_info_list() = 0;
 };
 }  // namespace autd

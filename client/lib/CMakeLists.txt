@@ -41,6 +41,9 @@ set(SOURCE_LIST
 )
 
 add_library(autd3 STATIC ${SOURCE_LIST})
+if(USE_DOUBLE)
+add_definitions(-DUSE_DOUBLE_AUTD)
+endif()
 
 if(WIN32 AND (NOT DISABLE_MATLAB))
   find_package( Matlab )
@@ -57,35 +60,45 @@ include_directories(${INCLUDE_LIST})
 
 if(WIN32)
   source_group("link" FILES
-    link.cpp
     emulator_link.cpp
+    debug_link.cpp
+    ../include/emulator_link.hpp
+    ../include/debug_link.hpp
   )
 
   source_group("gain" FILES
     gain.cpp
-    matlabgain.cpp
+    matlab_gain.cpp
     holo_gain.cpp
-    groupedgain.cpp
+    grouped_gain.cpp
+    ../include/gain.hpp
   )
 
   source_group("modulation" FILES
     modulation.cpp
+    ../include/modulation.hpp
   )
 
   source_group("sequence" FILES
     sequence.cpp
+    ../include/sequence.hpp
   )
  
   source_group("controller" FILES
     controller.cpp
-    controller_v_0_1.cpp
-    controller_v_0_6.cpp
-    controller_v_0_7.cpp
+    autd_logic.cpp
+    ../include/controller.hpp
+    autd_logic.hpp
+  )
+
+  source_group("geometry" FILES
     geometry.cpp
+    ../include/geometry.hpp
   )
 
   source_group("util" FILES
     ${OS}/timer.cpp
+    timer.hpp
   )
 endif()
 

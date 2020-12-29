@@ -1,3 +1,20 @@
+# 0.8.0
+* Delete backward compatibility
+* Delete `Geometry::DelDevice()` and `Geometry::deviceIdForDeviceIdx()`
+* Delete `Controller::LateralModulationAT()`
+* Delete `vector3.hpp` and `quaternion.hpp`
+* Rename some functions to unify the naming
+* Add `DebugLink`
+* Add `SetDelay`
+* Add `Geometry::wavelength()` and `Geometry::set_wavelength()`
+* Add `USE_DOUBLE_AUTD` macro to switch float type 
+    * Set default float type to `float`
+    * Also, change float type in capi from `double` to `float`
+* Perform overall refactoring
+
+# 0.7.2
+* Support Apple Silicon mac
+
 # 0.7.1
 * Changed Timer implementation from TimerQueue to timeSetEvent (Windows)
     * Because TimerQueue  does not work with the resolution of 16ms or less

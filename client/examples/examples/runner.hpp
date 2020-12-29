@@ -3,13 +3,16 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2020
+// Last Modified: 27/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
 //
 
+#pragma once
+
 #include <functional>
+#include <iostream>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -21,6 +24,7 @@
 #include "seq.hpp"
 #include "simple.hpp"
 #include "stm.hpp"
+#include "delay.hpp"
 
 using std::cin;
 using std::cout;
@@ -30,13 +34,17 @@ using std::pair;
 using std::string;
 using std::vector;
 
-int run(autd::ControllerPtr autd) {
-  using F = function<void(autd::ControllerPtr autd)>;
+constexpr auto ULTRASOUND_WAVELENGTH = 8.5;
+
+inline int Run(autd::ControllerPtr& autd) {
+  using F = function<void(autd::ControllerPtr&)>;
   vector<pair<F, string>> examples = {
-      pair(F{simple_test}, "Single Focal Point Test"),         pair(F{bessel_test}, "BesselBeam Test"),
-      pair(F{holo_test}, "Multiple Focal Points Test"),        pair(F{stm_test}, "Spatio-Temporal Modulation Test"),
-      pair(F{seq_test}, "Point Sequence Test (Hardware STM)"),
+      pair(F{SimpleTest}, "Single Focal Point Test"),         pair(F{BesselTest}, "BesselBeam Test"),
+      pair(F{HoloTest}, "Multiple Focal Points Test"),        pair(F{STMTest}, "Spatio-Temporal Modulation Test"),
+      pair(F{SeqTest}, "Point Sequence Test (Hardware STM)"), pair(F{DelayTest}, "(Advanced) Delay test")
   };
+
+  autd->geometry()->set_wavelength(ULTRASOUND_WAVELENGTH);
 
   autd->Clear();
 
@@ -46,20 +54,20 @@ int run(autd::ControllerPtr autd) {
   autd->Calibrate(config);
 
   auto firm_info_list = autd->firmware_info_list();
-  for (auto firm_info : firm_info_list) cout << firm_info << endl;
+  for (auto& firm_info : firm_info_list) cout << firm_info << endl;
 
   while (true) {
-    for (int i = 0; i < examples.size(); i++) {
+    for (size_t i = 0; i < examples.size(); i++) {
       cout << "[" << i << "]: " << examples[i].second << endl;
     }
     cout << "[Others]: finish." << endl;
 
     cout << "Choose number: ";
-    string in = "";
-    int idx = 0;
+    string in;
+    size_t idx = 0;
     getline(cin, in);
     std::stringstream s(in);
-    auto empty = in == "\n";
+    const auto empty = in == "\n";
     if (!(s >> idx) || idx >= examples.size() || empty) {
       break;
     }
@@ -68,7 +76,7 @@ int run(autd::ControllerPtr autd) {
     fn(autd);
 
     cout << "press any key to finish..." << endl;
-    getchar();
+    auto _ = getchar();
 
     cout << "finish." << endl;
     autd->FinishSTModulation();
