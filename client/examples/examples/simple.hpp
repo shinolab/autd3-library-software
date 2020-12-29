@@ -3,25 +3,25 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2020
+// Last Modified: 25/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
 //
 
+#pragma once
+
 #include "autd3.hpp"
 
-using autd::NUM_TRANS_X;
-using autd::NUM_TRANS_Y;
-using autd::TRANS_SIZE_MM;
+using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SIZE_MM;
 
-void simple_test(autd::ControllerPtr autd) {
+inline void SimpleTest(const autd::ControllerPtr& autd) {
   autd->SetSilentMode(true);
 
-  auto m = autd::modulation::SineModulation::Create(150);  // 150Hz AM
+  const auto m = autd::modulation::SineModulation::Create(150);  // 150Hz AM
   autd->AppendModulationSync(m);
 
-  auto center = autd::Vector3(TRANS_SIZE_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SIZE_MM * ((NUM_TRANS_Y - 1) / 2.0), 150);
-  auto g = autd::gain::FocalPointGain::Create(center);
+  const auto center = autd::Vector3(TRANS_SIZE_MM * ((NUM_TRANS_X - 1) / 2.0f), TRANS_SIZE_MM * ((NUM_TRANS_Y - 1) / 2.0f), 150.0f);
+  const auto g = autd::gain::FocalPointGain::Create(center);
   autd->AppendGainSync(g);
 }

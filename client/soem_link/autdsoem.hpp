@@ -3,7 +3,7 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/07/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -18,31 +18,40 @@
 namespace autdsoem {
 
 struct ECConfig {
-  uint32_t ec_sm3_cyctime_ns;
-  uint32_t ec_sync0_cyctime_ns;
+  uint32_t ec_sm3_cycle_time_ns;
+  uint32_t ec_sync0_cycle_time_ns;
   size_t header_size;
   size_t body_size;
   size_t input_frame_size;
 };
 
-class ISOEMController {
+class SOEMController {
  public:
-  static std::unique_ptr<ISOEMController> Create();
-  virtual ~ISOEMController() {}
+  static std::unique_ptr<SOEMController> Create();
+  SOEMController() = default;
+  virtual ~SOEMController() = default;
+  SOEMController(const SOEMController& v) noexcept = delete;
+  SOEMController& operator=(const SOEMController& obj) = delete;
+  SOEMController(SOEMController&& obj) = default;
+  SOEMController& operator=(SOEMController&& obj) = default;
 
-  virtual void Open(const char *ifname, size_t dev_num, ECConfig config) = 0;
+  virtual void Open(const char* ifname, size_t dev_num, ECConfig config) = 0;
   virtual void Close() = 0;
 
   virtual bool is_open() = 0;
 
   virtual void Send(size_t size, std::unique_ptr<uint8_t[]> buf) = 0;
-  virtual std::vector<uint8_t> Read() = 0;
+  virtual void Read(uint8_t* rx) = 0;
 };
 
-struct EtherCATAdapterInfo {
- public:
-  EtherCATAdapterInfo() {}
-  EtherCATAdapterInfo(const EtherCATAdapterInfo &info) {
+struct EtherCATAdapterInfo final {
+  EtherCATAdapterInfo() = default;
+  ~EtherCATAdapterInfo() = default;
+  EtherCATAdapterInfo& operator=(const EtherCATAdapterInfo& obj) = delete;
+  EtherCATAdapterInfo(EtherCATAdapterInfo&& obj) = default;
+  EtherCATAdapterInfo& operator=(EtherCATAdapterInfo&& obj) = default;
+
+  EtherCATAdapterInfo(const EtherCATAdapterInfo& info) {
     desc = info.desc;
     name = info.name;
   }

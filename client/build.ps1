@@ -16,8 +16,7 @@ Param(
     [ValidateSet(2017 , 2019)]$VS_VERSION = 2019,
     [string]$ARCH = "x64",
     [switch]$DISABLE_MATLAB = $FALSE,
-    [switch]$ENABLE_TEST,
-    [string]$TOOL_CHAIN = ""
+    [switch]$USE_DOUBLE = $FALSE
 )
 
 Start-Transcript "build.log" | Out-Null
@@ -39,13 +38,6 @@ function FindInstallLocation([string]$displayName) {
     else {
         return "NULL"
     }
-}
-
-if ($ENABLE_TEST -and ($TOOL_CHAIN -eq "")) {
-    ColorEcho "Red" "Error" "Please specify vcpkg tool chain file. ex. -TOOL_CHAIN ""-DCMAKE_TOOLCHAIN_FILE=C:[...]\vcpkg\scripts\buildsystems\vcpkg.cmake"""
-    Stop-Transcript | Out-Null
-    $host.UI.RawUI.ReadKey() | Out-Null
-    Exit
 }
 
 # Show VS info
@@ -143,19 +135,20 @@ if ($VS_VERSION -ne 2017) {
     $command += " -A " + $ARCH
 }
 
-if ($ENABLE_TEST) {
-    $command += " -D ENABLE_TESTS=ON " + $TOOL_CHAIN
-}
-else {
-    $command += " -D ENABLE_TESTS=OFF"
-}
-
 if ($DISABLE_MATLAB) {
     $command += " -D DISABLE_MATLAB=ON"
 }
 else {
     $command += " -D DISABLE_MATLAB=OFF"
 }
+
+if ($USE_DOUBLE) {
+    $command += " -D USE_DOUBLE=ON"
+}
+else {
+    $command += " -D USE_DOUBLE=OFF"
+}
+
 Invoke-Expression $command | Tee-Object -FilePath "build.log"
 Pop-Location
 

@@ -3,32 +3,57 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 31/10/2020
+// Last Modified: 27/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
 //
 
+#pragma once
+
+#include <iostream>
+#include <string>
+
 #include "autd3.hpp"
 
-using autd::NUM_TRANS_X;
-using autd::NUM_TRANS_Y;
-using autd::TRANS_SIZE_MM;
-using autd::gain::OptMethod;
+using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SIZE_MM;
+using autd::gain::OPT_METHOD;
 
-void holo_test(autd::ControllerPtr autd) {
+inline OPT_METHOD SelectOpt() {
+    std::cout << "Select Optimization Method (default is SDP)" << std::endl;
+    const std::vector<std::string> opts = {"SDP", "EVD", "GS", "GS-PAT", "NAIVE", "LM"};
+    for (size_t i = 0; i < opts.size(); i++) {
+        const auto& name = opts[i];
+        std::cout << "[" << i << "]: " << name << std::endl;
+    }
+
+    std::string in;
+    size_t idx = 0;
+    getline(std::cin, in);
+    std::stringstream s(in);
+    const auto empty = in == "\n";
+    if (!(s >> idx) || idx >= opts.size() || empty) {
+        idx = 0;
+    }
+
+    return static_cast<OPT_METHOD>(idx);
+}
+
+inline void HoloTest(const autd::ControllerPtr& autd) {
   autd->SetSilentMode(true);
 
-  auto m = autd::modulation::SineModulation::Create(150);  // 150Hz AM
+  const auto m = autd::modulation::SineModulation::Create(150);  // 150Hz AM
   autd->AppendModulationSync(m);
 
-  auto center = autd::Vector3(TRANS_SIZE_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SIZE_MM * ((NUM_TRANS_Y - 1) / 2.0), 150);
-  auto foci = {
-      center - autd::Vector3::unit_x() * 30.0,
-      center + autd::Vector3::unit_x() * 30.0,
+  const auto center = autd::Vector3(TRANS_SIZE_MM * ((NUM_TRANS_X - 1) / 2.0f), TRANS_SIZE_MM * ((NUM_TRANS_Y - 1) / 2.0f), 150.0f);
+  const std::vector<autd::Vector3> foci = {
+      center - autd::Vector3::UnitX() * 30.0f,
+      center + autd::Vector3::UnitX() * 30.0f,
   };
-  auto amps = {1.0, 1.0};
+  const std::vector<autd::Float> amps = {1, 1};
 
-  auto g = autd::gain::HoloGain::Create(foci, amps, OptMethod::SDP);
+  const auto opt = SelectOpt();
+  const auto g = autd::gain::HoloGain::Create(foci, amps, opt);
+	
   autd->AppendGainSync(g);
 }

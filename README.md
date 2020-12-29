@@ -1,9 +1,9 @@
 ![build](https://github.com/shinolab/autd3-library-software/workflows/build/badge.svg)
 ![Upload Release Asset](https://github.com/shinolab/autd3-library-software/workflows/Upload%20Release%20Asset/badge.svg)
 
-# autd3 #
+# [AUTD3](https://hapislab.org/airborne-ultrasound-tactile-display?lang=en) #
 
-Version: 0.7.0
+Version: 0.8.0
 
 * This repository is forked from [old version](https://github.com/shinolab/autd)
 
@@ -24,17 +24,19 @@ If the number of x or y changes, the firmware of FPGA or CPU must be upgraded.
 
 This versioning was introduced after version 0.3.0.
 
-## ⚠ CAUTION ##
+## :fire: CAUTION
 
 * Before using, be sure to write the latest firmwares in `dist/firmware`. For more information, please see [readme](/dist/firmware/Readme.md).
 
-* If you are using Windows, you should disable Hyper-V, otherwise, it will cause unexpected behavior.
+## :ballot_box_with_check: Requirements
 
-## Requirements
+* If you use `SOEMLink` on Windows, install [Npcap](https://nmap.org/npcap/) with WinPcap API-compatible mode (recommended) or [WinPcap](https://www.winpcap.org/).
 
-* If you are using Windows, install [Npcap](https://nmap.org/npcap/) with WinPcap API-compatible mode (recommended) or [WinPcap](https://www.winpcap.org/).
+* If you use `TwinCAT`, please see [how to install AUTDServer](https://github.com/shinolab/autd3-library-software/wiki/How-to-install-AUTDServer).
 
-## Build ##
+* This library depends on [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page) library.
+
+## :hammer_and_wrench: Build
 
 * Pre-built binaries and header files are on the [GitHub Release page](https://github.com/shinolab/autd3-library-software/releases). Instead, if you want to build from source, install CMake version 3.12 or higher and follow the instructions below.
     * Windows:
@@ -68,7 +70,7 @@ If you are using Linux/macOS, you may need to run as root.
 
 If you use this SDK in your research please consider to include the following citation in your publications:
 
-S. Inoue, Y. Makino and H. Shinoda "Scalable Architecture for Airborne Ultrasound Tactile Display", Asia Haptics 2016
+* S. Inoue, Y. Makino and H. Shinoda "Scalable Architecture for Airborne Ultrasound Tactile Display", Asia Haptics 2016
 
 # Author #
 

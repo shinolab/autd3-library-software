@@ -3,7 +3,7 @@
 // Created Date: 29/04/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/07/2020
+// Last Modified: 26/12/2020
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -13,12 +13,12 @@
 
 #if _WINDOWS
 #define NOMINMAX
-#include <winsock2.h>
+#include <WinSock2.h>
 #endif
 
 #include <memory>
 #include <string>
-#include <vector>
+#include <utility>
 
 #include "emulator_link.hpp"
 #include "geometry.hpp"
@@ -28,29 +28,33 @@ namespace autd::link {
 /**
  * @brief Experimental: Link to connect with [Emulator](https://github.com/shinolab/autd-emulator)
  */
-class EmulatorLink : public Link {
+class EmulatorLink final : public Link {
  public:
-  static LinkPtr Create(std::string ipaddr, int32_t port, GeometryPtr geometry);
-  ~EmulatorLink() override{};
+  static LinkPtr Create(const std::string& ip_addr, uint16_t port, const GeometryPtr& geometry);
+  EmulatorLink(std::string ip_addr, const uint16_t port, GeometryPtr geometry)
+      : Link(), _ip_addr(std::move(ip_addr)), _geometry(std::move(geometry)), _port(port) {}
+  ~EmulatorLink() override = default;
+  EmulatorLink(const EmulatorLink& v) noexcept = delete;
+  EmulatorLink& operator=(const EmulatorLink& obj) = delete;
+  EmulatorLink(EmulatorLink&& obj) = delete;
+  EmulatorLink& operator=(EmulatorLink&& obj) = delete;
 
- protected:
-  void Open() final;
-  void Close() final;
-  void Send(size_t size, std::unique_ptr<uint8_t[]> buf) final;
-  std::vector<uint8_t> Read(uint32_t buffer_len) final;
-  bool is_open() final;
+  void Open() override;
+  void Close() override;
+  std::optional<int32_t> Send(size_t size, std::unique_ptr<uint8_t[]> buf) override;
+  std::optional<int32_t> Read(uint8_t* rx, uint32_t buffer_len) override;
+  bool is_open() override;
   void SetGeometry();
 
  private:
   bool _is_open = false;
-  size_t _dev_num = 0;
-  std::string _ipaddr;
+  std::string _ip_addr;
   GeometryPtr _geometry;
-  int32_t _port;
+  uint16_t _port = 0;
 #if _WINDOWS
   SOCKET _socket = {};
   sockaddr_in _addr = {};
 #endif
-  uint8_t _last_ms_id = 0;
+  uint8_t _last_msg_id = 0;
 };
 }  // namespace autd::link
