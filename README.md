@@ -61,7 +61,7 @@ If you are using Linux/macOS, you may need to run as root.
 
 ## For other programming languages ##
 
-* [Rust](https://github.com/shinolab/ruautd)
+* [Rust](https://github.com/shinolab/rust-autd)
 * [C#](https://github.com/shinolab/autd3sharp)
 * [python](https://github.com/shinolab/pyautd)
 * [julia](https://github.com/shinolab/AUTD3.jl)
