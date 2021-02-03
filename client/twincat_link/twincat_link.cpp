@@ -197,13 +197,12 @@ typedef long(_stdcall* TcAdsSyncReadReqEx)(long, AmsAddr*,       // NOLINT
                                            unsigned long,        // NOLINT
                                            void*,                // NOLINT
                                            unsigned long*);      // NOLINT
-#ifdef _WIN64
+
 constexpr auto TCADS_ADS_PORT_OPEN_EX = "AdsPortOpenEx";
 constexpr auto TCADS_ADS_GET_LOCAL_ADDRESS_EX = "AdsGetLocalAddressEx";
 constexpr auto TCADS_ADS_PORT_CLOSE_EX = "AdsPortCloseEx";
 constexpr auto TCADS_ADS_SYNC_WRITE_REQ_EX = "AdsSyncWriteReqEx";
 constexpr auto TCADS_ADS_SYNC_READ_REQ_EX = "AdsSyncReadReqEx2";
-#endif
 
 void LocalTwinCATLinkImpl::Open() {
   this->_lib = LoadLibrary("TcAdsDll.dll");
