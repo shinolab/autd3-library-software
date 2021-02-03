@@ -40,10 +40,14 @@ function FindInstallLocation([string]$displayName) {
     }
 }
 
+if ($ARCH -eq "x86") {
+    $ARCH = "Win32"
+}
+
 # Show VS info
 $IDE_NAME = "Visual Studio "
 if ($VS_VERSION -eq 2017) {
-    if ( ($ARCH -eq "x86") -or ($ARCH -eq "Win32")) {
+    if ($ARCH -eq "Win32") {
         $IDE_NAME = $IDE_NAME + "15 2017"
     }
     else {
