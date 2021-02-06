@@ -42,7 +42,7 @@ set(SOURCE_LIST
 
 add_library(autd3 STATIC ${SOURCE_LIST})
 if(USE_DOUBLE)
-add_definitions(-DUSE_DOUBLE_AUTD)
+  add_definitions(-DUSE_DOUBLE_AUTD)
 endif()
 
 if(WIN32 AND (NOT DISABLE_MATLAB))
@@ -69,9 +69,13 @@ if(WIN32)
   source_group("gain" FILES
     gain.cpp
     matlab_gain.cpp
-    holo_gain.cpp
     grouped_gain.cpp
     ../include/gain.hpp
+  )
+
+  source_group("gain/holo" FILES
+    ../include/holo_gain.hpp
+    holo_gain.cpp
   )
 
   source_group("modulation" FILES
@@ -105,5 +109,5 @@ endif()
 target_link_libraries(autd3 ${CMAKE_THREAD_LIBS_INIT})
 
 if (WIN32)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4068 /wd4819 /D _SILENCE_CXX17_RESULT_OF_DEPRECATION_WARNING")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4068 /wd4819")
 endif()
