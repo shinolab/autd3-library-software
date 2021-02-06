@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 27/12/2020
+// Last Modified: 06/02/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -18,5 +18,6 @@
 #include "firmware_version.hpp"
 #include "gain.hpp"
 #include "geometry.hpp"
+#include "holo_gain.hpp"
 #include "modulation.hpp"
 #include "sequence.hpp"
