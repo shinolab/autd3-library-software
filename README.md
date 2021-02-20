@@ -1,9 +1,9 @@
 ![build](https://github.com/shinolab/autd3-library-software/workflows/build/badge.svg)
 ![Upload Release Asset](https://github.com/shinolab/autd3-library-software/workflows/Upload%20Release%20Asset/badge.svg)
 
-# [AUTD3](https://hapislab.org/airborne-ultrasound-tactile-display?lang=en) #
+# [AUTD3](https://hapislab.org/airborne-ultrasound-tactile-display?lang=en)
 
-Version: 0.8.0
+Version: 0.8.1
 
 * This repository is forked from [old version](https://github.com/shinolab/autd)
 
@@ -13,7 +13,7 @@ Version: 0.8.0
 
 * The firmware codes are available at [here](https://github.com/shinolab/autd3-library-firmware).
 
-## Versioning ##
+## Versioning
 
 The meanings of version number x.y.z are
 * x: Architecture version.
@@ -72,6 +72,6 @@ If you use this SDK in your research please consider to include the following ci
 
 * S. Inoue, Y. Makino and H. Shinoda "Scalable Architecture for Airborne Ultrasound Tactile Display", Asia Haptics 2016
 
-# Author #
+# Author
 
-Shun Suzuki, 2019-2020
+Shun Suzuki, 2019-2021
