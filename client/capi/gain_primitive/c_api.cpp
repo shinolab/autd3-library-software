@@ -10,8 +10,8 @@
 //
 
 #include "../base/wrapper_gain.hpp"
-#include "./autd3_c_api_gain_primitive.h"
-#include "primitive_gain.hpp"
+#include "./gain_primitive.h"
+#include "gain/primitive.hpp"
 
 void AUTDFocalPointGain(VOID_PTR* gain, const float x, const float y, const float z, const uint8_t duty) {
   auto* g = GainCreate(autd::gain::FocalPointGain::Create(autd::Vector3(x, y, z), duty));

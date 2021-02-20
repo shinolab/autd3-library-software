@@ -9,7 +9,7 @@
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
 //
 
-#include "soem_link.hpp"
+#include "link/soem.hpp"
 
 #include <algorithm>
 #include <bitset>

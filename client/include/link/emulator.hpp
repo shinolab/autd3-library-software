@@ -20,7 +20,7 @@
 #include <string>
 #include <utility>
 
-#include "emulator_link.hpp"
+#include "link/emulator.hpp"
 #include "geometry.hpp"
 #include "link.hpp"
 

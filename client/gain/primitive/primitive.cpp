@@ -10,7 +10,7 @@
 //
 
 
-#include "primitive_gain.hpp"
+#include "gain/primitive.hpp"
 
 namespace autd::gain {
 

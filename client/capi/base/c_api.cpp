@@ -16,7 +16,6 @@
 
 #include "./autd3_c_api.h"
 #include "autd3.hpp"
-#include "twincat_link.hpp"
 #include "wrapper.hpp"
 #include "wrapper_gain.hpp"
 #include "wrapper_link.hpp"

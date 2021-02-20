@@ -12,8 +12,8 @@
 #include <cstdint>
 
 #include "../base/wrapper_link.hpp"
-#include "./autd3_c_api_twincat_link.h"
-#include "twincat_link.hpp"
+#include "./twincat_link.h"
+#include "link/twincat.hpp"
 
 void AUTDTwinCATLink(VOID_PTR* out, const char* ipv4_addr, const char* ams_net_id) {
   auto* link = LinkCreate(autd::link::TwinCATLink::Create(std::string(ipv4_addr), std::string(ams_net_id)));

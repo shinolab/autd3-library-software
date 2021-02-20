@@ -11,13 +11,13 @@ set(INCLUDE_LIST
 
 add_library(autd3capi-gain-holo SHARED
   c_api.cpp
-  autd3_c_api_gain_holo.h
+  gain_holo.h
   ../base/wrapper_gain.hpp
 )
  
 include_directories(${INCLUDE_LIST})
 
-target_link_libraries(autd3capi-gain-holo holo_gain)
+target_link_libraries(autd3capi-gain-holo gain_holo)
 target_link_libraries(autd3capi-gain-holo autd3)
 
 set_target_properties(autd3capi-gain-holo

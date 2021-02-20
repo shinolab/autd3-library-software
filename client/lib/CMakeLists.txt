@@ -6,15 +6,7 @@ set (CMAKE_CXX_STANDARD 17)
 
 set(EIGEN_PATH ../deps/Eigen3)
 
-if (POLICY CMP0074)
-  cmake_policy(SET CMP0074 NEW)
-endif()
-
-if (POLICY CMP0079)
-  cmake_policy(SET CMP0079 NEW)
-endif()
-
-find_package( Threads REQUIRED )
+find_package(Threads REQUIRED)
 
 set(INCLUDE_LIST
   ../include

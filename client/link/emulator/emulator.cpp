@@ -9,7 +9,7 @@
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
 //
 
-#include "emulator_link.hpp"
+#include "link/emulator.hpp"
 
 #if _WINDOWS
 #include <atlstr.h>

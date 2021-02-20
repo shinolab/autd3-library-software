@@ -12,7 +12,7 @@ set(INCLUDE_LIST
 
 add_library(autd3capi-gain-primitive SHARED
   c_api.cpp
-  autd3_c_api_gain_primitive.h
+  gain_primitive.h
   ../base/wrapper_gain.hpp
 )
  

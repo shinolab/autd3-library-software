@@ -15,6 +15,7 @@
 #include <string>
 
 #include "autd3.hpp"
+#include "gain/holo.hpp"
 
 using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SIZE_MM;
 using autd::gain::OPT_METHOD;
