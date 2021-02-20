@@ -37,7 +37,7 @@ if(USE_DOUBLE)
   add_definitions(-DUSE_DOUBLE_AUTD)
 endif()
 
-if(WIN32 AND (NOT DISABLE_MATLAB))
+if(WIN32 AND ENABLE_MATLAB_GAIN)
   find_package( Matlab )
   if (Matlab_FOUND AND Matlab_MX_LIBRARY)
     list(APPEND INCLUDE_LIST

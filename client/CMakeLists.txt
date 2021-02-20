@@ -3,18 +3,44 @@ cmake_minimum_required(VERSION 3.10)
 project(autd3)
 set(VERSION_MAJOR   0   CACHE STRING "Project major version number.")
 set(VERSION_MINOR   8   CACHE STRING "Project minor version number.")
-set(VERSION_PATCH   1   CACHE STRING "Project patch version number.")
+set(VERSION_PATCH   2   CACHE STRING "Project patch version number.")
 mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
 
-option(DISABLE_MATLAB "DISABLE_MATLAB" OFF)
+option(ENABLE_MATLAB_GAIN "ENABLE_MATLAB_GAIN" ON)
+option(BUILD_DOC "BUILD_DOC" ON)
 option(USE_DOUBLE "USE_DOUBLE" OFF)
+option(ENABLE_EIGEN "ENABLE_EIGEN" ON)
+option(ENABLE_TWINCAT_LINK "ENABLE_TWINCAT_LINK" ON)
+option(ENABLE_SOEM_LINK "ENABLE_SOEM_LINK" ON)
+option(ENABLE_DEBUG_LINK "ENABLE_DEBUG_LINK" ON)
+option(ENABLE_EMULATOR_LINK "ENABLE_EMULATOR_LINK" ON)
+option(IGNORE_EXAMPLE "IGNORE_EXAMPLE" OFF)
+option(BUILD_CAPI "BUILD_CAPI" ON)
+option(ENABLE_LINT "ENABLE_LINT" ON)
 
-if(DISABLE_MATLAB)
+if(NOT ENABLE_MATLAB_GAIN)
   message(STATUS "Disabled Matlab")
 endif()
-
+if(BUILD_DOC)
+  message(STATUS "Build doc")
+endif()
 if(USE_DOUBLE)
   message(STATUS "Use double precision floating point number")
+endif()
+if(NOT ENABLE_TWINCAT_LINK)
+  message(STATUS "Disabled TwinCATLink")
+endif()
+if(NOT ENABLE_SOEM_LINK)
+  message(STATUS "Disabled SOEMLink")
+endif()
+if(NOT ENABLE_DEBUG_LINK)
+  message(STATUS "Disabled DebugLink")
+endif()
+if(ENABLE_EMULATOR_LINK)
+  message(STATUS "Enabled EmulatorLink")
+endif()
+if(IGNORE_EXAMPLE)
+  message(STATUS "Ignored examples")
 endif()
 
 if(WIN32)
@@ -38,30 +64,57 @@ else()
   endif()
 endif()
 
-file(GLOB_RECURSE lint_files lib/*.cpp lib/*.hpp include/*.hpp capi/*.cpp capi/*.cpp soem_link/*.cpp soem_link/*.hpp)
-
-ADD_CUSTOM_TARGET(cpplint
-  python
-  ${PROJECT_SOURCE_DIR}/deps/cpplint.py
-  --filter=-runtime/references,-build/c++11,-whitespace/comments
-  --linelength=150
-  ${lint_files}
+if(ENABLE_LINT)
+  file(GLOB_RECURSE lint_files lib/*.cpp lib/*.hpp include/*.hpp capi/*.cpp capi/*.hpp capi/*.h link/*.cpp link/*.hpp)
+  ADD_CUSTOM_TARGET(cpplint
+    python
+    ${PROJECT_SOURCE_DIR}/deps/cpplint.py
+    --filter=-runtime/references,-build/c++11,-whitespace/comments
+    --linelength=150
+    ${lint_files}
   )
+endif()
 
-# ADS
-add_subdirectory(deps/BeckhoffADS)
-# SOEM
-add_subdirectory(deps/SOEM)
+if(ENABLE_DEBUG_LINK)
+  add_subdirectory(links/debug_link)
+endif()
 
-add_subdirectory(soem_link)
-add_subdirectory(twincat_link)
+if(ENABLE_EMULATOR_LINK)
+  add_subdirectory(links/emulator_link)
+endif()
+
+if(ENABLE_TWINCAT_LINK)
+  add_subdirectory(deps/BeckhoffADS)
+  add_subdirectory(links/twincat_link)
+endif()
+
+if(ENABLE_SOEM_LINK)
+  add_subdirectory(deps/SOEM)
+  add_subdirectory(links/soem_link)
+endif()
 
 add_subdirectory(lib)
-add_subdirectory(capi)
-add_subdirectory(doc)
+
+if(BUILD_CAPI)
+  add_subdirectory(capi/base)
+  if(ENABLE_EMULATOR_LINK)
+    add_subdirectory(capi/emulator_link)
+  endif()
+  if(ENABLE_SOEM_LINK)
+    add_subdirectory(capi/soem_link)
+  endif()
+  if(ENABLE_TWINCAT_LINK)
+    add_subdirectory(capi/twincat_link)
+  endif()
+endif()
+
+if(BUILD_DOC)
+  add_subdirectory(doc)
+endif()
+
 if(NOT IGNORE_EXAMPLE)
-    add_subdirectory(examples)
-    if(WIN32)
-      set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT example_soem)
-    endif()
+  add_subdirectory(examples)
+  if(WIN32 AND ENABLE_SOEM_LINK)
+    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT example_soem)
+  endif()
 endif()

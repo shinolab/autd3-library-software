@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.10)
 
-set(SOEM_PATH ../deps/SOEM/SOEM)
+set(SOEM_PATH ../../deps/SOEM/SOEM)
 
 set (CMAKE_CXX_STANDARD 17)
 
 include_directories(
-	../include
+	../../include
 
 	${SOEM_PATH}/soem
 	${SOEM_PATH}/osal
@@ -24,7 +24,7 @@ add_library(soem_link STATIC
 	autdsoem.cpp
 	autdsoem.hpp
 	soem_link.cpp
-	../include/soem_link.hpp
+	../../include/soem_link.hpp
 )
 target_link_libraries(soem_link soem)
 
