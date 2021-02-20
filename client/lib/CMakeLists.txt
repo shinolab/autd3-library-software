@@ -37,17 +37,6 @@ if(USE_DOUBLE)
   add_definitions(-DUSE_DOUBLE_AUTD)
 endif()
 
-if(WIN32 AND ENABLE_MATLAB_GAIN)
-  find_package( Matlab )
-  if (Matlab_FOUND AND Matlab_MX_LIBRARY)
-    list(APPEND INCLUDE_LIST
-      ${Matlab_INCLUDE_DIRS}
-    )
-    add_definitions(-DMATLAB_ENABLED)
-    target_link_libraries(autd3 ${Matlab_MX_LIBRARY} ${Matlab_MAT_LIBRARY})
-  endif()
-endif()
-
 include_directories(${INCLUDE_LIST})
 
 if(WIN32)
@@ -60,14 +49,8 @@ if(WIN32)
 
   source_group("gain" FILES
     gain.cpp
-    matlab_gain.cpp
     grouped_gain.cpp
     ../include/gain.hpp
-  )
-
-  source_group("gain/holo" FILES
-    ../include/holo_gain.hpp
-    holo_gain.cpp
   )
 
   source_group("modulation" FILES

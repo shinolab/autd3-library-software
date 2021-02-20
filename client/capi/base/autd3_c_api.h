@@ -50,14 +50,8 @@ EXPORT_AUTD uint64_t AUTDRemainingInBuffer(VOID_PTR handle);
 #pragma endregion
 
 #pragma region Gain
-EXPORT_AUTD void AUTDFocalPointGain(VOID_PTR* gain, float x, float y, float z, uint8_t duty);
-EXPORT_AUTD void AUTDGroupedGain(VOID_PTR* gain, const int32_t* group_ids, VOID_PTR const* in_gains, int32_t size);
-EXPORT_AUTD void AUTDBesselBeamGain(VOID_PTR* gain, float x, float y, float z, float n_x, float n_y, float n_z, float theta_z, uint8_t duty);
-EXPORT_AUTD void AUTDPlaneWaveGain(VOID_PTR* gain, float n_x, float n_y, float n_z, uint8_t duty);
-EXPORT_AUTD void AUTDCustomGain(VOID_PTR* gain, const uint16_t* data, int32_t data_length);
-EXPORT_AUTD void AUTDHoloGain(VOID_PTR* gain, const float* points, const float* amps, int32_t size, int32_t method, VOID_PTR params);
-EXPORT_AUTD void AUTDTransducerTestGain(VOID_PTR* gain, int32_t idx, uint8_t duty, uint8_t phase);
 EXPORT_AUTD void AUTDNullGain(VOID_PTR* gain);
+EXPORT_AUTD void AUTDGroupedGain(VOID_PTR* gain, const int32_t* group_ids, VOID_PTR const* in_gains, int32_t size);
 EXPORT_AUTD void AUTDDeleteGain(VOID_PTR gain);
 #pragma endregion
 
