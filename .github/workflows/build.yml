@@ -22,18 +22,25 @@ jobs:
     - name: setup-msbuild
       if: matrix.os == 'windows-latest'
       uses: microsoft/setup-msbuild@v1
-    - name: build for Windows
+    - name: build for Windows x64
       if: matrix.os == 'windows-latest'
       run: |
         cd client
         cmake -G "Visual Studio 16 2019" -A x64 -B "build"
         cd build
         msbuild autd3.sln /t:build /p:Configuration=Release
+    - name: build for Windows x86
+      if: matrix.os == 'windows-latest'
+      run: |
+        cd client
+        cmake -G "Visual Studio 16 2019" -A Win32 -B "build_x86"
+        cd build_x86
+        msbuild autd3.sln /t:build /p:Configuration=Release
     - name: install gcc-10
       if: matrix.os == 'ubuntu-latest'
       run: |
         sudo apt update
-        sudo apt install gcc-10 g++-10 -y
+        sudo apt install gcc-10 g++-10 g++-arm-linux-gnueabihf g++-aarch64-linux-gnu -y
       shell: bash
     - name: build for Linux
       if: matrix.os == 'ubuntu-latest'
@@ -41,6 +48,28 @@ jobs:
         cd client
         mkdir -p build && cd build
         cmake .. -DCMAKE_BUILD_TYPE=Release
+        make
+      shell: bash
+      env:
+        CC: gcc-10
+        CXX: g++-10
+    - name: build for Linux ARM32
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        cd client
+        mkdir -p build_arm32 && cd build_arm32
+        cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TARGET=ARM32
+        make
+      shell: bash
+      env:
+        CC: gcc-10
+        CXX: g++-10
+    - name: build for Linux ARM64
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        cd client
+        mkdir -p build_arm64 && cd build_arm64
+        cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TARGET=ARM64
         make
       shell: bash
       env:
@@ -62,7 +91,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
 
-    steps:
+    steps: 
     - uses: actions/checkout@v2
     - name: Checkout submodules
       run: git submodule update --init --force --recursive

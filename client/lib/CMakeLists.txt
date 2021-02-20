@@ -6,14 +6,6 @@ set (CMAKE_CXX_STANDARD 17)
 
 set(EIGEN_PATH ../deps/Eigen3)
 
-if(WIN32)
-	set(OS win32)
-elseif(APPLE)
-	set(OS macosx)
-else()
-	set(OS linux)
-endif()
-
 if (POLICY CMP0074)
   cmake_policy(SET CMP0074 NEW)
 endif()
@@ -106,4 +98,6 @@ target_link_libraries(autd3 ${CMAKE_THREAD_LIBS_INIT})
 
 if (WIN32)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4068 /wd4819 /D _SILENCE_CXX17_RESULT_OF_DEPRECATION_WARNING")
+else()
+  set_target_properties(autd3 PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
