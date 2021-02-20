@@ -12,7 +12,6 @@
 #pragma once
 
 #include <utility>
-#include <vector>
 
 #include "gain.hpp"
 

@@ -20,10 +20,6 @@
 #include "sequence.hpp"
 
 typedef struct {
-  autd::ModulationPtr ptr;
-} ModulationWrapper;
-
-typedef struct {
   autd::SequencePtr ptr;
 } SequenceWrapper;
 
@@ -34,9 +30,6 @@ typedef struct {
 typedef struct {
   std::vector<autd::FirmwareInfo> list;
 } FirmwareInfoListWrapper;
-
-inline ModulationWrapper* ModulationCreate(const autd::ModulationPtr& ptr) { return new ModulationWrapper{ptr}; }
-inline void ModulationDelete(ModulationWrapper* ptr) { delete ptr; }
 
 inline SequenceWrapper* SequencePtrCreate(const autd::SequencePtr& ptr) { return new SequenceWrapper{ptr}; }
 inline void SequenceDelete(SequenceWrapper* ptr) { delete ptr; }
