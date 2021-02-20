@@ -6,11 +6,11 @@ set(EIGEN_PATH ../../deps/Eigen3)
 
 include_directories(../../include ${EIGEN_PATH})
 
-add_library(holo_gain STATIC
-	holo_gain.cpp
-	../../include/holo_gain.hpp
+add_library(gain_holo STATIC
+	holo.cpp
+	../../include/gain/holo.hpp
 )
 
 if(NOT WIN32)
-  set_target_properties(holo_gain PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  set_target_properties(gain_holo PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

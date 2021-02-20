@@ -10,7 +10,7 @@
 //
 
 #include "autd3.hpp"
-#include "emulator_link.hpp"
+#include "link/emulator.hpp"
 #include "runner.hpp"
 
 using namespace std;

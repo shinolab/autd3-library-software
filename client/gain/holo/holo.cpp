@@ -9,7 +9,7 @@
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
 //
 
-#include "holo_gain.hpp"
+#include "gain/holo.hpp"
 
 #include <complex>
 #include <map>

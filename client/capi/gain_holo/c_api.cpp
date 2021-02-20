@@ -10,8 +10,8 @@
 //
 
 #include "../base/wrapper_gain.hpp"
-#include "./autd3_c_api_gain_holo.h"
-#include "holo_gain.hpp"
+#include "./gain_holo.h"
+#include "gain/holo.hpp"
 
 void AUTDHoloGain(VOID_PTR* gain, const float* points, const float* amps, const int32_t size, int32_t method, VOID_PTR params) {
   std::vector<autd::Vector3> holo;

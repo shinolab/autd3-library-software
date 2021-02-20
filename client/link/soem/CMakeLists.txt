@@ -20,24 +20,24 @@ if(WIN32)
 	)
 endif()
 
-add_library(soem_link STATIC
+add_library(link_soem STATIC
 	autdsoem.cpp
 	autdsoem.hpp
-	soem_link.cpp
-	../../include/soem_link.hpp
+	soem.cpp
+	../../include/link/soem.hpp
 )
-target_link_libraries(soem_link soem)
+target_link_libraries(link_soem soem)
 
 if(WIN32)
 	if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-		add_custom_command(TARGET soem_link
+		add_custom_command(TARGET link_soem
 						POST_BUILD
 						COMMAND lib /OUT:$(OUTDIR)temp.lib $(TARGETPATH) $(SolutionDir)..\\deps\\SOEM\\SOEM\\oshw\\win32\\wpcap\\Lib\\*.lib /ignore:4006
 						COMMAND del $(TARGETPATH)
 						COMMAND rename $(OUTDIR)temp.lib $(TargetFileName)
 		)
 	else()
-		add_custom_command(TARGET soem_link
+		add_custom_command(TARGET link_soem
 						POST_BUILD
 						COMMAND lib /OUT:$(OUTDIR)temp.lib $(TARGETPATH) $(SolutionDir)..\\deps\\SOEM\\SOEM\\oshw\\win32\\wpcap\\Lib\\x64\\*.lib /ignore:4006
 						COMMAND del $(TARGETPATH)
@@ -48,5 +48,5 @@ if(WIN32)
 endif()
 
 if(NOT WIN32)
-  set_target_properties(soem_link PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  set_target_properties(link_soem PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

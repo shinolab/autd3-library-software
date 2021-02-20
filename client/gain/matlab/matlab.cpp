@@ -18,7 +18,7 @@
 #include <iostream>
 #endif
 
-#include "matlab_gain.hpp"
+#include "gain/matlab.hpp"
 
 namespace autd::gain {
 

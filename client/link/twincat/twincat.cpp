@@ -9,7 +9,7 @@
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
 //
 
-#include "twincat_link.hpp"
+#include "link/twincat.hpp"
 
 #if _WINDOWS
 #include <codeanalysis/warnings.h>  // NOLINT

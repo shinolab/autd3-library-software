@@ -9,8 +9,8 @@
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
 //
 
-#include "./autd3_c_api_emulator_link.h"
-#include "emulator_link.hpp"
+#include "./emulator_link.h"
+#include "link/emulator.hpp"
 #include "../base/wrapper.hpp"
 #include "../base/wrapper_link.hpp"
 

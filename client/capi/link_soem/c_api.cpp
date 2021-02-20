@@ -10,8 +10,8 @@
 //
 
 #include "../base/wrapper_link.hpp"
-#include "./autd3_c_api_soem_link.h"
-#include "soem_link.hpp"
+#include "./soem_link.h"
+#include "link/soem.hpp"
 
 typedef struct {
   autd::link::EtherCATAdapters adapters;

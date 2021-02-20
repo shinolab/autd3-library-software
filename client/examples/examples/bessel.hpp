@@ -12,7 +12,7 @@
 #pragma once
 
 #include "autd3.hpp"
-#include "primitive_gain.hpp"
+#include "gain/primitive.hpp"
 
 using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SIZE_MM, autd::PI;
 
