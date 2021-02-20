@@ -9,13 +9,19 @@ mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
 option(BUILD_DOC "BUILD_DOC" ON)
 option(USE_DOUBLE "USE_DOUBLE" OFF)
 option(ENABLE_EIGEN "ENABLE_EIGEN" ON)
+
 option(ENABLE_PRIMITIVE_GAIN "ENABLE_PRIMITIVE_GAIN" ON)
 option(ENABLE_HOLO_GAIN "ENABLE_HOLO_GAIN" ON)
 option(ENABLE_MATLAB_GAIN "ENABLE_MATLAB_GAIN" ON)
+
+option(ENABLE_PRIMITIVE_MODULATION "ENABLE_PRIMITIVE_MODULATION" ON)
+option(ENABLE_FROM_FILE_MODULATION "ENABLE_FROM_FILE_MODULATION" ON)
+
 option(ENABLE_TWINCAT_LINK "ENABLE_TWINCAT_LINK" ON)
 option(ENABLE_SOEM_LINK "ENABLE_SOEM_LINK" ON)
 option(ENABLE_DEBUG_LINK "ENABLE_DEBUG_LINK" ON)
 option(ENABLE_EMULATOR_LINK "ENABLE_EMULATOR_LINK" ON)
+
 option(IGNORE_EXAMPLE "IGNORE_EXAMPLE" OFF)
 option(BUILD_CAPI "BUILD_CAPI" ON)
 option(ENABLE_LINT "ENABLE_LINT" ON)
@@ -99,6 +105,14 @@ if(ENABLE_HOLO_GAIN)
   add_subdirectory(gain/holo)
 endif()
 
+# Modulation
+if(ENABLE_PRIMITIVE_MODULATION)
+  add_subdirectory(modulation/primitive)
+endif()
+if(ENABLE_FROM_FILE_MODULATION)
+  add_subdirectory(modulation/from_file)
+endif()
+
 # Link
 if(ENABLE_DEBUG_LINK)
   add_subdirectory(link/debug)
@@ -125,6 +139,14 @@ if(BUILD_CAPI)
   if(ENABLE_HOLO_GAIN)
     add_subdirectory(capi/gain_holo)
   endif()
+  
+  if(ENABLE_PRIMITIVE_MODULATION)
+    add_subdirectory(capi/modulation_primitive)
+  endif()
+  if(ENABLE_FROM_FILE_MODULATION)
+    add_subdirectory(capi/modulation_from_file)
+  endif()
+
   if(ENABLE_EMULATOR_LINK)
     add_subdirectory(capi/link_emulator)
   endif()

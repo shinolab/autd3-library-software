@@ -19,6 +19,7 @@
 #include "wrapper.hpp"
 #include "wrapper_gain.hpp"
 #include "wrapper_link.hpp"
+#include "wrapper_modulation.hpp"
 
 #pragma region Controller
 void AUTDCreateController(VOID_PTR* out) {
@@ -170,32 +171,6 @@ void AUTDDeleteGain(VOID_PTR const gain) {
 #pragma region Modulation
 void AUTDModulation(VOID_PTR* mod, const uint8_t amp) {
   auto* m = ModulationCreate(autd::modulation::Modulation::Create(amp));
-  *mod = m;
-}
-void AUTDCustomModulation(VOID_PTR* mod, const uint8_t* buf, const uint32_t size) {
-  auto* m = ModulationCreate(autd::modulation::Modulation::Create(0));
-  m->ptr->buffer.resize(size, 0);
-  std::memcpy(&m->ptr->buffer[0], buf, size);
-  *mod = m;
-}
-void AUTDRawPCMModulation(VOID_PTR* mod, const char* filename, const float sampling_freq) {
-  auto* m = ModulationCreate(autd::modulation::RawPCMModulation::Create(std::string(filename), sampling_freq));
-  *mod = m;
-}
-void AUTDSquareModulation(VOID_PTR* mod, const int32_t freq, const uint8_t low, const uint8_t high) {
-  auto* m = ModulationCreate(autd::modulation::SquareModulation::Create(freq, low, high));
-  *mod = m;
-}
-void AUTDSawModulation(VOID_PTR* mod, const int32_t freq) {
-  auto* m = ModulationCreate(autd::modulation::SawModulation::Create(freq));
-  *mod = m;
-}
-void AUTDSineModulation(VOID_PTR* mod, const int32_t freq, const float amp, const float offset) {
-  auto* m = ModulationCreate(autd::modulation::SineModulation::Create(freq, amp, offset));
-  *mod = m;
-}
-void AUTDWavModulation(VOID_PTR* mod, const char* filename) {
-  auto* m = ModulationCreate(autd::modulation::WavModulation::Create(std::string(filename)));
   *mod = m;
 }
 void AUTDDeleteModulation(VOID_PTR const mod) {

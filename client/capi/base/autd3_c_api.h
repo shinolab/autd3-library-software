@@ -57,12 +57,6 @@ EXPORT_AUTD void AUTDDeleteGain(VOID_PTR gain);
 
 #pragma region Modulation
 EXPORT_AUTD void AUTDModulation(VOID_PTR* mod, uint8_t amp);
-EXPORT_AUTD void AUTDCustomModulation(VOID_PTR* mod, const uint8_t* buf, uint32_t size);
-EXPORT_AUTD void AUTDRawPCMModulation(VOID_PTR* mod, const char* filename, float sampling_freq);
-EXPORT_AUTD void AUTDSawModulation(VOID_PTR* mod, int32_t freq);
-EXPORT_AUTD void AUTDSineModulation(VOID_PTR* mod, int32_t freq, float amp, float offset);
-EXPORT_AUTD void AUTDSquareModulation(VOID_PTR* mod, int32_t freq, uint8_t low, uint8_t high);
-EXPORT_AUTD void AUTDWavModulation(VOID_PTR* mod, const char* filename);
 EXPORT_AUTD void AUTDDeleteModulation(VOID_PTR mod);
 #pragma endregion
 

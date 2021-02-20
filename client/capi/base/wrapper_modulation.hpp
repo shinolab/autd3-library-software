@@ -11,13 +11,11 @@
 
 #pragma once
 
-#include <utility>
-
-#include "gain.hpp"
+#include "modulation.hpp"
 
 typedef struct {
-  autd::GainPtr ptr;
-} GainWrapper;
+  autd::ModulationPtr ptr;
+} ModulationWrapper;
 
-inline GainWrapper* GainCreate(const autd::GainPtr& ptr) { return new GainWrapper{ptr}; }
-inline void GainDelete(GainWrapper* ptr) { delete ptr; }
+inline ModulationWrapper* ModulationCreate(const autd::ModulationPtr& ptr) { return new ModulationWrapper{ptr}; }
+inline void ModulationDelete(ModulationWrapper* ptr) { delete ptr; }
