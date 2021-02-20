@@ -35,14 +35,14 @@ int32_t AUTDOpenControllerWith(VOID_PTR const handle, VOID_PTR const p_link) {
   if (!cnt->ptr->is_open()) return ENXIO;
   return 0;
 }
-int32_t AUTDAddDevice(VOID_PTR const handle, const float x, const float y, const float z, const float rz1, const float ry, const float rz2,
+int32_t AUTDAddDevice(VOID_PTR const handle, const autd::Float x, const autd::Float y, const autd::Float z, const autd::Float rz1, const autd::Float ry, const autd::Float rz2,
                       const int32_t group_id) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   const auto res = cnt->ptr->geometry()->AddDevice(autd::Vector3(x, y, z), autd::Vector3(rz1, ry, rz2), group_id);
   return static_cast<int32_t>(res);
 }
-int32_t AUTDAddDeviceQuaternion(VOID_PTR const handle, const float x, const float y, const float z, const float qua_w, const float qua_x,
-                                const float qua_y, const float qua_z, const int32_t group_id) {
+int32_t AUTDAddDeviceQuaternion(VOID_PTR const handle, const autd::Float x, const autd::Float y, const autd::Float z, const autd::Float qua_w, const autd::Float qua_x,
+                                const autd::Float qua_y, const autd::Float qua_z, const int32_t group_id) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   const auto res = cnt->ptr->geometry()->AddDeviceQuaternion(autd::Vector3(x, y, z), autd::Quaternion(qua_w, qua_x, qua_y, qua_z), group_id);
   return static_cast<int32_t>(res);
@@ -103,11 +103,11 @@ bool AUTDIsSilentMode(VOID_PTR const handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   return cnt->ptr->silent_mode();
 }
-float AUTDWavelength(VOID_PTR const handle) {
+autd::Float AUTDWavelength(VOID_PTR const handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   return cnt->ptr->geometry()->wavelength();
 }
-void AUTDSetWavelength(VOID_PTR const handle, const float wavelength) {
+void AUTDSetWavelength(VOID_PTR const handle, const autd::Float wavelength) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   return cnt->ptr->geometry()->set_wavelength(wavelength);
 }
@@ -184,11 +184,11 @@ void AUTDSequence(VOID_PTR* out) {
   auto* s = SequencePtrCreate(autd::sequence::PointSequence::Create());
   *out = s;
 }
-void AUTDSequenceAppendPoint(VOID_PTR const seq, const float x, const float y, const float z) {
+void AUTDSequenceAppendPoint(VOID_PTR const seq, const autd::Float x, const autd::Float y, const autd::Float z) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
   seq_w->ptr->AppendPoint(autd::Vector3(x, y, z));
 }
-void AUTDSequenceAppendPoints(VOID_PTR const seq, const float* points, const uint64_t size) {
+void AUTDSequenceAppendPoints(VOID_PTR const seq, const autd::Float* points, const uint64_t size) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
   std::vector<autd::Vector3> p;
   for (size_t i = 0; i < size; i++) {
@@ -196,15 +196,15 @@ void AUTDSequenceAppendPoints(VOID_PTR const seq, const float* points, const uin
   }
   seq_w->ptr->AppendPoints(p);
 }
-float AUTDSequenceSetFreq(VOID_PTR const seq, const float freq) {
+autd::Float AUTDSequenceSetFreq(VOID_PTR const seq, const autd::Float freq) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
   return seq_w->ptr->SetFrequency(freq);
 }
-float AUTDSequenceFreq(VOID_PTR const seq) {
+autd::Float AUTDSequenceFreq(VOID_PTR const seq) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
   return seq_w->ptr->frequency();
 }
-float AUTDSequenceSamplingFreq(VOID_PTR const seq) {
+autd::Float AUTDSequenceSamplingFreq(VOID_PTR const seq) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
   return seq_w->ptr->sampling_frequency();
 }
@@ -212,8 +212,8 @@ uint16_t AUTDSequenceSamplingFreqDiv(VOID_PTR const seq) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
   return seq_w->ptr->sampling_frequency_division();
 }
-void AUTDCircumSequence(VOID_PTR* out, const float x, const float y, const float z, const float nx, const float ny, const float nz,
-                        const float radius, const uint64_t n) {
+void AUTDCircumSequence(VOID_PTR* out, const autd::Float x, const autd::Float y, const autd::Float z, const autd::Float nx, const autd::Float ny, const autd::Float nz,
+                        const autd::Float radius, const uint64_t n) {
   auto* s = SequencePtrCreate(autd::sequence::CircumSeq::Create(autd::Vector3(x, y, z), autd::Vector3(nx, ny, nz), radius, static_cast<size_t>(n)));
   *out = s;
 }
@@ -250,7 +250,7 @@ void AUTDAppendSTMGain(VOID_PTR const handle, VOID_PTR const gain) {
   auto* g = static_cast<GainWrapper*>(gain);
   cnt->ptr->AppendSTMGain(g->ptr);
 }
-void AUTDStartSTModulation(VOID_PTR const handle, const float freq) {
+void AUTDStartSTModulation(VOID_PTR const handle, const autd::Float freq) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   cnt->ptr->StartSTModulation(freq);
 }
@@ -276,28 +276,28 @@ int32_t AUTDDeviceIdxForTransIdx(VOID_PTR const handle, const int32_t global_tra
   const auto res = cnt->ptr->geometry()->device_idx_for_trans_idx(global_trans_idx);
   return static_cast<int32_t>(res);
 }
-float* AUTDTransPositionByGlobal(VOID_PTR const handle, const int32_t global_trans_idx) {
+autd::Float* AUTDTransPositionByGlobal(VOID_PTR const handle, const int32_t global_trans_idx) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   const auto pos = cnt->ptr->geometry()->position(global_trans_idx);
-  auto* array = new float[3];
+  auto* array = new autd::Float[3];
   array[0] = pos.x();
   array[1] = pos.y();
   array[2] = pos.z();
   return array;
 }
-float* AUTDTransPositionByLocal(VOID_PTR const handle, const int32_t device_idx, const int32_t local_trans_idx) {
+autd::Float* AUTDTransPositionByLocal(VOID_PTR const handle, const int32_t device_idx, const int32_t local_trans_idx) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   const auto pos = cnt->ptr->geometry()->position(device_idx, local_trans_idx);
-  auto* array = new float[3];
+  auto* array = new autd::Float[3];
   array[0] = pos.x();
   array[1] = pos.y();
   array[2] = pos.z();
   return array;
 }
-float* AUTDDeviceDirection(VOID_PTR const handle, const int32_t device_idx) {
+autd::Float* AUTDDeviceDirection(VOID_PTR const handle, const int32_t device_idx) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   const auto dir = cnt->ptr->geometry()->direction(device_idx);
-  auto* array = new float[3];
+  auto* array = new autd::Float[3];
   array[0] = dir.x();
   array[1] = dir.y();
   array[2] = dir.z();
