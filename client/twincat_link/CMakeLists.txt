@@ -2,14 +2,6 @@ cmake_minimum_required(VERSION 3.10)
 
 set (CMAKE_CXX_STANDARD 17)
 
-if(WIN32)
-	set(OS win32)
-elseif(APPLE)
-	set(OS macosx)
-else()
-	set(OS linux)
-endif()
-
 include_directories(
 	../include
 	${Ads_INCLUDE_DIR}

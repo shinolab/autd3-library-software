@@ -1,3 +1,6 @@
+# 0.8.1
+* Provide win-x86, linux-arm32, linux-arm64 binaries
+
 # 0.8.0
 * Delete backward compatibility
 * Delete `Geometry::DelDevice()` and `Geometry::deviceIdForDeviceIdx()`
