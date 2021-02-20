@@ -3,7 +3,7 @@
 // Created Date: 09/06/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 27/12/2020
+// Last Modified: 20/02/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -11,7 +11,14 @@
 
 #pragma once
 
-#include "autd3.hpp"
+#include <utility>
+#include <vector>
+
+#include "controller.hpp"
+#include "firmware_version.hpp"
+#include "gain.hpp"
+#include "modulation.hpp"
+#include "sequence.hpp"
 
 typedef struct {
   autd::GainPtr ptr;
@@ -26,16 +33,8 @@ typedef struct {
 } SequenceWrapper;
 
 typedef struct {
-  autd::LinkPtr ptr;
-} LinkWrapper;
-
-typedef struct {
   autd::ControllerPtr ptr;
 } ControllerWrapper;
-
-typedef struct {
-  autd::link::EtherCATAdapters adapters;
-} EtherCATAdaptersWrapper;
 
 typedef struct {
   std::vector<autd::FirmwareInfo> list;
@@ -50,15 +49,8 @@ inline void ModulationDelete(ModulationWrapper* ptr) { delete ptr; }
 inline SequenceWrapper* SequencePtrCreate(const autd::SequencePtr& ptr) { return new SequenceWrapper{ptr}; }
 inline void SequenceDelete(SequenceWrapper* ptr) { delete ptr; }
 
-inline LinkWrapper* LinkCreate(autd::LinkPtr ptr) { return new LinkWrapper{std::move(ptr)}; }
-
-inline void LinkDelete(LinkWrapper* ptr) { delete ptr; }
-
 inline ControllerWrapper* ControllerCreate(autd::ControllerPtr ptr) { return new ControllerWrapper{std::move(ptr)}; }
 inline void ControllerDelete(ControllerWrapper* ptr) { delete ptr; }
-
-inline EtherCATAdaptersWrapper* EtherCATAdaptersCreate(const autd::link::EtherCATAdapters& adapters) { return new EtherCATAdaptersWrapper{adapters}; }
-inline void EtherCATAdaptersDelete(EtherCATAdaptersWrapper* ptr) { delete ptr; }
 
 inline FirmwareInfoListWrapper* FirmwareInfoListCreate(const std::vector<autd::FirmwareInfo>& list) { return new FirmwareInfoListWrapper{list}; }
 inline void FirmwareInfoListDelete(FirmwareInfoListWrapper* ptr) { delete ptr; }

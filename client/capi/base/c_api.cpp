@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/02/2021
+// Last Modified: 20/02/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -16,10 +16,9 @@
 
 #include "./autd3_c_api.h"
 #include "autd3.hpp"
-#include "emulator_link.hpp"
-#include "soem_link.hpp"
 #include "twincat_link.hpp"
 #include "wrapper.hpp"
+#include "wrapper_link.hpp"
 
 #pragma region Controller
 void AUTDCreateController(VOID_PTR* out) {
@@ -73,23 +72,6 @@ void AUTDSetSilentMode(VOID_PTR const handle, const bool mode) {
 void AUTDStop(VOID_PTR const handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   cnt->ptr->Stop();
-}
-int32_t AUTDGetAdapterPointer(VOID_PTR* out) {
-  size_t size;
-  const auto adapters = autd::link::SOEMLink::EnumerateAdapters(&size);
-  *out = EtherCATAdaptersCreate(adapters);
-  return static_cast<int32_t>(size);
-}
-void AUTDGetAdapter(VOID_PTR p_adapter, const int32_t index, char* desc, char* name) {
-  auto* wrapper = static_cast<EtherCATAdaptersWrapper*>(p_adapter);
-  const auto& desc_ = wrapper->adapters[index].first;
-  const auto& name_ = wrapper->adapters[index].second;
-  std::char_traits<char>::copy(desc, desc_.c_str(), desc_.size() + 1);
-  std::char_traits<char>::copy(name, name_.c_str(), name_.size() + 1);
-}
-void AUTDFreeAdapterPointer(VOID_PTR p_adapter) {
-  auto* wrapper = static_cast<EtherCATAdaptersWrapper*>(p_adapter);
-  EtherCATAdaptersDelete(wrapper);
 }
 int32_t AUTDGetFirmwareInfoListPointer(VOID_PTR const handle, VOID_PTR* out) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
@@ -299,26 +281,6 @@ void AUTDDeleteSequence(VOID_PTR const seq) {
   SequenceDelete(seq_w);
 }
 #pragma endredion
-
-#pragma region Link
-void AUTDSOEMLink(VOID_PTR* out, const char* ifname, const int32_t device_num) {
-  auto* link = LinkCreate(autd::link::SOEMLink::Create(std::string(ifname), device_num));
-  *out = link;
-}
-void AUTDTwinCATLink(VOID_PTR* out, const char* ipv4_addr, const char* ams_net_id) {
-  auto* link = LinkCreate(autd::link::TwinCATLink::Create(std::string(ipv4_addr), std::string(ams_net_id)));
-  *out = link;
-}
-void AUTDLocalTwinCATLink(VOID_PTR* out) {
-  auto* link = LinkCreate(autd::link::LocalTwinCATLink::Create());
-  *out = link;
-}
-void AUTDEmulatorLink(VOID_PTR* out, const char* addr, const uint16_t port, VOID_PTR const handle) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  auto* link = LinkCreate(autd::link::EmulatorLink::Create(std::string(addr), port, cnt->ptr->geometry()));
-  *out = link;
-}
-#pragma endregion
 
 #pragma region LowLevelInterface
 void AUTDAppendGain(VOID_PTR const handle, VOID_PTR const gain) {

@@ -19,9 +19,9 @@
 #include <sstream>
 #include <string>
 
-#include "autd_logic.hpp"
+#include "../lib/autd_logic.hpp"
 #include "consts.hpp"
-#include "pre_def.hpp"
+#include "../lib/pre_def.hpp"
 
 namespace autd::link {
 

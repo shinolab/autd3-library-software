@@ -3,13 +3,13 @@ cmake_minimum_required(VERSION 3.10)
 set (CMAKE_CXX_STANDARD 17)
 
 include_directories(
-	../include
+	../../include
 	${Ads_INCLUDE_DIR}
 )
 
 add_library(twincat_link STATIC
 	twincat_link.cpp
-	../include/twincat_link.hpp
+	../../include/twincat_link.hpp
 )
 
 target_link_libraries(twincat_link ${Ads_LIBRARIES})
