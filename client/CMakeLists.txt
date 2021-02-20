@@ -18,11 +18,24 @@ if(USE_DOUBLE)
 endif()
 
 if(WIN32)
-	set(OS win32)
+  set(OS win32)
+  include(cmakes/win_vs.cmake)
 elseif(APPLE)
-	set(OS macosx)
+  set(OS macosx)
+  include(cmakes/mac.cmake)
 else()
-	set(OS linux)
+  set(OS linux)
+  if(DEFINED BUILD_TARGET)
+    if (${BUILD_TARGET} STREQUAL ARM32 OR ${BUILD_TARGET} STREQUAL ARM)
+      include(cmakes/arm32.cmake)
+    elseif(${BUILD_TARGET} STREQUAL ARM64 OR ${BUILD_TARGET} STREQUAL AARCH64)
+      include(cmakes/arm64.cmake)
+    elseif(${BUILD_TARGET} STREQUAL AMD64 OR ${BUILD_TARGET} STREQUAL x86_64 OR ${BUILD_TARGET} STREQUAL x64)
+      include(cmakes/linux.cmake)
+    endif()
+  else()
+    include(cmakes/linux.cmake)
+  endif()
 endif()
 
 file(GLOB_RECURSE lint_files lib/*.cpp lib/*.hpp include/*.hpp capi/*.cpp capi/*.cpp soem_link/*.cpp soem_link/*.hpp)
@@ -34,14 +47,6 @@ ADD_CUSTOM_TARGET(cpplint
   --linelength=150
   ${lint_files}
   )
-
-if(WIN32)
-    include(cmakes/win_vs.cmake)
-elseif(APPLE)
-    include(cmakes/mac.cmake)
-else()
-    include(cmakes/linux.cmake)
-endif()
 
 # ADS
 add_subdirectory(deps/BeckhoffADS)
