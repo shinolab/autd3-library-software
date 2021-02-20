@@ -44,6 +44,7 @@ elseif(APPLE)
     target_link_libraries(autd3capi pcap)
 else()
     target_link_libraries(autd3capi rt)
+    target_link_libraries(autd3capi -static-libgcc -static-libstdc++)
 endif()
 set_target_properties(autd3capi
     PROPERTIES
