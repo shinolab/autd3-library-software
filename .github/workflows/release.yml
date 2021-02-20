@@ -138,15 +138,15 @@ jobs:
           cmake .. -DCMAKE_BUILD_TYPE=Release
           make
           cd ../..
-          mkdir lib
-          mkdir bin
+          mkdir -p lib
+          mkdir -p bin
           cp -f client/build/lib/libautd3.a lib
           cp -f client/build/soem_link/libsoem_link.a lib
           cp -f client/build/twincat_link/libtwincat_link.a lib
           cp -f client/build/deps/BeckhoffADS/libads.a lib
           cp -f client/build/bin/*.so bin
-          mv -f dist/firmware firmware/
-          mv -f client/include include/
+          cp -rf dist/firmware firmware/
+          cp -rf client/include include/
           tar -zcvf assets_x64.tar.gz firmware include lib bin
         shell: bash
         env:
@@ -159,15 +159,15 @@ jobs:
           cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TARGET=ARM32
           make
           cd ../..
-          mkdir lib
-          mkdir bin
+          mkdir -p lib
+          mkdir -p bin
           cp -f client/build/lib/libautd3.a lib
           cp -f client/build/soem_link/libsoem_link.a lib
           cp -f client/build/twincat_link/libtwincat_link.a lib
           cp -f client/build/deps/BeckhoffADS/libads.a lib
           cp -f client/build/bin/*.so bin
-          mv -f dist/firmware firmware/
-          mv -f client/include include/
+          cp -rf dist/firmware firmware/
+          cp -rf client/include include/
           tar -zcvf assets_arm32.tar.gz firmware include lib bin
         shell: bash
         env:
@@ -180,15 +180,15 @@ jobs:
           cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TARGET=ARM64
           make
           cd ../..
-          mkdir lib
-          mkdir bin
+          mkdir -p lib
+          mkdir -p bin
           cp -f client/build/lib/libautd3.a lib
           cp -f client/build/soem_link/libsoem_link.a lib
           cp -f client/build/twincat_link/libtwincat_link.a lib
           cp -f client/build/deps/BeckhoffADS/libads.a lib
           cp -f client/build/bin/*.so bin
-          mv -f dist/firmware firmware/
-          mv -f client/include include/
+          cp -rf dist/firmware firmware/
+          cp -rf client/include include/
           tar -zcvf assets_arm64.tar.gz firmware include lib bin
         shell: bash
         env:
