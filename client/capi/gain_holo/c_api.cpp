@@ -13,9 +13,9 @@
 #include "./gain_holo.h"
 #include "gain/holo.hpp"
 
-void AUTDHoloGain(VOID_PTR* gain, const float* points, const float* amps, const int32_t size, int32_t method, VOID_PTR params) {
+void AUTDHoloGain(VOID_PTR* gain, const autd::Float* points, const autd::Float* amps, const int32_t size, int32_t method, VOID_PTR params) {
   std::vector<autd::Vector3> holo;
-  std::vector<float> amps_;
+  std::vector<autd::Float> amps_;
   for (auto i = 0; i < size; i++) {
     autd::Vector3 v(points[3 * i], points[3 * i + 1], points[3 * i + 2]);
     holo.emplace_back(v);

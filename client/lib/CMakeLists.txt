@@ -25,9 +25,6 @@ set(SOURCE_LIST
 )
 
 add_library(autd3 STATIC ${SOURCE_LIST})
-if(USE_DOUBLE)
-  add_definitions(-DUSE_DOUBLE_AUTD)
-endif()
 
 include_directories(${INCLUDE_LIST})
 

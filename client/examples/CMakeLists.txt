@@ -7,10 +7,6 @@ include_directories(../include ${EIGEN_PATH} examples)
 
 file(GLOB hpp_files examples/*.hpp)
 
-if(USE_DOUBLE)
-add_definitions(-DUSE_DOUBLE_AUTD)
-endif()
-
 if(ENABLE_PRIMITIVE_GAIN)
 add_definitions(-DENABLE_PRIMITIVE_GAIN)
 endif()
