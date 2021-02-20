@@ -4,14 +4,6 @@ set (CMAKE_CXX_STANDARD 17)
 
 set(EIGEN_PATH ../deps/Eigen3)
 
-if(WIN32)
-	set(OS win32)
-elseif(APPLE)
-	set(OS macosx)
-else()
-	set(OS linux)
-endif()
-
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/deps)
 
 if (POLICY CMP0074)
@@ -30,19 +22,12 @@ set(INCLUDE_LIST
   ${Ads_INCLUDE_DIR}
 )
 
-file(GLOB cpp_files ../lib/*.cpp)
-file(GLOB hpp_files ../lib/*.hpp)
 file(GLOB include_files  ../include/*.hpp)
 
 add_library(autd3capi SHARED
   c_api.cpp
   autd3_c_api.h
   wrapper.hpp
-
-  ${hpp_files}
-  ${cpp_files}
-  ../lib/${OS}/timer.cpp
-    
   ${include_files}
 )
 
@@ -51,6 +36,7 @@ include_directories(${INCLUDE_LIST})
 target_link_libraries(autd3capi ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(autd3capi soem_link)
 target_link_libraries(autd3capi twincat_link)
+target_link_libraries(autd3capi autd3)
 if(WIN32)
     target_link_libraries(autd3capi ws2_32.lib)
     target_link_libraries(autd3capi winmm.lib)
@@ -59,7 +45,6 @@ elseif(APPLE)
 else()
     target_link_libraries(autd3capi rt)
 endif()
-
 set_target_properties(autd3capi
     PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"

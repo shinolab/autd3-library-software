@@ -14,7 +14,6 @@ endif()
 add_executable(example_soem soem.cpp ${hpp_files})
 target_link_libraries(example_soem autd3)
 target_link_libraries(example_soem soem_link)
-
 if(WIN32)
     target_link_libraries(example_soem ws2_32.lib)
     target_link_libraries(example_soem winmm.lib)
