@@ -11,6 +11,9 @@
 
 #pragma once
 
+#include <string>
+#include <utility>
+
 #include "gain.hpp"
 
 namespace autd {

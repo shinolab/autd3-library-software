@@ -10,8 +10,10 @@
 //
 
 #pragma once
-
 #include <map>
+#include <memory>
+#include <utility>
+#include <vector>
 
 #include "autd_types.hpp"
 #include "consts.hpp"
