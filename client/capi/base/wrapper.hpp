@@ -16,13 +16,8 @@
 
 #include "controller.hpp"
 #include "firmware_version.hpp"
-#include "gain.hpp"
 #include "modulation.hpp"
 #include "sequence.hpp"
-
-typedef struct {
-  autd::GainPtr ptr;
-} GainWrapper;
 
 typedef struct {
   autd::ModulationPtr ptr;
@@ -39,9 +34,6 @@ typedef struct {
 typedef struct {
   std::vector<autd::FirmwareInfo> list;
 } FirmwareInfoListWrapper;
-
-inline GainWrapper* GainCreate(const autd::GainPtr& ptr) { return new GainWrapper{ptr}; }
-inline void GainDelete(GainWrapper* ptr) { delete ptr; }
 
 inline ModulationWrapper* ModulationCreate(const autd::ModulationPtr& ptr) { return new ModulationWrapper{ptr}; }
 inline void ModulationDelete(ModulationWrapper* ptr) { delete ptr; }

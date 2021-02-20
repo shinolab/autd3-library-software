@@ -15,6 +15,7 @@
 #include <math.h>
 
 #include <array>
+#include <cstdint>
 
 #include "autd_types.hpp"
 

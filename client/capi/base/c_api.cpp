@@ -18,6 +18,7 @@
 #include "autd3.hpp"
 #include "twincat_link.hpp"
 #include "wrapper.hpp"
+#include "wrapper_gain.hpp"
 #include "wrapper_link.hpp"
 
 #pragma region Controller
@@ -143,8 +144,8 @@ uint64_t AUTDRemainingInBuffer(VOID_PTR const handle) {
 #pragma endregion
 
 #pragma region Gain
-void AUTDFocalPointGain(VOID_PTR* gain, const float x, const float y, const float z, const uint8_t duty) {
-  auto* g = GainCreate(autd::gain::FocalPointGain::Create(autd::Vector3(x, y, z), duty));
+void AUTDNullGain(VOID_PTR* gain) {
+  auto* g = GainCreate(autd::gain::NullGain::Create());
   *gain = g;
 }
 void AUTDGroupedGain(VOID_PTR* gain, const int32_t* group_ids, VOID_PTR const* in_gains, const int32_t size) {
@@ -160,40 +161,6 @@ void AUTDGroupedGain(VOID_PTR* gain, const int32_t* group_ids, VOID_PTR const* i
   auto* g_gain = GainCreate(autd::gain::GroupedGain::Create(gain_map));
 
   *gain = g_gain;
-}
-void AUTDBesselBeamGain(VOID_PTR* gain, const float x, const float y, const float z, const float n_x, const float n_y, const float n_z,
-                        const float theta_z, const uint8_t duty) {
-  auto* g = GainCreate(autd::gain::BesselBeamGain::Create(autd::Vector3(x, y, z), autd::Vector3(n_x, n_y, n_z), theta_z, duty));
-  *gain = g;
-}
-void AUTDPlaneWaveGain(VOID_PTR* gain, const float n_x, const float n_y, const float n_z, const uint8_t duty) {
-  auto* g = GainCreate(autd::gain::PlaneWaveGain::Create(autd::Vector3(n_x, n_y, n_z), duty));
-  *gain = g;
-}
-void AUTDCustomGain(VOID_PTR* gain, const uint16_t* data, const int32_t data_length) {
-  auto* g = GainCreate(autd::gain::CustomGain::Create(data, data_length));
-  *gain = g;
-}
-void AUTDHoloGain(VOID_PTR* gain, const float* points, const float* amps, const int32_t size, int32_t method, VOID_PTR params) {
-  std::vector<autd::Vector3> holo;
-  std::vector<float> amps_;
-  for (auto i = 0; i < size; i++) {
-    autd::Vector3 v(points[3 * i], points[3 * i + 1], points[3 * i + 2]);
-    holo.emplace_back(v);
-    amps_.emplace_back(amps[i]);
-  }
-
-  const auto method_ = static_cast<autd::gain::OPT_METHOD>(method);
-  auto* g = GainCreate(autd::gain::HoloGain::Create(holo, amps_, method_, params));
-  *gain = g;
-}
-void AUTDTransducerTestGain(VOID_PTR* gain, const int32_t idx, const uint8_t duty, const uint8_t phase) {
-  auto* g = GainCreate(autd::gain::TransducerTestGain::Create(idx, duty, phase));
-  *gain = g;
-}
-void AUTDNullGain(VOID_PTR* gain) {
-  auto* g = GainCreate(autd::gain::NullGain::Create());
-  *gain = g;
 }
 void AUTDDeleteGain(VOID_PTR const gain) {
   auto* g = static_cast<GainWrapper*>(gain);

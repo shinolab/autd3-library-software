@@ -1,9 +1,9 @@
-// File: holo_gain.hpp
+﻿// File: holo_gain.hpp
 // Project: include
 // Created Date: 06/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/02/2021
+// Last Modified: 20/02/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -22,9 +22,7 @@
 
 #include "gain.hpp"
 
-namespace autd {
-namespace gain {
-
+namespace autd::gain {
 /**
  * @brief Optimization method for generating multiple foci.
  */
@@ -99,5 +97,4 @@ class HoloGain final : public Gain {
   OPT_METHOD _method = OPT_METHOD::SDP;
   void* _params = nullptr;
 };
-}  // namespace gain
-}  // namespace autd
+}  // namespace autd::gain
