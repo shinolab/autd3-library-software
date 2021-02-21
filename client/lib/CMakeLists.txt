@@ -1,29 +1,17 @@
 cmake_minimum_required(VERSION 3.10)
 
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/deps)
-
 set (CMAKE_CXX_STANDARD 17)
 
-set(EIGEN_PATH ../deps/Eigen3)
-
-if (POLICY CMP0074)
-  cmake_policy(SET CMP0074 NEW)
-endif()
-
-if (POLICY CMP0079)
-  cmake_policy(SET CMP0079 NEW)
-endif()
-
-find_package( Threads REQUIRED )
+find_package(Threads REQUIRED)
 
 set(INCLUDE_LIST
-  ../include
+  ${PROJECT_SOURCE_DIR}/include
   ${EIGEN_PATH}
 )
 
 file(GLOB cpp_files *.cpp)
 file(GLOB hpp_files *.hpp)
-file(GLOB include_files  ../include/*.hpp)
+file(GLOB include_files ${PROJECT_SOURCE_DIR}include/*.hpp)
 
 set(SOURCE_LIST 
   ${cpp_files}
@@ -33,20 +21,6 @@ set(SOURCE_LIST
 )
 
 add_library(autd3 STATIC ${SOURCE_LIST})
-if(USE_DOUBLE)
-  add_definitions(-DUSE_DOUBLE_AUTD)
-endif()
-
-if(WIN32 AND (NOT DISABLE_MATLAB))
-  find_package( Matlab )
-  if (Matlab_FOUND AND Matlab_MX_LIBRARY)
-    list(APPEND INCLUDE_LIST
-      ${Matlab_INCLUDE_DIRS}
-    )
-    add_definitions(-DMATLAB_ENABLED)
-    target_link_libraries(autd3 ${Matlab_MX_LIBRARY} ${Matlab_MAT_LIBRARY})
-  endif()
-endif()
 
 include_directories(${INCLUDE_LIST})
 
@@ -54,42 +28,36 @@ if(WIN32)
   source_group("link" FILES
     emulator_link.cpp
     debug_link.cpp
-    ../include/emulator_link.hpp
-    ../include/debug_link.hpp
+    ${PROJECT_SOURCE_DIR}/include/emulator_link.hpp
+    ${PROJECT_SOURCE_DIR}/include/debug_link.hpp
   )
 
   source_group("gain" FILES
     gain.cpp
-    matlab_gain.cpp
     grouped_gain.cpp
-    ../include/gain.hpp
-  )
-
-  source_group("gain/holo" FILES
-    ../include/holo_gain.hpp
-    holo_gain.cpp
+    ${PROJECT_SOURCE_DIR}include/gain.hpp
   )
 
   source_group("modulation" FILES
     modulation.cpp
-    ../include/modulation.hpp
+    ${PROJECT_SOURCE_DIR}include/modulation.hpp
   )
 
   source_group("sequence" FILES
     sequence.cpp
-    ../include/sequence.hpp
+    ${PROJECT_SOURCE_DIR}include/sequence.hpp
   )
  
   source_group("controller" FILES
     controller.cpp
     autd_logic.cpp
-    ../include/controller.hpp
+    ${PROJECT_SOURCE_DIR}/include/controller.hpp
     autd_logic.hpp
   )
 
   source_group("geometry" FILES
     geometry.cpp
-    ../include/geometry.hpp
+    ${PROJECT_SOURCE_DIR}include/geometry.hpp
   )
 
   source_group("util" FILES

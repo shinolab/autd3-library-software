@@ -12,7 +12,7 @@
 #include <iostream>
 
 #include "autd3.hpp"
-#include "debug_link.hpp"
+#include "link/debug.hpp"
 #include "runner.hpp"
 
 using namespace std;

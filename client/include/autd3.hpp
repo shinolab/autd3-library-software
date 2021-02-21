@@ -18,6 +18,5 @@
 #include "firmware_version.hpp"
 #include "gain.hpp"
 #include "geometry.hpp"
-#include "holo_gain.hpp"
 #include "modulation.hpp"
 #include "sequence.hpp"

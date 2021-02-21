@@ -13,7 +13,7 @@
 
 #include "autd3.hpp"
 #include "runner.hpp"
-#include "soem_link.hpp"
+#include "link/soem.hpp"
 
 using namespace std;
 
