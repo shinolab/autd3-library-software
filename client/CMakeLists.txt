@@ -19,6 +19,8 @@ option(ENABLE_MATLAB_GAIN "ENABLE_MATLAB_GAIN" OFF)
 option(ENABLE_PRIMITIVE_MODULATION "ENABLE_PRIMITIVE_MODULATION" ON)
 option(ENABLE_FROM_FILE_MODULATION "ENABLE_FROM_FILE_MODULATION" OFF)
 
+option(ENABLE_PRIMITIVE_SEQUENCE "ENABLE_PRIMITIVE_SEQUENCE" ON)
+
 option(ENABLE_SOEM_LINK "ENABLE_SOEM_LINK" ON)
 option(ENABLE_TWINCAT_LINK "ENABLE_TWINCAT_LINK" OFF)
 option(ENABLE_DEBUG_LINK "ENABLE_DEBUG_LINK" OFF)
@@ -36,6 +38,7 @@ if(BUILD_ALL)
   set(ENABLE_MATLAB_GAIN ON)
   set(ENABLE_PRIMITIVE_MODULATION ON)
   set(ENABLE_FROM_FILE_MODULATION ON)
+  set(ENABLE_PRIMITIVE_SEQUENCE ON)
   set(ENABLE_SOEM_LINK ON)
   set(ENABLE_TWINCAT_LINK ON)
   set(ENABLE_DEBUG_LINK ON)
@@ -140,6 +143,11 @@ if(ENABLE_FROM_FILE_MODULATION)
   add_subdirectory(modulation/from_file)
 endif()
 
+#Sequence
+if(ENABLE_PRIMITIVE_SEQUENCE)
+  add_subdirectory(sequence/primitive)
+endif()
+
 # Link
 if(ENABLE_DEBUG_LINK)
   add_subdirectory(link/debug)
@@ -172,6 +180,10 @@ if(BUILD_CAPI)
   endif()
   if(ENABLE_FROM_FILE_MODULATION)
     add_subdirectory(capi/modulation_from_file)
+  endif()
+
+  if(ENABLE_PRIMITIVE_SEQUENCE)
+    add_subdirectory(capi/sequence_primitive)
   endif()
 
   if(ENABLE_EMULATOR_LINK)

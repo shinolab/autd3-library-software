@@ -2,11 +2,11 @@ cmake_minimum_required(VERSION 3.10)
 
 set (CMAKE_CXX_STANDARD 17)
 
-include_directories(../../include)
+include_directories(${PROJECT_SOURCE_DIR}/include)
 
 add_library(modulation_primitive STATIC
   primitive.cpp
-  ../../include/modulation/primitive.hpp
+  ${PROJECT_SOURCE_DIR}/include/modulation/primitive.hpp
 )
 
 set_target_properties(modulation_primitive

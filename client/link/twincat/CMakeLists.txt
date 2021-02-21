@@ -23,6 +23,10 @@ set_target_properties(link_twincat
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
 )
 
+if(WIN32)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4267 /wd4996")
+endif()
+
 if(NOT WIN32)
   set_target_properties(link_twincat PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
