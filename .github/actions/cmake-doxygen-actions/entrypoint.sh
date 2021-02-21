@@ -3,5 +3,5 @@ cd $2
 cd $1
 mkdir build
 cd build 
-cmake ..
+cmake .. -DBUILD_ALL=ON
 make doc
