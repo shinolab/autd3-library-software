@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/02/2021
+// Last Modified: 21/02/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -35,14 +35,14 @@ int32_t AUTDOpenControllerWith(VOID_PTR const handle, VOID_PTR const p_link) {
   if (!cnt->ptr->is_open()) return ENXIO;
   return 0;
 }
-int32_t AUTDAddDevice(VOID_PTR const handle, const autd::Float x, const autd::Float y, const autd::Float z, const autd::Float rz1, const autd::Float ry, const autd::Float rz2,
-                      const int32_t group_id) {
+int32_t AUTDAddDevice(VOID_PTR const handle, const autd::Float x, const autd::Float y, const autd::Float z, const autd::Float rz1,
+                      const autd::Float ry, const autd::Float rz2, const int32_t group_id) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   const auto res = cnt->ptr->geometry()->AddDevice(autd::Vector3(x, y, z), autd::Vector3(rz1, ry, rz2), group_id);
   return static_cast<int32_t>(res);
 }
-int32_t AUTDAddDeviceQuaternion(VOID_PTR const handle, const autd::Float x, const autd::Float y, const autd::Float z, const autd::Float qua_w, const autd::Float qua_x,
-                                const autd::Float qua_y, const autd::Float qua_z, const int32_t group_id) {
+int32_t AUTDAddDeviceQuaternion(VOID_PTR const handle, const autd::Float x, const autd::Float y, const autd::Float z, const autd::Float qua_w,
+                                const autd::Float qua_x, const autd::Float qua_y, const autd::Float qua_z, const int32_t group_id) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   const auto res = cnt->ptr->geometry()->AddDeviceQuaternion(autd::Vector3(x, y, z), autd::Quaternion(qua_w, qua_x, qua_y, qua_z), group_id);
   return static_cast<int32_t>(res);
@@ -212,8 +212,8 @@ uint16_t AUTDSequenceSamplingFreqDiv(VOID_PTR const seq) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
   return seq_w->ptr->sampling_frequency_division();
 }
-void AUTDCircumSequence(VOID_PTR* out, const autd::Float x, const autd::Float y, const autd::Float z, const autd::Float nx, const autd::Float ny, const autd::Float nz,
-                        const autd::Float radius, const uint64_t n) {
+void AUTDCircumSequence(VOID_PTR* out, const autd::Float x, const autd::Float y, const autd::Float z, const autd::Float nx, const autd::Float ny,
+                        const autd::Float nz, const autd::Float radius, const uint64_t n) {
   auto* s = SequencePtrCreate(autd::sequence::CircumSeq::Create(autd::Vector3(x, y, z), autd::Vector3(nx, ny, nz), radius, static_cast<size_t>(n)));
   *out = s;
 }

@@ -9,6 +9,13 @@ add_library(modulation_primitive STATIC
   ../../include/modulation/primitive.hpp
 )
 
+set_target_properties(modulation_primitive
+  PROPERTIES
+  ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+)
+
 if(NOT WIN32)
   set_target_properties(modulation_primitive PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

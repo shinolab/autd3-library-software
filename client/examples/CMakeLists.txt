@@ -2,8 +2,7 @@ cmake_minimum_required(VERSION 3.1)
 
 set (CMAKE_CXX_STANDARD 17)
 
-set(EIGEN_PATH ../deps/Eigen3)
-include_directories(../include ${EIGEN_PATH} examples)
+include_directories(${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH} examples)
 
 file(GLOB hpp_files examples/*.hpp)
 

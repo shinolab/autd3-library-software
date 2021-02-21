@@ -2,12 +2,18 @@ cmake_minimum_required(VERSION 3.10)
 
 set (CMAKE_CXX_STANDARD 17)
 
-set(EIGEN_PATH ../../deps/Eigen3)
-include_directories(../../include ${EIGEN_PATH})
+include_directories(${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
 
 add_library(gain_primitive STATIC
   primitive.cpp
-  ../../include/gain/primitive.hpp
+  ${PROJECT_SOURCE_DIR}/include/gain/primitive.hpp
+)
+
+set_target_properties(gain_primitive
+  PROPERTIES
+  ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
 )
 
 if(NOT WIN32)

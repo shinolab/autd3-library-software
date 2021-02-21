@@ -2,13 +2,18 @@ cmake_minimum_required(VERSION 3.10)
 
 set (CMAKE_CXX_STANDARD 17)
 
-set(EIGEN_PATH ../../deps/Eigen3)
-
-include_directories(../../include ${EIGEN_PATH})
+include_directories(${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
 
 add_library(gain_holo STATIC
 	holo.cpp
-	../../include/gain/holo.hpp
+	${PROJECT_SOURCE_DIR}/include/gain/holo.hpp
+)
+
+set_target_properties(gain_holo
+  PROPERTIES
+  ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
 )
 
 if(NOT WIN32)

@@ -2,27 +2,15 @@ cmake_minimum_required(VERSION 3.12)
 
 set (CMAKE_CXX_STANDARD 17)
 
-set(EIGEN_PATH ../../deps/Eigen3)
-
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/deps)
-
-if (POLICY CMP0074)
-  cmake_policy(SET CMP0074 NEW)
-endif()
-
-if (POLICY CMP0079)
-  cmake_policy(SET CMP0079 NEW)
-endif()
-
-find_package( Threads REQUIRED )
+find_package(Threads REQUIRED)
 
 set(INCLUDE_LIST
-  ../../include
+  ${PROJECT_SOURCE_DIR}/include
   ${EIGEN_PATH}
   ${Ads_INCLUDE_DIR}
 )
 
-file(GLOB include_files  ../../include/*.hpp *.hpp)
+file(GLOB include_files  ${PROJECT_SOURCE_DIR}/include/*.hpp *.hpp)
 
 add_library(autd3capi SHARED
   c_api.cpp

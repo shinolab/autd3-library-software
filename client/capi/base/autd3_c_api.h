@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/02/2021
+// Last Modified: 21/02/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -26,9 +26,10 @@ extern "C" {
 #pragma region Controller
 EXPORT_AUTD void AUTDCreateController(VOID_PTR* out);
 EXPORT_AUTD int32_t AUTDOpenControllerWith(VOID_PTR handle, VOID_PTR p_link);
-EXPORT_AUTD int32_t AUTDAddDevice(VOID_PTR handle, autd::Float x, autd::Float y, autd::Float z, autd::Float rz1, autd::Float ry, autd::Float rz2, int32_t group_id);
-EXPORT_AUTD int32_t AUTDAddDeviceQuaternion(VOID_PTR handle, autd::Float x, autd::Float y, autd::Float z, autd::Float qua_w, autd::Float qua_x, autd::Float qua_y, autd::Float qua_z,
-                                            int32_t group_id);
+EXPORT_AUTD int32_t AUTDAddDevice(VOID_PTR handle, autd::Float x, autd::Float y, autd::Float z, autd::Float rz1, autd::Float ry, autd::Float rz2,
+                                  int32_t group_id);
+EXPORT_AUTD int32_t AUTDAddDeviceQuaternion(VOID_PTR handle, autd::Float x, autd::Float y, autd::Float z, autd::Float qua_w, autd::Float qua_x,
+                                            autd::Float qua_y, autd::Float qua_z, int32_t group_id);
 EXPORT_AUTD bool AUTDCalibrate(VOID_PTR handle, int32_t smpl_freq, int32_t buf_size);
 EXPORT_AUTD void AUTDCloseController(VOID_PTR handle);
 EXPORT_AUTD void AUTDClear(VOID_PTR handle);
@@ -70,7 +71,8 @@ EXPORT_AUTD autd::Float AUTDSequenceSetFreq(VOID_PTR seq, autd::Float freq);
 EXPORT_AUTD autd::Float AUTDSequenceFreq(VOID_PTR seq);
 EXPORT_AUTD autd::Float AUTDSequenceSamplingFreq(VOID_PTR seq);
 EXPORT_AUTD uint16_t AUTDSequenceSamplingFreqDiv(VOID_PTR seq);
-EXPORT_AUTD void AUTDCircumSequence(VOID_PTR* out, autd::Float x, autd::Float y, autd::Float z, autd::Float nx, autd::Float ny, autd::Float nz, autd::Float radius, uint64_t n);
+EXPORT_AUTD void AUTDCircumSequence(VOID_PTR* out, autd::Float x, autd::Float y, autd::Float z, autd::Float nx, autd::Float ny, autd::Float nz,
+                                    autd::Float radius, uint64_t n);
 EXPORT_AUTD void AUTDDeleteSequence(VOID_PTR seq);
 #pragma endredion
 

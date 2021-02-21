@@ -2,13 +2,18 @@ cmake_minimum_required(VERSION 3.10)
 
 set (CMAKE_CXX_STANDARD 17)
 
-set(EIGEN_PATH ../../deps/Eigen3)
-
-include_directories(../../include ${EIGEN_PATH})
+include_directories(${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
 
 add_library(link_emulator STATIC
-emulator.cpp
-	../../include/link/emulator.hpp
+  emulator.cpp
+  ${PROJECT_SOURCE_DIR}/include/link/emulator.hpp
+)
+
+set_target_properties(link_emulator
+  PROPERTIES
+  ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
 )
 
 if(NOT WIN32)
