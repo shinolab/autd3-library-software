@@ -1,21 +1,17 @@
 cmake_minimum_required(VERSION 3.10)
 
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/deps)
-
 set (CMAKE_CXX_STANDARD 17)
-
-set(EIGEN_PATH ../deps/Eigen3)
 
 find_package(Threads REQUIRED)
 
 set(INCLUDE_LIST
-  ../include
+  ${PROJECT_SOURCE_DIR}/include
   ${EIGEN_PATH}
 )
 
 file(GLOB cpp_files *.cpp)
 file(GLOB hpp_files *.hpp)
-file(GLOB include_files  ../include/*.hpp)
+file(GLOB include_files ${PROJECT_SOURCE_DIR}include/*.hpp)
 
 set(SOURCE_LIST 
   ${cpp_files}
@@ -32,36 +28,36 @@ if(WIN32)
   source_group("link" FILES
     emulator_link.cpp
     debug_link.cpp
-    ../include/emulator_link.hpp
-    ../include/debug_link.hpp
+    ${PROJECT_SOURCE_DIR}/include/emulator_link.hpp
+    ${PROJECT_SOURCE_DIR}/include/debug_link.hpp
   )
 
   source_group("gain" FILES
     gain.cpp
     grouped_gain.cpp
-    ../include/gain.hpp
+    ${PROJECT_SOURCE_DIR}include/gain.hpp
   )
 
   source_group("modulation" FILES
     modulation.cpp
-    ../include/modulation.hpp
+    ${PROJECT_SOURCE_DIR}include/modulation.hpp
   )
 
   source_group("sequence" FILES
     sequence.cpp
-    ../include/sequence.hpp
+    ${PROJECT_SOURCE_DIR}include/sequence.hpp
   )
  
   source_group("controller" FILES
     controller.cpp
     autd_logic.cpp
-    ../include/controller.hpp
+    ${PROJECT_SOURCE_DIR}/include/controller.hpp
     autd_logic.hpp
   )
 
   source_group("geometry" FILES
     geometry.cpp
-    ../include/geometry.hpp
+    ${PROJECT_SOURCE_DIR}include/geometry.hpp
   )
 
   source_group("util" FILES
