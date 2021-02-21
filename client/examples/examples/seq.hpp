@@ -14,6 +14,7 @@
 #include <iostream>
 
 #include "autd3.hpp"
+#include "sequence/primitive.hpp"
 
 inline void SeqTest(const autd::ControllerPtr& autd) {
   autd->SetSilentMode(false);

@@ -14,6 +14,7 @@
 #include <memory>
 
 #include "autd_types.hpp"
+#include "linalg.hpp"
 
 namespace autd {
 

@@ -11,7 +11,7 @@ run `build.ps1`, then open `autd3.sln` in `BUILD_DIR` (default `build`)
 * -BUILD_DIR = [\build]
 * -VS_VERSION = 2017, [2019]
 * -ARCH = [x64]
-* -DISABLE_MATLAB = [False]
+* -ENABLE_MATLAB_GAIN = [True]
 * -USE_DOUBLE = [False]
 
 ## Mac/Linux ##

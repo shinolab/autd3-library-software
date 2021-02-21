@@ -3,18 +3,83 @@ cmake_minimum_required(VERSION 3.10)
 project(autd3)
 set(VERSION_MAJOR   0   CACHE STRING "Project major version number.")
 set(VERSION_MINOR   8   CACHE STRING "Project minor version number.")
-set(VERSION_PATCH   1   CACHE STRING "Project patch version number.")
+set(VERSION_PATCH   2   CACHE STRING "Project patch version number.")
 mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
 
-option(DISABLE_MATLAB "DISABLE_MATLAB" OFF)
-option(USE_DOUBLE "USE_DOUBLE" OFF)
+option(BUILD_ALL "BUILD_ALL" OFF)
 
-if(DISABLE_MATLAB)
-  message(STATUS "Disabled Matlab")
+option(BUILD_DOC "BUILD_DOC" OFF)
+option(USE_DOUBLE "USE_DOUBLE" OFF)
+option(ENABLE_EIGEN "ENABLE_EIGEN" ON)
+
+option(ENABLE_PRIMITIVE_GAIN "ENABLE_PRIMITIVE_GAIN" ON)
+option(ENABLE_HOLO_GAIN "ENABLE_HOLO_GAIN" ON)
+option(ENABLE_MATLAB_GAIN "ENABLE_MATLAB_GAIN" OFF)
+
+option(ENABLE_PRIMITIVE_MODULATION "ENABLE_PRIMITIVE_MODULATION" ON)
+option(ENABLE_FROM_FILE_MODULATION "ENABLE_FROM_FILE_MODULATION" OFF)
+
+option(ENABLE_PRIMITIVE_SEQUENCE "ENABLE_PRIMITIVE_SEQUENCE" ON)
+
+option(ENABLE_SOEM_LINK "ENABLE_SOEM_LINK" ON)
+option(ENABLE_TWINCAT_LINK "ENABLE_TWINCAT_LINK" OFF)
+option(ENABLE_DEBUG_LINK "ENABLE_DEBUG_LINK" OFF)
+option(ENABLE_EMULATOR_LINK "ENABLE_EMULATOR_LINK" OFF)
+
+option(IGNORE_EXAMPLE "IGNORE_EXAMPLE" OFF)
+option(BUILD_CAPI "BUILD_CAPI" OFF)
+option(ENABLE_LINT "ENABLE_LINT" OFF)
+
+if(BUILD_ALL)
+  set(BUILD_DOC ON)
+  set(ENABLE_EIGEN ON)
+  set(ENABLE_PRIMITIVE_GAIN ON)
+  set(ENABLE_HOLO_GAIN ON)
+  set(ENABLE_MATLAB_GAIN ON)
+  set(ENABLE_PRIMITIVE_MODULATION ON)
+  set(ENABLE_FROM_FILE_MODULATION ON)
+  set(ENABLE_PRIMITIVE_SEQUENCE ON)
+  set(ENABLE_SOEM_LINK ON)
+  set(ENABLE_TWINCAT_LINK ON)
+  set(ENABLE_DEBUG_LINK ON)
+  set(ENABLE_EMULATOR_LINK ON)
+  set(BUILD_CAPI ON)
+  set(ENABLE_LINT ON)
 endif()
 
+if(ENABLE_MATLAB_GAIN)
+  message(STATUS "Enabled Matlab Gain")
+endif()
+if(NOT ENABLE_HOLO_GAIN)
+  message(STATUS "Disabled HoloGain")
+endif()
+if(BUILD_DOC)
+  find_package(Doxygen)
+  if(DOXYGEN_FOUND)
+    message(STATUS "Build doc")
+  else()
+    message(STATUS "Doxygen is needed to build the documentation. Skip building doc...")
+    set(BUILD_DOC OFF)
+  endif()
+endif()
 if(USE_DOUBLE)
   message(STATUS "Use double precision floating point number")
+  add_definitions(-DUSE_DOUBLE_AUTD)
+endif()
+if(NOT ENABLE_SOEM_LINK)
+  message(STATUS "Disabled SOEMLink")
+endif()
+if(ENABLE_TWINCAT_LINK)
+  message(STATUS "Enabled TwinCATLink")
+endif()
+if(ENABLE_DEBUG_LINK)
+  message(STATUS "Enabled DebugLink")
+endif()
+if(ENABLE_EMULATOR_LINK)
+  message(STATUS "Enabled EmulatorLink")
+endif()
+if(IGNORE_EXAMPLE)
+  message(STATUS "Ignored examples")
 endif()
 
 if(WIN32)
@@ -38,30 +103,107 @@ else()
   endif()
 endif()
 
-file(GLOB_RECURSE lint_files lib/*.cpp lib/*.hpp include/*.hpp capi/*.cpp capi/*.cpp soem_link/*.cpp soem_link/*.hpp)
-
-ADD_CUSTOM_TARGET(cpplint
-  python
-  ${PROJECT_SOURCE_DIR}/deps/cpplint.py
-  --filter=-runtime/references,-build/c++11,-whitespace/comments
-  --linelength=150
-  ${lint_files}
+if(ENABLE_LINT)
+  file(GLOB_RECURSE lint_files lib/*.cpp lib/*.hpp include/*.hpp capi/*.cpp capi/*.hpp capi/*.h link/*.cpp link/*.hpp)
+  ADD_CUSTOM_TARGET(cpplint
+    python
+    ${PROJECT_SOURCE_DIR}/deps/cpplint.py
+    --filter=-runtime/references,-build/c++11,-whitespace/comments
+    --linelength=150
+    ${lint_files}
   )
+endif()
 
-# ADS
-add_subdirectory(deps/BeckhoffADS)
-# SOEM
-add_subdirectory(deps/SOEM)
+if (POLICY CMP0074)
+  cmake_policy(SET CMP0074 NEW)
+endif()
 
-add_subdirectory(soem_link)
-add_subdirectory(twincat_link)
+if (POLICY CMP0079)
+  cmake_policy(SET CMP0079 NEW)
+endif()
+
+set(EIGEN_PATH ${PROJECT_SOURCE_DIR}/deps/Eigen3)
+
+# Gain
+if(ENABLE_PRIMITIVE_GAIN)
+  add_subdirectory(gain/primitive)
+endif()
+if(WIN32 AND ENABLE_MATLAB_GAIN)
+  add_subdirectory(gain/matlab)
+endif()
+if(ENABLE_HOLO_GAIN)
+  add_subdirectory(gain/holo)
+endif()
+
+# Modulation
+if(ENABLE_PRIMITIVE_MODULATION)
+  add_subdirectory(modulation/primitive)
+endif()
+if(ENABLE_FROM_FILE_MODULATION)
+  add_subdirectory(modulation/from_file)
+endif()
+
+#Sequence
+if(ENABLE_PRIMITIVE_SEQUENCE)
+  add_subdirectory(sequence/primitive)
+endif()
+
+# Link
+if(ENABLE_DEBUG_LINK)
+  add_subdirectory(link/debug)
+endif()
+if(ENABLE_EMULATOR_LINK)
+  add_subdirectory(link/emulator)
+endif()
+if(ENABLE_TWINCAT_LINK)
+  set (ADS_PATH ${PROJECT_SOURCE_DIR}/deps/BeckhoffADS/ADS)
+  add_subdirectory(link/twincat)
+endif()
+if(ENABLE_SOEM_LINK)
+  set(SOEM_PATH ${PROJECT_SOURCE_DIR}/deps/SOEM/SOEM)
+  add_subdirectory(link/soem)
+endif()
 
 add_subdirectory(lib)
-add_subdirectory(capi)
-add_subdirectory(doc)
+
+if(BUILD_CAPI)
+  add_subdirectory(capi/base)
+  if(ENABLE_PRIMITIVE_GAIN)
+    add_subdirectory(capi/gain_primitive)
+  endif()
+  if(ENABLE_HOLO_GAIN)
+    add_subdirectory(capi/gain_holo)
+  endif()
+  
+  if(ENABLE_PRIMITIVE_MODULATION)
+    add_subdirectory(capi/modulation_primitive)
+  endif()
+  if(ENABLE_FROM_FILE_MODULATION)
+    add_subdirectory(capi/modulation_from_file)
+  endif()
+
+  if(ENABLE_PRIMITIVE_SEQUENCE)
+    add_subdirectory(capi/sequence_primitive)
+  endif()
+
+  if(ENABLE_EMULATOR_LINK)
+    add_subdirectory(capi/link_emulator)
+  endif()
+  if(ENABLE_SOEM_LINK)
+    add_subdirectory(capi/link_soem)
+  endif()
+  if(ENABLE_TWINCAT_LINK)
+    add_subdirectory(capi/link_twincat)
+  endif()
+endif()
+
+if(BUILD_DOC)
+  add_subdirectory(doc)
+endif()
+
 if(NOT IGNORE_EXAMPLE)
-    add_subdirectory(examples)
-    if(WIN32)
-      set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT example_soem)
-    endif()
+  add_subdirectory(examples)
+  if(WIN32 AND ENABLE_SOEM_LINK)
+    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT example_soem)
+  endif()
 endif()
