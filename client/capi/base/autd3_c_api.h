@@ -71,8 +71,6 @@ EXPORT_AUTD autd::Float AUTDSequenceSetFreq(VOID_PTR seq, autd::Float freq);
 EXPORT_AUTD autd::Float AUTDSequenceFreq(VOID_PTR seq);
 EXPORT_AUTD autd::Float AUTDSequenceSamplingFreq(VOID_PTR seq);
 EXPORT_AUTD uint16_t AUTDSequenceSamplingFreqDiv(VOID_PTR seq);
-EXPORT_AUTD void AUTDCircumSequence(VOID_PTR* out, autd::Float x, autd::Float y, autd::Float z, autd::Float nx, autd::Float ny, autd::Float nz,
-                                    autd::Float radius, uint64_t n);
 EXPORT_AUTD void AUTDDeleteSequence(VOID_PTR seq);
 #pragma endredion
 

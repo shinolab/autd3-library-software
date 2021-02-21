@@ -17,9 +17,6 @@
 #include "./autd3_c_api.h"
 #include "autd3.hpp"
 #include "wrapper.hpp"
-#include "wrapper_gain.hpp"
-#include "wrapper_link.hpp"
-#include "wrapper_modulation.hpp"
 
 #pragma region Controller
 void AUTDCreateController(VOID_PTR* out) {
@@ -211,11 +208,6 @@ autd::Float AUTDSequenceSamplingFreq(VOID_PTR const seq) {
 uint16_t AUTDSequenceSamplingFreqDiv(VOID_PTR const seq) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
   return seq_w->ptr->sampling_frequency_division();
-}
-void AUTDCircumSequence(VOID_PTR* out, const autd::Float x, const autd::Float y, const autd::Float z, const autd::Float nx, const autd::Float ny,
-                        const autd::Float nz, const autd::Float radius, const uint64_t n) {
-  auto* s = SequencePtrCreate(autd::sequence::CircumSeq::Create(autd::Vector3(x, y, z), autd::Vector3(nx, ny, nz), radius, static_cast<size_t>(n)));
-  *out = s;
 }
 void AUTDDeleteSequence(VOID_PTR const seq) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);

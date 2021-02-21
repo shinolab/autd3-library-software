@@ -3,7 +3,7 @@
 // Created Date: 09/06/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/02/2021
+// Last Modified: 21/02/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -16,12 +16,10 @@
 
 #include "controller.hpp"
 #include "firmware_version.hpp"
-#include "modulation.hpp"
-#include "sequence.hpp"
-
-typedef struct {
-  autd::SequencePtr ptr;
-} SequenceWrapper;
+#include "wrapper_gain.hpp"
+#include "wrapper_link.hpp"
+#include "wrapper_modulation.hpp"
+#include "wrapper_sequence.hpp"
 
 typedef struct {
   autd::ControllerPtr ptr;
@@ -30,9 +28,6 @@ typedef struct {
 typedef struct {
   std::vector<autd::FirmwareInfo> list;
 } FirmwareInfoListWrapper;
-
-inline SequenceWrapper* SequencePtrCreate(const autd::SequencePtr& ptr) { return new SequenceWrapper{ptr}; }
-inline void SequenceDelete(SequenceWrapper* ptr) { delete ptr; }
 
 inline ControllerWrapper* ControllerCreate(autd::ControllerPtr ptr) { return new ControllerWrapper{std::move(ptr)}; }
 inline void ControllerDelete(ControllerWrapper* ptr) { delete ptr; }
