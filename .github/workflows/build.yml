@@ -26,14 +26,14 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: |
         cd client
-        cmake -G "Visual Studio 16 2019" -A x64 -B "build"
+        cmake -G "Visual Studio 16 2019" -A x64 -B "build" -DBUILD_ALL=ON
         cd build
         msbuild autd3.sln /t:build /p:Configuration=Release
     - name: build for Windows x86
       if: matrix.os == 'windows-latest'
       run: |
         cd client
-        cmake -G "Visual Studio 16 2019" -A Win32 -B "build_x86"
+        cmake -G "Visual Studio 16 2019" -A Win32 -B "build_x86" -DBUILD_ALL=ON
         cd build_x86
         msbuild autd3.sln /t:build /p:Configuration=Release
     - name: install gcc-10
@@ -47,7 +47,7 @@ jobs:
       run: |
         cd client
         mkdir -p build && cd build
-        cmake .. -DCMAKE_BUILD_TYPE=Release
+        cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_ALL=ON
         make
       shell: bash
       env:
@@ -58,7 +58,7 @@ jobs:
       run: |
         cd client
         mkdir -p build_arm32 && cd build_arm32
-        cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TARGET=ARM32
+        cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TARGET=ARM32 -DBUILD_ALL=ON
         make
       shell: bash
       env:
@@ -69,7 +69,7 @@ jobs:
       run: |
         cd client
         mkdir -p build_arm64 && cd build_arm64
-        cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TARGET=ARM64
+        cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TARGET=ARM64 -DBUILD_ALL=ON
         make
       shell: bash
       env:
@@ -80,7 +80,7 @@ jobs:
       run: |
         cd client
         mkdir -p build && cd build
-        cmake .. -DCMAKE_BUILD_TYPE=Release
+        cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_ALL=ON
         make
         
         
@@ -99,5 +99,5 @@ jobs:
       run: |
         cd client
         mkdir -p build && cd build
-        cmake ..
+        cmake .. -DBUILD_ALL=ON
         make cpplint
