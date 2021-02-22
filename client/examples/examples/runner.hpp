@@ -3,7 +3,7 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/02/2021
+// Last Modified: 22/02/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -39,20 +39,12 @@ constexpr auto ULTRASOUND_WAVELENGTH = 8.5;
 inline int Run(autd::ControllerPtr& autd) {
   using F = function<void(autd::ControllerPtr&)>;
   vector<pair<F, string>> examples = {
-#if defined(ENABLE_PRIMITIVE_GAIN) && defined(ENABLE_PRIMITIVE_MODULATION)
-    pair(F{SimpleTest}, "Single Focal Point Test"),
-    pair(F{BesselTest}, "BesselBeam Test"),
+      pair(F{SimpleTest}, "Single Focal Point Test"),         pair(F{BesselTest}, "BesselBeam Test"),
+      pair(F{STMTest}, "Spatio-Temporal Modulation Test"),
+#ifdef BUILD_HOLO_GAIN
+      pair(F{HoloTest}, "Multiple Focal Points Test"),
 #endif
-#ifdef ENABLE_PRIMITIVE_GAIN
-    pair(F{STMTest}, "Spatio-Temporal Modulation Test"),
-#endif
-#if defined(ENABLE_HOLO_GAIN) && defined(ENABLE_PRIMITIVE_MODULATION)
-    pair(F{HoloTest}, "Multiple Focal Points Test"),
-#endif
-#ifdef ENABLE_PRIMITIVE_SEQUENCE
-    pair(F{SeqTest}, "Point Sequence Test (Hardware STM)"),
-#endif
-    pair(F{DelayTest}, "(Advanced) Delay test"),
+      pair(F{SeqTest}, "Point Sequence Test (Hardware STM)"), pair(F{DelayTest}, "(Advanced) Delay test"),
   };
 
   autd->geometry()->set_wavelength(ULTRASOUND_WAVELENGTH);
