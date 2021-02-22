@@ -3,7 +3,7 @@
 // Created Date: 01/07/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 27/12/2020
+// Last Modified: 22/02/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -14,7 +14,6 @@
 #include <iostream>
 
 #include "autd3.hpp"
-#include "sequence/primitive.hpp"
 
 inline void SeqTest(const autd::ControllerPtr& autd) {
   autd->SetSilentMode(false);

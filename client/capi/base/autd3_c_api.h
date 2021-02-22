@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/02/2021
+// Last Modified: 22/02/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -56,11 +56,20 @@ EXPORT_AUTD uint64_t AUTDRemainingInBuffer(VOID_PTR handle);
 EXPORT_AUTD void AUTDNullGain(VOID_PTR* gain);
 EXPORT_AUTD void AUTDGroupedGain(VOID_PTR* gain, const int32_t* group_ids, VOID_PTR const* in_gains, int32_t size);
 EXPORT_AUTD void AUTDDeleteGain(VOID_PTR gain);
+EXPORT_AUTD void AUTDFocalPointGain(VOID_PTR* gain, float x, float y, float z, uint8_t duty);
+EXPORT_AUTD void AUTDBesselBeamGain(VOID_PTR* gain, float x, float y, float z, float n_x, float n_y, float n_z, float theta_z, uint8_t duty);
+EXPORT_AUTD void AUTDPlaneWaveGain(VOID_PTR* gain, float n_x, float n_y, float n_z, uint8_t duty);
+EXPORT_AUTD void AUTDCustomGain(VOID_PTR* gain, const uint16_t* data, int32_t data_length);
+EXPORT_AUTD void AUTDTransducerTestGain(VOID_PTR* gain, int32_t idx, uint8_t duty, uint8_t phase);
 #pragma endregion
 
 #pragma region Modulation
 EXPORT_AUTD void AUTDModulation(VOID_PTR* mod, uint8_t amp);
 EXPORT_AUTD void AUTDDeleteModulation(VOID_PTR mod);
+EXPORT_AUTD void AUTDCustomModulation(VOID_PTR* mod, const uint8_t* buf, uint32_t size);
+EXPORT_AUTD void AUTDSawModulation(VOID_PTR* mod, int32_t freq);
+EXPORT_AUTD void AUTDSineModulation(VOID_PTR* mod, int32_t freq, float amp, float offset);
+EXPORT_AUTD void AUTDSquareModulation(VOID_PTR* mod, int32_t freq, uint8_t low, uint8_t high);
 #pragma endregion
 
 #pragma region Sequence
@@ -72,6 +81,8 @@ EXPORT_AUTD autd::Float AUTDSequenceFreq(VOID_PTR seq);
 EXPORT_AUTD autd::Float AUTDSequenceSamplingFreq(VOID_PTR seq);
 EXPORT_AUTD uint16_t AUTDSequenceSamplingFreqDiv(VOID_PTR seq);
 EXPORT_AUTD void AUTDDeleteSequence(VOID_PTR seq);
+EXPORT_AUTD void AUTDCircumSequence(VOID_PTR* out, autd::Float x, autd::Float y, autd::Float z, autd::Float nx, autd::Float ny, autd::Float nz,
+                                    autd::Float radius, uint64_t n);
 #pragma endredion
 
 #pragma region LowLevelInterface

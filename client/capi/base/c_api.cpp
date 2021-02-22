@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/02/2021
+// Last Modified: 22/02/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -163,6 +163,29 @@ void AUTDDeleteGain(VOID_PTR const gain) {
   auto* g = static_cast<GainWrapper*>(gain);
   GainDelete(g);
 }
+void AUTDFocalPointGain(VOID_PTR* gain, const float x, const float y, const float z, const uint8_t duty) {
+  auto* g = GainCreate(autd::gain::FocalPointGain::Create(autd::Vector3(x, y, z), duty));
+  *gain = g;
+}
+
+void AUTDBesselBeamGain(VOID_PTR* gain, const float x, const float y, const float z, const float n_x, const float n_y, const float n_z,
+                        const float theta_z, const uint8_t duty) {
+  auto* g = GainCreate(autd::gain::BesselBeamGain::Create(autd::Vector3(x, y, z), autd::Vector3(n_x, n_y, n_z), theta_z, duty));
+  *gain = g;
+}
+void AUTDPlaneWaveGain(VOID_PTR* gain, const float n_x, const float n_y, const float n_z, const uint8_t duty) {
+  auto* g = GainCreate(autd::gain::PlaneWaveGain::Create(autd::Vector3(n_x, n_y, n_z), duty));
+  *gain = g;
+}
+void AUTDCustomGain(VOID_PTR* gain, const uint16_t* data, const int32_t data_length) {
+  auto* g = GainCreate(autd::gain::CustomGain::Create(data, data_length));
+  *gain = g;
+}
+
+void AUTDTransducerTestGain(VOID_PTR* gain, const int32_t idx, const uint8_t duty, const uint8_t phase) {
+  auto* g = GainCreate(autd::gain::TransducerTestGain::Create(idx, duty, phase));
+  *gain = g;
+}
 #pragma endregion
 
 #pragma region Modulation
@@ -173,6 +196,24 @@ void AUTDModulation(VOID_PTR* mod, const uint8_t amp) {
 void AUTDDeleteModulation(VOID_PTR const mod) {
   auto* m = static_cast<ModulationWrapper*>(mod);
   ModulationDelete(m);
+}
+void AUTDCustomModulation(VOID_PTR* mod, const uint8_t* buf, const uint32_t size) {
+  auto* m = ModulationCreate(autd::modulation::Modulation::Create(0));
+  m->ptr->buffer.resize(size, 0);
+  std::memcpy(&m->ptr->buffer[0], buf, size);
+  *mod = m;
+}
+void AUTDSquareModulation(VOID_PTR* mod, const int32_t freq, const uint8_t low, const uint8_t high) {
+  auto* m = ModulationCreate(autd::modulation::SquareModulation::Create(freq, low, high));
+  *mod = m;
+}
+void AUTDSawModulation(VOID_PTR* mod, const int32_t freq) {
+  auto* m = ModulationCreate(autd::modulation::SawModulation::Create(freq));
+  *mod = m;
+}
+void AUTDSineModulation(VOID_PTR* mod, const int32_t freq, const float amp, const float offset) {
+  auto* m = ModulationCreate(autd::modulation::SineModulation::Create(freq, amp, offset));
+  *mod = m;
 }
 #pragma endregion
 
@@ -212,6 +253,11 @@ uint16_t AUTDSequenceSamplingFreqDiv(VOID_PTR const seq) {
 void AUTDDeleteSequence(VOID_PTR const seq) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
   SequenceDelete(seq_w);
+}
+void AUTDCircumSequence(VOID_PTR* out, const autd::Float x, const autd::Float y, const autd::Float z, const autd::Float nx, const autd::Float ny,
+                        const autd::Float nz, const autd::Float radius, const uint64_t n) {
+  auto* s = SequencePtrCreate(autd::sequence::CircumSeq::Create(autd::Vector3(x, y, z), autd::Vector3(nx, ny, nz), radius, static_cast<size_t>(n)));
+  *out = s;
 }
 #pragma endredion
 
