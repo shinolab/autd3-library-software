@@ -3,13 +3,14 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/02/2021
+// Last Modified: 24/02/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
 //
 
 #pragma once
+#include <cassert>
 #include <map>
 #include <memory>
 #include <utility>
@@ -18,6 +19,7 @@
 #include "autd_types.hpp"
 #include "consts.hpp"
 #include "geometry.hpp"
+#include "linalg.hpp"
 
 namespace autd {
 namespace gain {

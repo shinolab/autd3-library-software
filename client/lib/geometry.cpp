@@ -3,27 +3,19 @@
 // Created Date: 08/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 27/12/2020
+// Last Modified: 24/02/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
 //
 
-#if WIN32
-#include <codeanalysis/warnings.h>  // NOLINT
-#pragma warning(push)
-#pragma warning(disable : ALL_CODE_ANALYSIS_WARNINGS)
-#endif
-#include <Eigen/Geometry>
-#if WIN32
-#pragma warning(pop)
-#endif
+#include "geometry.hpp"
 
 #include <map>
 
 #include "autd3.hpp"
 #include "autd_logic.hpp"
-#include "geometry.hpp"
+#include "linalg.hpp"
 
 using autd::IsMissingTransducer;
 using autd::NUM_TRANS_IN_UNIT;
@@ -33,9 +25,8 @@ using autd::TRANS_SIZE_MM;
 
 namespace autd {
 struct Device {
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   static Device Create(const Vector3& position, const Quaternion& quaternion) {
-    const Eigen::Transform<Float, 3, Eigen::Affine> transform_matrix = Eigen::Translation<Float, 3>(position) * quaternion;
+    const Matrix4x4 transform_matrix = Translation(position, quaternion);
     const auto x_direction = quaternion * Vector3(1, 0, 0);
     const auto y_direction = quaternion * Vector3(0, 1, 0);
     const auto z_direction = quaternion * Vector3(0, 0, 1);
@@ -54,8 +45,8 @@ struct Device {
   }
 
   static Device Create(const Vector3& position, const Vector3& euler_angles) {
-    const auto quaternion = Eigen::AngleAxis<Float>(euler_angles.x(), Vector3::UnitZ()) *
-                            Eigen::AngleAxis<Float>(euler_angles.y(), Vector3::UnitY()) * Eigen::AngleAxis<Float>(euler_angles.z(), Vector3::UnitZ());
+    const auto quaternion =
+        AngleAxis(euler_angles.x(), Vector3::UnitZ()) * AngleAxis(euler_angles.y(), Vector3::UnitY()) * AngleAxis(euler_angles.z(), Vector3::UnitZ());
 
     return Create(position, quaternion);
   }
