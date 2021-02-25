@@ -3,7 +3,7 @@
 // Created Date: 27/02/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 24/02/2021
+// Last Modified: 25/02/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -19,81 +19,21 @@
 #include <iostream>
 #include <memory>
 
+#include "helper.hpp"
+
 namespace autd::_utils {
-class VectorHelper {
- public:
-  template <typename T, typename V1, typename V2>
-  static T dot(const V1& lhs, const V2& rhs) {
-    T d = 0;
-    const T* lp = lhs.get();
-    const T* rp = rhs.get();
-    for (auto i = 0; i < lhs.size(); i++) d += *(lp++) * *(rp++);
-    return d;
-  }
-
-  template <typename T, typename V>
-  static T l2_norm_squared(V& v) {
-    T n = 0;
-    auto lp = lhs.get();
-    for (auto i = 0; i < v.size(); i++) n += *lp * *(lp++);
-    return n;
-  }
-
-  template <typename T, typename V>
-  static V& add(V& dst, const V& src) {
-    T* dp = dst.data();
-    const T* sp = src.data();
-    for (auto i = 0; i < dst.size(); i++) *dp++ += *sp++;
-    return dst;
-  }
-
-  template <typename T, typename V>
-  static V& sub(V& dst, const V& src) {
-    T* dp = dst.data();
-    const T* sp = src.data();
-    for (auto i = 0; i < dst.size(); i++) *dp++ -= *sp++;
-    return dst;
-  }
-
-  template <typename T, typename V>
-  static V& mul(V& dst, const T& src) {
-    T* dp = dst.data();
-    for (auto i = 0; i < dst.size(); i++) *dp++ *= src;
-    return dst;
-  }
-
-  template <typename T, typename V>
-  static V div(V& dst, const T& src) {
-    T* dp = dst.data();
-    for (auto i = 0; i < dst.size(); i++) *dp++ /= src;
-    return dst;
-  }
-
-  template <typename V>
-  static bool equals(const V& lhs, const V& rhs) {
-    if (lhs.size() != rhs.size()) return false;
-    bool r = true;
-    for (auto i = 0; i < lhs.size(); i++) r = r && (lhs(i) == rhs(i));
-    return r;
-  }
-
-  template <typename V>
-  static std::ostream& show(std::ostream& os, const V& obj) {
-    os << "Vector" << obj.size() << ":";
-    for (auto i = 0; i < obj.size(); i++) os << "\n\t" << obj(i);
-    return os;
-  }
-};
 
 template <typename T>
 struct VectorX {
  public:
-  VectorX() = default;
   VectorX(size_t size) : _size(size) { _data = std::make_unique<T[]>(size); }
   VectorX(const VectorX& obj) : VectorX(obj.size()) { std::memcpy(_data.get(), obj.data(), _size * sizeof(T)); }
-  VectorX& operator=(const VectorX& obj) { std::memcpy(_data.get(), obj.data(), _size * sizeof(T)); };
+  VectorX& operator=(const VectorX& obj) {
+    std::memcpy(_data.get(), obj.data(), _size * sizeof(T));
+    return *this;
+  };
 
-  T l2_norm_squared() const { return VectorHelper::l2_norm_squared(this); }
+  T l2_norm_squared() const { return _Helper::l2_norm_squared<T, VectorX>(*this); }
   T l2_norm() const { return std::sqrt(l2_norm_squared()); }
   T norm() const { return l2_norm(); }
 
@@ -106,7 +46,7 @@ struct VectorX {
     return v;
   }
 
-  T dot(const VectorX& rhs) const { return VectorHelper::dot<T, VectorX, VectorX>(*this, rhs); }
+  T dot(const VectorX& rhs) const { return _Helper::dot<T, VectorX, VectorX>(*this, rhs); }
 
   T& at(size_t i) { return _data[i]; }
   const T& at(size_t i) const { return _data[i]; }
@@ -126,44 +66,32 @@ struct VectorX {
   template <typename Ts>
   friend inline bool operator!=(const VectorX<Ts>& lhs, const VectorX<Ts>& rhs);
 
-  VectorX& operator+=(const VectorX& rhs) { return VectorHelper::add(this, rhs); }
-  VectorX& operator-=(const VectorX& rhs) { return VectorHelper::sub(this, rhs); }
-  VectorX& operator*=(T rhs) { return VectorHelper::mul(this, rhs); }
-  VectorX& operator/=(T rhs) { return VectorHelper::div(this, rhs); }
+  VectorX& operator+=(const VectorX& rhs) { return _Helper::add<T, VectorX>(*this, rhs); }
+  VectorX& operator-=(const VectorX& rhs) { return _Helper::sub<T, VectorX>(*this, rhs); }
+  VectorX& operator*=(T rhs) { return _Helper::mul<T, VectorX>(*this, rhs); }
+  VectorX& operator/=(T rhs) { return _Helper::div<T, VectorX>(*this, rhs); }
 
-  friend VectorX operator+(VectorX lhs, const VectorX& rhs) {
-    lhs += rhs;
-    return lhs;
-  }
-  friend VectorX operator-(VectorX lhs, const VectorX& rhs) {
-    lhs -= rhs;
-    return lhs;
-  }
-  friend VectorX operator*(VectorX lhs, const T& rhs) {
-    lhs *= rhs;
-    return lhs;
-  }
-  friend VectorX operator*(const T& lhs, VectorX rhs) {
-    rhs *= lhs;
-    return rhs;
-  }
-  friend VectorX operator/(VectorX lhs, const T& rhs) {
-    lhs /= rhs;
-    return lhs;
-  }
+  VectorX operator-() const { return _Helper::neg<T, VectorX>(*this); }
 
- private:
+  friend VectorX operator+(const VectorX& lhs, const VectorX& rhs) { return _Helper::add<T, VectorX>(lhs, rhs); }
+
+  friend VectorX operator-(const VectorX& lhs, const VectorX& rhs) { return _Helper::sub<T, VectorX>(lhs, rhs); }
+  friend VectorX operator*(const VectorX& lhs, const T& rhs) { return _Helper::mul<T, VectorX>(lhs, rhs); }
+  friend VectorX operator*(const T& lhs, const VectorX& rhs) { return _Helper::mul<T, VectorX>(rhs, lhs); }
+  friend VectorX operator/(const VectorX& lhs, const T& rhs) { return _Helper::div<T, VectorX>(lhs, rhs); }
+
+ protected:
   size_t _size;
   std::unique_ptr<T[]> _data;
 };
 
 template <typename T>
 inline std::ostream& operator<<(std::ostream& os, const VectorX<T>& obj) {
-  return VectorHelper::show(os, obj);
+  return _Helper::vec_show(os, obj);
 }
 template <typename T>
 inline bool operator==(const VectorX<T>& lhs, const VectorX<T>& rhs) {
-  return VectorHelper::equals(lhs, rhs);
+  return _Helper::vec_equals(lhs, rhs);
 }
 template <typename T>
 inline bool operator!=(const VectorX<T>& lhs, const VectorX<T>& rhs) {
@@ -173,10 +101,11 @@ inline bool operator!=(const VectorX<T>& lhs, const VectorX<T>& rhs) {
 template <typename T>
 class Vector3 : public VectorX<T> {
  public:
+  Vector3() : VectorX(3){};
   Vector3(T x, T y, T z) : VectorX(3) {
-    data()[0] = x;
-    data()[1] = y;
-    data()[2] = z;
+    _data[0] = x;
+    _data[1] = y;
+    _data[2] = z;
   }
 
   T& x() noexcept { return at(0); }
@@ -191,7 +120,7 @@ class Vector3 : public VectorX<T> {
   static Vector3 UnitZ() { return Vector3(0, 0, 1); }
   static Vector3 Zero() { return Vector3(0, 0, 0); }
 
-  Vector3& normalized() const { return *this / this->l2_norm(); }
+  Vector3 normalized() const { return *this / this->l2_norm(); }
 
   Vector3 cross(const Vector3& rhs) const {
     return Vector3(y() * rhs.z() - z() * rhs.y(), z() * rhs.x() - x() * rhs.z(), x() * rhs.y() - y() * rhs.x());
@@ -208,50 +137,62 @@ class Vector3 : public VectorX<T> {
     }
   }
 
-  template <typename Ts>
-  friend inline std::ostream& operator<<(std::ostream&, const Vector3<Ts>&);
-  template <typename Ts>
-  friend inline bool operator==(const Vector3<Ts>& lhs, const Vector3<Ts>& rhs);
-  template <typename Ts>
-  friend inline bool operator!=(const Vector3<Ts>& lhs, const Vector3<Ts>& rhs);
+  Vector3& operator+=(const Vector3& rhs) { return _Helper::add<T, Vector3>(*this, rhs); }
+  Vector3& operator-=(const Vector3& rhs) { return _Helper::sub<T, Vector3>(*this, rhs); }
+  Vector3& operator*=(const T& rhs) { return _Helper::mul<T, Vector3>(*this, rhs); }
+  Vector3& operator/=(const T& rhs) { return _Helper::div<T, Vector3>(*this, rhs); }
 
-  Vector3& operator+=(const Vector3& rhs) { return VectorHelper::add<T, Vector3>(*this, rhs); }
-  Vector3& operator-=(const Vector3& rhs) { return VectorHelper::sub<T, Vector3>(*this, rhs); }
-  Vector3& operator*=(const T& rhs) { return VectorHelper::mul<T, Vector3>(*this, rhs); }
-  Vector3& operator/=(const T& rhs) { return VectorHelper::div<T, Vector3>(*this, rhs); }
+  Vector3 operator-() const { return _Helper::neg<T, Vector3>(*this); }
 
-  friend Vector3 operator+(Vector3 lhs, const Vector3& rhs) {
-    lhs += rhs;
-    return lhs;
-  }
-  friend Vector3 operator-(Vector3 lhs, const Vector3& rhs) {
-    lhs -= rhs;
-    return lhs;
-  }
-  friend Vector3 operator*(Vector3 lhs, const T& rhs) {
-    lhs *= rhs;
-    return lhs;
-  }
-  friend Vector3 operator*(const T& lhs, Vector3 rhs) {
-    rhs *= lhs;
-    return rhs;
-  }
-  friend Vector3 operator/(Vector3 lhs, const T& rhs) {
-    lhs /= rhs;
-    return lhs;
-  }
+  friend Vector3 operator+(const Vector3& lhs, const Vector3& rhs) { return _Helper::add<T, Vector3>(lhs, rhs); }
+
+  friend Vector3 operator-(const Vector3& lhs, const Vector3& rhs) { return _Helper::sub<T, Vector3>(lhs, rhs); }
+  friend Vector3 operator*(const Vector3& lhs, const T& rhs) { return _Helper::mul<T, Vector3>(lhs, rhs); }
+  friend Vector3 operator*(const T& lhs, const Vector3& rhs) { return _Helper::mul<T, Vector3>(rhs, lhs); }
+  friend Vector3 operator/(const Vector3& lhs, const T& rhs) { return _Helper::div<T, Vector3>(lhs, rhs); }
 };
 
 template <typename T>
-inline std::ostream& operator<<(std::ostream& os, const Vector3<T>& obj) {
-  return VectorHelper::show(os, obj);
-}
-template <typename T>
-inline bool operator==(const Vector3<T>& lhs, const Vector3<T>& rhs) {
-  return VectorHelper::equals(lhs, rhs);
-}
-template <typename T>
-inline bool operator!=(const Vector3<T>& lhs, const Vector3<T>& rhs) {
-  return !(lhs == rhs);
-}
+class Vector4 : public VectorX<T> {
+ public:
+  Vector4() : VectorX(4){};
+  Vector4(T x, T y, T z, T w) : VectorX(4) {
+    _data[0] = x;
+    _data[1] = y;
+    _data[2] = z;
+    _data[3] = w;
+  }
+
+  T& x() noexcept { return at(0); }
+  T& y() noexcept { return at(1); }
+  T& z() noexcept { return at(2); }
+  T& w() noexcept { return at(3); }
+  const T& x() const noexcept { return at(0); }
+  const T& y() const noexcept { return at(1); }
+  const T& z() const noexcept { return at(2); }
+  const T& w() const noexcept { return at(3); }
+
+  static Vector4 UnitX() { return Vector4(1, 0, 0, 0); }
+  static Vector4 UnitY() { return Vector4(0, 1, 0, 0); }
+  static Vector4 UnitZ() { return Vector4(0, 0, 1, 0); }
+  static Vector4 UnitW() { return Vector4(0, 0, 0, 1); }
+  static Vector4 Zero() { return Vector4(0, 0, 0, 0); }
+
+  Vector4 normalized() const { return *this / this->l2_norm(); }
+
+  Vector4& operator+=(const Vector4& rhs) { return _Helper::add<T, Vector4>(*this, rhs); }
+  Vector4& operator-=(const Vector4& rhs) { return _Helper::sub<T, Vector4>(*this, rhs); }
+  Vector4& operator*=(const T& rhs) { return _Helper::mul<T, Vector4>(*this, rhs); }
+  Vector4& operator/=(const T& rhs) { return _Helper::div<T, Vector4>(*this, rhs); }
+
+  Vector4 operator-() const { return _Helper::neg<T, Vector4>(*this); }
+
+  friend Vector4 operator+(const Vector4& lhs, const Vector4& rhs) { return _Helper::add<T, Vector4>(lhs, rhs); }
+
+  friend Vector4 operator-(const Vector4& lhs, const Vector4& rhs) { return _Helper::sub<T, Vector4>(lhs, rhs); }
+  friend Vector4 operator*(const Vector4& lhs, const T& rhs) { return _Helper::mul<T, Vector4>(lhs, rhs); }
+  friend Vector4 operator*(const T& lhs, const Vector4& rhs) { return _Helper::mul<T, Vector4>(rhs, lhs); }
+  friend Vector4 operator/(const Vector4& lhs, const T& rhs) { return _Helper::div<T, Vector4>(lhs, rhs); }
+};
+
 }  // namespace autd::_utils
