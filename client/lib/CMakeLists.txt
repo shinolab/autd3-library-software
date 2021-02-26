@@ -4,14 +4,9 @@ set (CMAKE_CXX_STANDARD 17)
 
 find_package(Threads REQUIRED)
 
-set(INCLUDE_LIST
-  ${PROJECT_SOURCE_DIR}/include
-  ${EIGEN_PATH}
-)
-
 file(GLOB cpp_files *.cpp)
 file(GLOB hpp_files *.hpp)
-file(GLOB include_files ${PROJECT_SOURCE_DIR}include/*.hpp)
+file(GLOB include_files ${PROJECT_SOURCE_DIR}/include/*.hpp ${PROJECT_SOURCE_DIR}/include/linalg/*.hpp)
 
 set(SOURCE_LIST 
   ${cpp_files}
@@ -22,30 +17,26 @@ set(SOURCE_LIST
 
 add_library(autd3 STATIC ${SOURCE_LIST})
 
-include_directories(${INCLUDE_LIST})
+include_directories(${PROJECT_SOURCE_DIR}/include)
+if(ENABLE_EIGEN)
+  include_directories(${EIGEN_PATH})
+endif()
 
 if(WIN32)
-  source_group("link" FILES
-    emulator_link.cpp
-    debug_link.cpp
-    ${PROJECT_SOURCE_DIR}/include/emulator_link.hpp
-    ${PROJECT_SOURCE_DIR}/include/debug_link.hpp
-  )
-
   source_group("gain" FILES
     gain.cpp
     grouped_gain.cpp
-    ${PROJECT_SOURCE_DIR}include/gain.hpp
+    ${PROJECT_SOURCE_DIR}/include/gain.hpp
   )
 
   source_group("modulation" FILES
     modulation.cpp
-    ${PROJECT_SOURCE_DIR}include/modulation.hpp
+    ${PROJECT_SOURCE_DIR}/include/modulation.hpp
   )
 
   source_group("sequence" FILES
     sequence.cpp
-    ${PROJECT_SOURCE_DIR}include/sequence.hpp
+    ${PROJECT_SOURCE_DIR}/include/sequence.hpp
   )
  
   source_group("controller" FILES
@@ -57,12 +48,20 @@ if(WIN32)
 
   source_group("geometry" FILES
     geometry.cpp
-    ${PROJECT_SOURCE_DIR}include/geometry.hpp
+    ${PROJECT_SOURCE_DIR}/include/geometry.hpp
   )
 
   source_group("util" FILES
     ${OS}/timer.cpp
     timer.hpp
+  )
+
+  source_group("linalg" FILES
+    ${PROJECT_SOURCE_DIR}/include/linalg.hpp
+    ${PROJECT_SOURCE_DIR}/include/linalg/helper.hpp
+    ${PROJECT_SOURCE_DIR}/include/linalg/matrix.hpp
+    ${PROJECT_SOURCE_DIR}/include/linalg/quaternion.hpp
+    ${PROJECT_SOURCE_DIR}/include/linalg/vector.hpp
   )
 endif()
 
