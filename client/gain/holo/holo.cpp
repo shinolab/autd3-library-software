@@ -3,7 +3,7 @@
 // Created Date: 06/07/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 06/02/2021
+// Last Modified: 27/02/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -27,7 +27,7 @@ using autd::Float, autd::ToFloat;
 using autd::GeometryPtr;
 using autd::NUM_TRANS_IN_UNIT;
 using autd::PI;
-using autd::gain::AdjustAmp;
+using autd::gain::ToDuty;
 using std::map, std::vector;
 
 #ifdef USE_DOUBLE_AUTD
@@ -170,7 +170,7 @@ void SetFromComplexDrive(vector<AUTDDataArray>& data, const VectorXc& drive, con
     const auto f_amp = normalize ? ToFloat(1.0) : abs(drive(j)) / max_coeff;
     const auto f_phase = arg(drive(j)) / (2 * PI) + ToFloat(0.5);
     const auto phase = static_cast<uint16_t>((1 - f_phase) * ToFloat(255.));
-    const uint16_t duty = static_cast<uint16_t>(AdjustAmp(f_amp)) << 8 & 0xFF00;
+    const uint16_t duty = static_cast<uint16_t>(ToDuty(f_amp)) << 8 & 0xFF00;
     data[dev_idx][trans_idx++] = duty | phase;
     if (trans_idx == NUM_TRANS_IN_UNIT) {
       dev_idx++;
