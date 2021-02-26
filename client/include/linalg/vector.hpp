@@ -3,7 +3,7 @@
 // Created Date: 27/02/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/02/2021
+// Last Modified: 27/02/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -26,12 +26,12 @@ namespace autd::_utils {
 template <typename T>
 struct VectorX {
  public:
-  VectorX(size_t size) : _size(size) { _data = std::make_unique<T[]>(size); }
+  explicit VectorX(size_t size) : _size(size) { _data = std::make_unique<T[]>(size); }
   VectorX(const VectorX& obj) : VectorX(obj.size()) { std::memcpy(_data.get(), obj.data(), _size * sizeof(T)); }
   VectorX& operator=(const VectorX& obj) {
     std::memcpy(_data.get(), obj.data(), _size * sizeof(T));
     return *this;
-  };
+  }
 
   T l2_norm_squared() const { return _Helper::l2_norm_squared<T, VectorX>(*this); }
   T l2_norm() const { return std::sqrt(l2_norm_squared()); }
@@ -40,9 +40,9 @@ struct VectorX {
   void normalize() { *this /= l2_norm(); }
   VectorX& normalized() const { return *this / this->l2_norm(); }
 
-  static VectorX Zero() {
-    VectorX v;
-    std::memset(v._data, 0, _size * sizeof(T));
+  static VectorX Zero(size_t size) {
+    VectorX v(size);
+    std::memset(v._data, 0, v._size * sizeof(T));
     return v;
   }
 
@@ -101,7 +101,7 @@ inline bool operator!=(const VectorX<T>& lhs, const VectorX<T>& rhs) {
 template <typename T>
 class Vector3 : public VectorX<T> {
  public:
-  Vector3() : VectorX(3){};
+  Vector3() : VectorX(3) {}
   Vector3(T x, T y, T z) : VectorX(3) {
     _data[0] = x;
     _data[1] = y;
@@ -155,7 +155,7 @@ class Vector3 : public VectorX<T> {
 template <typename T>
 class Vector4 : public VectorX<T> {
  public:
-  Vector4() : VectorX(4){};
+  Vector4() : VectorX(4) {}
   Vector4(T x, T y, T z, T w) : VectorX(4) {
     _data[0] = x;
     _data[1] = y;

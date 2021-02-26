@@ -3,7 +3,7 @@
 // Created Date: 27/02/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/02/2021
+// Last Modified: 27/02/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -33,7 +33,7 @@ struct MatrixX {
   MatrixX& operator=(const MatrixX& obj) {
     std::memcpy(_data.get(), obj.data(), size() * sizeof(T));
     return *this;
-  };
+  }
 
   static MatrixX Zero(size_t row, size_t col) {
     MatrixX v(row, col);
@@ -98,7 +98,7 @@ inline bool operator!=(const MatrixX<T>& lhs, const MatrixX<T>& rhs) {
 template <typename T>
 class Matrix4x4 : public MatrixX<T> {
  public:
-  Matrix4x4() : MatrixX(4, 4){};
+  Matrix4x4() : MatrixX(4, 4) {}
 
   Matrix4x4& operator+=(const Matrix4x4& rhs) { return _Helper::add<T, Matrix4x4>(*this, rhs); }
   Matrix4x4& operator-=(const Matrix4x4& rhs) { return _Helper::sub<T, Matrix4x4>(*this, rhs); }
