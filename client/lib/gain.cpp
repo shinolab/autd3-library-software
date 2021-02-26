@@ -73,7 +73,7 @@ void GroupedGain::Build() {
 }
 
 GainPtr PlaneWaveGain::Create(const Vector3& direction, const Float amp) {
-  const auto d = AdjustAmp(amp);
+  const auto d = ToDuty(amp);
   return Create(direction, d);
 }
 
@@ -106,7 +106,7 @@ void PlaneWaveGain::Build() {
 }
 
 GainPtr FocalPointGain::Create(const Vector3& point, const Float amp) {
-  const auto d = AdjustAmp(amp);
+  const auto d = ToDuty(amp);
   return Create(point, d);
 }
 
@@ -137,7 +137,7 @@ void FocalPointGain::Build() {
 }
 
 GainPtr BesselBeamGain::Create(const Vector3& point, const Vector3& vec_n, const Float theta_z, const Float amp) {
-  const auto duty = AdjustAmp(amp);
+  const auto duty = ToDuty(amp);
   return Create(point, vec_n, theta_z, duty);
 }
 
