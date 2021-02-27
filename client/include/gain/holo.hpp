@@ -3,7 +3,7 @@
 // Created Date: 06/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/02/2021
+// Last Modified: 27/02/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -48,6 +48,10 @@ enum class OPT_METHOD {
   LM = 5
 };
 
+enum class BACKEND {
+  Eigen = 0,
+};
+
 struct SDPParams {
   Float regularization;
   int32_t repeat;
@@ -76,24 +80,48 @@ class HoloGain final : public Gain {
    * @brief Generate function
    * @param[in] foci focal points
    * @param[in] amps amplitudes of the foci
+   * @param[in] backend backend of optimization. see also @ref BACKEND
+   * @param[in] method optimization method. see also @ref OPT_METHOD
+   * @param[in] params pointer to optimization parameters
+   */
+  static std::shared_ptr<HoloGain> Create(const std::vector<Vector3>& foci, const std::vector<Float>& amps, BACKEND backend = BACKEND::Eigen,
+                                          OPT_METHOD method = OPT_METHOD::SDP, void* params = nullptr);
+  /**
+   * @brief Generate function
+   * @param[in] foci focal points
+   * @param[in] amps amplitudes of the foci
    * @param[in] method optimization method. see also @ref OptMethod
    * @param[in] params pointer to optimization parameters
    */
-  static GainPtr Create(const std::vector<Vector3>& foci, const std::vector<Float>& amps, OPT_METHOD method = OPT_METHOD::SDP,
-                        void* params = nullptr);
+  static std::shared_ptr<HoloGain> Create(const std::vector<Vector3>& foci, const std::vector<Float>& amps, OPT_METHOD method = OPT_METHOD::SDP,
+                                          void* params = nullptr);
+
+  /**
+   * @brief Generate function
+   * @param[in] backend backend of optimization. see also @ref BACKEND
+   * @param[in] method optimization method. see also @ref OptMethod
+   * @param[in] params pointer to optimization parameters
+   */
+  static std::shared_ptr<HoloGain> Create(BACKEND backend = BACKEND::Eigen, OPT_METHOD method = OPT_METHOD::SDP, void* params = nullptr);
 
   void Build() override;
-  HoloGain(std::vector<Vector3> foci, std::vector<Float> amps, const OPT_METHOD method = OPT_METHOD::SDP, void* params = nullptr)
-      : Gain(), _foci(std::move(foci)), _amps(std::move(amps)), _method(method), _params(params) {}
+  HoloGain(std::vector<Vector3> foci, std::vector<Float> amps, const BACKEND backend = BACKEND::Eigen, const OPT_METHOD method = OPT_METHOD::SDP,
+           void* params = nullptr)
+      : Gain(), _foci(std::move(foci)), _amps(std::move(amps)), _backend(backend), _method(method), _params(params) {}
   ~HoloGain() override = default;
   HoloGain(const HoloGain& v) noexcept = default;
   HoloGain& operator=(const HoloGain& obj) = default;
   HoloGain(HoloGain&& obj) = default;
   HoloGain& operator=(HoloGain&& obj) = default;
 
+  std::vector<Vector3>& foci() { return this->_foci; }
+  std::vector<Float>& amplitudes() { return this->_amps; }
+  void Rebuild() { this->_built = false; }
+
  protected:
   std::vector<Vector3> _foci;
   std::vector<Float> _amps;
+  BACKEND _backend = BACKEND::Eigen;
   OPT_METHOD _method = OPT_METHOD::SDP;
   void* _params = nullptr;
 };
