@@ -16,6 +16,7 @@
 #include <map>
 #include <memory>
 #include <mutex>
+#include <random>
 #include <string>
 #include <utility>
 #include <vector>
@@ -28,24 +29,34 @@ namespace autd::gain {
  * @brief Optimization method for generating multiple foci.
  */
 enum class OPT_METHOD {
-  //! Inoue, Seki, Yasutoshi Makino, and Hiroyuki Shinoda. "Active touch perception produced by airborne ultrasonic haptic hologram." 2015 IEEE World
+  //! Inoue, Seki, Yasutoshi Makino, and Hiroyuki Shinoda. "Active touch
+  //! perception produced by airborne ultrasonic haptic hologram." 2015 IEEE
+  //! World
   //! Haptics Conference (WHC). IEEE, 2015.
   SDP = 0,
-  //! Long, Benjamin, et al. "Rendering volumetric haptic shapes in mid-air using ultrasound." ACM Transactions on Graphics (TOG) 33.6 (2014): 1-10.
+  //! Long, Benjamin, et al. "Rendering volumetric haptic shapes in mid-air
+  //! using ultrasound." ACM Transactions on Graphics (TOG) 33.6 (2014): 1-10.
   EVD = 1,
-  //! Asier Marzo and Bruce W Drinkwater. Holographic acoustic tweezers.Proceedings of theNational Academy of Sciences, 116(1):84–89, 2019.
+  //! Asier Marzo and Bruce W Drinkwater. Holographic acoustic
+  //! tweezers.Proceedings of theNational Academy of Sciences, 116(1):84–89,
+  //! 2019.
   GS = 2,
-  //! Diego Martinez Plasencia et al. "Gs-pat: high-speed multi-point sound-fields for phased arrays of transducers," ACMTrans-actions on Graphics
+  //! Diego Martinez Plasencia et al. "Gs-pat: high-speed multi-point
+  //! sound-fields for phased arrays of transducers," ACMTrans-actions on
+  //! Graphics
   //! (TOG), 39(4):138–1, 2020.
   //! Not yet been implemented with GPU.
   GS_PAT = 3,
   //! Naive linear synthesis method.
   NAIVE = 4,
-  //! K.Levenberg, “A method for the solution of certain non-linear problems in least squares,” Quarterly of applied mathematics, vol.2, no.2,
+  //! K.Levenberg, “A method for the solution of certain non-linear problems in
+  //! least squares,” Quarterly of applied mathematics, vol.2, no.2,
   //! pp.164–168, 1944.
-  //! D.W.Marquardt, “An algorithm for least-squares estimation of non-linear parameters,” Journal of the society for Industrial and
+  //! D.W.Marquardt, “An algorithm for least-squares estimation of non-linear
+  //! parameters,” Journal of the society for Industrial and
   //! AppliedMathematics, vol.11, no.2, pp.431–441, 1963.
-  //! K.Madsen, H.Nielsen, and O.Tingleff, “Methods for non-linear least squares problems (2nd ed.),” 2004.
+  //! K.Madsen, H.Nielsen, and O.Tingleff, “Methods for non-linear least squares
+  //! problems (2nd ed.),” 2004.
   LM = 5
 };
 
@@ -68,28 +79,41 @@ struct NLSParams {
   Float tau;
 };
 
-template <typename MCx>
-class Backend {
+template <typename MCx, typename VCx>
+class B {
  public:
   using MatrixXc = MCx;
+  using VectorXc = VCx;
 
   virtual bool is_support_SVD() = 0;
+  virtual bool is_support_EVD() = 0;
   virtual MatrixXc pseudoInverseSVD(const MatrixXc& matrix, Float alpha) = 0;
+  virtual VectorXc maxEigenVector(const MatrixXc& matrix) = 0;
   virtual MatrixXc transferMatrix(const GeometryPtr& geometry, const std::vector<Vector3>& foci) = 0;
-  virtual ~Backend() {}
+  virtual void matmul(std::complex<Float> alpha, const MatrixXc& a, const MatrixXc& b, std::complex<Float> beta, MatrixXc* c) = 0;
+  virtual void matvecmul(std::complex<Float> alpha, const MatrixXc& a, const VectorXc& b, std::complex<Float> beta, VectorXc* c) = 0;
+  virtual std::complex<Float> dot(const VectorXc& a, const VectorXc& b) = 0;
+  virtual Float maxCoeff(const VectorXc& v) = 0;
+  virtual ~B() {}
 };
 
-class Eigen3Backend final : public Backend<Eigen::Matrix<std::complex<Float>, -1, -1>> {
+class Eigen3Backend final : public B<Eigen::Matrix<std::complex<Float>, -1, -1>, Eigen::Matrix<std::complex<Float>, -1, 1>> {
  public:
   bool is_support_SVD() override { return true; }
+  bool is_support_EVD() override { return true; }
   MatrixXc pseudoInverseSVD(const MatrixXc& matrix, Float alpha) override;
+  VectorXc maxEigenVector(const MatrixXc& matrix) override;
   MatrixXc transferMatrix(const GeometryPtr& geometry, const std::vector<Vector3>& foci) override;
+  void matmul(std::complex<Float> alpha, const MatrixXc& a, const MatrixXc& b, std::complex<Float> beta, MatrixXc* c) override;
+  void matvecmul(std::complex<Float> alpha, const MatrixXc& a, const VectorXc& b, std::complex<Float> beta, VectorXc* c) override;
+  std::complex<Float> dot(const VectorXc& a, const VectorXc& b) override;
+  Float maxCoeff(const VectorXc& v) override;
 };
 
 /**
  * @brief Gain to produce multiple focal points
  */
-template <typename Backend>
+template <typename B>
 class HoloGain final : public Gain {
  public:
   /**
@@ -151,9 +175,44 @@ class HoloGain final : public Gain {
   std::vector<Float> _amps;
   OPT_METHOD _method = OPT_METHOD::SDP;
   void* _params = nullptr;
-  Backend _backend;
+  B _backend;
 
  private:
+  template <typename M>
+  inline void matmul(const M& a, const M& b, M* c) {
+    _backend.matmul(std::complex<Float>(1, 0), a, b, std::complex<Float>(0, 0), c);
+  }
+  template <typename M, typename V>
+  inline void matvecmul(const M& a, const V& b, V* c) {
+    _backend.matvecmul(std::complex<Float>(1, 0), a, b, std::complex<Float>(0, 0), c);
+  }
+  template <typename M, typename V>
+  inline void setBCDResult(M& mat, const V& vec, size_t idx) {
+    const size_t M = vec.size();
+    for (size_t i = 0; i < idx; i++) mat(idx, i) = std::conj(vec(i));
+    for (size_t i = idx + 1; i < M; i++) mat(idx, i) = std::conj(vec(i));
+    for (size_t i = 0; i < idx; i++) mat(i, idx) = vec(i);
+    for (size_t i = idx + 1; i < M; i++) mat(i, idx) = vec(i);
+  }
+
+  template <typename V>
+  void SetFromComplexDrive(std::vector<AUTDDataArray>& data, const V& drive, const bool normalize, const Float max_coeff) {
+    const size_t n = drive.size();
+    size_t dev_idx = 0;
+    size_t trans_idx = 0;
+    for (size_t j = 0; j < n; j++) {
+      const auto f_amp = normalize ? Float{1} : abs(drive(j)) / max_coeff;
+      const auto f_phase = arg(drive(j)) / (2 * PI) + Float{0.5};
+      const auto phase = static_cast<uint16_t>((1 - f_phase) * Float{255});
+      const uint16_t duty = static_cast<uint16_t>(ToDuty(f_amp)) << 8 & 0xFF00;
+      data[dev_idx][trans_idx++] = duty | phase;
+      if (trans_idx == NUM_TRANS_IN_UNIT) {
+        dev_idx++;
+        trans_idx = 0;
+      }
+    }
+  }
+
   void SDP() {
     auto alpha = Float{1e-3};
     auto lambda = Float{0.9};
@@ -171,45 +230,50 @@ class HoloGain final : public Gain {
     const size_t M = _foci.size();
     const auto N = _geometry->num_transducers();
 
-    Backend::MatrixXc P = Backend::MatrixXc::Zero(M, M);
+    B::MatrixXc P = B::MatrixXc::Zero(M, M);
     for (size_t i = 0; i < M; i++) P(i, i) = _amps[i];
 
-    // const Backend::MatrixXc B = _backend.transferMatrix(_geometry, _foci);
-    // const Backend::MatrixXc pinvB = _backend.pseudoInverseSVD(B, alpha);
-    const Backend::MatrixXc pinvB = _backend.pseudoInverseSVD(P, alpha);
+    const B::MatrixXc B = _backend.transferMatrix(_geometry, _foci);
+    const B::MatrixXc pinvB = _backend.pseudoInverseSVD(B, alpha);
 
-    // MatrixXc MM = P * (MatrixXc::Identity(M, M) - B * pinvB) * P;
-    // MatrixXc X = MatrixXc::Identity(M, M);
+    B::MatrixXc MM = B::MatrixXc::Identity(M, M);
+    _backend.matmul(std::complex<Float>(1, 0), B, pinvB, std::complex<Float>(-1, 0), &MM);
+    B::MatrixXc tmp(M, M);
+    matmul(P, MM, &tmp);
+    matmul(tmp, P, &MM);
+    B::MatrixXc X = B::MatrixXc::Identity(M, M);
 
-    // std::random_device rnd;
-    // std::mt19937 mt(rnd());
-    // std::uniform_real_distribution<double> range(0, 1);
-    // VectorXc zero = VectorXc::Zero(M);
-    // for (auto i = 0; i < repeat; i++) {
-    //  auto ii = static_cast<size_t>(M * static_cast<double>(range(mt)));
+    std::random_device rnd;
+    std::mt19937 mt(rnd());
+    std::uniform_real_distribution<double> range(0, 1);
+    B::VectorXc zero = B::VectorXc::Zero(M);
+    for (auto i = 0; i < repeat; i++) {
+      auto ii = static_cast<size_t>(M * static_cast<double>(range(mt)));
 
-    //  VectorXc mmc = MM.col(ii);
-    //  mmc(ii) = 0;
+      B::VectorXc mmc = MM.col(ii);
+      mmc(ii) = 0;
 
-    //  VectorXc x = X * mmc;
-    //  complex gamma = x.adjoint() * mmc;
-    //  if (gamma.real() > 0) {
-    //    x = -x * sqrt(lambda / gamma.real());
-    //    setBCDResult(&X, x, ii);
-    //  } else {
-    //    setBCDResult(&X, zero, ii);
-    //  }
-    //}
+      B::VectorXc x(M);
+      matvecmul(X, mmc, &x);
+      std::complex<Float> gamma = _backend.dot(x.adjoint(), mmc);
+      if (gamma.real() > 0) {
+        x = -x * sqrt(lambda / gamma.real());
+        setBCDResult(X, x, ii);
+      } else {
+        setBCDResult(X, zero, ii);
+      }
+    }
 
-    // const Eigen::ComplexEigenSolver<MatrixXc> ces(X);
-    // int idx = 0;
-    // ces.eigenvalues().cwiseAbs2().maxCoeff(&idx);
-    // VectorXc u = ces.eigenvectors().col(idx);
+    B::VectorXc u = _backend.maxEigenVector(X);
 
-    // const auto q = pinvB * P * u;
-    // const auto max_coeff = sqrt(q.cwiseAbs2().maxCoeff());
+    B::VectorXc ut(M);
+    matvecmul(P, u, &ut);
 
-    // SetFromComplexDrive(data, q, normalize, max_coeff);
+    B::VectorXc q(N);
+    matvecmul(pinvB, ut, &q);
+
+    const auto max_coeff = _backend.maxCoeff(q);
+    SetFromComplexDrive(_data, q, normalize, max_coeff);
   }
 };
 }  // namespace autd::gain
