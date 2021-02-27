@@ -95,6 +95,13 @@ Eigen3Backend::MatrixXc Eigen3Backend::pseudoInverseSVD(const Eigen3Backend::Mat
   return pinvB;
 }
 
+Eigen3Backend::VectorXc Eigen3Backend::maxEigenVector(const Eigen3Backend::MatrixXc& matrix) {
+  const Eigen::ComplexEigenSolver<MatrixXc> ces(matrix);
+  int idx = 0;
+  ces.eigenvalues().cwiseAbs2().maxCoeff(&idx);
+  return ces.eigenvectors().col(idx);
+}
+
 Eigen3Backend::MatrixXc Eigen3Backend::transferMatrix(const GeometryPtr& geometry, const std::vector<Vector3>& foci) {
   const size_t m = foci.size();
   const size_t n = geometry->num_transducers();
@@ -113,6 +120,22 @@ Eigen3Backend::MatrixXc Eigen3Backend::transferMatrix(const GeometryPtr& geometr
 
   return g;
 }
+
+void Eigen3Backend::matmul(std::complex<Float> alpha, const Eigen3Backend::MatrixXc& a, const Eigen3Backend::MatrixXc& b, std::complex<Float> beta,
+                           Eigen3Backend::MatrixXc* c) {
+  *c *= beta;
+  (*c).noalias() += alpha * (a * b);
+}
+
+void Eigen3Backend::matvecmul(std::complex<Float> alpha, const Eigen3Backend::MatrixXc& a, const Eigen3Backend::VectorXc& b, std::complex<Float> beta,
+                              Eigen3Backend::VectorXc* c) {
+  *c *= beta;
+  (*c).noalias() += alpha * (a * b);
+}
+
+std::complex<Float> Eigen3Backend::dot(const Eigen3Backend::VectorXc& a, const Eigen3Backend::VectorXc& b) { return a.dot(b); }
+
+Float Eigen3Backend::maxCoeff(const Eigen3Backend::VectorXc& v) { return sqrt(v.cwiseAbs2().maxCoeff()); }
 }  // namespace autd::gain
 
 //#include <complex>
@@ -124,123 +147,6 @@ Eigen3Backend::MatrixXc Eigen3Backend::transferMatrix(const GeometryPtr& geometr
 //#include "autd_types.hpp"
 //#include "consts.hpp"
 //#include "gain.hpp"
-
-// namespace hologainimpl {
-
-//
-// void RemoveRow(MatrixXc* const matrix, const size_t row_to_remove) {
-//  const auto num_rows = static_cast<size_t>(matrix->rows()) - 1;
-//  const auto num_cols = static_cast<size_t>(matrix->cols());
-//
-//  if (row_to_remove < num_rows)
-//    matrix->block(row_to_remove, 0, num_rows - row_to_remove, num_cols) = matrix->block(row_to_remove + 1, 0, num_rows - row_to_remove, num_cols);
-//
-//  matrix->conservativeResize(num_rows, num_cols);
-//}
-//
-// void RemoveColumn(MatrixXc* const matrix, const size_t col_to_remove) {
-//  const auto num_rows = static_cast<size_t>(matrix->rows());
-//  const auto num_cols = static_cast<size_t>(matrix->cols()) - 1;
-//
-//  if (col_to_remove < num_cols)
-//    matrix->block(0, col_to_remove, num_rows, num_cols - col_to_remove) = matrix->block(0, col_to_remove + 1, num_rows, num_cols - col_to_remove);
-//
-//  matrix->conservativeResize(num_rows, num_cols);
-//}
-//
-
-//
-// inline MatrixXc pseudoInverseSVD(const MatrixXc& matrix, Float alpha) {
-//  Eigen::JacobiSVD<MatrixXc> svd(matrix, Eigen::ComputeThinU | Eigen::ComputeThinV);
-//  Eigen::JacobiSVD<MatrixXc>::SingularValuesType singularValues_inv = svd.singularValues();
-//  for (auto i = 0; i < singularValues_inv.size(); i++) {
-//    singularValues_inv(i) = singularValues_inv(i) / (singularValues_inv(i) * singularValues_inv(i) + alpha);
-//  }
-//  MatrixXc pinvB = (svd.matrixV() * singularValues_inv.asDiagonal() * svd.matrixU().adjoint());
-//  return pinvB;
-//}
-//
-// inline void setBCDResult(MatrixXc* const mat, VectorXc& vec, size_t idx) {
-//  const auto M = vec.size();
-//  mat->block(idx, 0, 1, idx) = vec.block(0, 0, idx, 1).adjoint();
-//  mat->block(idx, idx + 1, 1, M - idx - 1) = vec.block(idx + 1, 0, M - idx - 1, 1).adjoint();
-//  mat->block(0, idx, idx, 1) = vec.block(0, 0, idx, 1);
-//  mat->block(idx + 1, idx, M - idx - 1, 1) = vec.block(idx + 1, 0, M - idx - 1, 1);
-//}
-//
-// void SetFromComplexDrive(vector<AUTDDataArray>& data, const VectorXc& drive, const bool normalize, const Float max_coeff) {
-//  const size_t n = drive.size();
-//  size_t dev_idx = 0;
-//  size_t trans_idx = 0;
-//  for (size_t j = 0; j < n; j++) {
-//    const auto f_amp = normalize ? Float{1} : abs(drive(j)) / max_coeff;
-//    const auto f_phase = arg(drive(j)) / (2 * PI) + Float{0.5};
-//    const auto phase = static_cast<uint16_t>((1 - f_phase) * Float{255});
-//    const uint16_t duty = static_cast<uint16_t>(ToDuty(f_amp)) << 8 & 0xFF00;
-//    data[dev_idx][trans_idx++] = duty | phase;
-//    if (trans_idx == NUM_TRANS_IN_UNIT) {
-//      dev_idx++;
-//      trans_idx = 0;
-//    }
-//  }
-//}
-//
-// void HoloGainImplSDP(vector<AUTDDataArray>& data, const MatrixX3& foci, const VectorX& amps, const GeometryPtr& geometry, void* params) {
-//  auto alpha = Float{1e-3};
-//  auto lambda = Float{0.9};
-//  auto repeat = 100;
-//  auto normalize = true;
-//
-//  if (params != nullptr) {
-//    auto* const sdp_params = static_cast<autd::gain::SDPParams*>(params);
-//    alpha = sdp_params->regularization < 0 ? alpha : sdp_params->regularization;
-//    repeat = sdp_params->repeat < 0 ? repeat : sdp_params->repeat;
-//    lambda = sdp_params->lambda < 0 ? lambda : sdp_params->lambda;
-//    normalize = sdp_params->normalize_amp;
-//  }
-//
-//  const size_t M = foci.rows();
-//  const auto N = geometry->num_transducers();
-//
-//  MatrixXc P = MatrixXc::Zero(M, M);
-//  for (size_t i = 0; i < M; i++) P(i, i) = amps(i);
-//
-//  const MatrixXc B = TransferMatrix(geometry, foci, M, N);
-//  MatrixXc pinvB = pseudoInverseSVD(B, alpha);
-//
-//  MatrixXc MM = P * (MatrixXc::Identity(M, M) - B * pinvB) * P;
-//  MatrixXc X = MatrixXc::Identity(M, M);
-//
-//  std::random_device rnd;
-//  std::mt19937 mt(rnd());
-//  std::uniform_real_distribution<double> range(0, 1);
-//  VectorXc zero = VectorXc::Zero(M);
-//  for (auto i = 0; i < repeat; i++) {
-//    auto ii = static_cast<size_t>(M * static_cast<double>(range(mt)));
-//
-//    VectorXc mmc = MM.col(ii);
-//    mmc(ii) = 0;
-//
-//    VectorXc x = X * mmc;
-//    complex gamma = x.adjoint() * mmc;
-//    if (gamma.real() > 0) {
-//      x = -x * sqrt(lambda / gamma.real());
-//      setBCDResult(&X, x, ii);
-//    } else {
-//      setBCDResult(&X, zero, ii);
-//    }
-//  }
-//
-//  const Eigen::ComplexEigenSolver<MatrixXc> ces(X);
-//  int idx = 0;
-//  ces.eigenvalues().cwiseAbs2().maxCoeff(&idx);
-//  VectorXc u = ces.eigenvectors().col(idx);
-//
-//  const auto q = pinvB * P * u;
-//  const auto max_coeff = sqrt(q.cwiseAbs2().maxCoeff());
-//
-//  SetFromComplexDrive(data, q, normalize, max_coeff);
-//}
 
 // void HoloGainImplEVD(vector<AUTDDataArray>& data, const MatrixX3& foci, const VectorX& amps, const GeometryPtr& geometry, void* params) {
 //  Float gamma = 1;
