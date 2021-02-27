@@ -23,7 +23,7 @@
 
 namespace hologainimpl {
 using autd::AUTDDataArray;
-using autd::Float, autd::ToFloat;
+using autd::Float;
 using autd::GeometryPtr;
 using autd::NUM_TRANS_IN_UNIT;
 using autd::PI;
@@ -76,7 +76,7 @@ using VectorX = Eigen::VectorXf;
 using complex = std::complex<float>;
 #endif
 
-static constexpr Float ATTENUATION = ToFloat(1.15e-4);
+static constexpr Float ATTENUATION = Float{1.15e-4};
 
 static Float DirectivityT4010A1(Float theta_deg) {
   theta_deg = abs(theta_deg);
@@ -167,9 +167,9 @@ void SetFromComplexDrive(vector<AUTDDataArray>& data, const VectorXc& drive, con
   size_t dev_idx = 0;
   size_t trans_idx = 0;
   for (size_t j = 0; j < n; j++) {
-    const auto f_amp = normalize ? ToFloat(1.0) : abs(drive(j)) / max_coeff;
-    const auto f_phase = arg(drive(j)) / (2 * PI) + ToFloat(0.5);
-    const auto phase = static_cast<uint16_t>((1 - f_phase) * ToFloat(255.));
+    const auto f_amp = normalize ? Float{1} : abs(drive(j)) / max_coeff;
+    const auto f_phase = arg(drive(j)) / (2 * PI) + Float{0.5};
+    const auto phase = static_cast<uint16_t>((1 - f_phase) * Float{255});
     const uint16_t duty = static_cast<uint16_t>(ToDuty(f_amp)) << 8 & 0xFF00;
     data[dev_idx][trans_idx++] = duty | phase;
     if (trans_idx == NUM_TRANS_IN_UNIT) {
@@ -180,8 +180,8 @@ void SetFromComplexDrive(vector<AUTDDataArray>& data, const VectorXc& drive, con
 }
 
 void HoloGainImplSDP(vector<AUTDDataArray>& data, const MatrixX3& foci, const VectorX& amps, const GeometryPtr& geometry, void* params) {
-  auto alpha = ToFloat(1e-3);
-  auto lambda = ToFloat(0.9);
+  auto alpha = Float{1e-3};
+  auto lambda = Float{0.9};
   auto repeat = 100;
   auto normalize = true;
 
@@ -408,9 +408,9 @@ inline MatrixXc MakeBhB(const GeometryPtr& geometry, const MatrixX3& foci, const
 }
 
 void HoloGainImplLM(vector<AUTDDataArray>& data, const MatrixX3& foci, const VectorX& amps, const GeometryPtr& geometry, void* params) {
-  auto eps_1 = ToFloat(1e-8);
-  auto eps_2 = ToFloat(1e-8);
-  auto tau = ToFloat(1e-3);
+  auto eps_1 = Float{1e-8};
+  auto eps_2 = Float{1e-8};
+  auto tau = Float{1e-3};
   auto k_max = 5;
 
   if (params != nullptr) {
@@ -477,7 +477,7 @@ void HoloGainImplLM(vector<AUTDDataArray>& data, const MatrixX3& foci, const Vec
           g(i) = tmp;
         }
         is_found = g.maxCoeff() <= eps_1;
-        mu *= std::max(ToFloat(1. / 3.), pow(1 - (2 * rho - 1), ToFloat(3.)));
+        mu *= std::max(Float{1. / 3.}, pow(1 - (2 * rho - 1), Float{3.}));
         nu = 2.0;
       } else {
         mu *= nu;
@@ -503,9 +503,18 @@ void HoloGainImplLM(vector<AUTDDataArray>& data, const MatrixX3& foci, const Vec
 
 namespace autd::gain {
 
-GainPtr HoloGain::Create(const std::vector<Vector3>& foci, const std::vector<Float>& amps, const OPT_METHOD method, void* params) {
-  GainPtr ptr = std::make_shared<HoloGain>(foci, amps, method, params);
+std::shared_ptr<HoloGain> HoloGain::Create(const std::vector<Vector3>& foci, const std::vector<Float>& amps, const BACKEND backend,
+                                           const OPT_METHOD method, void* params) {
+  std::shared_ptr<HoloGain> ptr = std::make_shared<HoloGain>(foci, amps, backend, method, params);
   return ptr;
+}
+
+std::shared_ptr<HoloGain> HoloGain::Create(const std::vector<Vector3>& foci, const std::vector<Float>& amps, const OPT_METHOD method, void* params) {
+  return HoloGain::Create(foci, amps, BACKEND::Eigen, method, params);
+}
+
+std::shared_ptr<HoloGain> HoloGain::Create(const BACKEND backend, const OPT_METHOD method, void* params) {
+  return HoloGain::Create(std::vector<Vector3>(), std::vector<Float>(), BACKEND::Eigen, method, params);
 }
 
 void HoloGain::Build() {
@@ -544,5 +553,7 @@ void HoloGain::Build() {
       hologainimpl::HoloGainImplLM(_data, foci, amps, geo, _params);
       break;
   }
+
+  this->_built = true;
 }
 }  // namespace autd::gain
