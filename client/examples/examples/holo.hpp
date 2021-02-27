@@ -18,7 +18,7 @@
 #include "gain/holo.hpp"
 
 using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SIZE_MM;
-using autd::gain::OPT_METHOD, autd::gain::BACKEND;
+using autd::gain::OPT_METHOD, autd::gain::Eigen3Backend;
 
 inline OPT_METHOD SelectOpt() {
   std::cout << "Select Optimization Method (default is SDP)" << std::endl;
@@ -54,7 +54,7 @@ inline void HoloTest(const autd::ControllerPtr& autd) {
   const std::vector<autd::Float> amps = {1, 1};
 
   const auto opt = SelectOpt();
-  const auto g = autd::gain::HoloGain::Create(foci, amps, BACKEND::Eigen, opt);
+  const auto g = autd::gain::HoloGain<Eigen3Backend>::Create(foci, amps, opt);
 
   autd->AppendGainSync(g);
 }
