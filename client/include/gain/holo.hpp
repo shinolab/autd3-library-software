@@ -3,7 +3,7 @@
 // Created Date: 06/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 28/02/2021
+// Last Modified: 01/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -627,22 +627,22 @@ class HoloGain final : public Gain {
     for (auto k = 0; k < k_max; k++) {
       if (is_found) break;
 
-      _backend.matadd(Float{-1.0}, a, Float{0.0}, &tmpm);
-      _backend.matadd(-mu, identity, Float{1.0}, &tmpm);
+      _backend.matadd(Float{1.0}, a, Float{0.0}, &tmpm);
+      _backend.matadd(mu, identity, Float{1.0}, &tmpm);
       _backend.solve(tmpm, g, &h_lm);
 
       if (h_lm.norm() <= eps_2 * (x.norm() + eps_2)) {
         is_found = true;
       } else {
         _backend.vecadd(Float{1.0}, x, Float{0.0}, &x_new);
-        _backend.vecadd(Float{1.0}, h_lm, Float{1.0}, &x_new);
+        _backend.vecadd(Float{-1.0}, h_lm, Float{1.0}, &x_new);
         for (size_t i = 0; i < n_param; i++) t(i) = exp(std::complex<Float>(0, x_new(i)));
 
         matvecmul(bhb, t, &tmpc);
         Float fx_new = _backend.cdot(t, tmpc).real();
 
         _backend.vecadd(mu, h_lm, Float{0.0}, &tmp);
-        _backend.vecadd(Float{-1.0}, g, 1.0, &tmp);
+        _backend.vecadd(Float{1.0}, g, 1.0, &tmp);
         Float l0_lhlm = _backend.dot(h_lm, tmp) / 2;
 
         Float rho = (fx - fx_new) / l0_lhlm;
