@@ -3,7 +3,7 @@
 // Created Date: 06/07/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 28/02/2021
+// Last Modified: 01/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -59,7 +59,13 @@ void Eigen3Backend::matmul(const char* transa, const char* transb, std::complex<
       (*c).noalias() += alpha * (a.transpose() * b);
     }
   } else {
-    (*c).noalias() += alpha * (a * b);
+    if (strcmp(transb, "C") == 0) {
+      (*c).noalias() += alpha * (a * b.adjoint());
+    } else if (strcmp(transb, "T") == 0) {
+      (*c).noalias() += alpha * (a * b.transpose());
+    } else {
+      (*c).noalias() += alpha * (a * b);
+    }
   }
 }
 
