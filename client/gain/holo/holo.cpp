@@ -66,8 +66,6 @@ void Eigen3Backend::matmul(const char* transa, const char* transb, std::complex<
 void Eigen3Backend::matvecmul(const char* transa, std::complex<Float> alpha, const Eigen3Backend::MatrixXc& a, const Eigen3Backend::VectorXc& b,
                               std::complex<Float> beta, Eigen3Backend::VectorXc* c) {
   *c *= beta;
-  (*c).noalias() += alpha * (a * b);
-
   if (strcmp(transa, "C") == 0) {
     (*c).noalias() += alpha * (a.adjoint() * b);
   } else if (strcmp(transa, "T") == 0) {

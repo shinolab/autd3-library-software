@@ -184,7 +184,7 @@ class B {
 };
 
 class Eigen3Backend final : public B<Eigen::Matrix<std::complex<Float>, -1, -1>, Eigen::Matrix<std::complex<Float>, -1, 1>,
-                                     Eigen::Matrix<Float, -1, 1>, Eigen::Matrix<Float, -1, 1>> {
+                                     Eigen::Matrix<Float, -1, -1>, Eigen::Matrix<Float, -1, 1>> {
  public:
   bool supports_SVD() override { return true; }
   bool supports_EVD() override { return true; }
