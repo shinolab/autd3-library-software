@@ -152,9 +152,9 @@ class HoloGain final : public Gain {
       case OPT_METHOD::EVD:
         EVD();
         break;
-        // case OPT_METHOD::NAIVE:
-        //  hologainimpl::HoloGainImplNaive(_data, foci, amps, geo);
-        //  break;
+      case OPT_METHOD::NAIVE:
+        NAIVE();
+        break;
         // case OPT_METHOD::GS:
         //  hologainimpl::HoloGainImplGS(_data, foci, amps, geo, _params);
         //  break;
@@ -351,6 +351,20 @@ class HoloGain final : public Gain {
 
     const auto max_coeff = _backend.maxCoeff(q);
     SetFromComplexDrive(_data, q, normalize, max_coeff);
+  }
+
+  void NAIVE() {
+    const size_t m = _foci.size();
+    const auto n = _geometry->num_transducers();
+
+    const B::MatrixXc g = _backend.transferMatrix(_geometry, _foci);
+    B::VectorXc p(m);
+    for (size_t i = 0; i < m; i++) p(i) = std::complex<Float>(_amps[i], 0);
+
+    B::VectorXc q(n);
+    _backend.matvecmul("C", std::complex<Float>(1, 0), g, p, std::complex<Float>(0, 0), &q);
+
+    SetFromComplexDrive(_data, q, true, 1.0);
   }
 };
 }  // namespace autd::gain

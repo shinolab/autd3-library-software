@@ -183,17 +183,6 @@ void Eigen3Backend::concat_in_row(const Eigen3Backend::MatrixXc& a, const Eigen3
 //#include "gain.hpp"
 
 //
-// void HoloGainImplNaive(vector<AUTDDataArray>& data, const MatrixX3& foci, const VectorX& amps, const GeometryPtr& geometry) {
-//  const size_t m = foci.rows();
-//  const auto n = geometry->num_transducers();
-//
-//  const auto g = TransferMatrix(geometry, foci, m, n);
-//  const auto gh = g.adjoint();
-//  const VectorXc p = amps;
-//  const auto q = gh * p;
-//  SetFromComplexDrive(data, q, true, 1.0);
-//}
-//
 // void HoloGainImplGS(vector<AUTDDataArray>& data, const MatrixX3& foci, const VectorX& amps, const GeometryPtr& geometry, void* params) {
 //  const int32_t repeat = params == nullptr ? 100 : *static_cast<uint32_t*>(params);
 //
