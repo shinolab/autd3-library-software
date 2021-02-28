@@ -183,31 +183,6 @@ void Eigen3Backend::concat_in_row(const Eigen3Backend::MatrixXc& a, const Eigen3
 //#include "gain.hpp"
 
 //
-// void HoloGainImplGS(vector<AUTDDataArray>& data, const MatrixX3& foci, const VectorX& amps, const GeometryPtr& geometry, void* params) {
-//  const int32_t repeat = params == nullptr ? 100 : *static_cast<uint32_t*>(params);
-//
-//  const size_t m = foci.rows();
-//  const auto n = geometry->num_transducers();
-//
-//  const auto g = TransferMatrix(geometry, foci, m, n);
-//
-//  const auto gh = g.adjoint();
-//
-//  VectorXc p0 = amps;
-//  VectorXc q0 = VectorXc::Ones(n);
-//
-//  VectorXc q = q0;
-//  for (auto k = 0; k < repeat; k++) {
-//    auto gamma = g * q;
-//    VectorXc p(m);
-//    for (size_t i = 0; i < m; i++) p(i) = gamma(i) / abs(gamma(i)) * p0(i);
-//    auto xi = gh * p;
-//    for (size_t j = 0; j < n; j++) q(j) = xi(j) / abs(xi(j)) * q0(j);
-//  }
-//
-//  SetFromComplexDrive(data, q, true, 1.0);
-//}
-//
 // void HoloGainImplGSPAT(vector<AUTDDataArray>& data, const MatrixX3& foci, const VectorX& amps, const GeometryPtr& geometry, void* params) {
 //  const int32_t repeat = params == nullptr ? 100 : *static_cast<uint32_t*>(params);
 //
