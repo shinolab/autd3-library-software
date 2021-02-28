@@ -155,9 +155,9 @@ class HoloGain final : public Gain {
       case OPT_METHOD::NAIVE:
         NAIVE();
         break;
-        // case OPT_METHOD::GS:
-        //  hologainimpl::HoloGainImplGS(_data, foci, amps, geo, _params);
-        //  break;
+      case OPT_METHOD::GS:
+        GS();
+        break;
         // case OPT_METHOD::GS_PAT:
         //  hologainimpl::HoloGainImplGSPAT(_data, foci, amps, geo, _params);
         //  break;
@@ -363,6 +363,30 @@ class HoloGain final : public Gain {
 
     B::VectorXc q(n);
     _backend.matvecmul("C", std::complex<Float>(1, 0), g, p, std::complex<Float>(0, 0), &q);
+
+    SetFromComplexDrive(_data, q, true, 1.0);
+  }
+
+  void GS() {
+    const int32_t repeat = _params == nullptr ? 100 : *static_cast<uint32_t*>(_params);
+
+    const size_t m = _foci.size();
+    const auto n = _geometry->num_transducers();
+
+    const B::MatrixXc g = _backend.transferMatrix(_geometry, _foci);
+
+    B::VectorXc q0 = B::VectorXc::Ones(n);
+
+    B::VectorXc q = q0;
+    B::VectorXc gamma(m);
+    B::VectorXc p(m);
+    B::VectorXc xi(n);
+    for (auto k = 0; k < repeat; k++) {
+      matvecmul(g, q, &gamma);
+      for (size_t i = 0; i < m; i++) p(i) = gamma(i) / abs(gamma(i)) * _amps[i];
+      _backend.matvecmul("C", std::complex<Float>(1, 0), g, p, std::complex<Float>(0, 0), &xi);
+      for (size_t j = 0; j < n; j++) q(j) = xi(j) / abs(xi(j)) * q0(j);
+    }
 
     SetFromComplexDrive(_data, q, true, 1.0);
   }
