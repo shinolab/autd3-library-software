@@ -3,7 +3,7 @@
 // Created Date: 06/07/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 27/02/2021
+// Last Modified: 28/02/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -121,21 +121,55 @@ Eigen3Backend::MatrixXc Eigen3Backend::transferMatrix(const GeometryPtr& geometr
   return g;
 }
 
-void Eigen3Backend::matmul(std::complex<Float> alpha, const Eigen3Backend::MatrixXc& a, const Eigen3Backend::MatrixXc& b, std::complex<Float> beta,
-                           Eigen3Backend::MatrixXc* c) {
+void Eigen3Backend::matmul(const char* transa, const char* transb, std::complex<Float> alpha, const Eigen3Backend::MatrixXc& a,
+                           const Eigen3Backend::MatrixXc& b, std::complex<Float> beta, Eigen3Backend::MatrixXc* c) {
   *c *= beta;
-  (*c).noalias() += alpha * (a * b);
+  if (strcmp(transa, "C") == 0) {
+    if (strcmp(transb, "C") == 0) {
+      (*c).noalias() += alpha * (a.adjoint() * b.adjoint());
+    } else if (strcmp(transb, "T") == 0) {
+      (*c).noalias() += alpha * (a.adjoint() * b.transpose());
+    } else {
+      (*c).noalias() += alpha * (a.adjoint() * b);
+    }
+  } else if (strcmp(transa, "T") == 0) {
+    if (strcmp(transb, "C") == 0) {
+      (*c).noalias() += alpha * (a.transpose() * b.adjoint());
+    } else if (strcmp(transb, "T") == 0) {
+      (*c).noalias() += alpha * (a.transpose() * b.transpose());
+    } else {
+      (*c).noalias() += alpha * (a.transpose() * b);
+    }
+  } else {
+    (*c).noalias() += alpha * (a * b);
+  }
 }
 
-void Eigen3Backend::matvecmul(std::complex<Float> alpha, const Eigen3Backend::MatrixXc& a, const Eigen3Backend::VectorXc& b, std::complex<Float> beta,
-                              Eigen3Backend::VectorXc* c) {
+void Eigen3Backend::matvecmul(const char* transa, std::complex<Float> alpha, const Eigen3Backend::MatrixXc& a, const Eigen3Backend::VectorXc& b,
+                              std::complex<Float> beta, Eigen3Backend::VectorXc* c) {
   *c *= beta;
   (*c).noalias() += alpha * (a * b);
+
+  if (strcmp(transa, "C") == 0) {
+    (*c).noalias() += alpha * (a.adjoint() * b);
+  } else if (strcmp(transa, "T") == 0) {
+    (*c).noalias() += alpha * (a.transpose() * b);
+  } else {
+    (*c).noalias() += alpha * (a * b);
+  }
+}
+
+void Eigen3Backend::solve(const Eigen3Backend::MatrixXc& a, const Eigen3Backend::VectorXc& b, Eigen3Backend::VectorXc* c) {
+  Eigen::FullPivHouseholderQR<Eigen3Backend::MatrixXc> qr(a);
+  *c = qr.solve(b);
 }
 
 std::complex<Float> Eigen3Backend::dot(const Eigen3Backend::VectorXc& a, const Eigen3Backend::VectorXc& b) { return a.dot(b); }
 
 Float Eigen3Backend::maxCoeff(const Eigen3Backend::VectorXc& v) { return sqrt(v.cwiseAbs2().maxCoeff()); }
+
+void Eigen3Backend::concat_in_row(const Eigen3Backend::MatrixXc& a, const Eigen3Backend::MatrixXc& b, Eigen3Backend::MatrixXc* c) { *c << a, b; }
+
 }  // namespace autd::gain
 
 //#include <complex>
@@ -148,83 +182,6 @@ Float Eigen3Backend::maxCoeff(const Eigen3Backend::VectorXc& v) { return sqrt(v.
 //#include "consts.hpp"
 //#include "gain.hpp"
 
-// void HoloGainImplEVD(vector<AUTDDataArray>& data, const MatrixX3& foci, const VectorX& amps, const GeometryPtr& geometry, void* params) {
-//  Float gamma = 1;
-//  auto normalize = true;
-//
-//  if (params != nullptr) {
-//    auto* const evd_params = static_cast<autd::gain::EVDParams*>(params);
-//    gamma = evd_params->regularization < 0 ? gamma : evd_params->regularization;
-//    normalize = evd_params->normalize_amp;
-//  }
-//
-//  const size_t m = foci.rows();
-//  const auto n = geometry->num_transducers();
-//
-//  auto g = TransferMatrix(geometry, foci, m, n);
-//
-//  VectorXc denominator(m);
-//  for (size_t i = 0; i < m; i++) {
-//    auto tmp = complex(0, 0);
-//    for (size_t j = 0; j < n; j++) {
-//      tmp += g(i, j);
-//    }
-//    denominator(i) = tmp;
-//  }
-//
-//  MatrixXc x(n, m);
-//  for (size_t i = 0; i < m; i++) {
-//    auto c = complex(amps(i), 0) / denominator(i);
-//    for (size_t j = 0; j < n; j++) {
-//      x(j, i) = c * std::conj(g(i, j));
-//    }
-//  }
-//  auto r = g * x;
-//
-//  Eigen::ComplexEigenSolver<MatrixXc> ces(r);
-//  const auto& evs = ces.eigenvalues();
-//  Float abs_eiv = 0;
-//  auto idx = 0;
-//  for (auto j = 0; j < evs.rows(); j++) {
-//    const auto eiv = abs(evs(j));
-//    if (abs_eiv < eiv) {
-//      abs_eiv = eiv;
-//      idx = j;
-//    }
-//  }
-//  auto max_ev = ces.eigenvectors().row(idx);
-//  VectorX e_arg(m);
-//  for (size_t i = 0; i < m; i++) {
-//    e_arg(i) = arg(max_ev(i));
-//  }
-//
-//  auto sigma = MatrixXc(n, n);
-//  for (size_t j = 0; j < n; j++) {
-//    Float tmp = 0;
-//    for (size_t i = 0; i < m; i++) {
-//      tmp += abs(g(i, j)) * amps(i);
-//    }
-//    sigma(j, j) = complex(pow(sqrt(tmp / static_cast<Float>(m)), gamma), 0.0);
-//  }
-//
-//  MatrixXc gr(g.rows() + sigma.rows(), g.cols());
-//  gr << g, sigma;
-//
-//  VectorXc f = VectorXc::Zero(m + n);
-//  for (size_t i = 0; i < m; i++) {
-//    f(i) = amps(i) * exp(complex(0.0, e_arg(i)));
-//  }
-//
-//  auto gt = gr.adjoint();
-//  auto gtg = gt * gr;
-//  auto gtf = gt * f;
-//  Eigen::FullPivHouseholderQR<MatrixXc> qr(gtg);
-//  auto q = qr.solve(gtf);
-//
-//  auto max_coeff = sqrt(q.cwiseAbs2().maxCoeff());
-//
-//  SetFromComplexDrive(data, q, normalize, max_coeff);
-//}
 //
 // void HoloGainImplNaive(vector<AUTDDataArray>& data, const MatrixX3& foci, const VectorX& amps, const GeometryPtr& geometry) {
 //  const size_t m = foci.rows();
