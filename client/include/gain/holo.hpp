@@ -46,7 +46,7 @@ enum class OPT_METHOD {
   //! Graphics
   //! (TOG), 39(4):138–1, 2020.
   //! Not yet been implemented with GPU.
-  GS_PAT = 3,
+  GSPAT = 3,
   //! Naive linear synthesis method.
   NAIVE = 4,
   //! K.Levenberg, “A method for the solution of certain non-linear problems in
@@ -158,9 +158,9 @@ class HoloGain final : public Gain {
       case OPT_METHOD::GS:
         GS();
         break;
-        // case OPT_METHOD::GS_PAT:
-        //  hologainimpl::HoloGainImplGSPAT(_data, foci, amps, geo, _params);
-        //  break;
+      case OPT_METHOD::GSPAT:
+        GSPAT();
+        break;
         // case OPT_METHOD::LM:
         //  hologainimpl::HoloGainImplLM(_data, foci, amps, geo, _params);
         //  break;
@@ -387,6 +387,50 @@ class HoloGain final : public Gain {
       _backend.matvecmul("C", std::complex<Float>(1, 0), g, p, std::complex<Float>(0, 0), &xi);
       for (size_t j = 0; j < n; j++) q(j) = xi(j) / abs(xi(j)) * q0(j);
     }
+
+    SetFromComplexDrive(_data, q, true, 1.0);
+  }
+
+  void GSPAT() {
+    const int32_t repeat = _params == nullptr ? 100 : *static_cast<uint32_t*>(_params);
+
+    const size_t m = _foci.size();
+    const auto n = _geometry->num_transducers();
+
+    const B::MatrixXc g = _backend.transferMatrix(_geometry, _foci);
+
+    B::VectorXc denominator(m);
+    for (size_t i = 0; i < m; i++) {
+      auto tmp = std::complex<Float>(0, 0);
+      for (size_t j = 0; j < n; j++) tmp += abs(g(i, j));
+      denominator(i) = tmp;
+    }
+
+    B::MatrixXc b(n, m);
+    for (size_t i = 0; i < m; i++) {
+      auto d = denominator(i) * denominator(i);
+      for (size_t j = 0; j < n; j++) {
+        b(j, i) = std::conj(g(i, j)) / d;
+      }
+    }
+
+    B::MatrixXc r(m, m);
+    matmul(g, b, &r);
+
+    B::VectorXc p(m);
+    for (size_t i = 0; i < m; i++) p(i) = std::complex<Float>(_amps[i], 0);
+
+    B::VectorXc gamma(m);
+    matvecmul(r, p, &gamma);
+    for (auto k = 0; k < repeat; k++) {
+      for (size_t i = 0; i < m; i++) p(i) = gamma(i) / abs(gamma(i)) * _amps[i];
+      matvecmul(r, p, &gamma);
+    }
+
+    for (size_t i = 0; i < m; i++) p(i) = gamma(i) / (abs(gamma(i)) * abs(gamma(i))) * _amps[i] * _amps[i];
+
+    B::VectorXc q(n);
+    matvecmul(b, p, &q);
 
     SetFromComplexDrive(_data, q, true, 1.0);
   }

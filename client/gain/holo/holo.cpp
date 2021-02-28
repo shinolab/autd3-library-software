@@ -183,45 +183,6 @@ void Eigen3Backend::concat_in_row(const Eigen3Backend::MatrixXc& a, const Eigen3
 //#include "gain.hpp"
 
 //
-// void HoloGainImplGSPAT(vector<AUTDDataArray>& data, const MatrixX3& foci, const VectorX& amps, const GeometryPtr& geometry, void* params) {
-//  const int32_t repeat = params == nullptr ? 100 : *static_cast<uint32_t*>(params);
-//
-//  const size_t m = foci.rows();
-//  const auto n = geometry->num_transducers();
-//
-//  auto g = TransferMatrix(geometry, foci, m, n);
-//
-//  VectorXc denominator(m);
-//  for (size_t i = 0; i < m; i++) {
-//    auto tmp = complex(0, 0);
-//    for (size_t j = 0; j < n; j++) tmp += abs(g(i, j));
-//    denominator(i) = tmp;
-//  }
-//
-//  MatrixXc b(n, m);
-//  for (size_t i = 0; i < m; i++) {
-//    auto d = denominator(i) * denominator(i);
-//    for (size_t j = 0; j < n; j++) {
-//      b(j, i) = std::conj(g(i, j)) / d;
-//    }
-//  }
-//
-//  const auto r = g * b;
-//
-//  VectorXc p0 = amps;
-//  VectorXc p = p0;
-//  VectorXc gamma = r * p;
-//  for (auto k = 0; k < repeat; k++) {
-//    for (size_t i = 0; i < m; i++) p(i) = gamma(i) / abs(gamma(i)) * p0(i);
-//    gamma = r * p;
-//  }
-//
-//  for (size_t i = 0; i < m; i++) p(i) = gamma(i) / (abs(gamma(i)) * abs(gamma(i))) * p0(i) * p0(i);
-//  const auto q = b * p;
-//
-//  SetFromComplexDrive(data, q, true, 1.0);
-//}
-//
 // inline MatrixXc CalcTTh(const VectorX& x) {
 //  const size_t len = x.size();
 //  VectorXc t(len);
