@@ -3,7 +3,7 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 27/02/2021
+// Last Modified: 01/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include <chrono>
 #include <iostream>
 #include <string>
 
@@ -18,7 +19,7 @@
 #include "gain/holo.hpp"
 
 using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SIZE_MM;
-using autd::gain::OPT_METHOD, autd::gain::Eigen3Backend;
+using autd::gain::OPT_METHOD, autd::gain::Eigen3Backend, autd::gain::BLASBackend;
 
 inline OPT_METHOD SelectOpt() {
   std::cout << "Select Optimization Method (default is SDP)" << std::endl;
@@ -54,7 +55,14 @@ inline void HoloTest(const autd::ControllerPtr& autd) {
   const std::vector<autd::Float> amps = {1, 1};
 
   const auto opt = SelectOpt();
+  auto start = std::chrono::system_clock::now();
   const auto g = autd::gain::HoloGain<Eigen3Backend>::Create(foci, amps, opt);
+  g->SetGeometry(autd->geometry());
+  g->Build();
+  auto end = std::chrono::system_clock::now();
+  auto dur = end - start;
+  auto msec = std::chrono::duration_cast<std::chrono::milliseconds>(dur).count();
+  std::cout << msec << " milli sec \n";
 
   autd->AppendGainSync(g);
 }

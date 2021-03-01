@@ -24,6 +24,11 @@
 #include "gain.hpp"
 #include "linalg.hpp"
 
+#ifdef ENABLE_BLAS
+#include "linalg/matrix.hpp"
+#include "linalg/vector.hpp"
+#endif
+
 namespace {
 
 using autd::Float;
@@ -151,8 +156,10 @@ struct NLSParams {
   Float tau;
 };
 
+enum class TRANSPOSE { NoTrans = 111, Trans = 112, ConjTrans = 113, ConjNoTrans = 114 };
+
 template <typename MCx, typename VCx, typename Mx, typename Vx>
-class B {
+class Backend {
  public:
   using MatrixXc = MCx;
   using VectorXc = VCx;
@@ -164,48 +171,79 @@ class B {
   virtual bool supports_solve() = 0;
   virtual void hadamardProduct(const MatrixXc& a, const MatrixXc& b, MatrixXc* c) = 0;
   virtual void real(const MatrixXc& a, MatrixX* b) = 0;
-  virtual MatrixXc pseudoInverseSVD(const MatrixXc& matrix, Float alpha) = 0;
-  virtual VectorXc maxEigenVector(const MatrixXc& matrix) = 0;
+  virtual void pseudoInverseSVD(MatrixXc* matrix, Float alpha, MatrixXc* result) = 0;
+  virtual VectorXc maxEigenVector(MatrixXc* matrix) = 0;
   virtual void matadd(Float alpha, const MatrixX& a, Float beta, MatrixX* b) = 0;
-  virtual void matmul(const char* transa, const char* transb, std::complex<Float> alpha, const MatrixXc& a, const MatrixXc& b,
+  virtual void matmul(const TRANSPOSE transa, const TRANSPOSE transb, std::complex<Float> alpha, const MatrixXc& a, const MatrixXc& b,
                       std::complex<Float> beta, MatrixXc* c) = 0;
-  virtual void matvecmul(const char* transa, std::complex<Float> alpha, const MatrixXc& a, const VectorXc& b, std::complex<Float> beta,
+  virtual void matvecmul(const TRANSPOSE transa, std::complex<Float> alpha, const MatrixXc& a, const VectorXc& b, std::complex<Float> beta,
                          VectorXc* c) = 0;
   virtual void vecadd(Float alpha, const VectorX& a, Float beta, VectorX* b) = 0;
-  virtual void csolve(const MatrixXc& a, const VectorXc& b, VectorXc* c) = 0;
-  virtual void solve(const MatrixX& a, const VectorX& b, VectorX* c) = 0;
+  virtual void csolve(MatrixXc* a, VectorXc* b, VectorXc* c) = 0;
+  virtual void solve(MatrixX* a, VectorX* b, VectorX* c) = 0;
   virtual Float dot(const VectorX& a, const VectorX& b) = 0;
   virtual std::complex<Float> cdot(const VectorXc& a, const VectorXc& b) = 0;
-  virtual Float maxCoeff(const VectorXc& v) = 0;
+  virtual Float maxCoeff(const VectorX& v) = 0;
+  virtual Float cmaxCoeff(const VectorXc& v) = 0;
   virtual MatrixXc concat_in_row(const MatrixXc& a, const MatrixXc& b) = 0;
   virtual MatrixXc concat_in_col(const MatrixXc& a, const MatrixXc& b) = 0;
 
-  virtual ~B() {}
+  virtual ~Backend() {}
 };
 
-class Eigen3Backend final : public B<Eigen::Matrix<std::complex<Float>, -1, -1>, Eigen::Matrix<std::complex<Float>, -1, 1>,
-                                     Eigen::Matrix<Float, -1, -1>, Eigen::Matrix<Float, -1, 1>> {
+class Eigen3Backend final : public Backend<Eigen::Matrix<std::complex<Float>, -1, -1>, Eigen::Matrix<std::complex<Float>, -1, 1>,
+                                           Eigen::Matrix<Float, -1, -1>, Eigen::Matrix<Float, -1, 1>> {
  public:
   bool supports_SVD() override { return true; }
   bool supports_EVD() override { return true; }
   bool supports_solve() override { return true; }
   void hadamardProduct(const MatrixXc& a, const MatrixXc& b, MatrixXc* c);
   void real(const MatrixXc& a, MatrixX* b);
-  MatrixXc pseudoInverseSVD(const MatrixXc& matrix, Float alpha) override;
-  VectorXc maxEigenVector(const MatrixXc& matrix) override;
+  void pseudoInverseSVD(MatrixXc* matrix, Float alpha, MatrixXc* result) override;
+  VectorXc maxEigenVector(MatrixXc* matrix) override;
   void matadd(Float alpha, const MatrixX& a, Float beta, MatrixX* b) override;
-  void matmul(const char* transa, const char* transb, std::complex<Float> alpha, const MatrixXc& a, const MatrixXc& b, std::complex<Float> beta,
-              MatrixXc* c) override;
-  void matvecmul(const char* transa, std::complex<Float> alpha, const MatrixXc& a, const VectorXc& b, std::complex<Float> beta, VectorXc* c) override;
+  void matmul(const TRANSPOSE transa, const TRANSPOSE transb, std::complex<Float> alpha, const MatrixXc& a, const MatrixXc& b,
+              std::complex<Float> beta, MatrixXc* c) override;
+  void matvecmul(const TRANSPOSE transa, std::complex<Float> alpha, const MatrixXc& a, const VectorXc& b, std::complex<Float> beta,
+                 VectorXc* c) override;
   void vecadd(Float alpha, const VectorX& a, Float beta, VectorX* b) override;
-  void csolve(const MatrixXc& a, const VectorXc& b, VectorXc* c) override;
-  void solve(const MatrixX& a, const VectorX& b, VectorX* c) override;
+  void csolve(MatrixXc* a, VectorXc* b, VectorXc* c) override;
+  void solve(MatrixX* a, VectorX* b, VectorX* c) override;
   Float dot(const VectorX& a, const VectorX& b) override;
   std::complex<Float> cdot(const VectorXc& a, const VectorXc& b) override;
-  Float maxCoeff(const VectorXc& v) override;
+  Float maxCoeff(const VectorX& v) override;
+  Float cmaxCoeff(const VectorXc& v) override;
   MatrixXc concat_in_row(const MatrixXc& a, const MatrixXc& b) override;
   MatrixXc concat_in_col(const MatrixXc& a, const MatrixXc& b) override;
 };
+
+#ifdef ENABLE_BLAS
+class BLASBackend final
+    : public Backend<_utils::MatrixX<std::complex<Float>>, _utils::VectorX<std::complex<Float>>, _utils::MatrixX<Float>, _utils::VectorX<Float>> {
+ public:
+  bool supports_SVD() override { return true; }
+  bool supports_EVD() override { return true; }
+  bool supports_solve() override { return true; }
+  void hadamardProduct(const MatrixXc& a, const MatrixXc& b, MatrixXc* c);
+  void real(const MatrixXc& a, MatrixX* b);
+  void pseudoInverseSVD(MatrixXc* matrix, Float alpha, MatrixXc* result) override;
+  VectorXc maxEigenVector(MatrixXc* matrix) override;
+  void matadd(Float alpha, const MatrixX& a, Float beta, MatrixX* b) override;
+  void matmul(const TRANSPOSE transa, const TRANSPOSE transb, std::complex<Float> alpha, const MatrixXc& a, const MatrixXc& b,
+              std::complex<Float> beta, MatrixXc* c) override;
+  void matvecmul(const TRANSPOSE transa, std::complex<Float> alpha, const MatrixXc& a, const VectorXc& b, std::complex<Float> beta,
+                 VectorXc* c) override;
+  void vecadd(Float alpha, const VectorX& a, Float beta, VectorX* b) override;
+  void csolve(MatrixXc* a, VectorXc* b, VectorXc* c) override;
+  void solve(MatrixX* a, VectorX* b, VectorX* c) override;
+  Float dot(const VectorX& a, const VectorX& b) override;
+  std::complex<Float> cdot(const VectorXc& a, const VectorXc& b) override;
+  Float maxCoeff(const VectorX& v) override;
+  Float cmaxCoeff(const VectorXc& v) override;
+  MatrixXc concat_in_row(const MatrixXc& a, const MatrixXc& b) override;
+  MatrixXc concat_in_col(const MatrixXc& a, const MatrixXc& b) override;
+};
+#endif
 
 /**
  * @brief Gain to produce multiple focal points
@@ -277,11 +315,11 @@ class HoloGain final : public Gain {
  private:
   template <typename M>
   inline void matmul(const M& a, const M& b, M* c) {
-    _backend.matmul("N", "N", std::complex<Float>(1, 0), a, b, std::complex<Float>(0, 0), c);
+    _backend.matmul(TRANSPOSE::NoTrans, TRANSPOSE::NoTrans, std::complex<Float>(1, 0), a, b, std::complex<Float>(0, 0), c);
   }
   template <typename M, typename V>
   inline void matvecmul(const M& a, const V& b, V* c) {
-    _backend.matvecmul("N", std::complex<Float>(1, 0), a, b, std::complex<Float>(0, 0), c);
+    _backend.matvecmul(TRANSPOSE::NoTrans, std::complex<Float>(1, 0), a, b, std::complex<Float>(0, 0), c);
   }
   template <typename M, typename V>
   inline void setBCDResult(M& mat, const V& vec, size_t idx) {
@@ -350,13 +388,14 @@ class HoloGain final : public Gain {
     const size_t n = _geometry->num_transducers();
 
     B::MatrixXc P = B::MatrixXc::Zero(m, m);
-    for (size_t i = 0; i < m; i++) P(i, i) = _amps[i];
+    for (size_t i = 0; i < m; i++) P(i, i) = std::complex<Float>(_amps[i], 0);
 
-    const B::MatrixXc B = transferMatrix<B::MatrixXc>();
-    const B::MatrixXc pinvB = _backend.pseudoInverseSVD(B, alpha);
+    B::MatrixXc B = transferMatrix<B::MatrixXc>();
+    B::MatrixXc pinvB(m, n);
+    _backend.pseudoInverseSVD(&B, alpha, &pinvB);
 
     B::MatrixXc MM = B::MatrixXc::Identity(m, m);
-    _backend.matmul("N", "N", std::complex<Float>(1, 0), B, pinvB, std::complex<Float>(-1, 0), &MM);
+    _backend.matmul(TRANSPOSE::NoTrans, TRANSPOSE::NoTrans, std::complex<Float>(1, 0), B, pinvB, std::complex<Float>(-1, 0), &MM);
     B::MatrixXc tmp(m, m);
     matmul(P, MM, &tmp);
     matmul(tmp, P, &MM);
@@ -383,7 +422,7 @@ class HoloGain final : public Gain {
       }
     }
 
-    B::VectorXc u = _backend.maxEigenVector(X);
+    B::VectorXc u = _backend.maxEigenVector(&X);
 
     B::VectorXc ut(m);
     matvecmul(P, u, &ut);
@@ -391,7 +430,7 @@ class HoloGain final : public Gain {
     B::VectorXc q(n);
     matvecmul(pinvB, ut, &q);
 
-    const auto max_coeff = _backend.maxCoeff(q);
+    const auto max_coeff = _backend.cmaxCoeff(q);
     SetFromComplexDrive(_data, q, normalize, max_coeff);
   }
 
@@ -430,7 +469,7 @@ class HoloGain final : public Gain {
     }
     B::MatrixXc r(m, m);
     matmul(g, x, &r);
-    B::VectorXc max_ev = _backend.maxEigenVector(r);
+    B::VectorXc max_ev = _backend.maxEigenVector(&r);
 
     B::MatrixXc sigma = B::MatrixXc::Zero(n, n);
     for (size_t j = 0; j < n; j++) {
@@ -447,15 +486,15 @@ class HoloGain final : public Gain {
     for (size_t i = 0; i < m; i++) f(i) = _amps[i] * max_ev(i) / abs(max_ev(i));
 
     B::MatrixXc gtg(n, n);
-    _backend.matmul("C", "N", std::complex<Float>(1, 0), gr, gr, std::complex<Float>(0, 0), &gtg);
+    _backend.matmul(TRANSPOSE::ConjTrans, TRANSPOSE::NoTrans, std::complex<Float>(1, 0), gr, gr, std::complex<Float>(0, 0), &gtg);
 
     B::VectorXc gtf(n);
-    _backend.matvecmul("C", std::complex<Float>(1, 0), gr, f, std::complex<Float>(0, 0), &gtf);
+    _backend.matvecmul(TRANSPOSE::ConjTrans, std::complex<Float>(1, 0), gr, f, std::complex<Float>(0, 0), &gtf);
 
     B::VectorXc q(n);
-    _backend.csolve(gtg, gtf, &q);
+    _backend.csolve(&gtg, &gtf, &q);
 
-    const auto max_coeff = _backend.maxCoeff(q);
+    const auto max_coeff = _backend.cmaxCoeff(q);
     SetFromComplexDrive(_data, q, normalize, max_coeff);
   }
 
@@ -468,7 +507,7 @@ class HoloGain final : public Gain {
     for (size_t i = 0; i < m; i++) p(i) = std::complex<Float>(_amps[i], 0);
 
     B::VectorXc q(n);
-    _backend.matvecmul("C", std::complex<Float>(1, 0), g, p, std::complex<Float>(0, 0), &q);
+    _backend.matvecmul(TRANSPOSE::ConjTrans, std::complex<Float>(1, 0), g, p, std::complex<Float>(0, 0), &q);
 
     SetFromComplexDrive(_data, q, true, 1.0);
   }
@@ -490,7 +529,7 @@ class HoloGain final : public Gain {
     for (auto k = 0; k < repeat; k++) {
       matvecmul(g, q, &gamma);
       for (size_t i = 0; i < m; i++) p(i) = gamma(i) / abs(gamma(i)) * _amps[i];
-      _backend.matvecmul("C", std::complex<Float>(1, 0), g, p, std::complex<Float>(0, 0), &xi);
+      _backend.matvecmul(TRANSPOSE::ConjTrans, std::complex<Float>(1, 0), g, p, std::complex<Float>(0, 0), &xi);
       for (size_t j = 0; j < n; j++) q(j) = xi(j) / abs(xi(j)) * q0(j);
     }
 
@@ -552,15 +591,15 @@ class HoloGain final : public Gain {
     const auto g = transferMatrix<M>();
 
     M b = _backend.concat_in_col(g, p);
-    _backend.matmul("C", "N", std::complex<Float>(1, 0), b, b, std::complex<Float>(0, 0), bhb);
+    _backend.matmul(TRANSPOSE::ConjTrans, TRANSPOSE::NoTrans, std::complex<Float>(1, 0), b, b, std::complex<Float>(0, 0), bhb);
   }
 
-  template <typename M, typename V, typename Vc>
+  template <typename M, typename V>
   inline void calcTTh(const V& x, M* tth) {
     const size_t len = x.size();
-    Vc t(len);
-    for (size_t i = 0; i < len; i++) t(i) = exp(std::complex<Float>(0, -x(i)));
-    _backend.matmul("N", "C", std::complex<Float>(1, 0), t, t, std::complex<Float>(0, 0), tth);
+    M t(len, 1);
+    for (size_t i = 0; i < len; i++) t(i, 0) = exp(std::complex<Float>(0, -x(i)));
+    _backend.matmul(TRANSPOSE::NoTrans, TRANSPOSE::ConjTrans, std::complex<Float>(1, 0), t, t, std::complex<Float>(0, 0), tth);
   }
 
   void LM() {
@@ -590,7 +629,7 @@ class HoloGain final : public Gain {
     Float nu = Float{2};
 
     B::MatrixXc tth(n_param, n_param);
-    calcTTh<B::MatrixXc, B::VectorX, B::VectorXc>(x, &tth);
+    calcTTh<B::MatrixXc, B::VectorX>(x, &tth);
 
     B::MatrixXc bhb_tth(n_param, n_param);
     _backend.hadamardProduct(bhb, tth, &bhb_tth);
@@ -610,7 +649,7 @@ class HoloGain final : public Gain {
 
     auto mu = tau * a_max;
 
-    auto is_found = g.maxCoeff() <= eps_1;
+    auto is_found = _backend.maxCoeff(g) <= eps_1;
 
     B::VectorXc t(n_param);
     for (size_t i = 0; i < n_param; i++) t(i) = exp(std::complex<Float>(0, x(i)));
@@ -629,7 +668,7 @@ class HoloGain final : public Gain {
 
       _backend.matadd(Float{1.0}, a, Float{0.0}, &tmpm);
       _backend.matadd(mu, identity, Float{1.0}, &tmpm);
-      _backend.solve(tmpm, g, &h_lm);
+      _backend.solve(&tmpm, &g, &h_lm);
 
       if (h_lm.norm() <= eps_2 * (x.norm() + eps_2)) {
         is_found = true;
@@ -649,7 +688,7 @@ class HoloGain final : public Gain {
         fx = fx_new;
         if (rho > 0) {
           _backend.vecadd(Float{1.0}, x_new, Float{0.0}, &x);
-          calcTTh<B::MatrixXc, B::VectorX, B::VectorXc>(x, &tth);
+          calcTTh<B::MatrixXc, B::VectorX>(x, &tth);
           _backend.hadamardProduct(bhb, tth, &bhb_tth);
           _backend.real(bhb_tth, &a);
           for (size_t i = 0; i < n_param; i++) {
@@ -657,7 +696,7 @@ class HoloGain final : public Gain {
             for (size_t j = 0; j < n_param; j++) tmp += bhb_tth(i, j).imag();
             g(i) = tmp;
           }
-          is_found = g.maxCoeff() <= eps_1;
+          is_found = _backend.maxCoeff(g) <= eps_1;
           mu *= std::max(Float{1. / 3.}, pow(1 - (2 * rho - 1), Float{3.}));
           nu = 2.0;
         } else {

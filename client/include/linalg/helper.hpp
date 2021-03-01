@@ -3,7 +3,7 @@
 // Created Date: 25/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/02/2021
+// Last Modified: 01/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -100,8 +100,8 @@ class _Helper {
 
   template <typename V>
   static bool mat_equals(const V& lhs, const V& rhs) {
-    if (lhs.num_cols() != rhs.num_cols()) return false;
-    if (lhs.num_rows() != rhs.num_rows()) return false;
+    if (lhs.cols() != rhs.cols()) return false;
+    if (lhs.rows() != rhs.rows()) return false;
     bool r = true;
     const T* lp = lhs.data();
     const T* rp = rhs.data();
@@ -111,10 +111,10 @@ class _Helper {
 
   template <typename V>
   static std::ostream& mat_show(std::ostream& os, const V& obj) {
-    os << "Matrix" << obj.num_rows() << "x" << obj.num_cols() << ":";
-    for (auto row = 0; row < obj.num_rows(); row++) {
+    os << "Matrix" << obj.rows() << "x" << obj.cols() << ":";
+    for (auto row = 0; row < obj.rows(); row++) {
       os << "\n\t";
-      for (auto col = 0; col < obj.num_cols(); col++) os << obj(row, col) << ", ";
+      for (auto col = 0; col < obj.cols(); col++) os << obj(row, col) << ", ";
     }
     return os;
   }
@@ -149,9 +149,9 @@ class _Helper {
   template <typename T, typename M, typename V>
   static V mat_vec_mul(const M& m, const V& v) {
     V res(v.size());
-    for (size_t row = 0; row < m.num_rows(); row++) {
+    for (size_t row = 0; row < m.rows(); row++) {
       T n = 0;
-      for (size_t col = 0; col < m.num_cols(); col++) {
+      for (size_t col = 0; col < m.cols(); col++) {
         n += m(row, col) * v(col);
       }
       res(row) = n;
