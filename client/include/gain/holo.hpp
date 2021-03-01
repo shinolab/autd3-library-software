@@ -391,7 +391,7 @@ class HoloGain final : public Gain {
     for (size_t i = 0; i < m; i++) P(i, i) = std::complex<Float>(_amps[i], 0);
 
     B::MatrixXc B = transferMatrix<B::MatrixXc>();
-    B::MatrixXc pinvB(m, n);
+    B::MatrixXc pinvB(n, m);
     _backend.pseudoInverseSVD(&B, alpha, &pinvB);
 
     B::MatrixXc MM = B::MatrixXc::Identity(m, m);
