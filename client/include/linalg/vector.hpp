@@ -3,7 +3,7 @@
 // Created Date: 27/02/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 27/02/2021
+// Last Modified: 01/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -42,7 +42,12 @@ struct VectorX {
 
   static VectorX Zero(size_t size) {
     VectorX v(size);
-    std::memset(v._data, 0, v._size * sizeof(T));
+    std::memset(v._data.get(), 0, v._size * sizeof(T));
+    return v;
+  }
+  static VectorX Ones(size_t size) {
+    VectorX v(size);
+    for (size_t i = 0; i < size; i++) v._data[i] = T{1};
     return v;
   }
 
