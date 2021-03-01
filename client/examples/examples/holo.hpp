@@ -56,7 +56,7 @@ inline void HoloTest(const autd::ControllerPtr& autd) {
 
   const auto opt = SelectOpt();
   auto start = std::chrono::system_clock::now();
-  const auto g = autd::gain::HoloGain<Eigen3Backend>::Create(foci, amps, opt);
+  const auto g = autd::gain::HoloGain<BLASBackend>::Create(foci, amps, opt);
   g->SetGeometry(autd->geometry());
   g->Build();
   auto end = std::chrono::system_clock::now();
