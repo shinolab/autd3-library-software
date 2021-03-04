@@ -1,15 +1,18 @@
-﻿#
-# File: build.ps1
+﻿# File: autd_firmware_writer.ps1
 # Project: firmware
 # Created Date: 14/02/2020
 # Author: Shun Suzuki
 # -----
-# Last Modified: 14/02/2020
+# Last Modified: 04/03/2021
 # Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 # -----
-# Copyright (c) 2020 Hapis Lab. All rights reserved.
+# Copyright (c) 2021 Hapis Lab. All rights reserved.
 # 
-#
+
+Param(
+    [string]$vivado_dir = "NULL"
+)
+
 function ColorEcho($color, $PREFIX, $message) {
     Write-Host $PREFIX -ForegroundColor $color -NoNewline
     Write-Host ":", $message
@@ -68,37 +71,41 @@ function UpdateCPU([string]$cpuFirmwareFile) {
     }
 }
 
-function UpdateFPGA([string]$fpgaFirmwareFile) {
+function UpdateFPGA([string]$fpgaFirmwareFile, [string]$vivado_dir) {
     if (-not (Get-Command vivado -ea SilentlyContinue)) {
-        ColorEcho "Green" "INFO" "Vivado is not found in PATH. Looking for Vivado..."
-        $xilinx_path = FindVivado
-        if (($xilinx_path -eq "NULL")) {
-            ColorEcho "Red" "Error" "Vivado is not found. Install Vivado."
-            Stop-Transcript | Out-Null
-            $host.UI.RawUI.ReadKey() | Out-Null
-            exit
-        }
-        
-        $vivado_path = Join-Path $xilinx_path "Vivado"
-        if (-not (Test-Path $vivado_path)) {
-            ColorEcho "Red" "Error" "Vivado is not found. Install Vivado."
-            Stop-Transcript | Out-Null
-            $host.UI.RawUI.ReadKey() | Out-Null
-            exit
-        }
-        
-        $vivados = Get-ChildItem $vivado_path
-        if ($vivados.Length -eq 0) {
-            ColorEcho "Red" "Error" "Vivado is not found. Install Vivado."
-            Stop-Transcript | Out-Null
-            $host.UI.RawUI.ReadKey() | Out-Null
-            exit
+        if ($vivado_dir -eq "NULL"){
+            ColorEcho "Green" "INFO" "Vivado is not found in PATH. Looking for Vivado..."
+            $xilinx_path = FindVivado
+            if (($xilinx_path -eq "NULL")) {
+                ColorEcho "Red" "Error" "Vivado is not found. Install Vivado."
+                Stop-Transcript | Out-Null
+                $host.UI.RawUI.ReadKey() | Out-Null
+                exit
+            }
+            
+            $vivado_path = Join-Path $xilinx_path "Vivado"
+            if (-not (Test-Path $vivado_path)) {
+                ColorEcho "Red" "Error" "Vivado is not found. Install Vivado."
+                Stop-Transcript | Out-Null
+                $host.UI.RawUI.ReadKey() | Out-Null
+                exit
+            }
+            
+            $vivados = Get-ChildItem $vivado_path
+            if ($vivados.Length -eq 0) {
+                ColorEcho "Red" "Error" "Vivado is not found. Install Vivado."
+                Stop-Transcript | Out-Null
+                $host.UI.RawUI.ReadKey() | Out-Null
+                exit
+            }
+
+            $vivado_ver = $vivados | Select-Object -first 1
+            ColorEcho "Green" "INFO" "Find Vivado", $vivado_ver.Name
+            $vivado_dir = $vivado_ver.FullName
         }
 
-        $vivado_ver = $vivados | Select-Object -first 1
-        ColorEcho "Green" "INFO" "Find Vivado", $vivado_ver.Name
-        $vivado_bin = Join-Path $vivado_ver.FullName "bin"
-        $vivado_lib = Join-Path $vivado_ver.FullName "lib" | Join-Path -ChildPath "win64.o" 
+        $vivado_bin = Join-Path $vivado_dir "bin"
+        $vivado_lib = Join-Path $vivado_dir "lib" | Join-Path -ChildPath "win64.o" 
         $env:Path = $env:Path + ";" + $vivado_bin + ";" + $vivado_lib
     }
 
@@ -150,15 +157,15 @@ do {
         [int]$select = Read-host "Select"
     }
     catch { $is_num = $false }
-} 
+}
 until (($select -ge 0 -and $select -le 2) -and $is_num)
 
 if ($select -eq 0) {
     UpdateCPU $cpu_firmware
-    UpdateFPGA $fpga_firmware
+    UpdateFPGA $fpga_firmware $vivado_dir
 }
 if ($select -eq 1) {
-    UpdateFPGA $fpga_firmware
+    UpdateFPGA $fpga_firmware $vivado_dir
 }
 if ($select -eq 2) {
     UpdateCPU $cpu_firmware
