@@ -3,7 +3,7 @@
 // Created Date: 06/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/03/2021
+// Last Modified: 06/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -23,85 +23,10 @@
 
 #include "gain.hpp"
 #include "linalg.hpp"
+#include "linalg_backend.hpp"
+#include "utils.hpp"
 
-#ifdef ENABLE_BLAS
-#include "linalg/matrix.hpp"
-#include "linalg/vector.hpp"
-#endif
-
-namespace {
-
-using autd::Float;
-using autd::PI;
-
-#ifdef USE_DOUBLE_AUTD
-constexpr double DIR_COEFF_A[] = {1.0, 1.0, 1.0, 0.891250938, 0.707945784, 0.501187234, 0.354813389, 0.251188643, 0.199526231};
-constexpr double DIR_COEFF_B[] = {
-    0., 0., -0.00459648054721, -0.0155520765675, -0.0208114779827, -0.0182211227016, -0.0122437497109, -0.00780345575475, -0.00312857467007};
-constexpr double DIR_COEFF_C[] = {
-    0., 0., -0.000787968093807, -0.000307591508224, -0.000218348633296, 0.00047738416141, 0.000120353137658, 0.000323676257958, 0.000143850511};
-constexpr double DIR_COEFF_D[] = {
-    0., 0., 1.60125528528e-05, 2.9747624976e-06, 2.31910931569e-05, -1.1901034125e-05, 6.77743734332e-06, -5.99548024824e-06, -4.79372835035e-06};
-using complex = std::complex<double>;
-#else
-constexpr float DIR_COEFF_A[] = {1.0f, 1.0f, 1.0f, 0.891250938f, 0.707945784f, 0.501187234f, 0.354813389f, 0.251188643f, 0.199526231f};
-constexpr float DIR_COEFF_B[] = {
-    0.f, 0.f, -0.00459648054721f, -0.0155520765675f, -0.0208114779827f, -0.0182211227016f, -0.0122437497109f, -0.00780345575475f, -0.00312857467007f};
-constexpr float DIR_COEFF_C[] = {0.f,
-                                 0.f,
-                                 -0.000787968093807f,
-                                 -0.000307591508224f,
-                                 -0.000218348633296f,
-                                 0.00047738416141f,
-                                 0.000120353137658f,
-                                 0.000323676257958f,
-                                 0.000143850511f};
-constexpr float DIR_COEFF_D[] = {0.f,
-                                 0.f,
-                                 1.60125528528e-05f,
-                                 2.9747624976e-06f,
-                                 2.31910931569e-05f,
-                                 -1.1901034125e-05f,
-                                 6.77743734332e-06f,
-                                 -5.99548024824e-06f,
-                                 -4.79372835035e-06f};
-using complex = std::complex<float>;
-#endif
-
-static constexpr Float ATTENUATION = Float{1.15e-4};
-
-static Float directivityT4010A1(Float theta_deg) {
-  theta_deg = abs(theta_deg);
-
-  while (theta_deg > 90) {
-    theta_deg = abs(180 - theta_deg);
-  }
-
-  const auto i = static_cast<size_t>(ceil(theta_deg / 10));
-
-  if (i == 0) {
-    return 1;
-  }
-
-  const auto a = DIR_COEFF_A[i - 1];
-  const auto b = DIR_COEFF_B[i - 1];
-  const auto c = DIR_COEFF_C[i - 1];
-  const auto d = DIR_COEFF_D[i - 1];
-  const auto x = theta_deg - static_cast<Float>(i - 1) * 10;
-  return a + b * x + c * x * x + d * x * x * x;
-}
-
-complex transfer(const autd::Vector3& trans_pos, const autd::Vector3& trans_norm, const autd::Vector3& target_pos, const Float wave_number) {
-  const auto diff = target_pos - trans_pos;
-  const auto dist = diff.norm();
-  const auto theta = atan2(diff.dot(trans_norm), dist * trans_norm.norm()) * 180 / PI;
-  const auto directivity = directivityT4010A1(theta);
-
-  return directivity / dist * exp(complex(-dist * ATTENUATION, -wave_number * dist));
-}
-}  // namespace
-
-namespace autd::gain {
+namespace autd::gain::holo {
 /**
  * @brief Optimization method for generating multiple foci.
  */
@@ -154,102 +79,8 @@ struct NLSParams {
   Float eps_2;
   int32_t k_max;
   Float tau;
+  Float* initial;
 };
-
-enum class TRANSPOSE { NoTrans = 111, Trans = 112, ConjTrans = 113, ConjNoTrans = 114 };
-
-template <typename MCx, typename VCx, typename Mx, typename Vx>
-class Backend {
- public:
-  using MatrixXc = MCx;
-  using VectorXc = VCx;
-  using MatrixX = Mx;
-  using VectorX = Vx;
-
-  virtual bool supports_SVD() = 0;
-  virtual bool supports_EVD() = 0;
-  virtual bool supports_solve() = 0;
-  virtual void hadamardProduct(const MatrixXc& a, const MatrixXc& b, MatrixXc* c) = 0;
-  virtual void real(const MatrixXc& a, MatrixX* b) = 0;
-  virtual void pseudoInverseSVD(MatrixXc* matrix, Float alpha, MatrixXc* result) = 0;
-  virtual VectorXc maxEigenVector(MatrixXc* matrix) = 0;
-  virtual void matadd(Float alpha, const MatrixX& a, Float beta, MatrixX* b) = 0;
-  virtual void matmul(const TRANSPOSE transa, const TRANSPOSE transb, std::complex<Float> alpha, const MatrixXc& a, const MatrixXc& b,
-                      std::complex<Float> beta, MatrixXc* c) = 0;
-  virtual void matvecmul(const TRANSPOSE transa, std::complex<Float> alpha, const MatrixXc& a, const VectorXc& b, std::complex<Float> beta,
-                         VectorXc* c) = 0;
-  virtual void vecadd(Float alpha, const VectorX& a, Float beta, VectorX* b) = 0;
-  virtual void csolveh(MatrixXc* a, VectorXc* b) = 0;
-  virtual void solveg(MatrixX* a, VectorX* b, VectorX* c) = 0;
-  virtual Float dot(const VectorX& a, const VectorX& b) = 0;
-  virtual std::complex<Float> cdot(const VectorXc& a, const VectorXc& b) = 0;
-  virtual Float maxCoeff(const VectorX& v) = 0;
-  virtual Float cmaxCoeff(const VectorXc& v) = 0;
-  virtual MatrixXc concat_in_row(const MatrixXc& a, const MatrixXc& b) = 0;
-  virtual MatrixXc concat_in_col(const MatrixXc& a, const MatrixXc& b) = 0;
-  virtual void matcpy(const MatrixX& a, MatrixX* b) = 0;
-  virtual void veccpy(const VectorX& a, VectorX* b) = 0;
-
-  virtual ~Backend() {}
-};
-
-class Eigen3Backend final : public Backend<Eigen::Matrix<std::complex<Float>, -1, -1>, Eigen::Matrix<std::complex<Float>, -1, 1>,
-                                           Eigen::Matrix<Float, -1, -1>, Eigen::Matrix<Float, -1, 1>> {
- public:
-  bool supports_SVD() override { return true; }
-  bool supports_EVD() override { return true; }
-  bool supports_solve() override { return true; }
-  void hadamardProduct(const MatrixXc& a, const MatrixXc& b, MatrixXc* c);
-  void real(const MatrixXc& a, MatrixX* b);
-  void pseudoInverseSVD(MatrixXc* matrix, Float alpha, MatrixXc* result) override;
-  VectorXc maxEigenVector(MatrixXc* matrix) override;
-  void matadd(Float alpha, const MatrixX& a, Float beta, MatrixX* b) override;
-  void matmul(const TRANSPOSE transa, const TRANSPOSE transb, std::complex<Float> alpha, const MatrixXc& a, const MatrixXc& b,
-              std::complex<Float> beta, MatrixXc* c) override;
-  void matvecmul(const TRANSPOSE transa, std::complex<Float> alpha, const MatrixXc& a, const VectorXc& b, std::complex<Float> beta,
-                 VectorXc* c) override;
-  void vecadd(Float alpha, const VectorX& a, Float beta, VectorX* b) override;
-  void csolveh(MatrixXc* a, VectorXc* b) override;
-  void solveg(MatrixX* a, VectorX* b, VectorX* c) override;
-  Float dot(const VectorX& a, const VectorX& b) override;
-  std::complex<Float> cdot(const VectorXc& a, const VectorXc& b) override;
-  Float maxCoeff(const VectorX& v) override;
-  Float cmaxCoeff(const VectorXc& v) override;
-  MatrixXc concat_in_row(const MatrixXc& a, const MatrixXc& b) override;
-  MatrixXc concat_in_col(const MatrixXc& a, const MatrixXc& b) override;
-  void matcpy(const MatrixX& a, MatrixX* b) override;
-  void veccpy(const VectorX& a, VectorX* b) override;
-};
-
-#ifdef ENABLE_BLAS
-class BLASBackend final
-    : public Backend<_utils::MatrixX<std::complex<Float>>, _utils::VectorX<std::complex<Float>>, _utils::MatrixX<Float>, _utils::VectorX<Float>> {
- public:
-  bool supports_SVD() override { return true; }
-  bool supports_EVD() override { return true; }
-  bool supports_solve() override { return true; }
-  void hadamardProduct(const MatrixXc& a, const MatrixXc& b, MatrixXc* c);
-  void real(const MatrixXc& a, MatrixX* b);
-  void pseudoInverseSVD(MatrixXc* matrix, Float alpha, MatrixXc* result) override;
-  VectorXc maxEigenVector(MatrixXc* matrix) override;
-  void matadd(Float alpha, const MatrixX& a, Float beta, MatrixX* b) override;
-  void matmul(const TRANSPOSE transa, const TRANSPOSE transb, std::complex<Float> alpha, const MatrixXc& a, const MatrixXc& b,
-              std::complex<Float> beta, MatrixXc* c) override;
-  void matvecmul(const TRANSPOSE transa, std::complex<Float> alpha, const MatrixXc& a, const VectorXc& b, std::complex<Float> beta,
-                 VectorXc* c) override;
-  void vecadd(Float alpha, const VectorX& a, Float beta, VectorX* b) override;
-  void csolveh(MatrixXc* a, VectorXc* b) override;
-  void solveg(MatrixX* a, VectorX* b, VectorX* c) override;
-  Float dot(const VectorX& a, const VectorX& b) override;
-  std::complex<Float> cdot(const VectorXc& a, const VectorXc& b) override;
-  Float maxCoeff(const VectorX& v) override;
-  Float cmaxCoeff(const VectorXc& v) override;
-  MatrixXc concat_in_row(const MatrixXc& a, const MatrixXc& b) override;
-  MatrixXc concat_in_col(const MatrixXc& a, const MatrixXc& b) override;
-  void matcpy(const MatrixX& a, MatrixX* b) override;
-  void veccpy(const VectorX& a, VectorX* b) override;
-};
-#endif
 
 /**
  * @brief Gain to produce multiple focal points
@@ -309,7 +140,10 @@ class HoloGain final : public Gain {
 
   std::vector<Vector3>& foci() { return this->_foci; }
   std::vector<Float>& amplitudes() { return this->_amps; }
-  void Rebuild() { this->_built = false; }
+  void Rebuild() {
+    this->_built = false;
+    this->Build();
+  }
 
  protected:
   std::vector<Vector3> _foci;
@@ -337,7 +171,7 @@ class HoloGain final : public Gain {
   }
 
   template <typename V>
-  void SetFromComplexDrive(std::vector<AUTDDataArray>& data, const V& drive, const bool normalize, const Float max_coeff) {
+  void SetFromComplexDrive(std::vector<autd::AUTDDataArray>& data, const V& drive, const bool normalize, const Float max_coeff) {
     const size_t n = drive.size();
     size_t dev_idx = 0;
     size_t trans_idx = 0;
@@ -354,6 +188,16 @@ class HoloGain final : public Gain {
     }
   }
 
+  std::complex<Float> transfer(const autd::Vector3& trans_pos, const autd::Vector3& trans_norm, const autd::Vector3& target_pos,
+                               const Float wave_number, const Float atten = 0) {
+    const auto diff = target_pos - trans_pos;
+    const auto dist = diff.norm();
+    const auto theta = atan2(diff.dot(trans_norm), dist * trans_norm.norm()) * 180 / PI;
+    const auto directivity = autd::utils::directivityT4010A1(theta);
+
+    return directivity / dist * exp(std::complex<Float>(-dist * atten, -wave_number * dist));
+  }
+
   template <typename M>
   M transferMatrix() {
     const size_t m = _foci.size();
@@ -362,16 +206,39 @@ class HoloGain final : public Gain {
     M g(m, n);
 
     const auto wave_number = 2 * PI / _geometry->wavelength();
+    const auto atten = _geometry->attenuation_coeff();
     for (size_t i = 0; i < m; i++) {
       const auto& tp = _foci[i];
       for (size_t j = 0; j < n; j++) {
         const auto pos = _geometry->position(j);
         const auto dir = _geometry->direction(j / NUM_TRANS_IN_UNIT);
-        g(i, j) = transfer(pos, dir, tp, wave_number);
+        g(i, j) = transfer(pos, dir, tp, wave_number, atten);
       }
     }
 
     return g;
+  }
+
+  template <typename M>
+  inline void makeBhB(M* bhb) {
+    const size_t m = _foci.size();
+    const size_t n = _geometry->num_transducers();
+
+    M p = M::Zero(m, m);
+    for (size_t i = 0; i < m; i++) p(i, i) = -_amps[i];
+
+    const auto g = transferMatrix<M>();
+
+    M b = _backend.concat_in_col(g, p);
+    _backend.matmul(TRANSPOSE::ConjTrans, TRANSPOSE::NoTrans, std::complex<Float>(1, 0), b, b, std::complex<Float>(0, 0), bhb);
+  }
+
+  template <typename M, typename V>
+  inline void calcTTh(const V& x, M* tth) {
+    const size_t len = x.size();
+    M t(len, 1);
+    for (size_t i = 0; i < len; i++) t(i, 0) = exp(std::complex<Float>(0, -x(i)));
+    _backend.matmul(TRANSPOSE::NoTrans, TRANSPOSE::ConjTrans, std::complex<Float>(1, 0), t, t, std::complex<Float>(0, 0), tth);
   }
 
   void SDP() {
@@ -383,7 +250,7 @@ class HoloGain final : public Gain {
     auto normalize = true;
 
     if (_params != nullptr) {
-      auto* const sdp_params = static_cast<autd::gain::SDPParams*>(_params);
+      auto* const sdp_params = static_cast<autd::gain::holo::SDPParams*>(_params);
       alpha = sdp_params->regularization < 0 ? alpha : sdp_params->regularization;
       repeat = sdp_params->repeat < 0 ? repeat : sdp_params->repeat;
       lambda = sdp_params->lambda < 0 ? lambda : sdp_params->lambda;
@@ -447,7 +314,7 @@ class HoloGain final : public Gain {
     auto normalize = true;
 
     if (_params != nullptr) {
-      auto* const evd_params = static_cast<autd::gain::EVDParams*>(_params);
+      auto* const evd_params = static_cast<autd::gain::holo::EVDParams*>(_params);
       gamma = evd_params->regularization < 0 ? gamma : evd_params->regularization;
       normalize = evd_params->normalize_amp;
     }
@@ -585,28 +452,6 @@ class HoloGain final : public Gain {
     SetFromComplexDrive(_data, q, true, 1.0);
   }
 
-  template <typename M>
-  inline void makeBhB(M* bhb) {
-    const size_t m = _foci.size();
-    const size_t n = _geometry->num_transducers();
-
-    M p = M::Zero(m, m);
-    for (size_t i = 0; i < m; i++) p(i, i) = -_amps[i];
-
-    const auto g = transferMatrix<M>();
-
-    M b = _backend.concat_in_col(g, p);
-    _backend.matmul(TRANSPOSE::ConjTrans, TRANSPOSE::NoTrans, std::complex<Float>(1, 0), b, b, std::complex<Float>(0, 0), bhb);
-  }
-
-  template <typename M, typename V>
-  inline void calcTTh(const V& x, M* tth) {
-    const size_t len = x.size();
-    M t(len, 1);
-    for (size_t i = 0; i < len; i++) t(i, 0) = exp(std::complex<Float>(0, -x(i)));
-    _backend.matmul(TRANSPOSE::NoTrans, TRANSPOSE::ConjTrans, std::complex<Float>(1, 0), t, t, std::complex<Float>(0, 0), tth);
-  }
-
   void LM() {
     if (!_backend.supports_solve()) std::cerr << "This backend does not support this method.\n";
 
@@ -614,13 +459,15 @@ class HoloGain final : public Gain {
     auto eps_2 = Float{1e-8};
     auto tau = Float{1e-3};
     auto k_max = 5;
+    Float* initial = nullptr;
 
     if (_params != nullptr) {
-      auto* const nlp_params = static_cast<autd::gain::NLSParams*>(_params);
+      auto* const nlp_params = static_cast<autd::gain::holo::NLSParams*>(_params);
       eps_1 = nlp_params->eps_1 < 0 ? eps_1 : nlp_params->eps_1;
       eps_2 = nlp_params->eps_2 < 0 ? eps_2 : nlp_params->eps_2;
       k_max = nlp_params->k_max < 0 ? k_max : nlp_params->k_max;
       tau = nlp_params->tau < 0 ? tau : nlp_params->tau;
+      initial = nlp_params->initial;
     }
 
     const size_t m = _foci.size();
@@ -631,10 +478,11 @@ class HoloGain final : public Gain {
     makeBhB<B::MatrixXc>(&bhb);
 
     B::VectorX x(n_param);
-    std::random_device rnd;
-    std::mt19937 mt(rnd());
-    std::uniform_real_distribution<Float> range(0, 2 * PI);
-    for (auto i = 0; i < n_param; i++) x(i) = range(mt);
+    if (initial == nullptr) {
+      std::memset(x.data(), 0, x.size() * sizeof(Float));
+    } else {
+      std::memcpy(x.data(), initial, x.size() * sizeof(Float));
+    }
 
     Float nu = Float{2};
 
@@ -729,4 +577,4 @@ class HoloGain final : public Gain {
     }
   }
 };
-}  // namespace autd::gain
+}  // namespace autd::gain::holo
