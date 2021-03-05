@@ -2,12 +2,17 @@ cmake_minimum_required(VERSION 3.10)
 
 set (CMAKE_CXX_STANDARD 17)
 
-include_directories(${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
+include_directories(${PROJECT_SOURCE_DIR}/include)
 
 add_library(gain_holo STATIC
-	holo.cpp
-	${PROJECT_SOURCE_DIR}/include/gain/holo.hpp
+linalg_backend.cpp
+${PROJECT_SOURCE_DIR}/include/gain/linalg_backend.hpp
+${PROJECT_SOURCE_DIR}/include/gain/holo.hpp
 )
+
+if(ENABLE_EIGEN)
+  include_directories(${EIGEN_PATH})
+endif()
 
 if(ENABLE_BLAS)
   include_directories(${BLAS_INCLUDE_DIR})

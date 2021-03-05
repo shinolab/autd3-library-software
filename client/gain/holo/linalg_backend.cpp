@@ -1,13 +1,15 @@
-﻿// File: holo_gain.cpp
-// Project: lib
-// Created Date: 06/07/2016
-// Author: Seki Inoue
+// File: linalg_backend.cpp
+// Project: holo
+// Created Date: 06/03/2021
+// Author: Shun Suzuki
 // -----
-// Last Modified: 05/03/2021
+// Last Modified: 06/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
-// Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
+// Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
+
+#include "gain/linalg_backend.hpp"
 
 #include "gain/holo.hpp"
 
@@ -26,8 +28,9 @@
 #endif
 #endif
 
-namespace autd::gain {
+namespace autd::gain::holo {
 
+#ifdef ENABLE_EIGEN
 void Eigen3Backend::hadamardProduct(const Eigen3Backend::MatrixXc& a, const Eigen3Backend::MatrixXc& b, Eigen3Backend::MatrixXc* c) {
   (*c).noalias() = a.cwiseProduct(b);
 }
@@ -167,6 +170,8 @@ Eigen3Backend::MatrixXc Eigen3Backend::concat_in_col(const Eigen3Backend::Matrix
 void Eigen3Backend::matcpy(const Eigen3Backend::MatrixX& a, Eigen3Backend::MatrixX* b) { *b = a; }
 void Eigen3Backend::veccpy(const Eigen3Backend::VectorX& a, Eigen3Backend::VectorX* b) { *b = a; }
 
+#endif
+
 #ifdef ENABLE_BLAS
 
 #ifdef USE_DOUBLE_AUTD
@@ -179,7 +184,7 @@ void Eigen3Backend::veccpy(const Eigen3Backend::VectorX& a, Eigen3Backend::Vecto
 #define AUTD_dot cblas_ddot
 #define AUTD_imaxc cblas_izamax
 #define AUTD_imax cblas_idamax
-#define AUTD_gesv LAPACKE_dgesv
+#define AUTD_sysv LAPACKE_dsysv
 #define AUTD_posvc LAPACKE_zposv
 #define AUTD_cpy LAPACKE_dlacpy
 #else
@@ -192,13 +197,13 @@ void Eigen3Backend::veccpy(const Eigen3Backend::VectorX& a, Eigen3Backend::Vecto
 #define AUTD_dot cblas_sdot
 #define AUTD_imaxc cblas_icamax
 #define AUTD_imax cblas_isamax
-#define AUTD_gesv LAPACKE_sgesv
+#define AUTD_sysv LAPACKE_ssysv
 #define AUTD_posvc LAPACKE_cposv
 #define AUTD_cpy LAPACKE_slacpy
 #endif
 
-inline void blas_matmul(CBLAS_TRANSPOSE transa, CBLAS_TRANSPOSE transb, complex alpha, BLASBackend::MatrixXc& a, BLASBackend::MatrixXc& b,
-                        complex beta, BLASBackend::MatrixXc* c) {
+inline void blas_matmul(CBLAS_TRANSPOSE transa, CBLAS_TRANSPOSE transb, std::complex<Float> alpha, BLASBackend::MatrixXc& a, BLASBackend::MatrixXc& b,
+                        std::complex<Float> beta, BLASBackend::MatrixXc* c) {
   const blasint M = static_cast<blasint>(a.rows());
   const blasint N = static_cast<blasint>(b.cols());
   const blasint K = static_cast<blasint>(a.cols());
@@ -207,8 +212,8 @@ inline void blas_matmul(CBLAS_TRANSPOSE transa, CBLAS_TRANSPOSE transb, complex 
 
 inline void blas_matmul(CBLAS_TRANSPOSE transa, CBLAS_TRANSPOSE transb, BLASBackend::MatrixXc& a, BLASBackend::MatrixXc& b,
                         BLASBackend::MatrixXc* c) {
-  complex one = complex(1.0, 0.0);
-  complex zero = complex(0.0, 0.0);
+  std::complex<Float> one = std::complex<Float>(1.0, 0.0);
+  std::complex<Float> zero = std::complex<Float>(0.0, 0.0);
   blas_matmul(transa, transb, one, a, b, zero, c);
 }
 
@@ -299,9 +304,8 @@ void BLASBackend::solveg(BLASBackend::MatrixX* a, BLASBackend::VectorX* b, BLASB
   const blasint LDB = static_cast<blasint>(b->size());
   std::memcpy(c->data(), b->data(), LDB * sizeof(Float));
   std::unique_ptr<blasint[]> ipiv = std::make_unique<blasint[]>(N);
-  AUTD_gesv(CblasColMajor, N, 1, a->data(), LDA, ipiv.get(), c->data(), LDB);
+  AUTD_sysv(CblasColMajor, 'U', N, 1, a->data(), LDA, ipiv.get(), c->data(), LDB);
 }
-
 void BLASBackend::csolveh(BLASBackend::MatrixXc* a, BLASBackend::VectorXc* b) {
   const blasint N = static_cast<blasint>(a->cols());
   const blasint LDA = static_cast<blasint>(a->rows());
@@ -362,4 +366,4 @@ void BLASBackend::veccpy(const BLASBackend::VectorX& a, BLASBackend::VectorX* b)
 }
 #endif
 
-}  // namespace autd::gain
+}  // namespace autd::gain::holo
