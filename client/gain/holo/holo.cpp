@@ -307,8 +307,7 @@ void BLASBackend::csolveh(BLASBackend::MatrixXc* a, BLASBackend::VectorXc* b) {
 }
 
 Float BLASBackend::dot(const BLASBackend::VectorX& a, const BLASBackend::VectorX& b) {
-  double d = AUTD_dot(static_cast<blasint>(a.size()), a.data(), 1, b.data(), 1);
-  return d;
+  return AUTD_dot(static_cast<blasint>(a.size()), a.data(), 1, b.data(), 1);
 }
 
 std::complex<Float> BLASBackend::cdot(const BLASBackend::VectorXc& a, const BLASBackend::VectorXc& b) {
