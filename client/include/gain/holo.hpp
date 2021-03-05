@@ -3,7 +3,7 @@
 // Created Date: 06/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/03/2021
+// Last Modified: 05/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -179,8 +179,8 @@ class Backend {
   virtual void matvecmul(const TRANSPOSE transa, std::complex<Float> alpha, const MatrixXc& a, const VectorXc& b, std::complex<Float> beta,
                          VectorXc* c) = 0;
   virtual void vecadd(Float alpha, const VectorX& a, Float beta, VectorX* b) = 0;
-  virtual void csolve(MatrixXc* a, VectorXc* b, VectorXc* c) = 0;
-  virtual void solve(MatrixX* a, VectorX* b, VectorX* c) = 0;
+  virtual void csolveh(MatrixXc* a, VectorXc* b) = 0;
+  virtual void solveg(MatrixX* a, VectorX* b, VectorX* c) = 0;
   virtual Float dot(const VectorX& a, const VectorX& b) = 0;
   virtual std::complex<Float> cdot(const VectorXc& a, const VectorXc& b) = 0;
   virtual Float maxCoeff(const VectorX& v) = 0;
@@ -207,8 +207,8 @@ class Eigen3Backend final : public Backend<Eigen::Matrix<std::complex<Float>, -1
   void matvecmul(const TRANSPOSE transa, std::complex<Float> alpha, const MatrixXc& a, const VectorXc& b, std::complex<Float> beta,
                  VectorXc* c) override;
   void vecadd(Float alpha, const VectorX& a, Float beta, VectorX* b) override;
-  void csolve(MatrixXc* a, VectorXc* b, VectorXc* c) override;
-  void solve(MatrixX* a, VectorX* b, VectorX* c) override;
+  void csolveh(MatrixXc* a, VectorXc* b) override;
+  void solveg(MatrixX* a, VectorX* b, VectorX* c) override;
   Float dot(const VectorX& a, const VectorX& b) override;
   std::complex<Float> cdot(const VectorXc& a, const VectorXc& b) override;
   Float maxCoeff(const VectorX& v) override;
@@ -234,8 +234,8 @@ class BLASBackend final
   void matvecmul(const TRANSPOSE transa, std::complex<Float> alpha, const MatrixXc& a, const VectorXc& b, std::complex<Float> beta,
                  VectorXc* c) override;
   void vecadd(Float alpha, const VectorX& a, Float beta, VectorX* b) override;
-  void csolve(MatrixXc* a, VectorXc* b, VectorXc* c) override;
-  void solve(MatrixX* a, VectorX* b, VectorX* c) override;
+  void csolveh(MatrixXc* a, VectorXc* b) override;
+  void solveg(MatrixX* a, VectorX* b, VectorX* c) override;
   Float dot(const VectorX& a, const VectorX& b) override;
   std::complex<Float> cdot(const VectorXc& a, const VectorXc& b) override;
   Float maxCoeff(const VectorX& v) override;
@@ -491,11 +491,10 @@ class HoloGain final : public Gain {
     B::VectorXc gtf(n);
     _backend.matvecmul(TRANSPOSE::ConjTrans, std::complex<Float>(1, 0), gr, f, std::complex<Float>(0, 0), &gtf);
 
-    B::VectorXc q(n);
-    _backend.csolve(&gtg, &gtf, &q);
+    _backend.csolveh(&gtg, &gtf);
 
-    const auto max_coeff = _backend.cmaxCoeff(q);
-    SetFromComplexDrive(_data, q, normalize, max_coeff);
+    const auto max_coeff = _backend.cmaxCoeff(gtf);
+    SetFromComplexDrive(_data, gtf, normalize, max_coeff);
   }
 
   void NAIVE() {
@@ -625,7 +624,13 @@ class HoloGain final : public Gain {
     B::MatrixXc bhb(n_param, n_param);
     makeBhB<B::MatrixXc>(&bhb);
 
-    B::VectorX x = B::VectorX::Zero(n_param);
+    // B::VectorX x = B::VectorX::Zero(n_param);
+    B::VectorX x(n_param);
+    std::random_device rnd;
+    std::mt19937 mt(rnd());
+    std::uniform_real_distribution<Float> range(0, 2 * PI);
+    for (auto i = 0; i < n_param; i++) x(i) = range(mt);
+
     Float nu = Float{2};
 
     B::MatrixXc tth(n_param, n_param);
@@ -668,7 +673,7 @@ class HoloGain final : public Gain {
 
       _backend.matadd(Float{1.0}, a, Float{0.0}, &tmpm);
       _backend.matadd(mu, identity, Float{1.0}, &tmpm);
-      _backend.solve(&tmpm, &g, &h_lm);
+      _backend.solveg(&tmpm, &g, &h_lm);
 
       if (h_lm.norm() <= eps_2 * (x.norm() + eps_2)) {
         is_found = true;

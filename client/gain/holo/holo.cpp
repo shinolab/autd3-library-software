@@ -3,7 +3,7 @@
 // Created Date: 06/07/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 01/03/2021
+// Last Modified: 05/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -40,19 +40,16 @@ void Eigen3Backend::pseudoInverseSVD(Eigen3Backend::MatrixXc* matrix, Float alph
   }
   (*result).noalias() = (svd.matrixV() * singularValues_inv.asDiagonal() * svd.matrixU().adjoint());
 }
-
 Eigen3Backend::VectorXc Eigen3Backend::maxEigenVector(Eigen3Backend::MatrixXc* matrix) {
   const Eigen::ComplexEigenSolver<MatrixXc> ces(*matrix);
   int idx = 0;
   ces.eigenvalues().cwiseAbs2().maxCoeff(&idx);
   return ces.eigenvectors().col(idx);
 }
-
 void Eigen3Backend::matadd(Float alpha, const MatrixX& a, Float beta, MatrixX* b) {
   *b *= beta;
   (*b).noalias() += alpha * a;
 }
-
 void Eigen3Backend::matmul(const TRANSPOSE transa, const TRANSPOSE transb, std::complex<Float> alpha, const Eigen3Backend::MatrixXc& a,
                            const Eigen3Backend::MatrixXc& b, std::complex<Float> beta, Eigen3Backend::MatrixXc* c) {
   *c *= beta;
@@ -123,7 +120,6 @@ void Eigen3Backend::matmul(const TRANSPOSE transa, const TRANSPOSE transb, std::
       break;
   }
 }
-
 void Eigen3Backend::matvecmul(const TRANSPOSE transa, std::complex<Float> alpha, const Eigen3Backend::MatrixXc& a, const Eigen3Backend::VectorXc& b,
                               std::complex<Float> beta, Eigen3Backend::VectorXc* c) {
   *c *= beta;
@@ -142,25 +138,20 @@ void Eigen3Backend::matvecmul(const TRANSPOSE transa, std::complex<Float> alpha,
       break;
   }
 }
-
 void Eigen3Backend::vecadd(Float alpha, const Eigen3Backend::VectorX& a, Float beta, Eigen3Backend::VectorX* b) {
   *b *= beta;
   (*b).noalias() += alpha * a;
 }
-void Eigen3Backend::solve(Eigen3Backend::MatrixX* a, Eigen3Backend::VectorX* b, Eigen3Backend::VectorX* c) {
+void Eigen3Backend::solveg(Eigen3Backend::MatrixX* a, Eigen3Backend::VectorX* b, Eigen3Backend::VectorX* c) {
   Eigen::HouseholderQR<Eigen3Backend::MatrixX> qr(*a);
   (*c).noalias() = qr.solve(*b);
 }
-
-void Eigen3Backend::csolve(Eigen3Backend::MatrixXc* a, Eigen3Backend::VectorXc* b, Eigen3Backend::VectorXc* c) {
-  Eigen::FullPivHouseholderQR<Eigen3Backend::MatrixXc> qr(*a);
-  (*c).noalias() = qr.solve(*b);
+void Eigen3Backend::csolveh(Eigen3Backend::MatrixXc* a, Eigen3Backend::VectorXc* b) {
+  Eigen::LLT<Eigen3Backend::MatrixXc> llt(*a);
+  llt.solveInPlace(*b);
 }
-
 Float Eigen3Backend::dot(const Eigen3Backend::VectorX& a, const Eigen3Backend::VectorX& b) { return a.dot(b); }
-
 std::complex<Float> Eigen3Backend::cdot(const Eigen3Backend::VectorXc& a, const Eigen3Backend::VectorXc& b) { return a.conjugate().dot(b); }
-
 Float Eigen3Backend::cmaxCoeff(const Eigen3Backend::VectorXc& v) { return sqrt(v.cwiseAbs2().maxCoeff()); }
 Float Eigen3Backend::maxCoeff(const Eigen3Backend::VectorX& v) { return v.maxCoeff(); }
 Eigen3Backend::MatrixXc Eigen3Backend::concat_in_row(const Eigen3Backend::MatrixXc& a, const Eigen3Backend::MatrixXc& b) {
@@ -175,7 +166,6 @@ Eigen3Backend::MatrixXc Eigen3Backend::concat_in_col(const Eigen3Backend::Matrix
 }
 
 #ifdef ENABLE_BLAS
-
 inline void blas_matmul(CBLAS_TRANSPOSE transa, CBLAS_TRANSPOSE transb, complex alpha, BLASBackend::MatrixXc& a, BLASBackend::MatrixXc& b,
                         complex beta, BLASBackend::MatrixXc* c) {
   const blasint M = static_cast<blasint>(a.rows());
@@ -194,7 +184,6 @@ inline void blas_matmul(CBLAS_TRANSPOSE transa, CBLAS_TRANSPOSE transb, BLASBack
 inline void blas_matmul(BLASBackend::MatrixXc& a, BLASBackend::MatrixXc& b, BLASBackend::MatrixXc* c) {
   blas_matmul(CblasNoTrans, CblasNoTrans, a, b, c);
 }
-
 void BLASBackend::hadamardProduct(const BLASBackend::MatrixXc& a, const BLASBackend::MatrixXc& b, BLASBackend::MatrixXc* c) {
   const auto* ap = a.data();
   const auto* bp = b.data();
@@ -251,38 +240,44 @@ void BLASBackend::matadd(Float alpha, const BLASBackend::MatrixX& a, Float beta,
 
 void BLASBackend::matmul(const TRANSPOSE transa, const TRANSPOSE transb, std::complex<Float> alpha, const BLASBackend::MatrixXc& a,
                          const BLASBackend::MatrixXc& b, std::complex<Float> beta, BLASBackend::MatrixXc* c) {
-  const blasint M = static_cast<blasint>(a.rows());
-  const blasint N = static_cast<blasint>(b.cols());
-  const blasint K = static_cast<blasint>(a.cols());
-  cblas_cgemm(CblasColMajor, static_cast<CBLAS_TRANSPOSE>(transa), static_cast<CBLAS_TRANSPOSE>(transb), M, N, K, &alpha, a.data(), M, b.data(), K,
-              &beta, c->data(), M);
+  const blasint LDA = static_cast<blasint>(a.rows());
+  const blasint LDB = static_cast<blasint>(b.rows());
+  const blasint M =
+      (transa == TRANSPOSE::NoTrans || transa == TRANSPOSE::ConjNoTrans) ? static_cast<blasint>(a.rows()) : static_cast<blasint>(a.cols());
+  const blasint N =
+      (transb == TRANSPOSE::NoTrans || transb == TRANSPOSE::ConjNoTrans) ? static_cast<blasint>(b.cols()) : static_cast<blasint>(b.rows());
+  const blasint K =
+      (transa == TRANSPOSE::NoTrans || transa == TRANSPOSE::ConjNoTrans) ? static_cast<blasint>(a.cols()) : static_cast<blasint>(a.rows());
+  cblas_cgemm(CblasColMajor, static_cast<CBLAS_TRANSPOSE>(transa), static_cast<CBLAS_TRANSPOSE>(transb), M, N, K, &alpha, a.data(), LDA, b.data(),
+              LDB, &beta, c->data(), M);
 }
 
 void BLASBackend::matvecmul(const TRANSPOSE transa, std::complex<Float> alpha, const BLASBackend::MatrixXc& a, const BLASBackend::VectorXc& b,
                             std::complex<Float> beta, BLASBackend::VectorXc* c) {
+  const blasint LDA = static_cast<blasint>(a.rows());
   const blasint M = static_cast<blasint>(a.rows());
   const blasint N = static_cast<blasint>(a.cols());
-  cblas_cgemv(CblasColMajor, static_cast<CBLAS_TRANSPOSE>(transa), M, N, &alpha, a.data(), M, b.data(), 1, &beta, c->data(), 1);
+  cblas_cgemv(CblasColMajor, static_cast<CBLAS_TRANSPOSE>(transa), M, N, &alpha, a.data(), LDA, b.data(), 1, &beta, c->data(), 1);
 }
 void BLASBackend::vecadd(Float alpha, const BLASBackend::VectorX& a, Float beta, BLASBackend::VectorX* b) {
   cblas_saxpy(static_cast<blasint>(a.size()), alpha, a.data(), 1, b->data(), 1);
 }
-void BLASBackend::solve(BLASBackend::MatrixX* a, BLASBackend::VectorX* b, BLASBackend::VectorX* c) {
+void BLASBackend::solveg(BLASBackend::MatrixX* a, BLASBackend::VectorX* b, BLASBackend::VectorX* c) {
   const blasint N = static_cast<blasint>(a->cols());
-
   const blasint LDA = static_cast<blasint>(a->rows());
   const blasint LDB = static_cast<blasint>(b->size());
   std::memcpy(c->data(), b->data(), LDB * sizeof(Float));
-  LAPACKE_sgesv(CblasColMajor, N, 1, a->data(), LDA, nullptr, c->data(), LDB);
+  std::unique_ptr<blasint[]> ipiv = std::make_unique<blasint[]>(N);
+  LAPACKE_sgesv(CblasColMajor, N, 1, a->data(), LDA, ipiv.get(), c->data(), LDB);
 }
 
-void BLASBackend::csolve(BLASBackend::MatrixXc* a, BLASBackend::VectorXc* b, BLASBackend::VectorXc* c) {
+void BLASBackend::csolveh(BLASBackend::MatrixXc* a, BLASBackend::VectorXc* b) {
   const blasint N = static_cast<blasint>(a->cols());
-
   const blasint LDA = static_cast<blasint>(a->rows());
   const blasint LDB = static_cast<blasint>(b->size());
-  std::memcpy(c->data(), b->data(), LDB * sizeof(std::complex<Float>));
-  LAPACKE_cgesv(CblasColMajor, N, 1, a->data(), LDA, nullptr, c->data(), LDB);
+  std::unique_ptr<blasint[]> ipiv = std::make_unique<blasint[]>(N);
+  auto r = LAPACKE_cposv(CblasColMajor, 'U', N, 1, a->data(), LDA, b->data(), LDB);
+  std::cout << r << std::endl;
 }
 
 Float BLASBackend::dot(const BLASBackend::VectorX& a, const BLASBackend::VectorX& b) {
@@ -304,25 +299,25 @@ Float BLASBackend::cmaxCoeff(const BLASBackend::VectorXc& v) {
 }
 BLASBackend::MatrixXc BLASBackend::concat_in_row(const BLASBackend::MatrixXc& a, const BLASBackend::MatrixXc& b) {
   BLASBackend::MatrixXc c(a.rows() + b.rows(), b.cols());
+  const auto* ap = a.data();
+  const auto* bp = b.data();
   auto* cp = c.data();
-  std::memcpy(cp, a.data(), a.size() * sizeof(std::complex<Float>));
-  cp += a.size();
-  std::memcpy(cp, b.data(), b.size() * sizeof(std::complex<Float>));
+  for (size_t i = 0; i < a.cols(); i++) {
+    std::memcpy(cp, ap, a.rows() * sizeof(std::complex<float>));
+    ap += a.rows();
+    cp += a.rows();
+    std::memcpy(cp, bp, b.rows() * sizeof(std::complex<float>));
+    bp += b.rows();
+    cp += b.rows();
+  }
   return c;
 }
 BLASBackend::MatrixXc BLASBackend::concat_in_col(const BLASBackend::MatrixXc& a, const BLASBackend::MatrixXc& b) {
   BLASBackend::MatrixXc c(a.rows(), a.cols() + b.cols());
-
-  const auto* ap = a.data();
-  const auto* bp = b.data();
   auto* cp = c.data();
-  for (size_t i = 0; i < a.rows(); i++) {
-    std::memcpy(cp, ap, a.cols() * sizeof(std::complex<Float>));
-    ap += a.cols();
-    cp += a.cols();
-    std::memcpy(cp, bp, b.cols() * sizeof(std::complex<Float>));
-    bp += b.cols();
-  }
+  std::memcpy(cp, a.data(), a.size() * sizeof(std::complex<float>));
+  cp += a.size();
+  std::memcpy(cp, b.data(), b.size() * sizeof(std::complex<float>));
   return c;
 }
 #endif
