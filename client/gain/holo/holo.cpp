@@ -166,12 +166,39 @@ Eigen3Backend::MatrixXc Eigen3Backend::concat_in_col(const Eigen3Backend::Matrix
 }
 
 #ifdef ENABLE_BLAS
+
+#ifdef USE_DOUBLE_AUTD
+#define AUTD_gesvd LAPACKE_zgesvd
+#define AUTD_heev LAPACKE_zheev
+#define AUTD_axpy cblas_daxpy
+#define AUTD_gemm cblas_zgemm
+#define AUTD_gemv cblas_zgemv
+#define AUTD_dotc cblas_zdotc
+#define AUTD_dot cblas_ddot
+#define AUTD_imaxc cblas_izamax
+#define AUTD_imax cblas_idamax
+#define AUTD_gesv LAPACKE_dgesv
+#define AUTD_posvc LAPACKE_zposv
+#else
+#define AUTD_gesvd LAPACKE_cgesvd
+#define AUTD_heev LAPACKE_cheev
+#define AUTD_axpy cblas_saxpy
+#define AUTD_gemm cblas_cgemm
+#define AUTD_gemv cblas_cgemv
+#define AUTD_dotc cblas_cdotc
+#define AUTD_dot cblas_sdot
+#define AUTD_imaxc cblas_icamax
+#define AUTD_imax cblas_isamax
+#define AUTD_gesv LAPACKE_sgesv
+#define AUTD_posvc LAPACKE_cposv
+#endif
+
 inline void blas_matmul(CBLAS_TRANSPOSE transa, CBLAS_TRANSPOSE transb, complex alpha, BLASBackend::MatrixXc& a, BLASBackend::MatrixXc& b,
                         complex beta, BLASBackend::MatrixXc* c) {
   const blasint M = static_cast<blasint>(a.rows());
   const blasint N = static_cast<blasint>(b.cols());
   const blasint K = static_cast<blasint>(a.cols());
-  cblas_cgemm(CblasColMajor, transa, transb, M, N, K, &alpha, a.data(), M, b.data(), K, &beta, c->data(), M);
+  AUTD_gemm(CblasColMajor, transa, transb, M, N, K, &alpha, a.data(), M, b.data(), K, &beta, c->data(), M);
 }
 
 inline void blas_matmul(CBLAS_TRANSPOSE transa, CBLAS_TRANSPOSE transb, BLASBackend::MatrixXc& a, BLASBackend::MatrixXc& b,
@@ -208,13 +235,13 @@ void BLASBackend::pseudoInverseSVD(BLASBackend::MatrixXc* matrix, Float alpha, B
   const blasint LDVT = static_cast<blasint>(nc);
 
   const size_t s_size = std::min(nr, nc);
-  auto s = std::make_unique<float[]>(s_size);
+  auto s = std::make_unique<Float[]>(s_size);
   BLASBackend::MatrixXc u = BLASBackend::MatrixXc(nr, nr);
   BLASBackend::MatrixXc vt = BLASBackend::MatrixXc(nc, nc);
-  auto superb = std::make_unique<float[]>(s_size - 1);
+  auto superb = std::make_unique<Float[]>(s_size - 1);
 
-  LAPACKE_cgesvd(LAPACK_COL_MAJOR, 'A', 'A', static_cast<blasint>(nr), static_cast<blasint>(nc), matrix->data(), LDA, s.get(), u.data(), LDU,
-                 vt.data(), LDVT, superb.get());
+  AUTD_gesvd(LAPACK_COL_MAJOR, 'A', 'A', static_cast<blasint>(nr), static_cast<blasint>(nc), matrix->data(), LDA, s.get(), u.data(), LDU, vt.data(),
+             LDVT, superb.get());
 
   BLASBackend::MatrixXc sinv = BLASBackend::MatrixXc::Zero(nc, nr);
   for (size_t i = 0; i < s_size; i++) {
@@ -228,14 +255,14 @@ void BLASBackend::pseudoInverseSVD(BLASBackend::MatrixXc* matrix, Float alpha, B
 
 BLASBackend::VectorXc BLASBackend::maxEigenVector(BLASBackend::MatrixXc* matrix) {
   const size_t size = matrix->cols();
-  auto eigenvalues = std::make_unique<float[]>(size);
-  LAPACKE_cheev(CblasColMajor, 'V', 'U', static_cast<blasint>(size), matrix->data(), static_cast<blasint>(size), eigenvalues.get());
+  auto eigenvalues = std::make_unique<Float[]>(size);
+  AUTD_heev(CblasColMajor, 'V', 'U', static_cast<blasint>(size), matrix->data(), static_cast<blasint>(size), eigenvalues.get());
 
   return matrix->col(size - 1);
 }
 
 void BLASBackend::matadd(Float alpha, const BLASBackend::MatrixX& a, Float beta, BLASBackend::MatrixX* b) {
-  cblas_saxpy(static_cast<blasint>(a.size()), alpha, a.data(), 1, b->data(), 1);
+  AUTD_axpy(static_cast<blasint>(a.size()), alpha, a.data(), 1, b->data(), 1);
 }
 
 void BLASBackend::matmul(const TRANSPOSE transa, const TRANSPOSE transb, std::complex<Float> alpha, const BLASBackend::MatrixXc& a,
@@ -248,8 +275,8 @@ void BLASBackend::matmul(const TRANSPOSE transa, const TRANSPOSE transb, std::co
       (transb == TRANSPOSE::NoTrans || transb == TRANSPOSE::ConjNoTrans) ? static_cast<blasint>(b.cols()) : static_cast<blasint>(b.rows());
   const blasint K =
       (transa == TRANSPOSE::NoTrans || transa == TRANSPOSE::ConjNoTrans) ? static_cast<blasint>(a.cols()) : static_cast<blasint>(a.rows());
-  cblas_cgemm(CblasColMajor, static_cast<CBLAS_TRANSPOSE>(transa), static_cast<CBLAS_TRANSPOSE>(transb), M, N, K, &alpha, a.data(), LDA, b.data(),
-              LDB, &beta, c->data(), M);
+  AUTD_gemm(CblasColMajor, static_cast<CBLAS_TRANSPOSE>(transa), static_cast<CBLAS_TRANSPOSE>(transb), M, N, K, &alpha, a.data(), LDA, b.data(), LDB,
+            &beta, c->data(), M);
 }
 
 void BLASBackend::matvecmul(const TRANSPOSE transa, std::complex<Float> alpha, const BLASBackend::MatrixXc& a, const BLASBackend::VectorXc& b,
@@ -257,10 +284,10 @@ void BLASBackend::matvecmul(const TRANSPOSE transa, std::complex<Float> alpha, c
   const blasint LDA = static_cast<blasint>(a.rows());
   const blasint M = static_cast<blasint>(a.rows());
   const blasint N = static_cast<blasint>(a.cols());
-  cblas_cgemv(CblasColMajor, static_cast<CBLAS_TRANSPOSE>(transa), M, N, &alpha, a.data(), LDA, b.data(), 1, &beta, c->data(), 1);
+  AUTD_gemv(CblasColMajor, static_cast<CBLAS_TRANSPOSE>(transa), M, N, &alpha, a.data(), LDA, b.data(), 1, &beta, c->data(), 1);
 }
 void BLASBackend::vecadd(Float alpha, const BLASBackend::VectorX& a, Float beta, BLASBackend::VectorX* b) {
-  cblas_saxpy(static_cast<blasint>(a.size()), alpha, a.data(), 1, b->data(), 1);
+  AUTD_axpy(static_cast<blasint>(a.size()), alpha, a.data(), 1, b->data(), 1);
 }
 void BLASBackend::solveg(BLASBackend::MatrixX* a, BLASBackend::VectorX* b, BLASBackend::VectorX* c) {
   const blasint N = static_cast<blasint>(a->cols());
@@ -268,7 +295,7 @@ void BLASBackend::solveg(BLASBackend::MatrixX* a, BLASBackend::VectorX* b, BLASB
   const blasint LDB = static_cast<blasint>(b->size());
   std::memcpy(c->data(), b->data(), LDB * sizeof(Float));
   std::unique_ptr<blasint[]> ipiv = std::make_unique<blasint[]>(N);
-  LAPACKE_sgesv(CblasColMajor, N, 1, a->data(), LDA, ipiv.get(), c->data(), LDB);
+  AUTD_gesv(CblasColMajor, N, 1, a->data(), LDA, ipiv.get(), c->data(), LDB);
 }
 
 void BLASBackend::csolveh(BLASBackend::MatrixXc* a, BLASBackend::VectorXc* b) {
@@ -276,25 +303,25 @@ void BLASBackend::csolveh(BLASBackend::MatrixXc* a, BLASBackend::VectorXc* b) {
   const blasint LDA = static_cast<blasint>(a->rows());
   const blasint LDB = static_cast<blasint>(b->size());
   std::unique_ptr<blasint[]> ipiv = std::make_unique<blasint[]>(N);
-  auto r = LAPACKE_cposv(CblasColMajor, 'U', N, 1, a->data(), LDA, b->data(), LDB);
-  std::cout << r << std::endl;
+  AUTD_posvc(CblasColMajor, 'U', N, 1, a->data(), LDA, b->data(), LDB);
 }
 
 Float BLASBackend::dot(const BLASBackend::VectorX& a, const BLASBackend::VectorX& b) {
-  return cblas_sdot(static_cast<blasint>(a.size()), a.data(), 1, b.data(), 1);
+  double d = AUTD_dot(static_cast<blasint>(a.size()), a.data(), 1, b.data(), 1);
+  return d;
 }
 
 std::complex<Float> BLASBackend::cdot(const BLASBackend::VectorXc& a, const BLASBackend::VectorXc& b) {
-  openblas_complex_float d = cblas_cdotc(static_cast<blasint>(a.size()), a.data(), 1, b.data(), 1);
-  return std::complex<Float>(openblas_complex_float_real(d), openblas_complex_float_imag(d));
+  auto d = AUTD_dotc(static_cast<blasint>(a.size()), a.data(), 1, b.data(), 1);
+  return std::complex<Float>(d.real, d.imag);
 }
 
 Float BLASBackend::maxCoeff(const BLASBackend::VectorX& v) {
-  auto idx = cblas_icamax(static_cast<blasint>(v.size()), v.data(), 1);
+  auto idx = AUTD_imax(static_cast<blasint>(v.size()), v.data(), 1);
   return v(idx);
 }
 Float BLASBackend::cmaxCoeff(const BLASBackend::VectorXc& v) {
-  auto idx = cblas_icamax(static_cast<blasint>(v.size()), v.data(), 1);
+  auto idx = AUTD_imaxc(static_cast<blasint>(v.size()), v.data(), 1);
   return abs(v(idx));
 }
 BLASBackend::MatrixXc BLASBackend::concat_in_row(const BLASBackend::MatrixXc& a, const BLASBackend::MatrixXc& b) {
