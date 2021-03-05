@@ -187,6 +187,8 @@ class Backend {
   virtual Float cmaxCoeff(const VectorXc& v) = 0;
   virtual MatrixXc concat_in_row(const MatrixXc& a, const MatrixXc& b) = 0;
   virtual MatrixXc concat_in_col(const MatrixXc& a, const MatrixXc& b) = 0;
+  virtual void matcpy(const MatrixX& a, MatrixX* b) = 0;
+  virtual void veccpy(const VectorX& a, VectorX* b) = 0;
 
   virtual ~Backend() {}
 };
@@ -215,6 +217,8 @@ class Eigen3Backend final : public Backend<Eigen::Matrix<std::complex<Float>, -1
   Float cmaxCoeff(const VectorXc& v) override;
   MatrixXc concat_in_row(const MatrixXc& a, const MatrixXc& b) override;
   MatrixXc concat_in_col(const MatrixXc& a, const MatrixXc& b) override;
+  void matcpy(const MatrixX& a, MatrixX* b) override;
+  void veccpy(const VectorX& a, VectorX* b) override;
 };
 
 #ifdef ENABLE_BLAS
@@ -242,6 +246,8 @@ class BLASBackend final
   Float cmaxCoeff(const VectorXc& v) override;
   MatrixXc concat_in_row(const MatrixXc& a, const MatrixXc& b) override;
   MatrixXc concat_in_col(const MatrixXc& a, const MatrixXc& b) override;
+  void matcpy(const MatrixX& a, MatrixX* b) override;
+  void veccpy(const VectorX& a, VectorX* b) override;
 };
 #endif
 
@@ -624,7 +630,6 @@ class HoloGain final : public Gain {
     B::MatrixXc bhb(n_param, n_param);
     makeBhB<B::MatrixXc>(&bhb);
 
-    // B::VectorX x = B::VectorX::Zero(n_param);
     B::VectorX x(n_param);
     std::random_device rnd;
     std::mt19937 mt(rnd());
@@ -671,28 +676,27 @@ class HoloGain final : public Gain {
     for (auto k = 0; k < k_max; k++) {
       if (is_found) break;
 
-      _backend.matadd(Float{1.0}, a, Float{0.0}, &tmpm);
+      _backend.matcpy(a, &tmpm);
       _backend.matadd(mu, identity, Float{1.0}, &tmpm);
       _backend.solveg(&tmpm, &g, &h_lm);
-
       if (h_lm.norm() <= eps_2 * (x.norm() + eps_2)) {
         is_found = true;
       } else {
-        _backend.vecadd(Float{1.0}, x, Float{0.0}, &x_new);
+        _backend.veccpy(x, &x_new);
         _backend.vecadd(Float{-1.0}, h_lm, Float{1.0}, &x_new);
         for (size_t i = 0; i < n_param; i++) t(i) = exp(std::complex<Float>(0, x_new(i)));
 
         matvecmul(bhb, t, &tmpc);
         Float fx_new = _backend.cdot(t, tmpc).real();
 
-        _backend.vecadd(mu, h_lm, Float{0.0}, &tmp);
-        _backend.vecadd(Float{1.0}, g, 1.0, &tmp);
+        _backend.veccpy(g, &tmp);
+        _backend.vecadd(mu, h_lm, Float{1.0}, &tmp);
         Float l0_lhlm = _backend.dot(h_lm, tmp) / 2;
 
         Float rho = (fx - fx_new) / l0_lhlm;
         fx = fx_new;
         if (rho > 0) {
-          _backend.vecadd(Float{1.0}, x_new, Float{0.0}, &x);
+          _backend.veccpy(x_new, &x);
           calcTTh<B::MatrixXc, B::VectorX>(x, &tth);
           _backend.hadamardProduct(bhb, tth, &bhb_tth);
           _backend.real(bhb_tth, &a);

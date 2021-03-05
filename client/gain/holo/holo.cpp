@@ -164,6 +164,8 @@ Eigen3Backend::MatrixXc Eigen3Backend::concat_in_col(const Eigen3Backend::Matrix
   c << a, b;
   return c;
 }
+void Eigen3Backend::matcpy(const Eigen3Backend::MatrixX& a, Eigen3Backend::MatrixX* b) { *b = a; }
+void Eigen3Backend::veccpy(const Eigen3Backend::VectorX& a, Eigen3Backend::VectorX* b) { *b = a; }
 
 #ifdef ENABLE_BLAS
 
@@ -173,24 +175,26 @@ Eigen3Backend::MatrixXc Eigen3Backend::concat_in_col(const Eigen3Backend::Matrix
 #define AUTD_axpy cblas_daxpy
 #define AUTD_gemm cblas_zgemm
 #define AUTD_gemv cblas_zgemv
-#define AUTD_dotc cblas_zdotc
+#define AUTD_dotc cblas_zdotu
 #define AUTD_dot cblas_ddot
 #define AUTD_imaxc cblas_izamax
 #define AUTD_imax cblas_idamax
 #define AUTD_gesv LAPACKE_dgesv
 #define AUTD_posvc LAPACKE_zposv
+#define AUTD_cpy LAPACKE_dlacpy
 #else
 #define AUTD_gesvd LAPACKE_cgesvd
 #define AUTD_heev LAPACKE_cheev
 #define AUTD_axpy cblas_saxpy
 #define AUTD_gemm cblas_cgemm
 #define AUTD_gemv cblas_cgemv
-#define AUTD_dotc cblas_cdotc
+#define AUTD_dotc cblas_cdotu
 #define AUTD_dot cblas_sdot
 #define AUTD_imaxc cblas_icamax
 #define AUTD_imax cblas_isamax
 #define AUTD_gesv LAPACKE_sgesv
 #define AUTD_posvc LAPACKE_cposv
+#define AUTD_cpy LAPACKE_slacpy
 #endif
 
 inline void blas_matmul(CBLAS_TRANSPOSE transa, CBLAS_TRANSPOSE transb, complex alpha, BLASBackend::MatrixXc& a, BLASBackend::MatrixXc& b,
@@ -316,8 +320,11 @@ std::complex<Float> BLASBackend::cdot(const BLASBackend::VectorXc& a, const BLAS
 }
 
 Float BLASBackend::maxCoeff(const BLASBackend::VectorX& v) {
-  auto idx = AUTD_imax(static_cast<blasint>(v.size()), v.data(), 1);
-  return v(idx);
+  Float maxv = v(0);
+  for (size_t i = 1; i < v.size(); i++) {
+    maxv = std::max(maxv, v(i));
+  }
+  return maxv;
 }
 Float BLASBackend::cmaxCoeff(const BLASBackend::VectorXc& v) {
   auto idx = AUTD_imaxc(static_cast<blasint>(v.size()), v.data(), 1);
@@ -345,6 +352,13 @@ BLASBackend::MatrixXc BLASBackend::concat_in_col(const BLASBackend::MatrixXc& a,
   cp += a.size();
   std::memcpy(cp, b.data(), b.size() * sizeof(std::complex<float>));
   return c;
+}
+void BLASBackend::matcpy(const BLASBackend::MatrixX& a, BLASBackend::MatrixX* b) {
+  AUTD_cpy(LAPACK_COL_MAJOR, 'A', static_cast<blasint>(a.rows()), static_cast<blasint>(a.cols()), a.data(), static_cast<blasint>(a.rows()), b->data(),
+           static_cast<blasint>(b->rows()));
+}
+void BLASBackend::veccpy(const BLASBackend::VectorX& a, BLASBackend::VectorX* b) {
+  AUTD_cpy(LAPACK_COL_MAJOR, 'A', static_cast<blasint>(a.size()), 1, a.data(), static_cast<blasint>(a.size()), b->data(), 1);
 }
 #endif
 
