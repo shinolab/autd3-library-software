@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 27/02/2021
+// Last Modified: 06/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -142,7 +142,7 @@ class PlaneWaveGain final : public Gain {
  private:
   Vector3 _direction = Vector3::UnitZ();
   uint8_t _duty = 0xFF;
-};  // namespace autd::gainclassPlaneWaveGainfinal:publicGain
+};
 
 /**
  * @brief Gain to produce single focal point

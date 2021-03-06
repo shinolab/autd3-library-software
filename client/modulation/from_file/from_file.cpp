@@ -3,7 +3,7 @@
 // Created Date: 20/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/02/2021
+// Last Modified: 06/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -40,39 +40,38 @@ auto RawPCMModulation::Build(const Configuration config) -> void {
   const auto mod_sf = static_cast<int32_t>(config.mod_sampling_freq());
   if (this->_sampling_freq < std::numeric_limits<Float>::epsilon()) this->_sampling_freq = static_cast<Float>(mod_sf);
 
-  const auto sampling_freq = static_cast<double>(this->_sampling_freq);
   // up sampling
-  std::vector<double> sample_buf;
-  const auto freq_ratio = mod_sf / sampling_freq;
+  std::vector<int32_t> sample_buf;
+  const auto freq_ratio = static_cast<Float>(mod_sf) / _sampling_freq;
   sample_buf.resize(this->_buf.size() * static_cast<size_t>(freq_ratio));
   for (size_t i = 0; i < sample_buf.size(); i++) {
-    const auto v = static_cast<double>(i) / freq_ratio;
-    const auto tmp = fmod(v, 1.0) < 1.0 / freq_ratio ? this->_buf.at(static_cast<int>(v)) : 0;
-    sample_buf.at(i) = static_cast<double>(tmp);
+    const auto v = static_cast<Float>(i) / freq_ratio;
+    const auto tmp = std::fmod(v, Float{1}) < 1 / freq_ratio ? this->_buf.at(static_cast<int>(v)) : 0;
+    sample_buf.at(i) = tmp;
   }
 
   // LPF
   const auto num_tap = 31;
-  const auto cutoff = sampling_freq / 2.0 / mod_sf;
-  std::vector<double> lpf(num_tap);
+  const auto cutoff = _sampling_freq / 2 / static_cast<Float>(mod_sf);
+  std::vector<Float> lpf(num_tap);
   for (auto i = 0; i < num_tap; i++) {
     const auto t = i - num_tap / 2;
-    lpf.at(i) = Sinc(t * cutoff * 2);
+    lpf.at(i) = Sinc(static_cast<Float>(t) * cutoff * 2);
   }
 
-  auto max_v = std::numeric_limits<double>::min();
-  auto min_v = std::numeric_limits<double>::max();
-  std::vector<double> lpf_buf;
+  auto max_v = std::numeric_limits<Float>::min();
+  auto min_v = std::numeric_limits<Float>::max();
+  std::vector<Float> lpf_buf;
   lpf_buf.resize(sample_buf.size(), 0);
   for (size_t i = 0; i < lpf_buf.size(); i++) {
     for (auto j = 0; j < num_tap; j++) {
-      lpf_buf.at(i) += sample_buf.at((i - j + sample_buf.size()) % sample_buf.size()) * lpf.at(j);
+      lpf_buf.at(i) += static_cast<Float>(sample_buf.at((i - j + sample_buf.size()) % sample_buf.size())) * lpf.at(j);
     }
-    max_v = std::max<double>(lpf_buf.at(i), max_v);
-    min_v = std::min<double>(lpf_buf.at(i), min_v);
+    max_v = std::max<Float>(lpf_buf.at(i), max_v);
+    min_v = std::min<Float>(lpf_buf.at(i), min_v);
   }
 
-  if (max_v - min_v < std::numeric_limits<double>::epsilon()) max_v = min_v + 1;
+  if (max_v - min_v < std::numeric_limits<Float>::epsilon()) max_v = min_v + 1;
   this->buffer.resize(lpf_buf.size(), 0);
   for (size_t i = 0; i < lpf_buf.size(); i++) {
     this->buffer.at(i) = static_cast<uint8_t>(round(255 * ((lpf_buf.at(i) - min_v) / (max_v - min_v))));

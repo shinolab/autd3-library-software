@@ -26,12 +26,12 @@ using autd::TRANS_SIZE_MM;
 namespace autd {
 struct Device {
   static Device Create(const Vector3& position, const Quaternion& quaternion) {
-    const Matrix4x4 transform_matrix = Translation(position, quaternion);
+    const auto transform_matrix = Translation(position, quaternion);
     const auto x_direction = quaternion * Vector3(1, 0, 0);
     const auto y_direction = quaternion * Vector3(0, 1, 0);
     const auto z_direction = quaternion * Vector3(0, 0, 1);
 
-    std::unique_ptr<Vector3[]> global_trans_positions = std::make_unique<Vector3[]>(NUM_TRANS_IN_UNIT);
+    auto global_trans_positions = std::make_unique<Vector3[]>(NUM_TRANS_IN_UNIT);
 
     auto index = 0;
     for (size_t y = 0; y < NUM_TRANS_Y; y++)
@@ -60,7 +60,7 @@ struct Device {
 
 class AUTDGeometry final : public Geometry {
  public:
-  AUTDGeometry() : _wavelength(8.5), _atten(0) {}
+  AUTDGeometry() : _wavelength(8.5), _attenuation(0) {}
   ~AUTDGeometry() override = default;
   AUTDGeometry(const AUTDGeometry& v) noexcept = default;
   AUTDGeometry& operator=(const AUTDGeometry& obj) = default;
@@ -92,7 +92,7 @@ class AUTDGeometry final : public Geometry {
   std::vector<Device> _devices;
   std::map<size_t, size_t> _group_map;
   Float _wavelength;
-  Float _atten;
+  Float _attenuation;
 };
 
 GeometryPtr Geometry::Create() { return std::make_shared<AUTDGeometry>(); }
@@ -113,8 +113,8 @@ size_t AUTDGeometry::AddDeviceQuaternion(const Vector3 position, const Quaternio
 
 Float AUTDGeometry::wavelength() noexcept { return this->_wavelength; }
 void AUTDGeometry::set_wavelength(const Float wavelength) noexcept { this->_wavelength = wavelength; }
-Float AUTDGeometry::attenuation_coeff() noexcept { return this->_atten; }
-void AUTDGeometry::set_attenuation_coeff(const Float attenuation) noexcept { this->_atten = attenuation; }
+Float AUTDGeometry::attenuation_coeff() noexcept { return this->_attenuation; }
+void AUTDGeometry::set_attenuation_coeff(const Float attenuation) noexcept { this->_attenuation = attenuation; }
 
 size_t AUTDGeometry::num_devices() noexcept { return this->_devices.size(); }
 
