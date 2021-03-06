@@ -3,7 +3,7 @@
 // Created Date: 08/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 27/02/2021
+// Last Modified: 06/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -60,7 +60,7 @@ struct Device {
 
 class AUTDGeometry final : public Geometry {
  public:
-  AUTDGeometry() : _wavelength(8.5) {}
+  AUTDGeometry() : _wavelength(8.5), _atten(0) {}
   ~AUTDGeometry() override = default;
   AUTDGeometry(const AUTDGeometry& v) noexcept = default;
   AUTDGeometry& operator=(const AUTDGeometry& obj) = default;
@@ -72,6 +72,8 @@ class AUTDGeometry final : public Geometry {
 
   Float wavelength() noexcept override;
   void set_wavelength(Float wavelength) noexcept override;
+  Float attenuation_coeff() noexcept override;
+  void set_attenuation_coeff(Float attenuation_coeff) noexcept override;
 
   size_t num_devices() noexcept override;
   size_t num_transducers() noexcept override;
@@ -90,6 +92,7 @@ class AUTDGeometry final : public Geometry {
   std::vector<Device> _devices;
   std::map<size_t, size_t> _group_map;
   Float _wavelength;
+  Float _atten;
 };
 
 GeometryPtr Geometry::Create() { return std::make_shared<AUTDGeometry>(); }
@@ -110,6 +113,8 @@ size_t AUTDGeometry::AddDeviceQuaternion(const Vector3 position, const Quaternio
 
 Float AUTDGeometry::wavelength() noexcept { return this->_wavelength; }
 void AUTDGeometry::set_wavelength(const Float wavelength) noexcept { this->_wavelength = wavelength; }
+Float AUTDGeometry::attenuation_coeff() noexcept { return this->_atten; }
+void AUTDGeometry::set_attenuation_coeff(const Float attenuation) noexcept { this->_atten = attenuation; }
 
 size_t AUTDGeometry::num_devices() noexcept { return this->_devices.size(); }
 
