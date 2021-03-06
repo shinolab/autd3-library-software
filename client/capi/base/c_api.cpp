@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/02/2021
+// Last Modified: 06/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -107,22 +107,6 @@ autd::Float AUTDWavelength(VOID_PTR const handle) {
 void AUTDSetWavelength(VOID_PTR const handle, const autd::Float wavelength) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   return cnt->ptr->geometry()->set_wavelength(wavelength);
-}
-void AUTDSetDelay(VOID_PTR handle, const uint16_t* delay, const int32_t data_length) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-
-  const int32_t dev_num = data_length / autd::NUM_TRANS_IN_UNIT;
-  std::vector<autd::AUTDDataArray> delay_(dev_num);
-  auto dev_idx = 0;
-  auto tran_idx = 0;
-  for (auto i = 0; i < data_length; i++) {
-    delay_[dev_idx][tran_idx++] = delay[i];
-    if (tran_idx == autd::NUM_TRANS_IN_UNIT) {
-      dev_idx++;
-      tran_idx = 0;
-    }
-  }
-  cnt->ptr->SetDelay(delay_);
 }
 int32_t AUTDNumDevices(VOID_PTR const handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);

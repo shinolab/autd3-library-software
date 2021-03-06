@@ -3,7 +3,7 @@
 // Created Date: 22/12/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 26/12/2020
+// Last Modified: 06/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -206,25 +206,6 @@ bool AUTDLogic::Clear() {
   header->command = CMD_CLEAR;
 
   return this->SendBlocking(size, move(body), 200);
-}
-
-void AUTDLogic::SetDelay(const std::vector<AUTDDataArray> &delay) {
-  const auto num_dev = this->_geometry->num_devices();
-  const auto size = sizeof(RxGlobalHeader) + num_dev * 2 * NUM_TRANS_IN_UNIT;
-  auto body = std::make_unique<uint8_t[]>(size);
-
-  auto *header = reinterpret_cast<RxGlobalHeader *>(&body[0]);
-  header->msg_id = CMD_SET_DELAY;
-  header->command = CMD_SET_DELAY;
-
-  auto *cursor = &body[0] + sizeof(RxGlobalHeader);
-  const auto byte_size = NUM_TRANS_IN_UNIT * sizeof(uint16_t);
-  for (size_t i = 0; i < std::min(num_dev, delay.size()); i++) {
-    std::memcpy(cursor, &delay[i].at(0), byte_size);
-    cursor += byte_size;
-  }
-
-  this->SendBlocking(size, move(body), 200);
 }
 
 void AUTDLogic::Close() {
