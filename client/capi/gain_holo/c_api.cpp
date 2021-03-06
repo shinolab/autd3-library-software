@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 27/02/2021
+// Last Modified: 06/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -22,7 +22,7 @@ void AUTDHoloGain(VOID_PTR* gain, const autd::Float* points, const autd::Float* 
     amps_.emplace_back(amps[i]);
   }
 
-  const auto method_ = static_cast<autd::gain::OPT_METHOD>(method);
-  auto* g = GainCreate(autd::gain::HoloGain<autd::gain::Eigen3Backend>::Create(holo, amps_, method_, params));
+  const auto method_ = static_cast<autd::gain::holo::OPT_METHOD>(method);
+  auto* g = GainCreate(autd::gain::holo::HoloGain<autd::gain::holo::Eigen3Backend>::Create(holo, amps_, method_, params));
   *gain = g;
 }
