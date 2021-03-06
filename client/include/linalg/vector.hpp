@@ -3,7 +3,7 @@
 // Created Date: 27/02/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/03/2021
+// Last Modified: 06/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -42,7 +42,8 @@ struct VectorX {
 
   static VectorX Zero(size_t size) {
     VectorX v(size);
-    std::memset(v._data.get(), 0, v._size * sizeof(T));
+    auto* p = v.data();
+    for (size_t i = 0; i < v.size(); i++) *p++ = T{0};
     return v;
   }
   static VectorX Ones(size_t size) {
@@ -106,19 +107,19 @@ inline bool operator!=(const VectorX<T>& lhs, const VectorX<T>& rhs) {
 template <typename T>
 class Vector3 : public VectorX<T> {
  public:
-  Vector3() : VectorX(3) {}
-  Vector3(T x, T y, T z) : VectorX(3) {
-    _data[0] = x;
-    _data[1] = y;
-    _data[2] = z;
+  Vector3() : VectorX<T>(3) {}
+  Vector3(T x, T y, T z) : VectorX<T>(3) {
+    this->_data[0] = x;
+    this->_data[1] = y;
+    this->_data[2] = z;
   }
 
-  T& x() noexcept { return at(0); }
-  T& y() noexcept { return at(1); }
-  T& z() noexcept { return at(2); }
-  const T& x() const noexcept { return at(0); }
-  const T& y() const noexcept { return at(1); }
-  const T& z() const noexcept { return at(2); }
+  T& x() noexcept { return this->at(0); }
+  T& y() noexcept { return this->at(1); }
+  T& z() noexcept { return this->at(2); }
+  const T& x() const noexcept { return this->at(0); }
+  const T& y() const noexcept { return this->at(1); }
+  const T& z() const noexcept { return this->at(2); }
 
   static Vector3 UnitX() { return Vector3(1, 0, 0); }
   static Vector3 UnitY() { return Vector3(0, 1, 0); }
@@ -160,22 +161,22 @@ class Vector3 : public VectorX<T> {
 template <typename T>
 class Vector4 : public VectorX<T> {
  public:
-  Vector4() : VectorX(4) {}
-  Vector4(T x, T y, T z, T w) : VectorX(4) {
-    _data[0] = x;
-    _data[1] = y;
-    _data[2] = z;
-    _data[3] = w;
+  Vector4() : VectorX<T>(4) {}
+  Vector4(T x, T y, T z, T w) : VectorX<T>(4) {
+    this->_data[0] = x;
+    this->_data[1] = y;
+    this->_data[2] = z;
+    this->_data[3] = w;
   }
 
-  T& x() noexcept { return at(0); }
-  T& y() noexcept { return at(1); }
-  T& z() noexcept { return at(2); }
-  T& w() noexcept { return at(3); }
-  const T& x() const noexcept { return at(0); }
-  const T& y() const noexcept { return at(1); }
-  const T& z() const noexcept { return at(2); }
-  const T& w() const noexcept { return at(3); }
+  T& x() noexcept { return this->at(0); }
+  T& y() noexcept { return this->at(1); }
+  T& z() noexcept { return this->at(2); }
+  T& w() noexcept { return this->at(3); }
+  const T& x() const noexcept { return this->at(0); }
+  const T& y() const noexcept { return this->at(1); }
+  const T& z() const noexcept { return this->at(2); }
+  const T& w() const noexcept { return this->at(3); }
 
   static Vector4 UnitX() { return Vector4(1, 0, 0, 0); }
   static Vector4 UnitY() { return Vector4(0, 1, 0, 0); }

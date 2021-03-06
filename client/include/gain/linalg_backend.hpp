@@ -11,7 +11,10 @@
 
 #pragma once
 
-#include "gain/holo.hpp"
+#include <complex>
+
+#include "autd_types.hpp"
+#include "linalg.hpp"
 
 #ifdef ENABLE_BLAS
 #include "linalg/matrix.hpp"
