@@ -7,3 +7,6 @@
 [submodule "client/deps/SOEM/SOEM"]
 	path = client/deps/SOEM/SOEM
 	url = https://github.com/OpenEtherCATsociety/SOEM.git
+[submodule "client/deps/cpplint"]
+	path = client/deps/cpplint
+	url = https://github.com/cpplint/cpplint.git
