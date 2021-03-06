@@ -55,8 +55,13 @@ BLAS can be used in building HoloGain (multiple foci), however, you have to inst
 ```
 mkdir build
 cd build
+cmake .. -DENABLE_BLAS=ON
+```
+or
+```
 cmake .. -DENABLE_BLAS=ON -DBLAS_LIB_DIR=<your BLAS library path> -DBLAS_INCLUDE_DIR=<your BLAS include path>
 ```
+
 * If you are using Windows, you may need to set `BLAS_DEPEND_LIB_DIR` to link some additional libraries.
     * For example, if you followed the below install example, you need link `flangmain.lib` by the following command;
         ```
