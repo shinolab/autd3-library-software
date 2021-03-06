@@ -110,6 +110,7 @@ if(ENABLE_EIGEN)
     execute_process(COMMAND git -C ${PROJECT_SOURCE_DIR} submodule update --init --recursive -- ${PROJECT_SOURCE_DIR}/deps/Eigen3)
   endif()
   add_definitions(-DENABLE_EIGEN)
+  add_definitions(-DEIGEN_MPL2_ONLY)
   set(EIGEN_PATH ${PROJECT_SOURCE_DIR}/deps/Eigen3)
 endif()
 
