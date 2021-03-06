@@ -52,7 +52,7 @@ void SineModulation::Build(const Configuration config) {
 
   for (size_t i = 0; i < n; i++) {
     auto tamp = std::fmod(static_cast<Float>(2 * rep * i) / static_cast<Float>(n), Float{2});
-    tamp = tamp > Float{1} ? Float{2} - tamp : tamp;
+    tamp = tamp > 1 ? 2 - tamp : tamp;
     tamp = std::clamp(this->_offset + (tamp - Float{0.5}) * this->_amp, Float{0}, Float{1});
     this->buffer.at(i) = static_cast<uint8_t>(tamp * 255);
   }
