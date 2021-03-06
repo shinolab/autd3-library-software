@@ -85,7 +85,7 @@ if(ENABLE_LINT)
   file(GLOB_RECURSE lint_files lib/*.cpp lib/*.hpp include/*.hpp capi/*.cpp capi/*.hpp capi/*.h link/*.cpp link/*.hpp)
   ADD_CUSTOM_TARGET(cpplint
     python
-    ${PROJECT_SOURCE_DIR}/deps/cpplint.py
+    ${PROJECT_SOURCE_DIR}/deps/cpplint/cpplint.py
     --filter=-runtime/references,-build/c++11,-whitespace/comments
     --linelength=150
     ${lint_files}
