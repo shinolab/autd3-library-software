@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/02/2021
+// Last Modified: 06/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -46,7 +46,6 @@ EXPORT_AUTD bool AUTDIsOpen(VOID_PTR handle);
 EXPORT_AUTD bool AUTDIsSilentMode(VOID_PTR handle);
 EXPORT_AUTD autd::Float AUTDWavelength(VOID_PTR handle);
 EXPORT_AUTD void AUTDSetWavelength(VOID_PTR handle, autd::Float wavelength);
-EXPORT_AUTD void AUTDSetDelay(VOID_PTR handle, const uint16_t* delay, int32_t data_length);
 EXPORT_AUTD int32_t AUTDNumDevices(VOID_PTR handle);
 EXPORT_AUTD int32_t AUTDNumTransducers(VOID_PTR handle);
 EXPORT_AUTD uint64_t AUTDRemainingInBuffer(VOID_PTR handle);
