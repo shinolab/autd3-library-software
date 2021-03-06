@@ -11,13 +11,8 @@
 
 #pragma once
 
-#define _USE_MATH_DEFINES
-#include <math.h>
-
 #include <algorithm>
-#include <cmath>
 #include <cstring>
-#include <iostream>
 #include <memory>
 
 #include "helper.hpp"
@@ -29,8 +24,12 @@ namespace autd::_utils {
 template <typename T>
 struct MatrixX {
  public:
-  MatrixX(size_t row, size_t col) : _num_row(row), _num_col(col) { _data = std::make_unique<T[]>(row * col); }
-  MatrixX(const MatrixX& obj) : MatrixX(obj._num_row, obj._num_col) { std::memcpy(_data.get(), obj.data(), size() * sizeof(T)); }
+  MatrixX(const size_t row, const size_t col) : _num_row(row), _num_col(col) { _data = std::make_unique<T[]>(row * col); }
+  MatrixX(const MatrixX& obj) {
+    _num_row = obj._num_row;
+    _num_col = obj._num_col;
+    std::memcpy(_data.get(), obj.data(), size() * sizeof(T));
+  }
   MatrixX& operator=(const MatrixX& obj) {
     std::memcpy(_data.get(), obj.data(), size() * sizeof(T));
     return *this;
@@ -43,26 +42,26 @@ struct MatrixX {
     return v;
   }
 
-  static MatrixX Identity(size_t row, size_t col) {
+  static MatrixX Identity(const size_t row, const size_t col) {
     MatrixX v = MatrixX::Zero(row, col);
     for (size_t i = 0; i < std::min(row, col); i++) v(i, i) = T{1};
     return v;
   }
 
-  T& at(size_t row, size_t col) { return _data[col * _num_row + row]; }
-  const T& at(size_t row, size_t col) const { return _data[col * _num_row + row]; }
+  T& at(const size_t row, const size_t col) { return _data[col * _num_row + row]; }
+  const T& at(const size_t row, const size_t col) const { return _data[col * _num_row + row]; }
 
-  T& operator()(size_t row, size_t col) { return _data[col * _num_row + row]; }
-  const T& operator()(size_t row, size_t col) const { return _data[col * _num_row + row]; }
+  T& operator()(const size_t row, const size_t col) { return _data[col * _num_row + row]; }
+  const T& operator()(const size_t row, const size_t col) const { return _data[col * _num_row + row]; }
 
   T* data() { return _data.get(); }
   const T* data() const { return _data.get(); }
 
-  const size_t rows() const noexcept { return _num_row; }
-  const size_t cols() const noexcept { return _num_col; }
-  const size_t size() const noexcept { return _num_row * _num_col; }
+  size_t rows() const noexcept { return _num_row; }
+  size_t cols() const noexcept { return _num_col; }
+  size_t size() const noexcept { return _num_row * _num_col; }
 
-  VectorX<T> col(size_t idx) const noexcept {
+  VectorX<T> col(const size_t idx) const noexcept {
     VectorX<T> v(_num_row);
     for (size_t i = 0; i < _num_row; i++) {
       v(i) = at(i, idx);
@@ -70,18 +69,18 @@ struct MatrixX {
     return v;
   }
 
-  VectorX<T> row(size_t idx) const noexcept {
+  VectorX<T> row(const size_t idx) const noexcept {
     VectorX<T> v(_num_col);
     std::memcpy(v.data(), _data[idx * _num_col], _num_col * sizeof(T));
     return v;
   }
 
   template <typename Ts>
-  friend inline std::ostream& operator<<(std::ostream&, const MatrixX<Ts>&);
+  friend std::ostream& operator<<(std::ostream&, const MatrixX<Ts>&);
   template <typename Ts>
-  friend inline bool operator==(const MatrixX<Ts>& lhs, const MatrixX<Ts>& rhs);
+  friend bool operator==(const MatrixX<Ts>& lhs, const MatrixX<Ts>& rhs);
   template <typename Ts>
-  friend inline bool operator!=(const MatrixX<Ts>& lhs, const MatrixX<Ts>& rhs);
+  friend bool operator!=(const MatrixX<Ts>& lhs, const MatrixX<Ts>& rhs);
 
   MatrixX& operator+=(const MatrixX& rhs) { return _Helper::add<T, MatrixX>(*this, rhs); }
   MatrixX& operator-=(const MatrixX& rhs) { return _Helper::sub<T, MatrixX>(*this, rhs); }
@@ -105,15 +104,15 @@ struct MatrixX {
 };
 
 template <typename T>
-inline std::ostream& operator<<(std::ostream& os, const MatrixX<T>& obj) {
+std::ostream& operator<<(std::ostream& os, const MatrixX<T>& obj) {
   return _Helper::mat_show(os, obj);
 }
 template <typename T>
-inline bool operator==(const MatrixX<T>& lhs, const MatrixX<T>& rhs) {
+bool operator==(const MatrixX<T>& lhs, const MatrixX<T>& rhs) {
   return _Helper::mat_equals(lhs, rhs);
 }
 template <typename T>
-inline bool operator!=(const MatrixX<T>& lhs, const MatrixX<T>& rhs) {
+bool operator!=(const MatrixX<T>& lhs, const MatrixX<T>& rhs) {
   return !(lhs == rhs);
 }
 

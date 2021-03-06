@@ -3,7 +3,7 @@
 // Created Date: 04/11/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/02/2021
+// Last Modified: 06/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -11,17 +11,14 @@
 
 #pragma once
 
-#define _USE_MATH_DEFINES  // NOLINT
-#include <math.h>
-
+#include <cmath>
 #include <limits>
 #include <memory>
-#include <string>
-#include <utility>
 #include <vector>
 
 #include "autd_types.hpp"
 #include "configuration.hpp"
+#include "consts.hpp"
 
 namespace autd {
 
@@ -33,9 +30,9 @@ using ModulationPtr = std::shared_ptr<modulation::Modulation>;
 
 namespace modulation {
 
-inline double Sinc(const double x) noexcept {
-  if (fabs(x) < std::numeric_limits<double>::epsilon()) return 1;
-  return sin(M_PI * x) / (M_PI * x);
+inline Float Sinc(const Float x) noexcept {
+  if (fabs(x) < std::numeric_limits<Float>::epsilon()) return 1;
+  return std::sin(PI * x) / (PI * x);
 }
 
 /**

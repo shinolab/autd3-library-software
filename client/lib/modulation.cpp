@@ -3,7 +3,7 @@
 // Created Date: 11/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 22/02/2021
+// Last Modified: 06/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -12,13 +12,11 @@
 #include "modulation.hpp"
 
 #include <algorithm>
+#include <cmath>
 #include <cstring>
 #include <numeric>
 
 #include "configuration.hpp"
-
-using autd::MOD_BUF_SIZE;
-using autd::MOD_SAMPLING_FREQ;
 
 namespace autd::modulation {
 Modulation::Modulation() noexcept { this->_sent = 0; }
@@ -52,13 +50,11 @@ void SineModulation::Build(const Configuration config) {
 
   this->buffer.resize(n, 0);
 
-  const auto offset = static_cast<double>(this->_offset);
-  const auto amp = static_cast<double>(this->_amp);
   for (size_t i = 0; i < n; i++) {
-    auto tamp = fmod(static_cast<Float>(2 * rep * i) / static_cast<Float>(n), 2.0);
-    tamp = tamp > 1.0 ? 2.0 - tamp : tamp;
-    tamp = std::clamp(offset + (tamp - 0.5) * amp, 0.0, 1.0);
-    this->buffer.at(i) = static_cast<uint8_t>(tamp * 255.0);
+    auto tamp = std::fmod(static_cast<Float>(2 * rep * i) / static_cast<Float>(n), Float{2});
+    tamp = tamp > Float{1} ? Float{2} - tamp : tamp;
+    tamp = std::clamp(this->_offset + (tamp - Float{0.5}) * this->_amp, Float{0}, Float{1});
+    this->buffer.at(i) = static_cast<uint8_t>(tamp * 255);
   }
 }
 #pragma endregion

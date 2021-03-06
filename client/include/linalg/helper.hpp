@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include <ostream>
+
 namespace autd::_utils {
 
 class _Helper {
@@ -23,7 +25,7 @@ class _Helper {
     return dst;
   }
   template <typename T, typename V>
-  static V add(const V& lhs, const V& rhs) {
+  static V add(const V&& lhs, const V& rhs) {
     V dst(lhs);
     T* dp = dst.data();
     const T* rp = rhs.data();
@@ -36,7 +38,7 @@ class _Helper {
     T* dp = dst.data();
     for (size_t i = 0; i < dst.size(); i++) {
       *dp = -*dp;
-      dp++;
+      ++dp;
     }
     return dst;
   }
@@ -50,7 +52,7 @@ class _Helper {
   }
 
   template <typename T, typename V>
-  static V sub(const V& lhs, const V& rhs) {
+  static V sub(const V&& lhs, const V& rhs) {
     V dst(lhs);
     T* dp = dst.data();
     const T* rp = rhs.data();
@@ -66,7 +68,7 @@ class _Helper {
   }
 
   template <typename T, typename V>
-  static V mul(const V& lhs, const T& rhs) {
+  static V mul(const V&& lhs, const T& rhs) {
     V dst(lhs);
     T* dp = dst.data();
     for (size_t i = 0; i < dst.size(); i++) *dp++ *= rhs;
@@ -81,7 +83,7 @@ class _Helper {
   }
 
   template <typename T, typename V>
-  static V div(const V& lhs, const T& rhs) {
+  static V div(const V&& lhs, const T& rhs) {
     V dst(lhs);
     T* dp = dst.data();
     for (size_t i = 0; i < dst.size(); i++) *dp++ /= rhs;
@@ -91,7 +93,7 @@ class _Helper {
   template <typename V>
   static bool vec_equals(const V& lhs, const V& rhs) {
     if (lhs.size() != rhs.size()) return false;
-    bool r = true;
+    auto r = true;
     const auto* lp = lhs.data();
     const auto* rp = rhs.data();
     for (size_t i = 0; i < lhs.size(); i++) r = r && (*lp++ == *rp++);
@@ -102,7 +104,7 @@ class _Helper {
   static bool mat_equals(const V& lhs, const V& rhs) {
     if (lhs.cols() != rhs.cols()) return false;
     if (lhs.rows() != rhs.rows()) return false;
-    bool r = true;
+    auto r = true;
     const auto* lp = lhs.data();
     const auto* rp = rhs.data();
     for (size_t i = 0; i < lhs.size(); i++) r = r && (*lp++ == *rp++);
@@ -141,7 +143,7 @@ class _Helper {
     const T* lp = v.data();
     for (size_t i = 0; i < v.size(); i++) {
       n += *lp * *lp;
-      lp++;
+      ++lp;
     }
     return n;
   }

@@ -3,7 +3,7 @@
 // Created Date: 27/02/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/02/2021
+// Last Modified: 06/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -88,11 +88,11 @@ class Quaternion {
   }
 
   template <typename Ts>
-  friend inline std::ostream& operator<<(std::ostream&, const Quaternion<Ts>&);
+  friend std::ostream& operator<<(std::ostream&, const Quaternion<Ts>&);
   template <typename Ts>
-  friend inline bool operator==(const Quaternion<Ts>& lhs, const Quaternion<Ts>& rhs);
+  friend bool operator==(const Quaternion<Ts>& lhs, const Quaternion<Ts>& rhs);
   template <typename Ts>
-  friend inline bool operator!=(const Quaternion<Ts>& lhs, const Quaternion<Ts>& rhs);
+  friend bool operator!=(const Quaternion<Ts>& lhs, const Quaternion<Ts>& rhs);
 
   Quaternion& operator+=(const Quaternion& rhs) {
     _w += rhs.w();
@@ -138,16 +138,16 @@ class Quaternion {
 };
 
 template <typename T>
-inline std::ostream& operator<<(std::ostream& os, const Quaternion<T>& obj) {
+std::ostream& operator<<(std::ostream& os, const Quaternion<T>& obj) {
   os << obj.w() << " + " << obj.x() << "i + " << obj.y() << "j + " << obj.z() << "k";
   return os;
 }
 template <typename T>
-inline bool operator==(const Quaternion<T>& lhs, const Quaternion<T>& rhs) {
+bool operator==(const Quaternion<T>& lhs, const Quaternion<T>& rhs) {
   return lhs.w() == rhs.w() && lhs.v() == rhs.v();
 }
 template <typename T>
-inline bool operator!=(const Quaternion<T>& lhs, const Quaternion<T>& rhs) {
+bool operator!=(const Quaternion<T>& lhs, const Quaternion<T>& rhs) {
   return !(lhs == rhs);
 }
 

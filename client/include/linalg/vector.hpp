@@ -26,7 +26,7 @@ namespace autd::_utils {
 template <typename T>
 struct VectorX {
  public:
-  explicit VectorX(size_t size) : _size(size) { _data = std::make_unique<T[]>(size); }
+  explicit VectorX(const size_t size) : _size(size) { _data = std::make_unique<T[]>(size); }
   VectorX(const VectorX& obj) : VectorX(obj.size()) { std::memcpy(_data.get(), obj.data(), _size * sizeof(T)); }
   VectorX& operator=(const VectorX& obj) {
     std::memcpy(_data.get(), obj.data(), _size * sizeof(T));
@@ -63,14 +63,13 @@ struct VectorX {
   T* data() { return _data.get(); }
   const T* data() const { return _data.get(); }
 
-  const size_t size() const noexcept { return _size; }
-
+  size_t size() const noexcept { return _size; }
   template <typename Ts>
-  friend inline std::ostream& operator<<(std::ostream&, const VectorX<Ts>&);
+  friend std::ostream& operator<<(std::ostream&, const VectorX<Ts>&);
   template <typename Ts>
-  friend inline bool operator==(const VectorX<Ts>& lhs, const VectorX<Ts>& rhs);
+  friend bool operator==(const VectorX<Ts>& lhs, const VectorX<Ts>& rhs);
   template <typename Ts>
-  friend inline bool operator!=(const VectorX<Ts>& lhs, const VectorX<Ts>& rhs);
+  friend bool operator!=(const VectorX<Ts>& lhs, const VectorX<Ts>& rhs);
 
   VectorX& operator+=(const VectorX& rhs) { return _Helper::add<T, VectorX>(*this, rhs); }
   VectorX& operator-=(const VectorX& rhs) { return _Helper::sub<T, VectorX>(*this, rhs); }
@@ -92,15 +91,15 @@ struct VectorX {
 };
 
 template <typename T>
-inline std::ostream& operator<<(std::ostream& os, const VectorX<T>& obj) {
+std::ostream& operator<<(std::ostream& os, const VectorX<T>& obj) {
   return _Helper::vec_show(os, obj);
 }
 template <typename T>
-inline bool operator==(const VectorX<T>& lhs, const VectorX<T>& rhs) {
+bool operator==(const VectorX<T>& lhs, const VectorX<T>& rhs) {
   return _Helper::vec_equals(lhs, rhs);
 }
 template <typename T>
-inline bool operator!=(const VectorX<T>& lhs, const VectorX<T>& rhs) {
+bool operator!=(const VectorX<T>& lhs, const VectorX<T>& rhs) {
   return !(lhs == rhs);
 }
 
