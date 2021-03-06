@@ -11,8 +11,10 @@
 
 #pragma once
 
+#include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <iostream>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -163,11 +165,11 @@ class HoloGain final : public Gain {
   }
   template <typename M, typename V>
   inline void setBCDResult(M& mat, const V& vec, size_t idx) {
-    const size_t M = vec.size();
+    const size_t m = vec.size();
     for (size_t i = 0; i < idx; i++) mat(idx, i) = std::conj(vec(i));
-    for (size_t i = idx + 1; i < M; i++) mat(idx, i) = std::conj(vec(i));
+    for (size_t i = idx + 1; i < m; i++) mat(idx, i) = std::conj(vec(i));
     for (size_t i = 0; i < idx; i++) mat(i, idx) = vec(i);
-    for (size_t i = idx + 1; i < M; i++) mat(i, idx) = vec(i);
+    for (size_t i = idx + 1; i < m; i++) mat(i, idx) = vec(i);
   }
 
   template <typename V>
@@ -222,7 +224,6 @@ class HoloGain final : public Gain {
   template <typename M>
   inline void makeBhB(M* bhb) {
     const size_t m = _foci.size();
-    const size_t n = _geometry->num_transducers();
 
     M p = M::Zero(m, m);
     for (size_t i = 0; i < m; i++) p(i, i) = -_amps[i];
@@ -260,31 +261,31 @@ class HoloGain final : public Gain {
     const size_t m = _foci.size();
     const size_t n = _geometry->num_transducers();
 
-    B::MatrixXc P = B::MatrixXc::Zero(m, m);
+    typename B::MatrixXc P = B::MatrixXc::Zero(m, m);
     for (size_t i = 0; i < m; i++) P(i, i) = std::complex<Float>(_amps[i], 0);
 
-    B::MatrixXc B = transferMatrix<B::MatrixXc>();
-    B::MatrixXc pinvB(n, m);
-    _backend.pseudoInverseSVD(&B, alpha, &pinvB);
+    typename B::MatrixXc b = transferMatrix<typename B::MatrixXc>();
+    typename B::MatrixXc pinvB(n, m);
+    _backend.pseudoInverseSVD(&b, alpha, &pinvB);
 
-    B::MatrixXc MM = B::MatrixXc::Identity(m, m);
-    _backend.matmul(TRANSPOSE::NoTrans, TRANSPOSE::NoTrans, std::complex<Float>(1, 0), B, pinvB, std::complex<Float>(-1, 0), &MM);
-    B::MatrixXc tmp(m, m);
+    typename B::MatrixXc MM = B::MatrixXc::Identity(m, m);
+    _backend.matmul(TRANSPOSE::NoTrans, TRANSPOSE::NoTrans, std::complex<Float>(1, 0), b, pinvB, std::complex<Float>(-1, 0), &MM);
+    typename B::MatrixXc tmp(m, m);
     matmul(P, MM, &tmp);
     matmul(tmp, P, &MM);
-    B::MatrixXc X = B::MatrixXc::Identity(m, m);
+    typename B::MatrixXc X = B::MatrixXc::Identity(m, m);
 
     std::random_device rnd;
     std::mt19937 mt(rnd());
     std::uniform_real_distribution<double> range(0, 1);
-    B::VectorXc zero = B::VectorXc::Zero(m);
+    typename B::VectorXc zero = B::VectorXc::Zero(m);
     for (auto i = 0; i < repeat; i++) {
       auto ii = static_cast<size_t>(m * static_cast<double>(range(mt)));
 
-      B::VectorXc mmc = MM.col(ii);
+      typename B::VectorXc mmc = MM.col(ii);
       mmc(ii) = 0;
 
-      B::VectorXc x(m);
+      typename B::VectorXc x(m);
       matvecmul(X, mmc, &x);
       std::complex<Float> gamma = _backend.cdot(x, mmc);
       if (gamma.real() > 0) {
@@ -295,12 +296,12 @@ class HoloGain final : public Gain {
       }
     }
 
-    B::VectorXc u = _backend.maxEigenVector(&X);
+    typename B::VectorXc u = _backend.maxEigenVector(&X);
 
-    B::VectorXc ut(m);
+    typename B::VectorXc ut(m);
     matvecmul(P, u, &ut);
 
-    B::VectorXc q(n);
+    typename B::VectorXc q(n);
     matvecmul(pinvB, ut, &q);
 
     const auto max_coeff = _backend.cmaxCoeff(q);
@@ -322,9 +323,9 @@ class HoloGain final : public Gain {
     const size_t m = _foci.size();
     const size_t n = _geometry->num_transducers();
 
-    const B::MatrixXc g = transferMatrix<B::MatrixXc>();
+    const typename B::MatrixXc g = transferMatrix<typename B::MatrixXc>();
 
-    B::VectorXc denominator(m);
+    typename B::VectorXc denominator(m);
     for (size_t i = 0; i < m; i++) {
       auto tmp = std::complex<Float>(0, 0);
       for (size_t j = 0; j < n; j++) {
@@ -333,18 +334,18 @@ class HoloGain final : public Gain {
       denominator(i) = tmp;
     }
 
-    B::MatrixXc x(n, m);
+    typename B::MatrixXc x(n, m);
     for (size_t i = 0; i < m; i++) {
       auto c = std::complex<Float>(_amps[i], 0) / denominator(i);
       for (size_t j = 0; j < n; j++) {
         x(j, i) = c * std::conj(g(i, j));
       }
     }
-    B::MatrixXc r(m, m);
+    typename B::MatrixXc r(m, m);
     matmul(g, x, &r);
-    B::VectorXc max_ev = _backend.maxEigenVector(&r);
+    typename B::VectorXc max_ev = _backend.maxEigenVector(&r);
 
-    B::MatrixXc sigma = B::MatrixXc::Zero(n, n);
+    typename B::MatrixXc sigma = B::MatrixXc::Zero(n, n);
     for (size_t j = 0; j < n; j++) {
       Float tmp = 0;
       for (size_t i = 0; i < m; i++) {
@@ -353,15 +354,15 @@ class HoloGain final : public Gain {
       sigma(j, j) = std::complex<Float>(pow(sqrt(tmp / static_cast<Float>(m)), gamma), 0.0);
     }
 
-    B::MatrixXc gr = _backend.concat_in_row(g, sigma);
+    typename B::MatrixXc gr = _backend.concat_in_row(g, sigma);
 
-    B::VectorXc f = B::VectorXc::Zero(m + n);
+    typename B::VectorXc f = B::VectorXc::Zero(m + n);
     for (size_t i = 0; i < m; i++) f(i) = _amps[i] * max_ev(i) / abs(max_ev(i));
 
-    B::MatrixXc gtg(n, n);
+    typename B::MatrixXc gtg(n, n);
     _backend.matmul(TRANSPOSE::ConjTrans, TRANSPOSE::NoTrans, std::complex<Float>(1, 0), gr, gr, std::complex<Float>(0, 0), &gtg);
 
-    B::VectorXc gtf(n);
+    typename B::VectorXc gtf(n);
     _backend.matvecmul(TRANSPOSE::ConjTrans, std::complex<Float>(1, 0), gr, f, std::complex<Float>(0, 0), &gtf);
 
     _backend.csolveh(&gtg, &gtf);
@@ -374,11 +375,11 @@ class HoloGain final : public Gain {
     const size_t m = _foci.size();
     const size_t n = _geometry->num_transducers();
 
-    const B::MatrixXc g = transferMatrix<B::MatrixXc>();
-    B::VectorXc p(m);
+    const typename B::MatrixXc g = transferMatrix<typename B::MatrixXc>();
+    typename B::VectorXc p(m);
     for (size_t i = 0; i < m; i++) p(i) = std::complex<Float>(_amps[i], 0);
 
-    B::VectorXc q(n);
+    typename B::VectorXc q(n);
     _backend.matvecmul(TRANSPOSE::ConjTrans, std::complex<Float>(1, 0), g, p, std::complex<Float>(0, 0), &q);
 
     SetFromComplexDrive(_data, q, true, 1.0);
@@ -390,14 +391,14 @@ class HoloGain final : public Gain {
     const size_t m = _foci.size();
     const size_t n = _geometry->num_transducers();
 
-    const B::MatrixXc g = transferMatrix<B::MatrixXc>();
+    const typename B::MatrixXc g = transferMatrix<typename B::MatrixXc>();
 
-    B::VectorXc q0 = B::VectorXc::Ones(n);
+    typename B::VectorXc q0 = B::VectorXc::Ones(n);
 
-    B::VectorXc q = q0;
-    B::VectorXc gamma(m);
-    B::VectorXc p(m);
-    B::VectorXc xi(n);
+    typename B::VectorXc q = q0;
+    typename B::VectorXc gamma(m);
+    typename B::VectorXc p(m);
+    typename B::VectorXc xi(n);
     for (auto k = 0; k < repeat; k++) {
       matvecmul(g, q, &gamma);
       for (size_t i = 0; i < m; i++) p(i) = gamma(i) / abs(gamma(i)) * _amps[i];
@@ -414,16 +415,16 @@ class HoloGain final : public Gain {
     const size_t m = _foci.size();
     const size_t n = _geometry->num_transducers();
 
-    const B::MatrixXc g = transferMatrix<B::MatrixXc>();
+    const typename B::MatrixXc g = transferMatrix<typename B::MatrixXc>();
 
-    B::VectorXc denominator(m);
+    typename B::VectorXc denominator(m);
     for (size_t i = 0; i < m; i++) {
       auto tmp = std::complex<Float>(0, 0);
       for (size_t j = 0; j < n; j++) tmp += abs(g(i, j));
       denominator(i) = tmp;
     }
 
-    B::MatrixXc b(n, m);
+    typename B::MatrixXc b(n, m);
     for (size_t i = 0; i < m; i++) {
       auto d = denominator(i) * denominator(i);
       for (size_t j = 0; j < n; j++) {
@@ -431,13 +432,13 @@ class HoloGain final : public Gain {
       }
     }
 
-    B::MatrixXc r(m, m);
+    typename B::MatrixXc r(m, m);
     matmul(g, b, &r);
 
-    B::VectorXc p(m);
+    typename B::VectorXc p(m);
     for (size_t i = 0; i < m; i++) p(i) = std::complex<Float>(_amps[i], 0);
 
-    B::VectorXc gamma(m);
+    typename B::VectorXc gamma(m);
     matvecmul(r, p, &gamma);
     for (auto k = 0; k < repeat; k++) {
       for (size_t i = 0; i < m; i++) p(i) = gamma(i) / abs(gamma(i)) * _amps[i];
@@ -446,7 +447,7 @@ class HoloGain final : public Gain {
 
     for (size_t i = 0; i < m; i++) p(i) = gamma(i) / (abs(gamma(i)) * abs(gamma(i))) * _amps[i] * _amps[i];
 
-    B::VectorXc q(n);
+    typename B::VectorXc q(n);
     matvecmul(b, p, &q);
 
     SetFromComplexDrive(_data, q, true, 1.0);
@@ -474,10 +475,10 @@ class HoloGain final : public Gain {
     const size_t n = _geometry->num_transducers();
     const size_t n_param = n + m;
 
-    B::MatrixXc bhb(n_param, n_param);
-    makeBhB<B::MatrixXc>(&bhb);
+    typename B::MatrixXc bhb(n_param, n_param);
+    makeBhB<typename B::MatrixXc>(&bhb);
 
-    B::VectorX x(n_param);
+    typename B::VectorX x(n_param);
     if (initial == nullptr) {
       std::memset(x.data(), 0, x.size() * sizeof(Float));
     } else {
@@ -486,16 +487,16 @@ class HoloGain final : public Gain {
 
     Float nu = Float{2};
 
-    B::MatrixXc tth(n_param, n_param);
-    calcTTh<B::MatrixXc, B::VectorX>(x, &tth);
+    typename B::MatrixXc tth(n_param, n_param);
+    calcTTh<typename B::MatrixXc, typename B::VectorX>(x, &tth);
 
-    B::MatrixXc bhb_tth(n_param, n_param);
+    typename B::MatrixXc bhb_tth(n_param, n_param);
     _backend.hadamardProduct(bhb, tth, &bhb_tth);
 
-    B::MatrixX a(n_param, n_param);
+    typename B::MatrixX a(n_param, n_param);
     _backend.real(bhb_tth, &a);
 
-    B::VectorX g(n_param);
+    typename B::VectorX g(n_param);
     for (size_t i = 0; i < n_param; i++) {
       Float tmp = 0;
       for (size_t k = 0; k < n_param; k++) tmp += bhb_tth(i, k).imag();
@@ -509,18 +510,18 @@ class HoloGain final : public Gain {
 
     auto is_found = _backend.maxCoeff(g) <= eps_1;
 
-    B::VectorXc t(n_param);
+    typename B::VectorXc t(n_param);
     for (size_t i = 0; i < n_param; i++) t(i) = exp(std::complex<Float>(0, x(i)));
 
-    B::VectorXc tmpc(n_param);
+    typename B::VectorXc tmpc(n_param);
     matvecmul(bhb, t, &tmpc);
     Float fx = _backend.cdot(t, tmpc).real();
 
-    B::MatrixX identity = B::MatrixX::Identity(n_param, n_param);
-    B::VectorX tmp(n_param);
-    B::VectorX h_lm(n_param);
-    B::VectorX x_new(n_param);
-    B::MatrixX tmpm(n_param, n_param);
+    typename B::MatrixX identity = B::MatrixX::Identity(n_param, n_param);
+    typename B::VectorX tmp(n_param);
+    typename B::VectorX h_lm(n_param);
+    typename B::VectorX x_new(n_param);
+    typename B::MatrixX tmpm(n_param, n_param);
     for (auto k = 0; k < k_max; k++) {
       if (is_found) break;
 
@@ -545,7 +546,7 @@ class HoloGain final : public Gain {
         fx = fx_new;
         if (rho > 0) {
           _backend.veccpy(x_new, &x);
-          calcTTh<B::MatrixXc, B::VectorX>(x, &tth);
+          calcTTh<typename B::MatrixXc, typename B::VectorX>(x, &tth);
           _backend.hadamardProduct(bhb, tth, &bhb_tth);
           _backend.real(bhb_tth, &a);
           for (size_t i = 0; i < n_param; i++) {

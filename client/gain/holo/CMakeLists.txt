@@ -26,9 +26,9 @@ set_target_properties(gain_holo
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
 )
 
-if(WIN32)
-  target_link_directories(gain_holo PUBLIC $ENV{CONDA_HOME}\\Library\\lib)
-endif()
-if(NOT WIN32)
+target_link_directories(gain_holo PUBLIC ${BLAS_DEPEND_LIB_DIR})
+if (WIN32)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4190")
+else()
   set_target_properties(gain_holo PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

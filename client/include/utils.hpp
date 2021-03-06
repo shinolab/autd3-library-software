@@ -11,7 +11,7 @@
 
 #pragma once
 
-namespace {
+namespace autd::utils {
 
 #ifdef USE_DOUBLE_AUTD
 constexpr double DIR_COEFF_A[] = {1.0, 1.0, 1.0, 0.891250938, 0.707945784, 0.501187234, 0.354813389, 0.251188643, 0.199526231};
@@ -44,9 +44,6 @@ constexpr float DIR_COEFF_D[] = {0.f,
                                  -5.99548024824e-06f,
                                  -4.79372835035e-06f};
 #endif
-}  // namespace
-
-namespace autd::utils {
 
 static Float directivityT4010A1(Float theta_deg) {
   theta_deg = abs(theta_deg);

@@ -3,7 +3,7 @@
 // Created Date: 27/02/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/03/2021
+// Last Modified: 06/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -14,6 +14,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+#include <algorithm>
 #include <cmath>
 #include <cstring>
 #include <iostream>
@@ -37,13 +38,13 @@ struct MatrixX {
 
   static MatrixX Zero(size_t row, size_t col) {
     MatrixX v(row, col);
-    std::memset(v._data.get(), 0, v.size() * sizeof(T));
+    auto* p = v.data();
+    for (size_t i = 0; i < v.size(); i++) *p++ = T{0};
     return v;
   }
 
   static MatrixX Identity(size_t row, size_t col) {
-    MatrixX v(row, col);
-    std::memset(v._data.get(), 0, v.size() * sizeof(T));
+    MatrixX v = MatrixX::Zero(row, col);
     for (size_t i = 0; i < std::min(row, col); i++) v(i, i) = T{1};
     return v;
   }
@@ -82,12 +83,12 @@ struct MatrixX {
   template <typename Ts>
   friend inline bool operator!=(const MatrixX<Ts>& lhs, const MatrixX<Ts>& rhs);
 
-  MatrixX& operator+=(const MatrixX& rhs) { return MatrixHelper::add<T, MatrixX>(*this, rhs); }
-  MatrixX& operator-=(const MatrixX& rhs) { return MatrixHelper::sub<T, MatrixX>(*this, rhs); }
-  MatrixX& operator*=(T rhs) { return MatrixHelper::mul<T, MatrixX>(*this, rhs); }
-  MatrixX& operator/=(T rhs) { return MatrixHelper::div<T, MatrixX>(*this, rhs); }
+  MatrixX& operator+=(const MatrixX& rhs) { return _Helper::add<T, MatrixX>(*this, rhs); }
+  MatrixX& operator-=(const MatrixX& rhs) { return _Helper::sub<T, MatrixX>(*this, rhs); }
+  MatrixX& operator*=(T rhs) { return _Helper::mul<T, MatrixX>(*this, rhs); }
+  MatrixX& operator/=(T rhs) { return _Helper::div<T, MatrixX>(*this, rhs); }
 
-  MatrixX operator-() const { return MatrixHelper::neg<T, MatrixX>(*this); }
+  MatrixX operator-() const { return _Helper::neg<T, MatrixX>(*this); }
 
   friend MatrixX operator+(const MatrixX& lhs, const MatrixX& rhs) { return _Helper::add<T, MatrixX>(lhs, rhs); }
   friend MatrixX operator-(const MatrixX& lhs, const MatrixX& rhs) { return _Helper::sub<T, MatrixX>(lhs, rhs); }
@@ -119,7 +120,7 @@ inline bool operator!=(const MatrixX<T>& lhs, const MatrixX<T>& rhs) {
 template <typename T>
 class Matrix4x4 : public MatrixX<T> {
  public:
-  Matrix4x4() : MatrixX(4, 4) {}
+  Matrix4x4() : MatrixX<T>(4, 4) {}
 
   Matrix4x4& operator+=(const Matrix4x4& rhs) { return _Helper::add<T, Matrix4x4>(*this, rhs); }
   Matrix4x4& operator-=(const Matrix4x4& rhs) { return _Helper::sub<T, Matrix4x4>(*this, rhs); }
