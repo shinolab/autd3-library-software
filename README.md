@@ -13,7 +13,7 @@ Version: 0.9.0
 
 * The firmware codes are available at [here](https://github.com/shinolab/autd3-library-firmware).
 
-## Versioning
+## :memo: Versioning
 
 The meanings of version number x.y.z are
 * x: Architecture version.
@@ -51,7 +51,7 @@ This versioning was introduced after version 0.3.0.
         make
         ```
 
-## Example
+## :beginner: Example
 
 See `client/examples`
 
@@ -64,11 +64,15 @@ If you are using Linux/macOS, you may need to run as root.
 * [python](https://github.com/shinolab/pyautd)
 * [julia](https://github.com/shinolab/AUTD3.jl)
 
-## Citing
+## :mortar_board: Citing
 
 If you use this SDK in your research please consider to include the following citation in your publications:
 
 * S. Inoue, Y. Makino and H. Shinoda "Scalable Architecture for Airborne Ultrasound Tactile Display", Asia Haptics 2016
+
+## :copyright: LICENSE
+
+See [LICENSE](./LICENSE) and [NOTICE](./NOTICE).
 
 # Author
 
