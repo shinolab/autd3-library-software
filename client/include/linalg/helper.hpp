@@ -3,7 +3,7 @@
 // Created Date: 25/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/03/2021
+// Last Modified: 08/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -25,7 +25,7 @@ class _Helper {
     return dst;
   }
   template <typename T, typename V>
-  static V add(const V&& lhs, const V& rhs) {
+  static V add(const V& lhs, const V& rhs) {
     V dst(lhs);
     T* dp = dst.data();
     const T* rp = rhs.data();
@@ -52,7 +52,7 @@ class _Helper {
   }
 
   template <typename T, typename V>
-  static V sub(const V&& lhs, const V& rhs) {
+  static V sub(const V& lhs, const V& rhs) {
     V dst(lhs);
     T* dp = dst.data();
     const T* rp = rhs.data();
@@ -68,7 +68,7 @@ class _Helper {
   }
 
   template <typename T, typename V>
-  static V mul(const V&& lhs, const T& rhs) {
+  static V mul(const V& lhs, const T& rhs) {
     V dst(lhs);
     T* dp = dst.data();
     for (size_t i = 0; i < dst.size(); i++) *dp++ *= rhs;
@@ -83,7 +83,7 @@ class _Helper {
   }
 
   template <typename T, typename V>
-  static V div(const V&& lhs, const T& rhs) {
+  static V div(const V& lhs, const T& rhs) {
     V dst(lhs);
     T* dp = dst.data();
     for (size_t i = 0; i < dst.size(); i++) *dp++ /= rhs;

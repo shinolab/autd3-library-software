@@ -50,6 +50,8 @@ sudo examples/example_soem
 
 BLAS can be used in building HoloGain (multiple foci), however, you have to install BLAS independently.
 
+* **Only OpenBLAS and Intel MKL are tested**; however, other BLAS libraries also may work. 
+
 ## Build with BLAS
 
 ```
@@ -63,10 +65,15 @@ cmake .. -DENABLE_BLAS=ON -DBLAS_LIB_DIR=<your BLAS library path> -DBLAS_INCLUDE
 ```
 
 * If you are using Windows, you may need to set `BLAS_DEPEND_LIB_DIR` to link some additional libraries.
-    * For example, if you followed the below install example, you need link `flangmain.lib` by the following command;
+    * For example, if you installed OpenBLAS as follow the below install example, you need link `flangmain.lib` by the following command;
         ```
         cmake .. -DENABLE_BLAS=ON -DBLAS_LIB_DIR=C:/opt/lib -DBLAS_INCLUDE_DIR=C:/opt/include/openblas -DBLAS_DEPEND_LIB_DIR=<your conda path>/Library/lib
         ``` 
+
+* If you use Intel MKL, please set `USE_MKL` ON.
+    ```
+    cmake .. -DENABLE_BLAS=ON -DBLAS_LIB_DIR=<your MKL lib path> -DBLAS_INCLUDE_DIR=<your MKL include path> -DUSE_MKL=ON
+    ```
 
 ## OpenBLAS install example in Windows
 

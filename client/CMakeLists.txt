@@ -12,6 +12,7 @@ option(BUILD_DOC "BUILD_DOC" OFF)
 option(USE_DOUBLE "USE_DOUBLE" OFF)
 option(ENABLE_EIGEN "ENABLE_EIGEN" ON)
 option(ENABLE_BLAS "ENABLE_BLAS" OFF)
+option(USE_MKL "USE_MKL" OFF)
 
 option(BUILD_HOLO_GAIN "BUILD_HOLO_GAIN" ON)
 option(BUILD_MATLAB_GAIN "BUILD_MATLAB_GAIN" OFF)
@@ -115,8 +116,12 @@ endif()
 
 if(ENABLE_BLAS)
   set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${BLAS_LIB_DIR}")
+  set(BLA_STATIC ON)
   find_package(BLAS REQUIRED)
   add_definitions(-DENABLE_BLAS)
+  if(USE_MKL)
+    add_definitions(-DUSE_BLAS_MKL)
+  endif()
 endif()
 
 # Gain

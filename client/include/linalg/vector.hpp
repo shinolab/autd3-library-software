@@ -3,7 +3,7 @@
 // Created Date: 27/02/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/03/2021
+// Last Modified: 08/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -79,7 +79,6 @@ struct VectorX {
   VectorX operator-() const { return _Helper::neg<T, VectorX>(*this); }
 
   friend VectorX operator+(const VectorX& lhs, const VectorX& rhs) { return _Helper::add<T, VectorX>(lhs, rhs); }
-
   friend VectorX operator-(const VectorX& lhs, const VectorX& rhs) { return _Helper::sub<T, VectorX>(lhs, rhs); }
   friend VectorX operator*(const VectorX& lhs, const T& rhs) { return _Helper::mul<T, VectorX>(lhs, rhs); }
   friend VectorX operator*(const T& lhs, const VectorX& rhs) { return _Helper::mul<T, VectorX>(rhs, lhs); }
