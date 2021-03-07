@@ -57,7 +57,7 @@ See `client/examples`
 
 If you are using Linux/macOS, you may need to run as root.
 
-## For other programming languages ##
+## :link: For other programming languages
 
 * [Rust](https://github.com/shinolab/rust-autd)
 * [C#](https://github.com/shinolab/autd3sharp)
