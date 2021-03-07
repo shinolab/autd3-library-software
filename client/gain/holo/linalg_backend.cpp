@@ -3,7 +3,7 @@
 // Created Date: 06/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/03/2021
+// Last Modified: 08/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -16,8 +16,13 @@
 #ifdef ENABLE_BLAS
 #define lapack_complex_float std::complex<float>
 #define lapack_complex_double std::complex<double>
+#ifdef USE_BLAS_MKL
+#include "mkl_cblas.h"
+#include "mkl_lapacke.h"
+#else
 #include "cblas.h"
 #include "lapacke.h"
+#endif
 #endif
 
 namespace autd::gain::holo {
