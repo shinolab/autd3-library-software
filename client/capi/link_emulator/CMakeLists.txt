@@ -20,6 +20,9 @@ target_link_libraries(autd3capi-link-emulator link_emulator)
 if(WIN32)
   target_link_libraries(autd3capi-link-emulator ws2_32.lib)
   target_link_libraries(autd3capi-link-emulator winmm.lib)
+elseif(APPLE)
+else()
+  target_link_libraries(autd3capi-link-emulator -static-libgcc -static-libstdc++)
 endif()
 
 set_target_properties(autd3capi-link-emulator

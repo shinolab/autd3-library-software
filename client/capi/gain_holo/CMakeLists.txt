@@ -17,6 +17,11 @@ include_directories(${INCLUDE_LIST})
 
 target_link_libraries(autd3capi-gain-holo gain_holo)
 target_link_libraries(autd3capi-gain-holo autd3)
+if(WIN32)
+elseif(APPLE)
+else()
+  target_link_libraries(autd3capi-gain-holo -static-libgcc -static-libstdc++)
+endif()
 
 set_target_properties(autd3capi-gain-holo
   PROPERTIES

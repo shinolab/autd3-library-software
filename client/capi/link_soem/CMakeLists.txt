@@ -22,6 +22,7 @@ elseif(APPLE)
   target_link_libraries(autd3capi-link-soem pcap)
 else()
   target_link_libraries(autd3capi-link-soem rt)
+  target_link_libraries(autd3capi-link-soem -static-libgcc -static-libstdc++)
 endif()
 
 set_target_properties(autd3capi-link-soem
