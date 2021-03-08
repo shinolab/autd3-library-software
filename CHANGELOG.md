@@ -5,6 +5,7 @@
 * Subdivide the main project into some small projects
 * Add some CMake options to finely control build options
     * Now, some projects are disabled by default
+* Fix bug which requires installing npcap (wpcap.dll) even when SOEM is not used (Windows) 
 
 # 0.8.1
 * Provide win-x86, linux-arm32, linux-arm64 binaries
