@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['firmwareinfo_201',['FirmwareInfo',['../classautd_1_1FirmwareInfo.html',1,'autd']]],
-  ['focalpointgain_202',['FocalPointGain',['../classautd_1_1gain_1_1FocalPointGain.html',1,'autd::gain']]]
+  ['emulatorlink_313',['EmulatorLink',['../classautd_1_1link_1_1EmulatorLink.html',1,'autd::link']]],
+  ['evdparams_314',['EVDParams',['../structautd_1_1gain_1_1holo_1_1EVDParams.html',1,'autd::gain::holo']]]
 ];

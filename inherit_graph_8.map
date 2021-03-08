@@ -1,8 +1,11 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classautd_1_1link_1_1Link.html" title="Link is the interface to the AUTD device." alt="" coords="5,107,109,133"/>
-<area shape="rect" id="node2" href="$classautd_1_1link_1_1DebugLink.html" title="Link for debug." alt="" coords="182,5,323,32"/>
-<area shape="rect" id="node3" href="$classautd_1_1link_1_1EmulatorLink.html" title="Experimental: Link to connect with Emulator" alt="" coords="175,56,330,83"/>
-<area shape="rect" id="node4" href="$classautd_1_1link_1_1LocalTwinCATLink.html" title="TwinCATLink using local TwinCAT server." alt="" coords="157,107,348,133"/>
-<area shape="rect" id="node5" href="$classautd_1_1link_1_1SOEMLink.html" title="Link using SOEM" alt="" coords="181,157,324,184"/>
-<area shape="rect" id="node6" href="$classautd_1_1link_1_1TwinCATLink.html" title="TwinCATLink using remote TwinCAT server." alt="" coords="173,208,332,235"/>
+<area shape="rect" id="node1" href="$classautd_1_1gain_1_1Gain.html" title="Gain controls the amplitude and phase of each transducer in the AUTD." alt="" coords="5,183,116,209"/>
+<area shape="rect" id="node2" href="$classautd_1_1gain_1_1BesselBeamGain.html" title="Gain to produce Bessel Beam." alt="" coords="173,5,357,32"/>
+<area shape="rect" id="node3" href="$classautd_1_1gain_1_1CustomGain.html" title="Gain that can set the phase and amplitude freely." alt="" coords="187,56,342,83"/>
+<area shape="rect" id="node4" href="$classautd_1_1gain_1_1FocalPointGain.html" title="Gain to produce single focal point." alt="" coords="179,107,351,133"/>
+<area shape="rect" id="node5" href="$classautd_1_1gain_1_1GroupedGain.html" title="Gain to group some gains." alt="" coords="185,157,344,184"/>
+<area shape="rect" id="node6" href="$classautd_1_1gain_1_1holo_1_1HoloGain.html" title="Gain to produce multiple focal points." alt="" coords="165,208,364,235"/>
+<area shape="rect" id="node7" href="$classautd_1_1gain_1_1MatlabGain.html" title="Gain created from Matlab mat file." alt="" coords="190,259,339,285"/>
+<area shape="rect" id="node8" href="$classautd_1_1gain_1_1PlaneWaveGain.html" title="Gain to create plane wave." alt="" coords="177,309,353,336"/>
+<area shape="rect" id="node9" href="$classautd_1_1gain_1_1TransducerTestGain.html" title="Gain to test a transducer." alt="" coords="164,360,365,387"/>
 </map>

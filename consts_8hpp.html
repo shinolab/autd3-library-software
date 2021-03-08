@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">0.8.1</span>
+   &#160;<span id="projectnumber">0.9.0</span>
    </div>
   </td>
  </tr>
@@ -78,17 +78,18 @@ $(function() {
 <div class="contents">
 <div class="textblock"><code>#include &lt;math.h&gt;</code><br />
 <code>#include &lt;array&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
 <code>#include &quot;<a class="el" href="autd__types_8hpp_source.html">autd_types.hpp</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for consts.hpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="consts_8hpp__incl.png" border="0" usemap="#include_2consts_8hpp" alt=""/></div>
 <map name="include_2consts_8hpp" id="include_2consts_8hpp">
-<area shape="rect" title=" " alt="" coords="51,5,181,32"/>
+<area shape="rect" title=" " alt="" coords="91,5,221,32"/>
 <area shape="rect" title=" " alt="" coords="5,80,67,107"/>
 <area shape="rect" title=" " alt="" coords="91,80,141,107"/>
-<area shape="rect" href="autd__types_8hpp.html" title=" " alt="" coords="165,80,275,107"/>
-<area shape="rect" title=" " alt="" coords="173,155,267,181"/>
+<area shape="rect" title=" " alt="" coords="165,80,227,107"/>
+<area shape="rect" href="autd__types_8hpp.html" title=" " alt="" coords="251,80,360,107"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -96,10 +97,14 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="consts_8hpp__dep__incl.png" border="0" usemap="#include_2consts_8hppdep" alt=""/></div>
 <map name="include_2consts_8hppdep" id="include_2consts_8hppdep">
-<area shape="rect" title=" " alt="" coords="5,5,136,32"/>
-<area shape="rect" href="autd3_8hpp.html" title=" " alt="" coords="39,229,161,256"/>
-<area shape="rect" href="controller_8hpp.html" title=" " alt="" coords="28,155,172,181"/>
-<area shape="rect" href="gain_8hpp.html" title=" " alt="" coords="108,80,223,107"/>
+<area shape="rect" title=" " alt="" coords="139,5,270,32"/>
+<area shape="rect" href="autd3_8hpp.html" title=" " alt="" coords="80,244,203,271"/>
+<area shape="rect" href="controller_8hpp.html" title=" " alt="" coords="202,162,346,189"/>
+<area shape="rect" href="gain_8hpp.html" title=" " alt="" coords="392,80,507,107"/>
+<area shape="rect" href="modulation_8hpp.html" title=" " alt="" coords="47,80,202,107"/>
+<area shape="rect" href="holo_8hpp.html" title=" " alt="" coords="553,162,696,189"/>
+<area shape="rect" href="matlab_8hpp.html" title=" " alt="" coords="370,162,529,189"/>
+<area shape="rect" href="from__file_8hpp.html" title=" " alt="" coords="47,155,178,196"/>
 </map>
 </div>
 </div>
@@ -134,13 +139,13 @@ Variables</h2></td></tr>
 <tr class="separator:ad6774eed0e4a9b96e644dbe4b470e795"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8caff93de9170505fcf236e48fc5d602"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd.html#a8caff93de9170505fcf236e48fc5d602">autd::NUM_TRANS_Y</a> = 14</td></tr>
 <tr class="separator:a8caff93de9170505fcf236e48fc5d602"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad5a64bb85f1759deaf21c027a644a2b7"><td class="memItemLeft" align="right" valign="top">constexpr Float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd.html#ad5a64bb85f1759deaf21c027a644a2b7">autd::TRANS_SIZE_MM</a> = ToFloat(10.16)</td></tr>
+<tr class="memitem:ad5a64bb85f1759deaf21c027a644a2b7"><td class="memItemLeft" align="right" valign="top">constexpr Float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd.html#ad5a64bb85f1759deaf21c027a644a2b7">autd::TRANS_SIZE_MM</a> = Float{10.16}</td></tr>
 <tr class="separator:ad5a64bb85f1759deaf21c027a644a2b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a39de4a36f496ed80d7d6b8fd77c9fce2"><td class="memItemLeft" align="right" valign="top">constexpr Float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd.html#a39de4a36f496ed80d7d6b8fd77c9fce2">autd::AUTD_WIDTH</a> = ToFloat(192.0)</td></tr>
+<tr class="memitem:a39de4a36f496ed80d7d6b8fd77c9fce2"><td class="memItemLeft" align="right" valign="top">constexpr Float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd.html#a39de4a36f496ed80d7d6b8fd77c9fce2">autd::AUTD_WIDTH</a> = Float{192.0}</td></tr>
 <tr class="separator:a39de4a36f496ed80d7d6b8fd77c9fce2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a71790a71f908a35af60e4820855eb87a"><td class="memItemLeft" align="right" valign="top">constexpr Float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd.html#a71790a71f908a35af60e4820855eb87a">autd::AUTD_HEIGHT</a> = ToFloat(151.4)</td></tr>
+<tr class="memitem:a71790a71f908a35af60e4820855eb87a"><td class="memItemLeft" align="right" valign="top">constexpr Float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd.html#a71790a71f908a35af60e4820855eb87a">autd::AUTD_HEIGHT</a> = Float{151.4}</td></tr>
 <tr class="separator:a71790a71f908a35af60e4820855eb87a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4972c8f49f2a9ea129ee12aac5804c34"><td class="memItemLeft" align="right" valign="top">constexpr Float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd.html#a4972c8f49f2a9ea129ee12aac5804c34">autd::PI</a> = ToFloat(M_PI)</td></tr>
+<tr class="memitem:a4972c8f49f2a9ea129ee12aac5804c34"><td class="memItemLeft" align="right" valign="top">constexpr Float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd.html#a4972c8f49f2a9ea129ee12aac5804c34">autd::PI</a> = Float{M_PI}</td></tr>
 <tr class="separator:a4972c8f49f2a9ea129ee12aac5804c34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2590369033b0824463ac61d6162ab528"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd.html#a2590369033b0824463ac61d6162ab528">autd::FPGA_CLOCK</a> = 25600000</td></tr>
 <tr class="separator:a2590369033b0824463ac61d6162ab528"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -150,7 +155,7 @@ Variables</h2></td></tr>
 <tr class="separator:a37c491d3aec2472bf5109295388ce89a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acd8328a50ea98ad6ad7347ff45e8464b"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd.html#acd8328a50ea98ad6ad7347ff45e8464b">autd::POINT_SEQ_CLK_IDX_MAX</a> = 40000</td></tr>
 <tr class="separator:acd8328a50ea98ad6ad7347ff45e8464b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7be2501223447430a8ad5e815b56b38e"><td class="memItemLeft" align="right" valign="top">constexpr Float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd.html#a7be2501223447430a8ad5e815b56b38e">autd::POINT_SEQ_BASE_FREQ</a> = ToFloat(40000.0)</td></tr>
+<tr class="memitem:a7be2501223447430a8ad5e815b56b38e"><td class="memItemLeft" align="right" valign="top">constexpr Float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd.html#a7be2501223447430a8ad5e815b56b38e">autd::POINT_SEQ_BASE_FREQ</a> = Float{40000.0}</td></tr>
 <tr class="separator:a7be2501223447430a8ad5e815b56b38e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>

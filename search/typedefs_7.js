@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['nullgain_382',['NullGain',['../namespaceautd_1_1gain.html#a9987a6e6649d6caf2c883bf0bd7240b0',1,'autd::gain']]]
+  ['nullgain_607',['NullGain',['../namespaceautd_1_1gain.html#a9987a6e6649d6caf2c883bf0bd7240b0',1,'autd::gain']]]
 ];

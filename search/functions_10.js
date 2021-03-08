@@ -1,6 +1,29 @@
 var searchData=
 [
-  ['tofloat_326',['ToFloat',['../namespaceautd.html#a6044c746c1a16ab1f29a162a89f0cf99',1,'autd']]],
-  ['transducertestgain_327',['TransducerTestGain',['../classautd_1_1gain_1_1TransducerTestGain.html#a905540f4772737a5e1691a880234e31b',1,'autd::gain::TransducerTestGain::TransducerTestGain(const size_t transducer_index, const uint8_t duty, const uint8_t phase)'],['../classautd_1_1gain_1_1TransducerTestGain.html#aba04518761b55288199e9ccca219e862',1,'autd::gain::TransducerTestGain::TransducerTestGain(const TransducerTestGain &amp;v) noexcept=default'],['../classautd_1_1gain_1_1TransducerTestGain.html#af64588a55ebbb626bbcfc95465e14c48',1,'autd::gain::TransducerTestGain::TransducerTestGain(TransducerTestGain &amp;&amp;obj)=default']]],
-  ['twincatlink_328',['TwinCATLink',['../classautd_1_1link_1_1TwinCATLink.html#a1612044bf4829f55122e5504a2231500',1,'autd::link::TwinCATLink::TwinCATLink()=default'],['../classautd_1_1link_1_1TwinCATLink.html#a27e1b69790c6c3287f4137a50a5f9bc9',1,'autd::link::TwinCATLink::TwinCATLink(const TwinCATLink &amp;v) noexcept=delete'],['../classautd_1_1link_1_1TwinCATLink.html#a8908b8f6de2391cd71deb7df0ef16846',1,'autd::link::TwinCATLink::TwinCATLink(TwinCATLink &amp;&amp;obj)=delete']]]
+  ['sampling_5ffrequency_497',['sampling_frequency',['../classautd_1_1sequence_1_1PointSequence.html#af9292c6aa1bd0b89a61c1326b6c664d2',1,'autd::sequence::PointSequence']]],
+  ['sampling_5ffrequency_5fdivision_498',['sampling_frequency_division',['../classautd_1_1sequence_1_1PointSequence.html#a6020f4e3aebdd5172de3194a2d566d22',1,'autd::sequence::PointSequence']]],
+  ['sawmodulation_499',['SawModulation',['../classautd_1_1modulation_1_1SawModulation.html#a191ccc4ead4105e7b8af81c8fcb5727d',1,'autd::modulation::SawModulation']]],
+  ['send_500',['Send',['../classautd_1_1link_1_1DebugLink.html#a87e40caeabc6aa79264938e85906e66a',1,'autd::link::DebugLink::Send()'],['../classautd_1_1link_1_1EmulatorLink.html#aacdff3a79ae435883f275c83304d5ffd',1,'autd::link::EmulatorLink::Send()'],['../classautd_1_1link_1_1SOEMLink.html#a6f94511ebfe8a87b962e57b2f555f235',1,'autd::link::SOEMLink::Send()'],['../classautd_1_1link_1_1TwinCATLink.html#abff86766a2b2a14cb0cb4b04f4484ce4',1,'autd::link::TwinCATLink::Send()'],['../classautd_1_1link_1_1LocalTwinCATLink.html#ada146493bb878d4c800de9df273453ae',1,'autd::link::LocalTwinCATLink::Send()'],['../classautd_1_1link_1_1Link.html#a7c06fde2a7ad5da4458e4cf1cd913bb5',1,'autd::link::Link::Send()']]],
+  ['sent_501',['sent',['../classautd_1_1modulation_1_1Modulation.html#a4a64e01c9431d532a796baed22d98d3e',1,'autd::modulation::Modulation::sent()'],['../classautd_1_1sequence_1_1PointSequence.html#a802a3f08c69f1b4f753d8c44097119e2',1,'autd::sequence::PointSequence::sent()']]],
+  ['set_5fattenuation_5fcoeff_502',['set_attenuation_coeff',['../classautd_1_1Geometry.html#af577c253d932155b662af6928a1eacab',1,'autd::Geometry']]],
+  ['set_5fmod_5fbuf_5fsize_503',['set_mod_buf_size',['../classautd_1_1Configuration.html#a2f3cbbd15ac1fb9c3c0f206bdeb11960',1,'autd::Configuration']]],
+  ['set_5fmod_5fsampling_5ffreq_504',['set_mod_sampling_freq',['../classautd_1_1Configuration.html#a20e9a6bd5bbda09d5964d7cdf2ace569',1,'autd::Configuration']]],
+  ['set_5fwavelength_505',['set_wavelength',['../classautd_1_1Geometry.html#a18f7902e9c1c923e8a38e88297db9e83',1,'autd::Geometry']]],
+  ['setfrequency_506',['SetFrequency',['../classautd_1_1sequence_1_1PointSequence.html#ab4b712c12ab995c6c3a56ef2ca6e8efc',1,'autd::sequence::PointSequence']]],
+  ['setgeometry_507',['SetGeometry',['../classautd_1_1gain_1_1Gain.html#a540939523c06a30f85201c0d57a76dcc',1,'autd::gain::Gain::SetGeometry()'],['../classautd_1_1link_1_1EmulatorLink.html#a31182eede7bb068b54ce37f197600fe6',1,'autd::link::EmulatorLink::SetGeometry()']]],
+  ['setsilentmode_508',['SetSilentMode',['../classautd_1_1Controller.html#a34a72ac892dc59ab9b1468f6ba4bafc1',1,'autd::Controller']]],
+  ['silent_5fmode_509',['silent_mode',['../classautd_1_1Controller.html#a360c89414d6ab0ac64bcc80e2a16a6e4',1,'autd::Controller']]],
+  ['sinc_510',['Sinc',['../namespaceautd_1_1modulation.html#a1bae5890f8102a86f6f464b03dcab18a',1,'autd::modulation']]],
+  ['sinemodulation_511',['SineModulation',['../classautd_1_1modulation_1_1SineModulation.html#a9f9b8ee0648f86b39ba7a2df104cfd1b',1,'autd::modulation::SineModulation']]],
+  ['size_512',['size',['../structautd_1_1__utils_1_1MatrixX.html#a4824a8d58a3402c1fa6dd72199cfff01',1,'autd::_utils::MatrixX::size()'],['../structautd_1_1__utils_1_1VectorX.html#a06991b64d758225b4e8934d54ef01c22',1,'autd::_utils::VectorX::size()']]],
+  ['soemlink_513',['SOEMLink',['../classautd_1_1link_1_1SOEMLink.html#a1514057d2295ced92b9d8b0d3d954781',1,'autd::link::SOEMLink::SOEMLink()=default'],['../classautd_1_1link_1_1SOEMLink.html#ad7e5e28e5a52879b47cc669be4460864',1,'autd::link::SOEMLink::SOEMLink(const SOEMLink &amp;v) noexcept=delete'],['../classautd_1_1link_1_1SOEMLink.html#acbaaf78bf8f7b3ee96c355c33635aa92',1,'autd::link::SOEMLink::SOEMLink(SOEMLink &amp;&amp;obj)=delete']]],
+  ['solveg_514',['solveg',['../classautd_1_1gain_1_1holo_1_1Backend.html#a55e1838898ad550c08c977f00d70a4f5',1,'autd::gain::holo::Backend']]],
+  ['squaremodulation_515',['SquareModulation',['../classautd_1_1modulation_1_1SquareModulation.html#a20749db7e621031eacd3fd7fa69bd375',1,'autd::modulation::SquareModulation']]],
+  ['startstmodulation_516',['StartSTModulation',['../classautd_1_1Controller.html#a331d9d86ff9fc00870995a467df6db22',1,'autd::Controller']]],
+  ['stop_517',['Stop',['../classautd_1_1Controller.html#aeb4244498561588439fcc0c7ef331ac8',1,'autd::Controller']]],
+  ['stopstmodulation_518',['StopSTModulation',['../classautd_1_1Controller.html#a886594a5b764fd1db8fe20bf2e6e36d9',1,'autd::Controller']]],
+  ['sub_519',['sub',['../classautd_1_1__utils_1_1__Helper.html#aa5244f7d52ac44f67030e2cd4d4be1b3',1,'autd::_utils::_Helper::sub(V &amp;dst, const V &amp;src)'],['../classautd_1_1__utils_1_1__Helper.html#ad80258cea0eed94f954077d4ddd29bd2',1,'autd::_utils::_Helper::sub(const V &amp;lhs, const V &amp;rhs)']]],
+  ['supports_5fevd_520',['supports_EVD',['../classautd_1_1gain_1_1holo_1_1Backend.html#af4ee6c1e29164afe4e4874dac4728c17',1,'autd::gain::holo::Backend']]],
+  ['supports_5fsolve_521',['supports_solve',['../classautd_1_1gain_1_1holo_1_1Backend.html#a3927e94a0dba3f73f8b978b865770707',1,'autd::gain::holo::Backend']]],
+  ['supports_5fsvd_522',['supports_SVD',['../classautd_1_1gain_1_1holo_1_1Backend.html#add047bc1c488dbd2f1c20ace4daa502f',1,'autd::gain::holo::Backend']]]
 ];

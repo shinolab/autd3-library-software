@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">0.8.1</span>
+   &#160;<span id="projectnumber">0.9.0</span>
    </div>
   </td>
  </tr>
@@ -69,30 +69,35 @@ $(function() {
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a>  </div>
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">modulation.hpp File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;memory&gt;</code><br />
-<code>#include &lt;string&gt;</code><br />
-<code>#include &lt;utility&gt;</code><br />
+<div class="textblock"><code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;limits&gt;</code><br />
+<code>#include &lt;memory&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 <code>#include &quot;<a class="el" href="autd__types_8hpp_source.html">autd_types.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="configuration_8hpp_source.html">configuration.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="consts_8hpp_source.html">consts.hpp</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for modulation.hpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="modulation_8hpp__incl.png" border="0" usemap="#include_2modulation_8hpp" alt=""/></div>
 <map name="include_2modulation_8hpp" id="include_2modulation_8hpp">
-<area shape="rect" title=" " alt="" coords="165,5,319,32"/>
-<area shape="rect" title=" " alt="" coords="5,80,73,107"/>
-<area shape="rect" title=" " alt="" coords="97,80,152,107"/>
-<area shape="rect" title=" " alt="" coords="176,80,228,107"/>
-<area shape="rect" title=" " alt="" coords="253,80,311,107"/>
-<area shape="rect" href="autd__types_8hpp.html" title=" " alt="" coords="335,80,445,107"/>
-<area shape="rect" href="configuration_8hpp.html" title=" " alt="" coords="469,80,588,107"/>
-<area shape="rect" title=" " alt="" coords="343,155,437,181"/>
+<area shape="rect" title=" " alt="" coords="211,5,365,32"/>
+<area shape="rect" title=" " alt="" coords="5,80,64,107"/>
+<area shape="rect" title=" " alt="" coords="88,80,141,107"/>
+<area shape="rect" title=" " alt="" coords="166,80,234,107"/>
+<area shape="rect" title=" " alt="" coords="259,80,317,107"/>
+<area shape="rect" href="autd__types_8hpp.html" title=" " alt="" coords="317,155,427,181"/>
+<area shape="rect" href="configuration_8hpp.html" title=" " alt="" coords="393,80,511,107"/>
+<area shape="rect" href="consts_8hpp.html" title=" " alt="" coords="536,80,621,107"/>
+<area shape="rect" title=" " alt="" coords="468,155,529,181"/>
+<area shape="rect" title=" " alt="" coords="553,155,604,181"/>
+<area shape="rect" title=" " alt="" coords="628,155,689,181"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -100,9 +105,10 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="modulation_8hpp__dep__incl.png" border="0" usemap="#include_2modulation_8hppdep" alt=""/></div>
 <map name="include_2modulation_8hppdep" id="include_2modulation_8hppdep">
-<area shape="rect" title=" " alt="" coords="55,5,209,32"/>
-<area shape="rect" href="controller_8hpp.html" title=" " alt="" coords="5,80,149,107"/>
-<area shape="rect" href="autd3_8hpp.html" title=" " alt="" coords="71,155,193,181"/>
+<area shape="rect" title=" " alt="" coords="109,5,264,32"/>
+<area shape="rect" href="controller_8hpp.html" title=" " alt="" coords="5,87,149,114"/>
+<area shape="rect" href="autd3_8hpp.html" title=" " alt="" coords="71,169,193,196"/>
+<area shape="rect" href="from__file_8hpp.html" title=" " alt="" coords="224,80,355,121"/>
 </map>
 </div>
 </div>
@@ -122,12 +128,6 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1modulation_1_1SawModulation.html">autd::modulation::SawModulation</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sawtooth wave modulation.  <a href="classautd_1_1modulation_1_1SawModulation.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1modulation_1_1RawPCMModulation.html">autd::modulation::RawPCMModulation</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classautd_1_1modulation_1_1Modulation.html" title="Modulation controls the amplitude modulation.">Modulation</a> created from raw pcm data.  <a href="classautd_1_1modulation_1_1RawPCMModulation.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1modulation_1_1WavModulation.html">autd::modulation::WavModulation</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classautd_1_1modulation_1_1Modulation.html" title="Modulation controls the amplitude modulation.">Modulation</a> created from wav file.  <a href="classautd_1_1modulation_1_1WavModulation.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Namespaces</h2></td></tr>
@@ -140,6 +140,11 @@ Namespaces</h2></td></tr>
 Typedefs</h2></td></tr>
 <tr class="memitem:a6a1a17952c10d0cce5d2b11f637ab924"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd.html#a6a1a17952c10d0cce5d2b11f637ab924">autd::ModulationPtr</a> = std::shared_ptr&lt; modulation::Modulation &gt;</td></tr>
 <tr class="separator:a6a1a17952c10d0cce5d2b11f637ab924"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a1bae5890f8102a86f6f464b03dcab18a"><td class="memItemLeft" align="right" valign="top">Float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1modulation.html#a1bae5890f8102a86f6f464b03dcab18a">autd::modulation::Sinc</a> (const Float x) noexcept</td></tr>
+<tr class="separator:a1bae5890f8102a86f6f464b03dcab18a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

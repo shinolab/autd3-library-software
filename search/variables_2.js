@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['eps_5f1_355',['eps_1',['../structautd_1_1gain_1_1NLSParams.html#a0adb74b7ee14b0b5bf3af8863a675948',1,'autd::gain::NLSParams']]],
-  ['eps_5f2_356',['eps_2',['../structautd_1_1gain_1_1NLSParams.html#a09f44187ab352b66d4ee9afd0d438f78',1,'autd::gain::NLSParams']]]
+  ['dir_5fcoeff_5fa_572',['DIR_COEFF_A',['../namespaceautd_1_1utils.html#ad94e7d4614b65d863a17af552ba20a63',1,'autd::utils']]],
+  ['dir_5fcoeff_5fb_573',['DIR_COEFF_B',['../namespaceautd_1_1utils.html#ac609cc27d07aadd8e510ec5b475a0681',1,'autd::utils']]],
+  ['dir_5fcoeff_5fc_574',['DIR_COEFF_C',['../namespaceautd_1_1utils.html#a1528ca8d5a1ae650fead57df124bea43',1,'autd::utils']]],
+  ['dir_5fcoeff_5fd_575',['DIR_COEFF_D',['../namespaceautd_1_1utils.html#a38fbce204d880682cc6fe05bff653e6b',1,'autd::utils']]]
 ];

@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">0.8.1</span>
+   &#160;<span id="projectnumber">0.9.0</span>
    </div>
   </td>
  </tr>
@@ -75,7 +75,7 @@ $(function() {
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">// Created Date: 26/12/2020</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">// Author: Shun Suzuki</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">// -----</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">// Last Modified: 27/12/2020</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">// Last Modified: 27/02/2021</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment">// -----</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">// Copyright (c) 2020 Hapis Lab. All rights reserved.</span></div>
@@ -83,34 +83,16 @@ $(function() {
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#if WIN32</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;codeanalysis/warnings.h&gt;</span>  <span class="comment">// NOLINT</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#pragma warning(push)</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#pragma warning(disable : ALL_CODE_ANALYSIS_WARNINGS)</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &lt;Eigen/Dense&gt;</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#if WIN32</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#pragma warning(pop)</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
-<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="namespaceautd.html">   24</a></span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceautd.html">autd</a> {</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#ifdef USE_DOUBLE_AUTD</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">using</span> <a class="code" href="namespaceautd.html#a0fd097d98e15eb4e6846d3f205acbcf7">Float</a> = double;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;constexpr <a class="code" href="namespaceautd.html#a0fd097d98e15eb4e6846d3f205acbcf7">Float</a> <a class="code" href="namespaceautd.html#a6044c746c1a16ab1f29a162a89f0cf99">ToFloat</a>(<span class="keyword">const</span> <span class="keywordtype">double</span> f) { <span class="keywordflow">return</span> f; }</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="namespaceautd.html#a0fd097d98e15eb4e6846d3f205acbcf7">   29</a></span>&#160;<span class="keyword">using</span> <a class="code" href="namespaceautd.html#a0fd097d98e15eb4e6846d3f205acbcf7">Float</a> = float;</div>
-<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="namespaceautd.html#a6044c746c1a16ab1f29a162a89f0cf99">   30</a></span>&#160;constexpr <a class="code" href="namespaceautd.html#a0fd097d98e15eb4e6846d3f205acbcf7">Float</a> <a class="code" href="namespaceautd.html#a6044c746c1a16ab1f29a162a89f0cf99">ToFloat</a>(<span class="keyword">const</span> <span class="keywordtype">double</span> f) { <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><a class="code" href="namespaceautd.html#a0fd097d98e15eb4e6846d3f205acbcf7">Float</a><span class="keyword">&gt;</span>(f); }</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
-<div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="namespaceautd.html#a7bd6947493884506b22408edfb55c19f">   33</a></span>&#160;<span class="keyword">using</span> <a class="code" href="namespaceautd.html#a7bd6947493884506b22408edfb55c19f">Vector3</a> = Eigen::Matrix&lt;Float, 3, 1&gt;;</div>
-<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="namespaceautd.html#ab355aeed291de48aef91866a5746f85c">   34</a></span>&#160;<span class="keyword">using</span> <a class="code" href="namespaceautd.html#ab355aeed291de48aef91866a5746f85c">Quaternion</a> = Eigen::Quaternion&lt;Float&gt;;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;}  <span class="comment">// namespace autd</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="namespaceautd.html">   14</a></span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceautd.html">autd</a> {</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#ifdef USE_DOUBLE_AUTD</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">using</span> <a class="code" href="namespaceautd.html#a0fd097d98e15eb4e6846d3f205acbcf7">Float</a> = double;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno"><a class="line" href="namespaceautd.html#a0fd097d98e15eb4e6846d3f205acbcf7">   18</a></span>&#160;<span class="keyword">using</span> <a class="code" href="namespaceautd.html#a0fd097d98e15eb4e6846d3f205acbcf7">Float</a> = float;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;}  <span class="comment">// namespace autd</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="anamespaceautd_html_a0fd097d98e15eb4e6846d3f205acbcf7"><div class="ttname"><a href="namespaceautd.html#a0fd097d98e15eb4e6846d3f205acbcf7">autd::Float</a></div><div class="ttdeci">float Float</div><div class="ttdef"><b>Definition:</b> <a href="autd__types_8hpp_source.html#l00029">autd_types.hpp:29</a></div></div>
-<div class="ttc" id="anamespaceautd_html_a6044c746c1a16ab1f29a162a89f0cf99"><div class="ttname"><a href="namespaceautd.html#a6044c746c1a16ab1f29a162a89f0cf99">autd::ToFloat</a></div><div class="ttdeci">constexpr Float ToFloat(const double f)</div><div class="ttdef"><b>Definition:</b> <a href="autd__types_8hpp_source.html#l00030">autd_types.hpp:30</a></div></div>
-<div class="ttc" id="anamespaceautd_html_ab355aeed291de48aef91866a5746f85c"><div class="ttname"><a href="namespaceautd.html#ab355aeed291de48aef91866a5746f85c">autd::Quaternion</a></div><div class="ttdeci">Eigen::Quaternion&lt; Float &gt; Quaternion</div><div class="ttdef"><b>Definition:</b> <a href="autd__types_8hpp_source.html#l00034">autd_types.hpp:34</a></div></div>
-<div class="ttc" id="anamespaceautd_html"><div class="ttname"><a href="namespaceautd.html">autd</a></div><div class="ttdef"><b>Definition:</b> <a href="autd__types_8hpp_source.html#l00024">autd_types.hpp:24</a></div></div>
-<div class="ttc" id="anamespaceautd_html_a7bd6947493884506b22408edfb55c19f"><div class="ttname"><a href="namespaceautd.html#a7bd6947493884506b22408edfb55c19f">autd::Vector3</a></div><div class="ttdeci">Eigen::Matrix&lt; Float, 3, 1 &gt; Vector3</div><div class="ttdef"><b>Definition:</b> <a href="autd__types_8hpp_source.html#l00033">autd_types.hpp:33</a></div></div>
+<div class="ttc" id="anamespaceautd_html_a0fd097d98e15eb4e6846d3f205acbcf7"><div class="ttname"><a href="namespaceautd.html#a0fd097d98e15eb4e6846d3f205acbcf7">autd::Float</a></div><div class="ttdeci">float Float</div><div class="ttdef"><b>Definition:</b> <a href="autd__types_8hpp_source.html#l00018">autd_types.hpp:18</a></div></div>
+<div class="ttc" id="anamespaceautd_html"><div class="ttname"><a href="namespaceautd.html">autd</a></div><div class="ttdef"><b>Definition:</b> <a href="autd__types_8hpp_source.html#l00014">autd_types.hpp:14</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

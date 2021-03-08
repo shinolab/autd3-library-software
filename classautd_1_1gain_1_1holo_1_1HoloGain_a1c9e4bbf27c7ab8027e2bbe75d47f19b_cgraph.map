@@ -1,0 +1,5 @@
+<map id="autd::gain::holo::HoloGain::Build" name="autd::gain::holo::HoloGain::Build">
+<area shape="rect" id="node1" title="Calculate amplitude and phase of each transducer." alt="" coords="5,23,172,65"/>
+<area shape="rect" id="node2" href="$namespaceautd_1_1gain.html#a09cb0bc804fd842044338fc716a3f3b6" title=" " alt="" coords="224,5,385,32"/>
+<area shape="rect" id="node3" href="$classautd_1_1gain_1_1Gain.html#ac14b5f5211079c7391554988aaf3ed62" title="Get AUTD Geometry." alt="" coords="220,56,389,83"/>
+</map>

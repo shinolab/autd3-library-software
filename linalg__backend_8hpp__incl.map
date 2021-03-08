@@ -1,0 +1,17 @@
+<map id="include/gain/linalg_backend.hpp" name="include/gain/linalg_backend.hpp">
+<area shape="rect" id="node1" title=" " alt="" coords="102,5,227,47"/>
+<area shape="rect" id="node2" title=" " alt="" coords="56,95,127,121"/>
+<area shape="rect" id="node3" href="$autd__types_8hpp.html" title=" " alt="" coords="81,169,190,196"/>
+<area shape="rect" id="node4" href="$linalg_8hpp.html" title=" " alt="" coords="233,95,309,121"/>
+<area shape="rect" id="node5" href="$matrix_8hpp.html" title=" " alt="" coords="214,169,329,196"/>
+<area shape="rect" id="node11" href="$quaternion_8hpp.html" title=" " alt="" coords="419,244,526,271"/>
+<area shape="rect" id="node13" href="$vector_8hpp.html" title=" " alt="" coords="290,319,373,345"/>
+<area shape="rect" id="node6" title=" " alt="" coords="219,244,294,271"/>
+<area shape="rect" id="node7" title=" " alt="" coords="111,393,173,420"/>
+<area shape="rect" id="node8" title=" " alt="" coords="197,393,265,420"/>
+<area shape="rect" id="node9" href="$helper_8hpp.html" title=" " alt="" coords="5,393,87,420"/>
+<area shape="rect" id="node10" title=" " alt="" coords="11,468,81,495"/>
+<area shape="rect" id="node12" title=" " alt="" coords="471,393,530,420"/>
+<area shape="rect" id="node14" title=" " alt="" coords="290,393,351,420"/>
+<area shape="rect" id="node15" title=" " alt="" coords="375,393,447,420"/>
+</map>

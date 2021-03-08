@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['besselbeamgain_193',['BesselBeamGain',['../classautd_1_1gain_1_1BesselBeamGain.html',1,'autd::gain']]]
+  ['_5fhelper_305',['_Helper',['../classautd_1_1__utils_1_1__Helper.html',1,'autd::_utils']]]
 ];

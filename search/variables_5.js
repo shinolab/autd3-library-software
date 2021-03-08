@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['lambda_359',['lambda',['../structautd_1_1gain_1_1SDPParams.html#aa5479b5e11dc66f6d18e1ea6a61fb5f6',1,'autd::gain::SDPParams']]]
+  ['initial_579',['initial',['../structautd_1_1gain_1_1holo_1_1NLSParams.html#a55d60b12f7e686e104408a6624af095f',1,'autd::gain::holo::NLSParams']]]
 ];

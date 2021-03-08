@@ -1,0 +1,11 @@
+<map id="autd::Translation" name="autd::Translation">
+<area shape="rect" id="node1" title=" " alt="" coords="5,157,123,184"/>
+<area shape="rect" id="node2" href="$classautd_1_1__utils_1_1Matrix4x4.html#af07edc77c68bf842865d2c022e55759c" title=" " alt="" coords="171,150,316,191"/>
+<area shape="rect" id="node3" href="$classautd_1_1__utils_1_1Quaternion.html#a143cb17007cb7eed6a3694cb7006eca5" title=" " alt="" coords="364,5,533,32"/>
+<area shape="rect" id="node4" href="$classautd_1_1__utils_1_1Quaternion.html#a9e534d9e48fb1fd8638bc95a7e003ae4" title=" " alt="" coords="366,56,531,83"/>
+<area shape="rect" id="node5" href="$classautd_1_1__utils_1_1Vector3.html#afbeb16de9e582ef7a33c9274474a03d3" title=" " alt="" coords="581,95,728,121"/>
+<area shape="rect" id="node6" href="$classautd_1_1__utils_1_1Quaternion.html#ab7c21bd640c625199b66ee43096df2c7" title=" " alt="" coords="366,157,531,184"/>
+<area shape="rect" id="node7" href="$classautd_1_1__utils_1_1Vector3.html#a495dd480ef820e38797d6d45a6b1005b" title=" " alt="" coords="581,171,728,197"/>
+<area shape="rect" id="node8" href="$classautd_1_1__utils_1_1Quaternion.html#ab2555c3adbd3c818b77277fcc83f62bc" title=" " alt="" coords="366,259,531,285"/>
+<area shape="rect" id="node9" href="$classautd_1_1__utils_1_1Vector3.html#a54d881c22931b8c1cf6e4abd735a65e4" title=" " alt="" coords="581,284,728,311"/>
+</map>

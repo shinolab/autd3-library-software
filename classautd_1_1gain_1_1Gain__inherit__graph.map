@@ -4,7 +4,7 @@
 <area shape="rect" id="node3" href="$classautd_1_1gain_1_1CustomGain.html" title="Gain that can set the phase and amplitude freely." alt="" coords="187,56,342,83"/>
 <area shape="rect" id="node4" href="$classautd_1_1gain_1_1FocalPointGain.html" title="Gain to produce single focal point." alt="" coords="179,107,351,133"/>
 <area shape="rect" id="node5" href="$classautd_1_1gain_1_1GroupedGain.html" title="Gain to group some gains." alt="" coords="185,157,344,184"/>
-<area shape="rect" id="node6" href="$classautd_1_1gain_1_1HoloGain.html" title="Gain to produce multiple focal points." alt="" coords="196,208,333,235"/>
+<area shape="rect" id="node6" href="$classautd_1_1gain_1_1holo_1_1HoloGain.html" title="Gain to produce multiple focal points." alt="" coords="165,208,364,235"/>
 <area shape="rect" id="node7" href="$classautd_1_1gain_1_1MatlabGain.html" title="Gain created from Matlab mat file." alt="" coords="190,259,339,285"/>
 <area shape="rect" id="node8" href="$classautd_1_1gain_1_1PlaneWaveGain.html" title="Gain to create plane wave." alt="" coords="177,309,353,336"/>
 <area shape="rect" id="node9" href="$classautd_1_1gain_1_1TransducerTestGain.html" title="Gain to test a transducer." alt="" coords="164,360,365,387"/>

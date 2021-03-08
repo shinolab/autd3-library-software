@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">0.8.1</span>
+   &#160;<span id="projectnumber">0.9.0</span>
    </div>
   </td>
  </tr>
@@ -118,9 +118,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a33b3663ad67630f3458f2cd9410a05b2"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a33b3663ad67630f3458f2cd9410a05b2">Clear</a> ()=0</td></tr>
 <tr class="memdesc:a33b3663ad67630f3458f2cd9410a05b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear all data in hardware.  <a href="classautd_1_1Controller.html#a33b3663ad67630f3458f2cd9410a05b2">More...</a><br /></td></tr>
 <tr class="separator:a33b3663ad67630f3458f2cd9410a05b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a360cef8559709fdcd2160ff8de81813c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a360cef8559709fdcd2160ff8de81813c">SetDelay</a> (const std::vector&lt; <a class="el" href="namespaceautd.html#ab327e6b9aa1f7390b9402c67b2230b55">AUTDDataArray</a> &gt; &amp;delay)=0</td></tr>
-<tr class="memdesc:a360cef8559709fdcd2160ff8de81813c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set output delay.  <a href="classautd_1_1Controller.html#a360cef8559709fdcd2160ff8de81813c">More...</a><br /></td></tr>
-<tr class="separator:a360cef8559709fdcd2160ff8de81813c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a791bb24df1a1bbc964765dbce7735fba"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a791bb24df1a1bbc964765dbce7735fba">Close</a> ()=0</td></tr>
 <tr class="memdesc:a791bb24df1a1bbc964765dbce7735fba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Close the controller.  <a href="classautd_1_1Controller.html#a791bb24df1a1bbc964765dbce7735fba">More...</a><br /></td></tr>
 <tr class="separator:a791bb24df1a1bbc964765dbce7735fba"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -863,40 +860,6 @@ Static Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Count the remaining data (Gain and Modulation) in buffer. </p>
-
-</div>
-</div>
-<a id="a360cef8559709fdcd2160ff8de81813c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a360cef8559709fdcd2160ff8de81813c">&#9670;&nbsp;</a></span>SetDelay()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual void autd::Controller::SetDelay </td>
-          <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd.html#ab327e6b9aa1f7390b9402c67b2230b55">AUTDDataArray</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>delay</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Set output delay. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">delay</td><td>delay for each transducer in units of ultrasound period (i.e. 25us) </td></tr>
-  </table>
-  </dd>
-</dl>
 
 </div>
 </div>

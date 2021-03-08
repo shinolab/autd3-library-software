@@ -1,10 +1,13 @@
 <map id="include/modulation.hpp" name="include/modulation.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="165,5,319,32"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,80,73,107"/>
-<area shape="rect" id="node3" title=" " alt="" coords="97,80,152,107"/>
-<area shape="rect" id="node4" title=" " alt="" coords="176,80,228,107"/>
-<area shape="rect" id="node5" title=" " alt="" coords="253,80,311,107"/>
-<area shape="rect" id="node6" href="$autd__types_8hpp.html" title=" " alt="" coords="335,80,445,107"/>
-<area shape="rect" id="node8" href="$configuration_8hpp.html" title=" " alt="" coords="469,80,588,107"/>
-<area shape="rect" id="node7" title=" " alt="" coords="343,155,437,181"/>
+<area shape="rect" id="node1" title=" " alt="" coords="211,5,365,32"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,80,64,107"/>
+<area shape="rect" id="node3" title=" " alt="" coords="88,80,141,107"/>
+<area shape="rect" id="node4" title=" " alt="" coords="166,80,234,107"/>
+<area shape="rect" id="node5" title=" " alt="" coords="259,80,317,107"/>
+<area shape="rect" id="node6" href="$autd__types_8hpp.html" title=" " alt="" coords="317,155,427,181"/>
+<area shape="rect" id="node7" href="$configuration_8hpp.html" title=" " alt="" coords="393,80,511,107"/>
+<area shape="rect" id="node8" href="$consts_8hpp.html" title=" " alt="" coords="536,80,621,107"/>
+<area shape="rect" id="node9" title=" " alt="" coords="468,155,529,181"/>
+<area shape="rect" id="node10" title=" " alt="" coords="553,155,604,181"/>
+<area shape="rect" id="node11" title=" " alt="" coords="628,155,689,181"/>
 </map>

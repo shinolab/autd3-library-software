@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['gs_399',['GS',['../namespaceautd_1_1gain.html#abad8dffb1def5cab9c93124f39fd52bba71a75a167c33c58bfb561764255c880a',1,'autd::gain']]],
-  ['gs_5fpat_400',['GS_PAT',['../namespaceautd_1_1gain.html#abad8dffb1def5cab9c93124f39fd52bba6a614aecc45609608ad66ca400cf7e90',1,'autd::gain']]]
+  ['evd_629',['EVD',['../namespaceautd_1_1gain_1_1holo.html#ae90b276caac0ca3361a0528a3854eb3fa19c94f62be3ecad6f0482d6fe5dcc0d8',1,'autd::gain::holo']]]
 ];

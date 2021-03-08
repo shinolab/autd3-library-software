@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">0.8.1</span>
+   &#160;<span id="projectnumber">0.9.0</span>
    </div>
   </td>
  </tr>
@@ -68,6 +68,9 @@ $(function() {
 <li>Calibrate()
 : <a class="el" href="classautd_1_1Controller.html#a751441d9e44b608cb10ad1711321924e">autd::Controller</a>
 </li>
+<li>cdot()
+: <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#ab59b6e907cb1f26305a04534e760964e">autd::gain::holo::Backend&lt; MCx, VCx, Mx, Vx &gt;</a>
+</li>
 <li>Clear()
 : <a class="el" href="classautd_1_1Controller.html#a33b3663ad67630f3458f2cd9410a05b2">autd::Controller</a>
 </li>
@@ -80,8 +83,26 @@ $(function() {
 , <a class="el" href="classautd_1_1link_1_1SOEMLink.html#ae37587998ca2137dcb114fa575226cf8">autd::link::SOEMLink</a>
 , <a class="el" href="classautd_1_1link_1_1TwinCATLink.html#a7d8d8d923dc3c584db3e249a8a30b43c">autd::link::TwinCATLink</a>
 </li>
+<li>cmaxCoeff()
+: <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#adb6121ffdfb7accd8df0c18eec6ba07c">autd::gain::holo::Backend&lt; MCx, VCx, Mx, Vx &gt;</a>
+</li>
+<li>col()
+: <a class="el" href="structautd_1_1__utils_1_1MatrixX.html#a848b0b3d9caef087a2a5f5bb53923c91">autd::_utils::MatrixX&lt; T &gt;</a>
+</li>
+<li>cols()
+: <a class="el" href="structautd_1_1__utils_1_1MatrixX.html#ac5bd321dd5ec9e70272e22332ce03057">autd::_utils::MatrixX&lt; T &gt;</a>
+</li>
+<li>concatCol()
+: <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a58aeb54a61f593424313b6dd8dffc8ec">autd::gain::holo::Backend&lt; MCx, VCx, Mx, Vx &gt;</a>
+</li>
+<li>concatRow()
+: <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a8de6ca2f641466cde704ce02b1d86f92">autd::gain::holo::Backend&lt; MCx, VCx, Mx, Vx &gt;</a>
+</li>
 <li>Configuration()
 : <a class="el" href="classautd_1_1Configuration.html#a45a866632dfc280edd1355803d64059e">autd::Configuration</a>
+</li>
+<li>conjugate()
+: <a class="el" href="classautd_1_1__utils_1_1Quaternion.html#a87570b49e54eb2b0537ae93e2ecab080">autd::_utils::Quaternion&lt; T &gt;</a>
 </li>
 <li>control_points()
 : <a class="el" href="classautd_1_1sequence_1_1PointSequence.html#a67d7a716b9871cd792c73e206056560d">autd::sequence::PointSequence</a>
@@ -99,7 +120,7 @@ $(function() {
 , <a class="el" href="classautd_1_1gain_1_1FocalPointGain.html#afd020bb9b454dcb3a091fcff2b2a2301">autd::gain::FocalPointGain</a>
 , <a class="el" href="classautd_1_1gain_1_1Gain.html#a79a89e5a7b3e57392f69e3e5b33cb56e">autd::gain::Gain</a>
 , <a class="el" href="classautd_1_1gain_1_1GroupedGain.html#ab5a578f0deecfe2d21b603c5fa0cd30d">autd::gain::GroupedGain</a>
-, <a class="el" href="classautd_1_1gain_1_1HoloGain.html#aad41ebbc5f60df97ca83d49570d9473c">autd::gain::HoloGain</a>
+, <a class="el" href="classautd_1_1gain_1_1holo_1_1HoloGain.html#a6486ccf79522c43f61725317a656e2c4">autd::gain::holo::HoloGain&lt; B &gt;</a>
 , <a class="el" href="classautd_1_1gain_1_1MatlabGain.html#a8d6aab778add83d07cfd22e9cbcf99f2">autd::gain::MatlabGain</a>
 , <a class="el" href="classautd_1_1gain_1_1PlaneWaveGain.html#a3ba93f12e4b81d438b7d781702ab93d7">autd::gain::PlaneWaveGain</a>
 , <a class="el" href="classautd_1_1gain_1_1TransducerTestGain.html#afd52d72cac517f0db1e1212af86a36f9">autd::gain::TransducerTestGain</a>
@@ -108,7 +129,7 @@ $(function() {
 , <a class="el" href="classautd_1_1link_1_1EmulatorLink.html#a636c6b984461e6f3a0c0a3d5fb316f7c">autd::link::EmulatorLink</a>
 , <a class="el" href="classautd_1_1link_1_1LocalTwinCATLink.html#af4d53e2977a1b64ce356093907fbf0e6">autd::link::LocalTwinCATLink</a>
 , <a class="el" href="classautd_1_1link_1_1SOEMLink.html#a4d961bd955a7514c0062a27ae5961faf">autd::link::SOEMLink</a>
-, <a class="el" href="classautd_1_1link_1_1TwinCATLink.html#aed9b6e4db5f0214386c0e263466d2194">autd::link::TwinCATLink</a>
+, <a class="el" href="classautd_1_1link_1_1TwinCATLink.html#a7538eef59e3855efad6268481fa19583">autd::link::TwinCATLink</a>
 , <a class="el" href="classautd_1_1modulation_1_1Modulation.html#a29a0169f256aa8a948ddb967ceea99b5">autd::modulation::Modulation</a>
 , <a class="el" href="classautd_1_1modulation_1_1RawPCMModulation.html#aae8ac3a01547cf880eb28c08440a75f2">autd::modulation::RawPCMModulation</a>
 , <a class="el" href="classautd_1_1modulation_1_1SawModulation.html#ac14171bc66180ceb8900ceee2c771631">autd::modulation::SawModulation</a>
@@ -116,10 +137,16 @@ $(function() {
 , <a class="el" href="classautd_1_1modulation_1_1SquareModulation.html#ab15bbf37fad9fa8c51258ed479184efd">autd::modulation::SquareModulation</a>
 , <a class="el" href="classautd_1_1modulation_1_1WavModulation.html#a2dd81e356b73a32ddca15b2cce1df0b8">autd::modulation::WavModulation</a>
 , <a class="el" href="classautd_1_1sequence_1_1CircumSeq.html#a1f803b3d23ae3098517cc2e1f6640599">autd::sequence::CircumSeq</a>
-, <a class="el" href="classautd_1_1sequence_1_1PointSequence.html#a6de24f65b42c99f74338efa952cb890d">autd::sequence::PointSequence</a>
+, <a class="el" href="classautd_1_1sequence_1_1PointSequence.html#af74abd0d1f233c12bdc86e64a786c999">autd::sequence::PointSequence</a>
+</li>
+<li>cross()
+: <a class="el" href="classautd_1_1__utils_1_1Vector3.html#ac3e14f576421f9aee98c8784df32ae12">autd::_utils::Vector3&lt; T &gt;</a>
+</li>
+<li>csolveh()
+: <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a7666ddd3a30c1cacdd9422e6a03cd017">autd::gain::holo::Backend&lt; MCx, VCx, Mx, Vx &gt;</a>
 </li>
 <li>CustomGain()
-: <a class="el" href="classautd_1_1gain_1_1CustomGain.html#ae94a07c68d093bf38ffbbab7bf8de488">autd::gain::CustomGain</a>
+: <a class="el" href="classautd_1_1gain_1_1CustomGain.html#aeaa2505d0db891fd20f846be150e7dfa">autd::gain::CustomGain</a>
 </li>
 </ul>
 </div><!-- contents -->

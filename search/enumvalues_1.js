@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['evd_398',['EVD',['../namespaceautd_1_1gain.html#abad8dffb1def5cab9c93124f39fd52bba19c94f62be3ecad6f0482d6fe5dcc0d8',1,'autd::gain']]]
+  ['conjnotrans_627',['ConjNoTrans',['../namespaceautd_1_1gain_1_1holo.html#a1e64d32be5947b46b7c11888905946efa8e4a7c53cf6743ff6c0a0664c2e655a0',1,'autd::gain::holo']]],
+  ['conjtrans_628',['ConjTrans',['../namespaceautd_1_1gain_1_1holo.html#a1e64d32be5947b46b7c11888905946efa8d5781583bcedc6e8f087a4269f04350',1,'autd::gain::holo']]]
 ];
