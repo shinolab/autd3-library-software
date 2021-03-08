@@ -41,8 +41,8 @@ This versioning was introduced after version 0.3.0.
         ```
         git clone https://github.com/shinolab/autd3-library-software.git --recursive 
         ```
-        Then,  run `client/build.ps1` (Visual Studio 2019 is required)
-    * Linux/Mac: 
+        Then, run `client/build.ps1` (Visual Studio 2019 is required) or build with CMake
+    * Linux/macOS: 
         ```
         git clone https://github.com/shinolab/autd3-library-software.git --recursive
         cd autd3-library-software/client
@@ -50,6 +50,14 @@ This versioning was introduced after version 0.3.0.
         cmake ..
         make
         ```
+
+    * Some projects are disabled by default. Please enable them by switching their flags ON
+        * e.g., if you want to use TwinCATLink;
+            ```
+            cmake .. -DBUILD_TWINCAT_LINK=ON
+            ```
+
+    * See [README](./client/README.md) for more details. 
 
 ## :beginner: Example
 
