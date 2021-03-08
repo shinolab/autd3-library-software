@@ -3,7 +3,7 @@
 // Created Date: 01/07/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 27/12/2020
+// Last Modified: 22/02/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -49,7 +49,7 @@ void PointSequence::AppendPoints(const std::vector<Vector3>& points) {
   for (const auto& p : points) {
     this->_control_points.emplace_back(p);
   }
-}  // namespace autd::sequence
+}
 
 std::vector<Vector3> PointSequence::control_points() const { return this->_control_points; }
 
@@ -77,7 +77,6 @@ Float PointSequence::sampling_frequency() const { return POINT_SEQ_BASE_FREQ / s
 size_t& PointSequence::sent() { return _sent; }
 
 uint16_t PointSequence::sampling_frequency_division() const { return this->_sampling_freq_div; }
-
 static Vector3 GetOrthogonal(const Vector3& v) {
   const auto a = Vector3::UnitX();
   if (acos(v.dot(a)) < PI / 2) {
@@ -106,5 +105,4 @@ SequencePtr CreateImpl(const Vector3& center, const Vector3& normal, const Float
 SequencePtr CircumSeq::Create(const Vector3& center, const Vector3& normal, const Float radius, const size_t n) {
   return CreateImpl(center, normal, radius, n);
 }
-
 }  // namespace autd::sequence

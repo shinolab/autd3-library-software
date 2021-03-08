@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 27/12/2020
+// Last Modified: 06/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -14,6 +14,7 @@
 #include <memory>
 
 #include "autd_types.hpp"
+#include "linalg.hpp"
 
 namespace autd {
 
@@ -58,6 +59,14 @@ class Geometry {
    * @brief set ultrasound wavelength
    */
   virtual void set_wavelength(Float wavelength) noexcept = 0;
+  /**
+   * @brief attenuation coefficient
+   */
+  virtual Float attenuation_coeff() noexcept = 0;
+  /**
+   * @brief set attenuation coefficient
+   */
+  virtual void set_attenuation_coeff(Float attenuation_coeff) noexcept = 0;
   /**
    * @brief Number of devices
    */

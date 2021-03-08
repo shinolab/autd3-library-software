@@ -11,7 +11,7 @@
 
 #include "autd3.hpp"
 #include "runner.hpp"
-#include "twincat_link.hpp"
+#include "link/twincat.hpp"
 
 using namespace std;
 

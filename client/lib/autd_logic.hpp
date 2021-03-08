@@ -3,7 +3,7 @@
 // Created Date: 22/12/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 27/12/2020
+// Last Modified: 06/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -36,7 +36,6 @@ constexpr uint8_t CMD_SEQ_MODE = 0x06;
 constexpr uint8_t CMD_INIT_REF_CLOCK = 0x07;
 constexpr uint8_t CMD_CALIB_SEQ_CLOCK = 0x08;
 constexpr uint8_t CMD_CLEAR = 0x09;
-constexpr uint8_t CMD_SET_DELAY = 0x0A;
 
 constexpr uint8_t OP_MODE_MSG_ID_MIN = 0x20;
 constexpr uint8_t OP_MODE_MSG_ID_MAX = 0xBF;
@@ -65,7 +64,6 @@ class AUTDLogic {
   void CalibrateSeq();
   bool Clear();
   void Close();
-  void SetDelay(const std::vector<AUTDDataArray>& delay);
   std::vector<FirmwareInfo> firmware_info_list();
 
   unique_ptr<uint8_t[]> MakeBody(const GainPtr& gain, const ModulationPtr& mod, size_t* size, uint8_t* send_msg_id) const;

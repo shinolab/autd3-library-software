@@ -3,7 +3,7 @@
 // Created Date: 30/03/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 27/12/2020
+// Last Modified: 08/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -12,6 +12,7 @@
 #pragma once
 
 #include <iostream>
+#include <sstream>
 #include <string>
 
 namespace autd {
@@ -41,21 +42,14 @@ class FirmwareInfo {
   uint16_t _fpga_version_number;
 
   static std::string firmware_version_map(const uint16_t version_number) {
-    switch (version_number) {
-      case 0:
-        return "older than v0.4";
-      case 1:
-        return "v0.4";
-      case 2:
-        return "v0.5";
-      case 3:
-        return "v0.6";
-      case 4:
-        return "v0.7";
-      case 5:
-        return "v0.8";
-      default:
-        return "unknown: " + std::to_string(version_number);
+    if (version_number == 0) {
+      return "older than v0.4";
+    } else if (version_number <= 6) {
+      std::stringstream ss;
+      ss << "v0." << version_number + 3;
+      return ss.str();
+    } else {
+      return "unknown: " + std::to_string(version_number);
     }
   }
 };

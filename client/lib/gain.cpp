@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 27/12/2020
+// Last Modified: 22/02/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -17,8 +17,6 @@
 #include "consts.hpp"
 
 namespace autd::gain {
-
-inline Float PosMod(const Float a, const Float b) { return a - floor(a / b) * b; }
 
 GainPtr Gain::Create() { return std::make_shared<Gain>(); }
 
@@ -44,8 +42,38 @@ void Gain::SetGeometry(const GeometryPtr& geometry) noexcept { this->_geometry =
 
 std::vector<AUTDDataArray>& Gain::data() { return this->_data; }
 
+GainPtr GroupedGain::Create(const std::map<size_t, GainPtr>& gain_map) {
+  GainPtr gain = std::make_shared<GroupedGain>(gain_map);
+  return gain;
+}
+
+void GroupedGain::Build() {
+  if (this->built()) return;
+
+  auto geometry = this->geometry();
+
+  CheckAndInit(geometry, &this->_data);
+
+  for (const auto& [fst, g] : this->_gain_map) {
+    g->SetGeometry(geometry);
+    g->Build();
+  }
+
+  for (size_t i = 0; i < geometry->num_devices(); i++) {
+    auto group_id = geometry->group_id_for_device_idx(i);
+    if (_gain_map.count(group_id)) {
+      auto& data = _gain_map[group_id]->data();
+      this->_data[i] = data[i];
+    } else {
+      this->_data[i] = AUTDDataArray{0x0000};
+    }
+  }
+
+  this->_built = true;
+}
+
 GainPtr PlaneWaveGain::Create(const Vector3& direction, const Float amp) {
-  const auto d = AdjustAmp(amp);
+  const auto d = ToDuty(amp);
   return Create(direction, d);
 }
 
@@ -78,7 +106,7 @@ void PlaneWaveGain::Build() {
 }
 
 GainPtr FocalPointGain::Create(const Vector3& point, const Float amp) {
-  const auto d = AdjustAmp(amp);
+  const auto d = ToDuty(amp);
   return Create(point, d);
 }
 
@@ -109,7 +137,7 @@ void FocalPointGain::Build() {
 }
 
 GainPtr BesselBeamGain::Create(const Vector3& point, const Vector3& vec_n, const Float theta_z, const Float amp) {
-  const auto duty = AdjustAmp(amp);
+  const auto duty = ToDuty(amp);
   return Create(point, vec_n, theta_z, duty);
 }
 

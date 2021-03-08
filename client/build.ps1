@@ -12,10 +12,10 @@
 #
 
 Param(
-    [string]$BUILD_DIR = "\build",
+    [string]$BUILD_DIR = "./build",
     [ValidateSet(2017 , 2019)]$VS_VERSION = 2019,
     [string]$ARCH = "x64",
-    [switch]$DISABLE_MATLAB = $FALSE,
+    [switch]$BUILD_ALL = $FALSE,
     [switch]$USE_DOUBLE = $FALSE
 )
 
@@ -139,11 +139,11 @@ if ($VS_VERSION -ne 2017) {
     $command += " -A " + $ARCH
 }
 
-if ($DISABLE_MATLAB) {
-    $command += " -D DISABLE_MATLAB=ON"
+if ($BUILD_ALL) {
+    $command += " -D BUILD_ALL=ON"
 }
 else {
-    $command += " -D DISABLE_MATLAB=OFF"
+    $command += " -D BUILD_ALL=OFF"
 }
 
 if ($USE_DOUBLE) {
