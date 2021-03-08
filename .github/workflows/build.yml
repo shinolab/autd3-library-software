@@ -48,7 +48,7 @@ jobs:
         cd client
         mkdir -p build && cd build
         cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_ALL=ON
-        make
+        make -j8
       shell: bash
       env:
         CC: gcc-10
@@ -59,7 +59,7 @@ jobs:
         cd client
         mkdir -p build_arm32 && cd build_arm32
         cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TARGET=ARM32 -DBUILD_ALL=ON
-        make
+        make -j8
       shell: bash
       env:
         CC: gcc-10
@@ -70,7 +70,7 @@ jobs:
         cd client
         mkdir -p build_arm64 && cd build_arm64
         cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TARGET=ARM64 -DBUILD_ALL=ON
-        make
+        make -j8
       shell: bash
       env:
         CC: gcc-10
@@ -81,7 +81,7 @@ jobs:
         cd client
         mkdir -p build && cd build
         cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_ALL=ON
-        make
+        make -j8
         
         
   lint:
@@ -99,5 +99,5 @@ jobs:
       run: |
         cd client
         mkdir -p build && cd build
-        cmake .. -DBUILD_ALL=ON
+        cmake .. -DBUILD_ALL=ON -DENABLE_LINT=ON
         make cpplint

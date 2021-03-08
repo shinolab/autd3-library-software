@@ -50,33 +50,27 @@ jobs:
       - name: Build project x64
         run: |
           cd client
-          cmake -G "Visual Studio 16 2019" -A x64 -B "build"
+          cmake -G "Visual Studio 16 2019" -A x64 -B "build" -DBUILD_ALL=ON
           cd build
           msbuild autd3.sln /t:build /p:Configuration=Release -maxcpucount
           mkdir publish
           mkdir publish/lib
           mkdir publish/bin
           cd ../..
-          copy client/build/lib/Release/autd3.lib client/build/publish/lib
-          copy client/build/soem_link/Release/soem_link.lib client/build/publish/lib
-          copy client/build/twincat_link/Release/twincat_link.lib client/build/publish/lib
-          copy client/build/deps/BeckhoffADS/Release/ads.lib client/build/publish/lib
+          copy client/build/lib/Release/*.lib client/build/publish/lib
           copy client/build/bin/Release/*.dll client/build/publish/bin
           Compress-Archive -Path LICENSE, NOTICE, dist/AUTDServer, dist/firmware, client/include, client/build/publish/lib, client/build/publish/bin -DestinationPath assets_x64.zip
       - name: Build project x86
         run: |
           cd client
-          cmake -G "Visual Studio 16 2019" -A Win32 -B "build_x86"
+          cmake -G "Visual Studio 16 2019" -A Win32 -B "build_x86" -DBUILD_ALL=ON
           cd build_x86
           msbuild autd3.sln /t:build /p:Configuration=Release -maxcpucount
           mkdir publish
           mkdir publish/lib
           mkdir publish/bin
           cd ../..
-          copy client/build_x86/lib/Release/autd3.lib client/build_x86/publish/lib
-          copy client/build_x86/soem_link/Release/soem_link.lib client/build_x86/publish/lib
-          copy client/build_x86/twincat_link/Release/twincat_link.lib client/build_x86/publish/lib
-          copy client/build_x86/deps/BeckhoffADS/Release/ads.lib client/build_x86/publish/lib
+          copy client/build_x86/lib/Release/*.lib client/build_x86/publish/lib
           copy client/build_x86/bin/Release/*.dll client/build_x86/publish/bin
           Compress-Archive -Path LICENSE, NOTICE, dist/AUTDServer, dist/firmware, client/include, client/build_x86/publish/lib, client/build_x86/publish/bin -DestinationPath assets_x86.zip
       - name: Load Release URL File from release job
@@ -135,15 +129,12 @@ jobs:
         run: |
           cd client
           mkdir -p build && cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release
-          make
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_ALL=ON
+          make -j8
           cd ../..
           mkdir -p lib
           mkdir -p bin
-          cp -f client/build/lib/libautd3.a lib
-          cp -f client/build/soem_link/libsoem_link.a lib
-          cp -f client/build/twincat_link/libtwincat_link.a lib
-          cp -f client/build/deps/BeckhoffADS/libads.a lib
+          cp -f client/build/lib/*.a lib
           cp -f client/build/bin/*.so bin
           cp -rf dist/firmware firmware/
           cp -rf client/include include/
@@ -156,15 +147,12 @@ jobs:
         run: |
           cd client
           mkdir -p build && cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TARGET=ARM32
-          make
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TARGET=ARM32 -DBUILD_ALL=ON
+          make -j8
           cd ../..
           mkdir -p lib
           mkdir -p bin
-          cp -f client/build/lib/libautd3.a lib
-          cp -f client/build/soem_link/libsoem_link.a lib
-          cp -f client/build/twincat_link/libtwincat_link.a lib
-          cp -f client/build/deps/BeckhoffADS/libads.a lib
+          cp -f client/build/lib/*.a lib
           cp -f client/build/bin/*.so bin
           cp -rf dist/firmware firmware/
           cp -rf client/include include/
@@ -177,15 +165,12 @@ jobs:
         run: |
           cd client
           mkdir -p build && cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TARGET=ARM64
-          make
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TARGET=ARM64 -DBUILD_ALL=ON
+          make -j8
           cd ../..
           mkdir -p lib
           mkdir -p bin
-          cp -f client/build/lib/libautd3.a lib
-          cp -f client/build/soem_link/libsoem_link.a lib
-          cp -f client/build/twincat_link/libtwincat_link.a lib
-          cp -f client/build/deps/BeckhoffADS/libads.a lib
+          cp -f client/build/lib/*.a lib
           cp -f client/build/bin/*.so bin
           cp -rf dist/firmware firmware/
           cp -rf client/include include/
@@ -255,15 +240,12 @@ jobs:
         run: |
           cd client
           mkdir -p build && cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release
-          make
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_ALL=ON
+          make -j8
           cd ../..
           mkdir -p lib
           mkdir -p bin
-          cp -f client/build/lib/libautd3.a lib
-          cp -f client/build/soem_link/libsoem_link.a lib
-          cp -f client/build/twincat_link/libtwincat_link.a lib
-          cp -f client/build/deps/BeckhoffADS/libads.a lib
+          cp -f client/build/lib/*.a lib
           cp -f client/build/bin/*.dylib bin
           mv -f dist/firmware firmware/
           mv -f client/include include/
