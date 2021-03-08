@@ -16,6 +16,11 @@ include_directories(${INCLUDE_LIST})
 
 target_link_libraries(autd3capi-modulation-from-file modulation_from_file)
 target_link_libraries(autd3capi-modulation-from-file autd3)
+if(WIN32)
+elseif(APPLE)
+else()
+  target_link_libraries(autd3capi-modulation-from-file -static-libgcc -static-libstdc++)
+endif()
 
 set_target_properties(autd3capi-modulation-from-file
   PROPERTIES

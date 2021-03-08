@@ -17,6 +17,9 @@ include_directories(${INCLUDE_LIST})
 target_link_libraries(autd3capi-link-twincat link_twincat)
 if(WIN32)
   target_link_libraries(autd3capi-link-twincat ws2_32.lib)
+elseif(APPLE)
+else()
+  target_link_libraries(autd3capi-link-twincat -static-libgcc -static-libstdc++)
 endif()
 
 set_target_properties(autd3capi-link-twincat
