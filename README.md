@@ -3,7 +3,7 @@
 
 # [AUTD3](https://hapislab.org/airborne-ultrasound-tactile-display?lang=en)
 
-Version: 0.8.1
+Version: 0.9.0
 
 * This repository is forked from [old version](https://github.com/shinolab/autd)
 
@@ -13,7 +13,7 @@ Version: 0.8.1
 
 * The firmware codes are available at [here](https://github.com/shinolab/autd3-library-firmware).
 
-## Versioning
+## :memo: Versioning
 
 The meanings of version number x.y.z are
 * x: Architecture version.
@@ -34,8 +34,6 @@ This versioning was introduced after version 0.3.0.
 
 * If you use `TwinCAT`, please see [how to install AUTDServer](https://github.com/shinolab/autd3-library-software/wiki/How-to-install-AUTDServer).
 
-* This library depends on [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page) library.
-
 ## :hammer_and_wrench: Build
 
 * Pre-built binaries and header files are on the [GitHub Release page](https://github.com/shinolab/autd3-library-software/releases). Instead, if you want to build from source, install CMake version 3.12 or higher and follow the instructions below.
@@ -53,24 +51,28 @@ This versioning was introduced after version 0.3.0.
         make
         ```
 
-## Example
+## :beginner: Example
 
 See `client/examples`
 
 If you are using Linux/macOS, you may need to run as root.
 
-## For other programming languages ##
+## :link: For other programming languages
 
 * [Rust](https://github.com/shinolab/rust-autd)
 * [C#](https://github.com/shinolab/autd3sharp)
 * [python](https://github.com/shinolab/pyautd)
 * [julia](https://github.com/shinolab/AUTD3.jl)
 
-## Citing
+## :mortar_board: Citing
 
 If you use this SDK in your research please consider to include the following citation in your publications:
 
 * S. Inoue, Y. Makino and H. Shinoda "Scalable Architecture for Airborne Ultrasound Tactile Display", Asia Haptics 2016
+
+## :copyright: LICENSE
+
+See [LICENSE](./LICENSE) and [NOTICE](./NOTICE).
 
 # Author
 

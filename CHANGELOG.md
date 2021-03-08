@@ -1,3 +1,11 @@
+# 0.9.0
+* Add BLAS backend in HoloGain
+* Delete `SetDelay` because of technical issue in FPGA
+* Add `vector.hpp`, `matrix.hpp`, and `quaternion.hpp` to build without Eigen3
+* Subdivide the main project into some small projects
+* Add some CMake options to finely control build options
+    * Now, some projects are disabled by default
+
 # 0.8.1
 * Provide win-x86, linux-arm32, linux-arm64 binaries
 

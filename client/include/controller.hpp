@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 27/12/2020
+// Last Modified: 06/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -83,11 +83,7 @@ class Controller {
    * @return true if success to clear
    */
   virtual bool Clear() = 0;
-  /**
-   * @brief Set output delay
-   * @param[in] delay delay for each transducer in units of ultrasound period (i.e. 25us)
-   */
-  virtual void SetDelay(const std::vector<AUTDDataArray>& delay) = 0;
+
   /**
    * @brief Close the controller
    */

@@ -62,7 +62,7 @@ jobs:
           copy client/build/twincat_link/Release/twincat_link.lib client/build/publish/lib
           copy client/build/deps/BeckhoffADS/Release/ads.lib client/build/publish/lib
           copy client/build/bin/Release/*.dll client/build/publish/bin
-          Compress-Archive -Path dist/AUTDServer, dist/firmware, client/include, client/build/publish/lib, client/build/publish/bin -DestinationPath assets_x64.zip
+          Compress-Archive -Path LICENSE, NOTICE, dist/AUTDServer, dist/firmware, client/include, client/build/publish/lib, client/build/publish/bin -DestinationPath assets_x64.zip
       - name: Build project x86
         run: |
           cd client
@@ -78,7 +78,7 @@ jobs:
           copy client/build_x86/twincat_link/Release/twincat_link.lib client/build_x86/publish/lib
           copy client/build_x86/deps/BeckhoffADS/Release/ads.lib client/build_x86/publish/lib
           copy client/build_x86/bin/Release/*.dll client/build_x86/publish/bin
-          Compress-Archive -Path dist/AUTDServer, dist/firmware, client/include, client/build_x86/publish/lib, client/build_x86/publish/bin -DestinationPath assets_x86.zip
+          Compress-Archive -Path LICENSE, NOTICE, dist/AUTDServer, dist/firmware, client/include, client/build_x86/publish/lib, client/build_x86/publish/bin -DestinationPath assets_x86.zip
       - name: Load Release URL File from release job
         uses: actions/download-artifact@v1
         with:
@@ -147,7 +147,7 @@ jobs:
           cp -f client/build/bin/*.so bin
           cp -rf dist/firmware firmware/
           cp -rf client/include include/
-          tar -zcvf assets_x64.tar.gz firmware include lib bin
+          tar -zcvf assets_x64.tar.gz firmware include lib bin LICENSE NOTICE 
         shell: bash
         env:
           CC: gcc-10
@@ -168,7 +168,7 @@ jobs:
           cp -f client/build/bin/*.so bin
           cp -rf dist/firmware firmware/
           cp -rf client/include include/
-          tar -zcvf assets_arm32.tar.gz firmware include lib bin
+          tar -zcvf assets_arm32.tar.gz firmware include lib bin LICENSE NOTICE
         shell: bash
         env:
           CC: gcc-10
@@ -189,7 +189,7 @@ jobs:
           cp -f client/build/bin/*.so bin
           cp -rf dist/firmware firmware/
           cp -rf client/include include/
-          tar -zcvf assets_arm64.tar.gz firmware include lib bin
+          tar -zcvf assets_arm64.tar.gz firmware include lib bin LICENSE NOTICE
         shell: bash
         env:
           CC: gcc-10
@@ -267,7 +267,7 @@ jobs:
           cp -f client/build/bin/*.dylib bin
           mv -f dist/firmware firmware/
           mv -f client/include include/
-          tar -zcvf assets.tar.gz firmware include lib bin
+          tar -zcvf assets.tar.gz firmware include lib bin LICENSE NOTICE
       - name: Load Release URL File from release job
         uses: actions/download-artifact@v1
         with:

@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 27/12/2020
+// Last Modified: 06/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -315,8 +315,6 @@ void AUTDController::OpenWith(LinkPtr link) {
 bool AUTDController::Calibrate(const Configuration config) { return this->_autd_logic->Calibrate(config); }
 
 bool AUTDController::Clear() { return this->_autd_logic->Clear(); }
-
-void AUTDController::SetDelay(const std::vector<AUTDDataArray>& delay) { this->_autd_logic->SetDelay(delay); }
 
 void AUTDController::Close() {
   this->_stm_cnt->Close();

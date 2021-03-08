@@ -3,7 +3,7 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 27/12/2020
+// Last Modified: 06/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -24,7 +24,6 @@
 #include "seq.hpp"
 #include "simple.hpp"
 #include "stm.hpp"
-#include "delay.hpp"
 
 using std::cin;
 using std::cout;
@@ -38,11 +37,12 @@ constexpr auto ULTRASOUND_WAVELENGTH = 8.5;
 
 inline int Run(autd::ControllerPtr& autd) {
   using F = function<void(autd::ControllerPtr&)>;
-  vector<pair<F, string>> examples = {
-      pair(F{SimpleTest}, "Single Focal Point Test"),         pair(F{BesselTest}, "BesselBeam Test"),
-      pair(F{HoloTest}, "Multiple Focal Points Test"),        pair(F{STMTest}, "Spatio-Temporal Modulation Test"),
-      pair(F{SeqTest}, "Point Sequence Test (Hardware STM)"), pair(F{DelayTest}, "(Advanced) Delay test")
-  };
+  vector<pair<F, string>> examples = {pair(F{SimpleTest}, "Single Focal Point Test"), pair(F{BesselTest}, "BesselBeam Test"),
+                                      pair(F{STMTest}, "Spatio-Temporal Modulation Test"),
+#ifdef BUILD_HOLO_GAIN
+                                      pair(F{HoloTest}, "Multiple Focal Points Test"),
+#endif
+                                      pair(F{SeqTest}, "Point Sequence Test (Hardware STM)")};
 
   autd->geometry()->set_wavelength(ULTRASOUND_WAVELENGTH);
 

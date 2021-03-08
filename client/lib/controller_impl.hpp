@@ -3,7 +3,7 @@
 // Created Date: 11/10/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 26/12/2020
+// Last Modified: 06/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -43,7 +43,6 @@ class AUTDController final : public Controller {
   bool Calibrate(Configuration config) override;
   bool Clear() override;
   void Close() override;
-  void SetDelay(const std::vector<AUTDDataArray>& delay) override;
   void Flush() override;
 
   void Stop() override;

@@ -3,7 +3,7 @@
 // Created Date: 04/11/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 27/12/2020
+// Last Modified: 06/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -11,13 +11,14 @@
 
 #pragma once
 
+#include <cmath>
+#include <limits>
 #include <memory>
-#include <string>
-#include <utility>
 #include <vector>
 
 #include "autd_types.hpp"
 #include "configuration.hpp"
+#include "consts.hpp"
 
 namespace autd {
 
@@ -28,6 +29,12 @@ class Modulation;
 using ModulationPtr = std::shared_ptr<modulation::Modulation>;
 
 namespace modulation {
+
+inline Float Sinc(const Float x) noexcept {
+  if (fabs(x) < std::numeric_limits<Float>::epsilon()) return 1;
+  return std::sin(PI * x) / (PI * x);
+}
+
 /**
  * @brief Modulation controls the amplitude modulation
  */
@@ -110,53 +117,6 @@ class SawModulation final : public Modulation {
 
  private:
   int _freq = 0;
-};
-
-/**
- * @brief Modulation created from raw pcm data
- */
-class RawPCMModulation final : public Modulation {
- public:
-  /**
-   * @brief Generate function
-   * @param[in] filename file path to raw pcm data
-   * @param[in] sampling_freq sampling frequency of the data
-   * @details The sampling frequency of AUTD is shown in autd::MOD_SAMPLING_FREQ, and it is not possible to modulate beyond the Nyquist frequency.
-   * No modulation beyond the Nyquist frequency can be produced.
-   * If samplingFreq is less than the Nyquist frequency, the data will be upsampled.
-   * The maximum modulation buffer size is shown in autd::MOD_BUF_SIZE. Only the data up to MOD_BUF_SIZE/MOD_SAMPLING_FREQ seconds can be output.
-   */
-  static ModulationPtr Create(const std::string& filename, Float sampling_freq = 0.0);
-  void Build(Configuration config) override;
-  explicit RawPCMModulation(const Float sampling_freq, std::vector<int32_t> buf)
-      : Modulation(), _sampling_freq(sampling_freq), _buf(std::move(buf)) {}
-
- private:
-  Float _sampling_freq = 0;
-  std::vector<int32_t> _buf;
-};
-
-/**
- * @brief Modulation created from wav file
- */
-class WavModulation final : public Modulation {
- public:
-  /**
-   * @brief Generate function
-   * @param[in] filename file path to wav data
-   * @details The sampling frequency of AUTD is shown in autd::MOD_SAMPLING_FREQ, and it is not possible to modulate beyond the Nyquist frequency.
-   * No modulation beyond the Nyquist frequency can be produced.
-   * If samplingFreq is less than the Nyquist frequency, the data will be upsampled.
-   * The maximum modulation buffer size is shown in autd::MOD_BUF_SIZE. Only the data up to MOD_BUF_SIZE/MOD_SAMPLING_FREQ seconds can be output.
-   */
-  static ModulationPtr Create(const std::string& filename);
-  void Build(Configuration config) override;
-  explicit WavModulation(const uint32_t sampling_freq, std::vector<uint8_t> buf)
-      : Modulation(), _sampling_freq(sampling_freq), _buf(std::move(buf)) {}
-
- private:
-  uint32_t _sampling_freq = 0;
-  std::vector<uint8_t> _buf;
 };
 }  // namespace modulation
 }  // namespace autd
