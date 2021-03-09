@@ -3,7 +3,7 @@
 // Created Date: 06/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/03/2021
+// Last Modified: 09/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -31,7 +31,7 @@ namespace autd::gain::holo {
 void Eigen3Backend::hadamardProduct(const MatrixXc& a, const MatrixXc& b, MatrixXc* c) { (*c).noalias() = a.cwiseProduct(b); }
 void Eigen3Backend::real(const MatrixXc& a, MatrixX* b) { (*b).noalias() = a.real(); }
 void Eigen3Backend::pseudoInverseSVD(MatrixXc* matrix, const Float alpha, MatrixXc* result) {
-  const Eigen::JacobiSVD<MatrixXc> svd(*matrix, Eigen::ComputeThinU | Eigen::ComputeThinV);
+  const Eigen::BDCSVD<MatrixXc> svd(*matrix, Eigen::ComputeThinU | Eigen::ComputeThinV);
   auto singularValues_inv = svd.singularValues();
   for (auto i = 0; i < singularValues_inv.size(); i++) {
     singularValues_inv(i) = singularValues_inv(i) / (singularValues_inv(i) * singularValues_inv(i) + alpha);
@@ -170,7 +170,7 @@ void Eigen3Backend::vecCpy(const VectorX& a, VectorX* b) { *b = a; }
 #ifdef ENABLE_BLAS
 
 #ifdef USE_DOUBLE_AUTD
-#define AUTD_gesvd LAPACKE_zgesvd
+#define AUTD_gesvd LAPACKE_zgesdd
 #define AUTD_heev LAPACKE_zheev
 #define AUTD_axpy cblas_daxpy
 #define AUTD_gemm cblas_zgemm
@@ -182,7 +182,7 @@ void Eigen3Backend::vecCpy(const VectorX& a, VectorX* b) { *b = a; }
 #define AUTD_posvc LAPACKE_zposv
 #define AUTD_cpy LAPACKE_dlacpy
 #else
-#define AUTD_gesvd LAPACKE_cgesvd
+#define AUTD_gesvd LAPACKE_cgesdd
 #define AUTD_heev LAPACKE_cheev
 #define AUTD_axpy cblas_saxpy
 #define AUTD_gemm cblas_cgemm
@@ -222,10 +222,8 @@ void BLASBackend::pseudoInverseSVD(MatrixXc* matrix, const Float alpha, MatrixXc
   const auto s = std::make_unique<Float[]>(s_size);
   auto u = MatrixXc(nr, nr);
   auto vt = MatrixXc(nc, nc);
-  const auto superb = std::make_unique<Float[]>(s_size - 1);
 
-  AUTD_gesvd(LAPACK_COL_MAJOR, 'A', 'A', static_cast<int>(nr), static_cast<int>(nc), matrix->data(), LDA, s.get(), u.data(), LDU, vt.data(), LDVT,
-             superb.get());
+  AUTD_gesvd(LAPACK_COL_MAJOR, 'A', static_cast<int>(nr), static_cast<int>(nc), matrix->data(), LDA, s.get(), u.data(), LDU, vt.data(), LDVT);
 
   auto singularInv = MatrixXc::Zero(nc, nr);
   for (size_t i = 0; i < s_size; i++) {
