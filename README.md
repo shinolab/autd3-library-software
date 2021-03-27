@@ -5,11 +5,9 @@
 
 Version: 0.9.0
 
-* This repository is forked from [old version](https://github.com/shinolab/autd)
+## :blue_book: **[Wiki for beginners](https://github.com/shinolab/autd3-library-software/wiki)**
 
-* [Here is API document](https://shinolab.github.io/autd3-library-software/index.html)
-
-* The firmware codes are available at [here](https://github.com/shinolab/autd3-library-firmware).
+## :books: [API document](https://shinolab.github.io/autd3-library-software/index.html)
 
 ## :memo: Versioning
 
@@ -24,7 +22,7 @@ This versioning was introduced after version 0.3.0.
 
 ## :fire: CAUTION
 
-* Before using, be sure to write the latest firmwares in `dist/firmware`. For more information, please see [readme](/dist/firmware/Readme.md).
+* Before using, be sure to write the latest firmwares in `dist/firmware`. For more information, please see [README](/dist/firmware/Readme.md).
 
 ## :ballot_box_with_check: Requirements
 
@@ -63,18 +61,16 @@ See `client/examples`
 
 If you are using Linux/macOS, you may need to run as root.
 
-## :books: [Wiki](https://github.com/shinolab/autd3-library-software/wiki)
-
-* [Install Details](https://github.com/shinolab/autd3-library-software/wiki/Install-Top)
-* [Device information](https://github.com/shinolab/autd3-library-software/wiki/Device-Information)
-* [Tutorials](https://github.com/shinolab/autd3-library-software/wiki/Tutorials)
-
 ## :link: For other programming languages
 
 * [Rust](https://github.com/shinolab/rust-autd)
 * [C#](https://github.com/shinolab/autd3sharp)
 * [python](https://github.com/shinolab/pyautd)
 * [julia](https://github.com/shinolab/AUTD3.jl)
+
+## :nut_and_bolt: Firmware
+
+* The firmware codes are available at [here](https://github.com/shinolab/autd3-library-firmware).
 
 ## :mortar_board: Citing
 
