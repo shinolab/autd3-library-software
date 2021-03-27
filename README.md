@@ -9,8 +9,6 @@ Version: 0.9.0
 
 * [Here is API document](https://shinolab.github.io/autd3-library-software/index.html)
 
-* For more details, refer to [Wiki](https://github.com/shinolab/autd3-library-software/wiki)
-
 * The firmware codes are available at [here](https://github.com/shinolab/autd3-library-firmware).
 
 ## :memo: Versioning
@@ -64,6 +62,12 @@ This versioning was introduced after version 0.3.0.
 See `client/examples`
 
 If you are using Linux/macOS, you may need to run as root.
+
+## :books: [Wiki](https://github.com/shinolab/autd3-library-software/wiki)
+
+* [Install Details](https://github.com/shinolab/autd3-library-software/wiki/Install-Top)
+* [Device information](https://github.com/shinolab/autd3-library-software/wiki/Device-Information)
+* [Tutorials](https://github.com/shinolab/autd3-library-software/wiki/Tutorials)
 
 ## :link: For other programming languages
 
