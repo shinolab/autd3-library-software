@@ -1,3 +1,8 @@
+# 0.9.1
+* Fix bugs in `autdsoem`
+* Make Eigen enable by default
+* Add `HoloGainE` and `HoloGainB`
+
 # 0.9.0
 * Add BLAS backend in HoloGain
 * Delete `SetDelay` because of technical issue in FPGA

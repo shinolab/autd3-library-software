@@ -3,7 +3,7 @@
 // Created Date: 20/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/03/2021
+// Last Modified: 30/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,7 +11,7 @@
 
 #pragma once
 
-#ifdef ENABLE_EIGEN
+#ifndef DISABLE_EIGEN
 #if WIN32
 #include <codeanalysis/warnings.h>  // NOLINT
 #pragma warning(push)
@@ -30,7 +30,7 @@
 #include "autd_types.hpp"
 
 namespace autd {
-#ifdef ENABLE_EIGEN
+#ifndef DISABLE_EIGEN
 using Vector3 = Eigen::Matrix<Float, 3, 1>;
 using Vector4 = Eigen::Matrix<Float, 4, 1>;
 using Matrix4x4 = Eigen::Matrix<Float, 4, 4>;

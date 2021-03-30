@@ -3,7 +3,7 @@
 // Created Date: 06/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/03/2021
+// Last Modified: 30/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -60,7 +60,7 @@ class Backend {
   virtual ~Backend() {}
 };
 
-#ifdef ENABLE_EIGEN
+#ifndef DISABLE_EIGEN
 class Eigen3Backend final : public Backend<Eigen::Matrix<std::complex<Float>, -1, -1>, Eigen::Matrix<std::complex<Float>, -1, 1>,
                                            Eigen::Matrix<Float, -1, -1>, Eigen::Matrix<Float, -1, 1>> {
  public:

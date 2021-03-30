@@ -3,7 +3,7 @@
 // Created Date: 06/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/03/2021
+// Last Modified: 30/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -578,4 +578,12 @@ class HoloGain final : public Gain {
     }
   }
 };
+
+#ifndef DISABLE_EIGEN
+using HoloGainE = HoloGain<Eigen3Backend>;
+#endif
+#ifdef ENABLE_BLAS
+using HoloGainB = HoloGain<BLASBackend>;
+#endif
+
 }  // namespace autd::gain::holo

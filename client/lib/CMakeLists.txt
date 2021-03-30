@@ -18,7 +18,7 @@ set(SOURCE_LIST
 add_library(autd3 STATIC ${SOURCE_LIST})
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
-if(ENABLE_EIGEN)
+if(NOT DISABLE_EIGEN)
   include_directories(${EIGEN_PATH})
 endif()
 

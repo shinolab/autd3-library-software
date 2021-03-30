@@ -3,7 +3,7 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/03/2021
+// Last Modified: 30/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -11,7 +11,6 @@
 
 #pragma once
 
-#include <chrono>
 #include <iostream>
 #include <string>
 
@@ -19,7 +18,7 @@
 #include "gain/holo.hpp"
 
 using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SIZE_MM;
-using autd::gain::holo::HoloGain, autd::gain::holo::OPT_METHOD, autd::gain::holo::Eigen3Backend;
+using autd::gain::holo::HoloGainE, autd::gain::holo::OPT_METHOD;
 
 inline OPT_METHOD SelectOpt() {
   std::cout << "Select Optimization Method (default is SDP)" << std::endl;
@@ -55,7 +54,6 @@ inline void HoloTest(const autd::ControllerPtr& autd) {
   const std::vector<autd::Float> amps = {1, 1};
 
   const auto opt = SelectOpt();
-  const auto g = HoloGain<Eigen3Backend>::Create(foci, amps, opt);
-
+  const auto g = HoloGainE::Create(foci, amps, opt);
   autd->AppendGainSync(g);
 }
