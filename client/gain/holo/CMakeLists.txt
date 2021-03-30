@@ -10,7 +10,7 @@ ${PROJECT_SOURCE_DIR}/include/gain/linalg_backend.hpp
 ${PROJECT_SOURCE_DIR}/include/gain/holo.hpp
 )
 
-if(ENABLE_EIGEN)
+if(NOT DISABLE_EIGEN)
   include_directories(${EIGEN_PATH})
 endif()
 

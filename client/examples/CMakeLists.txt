@@ -6,7 +6,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH} examples)
 
 file(GLOB hpp_files examples/*.hpp)
 
-if(BUILD_HOLO_GAIN AND ENABLE_EIGEN)
+if(BUILD_HOLO_GAIN AND (NOT DISABLE_EIGEN))
   add_definitions(-DBUILD_HOLO_GAIN)
 endif()
 

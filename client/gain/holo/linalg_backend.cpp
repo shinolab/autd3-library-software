@@ -3,7 +3,7 @@
 // Created Date: 06/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/03/2021
+// Last Modified: 30/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -27,7 +27,7 @@
 
 namespace autd::gain::holo {
 
-#ifdef ENABLE_EIGEN
+#ifndef DISABLE_EIGEN
 void Eigen3Backend::hadamardProduct(const MatrixXc& a, const MatrixXc& b, MatrixXc* c) { (*c).noalias() = a.cwiseProduct(b); }
 void Eigen3Backend::real(const MatrixXc& a, MatrixX* b) { (*b).noalias() = a.real(); }
 void Eigen3Backend::pseudoInverseSVD(MatrixXc* matrix, const Float alpha, MatrixXc* result) {
