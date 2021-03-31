@@ -1,7 +1,8 @@
 # 0.9.1
 * Fix bugs in `autdsoem`
 * Make Eigen enable by default
-* Add `HoloGainE` and `HoloGainB`
+* Add `HoloGainE` and `HoloGainB` alias for `HoloGain<Eigen3Backend>` and `HoloGain<BLASBackend>`, respectively
+* Add `Geometry::DelDevice` and `Geometry::ClearDevices`
 
 # 0.9.0
 * Add BLAS backend in HoloGain
