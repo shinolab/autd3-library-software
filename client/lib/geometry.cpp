@@ -3,7 +3,7 @@
 // Created Date: 08/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 06/03/2021
+// Last Modified: 31/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -70,6 +70,9 @@ class AUTDGeometry final : public Geometry {
   size_t AddDevice(Vector3 position, Vector3 euler_angles, size_t group = 0) override;
   size_t AddDeviceQuaternion(Vector3 position, Quaternion quaternion, size_t group = 0) override;
 
+  size_t DelDevice(size_t idx) override;
+  void ClearDevices() override;
+
   Float wavelength() noexcept override;
   void set_wavelength(Float wavelength) noexcept override;
   Float attenuation_coeff() noexcept override;
@@ -110,6 +113,12 @@ size_t AUTDGeometry::AddDeviceQuaternion(const Vector3 position, const Quaternio
   this->_group_map[device_id] = group;
   return device_id;
 }
+
+size_t AUTDGeometry::DelDevice(const size_t idx) {
+  this->_devices.erase(this->_devices.begin() + idx);
+  return idx;
+}
+void AUTDGeometry::ClearDevices() { std::vector<Device>().swap(this->_devices); }
 
 Float AUTDGeometry::wavelength() noexcept { return this->_wavelength; }
 void AUTDGeometry::set_wavelength(const Float wavelength) noexcept { this->_wavelength = wavelength; }

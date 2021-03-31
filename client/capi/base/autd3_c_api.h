@@ -30,6 +30,8 @@ EXPORT_AUTD int32_t AUTDAddDevice(VOID_PTR handle, autd::Float x, autd::Float y,
                                   int32_t group_id);
 EXPORT_AUTD int32_t AUTDAddDeviceQuaternion(VOID_PTR handle, autd::Float x, autd::Float y, autd::Float z, autd::Float qua_w, autd::Float qua_x,
                                             autd::Float qua_y, autd::Float qua_z, int32_t group_id);
+EXPORT_AUTD int32_t AUTDDeleteDevice(VOID_PTR handle, int32_t idx);
+EXPORT_AUTD void AUTDClearDevices(VOID_PTR handle);
 EXPORT_AUTD bool AUTDCalibrate(VOID_PTR handle, int32_t smpl_freq, int32_t buf_size);
 EXPORT_AUTD void AUTDCloseController(VOID_PTR handle);
 EXPORT_AUTD void AUTDClear(VOID_PTR handle);

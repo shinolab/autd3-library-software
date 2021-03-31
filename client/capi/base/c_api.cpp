@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/03/2021
+// Last Modified: 31/03/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -43,6 +43,15 @@ int32_t AUTDAddDeviceQuaternion(VOID_PTR const handle, const autd::Float x, cons
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   const auto res = cnt->ptr->geometry()->AddDeviceQuaternion(autd::Vector3(x, y, z), autd::Quaternion(qua_w, qua_x, qua_y, qua_z), group_id);
   return static_cast<int32_t>(res);
+}
+int32_t AUTDDeleteDevice(VOID_PTR const handle, const int32_t idx) {
+  auto* cnt = static_cast<ControllerWrapper*>(handle);
+  const auto res = cnt->ptr->geometry()->DelDevice(static_cast<size_t>(idx));
+  return static_cast<int32_t>(res);
+}
+void AUTDClearDevices(VOID_PTR const handle) {
+  auto* cnt = static_cast<ControllerWrapper*>(handle);
+  cnt->ptr->geometry()->ClearDevices();
 }
 bool AUTDCalibrate(VOID_PTR const handle, int32_t smpl_freq, int32_t buf_size) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
