@@ -60,7 +60,7 @@ void Timer::InitTimer() {
 
   act.sa_handler = MainLoop;
   act.sa_flags = SA_RESTART;
-  if (sigaction(SIGALRM, &act, NULL) < 0) throw runtime_error("Error : sigaction()");
+  if (sigaction(SIGALRM, &act, NULL) < 0) throw std::runtime_error("Error : sigaction()");
 
   itval.it_value.tv_sec = 0;
   itval.it_value.tv_nsec = this->_interval_us * TIME_SCALE;
@@ -73,9 +73,9 @@ void Timer::InitTimer() {
   se.sigev_notify_function = Notify;
   se.sigev_notify_attributes = NULL;
 
-  if (timer_create(CLOCK_REALTIME, &se, &_timer_id) < 0) throw runtime_error("Error: timer_create()");
+  if (timer_create(CLOCK_REALTIME, &se, &_timer_id) < 0) throw std::runtime_error("Error: timer_create()");
 
-  if (timer_settime(_timer_id, 0, &itval, NULL) < 0) throw runtime_error("Error: timer_settime()");
+  if (timer_settime(_timer_id, 0, &itval, NULL) < 0) throw std::runtime_error("Error: timer_settime()");
 }
 
 void Timer::MainLoop(int signum) {}
