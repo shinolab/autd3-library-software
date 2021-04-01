@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/03/2021
+// Last Modified: 01/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -49,6 +49,8 @@
 #include <memory>
 #include <mutex>
 #include <queue>
+#include <sstream>
+#include <stdexcept>
 #include <thread>
 #include <utility>
 #include <vector>
@@ -176,18 +178,15 @@ void SOEMControllerImpl::Open(const char* ifname, const size_t dev_num, const EC
 
   _sync0_cyc_time = config.ec_sync0_cycle_time_ns;
 
-  if (ec_init(ifname) <= 0) {
-    std::cerr << "No socket connection on " << ifname << std::endl;
-    return;
-  }
+  if (ec_init(ifname) <= 0) throw std::runtime_error("No socket connection on " + std::string(ifname));
 
   const auto wc = ec_config(0, _io_map);
-  if (wc <= 0) {
-    std::cerr << "No slaves found!" << std::endl;
-    return;
-  }
+  if (wc <= 0) throw std::runtime_error("No slaves found!");
+
   if (static_cast<size_t>(wc) != dev_num) {
-    std::cerr << "The number of slaves you added:" << dev_num << ", but found: " << wc << std::endl;
+    std::stringstream ss;
+    ss << "The number of slaves you added: " << dev_num << ", but found: " << wc;
+    throw std::runtime_error(ss.str());
   }
 
   ec_configdc();
@@ -205,10 +204,7 @@ void SOEMControllerImpl::Open(const char* ifname, const size_t dev_num, const EC
     ec_statecheck(0, EC_STATE_OPERATIONAL, 50000);
   } while (chk-- && ec_slave[0].state != EC_STATE_OPERATIONAL);
 
-  if (ec_slave[0].state != EC_STATE_OPERATIONAL) {
-    std::cerr << "One ore more slaves are not responding." << std::endl;
-    return;
-  }
+  if (ec_slave[0].state != EC_STATE_OPERATIONAL) throw std::runtime_error("One ore more slaves are not responding.");
 
   SetupSync0(true, _sync0_cyc_time);
 
@@ -217,14 +213,11 @@ void SOEMControllerImpl::Open(const char* ifname, const size_t dev_num, const EC
   timeBeginPeriod(u_resolution);
   _timer_id = timeSetEvent(config.ec_sm3_cycle_time_ns / 1000 / 1000, u_resolution, static_cast<LPTIMECALLBACK>(rt_thread), NULL, TIME_PERIODIC);
 
-  if (_timer_id == 0) {
-    std::cerr << "timeSetEvent failed." << std::endl;
-    return;
-  }
+  if (_timer_id == 0) throw std::runtime_error("timeSetEvent failed.");
 
   auto* const h_process = GetCurrentProcess();
   if (!SetPriorityClass(h_process, REALTIME_PRIORITY_CLASS)) {
-    std::cerr << "Failed to SetPriorityClass" << std::endl;
+    std::cerr << "Failed to SetPriorityClass\n";
   }
 
 #elif defined MACOSX
@@ -258,15 +251,9 @@ void SOEMControllerImpl::Open(const char* ifname, const size_t dev_num, const EC
   se.sigev_notify_function = rt_thread;
   se.sigev_notify_attributes = NULL;
 
-  if (timer_create(CLOCK_REALTIME, &se, &_timer_id) < 0) {
-    std::cerr << "Error: timer_create." << std::endl;
-    return;
-  }
+  if (timer_create(CLOCK_REALTIME, &se, &_timer_id) < 0) throw std::runtime_error("Error: timer_creat()");
 
-  if (timer_settime(_timer_id, 0, &itval, NULL) < 0) {
-    std::cerr << "Error: timer_settime." << std::endl;
-    return;
-  }
+  if (timer_settime(_timer_id, 0, &itval, NULL) < 0) throw std::runtime_error("Error: timer_settime()");
 #endif
 
   _is_open = true;

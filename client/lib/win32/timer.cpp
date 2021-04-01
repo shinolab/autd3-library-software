@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki and Saya Mizutani
 // -----
-// Last Modified: 26/12/2020
+// Last Modified: 01/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -16,6 +16,7 @@
 #include <atomic>
 #include <future>
 #include <iostream>
+#include <stdexcept>
 
 namespace autd {
 
@@ -29,9 +30,10 @@ Timer::Timer(const bool high_resolution) noexcept : _interval_us(1), _high_resol
 
 Timer::~Timer() noexcept(false) { this->Stop(); }
 
-void Timer::SetInterval(const uint32_t interval_us) {
+void Timer::SetInterval(uint32_t &interval_us) {
   if (!this->_high_resolution && interval_us % 1000 != 0) {
-    std::cerr << "The accuracy of the Windows timer is 1 ms. It may not run properly." << std::endl;
+    interval_us = (interval_us / 1000) * 1000;
+    std::cerr << "The accuracy of the Windows timer is 1 ms. The interval is set to " << interval_us << " us.\n";
   }
 
   this->_interval_us = interval_us;
@@ -48,9 +50,7 @@ void Timer::Start(const std::function<void()> &callback) {
     timeBeginPeriod(u_resolution);
     _timer_id = timeSetEvent(this->_interval_us / 1000, u_resolution, static_cast<LPTIMECALLBACK>(TimerThread), reinterpret_cast<DWORD_PTR>(this),
                              TIME_PERIODIC);
-    if (_timer_id == 0) {
-      std::cerr << "timeSetEvent failed." << std::endl;
-    }
+    if (_timer_id == 0) throw std::runtime_error("timeSetEvent failed.");
   }
 }
 

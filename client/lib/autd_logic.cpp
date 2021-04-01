@@ -3,7 +3,7 @@
 // Created Date: 22/12/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/03/2021
+// Last Modified: 01/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <cstring>
 #include <iostream>
+#include <stdexcept>
 #include <thread>
 #include <utility>
 
@@ -377,9 +378,7 @@ unique_ptr<uint8_t[]> AUTDLogic::MakeCalibBody(const Configuration config, size_
   const auto mod_buf_size = static_cast<uint32_t>(_config.mod_buf_size());
 
   if (mod_buf_size < mod_sampling_freq) {
-    std::cerr << "Modulation buffer size must be not less than sampling frequency.\n";
-    std::cerr << "Modulation buffer size is set to " << mod_sampling_freq << std::endl;
-    this->_config.set_mod_buf_size(static_cast<MOD_BUF_SIZE>(mod_sampling_freq));
+    throw std::runtime_error("Modulation buffer size must be not less than sampling frequency");
   }
 
   const auto mod_idx_shift = Log2U(MOD_SAMPLING_FREQ_BASE / mod_sampling_freq);

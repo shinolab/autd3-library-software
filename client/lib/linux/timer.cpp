@@ -3,7 +3,7 @@
 // Created Date: 04/09/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 26/12/2020
+// Last Modified: 01/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -35,7 +35,7 @@ Timer::Timer() noexcept : Timer::Timer(false) {}
 Timer::Timer(bool high_resolusion) noexcept { this->_interval_us = 1; }
 Timer::~Timer() noexcept(false) { this->Stop(); }
 
-void Timer::SetInterval(uint32_t interval_us) { this->_interval_us = interval_us; }
+void Timer::SetInterval(uint32_t &interval_us) { this->_interval_us = interval_us; }
 
 void Timer::Start(const std::function<void()> &callback) {
   this->Stop();
@@ -60,9 +60,7 @@ void Timer::InitTimer() {
 
   act.sa_handler = MainLoop;
   act.sa_flags = SA_RESTART;
-  if (sigaction(SIGALRM, &act, NULL) < 0) {
-    std::cerr << "Error: sigaction()." << std::endl;
-  }
+  if (sigaction(SIGALRM, &act, NULL) < 0) throw runtime_error("Error : sigaction()");
 
   itval.it_value.tv_sec = 0;
   itval.it_value.tv_nsec = this->_interval_us * TIME_SCALE;
@@ -75,13 +73,9 @@ void Timer::InitTimer() {
   se.sigev_notify_function = Notify;
   se.sigev_notify_attributes = NULL;
 
-  if (timer_create(CLOCK_REALTIME, &se, &_timer_id) < 0) {
-    std::cerr << "Error: timer_create." << std::endl;
-  }
+  if (timer_create(CLOCK_REALTIME, &se, &_timer_id) < 0) throw runtime_error("Error: timer_create()");
 
-  if (timer_settime(_timer_id, 0, &itval, NULL) < 0) {
-    std::cerr << "Error: timer_settime." << std::endl;
-  }
+  if (timer_settime(_timer_id, 0, &itval, NULL) < 0) throw runtime_error("Error: timer_settime()");
 }
 
 void Timer::MainLoop(int signum) {}

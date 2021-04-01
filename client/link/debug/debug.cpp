@@ -3,7 +3,7 @@
 // Created Date: 22/12/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/02/2021
+// Last Modified: 01/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -104,7 +104,7 @@ void DebugLink::Close() {
   _is_open = false;
 }
 
-std::optional<int32_t> DebugLink::Send(const size_t size, const std::unique_ptr<uint8_t[]> buf) {
+std::optional<std::string> DebugLink::Send(const size_t size, const std::unique_ptr<uint8_t[]> buf) {
   this->_out << "Call: Send()" << std::endl;
 
   _last_msg_id = buf[0];
@@ -143,7 +143,7 @@ std::optional<int32_t> DebugLink::Send(const size_t size, const std::unique_ptr<
   return std::nullopt;
 }
 
-std::optional<int32_t> DebugLink::Read(uint8_t *rx, const uint32_t buffer_len) {
+std::optional<std::string> DebugLink::Read(uint8_t *rx, const uint32_t buffer_len) {
   std::memset(rx, _last_msg_id, buffer_len);
   return std::nullopt;
 }
