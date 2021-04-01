@@ -120,7 +120,6 @@ void SOEMControllerImpl::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
     const auto includes_gain = (size - header_size) / body_size > 0;
     const auto output_frame_size = header_size + body_size;
 
-    auto expected = false;
     for (size_t i = 0; i < _dev_num; i++) {
       if (includes_gain) memcpy(&_io_map[output_frame_size * i], &buf[header_size + body_size * i], body_size);
       memcpy(&_io_map[output_frame_size * i + body_size], &buf[0], header_size);
