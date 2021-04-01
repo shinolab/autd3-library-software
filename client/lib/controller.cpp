@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 06/03/2021
+// Last Modified: 01/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -233,7 +233,7 @@ class AUTDControllerStm {
 
   void Start(const Float freq) {
     auto len = this->_stm_gains.size();
-    const auto interval_us = static_cast<int>(1000000. / static_cast<double>(freq) / static_cast<double>(len));
+    auto interval_us = static_cast<uint32_t>(1000000. / static_cast<double>(freq) / static_cast<double>(len));
     this->_p_stm_timer->SetInterval(interval_us);
 
     const auto current_size = this->_stm_bodies.size();

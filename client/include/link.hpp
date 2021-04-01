@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 27/12/2020
+// Last Modified: 01/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -13,6 +13,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 namespace autd {
 namespace link {
@@ -32,14 +33,14 @@ class Link {
   virtual void Close() = 0;
   /**
    * @brief  Send data to devices
-   * @return return nullopt if no error, otherwise return error code.
+   * @return return nullopt if no error, otherwise return error message.
    */
-  virtual std::optional<int32_t> Send(size_t size, std::unique_ptr<uint8_t[]> buf) = 0;
+  virtual std::optional<std::string> Send(size_t size, std::unique_ptr<uint8_t[]> buf) = 0;
   /**
    * @brief  Read data from devices
-   * @return return nullopt if no error, otherwise return error code.
+   * @return return nullopt if no error, otherwise return error message.
    */
-  virtual std::optional<int32_t> Read(uint8_t* rx, uint32_t buffer_len) = 0;
+  virtual std::optional<std::string> Read(uint8_t* rx, uint32_t buffer_len) = 0;
   virtual bool is_open() = 0;
 };
 }  // namespace link

@@ -3,7 +3,7 @@
 // Created Date: 20/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/03/2021
+// Last Modified: 01/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -159,7 +159,7 @@ void WavModulation::Build(const Configuration config) {
   if (buffer_size > mod_buf_size) {
     const auto mod_play_length_max = mod_buf_size / mod_sf;
     std::cerr << "Wave data length is too long. The data is truncated to the first " << mod_play_length_max
-              << (mod_play_length_max == 1 ? " second." : " seconds.") << std::endl;
+              << (mod_play_length_max == 1 ? " second.\n" : " seconds.\n");
     buffer_size = mod_buf_size;
   }
 

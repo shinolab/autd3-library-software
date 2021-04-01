@@ -3,7 +3,7 @@
 // Created Date: 29/04/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 27/12/2020
+// Last Modified: 01/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -66,7 +66,7 @@ void EmulatorLink::Close() {
   }
 }
 
-std::optional<int32_t> EmulatorLink::Send(const size_t size, std::unique_ptr<uint8_t[]> buf) {
+std::optional<std::string> EmulatorLink::Send(const size_t size, std::unique_ptr<uint8_t[]> buf) {
   _last_msg_id = buf[0];
   const std::unique_ptr<const uint8_t[]> send_buf = std::move(buf);
 #if _WINDOWS
@@ -75,7 +75,7 @@ std::optional<int32_t> EmulatorLink::Send(const size_t size, std::unique_ptr<uin
   return std::nullopt;
 }
 
-std::optional<int32_t> EmulatorLink::Read(uint8_t *rx, const uint32_t buffer_len) {
+std::optional<std::string> EmulatorLink::Read(uint8_t *rx, const uint32_t buffer_len) {
   std::memset(rx, _last_msg_id, buffer_len);
   return std::nullopt;
 }

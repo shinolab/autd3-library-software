@@ -3,7 +3,7 @@
 // Created Date: 29/04/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 26/12/2020
+// Last Modified: 01/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -20,9 +20,9 @@
 #include <string>
 #include <utility>
 
-#include "link/emulator.hpp"
 #include "geometry.hpp"
 #include "link.hpp"
+#include "link/emulator.hpp"
 
 namespace autd::link {
 /**
@@ -41,8 +41,8 @@ class EmulatorLink final : public Link {
 
   void Open() override;
   void Close() override;
-  std::optional<int32_t> Send(size_t size, std::unique_ptr<uint8_t[]> buf) override;
-  std::optional<int32_t> Read(uint8_t* rx, uint32_t buffer_len) override;
+  std::optional<std::string> Send(size_t size, std::unique_ptr<uint8_t[]> buf) override;
+  std::optional<std::string> Read(uint8_t* rx, uint32_t buffer_len) override;
   bool is_open() override;
   void SetGeometry();
 

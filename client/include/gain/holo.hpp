@@ -3,7 +3,7 @@
 // Created Date: 06/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/03/2021
+// Last Modified: 01/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -19,6 +19,7 @@
 #include <memory>
 #include <mutex>
 #include <random>
+#include <stdexcept>
 #include <string>
 #include <utility>
 #include <vector>
@@ -243,7 +244,7 @@ class HoloGain final : public Gain {
   }
 
   void SDP() {
-    if (!_backend.supports_SVD() || !_backend.supports_EVD()) std::cerr << "This backend does not support this method.\n";
+    if (!_backend.supports_SVD() || !_backend.supports_EVD()) throw std::runtime_error("This backend does not support this method.");
 
     auto alpha = Float{1e-3};
     auto lambda = Float{0.9};
@@ -309,7 +310,7 @@ class HoloGain final : public Gain {
   }
 
   void EVD() {
-    if (!_backend.supports_EVD() || !_backend.supports_solve()) std::cerr << "This backend does not support this method.\n";
+    if (!_backend.supports_EVD() || !_backend.supports_solve()) throw std::runtime_error("This backend does not support this method.");
 
     Float gamma = 1;
     auto normalize = true;
@@ -454,7 +455,7 @@ class HoloGain final : public Gain {
   }
 
   void LM() {
-    if (!_backend.supports_solve()) std::cerr << "This backend does not support this method.\n";
+    if (!_backend.supports_solve()) throw std::runtime_error("This backend does not support this method.");
 
     auto eps_1 = Float{1e-8};
     auto eps_2 = Float{1e-8};
