@@ -73,8 +73,8 @@ class SOEMControllerImpl final : public SOEMController {
 
   bool is_open() override;
 
-  void Open(const char* ifname, size_t dev_num, ECConfig config) override;
-  void Close() override;
+  bool Open(const char* ifname, size_t dev_num, ECConfig config) override;
+  bool Close() override;
 
   void Send(size_t size, std::unique_ptr<uint8_t[]> buf) override;
   void Read(uint8_t* rx) override;
@@ -162,7 +162,9 @@ void SOEMControllerImpl::SetupSync0(const bool activate, const uint32_t cycle_ti
   }
 }
 
-void SOEMControllerImpl::Open(const char* ifname, const size_t dev_num, const ECConfig config) {
+bool SOEMControllerImpl::Open(const char* ifname, const size_t dev_num, const ECConfig config) {
+  bool res = true;
+
   _dev_num = dev_num;
   _config = config;
   _output_frame_size = (config.header_size + config.body_size) * _dev_num;
@@ -218,6 +220,7 @@ void SOEMControllerImpl::Open(const char* ifname, const size_t dev_num, const EC
   auto* const h_process = GetCurrentProcess();
   if (!SetPriorityClass(h_process, REALTIME_PRIORITY_CLASS)) {
     std::cerr << "Failed to SetPriorityClass\n";
+    res = false;
   }
 
 #elif defined MACOSX
@@ -257,9 +260,11 @@ void SOEMControllerImpl::Open(const char* ifname, const size_t dev_num, const EC
 #endif
 
   _is_open = true;
+  return res;
 }
 
-void SOEMControllerImpl::Close() {
+bool SOEMControllerImpl::Close() {
+  bool res = true;
   if (_is_open) {
     _is_open = false;
 
@@ -286,6 +291,7 @@ void SOEMControllerImpl::Close() {
 
     ec_close();
   }
+  return res;
 }
 
 SOEMControllerImpl::SOEMControllerImpl() : _config() {

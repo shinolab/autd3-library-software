@@ -3,7 +3,7 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 26/12/2020
+// Last Modified: 01/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -35,8 +35,8 @@ class SOEMController {
   SOEMController(SOEMController&& obj) = default;
   SOEMController& operator=(SOEMController&& obj) = default;
 
-  virtual void Open(const char* ifname, size_t dev_num, ECConfig config) = 0;
-  virtual void Close() = 0;
+  virtual bool Open(const char* ifname, size_t dev_num, ECConfig config) = 0;
+  virtual bool Close() = 0;
 
   virtual bool is_open() = 0;
 

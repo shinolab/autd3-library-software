@@ -36,7 +36,7 @@ LinkPtr EmulatorLink::Create(const std::string &ip_addr, const uint16_t port, co
   return link;
 }
 
-void EmulatorLink::Open() {
+bool EmulatorLink::Open() {
 #if _WINDOWS
 #pragma warning(push)
 #pragma warning(disable : 6031)
@@ -51,9 +51,10 @@ void EmulatorLink::Open() {
 #endif
   SetGeometry();
   _is_open = true;
+  return true;
 }
 
-void EmulatorLink::Close() {
+bool EmulatorLink::Close() {
   if (_is_open) {
     auto buf = std::make_unique<uint8_t[]>(1);
     buf[0] = 0x00;
@@ -64,6 +65,7 @@ void EmulatorLink::Close() {
 #endif
     _is_open = false;
   }
+  return true;
 }
 
 std::optional<std::string> EmulatorLink::Send(const size_t size, std::unique_ptr<uint8_t[]> buf) {

@@ -3,7 +3,7 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/03/2021
+// Last Modified: 01/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -41,9 +41,14 @@ int main() {
 
   // If you have already recognized the EtherCAT adapter name, you can write it directly like below.
   // auto ifname = "\\Device\\NPF_{B5B631C6-ED16-4780-9C4C-3941AE8120A6}";
-  const auto ifname = GetAdapterName();
-  autd->OpenWith(autd::link::SOEMLink::Create(ifname, autd->geometry()->num_devices()));
-  if (!autd->is_open()) return ENXIO;
+  try {
+    const auto ifname = GetAdapterName();
+    autd->OpenWith(autd::link::SOEMLink::Create(ifname, autd->geometry()->num_devices()));
+    if (!autd->is_open()) return ENXIO;
+  } catch (std::exception& e) {
+    std::cerr << e.what() << std::endl;
+    return ENXIO;
+  }
 
   return Run(autd);
 }

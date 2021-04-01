@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/03/2021
+// Last Modified: 01/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -12,6 +12,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "configuration.hpp"
@@ -62,6 +63,11 @@ class Controller {
   virtual size_t remaining_in_buffer() = 0;
 
   /**
+   * @brief Return last error message
+   */
+  virtual std::string last_error() = 0;
+
+  /**
    * @brief Open device with a specific link.
    * @param[in] link Link
    */
@@ -77,7 +83,16 @@ class Controller {
    * @param[in] config configuration
    * @return true if success to calibrate
    */
-  virtual bool Calibrate(Configuration config = Configuration::GetDefaultConfiguration()) = 0;
+  [[deprecated("please use Synchronize() instead")]] virtual bool Calibrate(Configuration config = Configuration::GetDefaultConfiguration()) = 0;
+
+  /**
+   * @brief Synchronize all devices
+   * @details Call this function only once after OpenWith(). It takes several seconds and blocks the thread in the meantime.
+   * @param[in] config configuration
+   * @return true if success to synchronize
+   */
+  virtual bool Synchronize(Configuration config = Configuration::GetDefaultConfiguration()) = 0;
+
   /**
    * @brief Clear all data in hardware
    * @return true if success to clear
@@ -87,12 +102,12 @@ class Controller {
   /**
    * @brief Close the controller
    */
-  virtual void Close() = 0;
+  virtual bool Close() = 0;
 
   /**
    * @brief Stop outputting
    */
-  virtual void Stop() = 0;
+  virtual bool Stop() = 0;
   /**
    * @brief Append gain to the controller (non blocking)
    * @param[in] gain Gain to display
@@ -105,7 +120,7 @@ class Controller {
    * @param[in] wait_for_send if true, wait for the data to arrive on devices by handshaking
    * @details Gain will be build in this function.
    */
-  virtual void AppendGainSync(GainPtr gain, bool wait_for_send = false) = 0;
+  virtual bool AppendGainSync(GainPtr gain, bool wait_for_send = false) = 0;
   /**
    * @brief Append modulation to the controller (non blocking)
    * @details Modulation will be sent in another thread
@@ -114,7 +129,7 @@ class Controller {
   /**
    * @brief Append modulation to the controller (blocking)
    */
-  virtual void AppendModulationSync(ModulationPtr modulation) = 0;
+  virtual bool AppendModulationSync(ModulationPtr modulation) = 0;
   /**
    * @brief Append gain for STM
    */
@@ -145,7 +160,7 @@ class Controller {
   /**
    * @brief Append sequence to the controller (blocking)
    */
-  virtual void AppendSequence(SequencePtr seq) = 0;
+  virtual bool AppendSequence(SequencePtr seq) = 0;
 
   /**
    * @brief Flush the buffer

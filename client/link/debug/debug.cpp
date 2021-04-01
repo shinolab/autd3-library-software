@@ -94,14 +94,16 @@ LinkPtr DebugLink::Create(std::ostream &out) {
 }
 DebugLink::DebugLink(std::ostream &out) : _out(out) {}
 
-void DebugLink::Open() {
+bool DebugLink::Open() {
   this->_out << "Call: Open()" << std::endl;
   _is_open = true;
+  return true;
 }
 
-void DebugLink::Close() {
+bool DebugLink::Close() {
   this->_out << "Call: Close()" << std::endl;
   _is_open = false;
+  return true;
 }
 
 std::optional<std::string> DebugLink::Send(const size_t size, const std::unique_ptr<uint8_t[]> buf) {

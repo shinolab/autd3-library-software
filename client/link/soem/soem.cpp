@@ -47,8 +47,8 @@ class SOEMLinkImpl final : public SOEMLink {
   SOEMLinkImpl& operator=(SOEMLinkImpl&& obj) = delete;
 
  protected:
-  void Open() override;
-  void Close() override;
+  bool Open() override;
+  bool Close() override;
   std::optional<std::string> Send(size_t size, std::unique_ptr<uint8_t[]> buf) override;
   std::optional<std::string> Read(uint8_t* rx, uint32_t buffer_len) override;
   bool is_open() override;
@@ -65,7 +65,7 @@ LinkPtr SOEMLink::Create(const std::string& ifname, const size_t device_num) {
   return link;
 }
 
-void SOEMLinkImpl::Open() {
+bool SOEMLinkImpl::Open() {
   _cnt = autdsoem::SOEMController::Create();
 
   _config = autdsoem::ECConfig{};
@@ -75,13 +75,14 @@ void SOEMLinkImpl::Open() {
   _config.body_size = 498;
   _config.input_frame_size = EC_INPUT_FRAME_SIZE;
 
-  _cnt->Open(_ifname.c_str(), _device_num, _config);
+  return _cnt->Open(_ifname.c_str(), _device_num, _config);
 }
 
-void SOEMLinkImpl::Close() {
+bool SOEMLinkImpl::Close() {
   if (_cnt->is_open()) {
     _cnt->Close();
   }
+  return true;
 }
 
 std::optional<std::string> SOEMLinkImpl::Send(const size_t size, std::unique_ptr<uint8_t[]> buf) {

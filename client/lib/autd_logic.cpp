@@ -77,7 +77,7 @@ void AUTDLogic::Send(const GainPtr &gain, const ModulationPtr &mod) {
   this->SendData(body_size, move(body));
 }
 
-void AUTDLogic::SendBlocking(const GainPtr &gain, const ModulationPtr &mod) {
+bool AUTDLogic::SendBlocking(const GainPtr &gain, const ModulationPtr &mod) {
   if (gain != nullptr) {
     this->_seq_mode = false;
   }
@@ -86,10 +86,10 @@ void AUTDLogic::SendBlocking(const GainPtr &gain, const ModulationPtr &mod) {
   uint8_t msg_id = 0;
   auto body = this->MakeBody(gain, mod, &body_size, &msg_id);
   this->SendData(body_size, move(body));
-  WaitMsgProcessed(msg_id);
+  return WaitMsgProcessed(msg_id);
 }
 
-void AUTDLogic::SendBlocking(const SequencePtr &seq) {
+bool AUTDLogic::SendBlocking(const SequencePtr &seq) {
   this->_seq_mode = true;
 
   size_t body_size = 0;
@@ -97,9 +97,9 @@ void AUTDLogic::SendBlocking(const SequencePtr &seq) {
   auto body = this->MakeBody(seq, &body_size, &msg_id);
   this->SendData(body_size, move(body));
   if (seq->sent() == seq->control_points().size()) {
-    this->WaitMsgProcessed(0xC0, 2000, 0xE0);
+    return this->WaitMsgProcessed(0xC0, 2000, 0xE0);
   } else {
-    this->WaitMsgProcessed(msg_id, 200);
+    return this->WaitMsgProcessed(msg_id, 200);
   }
 }
 
@@ -155,14 +155,14 @@ bool AUTDLogic::WaitMsgProcessed(const uint8_t msg_id, const size_t max_trial, c
   return false;
 }
 
-bool AUTDLogic::Calibrate(const Configuration config) {
+bool AUTDLogic::Synchronize(const Configuration config) {
   this->_config = config;
   size_t size = 0;
   auto body = this->MakeCalibBody(config, &size);
   return this->SendBlocking(size, move(body), 5000);
 }
 
-void AUTDLogic::CalibrateSeq() {
+bool AUTDLogic::SynchronizeSeq() {
   std::vector<uint16_t> laps;
   for (size_t i = 0; i < this->_rx_data.size() / 2; i++) {
     const auto lap_raw = static_cast<uint16_t>(_rx_data[2 * i + 1]) << 8 | _rx_data[2 * i];
@@ -177,7 +177,7 @@ void AUTDLogic::CalibrateSeq() {
 
   const auto diff_max = *std::max_element(diffs.begin(), diffs.end());
   if (diff_max == 0) {
-    return;
+    return true;
   }
 
   if (diff_max > 500) {
@@ -193,7 +193,7 @@ void AUTDLogic::CalibrateSeq() {
   size_t body_size = 0;
   auto calib_body = this->MakeCalibSeqBody(diffs, &body_size);
   this->SendData(body_size, move(calib_body));
-  this->WaitMsgProcessed(0xE0, 200, 0xE0);
+  return this->WaitMsgProcessed(0xE0, 200, 0xE0);
 }
 
 bool AUTDLogic::Clear() {
@@ -209,12 +209,14 @@ bool AUTDLogic::Clear() {
   return this->SendBlocking(size, move(body), 200);
 }
 
-void AUTDLogic::Close() {
+bool AUTDLogic::Close() {
+  bool res = true;
   if (this->_link != nullptr) {
-    this->Clear();
-    this->_link->Close();
+    res &= this->Clear();
+    res &= this->_link->Close();
     this->_link = nullptr;
   }
+  return res;
 }
 
 inline uint16_t ConcatByte(const uint8_t high, const uint16_t low) { return static_cast<uint16_t>(static_cast<uint16_t>(high) << 8 | low); }
@@ -377,9 +379,7 @@ unique_ptr<uint8_t[]> AUTDLogic::MakeCalibBody(const Configuration config, size_
   const auto mod_sampling_freq = static_cast<uint32_t>(_config.mod_sampling_freq());
   const auto mod_buf_size = static_cast<uint32_t>(_config.mod_buf_size());
 
-  if (mod_buf_size < mod_sampling_freq) {
-    throw std::runtime_error("Modulation buffer size must be not less than sampling frequency");
-  }
+  if (mod_buf_size < mod_sampling_freq) throw std::runtime_error("Modulation buffer size must be not less than sampling frequency");
 
   const auto mod_idx_shift = Log2U(MOD_SAMPLING_FREQ_BASE / mod_sampling_freq);
   const auto ref_clk_cyc_shift = Log2U(mod_buf_size / mod_sampling_freq);
