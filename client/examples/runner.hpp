@@ -3,7 +3,7 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/03/2021
+// Last Modified: 01/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -19,11 +19,11 @@
 #include <vector>
 
 #include "autd3.hpp"
-#include "bessel.hpp"
-#include "holo.hpp"
-#include "seq.hpp"
-#include "simple.hpp"
-#include "stm.hpp"
+#include "examples/bessel.hpp"
+#include "examples/holo.hpp"
+#include "examples/seq.hpp"
+#include "examples/simple.hpp"
+#include "examples/stm.hpp"
 
 using std::cin;
 using std::cout;
@@ -46,12 +46,14 @@ inline int Run(autd::ControllerPtr& autd) {
 
   autd->geometry()->set_wavelength(ULTRASOUND_WAVELENGTH);
 
-  autd->Clear();
-
-  auto config = autd::Configuration::GetDefaultConfiguration();
-  config.set_mod_buf_size(autd::MOD_BUF_SIZE::BUF_4000);
-  config.set_mod_sampling_freq(autd::MOD_SAMPLING_FREQ::SMPL_4_KHZ);
-  autd->Calibrate(config);
+  try {
+    autd->Clear();
+    autd->Synchronize();
+  } catch (std::exception& e) {
+    autd->Close();
+    std::cerr << e.what() << std::endl;
+    return ENXIO;
+  }
 
   auto firm_info_list = autd->firmware_info_list();
   for (auto& firm_info : firm_info_list) cout << firm_info << endl;
@@ -76,7 +78,7 @@ inline int Run(autd::ControllerPtr& autd) {
     fn(autd);
 
     cout << "press any key to finish..." << endl;
-    auto _ = getchar();
+    cin.ignore();
 
     cout << "finish." << endl;
     autd->FinishSTModulation();

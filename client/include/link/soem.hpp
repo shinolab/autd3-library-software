@@ -52,8 +52,8 @@ class SOEMLink : public Link {
   SOEMLink(SOEMLink&& obj) = delete;
   SOEMLink& operator=(SOEMLink&& obj) = delete;
 
-  void Open() override = 0;
-  void Close() override = 0;
+  bool Open() override = 0;
+  bool Close() override = 0;
   std::optional<std::string> Send(size_t size, std::unique_ptr<uint8_t[]> buf) override = 0;
   std::optional<std::string> Read(uint8_t* rx, uint32_t buffer_len) override = 0;
   bool is_open() override = 0;

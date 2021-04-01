@@ -29,8 +29,8 @@ class Link {
   Link(Link&& obj) = delete;
   Link& operator=(Link&& obj) = delete;
 
-  virtual void Open() = 0;
-  virtual void Close() = 0;
+  virtual bool Open() = 0;
+  virtual bool Close() = 0;
   /**
    * @brief  Send data to devices
    * @return return nullopt if no error, otherwise return error message.

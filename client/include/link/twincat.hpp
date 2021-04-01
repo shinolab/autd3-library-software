@@ -46,8 +46,8 @@ class TwinCATLink : public Link {
   TwinCATLink(TwinCATLink&& obj) = delete;
   TwinCATLink& operator=(TwinCATLink&& obj) = delete;
 
-  void Open() override = 0;
-  void Close() override = 0;
+  bool Open() override = 0;
+  bool Close() override = 0;
   std::optional<std::string> Send(size_t size, std::unique_ptr<uint8_t[]> buf) override = 0;
   std::optional<std::string> Read(uint8_t* rx, uint32_t buffer_len) override = 0;
   bool is_open() override = 0;
@@ -69,8 +69,8 @@ class LocalTwinCATLink : public Link {
   LocalTwinCATLink(LocalTwinCATLink&& obj) = delete;
   LocalTwinCATLink& operator=(LocalTwinCATLink&& obj) = delete;
 
-  void Open() override = 0;
-  void Close() override = 0;
+  bool Open() override = 0;
+  bool Close() override = 0;
   std::optional<std::string> Send(size_t size, std::unique_ptr<uint8_t[]> buf) override = 0;
   std::optional<std::string> Read(uint8_t* rx, uint32_t buffer_len) override = 0;
   bool is_open() override = 0;

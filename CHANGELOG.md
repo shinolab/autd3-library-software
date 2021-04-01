@@ -3,6 +3,7 @@
 * Make Eigen enable by default
 * Add `HoloGainE` and `HoloGainB` alias for `HoloGain<Eigen3Backend>` and `HoloGain<BLASBackend>`, respectively
 * Add `Geometry::DelDevice` and `Geometry::ClearDevices`
+* Some functions that may fail now return a bool value. Also, functions that caused fatal errors now throw an exception.
 
 # 0.9.0
 * Add BLAS backend in HoloGain

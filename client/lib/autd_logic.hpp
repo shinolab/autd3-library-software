@@ -3,7 +3,7 @@
 // Created Date: 22/12/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/03/2021
+// Last Modified: 01/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -54,16 +54,16 @@ class AUTDLogic {
   void BuildModulation(const ModulationPtr& mod) const;
 
   void Send(const GainPtr& gain, const ModulationPtr& mod);
-  void SendBlocking(const GainPtr& gain, const ModulationPtr& mod);
-  void SendBlocking(const SequencePtr& seq);
+  bool SendBlocking(const GainPtr& gain, const ModulationPtr& mod);
+  bool SendBlocking(const SequencePtr& seq);
   bool SendBlocking(size_t size, unique_ptr<uint8_t[]> data, size_t trial);
   void SendData(size_t size, unique_ptr<uint8_t[]> data) const;
 
   bool WaitMsgProcessed(uint8_t msg_id, size_t max_trial = 200, uint8_t mask = 0xFF);
-  bool Calibrate(Configuration config);
-  void CalibrateSeq();
+  bool Synchronize(Configuration config);
+  bool SynchronizeSeq();
   bool Clear();
-  void Close();
+  bool Close();
   std::vector<FirmwareInfo> firmware_info_list();
 
   unique_ptr<uint8_t[]> MakeBody(const GainPtr& gain, const ModulationPtr& mod, size_t* size, uint8_t* send_msg_id) const;

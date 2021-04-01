@@ -3,7 +3,7 @@
 // Created Date: 11/10/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/03/2021
+// Last Modified: 01/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -12,6 +12,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "autd_logic.hpp"
@@ -37,25 +38,28 @@ class AUTDController final : public Controller {
   GeometryPtr geometry() noexcept override;
   bool silent_mode() noexcept override;
   size_t remaining_in_buffer() override;
+  std::string last_error() override;
+
   void SetSilentMode(bool silent) noexcept override;
 
   void OpenWith(LinkPtr link) override;
   bool Calibrate(Configuration config) override;
+  bool Synchronize(Configuration config) override;
   bool Clear() override;
-  void Close() override;
+  bool Close() override;
   void Flush() override;
 
-  void Stop() override;
+  bool Stop() override;
   void AppendGain(GainPtr gain) override;
-  void AppendGainSync(GainPtr gain, bool wait_for_send = false) override;
+  bool AppendGainSync(GainPtr gain, bool wait_for_send = false) override;
   void AppendModulation(ModulationPtr mod) override;
-  void AppendModulationSync(ModulationPtr mod) override;
+  bool AppendModulationSync(ModulationPtr mod) override;
   void AppendSTMGain(GainPtr gain) override;
   void AppendSTMGain(const std::vector<GainPtr>& gain_list) override;
   void StartSTModulation(Float freq) override;
   void StopSTModulation() override;
   void FinishSTModulation() override;
-  void AppendSequence(SequencePtr seq) override;
+  bool AppendSequence(SequencePtr seq) override;
   std::vector<FirmwareInfo> firmware_info_list() override;
 
  private:
@@ -63,5 +67,7 @@ class AUTDController final : public Controller {
   std::unique_ptr<AUTDControllerAsync> _async_cnt;
   std::unique_ptr<AUTDControllerStm> _stm_cnt;
   std::shared_ptr<AUTDLogic> _autd_logic;
+
+  std::string _last_error;
 };
 }  // namespace autd::internal

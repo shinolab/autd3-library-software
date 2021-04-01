@@ -38,27 +38,31 @@ class AUTDControllerSync {
  public:
   explicit AUTDControllerSync(const shared_ptr<AUTDLogic>& logic) : _autd_logic(logic) {}
 
-  void AppendGain(const GainPtr& gain, const bool wait_for_send) const {
+  bool AppendGain(const GainPtr& gain, const bool wait_for_send) const {
     this->_autd_logic->BuildGain(gain);
     if (wait_for_send) {
-      this->_autd_logic->SendBlocking(gain, nullptr);
+      return this->_autd_logic->SendBlocking(gain, nullptr);
     } else {
       this->_autd_logic->Send(gain, nullptr);
+      return true;
     }
   }
-  void AppendModulation(const ModulationPtr& mod) const {
+  bool AppendModulation(const ModulationPtr& mod) const {
+    auto res = true;
     this->_autd_logic->BuildModulation(mod);
     while (mod->buffer.size() > mod->sent()) {
-      _autd_logic->SendBlocking(nullptr, mod);
+      res &= _autd_logic->SendBlocking(nullptr, mod);
     }
     mod->sent() = 0;
+    return res;
   }
 
-  void AppendSeq(const SequencePtr& seq) const {
+  bool AppendSeq(const SequencePtr& seq) const {
+    auto res = true;
     while (seq->sent() < seq->control_points().size()) {
-      this->_autd_logic->SendBlocking(seq);
+      res &= this->_autd_logic->SendBlocking(seq);
     }
-    this->_autd_logic->CalibrateSeq();
+    return res && this->_autd_logic->SynchronizeSeq();
   }
 
  private:
@@ -304,57 +308,124 @@ bool AUTDController::silent_mode() noexcept { return this->_autd_logic->silent_m
 
 size_t AUTDController::remaining_in_buffer() { return this->_async_cnt->remaining_in_buffer(); }
 
+std::string AUTDController::last_error() { return this->_last_error; }
+
 void AUTDController::SetSilentMode(const bool silent) noexcept { this->_autd_logic->silent_mode() = silent; }
 
 void AUTDController::OpenWith(LinkPtr link) {
-  this->Close();
-  this->_autd_logic->OpenWith(move(link));
-  if (this->_autd_logic->is_open()) this->_async_cnt->InitPipeline();
+  try {
+    this->Close();
+    this->_autd_logic->OpenWith(move(link));
+    if (this->_autd_logic->is_open()) this->_async_cnt->InitPipeline();
+  } catch (std::exception& e) {
+    this->_last_error = e.what();
+    throw;
+  }
+}
+bool AUTDController::Calibrate(const Configuration config) { return Synchronize(config); }
+bool AUTDController::Synchronize(const Configuration config) {
+  bool res;
+  try {
+    res = this->_autd_logic->Synchronize(config);
+  } catch (std::exception& e) {
+    res = false;
+    this->_last_error = std::string(e.what());
+    throw;
+  }
+
+  return res;
 }
 
-bool AUTDController::Calibrate(const Configuration config) { return this->_autd_logic->Calibrate(config); }
+bool AUTDController::Clear() {
+  bool res;
+  try {
+    res = this->_autd_logic->Clear();
+  } catch (std::exception& e) {
+    this->_last_error = e.what();
+    throw;
+  }
+  return res;
+}
 
-bool AUTDController::Clear() { return this->_autd_logic->Clear(); }
-
-void AUTDController::Close() {
-  this->_stm_cnt->Close();
-  this->_async_cnt->Close();
-  this->Stop();
-  this->Clear();
-  this->_autd_logic->Close();
+bool AUTDController::Close() {
+  bool res = true;
+  try {
+    this->_stm_cnt->Close();
+    this->_async_cnt->Close();
+    this->Stop();
+    res &= this->Clear();
+    res &= this->_autd_logic->Close();
+  } catch (std::exception& e) {
+    this->_last_error = e.what();
+    throw;
+  }
+  return res;
 }
 
 void AUTDController::Flush() { this->_async_cnt->Flush(); }
 
-void AUTDController::Stop() {
+bool AUTDController::Stop() {
   const auto null_gain = gain::NullGain::Create();
-  this->AppendGainSync(null_gain, true);
+  return this->AppendGainSync(null_gain, true);
 }
 
 void AUTDController::AppendGain(const GainPtr gain) {
   this->_stm_cnt->Stop();
   this->_async_cnt->AppendGain(gain);
 }
-void AUTDController::AppendGainSync(const GainPtr gain, const bool wait_for_send) {
-  this->_stm_cnt->Stop();
-  this->_sync_cnt->AppendGain(gain, wait_for_send);
+bool AUTDController::AppendGainSync(const GainPtr gain, const bool wait_for_send) {
+  try {
+    this->_stm_cnt->Stop();
+    return this->_sync_cnt->AppendGain(gain, wait_for_send);
+  } catch (std::exception& e) {
+    this->_last_error = e.what();
+    throw;
+  }
 }
 
 void AUTDController::AppendModulation(const ModulationPtr mod) { this->_sync_cnt->AppendModulation(mod); }
-void AUTDController::AppendModulationSync(const ModulationPtr mod) { this->_sync_cnt->AppendModulation(mod); }
+bool AUTDController::AppendModulationSync(const ModulationPtr mod) {
+  try {
+    return this->_sync_cnt->AppendModulation(mod);
+  } catch (std::exception& e) {
+    this->_last_error = e.what();
+    throw;
+  }
+}
 
 void AUTDController::AppendSTMGain(const GainPtr gain) { this->_stm_cnt->AppendGain(gain); }
 void AUTDController::AppendSTMGain(const std::vector<GainPtr>& gain_list) { this->_stm_cnt->AppendGain(gain_list); }
-void AUTDController::StartSTModulation(const Float freq) { this->_stm_cnt->Start(freq); }
+void AUTDController::StartSTModulation(const Float freq) {
+  try {
+    this->_stm_cnt->Start(freq);
+  } catch (std::exception& e) {
+    this->_last_error = e.what();
+    throw;
+  }
+}
 void AUTDController::StopSTModulation() {
   this->_stm_cnt->Stop();
   this->Stop();
 }
 void AUTDController::FinishSTModulation() { this->_stm_cnt->Finish(); }
 
-void AUTDController::AppendSequence(const SequencePtr seq) { this->_sync_cnt->AppendSeq(seq); }
+bool AUTDController::AppendSequence(const SequencePtr seq) {
+  try {
+    return this->_sync_cnt->AppendSeq(seq);
+  } catch (std::exception& e) {
+    this->_last_error = e.what();
+    throw;
+  }
+}
 
-std::vector<FirmwareInfo> AUTDController::firmware_info_list() { return this->_autd_logic->firmware_info_list(); }
+std::vector<FirmwareInfo> AUTDController::firmware_info_list() {
+  try {
+    return this->_autd_logic->firmware_info_list();
+  } catch (std::exception& e) {
+    this->_last_error = e.what();
+    throw;
+  }
+}
 }  // namespace internal
 
 ControllerPtr Controller::Create() { return std::make_unique<internal::AUTDController>(); }
