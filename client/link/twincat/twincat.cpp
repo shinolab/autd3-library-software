@@ -257,11 +257,11 @@ std::optional<std::string> LocalTwinCATLinkImpl::Read(uint8_t* rx, const uint32_
 
 #else
 void LocalTwinCATLinkImpl::Open() {
-  throw runtime_error("Link to localhost has not been compiled. Rebuild this library on a Twincat3 host machine with TcADS-DLL.");
+  throw std::runtime_error("Link to localhost has not been compiled. Rebuild this library on a Twincat3 host machine with TcADS-DLL.");
 }
 void LocalTwinCATLinkImpl::Close() {}
-std::optional<int32_t> LocalTwinCATLinkImpl::Send(size_t size, std::unique_ptr<uint8_t[]> buf) { return std::nullopt; }
-std::optional<int32_t> LocalTwinCATLinkImpl::Read(uint8_t* rx, uint32_t buffer_len) { return std::nullopt; }
+std::optional<std::string> LocalTwinCATLinkImpl::Send(size_t size, std::unique_ptr<uint8_t[]> buf) { return std::nullopt; }
+std::optional<std::string> LocalTwinCATLinkImpl::Read(uint8_t* rx, uint32_t buffer_len) { return std::nullopt; }
 #endif  // TC_ADS
 
 }  // namespace autd::link
