@@ -31,5 +31,5 @@ inline void STMTest(const autd::ControllerPtr& autd) {
     autd->AppendSTMGain(g);
   }
 
-  autd->StartSTModulation(1.0);  // 1 Hz
+  autd->StartSTModulation(1);  // 1 Hz
 }

@@ -60,7 +60,8 @@
 
 namespace autdsoem {
 
-static std::atomic<bool> AUTD3_LIB_RT_THREAD_LOCK(false);
+//static std::atomic<bool> AUTD3_LIB_RT_THREAD_LOCK(false);
+static std::timed_mutex AUTD3_LIB_RT_THREAD_MTX;
 
 class SOEMControllerImpl final : public SOEMController {
  public:
@@ -120,6 +121,9 @@ void SOEMControllerImpl::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
     const auto includes_gain = (size - header_size) / body_size > 0;
     const auto output_frame_size = header_size + body_size;
 
+    std::unique_lock lk(AUTD3_LIB_RT_THREAD_MTX, std::defer_lock);
+    lk.try_lock_for(
+        std::chrono::nanoseconds(_config.ec_sm3_cycle_time_ns) * 2);
     for (size_t i = 0; i < _dev_num; i++) {
       if (includes_gain) memcpy(&_io_map[output_frame_size * i], &buf[header_size + body_size * i], body_size);
       memcpy(&_io_map[output_frame_size * i + body_size], &buf[0], header_size);
@@ -144,11 +148,17 @@ void SOEMControllerImpl::rt_thread()
 void SOEMControllerImpl::rt_thread(union sigval sv)
 #endif
 {
-  auto expected = false;
-  if (AUTD3_LIB_RT_THREAD_LOCK.compare_exchange_strong(expected, true)) {
+  //auto expected = false;
+  //if (AUTD3_LIB_RT_THREAD_LOCK.compare_exchange_strong(expected, true)) {
+  //  ec_send_processdata();
+  //  AUTD3_LIB_RT_THREAD_LOCK.store(false, std::memory_order_release);
+  //  ec_receive_processdata(EC_TIMEOUTRET);
+  //}
+  std::unique_lock lk(AUTD3_LIB_RT_THREAD_MTX, std::defer_lock);
+  if (lk.try_lock()) {
     ec_send_processdata();
-    AUTD3_LIB_RT_THREAD_LOCK.store(false, std::memory_order_release);
     ec_receive_processdata(EC_TIMEOUTRET);
+    lk.unlock();
   }
 }
 
