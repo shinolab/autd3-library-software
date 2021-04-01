@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/04/2021
+// Last Modified: 02/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -60,7 +60,6 @@
 
 namespace autdsoem {
 
-//static std::timed_mutex AUTD3_LIB_RT_THREAD_MTX;
 static std::atomic<bool> AUTD3_LIB_SEND_COND(false);
 static std::atomic<bool> AUTD3_LIB_RT_THREAD_LOCK(false);
 
@@ -120,18 +119,6 @@ bool SOEMControllerImpl::is_open() { return _is_open; }
 
 void SOEMControllerImpl::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
   if (buf != nullptr && _is_open) {
-    /*const auto header_size = _config.header_size;
-    const auto body_size = _config.body_size;
-    const auto includes_gain = (size - header_size) / body_size > 0;
-    const auto output_frame_size = header_size + body_size;
-
-    std::unique_lock lk(AUTD3_LIB_RT_THREAD_MTX, std::defer_lock);
-    lk.try_lock_for(
-        std::chrono::nanoseconds(_config.ec_sm3_cycle_time_ns) * 2);
-    for (size_t i = 0; i < _dev_num; i++) {
-      if (includes_gain) memcpy(&_io_map[output_frame_size * i], &buf[header_size + body_size * i], body_size);
-      memcpy(&_io_map[output_frame_size * i + body_size], &buf[0], header_size);
-    }*/
     {
       std::unique_lock<std::mutex> lk(_send_mtx);
       _send_q.push(std::pair(std::move(buf), size));
@@ -157,18 +144,6 @@ void SOEMControllerImpl::rt_thread()
 void SOEMControllerImpl::rt_thread(union sigval sv)
 #endif
 {
-  //auto expected = false;
-  //if (AUTD3_LIB_RT_THREAD_LOCK.compare_exchange_strong(expected, true)) {
-  //  ec_send_processdata();
-  //  AUTD3_LIB_RT_THREAD_LOCK.store(false, std::memory_order_release);
-  //  ec_receive_processdata(EC_TIMEOUTRET);
-  //}
-  //std::unique_lock lk(AUTD3_LIB_RT_THREAD_MTX, std::defer_lock);
-  //if (lk.try_lock()) {
-  //  ec_send_processdata();
-  //  ec_receive_processdata(EC_TIMEOUTRET);
-  //  lk.unlock();
-  //}
   auto expected = false;
   if (AUTD3_LIB_RT_THREAD_LOCK.compare_exchange_weak(expected, true)) {
     const auto pre = AUTD3_LIB_SEND_COND.load(std::memory_order_acquire);
@@ -299,14 +274,11 @@ bool SOEMControllerImpl::Close() {
     _is_open = false;
 
     _send_cond.notify_all();
-    if (std::this_thread::get_id() != _send_thread.get_id() &&
-        this->_send_thread.joinable())
-      this->_send_thread.join();
+    if (std::this_thread::get_id() != _send_thread.get_id() && this->_send_thread.joinable()) this->_send_thread.join();
     {
       std::unique_lock<std::mutex> lk(_send_mtx);
       std::queue<std::pair<std::unique_ptr<uint8_t[]>, size_t>>().swap(_send_q);
     }
-
 
     memset(_io_map, 0x00, _output_frame_size);
 
@@ -334,8 +306,7 @@ bool SOEMControllerImpl::Close() {
   return res;
 }
 
-void SOEMControllerImpl::CreateSendThread(size_t header_size,
-                                          size_t body_size) {
+void SOEMControllerImpl::CreateSendThread(size_t header_size, size_t body_size) {
   _send_thread = std::thread([this, header_size, body_size]() {
     while (_is_open) {
       std::unique_ptr<uint8_t[]> buf = nullptr;
@@ -355,17 +326,13 @@ void SOEMControllerImpl::CreateSendThread(size_t header_size,
         const auto output_frame_size = header_size + body_size;
 
         for (size_t i = 0; i < _dev_num; i++) {
-          if (includes_gain)
-            memcpy(&_io_map[output_frame_size * i],
-                   &buf[header_size + body_size * i], body_size);
-          memcpy(&_io_map[output_frame_size * i + body_size], &buf[0],
-                 header_size);
+          if (includes_gain) memcpy(&_io_map[output_frame_size * i], &buf[header_size + body_size * i], body_size);
+          memcpy(&_io_map[output_frame_size * i + body_size], &buf[0], header_size);
         }
 
         {
           AUTD3_LIB_SEND_COND.store(false, std::memory_order_release);
-          while (!AUTD3_LIB_SEND_COND.load(std::memory_order_acquire) &&
-                 _is_open) {
+          while (!AUTD3_LIB_SEND_COND.load(std::memory_order_acquire) && _is_open) {
           }
         }
 
