@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/03/2021
+// Last Modified: 01/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -32,7 +32,7 @@ EXPORT_AUTD int32_t AUTDAddDeviceQuaternion(VOID_PTR handle, autd::Float x, autd
                                             autd::Float qua_y, autd::Float qua_z, int32_t group_id);
 EXPORT_AUTD int32_t AUTDDeleteDevice(VOID_PTR handle, int32_t idx);
 EXPORT_AUTD void AUTDClearDevices(VOID_PTR handle);
-EXPORT_AUTD bool AUTDCalibrate(VOID_PTR handle, int32_t smpl_freq, int32_t buf_size);
+EXPORT_AUTD bool AUTDSynchronize(VOID_PTR handle, int32_t smpl_freq, int32_t buf_size);
 EXPORT_AUTD void AUTDCloseController(VOID_PTR handle);
 EXPORT_AUTD void AUTDClear(VOID_PTR handle);
 EXPORT_AUTD void AUTDFreeController(VOID_PTR handle);
@@ -41,6 +41,7 @@ EXPORT_AUTD void AUTDStop(VOID_PTR handle);
 EXPORT_AUTD int32_t AUTDGetFirmwareInfoListPointer(VOID_PTR handle, VOID_PTR* out);
 EXPORT_AUTD void AUTDGetFirmwareInfo(VOID_PTR p_firm_info_list, int32_t index, char* cpu_ver, char* fpga_ver);
 EXPORT_AUTD void AUTDFreeFirmwareInfoListPointer(VOID_PTR p_firm_info_list);
+EXPORT_AUTD void AUTDGetLastError(VOID_PTR handle, char* last_error);
 #pragma endregion
 
 #pragma region Property

@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 31/03/2021
+// Last Modified: 01/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -53,12 +53,12 @@ void AUTDClearDevices(VOID_PTR const handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   cnt->ptr->geometry()->ClearDevices();
 }
-bool AUTDCalibrate(VOID_PTR const handle, int32_t smpl_freq, int32_t buf_size) {
+bool AUTDSynchronize(VOID_PTR const handle, int32_t smpl_freq, int32_t buf_size) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   auto config = autd::Configuration::GetDefaultConfiguration();
   config.set_mod_sampling_freq(static_cast<autd::MOD_SAMPLING_FREQ>(smpl_freq));
   config.set_mod_buf_size(static_cast<autd::MOD_BUF_SIZE>(buf_size));
-  return cnt->ptr->Calibrate(config);
+  return cnt->ptr->Synchronize(config);
 }
 void AUTDCloseController(VOID_PTR const handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
@@ -97,6 +97,11 @@ void AUTDGetFirmwareInfo(VOID_PTR p_firm_info_list, const int32_t index, char* c
 void AUTDFreeFirmwareInfoListPointer(VOID_PTR p_firm_info_list) {
   auto* wrapper = static_cast<FirmwareInfoListWrapper*>(p_firm_info_list);
   FirmwareInfoListDelete(wrapper);
+}
+void AUTDGetLastError(VOID_PTR const handle, char* last_error) {
+  auto* cnt = static_cast<ControllerWrapper*>(handle);
+  const auto error_message_ = cnt->ptr->last_error();
+  std::char_traits<char>::copy(last_error, error_message_.c_str(), error_message_.size() + 1);
 }
 #pragma endregion
 
