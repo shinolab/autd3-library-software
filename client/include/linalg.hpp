@@ -3,7 +3,7 @@
 // Created Date: 20/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/03/2021
+// Last Modified: 01/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -17,9 +17,16 @@
 #pragma warning(push)
 #pragma warning(disable : ALL_CODE_ANALYSIS_WARNINGS)
 #endif
+#ifdef linux
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
 #include <Eigen/Dense>
 #if WIN32
 #pragma warning(pop)
+#endif
+#ifdef linux
+#pragma GCC diagnostic pop
 #endif
 #else
 #include "linalg/matrix.hpp"
