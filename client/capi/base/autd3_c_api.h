@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/04/2021
+// Last Modified: 02/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -33,11 +33,11 @@ EXPORT_AUTD int32_t AUTDAddDeviceQuaternion(VOID_PTR handle, autd::Float x, autd
 EXPORT_AUTD int32_t AUTDDeleteDevice(VOID_PTR handle, int32_t idx);
 EXPORT_AUTD void AUTDClearDevices(VOID_PTR handle);
 EXPORT_AUTD bool AUTDSynchronize(VOID_PTR handle, int32_t smpl_freq, int32_t buf_size);
-EXPORT_AUTD void AUTDCloseController(VOID_PTR handle);
-EXPORT_AUTD void AUTDClear(VOID_PTR handle);
+EXPORT_AUTD bool AUTDCloseController(VOID_PTR handle);
+EXPORT_AUTD bool AUTDClear(VOID_PTR handle);
 EXPORT_AUTD void AUTDFreeController(VOID_PTR handle);
 EXPORT_AUTD void AUTDSetSilentMode(VOID_PTR handle, bool mode);
-EXPORT_AUTD void AUTDStop(VOID_PTR handle);
+EXPORT_AUTD bool AUTDStop(VOID_PTR handle);
 EXPORT_AUTD int32_t AUTDGetFirmwareInfoListPointer(VOID_PTR handle, VOID_PTR* out);
 EXPORT_AUTD void AUTDGetFirmwareInfo(VOID_PTR p_firm_info_list, int32_t index, char* cpu_ver, char* fpga_ver);
 EXPORT_AUTD void AUTDFreeFirmwareInfoListPointer(VOID_PTR p_firm_info_list);
@@ -89,14 +89,14 @@ EXPORT_AUTD void AUTDCircumSequence(VOID_PTR* out, autd::Float x, autd::Float y,
 
 #pragma region LowLevelInterface
 EXPORT_AUTD void AUTDAppendGain(VOID_PTR handle, VOID_PTR gain);
-EXPORT_AUTD void AUTDAppendGainSync(VOID_PTR handle, VOID_PTR gain, bool wait_for_send);
+EXPORT_AUTD bool AUTDAppendGainSync(VOID_PTR handle, VOID_PTR gain, bool wait_for_send);
 EXPORT_AUTD void AUTDAppendModulation(VOID_PTR handle, VOID_PTR mod);
-EXPORT_AUTD void AUTDAppendModulationSync(VOID_PTR handle, VOID_PTR mod);
+EXPORT_AUTD bool AUTDAppendModulationSync(VOID_PTR handle, VOID_PTR mod);
 EXPORT_AUTD void AUTDAppendSTMGain(VOID_PTR handle, VOID_PTR gain);
 EXPORT_AUTD void AUTDStartSTModulation(VOID_PTR handle, autd::Float freq);
 EXPORT_AUTD void AUTDStopSTModulation(VOID_PTR handle);
 EXPORT_AUTD void AUTDFinishSTModulation(VOID_PTR handle);
-EXPORT_AUTD void AUTDAppendSequence(VOID_PTR handle, VOID_PTR seq);
+EXPORT_AUTD bool AUTDAppendSequence(VOID_PTR handle, VOID_PTR seq);
 EXPORT_AUTD void AUTDFlush(VOID_PTR handle);
 EXPORT_AUTD int32_t AUTDDeviceIdxForTransIdx(VOID_PTR handle, int32_t global_trans_idx);
 EXPORT_AUTD autd::Float* AUTDTransPositionByGlobal(VOID_PTR handle, int32_t global_trans_idx);

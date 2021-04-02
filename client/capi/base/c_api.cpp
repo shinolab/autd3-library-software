@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/04/2021
+// Last Modified: 02/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -60,13 +60,13 @@ bool AUTDSynchronize(VOID_PTR const handle, int32_t smpl_freq, int32_t buf_size)
   config.set_mod_buf_size(static_cast<autd::MOD_BUF_SIZE>(buf_size));
   return cnt->ptr->Synchronize(config);
 }
-void AUTDCloseController(VOID_PTR const handle) {
+bool AUTDCloseController(VOID_PTR const handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
-  cnt->ptr->Close();
+  return cnt->ptr->Close();
 }
-void AUTDClear(VOID_PTR const handle) {
+bool AUTDClear(VOID_PTR const handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
-  cnt->ptr->Clear();
+  return cnt->ptr->Clear();
 }
 void AUTDFreeController(VOID_PTR const handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
@@ -76,9 +76,9 @@ void AUTDSetSilentMode(VOID_PTR const handle, const bool mode) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   cnt->ptr->SetSilentMode(mode);
 }
-void AUTDStop(VOID_PTR const handle) {
+bool AUTDStop(VOID_PTR const handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
-  cnt->ptr->Stop();
+  return cnt->ptr->Stop();
 }
 int32_t AUTDGetFirmwareInfoListPointer(VOID_PTR const handle, VOID_PTR* out) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
@@ -266,20 +266,20 @@ void AUTDAppendGain(VOID_PTR const handle, VOID_PTR const gain) {
   cnt->ptr->AppendGain(g->ptr);
 }
 
-void AUTDAppendGainSync(VOID_PTR const handle, VOID_PTR const gain, const bool wait_for_send) {
+bool AUTDAppendGainSync(VOID_PTR const handle, VOID_PTR const gain, const bool wait_for_send) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   auto* g = static_cast<GainWrapper*>(gain);
-  cnt->ptr->AppendGainSync(g->ptr, wait_for_send);
+  return cnt->ptr->AppendGainSync(g->ptr, wait_for_send);
 }
 void AUTDAppendModulation(VOID_PTR const handle, VOID_PTR const mod) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   auto* m = static_cast<ModulationWrapper*>(mod);
   cnt->ptr->AppendModulation(m->ptr);
 }
-void AUTDAppendModulationSync(VOID_PTR const handle, VOID_PTR const mod) {
+bool AUTDAppendModulationSync(VOID_PTR const handle, VOID_PTR const mod) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   auto* m = static_cast<ModulationWrapper*>(mod);
-  cnt->ptr->AppendModulationSync(m->ptr);
+  return cnt->ptr->AppendModulationSync(m->ptr);
 }
 void AUTDAppendSTMGain(VOID_PTR const handle, VOID_PTR const gain) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
@@ -298,10 +298,10 @@ void AUTDFinishSTModulation(VOID_PTR const handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   cnt->ptr->FinishSTModulation();
 }
-void AUTDAppendSequence(VOID_PTR const handle, VOID_PTR const seq) {
+bool AUTDAppendSequence(VOID_PTR const handle, VOID_PTR const seq) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   auto* s = static_cast<SequenceWrapper*>(seq);
-  cnt->ptr->AppendSequence(s->ptr);
+  return cnt->ptr->AppendSequence(s->ptr);
 }
 void AUTDFlush(VOID_PTR const handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
