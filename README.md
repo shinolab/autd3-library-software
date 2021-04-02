@@ -76,6 +76,7 @@ If you are using Linux/macOS, you may need to run as root.
 
 If you use this SDK in your research please consider to include the following citation in your publications:
 
+* S. Suzuki, S. Inoue, M. Fujiwara, Y. Makino and H. Shinoda, "AUTD3: Scalable Airborne Ultrasound Tactile Display," in IEEE Transactions on Haptics, doi: 10.1109/TOH.2021.3069976.
 * S. Inoue, Y. Makino and H. Shinoda "Scalable Architecture for Airborne Ultrasound Tactile Display", Asia Haptics 2016
 
 ## :copyright: LICENSE
