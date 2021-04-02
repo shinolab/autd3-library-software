@@ -3,7 +3,7 @@
 
 # [AUTD3](https://hapislab.org/airborne-ultrasound-tactile-display?lang=en)
 
-Version: 0.9.0
+Version: 0.9.1
 
 * This repository is forked from [old version](https://github.com/shinolab/autd)
 
