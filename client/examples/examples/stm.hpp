@@ -3,7 +3,7 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 02/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -26,10 +26,10 @@ inline void STMTest(const autd::ControllerPtr& autd) {
   const auto point_num = 200;
   for (auto i = 0; i < point_num; i++) {
     const auto theta = 2 * PI * i / point_num;
-    const auto pos = center + radius * autd::Vector3(cos(theta), sin(theta), 0.0);
-    const auto g = autd::gain::FocalPointGain::Create(pos);
+    const auto pos = radius * autd::Vector3(cos(theta), sin(theta), 0.0);
+    const auto g = autd::gain::FocalPointGain::Create(center + pos);
     autd->AppendSTMGain(g);
   }
 
-  autd->StartSTModulation(1.0);  // 1 Hz
+  autd->StartSTModulation(1);  // 1 Hz
 }
