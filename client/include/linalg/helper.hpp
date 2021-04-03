@@ -3,7 +3,7 @@
 // Created Date: 25/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/03/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -96,7 +96,7 @@ class _Helper {
     auto r = true;
     const auto* lp = lhs.data();
     const auto* rp = rhs.data();
-    for (size_t i = 0; i < lhs.size(); i++) r = r && (*lp++ == *rp++);
+    for (size_t i = 0; i < lhs.size(); i++) r = r && *lp++ == *rp++;
     return r;
   }
 
@@ -107,7 +107,7 @@ class _Helper {
     auto r = true;
     const auto* lp = lhs.data();
     const auto* rp = rhs.data();
-    for (size_t i = 0; i < lhs.size(); i++) r = r && (*lp++ == *rp++);
+    for (size_t i = 0; i < lhs.size(); i++) r = r && *lp++ == *rp++;
     return r;
   }
 
@@ -133,7 +133,7 @@ class _Helper {
     T d = 0;
     const T* lp = lhs.data();
     const T* rp = rhs.data();
-    for (size_t i = 0; i < lhs.size(); i++) d += *(lp++) * *(rp++);
+    for (size_t i = 0; i < lhs.size(); i++) d += *lp++ * *rp++;
     return d;
   }
 

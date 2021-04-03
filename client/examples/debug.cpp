@@ -3,7 +3,7 @@
 // Created Date: 22/12/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/03/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -19,14 +19,26 @@
 using namespace std;
 
 int main() {
-  auto autd = autd::Controller::Create();
-  autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
-  autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
-  autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
-  autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+  try {
+    auto autd = autd::Controller::Create();
+    autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+    autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+    autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+    autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
 
-  autd->OpenWith(autd::link::DebugLink::Create(cout));
-  if (!autd->is_open()) return ENXIO;
+    auto res = autd->OpenWith(autd::link::DebugLink::Create(cout));
+    if (res.is_err()) {
+      std::cerr << res.unwrap_err() << std::endl;
+      return ENXIO;
+    }
+    if (!res.unwrap()) {
+      std::cerr << "Failed to open." << std::endl;
+      return ENXIO;
+    }
 
-  return Run(autd);
+    return Run(autd);
+  } catch (exception& e) {
+    std::cerr << e.what() << std::endl;
+    return ENXIO;
+  }
 }

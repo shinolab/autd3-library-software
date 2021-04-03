@@ -3,7 +3,7 @@
 // Created Date: 27/02/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/04/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -11,27 +11,26 @@
 
 #pragma once
 
-#define _USE_MATH_DEFINES
-#include <math.h>
-
 #include <cmath>
 #include <cstring>
-#include <iostream>
 #include <memory>
 
+#include "consts.hpp"
 #include "helper.hpp"
 
 namespace autd::_utils {
 
 template <typename T>
 struct VectorX {
- public:
   explicit VectorX(const size_t size) : _size(size) { _data = std::make_unique<T[]>(size); }
+  ~VectorX() = default;
   VectorX(const VectorX& obj) : VectorX(obj.size()) { std::memcpy(_data.get(), obj.data(), _size * sizeof(T)); }
   VectorX& operator=(const VectorX& obj) {
     std::memcpy(_data.get(), obj.data(), _size * sizeof(T));
     return *this;
   }
+  VectorX(const VectorX&& v) = default;
+  VectorX& operator=(VectorX&& obj) = default;
 
   [[nodiscard]] T l2_norm_squared() const { return _Helper::l2_norm_squared<T, VectorX>(*this); }
   [[nodiscard]] T l2_norm() const { return std::sqrt(l2_norm_squared()); }
@@ -134,11 +133,13 @@ class Vector3 : public VectorX<T> {
     auto cos = this->dot(v) / (this->l2_norm() * v.l2_norm());
     if (cos > 1) {
       return 0.0;
-    } else if (cos < -1) {
-      return M_PI;
-    } else {
-      return acos(cos);
     }
+
+    if (cos < -1) {
+      return PI;
+    }
+
+    return acos(cos);
   }
 
   Vector3& operator+=(const Vector3& rhs) { return _Helper::add<T, Vector3>(*this, rhs); }

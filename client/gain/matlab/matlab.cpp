@@ -3,7 +3,7 @@
 // Created Date: 20/09/2016
 // Author:Seki Inoue
 // -----
-// Last Modified: 03/04/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -22,7 +22,7 @@
 
 namespace autd::gain {
 
-Result<GainPtr, std::string> MatlabGain::Create(const std::string &filename, const std::string &var_name) {
+Result<GainPtr, std::string> MatlabGain::Create(const std::string& filename, const std::string& var_name) {
 #ifndef MATLAB_ENABLED
   return Err(std::string("MatlabGain requires Matlab libraries. Recompile with Matlab Environment."));
 #else
@@ -41,27 +41,29 @@ Result<bool, std::string> MatlabGain::Build() {
 #ifdef MATLAB_ENABLED
   const auto num_trans = this->geometry()->num_transducers();
 
-  const auto p_mat = matOpen(_filename.c_str(), "r");
+  auto* const p_mat = matOpen(_filename.c_str(), "r");
   if (p_mat == nullptr) return Err(std::string("Cannot open a file " + _filename));
 
-  const auto arr = matGetVariable(p_mat, _var_name.c_str());
+  auto* const arr = matGetVariable(p_mat, _var_name.c_str());
   const auto num_elems = mxGetNumberOfElements(arr);
   if (num_trans < num_elems) return Err(std::string("Insufficient number of data in mat file"));
 
-  const auto array = mxGetComplexDoubles(arr);
+  auto* const array = mxGetComplexDoubles(arr);
 
-  const auto pos = matGetVariable(p_mat, "pos");
-  double *pos_arr = nullptr;
+  auto* const pos = matGetVariable(p_mat, "pos");
+  double* pos_arr = nullptr;
   if (pos != nullptr) {
     pos_arr = mxGetPr(pos);
   }
 
   for (size_t i = 0; i < num_elems; i++) {
-    const auto f_amp = sqrt(array[i].real * array[i].real + array[i].imag * array[i].imag);
-    const auto amp = static_cast<uint16_t>(std::clamp<double>(f_amp, 0, 1) * 255.0);
-    auto f_phase = 0.0;
-    if (amp != 0) f_phase = atan2(array[i].imag, array[i].real);
-    const auto phase = static_cast<uint16_t>(round((-f_phase + M_PI) / (2.0 * M_PI) * 255.0));
+    const auto re = static_cast<Float>(array[i].real);
+    const auto im = static_cast<Float>(array[i].imag);
+    const auto f_amp = std::sqrt(re * re + im * im);
+    const auto amp = static_cast<uint16_t>(std::clamp<Float>(f_amp, 0, 1) * 255);
+    Float f_phase = 0;
+    if (amp != 0) f_phase = std::atan2(im, re);
+    const auto phase = static_cast<uint16_t>(round((-f_phase + PI) / (2 * PI) * 255));
 
     if (pos_arr != nullptr) {
       const auto x = static_cast<Float>(pos_arr[i * 3 + 0]);

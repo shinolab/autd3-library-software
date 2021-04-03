@@ -3,7 +3,7 @@
 // Created Date: 06/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/03/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -36,7 +36,7 @@ void Eigen3Backend::pseudoInverseSVD(MatrixXc* matrix, const Float alpha, Matrix
   for (auto i = 0; i < singularValues_inv.size(); i++) {
     singularValues_inv(i) = singularValues_inv(i) / (singularValues_inv(i) * singularValues_inv(i) + alpha);
   }
-  (*result).noalias() = (svd.matrixV() * singularValues_inv.asDiagonal() * svd.matrixU().adjoint());
+  (*result).noalias() = svd.matrixV() * singularValues_inv.asDiagonal() * svd.matrixU().adjoint();
 }
 Eigen3Backend::VectorXc Eigen3Backend::maxEigenVector(MatrixXc* matrix) {
   const Eigen::ComplexEigenSolver<MatrixXc> ces(*matrix);

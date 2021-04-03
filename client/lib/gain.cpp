@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 03/04/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -57,7 +57,8 @@ Result<bool, std::string> GroupedGain::Build() {
 
   for (const auto& [fst, g] : this->_gain_map) {
     g->SetGeometry(geometry);
-    g->Build();
+    auto res = g->Build();
+    if (res.is_err()) return res;
   }
 
   for (size_t i = 0; i < geometry->num_devices(); i++) {

@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/04/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -16,7 +16,6 @@
 #include <vector>
 
 #include "configuration.hpp"
-#include "consts.hpp"
 #include "firmware_version.hpp"
 #include "gain.hpp"
 #include "geometry.hpp"
@@ -109,7 +108,7 @@ class Controller {
    * @param[in] gain Gain to display
    * @details Gain will be sent in another thread
    */
-  virtual void AppendGain(GainPtr gain) = 0;
+  [[nodiscard]] virtual Result<bool, std::string> AppendGain(GainPtr gain) = 0;
   /**
    * @brief Append gain to the controller (blocking)
    * @param[in] gain Gain to display
@@ -121,7 +120,7 @@ class Controller {
    * @brief Append modulation to the controller (non blocking)
    * @details Modulation will be sent in another thread
    */
-  virtual void AppendModulation(ModulationPtr modulation) = 0;
+  [[nodiscard]] virtual Result<bool, std::string> AppendModulation(ModulationPtr modulation) = 0;
   /**
    * @brief Append modulation to the controller (blocking)
    */
@@ -146,12 +145,12 @@ class Controller {
   /**
    * @brief Suspend Spatio-Temporal Modulation
    */
-  virtual void StopSTModulation() = 0;
+  [[nodiscard]] virtual Result<bool, std::string> StopSTModulation() = 0;
   /**
    * @brief Finish Spatio-Temporal Modulation
    * @details Appended gains will be removed.
    */
-  virtual void FinishSTModulation() = 0;
+  [[nodiscard]] virtual Result<bool, std::string> FinishSTModulation() = 0;
 
   /**
    * @brief Append sequence to the controller (blocking)

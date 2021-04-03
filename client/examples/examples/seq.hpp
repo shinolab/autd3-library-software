@@ -3,7 +3,7 @@
 // Created Date: 01/07/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/02/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -19,7 +19,7 @@ inline void SeqTest(const autd::ControllerPtr& autd) {
   autd->SetSilentMode(false);
 
   const auto m = autd::modulation::Modulation::Create(255);
-  autd->AppendModulationSync(m);
+  autd->AppendModulationSync(m).unwrap();
 
   const auto center = autd::Vector3(autd::AUTD_WIDTH / 2, autd::AUTD_HEIGHT / 2, 150);
   const auto radius = 30.0;
@@ -32,5 +32,5 @@ inline void SeqTest(const autd::ControllerPtr& autd) {
   const auto actual_freq = circum->SetFrequency(freq);
   std::cout << "Actual frequency is " << actual_freq << "." << std::endl;
 
-  autd->AppendSequence(circum);
+  autd->AppendSequence(circum).unwrap();
 }

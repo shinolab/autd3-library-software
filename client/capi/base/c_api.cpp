@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 02/04/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -87,14 +87,14 @@ int32_t AUTDGetFirmwareInfoListPointer(VOID_PTR const handle, VOID_PTR* out) {
   *out = list;
   return size;
 }
-void AUTDGetFirmwareInfo(VOID_PTR p_firm_info_list, const int32_t index, char* cpu_ver, char* fpga_ver) {
+void AUTDGetFirmwareInfo(const VOID_PTR p_firm_info_list, const int32_t index, char* cpu_ver, char* fpga_ver) {
   auto* wrapper = static_cast<FirmwareInfoListWrapper*>(p_firm_info_list);
   const auto cpu_ver_ = wrapper->list[index].cpu_version();
   const auto fpga_ver_ = wrapper->list[index].fpga_version();
   std::char_traits<char>::copy(cpu_ver, cpu_ver_.c_str(), cpu_ver_.size() + 1);
   std::char_traits<char>::copy(fpga_ver, fpga_ver_.c_str(), fpga_ver_.size() + 1);
 }
-void AUTDFreeFirmwareInfoListPointer(VOID_PTR p_firm_info_list) {
+void AUTDFreeFirmwareInfoListPointer(const VOID_PTR p_firm_info_list) {
   auto* wrapper = static_cast<FirmwareInfoListWrapper*>(p_firm_info_list);
   FirmwareInfoListDelete(wrapper);
 }

@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki and Saya Mizutani
 // -----
-// Last Modified: 03/04/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -27,12 +27,12 @@ Timer::Timer() noexcept : Timer(false) {}
 
 Timer::Timer(const bool high_resolution) noexcept : _interval_us(1), _high_resolution(high_resolution) {}
 
-Timer::~Timer() noexcept(false) { this->Stop(); }
+Timer::~Timer() { (void)this->Stop(); }
 
 bool Timer::SetInterval(uint32_t &interval_us) {
   auto result = true;
   if (!this->_high_resolution && interval_us % 1000 != 0) {
-    interval_us = (interval_us / 1000) * 1000;
+    interval_us = interval_us / 1000 * 1000;
     result = false;
   }
 
@@ -41,7 +41,8 @@ bool Timer::SetInterval(uint32_t &interval_us) {
 }
 
 Result<bool, std::string> Timer::Start(const std::function<void()> &callback) {
-  this->Stop();
+  auto res = this->Stop();
+  if (res.is_err()) return res;
   this->_cb = callback;
   this->_loop = true;
 

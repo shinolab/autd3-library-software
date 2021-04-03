@@ -3,7 +3,7 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/04/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -81,15 +81,13 @@ Result<bool, std::string> SOEMLinkImpl::Close() { return _cnt.Close(); }
 Result<bool, std::string> SOEMLinkImpl::Send(const size_t size, std::unique_ptr<uint8_t[]> buf) {
   if (!_cnt.is_open()) return Ok(false);
 
-  _cnt.Send(size, std::move(buf));
-  return Ok(true);
+  return _cnt.Send(size, std::move(buf));
 }
 
 Result<bool, std::string> SOEMLinkImpl::Read(uint8_t* rx, [[maybe_unused]] uint32_t buffer_len) {
   if (!_cnt.is_open()) return Ok(false);
 
-  _cnt.Read(rx);
-  return Ok(true);
+  return _cnt.Read(rx);
 }
 
 bool SOEMLinkImpl::is_open() { return _cnt.is_open(); }
