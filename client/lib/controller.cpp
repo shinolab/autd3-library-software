@@ -240,7 +240,7 @@ class AUTDControllerStm {
     }
   }
 
-  Result<bool, std::string> Start(const Float freq) {
+  [[nodiscard]] Result<bool, std::string> Start(const Float freq) {
     auto len = this->_stm_gains.size();
     auto interval_us = static_cast<uint32_t>(1000000. / static_cast<double>(freq) / static_cast<double>(len));
     this->_stm_timer.SetInterval(interval_us);
@@ -275,7 +275,7 @@ class AUTDControllerStm {
 
   [[nodiscard]] Result<bool, std::string> Stop() { return this->_stm_timer.Stop(); }
 
-  Result<bool, std::string> Finish() {
+  [[nodiscard]] Result<bool, std::string> Finish() {
     this->Stop();
     vector<GainPtr>().swap(this->_stm_gains);
     for (auto* p : this->_stm_bodies) {
@@ -287,7 +287,7 @@ class AUTDControllerStm {
     return Ok(true);
   }
 
-  void Close() { this->Finish(); }
+  [[nodiscard]] Result<bool, std::string> Close() { return this->Finish(); }
 
  private:
   shared_ptr<AUTDLogic> _autd_logic;
@@ -378,7 +378,7 @@ void AUTDController::FinishSTModulation() { this->_stm_cnt->Finish(); }
 
 Result<bool, std::string> AUTDController::AppendSequence(const SequencePtr seq) { return this->_sync_cnt->AppendSeq(seq); }
 
-std::vector<FirmwareInfo> AUTDController::firmware_info_list() { return this->_autd_logic->firmware_info_list(); }
+Result<std::vector<FirmwareInfo>, std::string> AUTDController::firmware_info_list() { return this->_autd_logic->firmware_info_list(); }
 }  // namespace internal
 
 ControllerPtr Controller::Create() { return std::make_unique<internal::AUTDController>(); }

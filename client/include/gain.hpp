@@ -61,7 +61,7 @@ class Gain {
   /**
    * @brief Calculate amplitude and phase of each transducer
    */
-  virtual Result<bool, std::string> Build();
+  [[nodiscard]] virtual Result<bool, std::string> Build();
   /**
    * @brief Set AUTD Geometry which is required to build gain
    */

@@ -215,7 +215,7 @@ Result<bool, std::string> AUTDLogic::Close() {
 
 inline uint16_t ConcatByte(const uint8_t high, const uint16_t low) { return static_cast<uint16_t>(static_cast<uint16_t>(high) << 8 | low); }
 
-std::vector<FirmwareInfo> AUTDLogic::firmware_info_list() {
+Result<std::vector<FirmwareInfo>, std::string> AUTDLogic::firmware_info_list() {
   const auto size = this->_geometry->num_devices();
 
   std::vector<FirmwareInfo> res;
@@ -263,7 +263,7 @@ std::vector<FirmwareInfo> AUTDLogic::firmware_info_list() {
     auto info = FirmwareInfo(static_cast<uint16_t>(i), cpu_versions[i], fpga_versions[i]);
     res.emplace_back(info);
   }
-  return res;
+  return Ok(res);
 }
 
 unique_ptr<uint8_t[]> AUTDLogic::MakeBody(const GainPtr &gain, const ModulationPtr &mod, size_t *const size, uint8_t *const send_msg_id) const {

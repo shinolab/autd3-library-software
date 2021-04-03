@@ -66,7 +66,7 @@ class Controller {
    * @brief Open device with a specific link.
    * @param[in] link Link
    */
-  virtual Result<bool, std::string> OpenWith(LinkPtr link) = 0;
+  [[nodiscard]] virtual Result<bool, std::string> OpenWith(LinkPtr link) = 0;
 
   /**
    * @brief Set silent mode
@@ -78,7 +78,7 @@ class Controller {
    * @param[in] config configuration
    * @return true if success to calibrate
    */
-  [[deprecated("please use Synchronize() instead")]] virtual Result<bool, std::string> Calibrate(
+  [[deprecated("please use Synchronize() instead")]] [[nodiscard]] virtual Result<bool, std::string> Calibrate(
       Configuration config = Configuration::GetDefaultConfiguration()) = 0;
 
   /**
@@ -87,23 +87,23 @@ class Controller {
    * @param[in] config configuration
    * @return true if success to synchronize
    */
-  virtual Result<bool, std::string> Synchronize(Configuration config = Configuration::GetDefaultConfiguration()) = 0;
+  [[nodiscard]] virtual Result<bool, std::string> Synchronize(Configuration config = Configuration::GetDefaultConfiguration()) = 0;
 
   /**
    * @brief Clear all data in hardware
    * @return true if success to clear
    */
-  virtual Result<bool, std::string> Clear() = 0;
+  [[nodiscard]] virtual Result<bool, std::string> Clear() = 0;
 
   /**
    * @brief Close the controller
    */
-  virtual Result<bool, std::string> Close() = 0;
+  [[nodiscard]] virtual Result<bool, std::string> Close() = 0;
 
   /**
    * @brief Stop outputting
    */
-  virtual Result<bool, std::string> Stop() = 0;
+  [[nodiscard]] virtual Result<bool, std::string> Stop() = 0;
   /**
    * @brief Append gain to the controller (non blocking)
    * @param[in] gain Gain to display
@@ -116,7 +116,7 @@ class Controller {
    * @param[in] wait_for_send if true, wait for the data to arrive on devices by handshaking
    * @details Gain will be build in this function.
    */
-  virtual Result<bool, std::string> AppendGainSync(GainPtr gain, bool wait_for_send = false) = 0;
+  [[nodiscard]] virtual Result<bool, std::string> AppendGainSync(GainPtr gain, bool wait_for_send = false) = 0;
   /**
    * @brief Append modulation to the controller (non blocking)
    * @details Modulation will be sent in another thread
@@ -125,7 +125,7 @@ class Controller {
   /**
    * @brief Append modulation to the controller (blocking)
    */
-  virtual Result<bool, std::string> AppendModulationSync(ModulationPtr modulation) = 0;
+  [[nodiscard]] virtual Result<bool, std::string> AppendModulationSync(ModulationPtr modulation) = 0;
   /**
    * @brief Append gain for STM
    */
@@ -142,7 +142,7 @@ class Controller {
    * example, about 1ms on Windows. Note that it is affected by interruptions,
    * and so on.
    */
-  virtual Result<bool, std::string> StartSTModulation(Float freq) = 0;
+  [[nodiscard]] virtual Result<bool, std::string> StartSTModulation(Float freq) = 0;
   /**
    * @brief Suspend Spatio-Temporal Modulation
    */
@@ -156,7 +156,7 @@ class Controller {
   /**
    * @brief Append sequence to the controller (blocking)
    */
-  virtual Result<bool, std::string> AppendSequence(SequencePtr seq) = 0;
+  [[nodiscard]] virtual Result<bool, std::string> AppendSequence(SequencePtr seq) = 0;
 
   /**
    * @brief Flush the buffer
@@ -165,6 +165,6 @@ class Controller {
   /**
    * @brief Enumerate firmware information
    */
-  virtual std::vector<FirmwareInfo> firmware_info_list() = 0;
+  [[nodiscard]] virtual Result<std::vector<FirmwareInfo>, std::string> firmware_info_list() = 0;
 };
 }  // namespace autd

@@ -54,14 +54,14 @@ class PointSequence {
    * @details The maximum number of control points is 2000.
    */
 
-  Result<bool, std::string> AppendPoint(const Vector3& point);
+  [[nodiscard]] Result<bool, std::string> AppendPoint(const Vector3& point);
   /**
    * @brief Append control points
    * @param[in] points control points
    * @details The maximum number of control points is 2000.
    */
 
-  Result<bool, std::string> AppendPoints(const std::vector<Vector3>& points);
+  [[nodiscard]] Result<bool, std::string> AppendPoints(const std::vector<Vector3>& points);
 
   /**
    * @return std::vector<Vector3> Control points of the sequence
