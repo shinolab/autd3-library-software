@@ -3,7 +3,7 @@
 // Created Date: 01/07/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/04/2021
+// Last Modified: 03/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -32,16 +32,16 @@ SequencePtr PointSequence::Create(const std::vector<Vector3>& control_points) no
   return ptr;
 }
 
-void PointSequence::AppendPoint(const Vector3& point) {
+Result<bool, std::string> PointSequence::AppendPoint(const Vector3& point) {
   if (this->_control_points.size() + 1 > POINT_SEQ_BUFFER_SIZE_MAX)
-    throw std::runtime_error("Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX));
+    return Err(std::string("Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX)));
 
   this->_control_points.emplace_back(point);
 }
 
-void PointSequence::AppendPoints(const std::vector<Vector3>& points) {
+Result<bool, std::string> PointSequence::AppendPoints(const std::vector<Vector3>& points) {
   if (this->_control_points.size() + points.size() > POINT_SEQ_BUFFER_SIZE_MAX)
-    throw std::runtime_error("Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX));
+    return Err(std::string("Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX)));
 
   this->_control_points.reserve(this->_control_points.size() + points.size());
   for (const auto& p : points) {

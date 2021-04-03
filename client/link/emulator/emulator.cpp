@@ -36,7 +36,7 @@ LinkPtr EmulatorLink::Create(const std::string &ip_addr, const uint16_t port, co
   return link;
 }
 
-bool EmulatorLink::Open() {
+Result<bool, std::string> EmulatorLink::Open() {
 #if _WINDOWS
 #pragma warning(push)
 #pragma warning(disable : 6031)
@@ -51,10 +51,10 @@ bool EmulatorLink::Open() {
 #endif
   SetGeometry();
   _is_open = true;
-  return true;
+  return Ok(true);
 }
 
-bool EmulatorLink::Close() {
+Result<bool, std::string> EmulatorLink::Close() {
   if (_is_open) {
     auto buf = std::make_unique<uint8_t[]>(1);
     buf[0] = 0x00;
@@ -65,10 +65,10 @@ bool EmulatorLink::Close() {
 #endif
     _is_open = false;
   }
-  return true;
+  return Ok(true);
 }
 
-std::optional<std::string> EmulatorLink::Send(const size_t size, std::unique_ptr<uint8_t[]> buf) {
+Result<bool, std::string> EmulatorLink::Send(const size_t size, std::unique_ptr<uint8_t[]> buf) {
   _last_msg_id = buf[0];
   const std::unique_ptr<const uint8_t[]> send_buf = std::move(buf);
 #if _WINDOWS
@@ -77,12 +77,12 @@ std::optional<std::string> EmulatorLink::Send(const size_t size, std::unique_ptr
   (void)size;
   (void)_port;
 #endif
-  return std::nullopt;
+  return Ok(true);
 }
 
-std::optional<std::string> EmulatorLink::Read(uint8_t *rx, const uint32_t buffer_len) {
+Result<bool, std::string> EmulatorLink::Read(uint8_t *rx, const uint32_t buffer_len) {
   std::memset(rx, _last_msg_id, buffer_len);
-  return std::nullopt;
+  return Ok(true);
 }
 
 bool EmulatorLink::is_open() { return _is_open; }

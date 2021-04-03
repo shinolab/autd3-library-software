@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 22/02/2021
+// Last Modified: 03/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -23,8 +23,8 @@ GainPtr Gain::Create() { return std::make_shared<Gain>(); }
 Gain::Gain() noexcept : _built(false), _geometry(nullptr) {}
 Gain::Gain(std::vector<AUTDDataArray> data) noexcept : _built(false), _geometry(nullptr), _data(std::move(data)) {}
 
-void Gain::Build() {
-  if (this->built()) return;
+Result<bool, std::string> Gain::Build() {
+  if (this->built()) return Ok(false);
   auto geometry = this->geometry();
 
   CheckAndInit(geometry, &this->_data);
@@ -32,6 +32,7 @@ void Gain::Build() {
   for (size_t i = 0; i < geometry->num_devices(); i++) this->_data[i].fill(0x0000);
 
   this->_built = true;
+  return Ok(true);
 }
 
 bool Gain::built() const noexcept { return this->_built; }
@@ -47,8 +48,8 @@ GainPtr GroupedGain::Create(const std::map<size_t, GainPtr>& gain_map) {
   return gain;
 }
 
-void GroupedGain::Build() {
-  if (this->built()) return;
+Result<bool, std::string> GroupedGain::Build() {
+  if (this->built()) return Ok(false);
 
   auto geometry = this->geometry();
 
@@ -70,6 +71,7 @@ void GroupedGain::Build() {
   }
 
   this->_built = true;
+  return Ok(true);
 }
 
 GainPtr PlaneWaveGain::Create(const Vector3& direction, const Float amp) {
@@ -82,8 +84,8 @@ GainPtr PlaneWaveGain::Create(const Vector3& direction, uint8_t duty) {
   return ptr;
 }
 
-void PlaneWaveGain::Build() {
-  if (this->built()) return;
+Result<bool, std::string> PlaneWaveGain::Build() {
+  if (this->built()) return Ok(false);
 
   auto geometry = this->geometry();
 
@@ -103,6 +105,7 @@ void PlaneWaveGain::Build() {
     }
 
   this->_built = true;
+  return Ok(true);
 }
 
 GainPtr FocalPointGain::Create(const Vector3& point, const Float amp) {
@@ -115,8 +118,8 @@ GainPtr FocalPointGain::Create(const Vector3& point, uint8_t duty) {
   return gain;
 }
 
-void FocalPointGain::Build() {
-  if (this->built()) return;
+Result<bool, std::string> FocalPointGain::Build() {
+  if (this->built()) return Ok(false);
 
   auto geometry = this->geometry();
 
@@ -134,6 +137,7 @@ void FocalPointGain::Build() {
     }
 
   this->_built = true;
+  return Ok(true);
 }
 
 GainPtr BesselBeamGain::Create(const Vector3& point, const Vector3& vec_n, const Float theta_z, const Float amp) {
@@ -146,8 +150,8 @@ GainPtr BesselBeamGain::Create(const Vector3& point, const Vector3& vec_n, Float
   return gain;
 }
 
-void BesselBeamGain::Build() {
-  if (this->built()) return;
+Result<bool, std::string> BesselBeamGain::Build() {
+  if (this->built()) return Ok(false);
   auto geometry = this->geometry();
 
   CheckAndInit(geometry, &this->_data);
@@ -171,6 +175,7 @@ void BesselBeamGain::Build() {
       this->_data[dev][i] = duty | phase;
     }
   this->_built = true;
+  return Ok(true);
 }
 
 GainPtr CustomGain::Create(const uint16_t* data, const size_t data_length) {
@@ -195,15 +200,18 @@ GainPtr CustomGain::Create(const std::vector<AUTDDataArray>& data) {
   return gain;
 }
 
-void CustomGain::Build() { this->_built = true; }
+Result<bool, std::string> CustomGain::Build() {
+  this->_built = true;
+  return Ok(true);
+}
 
 GainPtr TransducerTestGain::Create(const size_t transducer_index, const uint8_t duty, const uint8_t phase) {
   GainPtr gain = std::make_shared<TransducerTestGain>(transducer_index, duty, phase);
   return gain;
 }
 
-void TransducerTestGain::Build() {
-  if (this->built()) return;
+Result<bool, std::string> TransducerTestGain::Build() {
+  if (this->built()) return Ok(false);
   auto geometry = this->geometry();
 
   CheckAndInit(geometry, &this->_data);
@@ -213,5 +221,6 @@ void TransducerTestGain::Build() {
   this->_data[geometry->device_idx_for_trans_idx(_transducer_idx)][_transducer_idx % NUM_TRANS_IN_UNIT] = d | s;
 
   this->_built = true;
+  return Ok(true);
 }
 }  // namespace autd::gain

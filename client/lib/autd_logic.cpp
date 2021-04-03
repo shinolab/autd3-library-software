@@ -3,7 +3,7 @@
 // Created Date: 22/12/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/04/2021
+// Last Modified: 03/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -47,9 +47,9 @@ GeometryPtr AUTDLogic::geometry() const noexcept { return this->_geometry; }
 
 bool &AUTDLogic::silent_mode() noexcept { return this->_silent_mode; }
 
-void AUTDLogic::OpenWith(LinkPtr link) {
+Result<bool, std::string> AUTDLogic::OpenWith(LinkPtr link) {
   this->_link = move(link);
-  this->_link->Open();
+  return this->_link->Open();
 }
 
 void AUTDLogic::BuildGain(const GainPtr &gain) {
@@ -66,18 +66,16 @@ void AUTDLogic::BuildModulation(const ModulationPtr &mod) const {
   }
 }
 
-void AUTDLogic::Send(const GainPtr &gain, const ModulationPtr &mod) {
-  if (gain != nullptr) {
-    this->_seq_mode = false;
-  }
+Result<bool, std::string> AUTDLogic::Send(const GainPtr &gain, const ModulationPtr &mod) {
+  if (gain != nullptr) this->_seq_mode = false;
 
   size_t body_size = 0;
   uint8_t msg_id = 0;
   auto body = this->MakeBody(gain, mod, &body_size, &msg_id);
-  this->SendData(body_size, move(body));
+  return this->SendData(body_size, move(body));
 }
 
-bool AUTDLogic::SendBlocking(const GainPtr &gain, const ModulationPtr &mod) {
+Result<bool, std::string> AUTDLogic::SendBlocking(const GainPtr &gain, const ModulationPtr &mod) {
   if (gain != nullptr) {
     this->_seq_mode = false;
   }
@@ -89,7 +87,7 @@ bool AUTDLogic::SendBlocking(const GainPtr &gain, const ModulationPtr &mod) {
   return WaitMsgProcessed(msg_id);
 }
 
-bool AUTDLogic::SendBlocking(const SequencePtr &seq) {
+Result<bool, std::string> AUTDLogic::SendBlocking(const SequencePtr &seq) {
   this->_seq_mode = true;
 
   size_t body_size = 0;
@@ -103,41 +101,33 @@ bool AUTDLogic::SendBlocking(const SequencePtr &seq) {
   }
 }
 
-bool AUTDLogic::SendBlocking(const size_t size, unique_ptr<uint8_t[]> data, const size_t trial) {
+Result<bool, std::string> AUTDLogic::SendBlocking(const size_t size, unique_ptr<uint8_t[]> data, const size_t trial) {
   const auto msg_id = data[0];
   this->SendData(size, move(data));
   return this->WaitMsgProcessed(msg_id, trial, 0xFF);
 }
 
-void AUTDLogic::SendData(const size_t size, unique_ptr<uint8_t[]> data) const {
-  if (this->_link == nullptr || !this->_link->is_open()) {
-    return;
-  }
+Result<bool, std::string> AUTDLogic::SendData(const size_t size, unique_ptr<uint8_t[]> data) const {
+  if (this->_link == nullptr || !this->_link->is_open()) return Ok(false);
 
   auto res = this->_link->Send(size, move(data));
-  if (res.has_value()) {
-    const auto err = res.value();
-    this->_link->Close();
-    std::cerr << "can't send data. Link closed (" << err << ")\n";
-  }
+  if (res.is_err()) this->_link->Close();
+  return res;
 }
 
-bool AUTDLogic::WaitMsgProcessed(const uint8_t msg_id, const size_t max_trial, const uint8_t mask) {
-  if (this->_link == nullptr || !this->_link->is_open()) {
-    return false;
-  }
+Result<bool, std::string> AUTDLogic::WaitMsgProcessed(const uint8_t msg_id, const size_t max_trial, const uint8_t mask) {
+  if (this->_link == nullptr || !this->_link->is_open()) return Ok(false);
 
   const auto num_dev = this->_geometry->num_devices();
   const auto buffer_len = num_dev * EC_INPUT_FRAME_SIZE;
   _rx_data.resize(buffer_len);
   for (size_t i = 0; i < max_trial; i++) {
     auto res = this->_link->Read(&_rx_data[0], static_cast<uint32_t>(buffer_len));
-    if (res.has_value()) {
+    if (res.is_err()) {
       this->Close();
-      const auto err = res.value();
-      std::cerr << "can't read data. Link closed (" << err << ")\n";
-      return false;
+      return res;
     }
+
     size_t processed = 0;
     for (size_t dev = 0; dev < num_dev; dev++) {
       const uint8_t proc_id = _rx_data[dev * 2 + 1] & mask;
@@ -145,24 +135,26 @@ bool AUTDLogic::WaitMsgProcessed(const uint8_t msg_id, const size_t max_trial, c
     }
 
     if (processed == num_dev) {
-      return true;
+      return Ok(true);
     }
 
     auto wait = static_cast<size_t>(std::ceil(static_cast<double>(EC_TRAFFIC_DELAY) * 1000 / EC_DEVICE_PER_FRAME * static_cast<double>(num_dev)));
     std::this_thread::sleep_for(std::chrono::milliseconds(wait));
   }
 
-  return false;
+  return Ok(false);
 }
 
-bool AUTDLogic::Synchronize(const Configuration config) {
+Result<bool, std::string> AUTDLogic::Synchronize(const Configuration config) {
   this->_config = config;
   size_t size = 0;
-  auto body = this->MakeCalibBody(config, &size);
-  return this->SendBlocking(size, move(body), 5000);
+  auto res = this->MakeCalibBody(config, &size);
+  if (res.is_err()) return Err(res.unwrap_err());
+
+  return this->SendBlocking(size, move(res.unwrap()), 5000);
 }
 
-bool AUTDLogic::SynchronizeSeq() {
+Result<bool, std::string> AUTDLogic::SynchronizeSeq() {
   std::vector<uint16_t> laps;
   for (size_t i = 0; i < this->_rx_data.size() / 2; i++) {
     const auto lap_raw = static_cast<uint16_t>(_rx_data[2 * i + 1]) << 8 | _rx_data[2 * i];
@@ -177,7 +169,7 @@ bool AUTDLogic::SynchronizeSeq() {
 
   const auto diff_max = *std::max_element(diffs.begin(), diffs.end());
   if (diff_max == 0) {
-    return true;
+    return Ok(true);
   }
 
   if (diff_max > 500) {
@@ -196,7 +188,7 @@ bool AUTDLogic::SynchronizeSeq() {
   return this->WaitMsgProcessed(0xE0, 200, 0xE0);
 }
 
-bool AUTDLogic::Clear() {
+Result<bool, std::string> AUTDLogic::Clear() {
   this->_config = Configuration::GetDefaultConfiguration();
 
   const auto size = sizeof(RxGlobalHeader);
@@ -209,14 +201,16 @@ bool AUTDLogic::Clear() {
   return this->SendBlocking(size, move(body), 200);
 }
 
-bool AUTDLogic::Close() {
-  bool res = true;
-  if (this->_link != nullptr) {
-    res &= this->Clear();
-    res &= this->_link->Close();
-    this->_link = nullptr;
-  }
-  return res;
+Result<bool, std::string> AUTDLogic::Close() {
+  if (this->_link == nullptr || !this->_link->is_open()) return Ok(false);
+
+  auto clear_result = this->Clear();
+
+  auto close_result = this->_link->Close();
+  if (close_result.is_err()) return std::move(close_result);
+
+  this->_link = nullptr;
+  return Ok(clear_result.unwrap_or(false) && close_result.unwrap());
 }
 
 inline uint16_t ConcatByte(const uint8_t high, const uint16_t low) { return static_cast<uint16_t>(static_cast<uint16_t>(high) << 8 | low); }
@@ -365,7 +359,7 @@ unique_ptr<uint8_t[]> AUTDLogic::MakeBody(const SequencePtr &seq, size_t *const 
   return body;
 }
 
-unique_ptr<uint8_t[]> AUTDLogic::MakeCalibBody(const Configuration config, size_t *const size) {
+Result<unique_ptr<uint8_t[]>, std::string> AUTDLogic::MakeCalibBody(const Configuration config, size_t *const size) {
   this->_config = config;
 
   const auto num_devices = this->_geometry->num_devices();
@@ -379,7 +373,7 @@ unique_ptr<uint8_t[]> AUTDLogic::MakeCalibBody(const Configuration config, size_
   const auto mod_sampling_freq = static_cast<uint32_t>(_config.mod_sampling_freq());
   const auto mod_buf_size = static_cast<uint32_t>(_config.mod_buf_size());
 
-  if (mod_buf_size < mod_sampling_freq) throw std::runtime_error("Modulation buffer size must be not less than sampling frequency");
+  if (mod_buf_size < mod_sampling_freq) return Err(std::string("Modulation buffer size must be not less than sampling frequency"));
 
   const auto mod_idx_shift = Log2U(MOD_SAMPLING_FREQ_BASE / mod_sampling_freq);
   const auto ref_clk_cyc_shift = Log2U(mod_buf_size / mod_sampling_freq);
@@ -391,7 +385,7 @@ unique_ptr<uint8_t[]> AUTDLogic::MakeCalibBody(const Configuration config, size_
     cursor += NUM_TRANS_IN_UNIT;
   }
 
-  return body;
+  return Ok(std::move(body));
 }
 
 unique_ptr<uint8_t[]> AUTDLogic::MakeCalibSeqBody(const std::vector<uint16_t> &comps, size_t *const size) const {

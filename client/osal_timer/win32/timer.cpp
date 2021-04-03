@@ -40,7 +40,7 @@ bool Timer::SetInterval(uint32_t &interval_us) {
   return result;
 }
 
-Result<int32_t, std::string> Timer::Start(const std::function<void()> &callback) {
+Result<bool, std::string> Timer::Start(const std::function<void()> &callback) {
   this->Stop();
   this->_cb = callback;
   this->_loop = true;
@@ -60,28 +60,28 @@ Result<int32_t, std::string> Timer::Start(const std::function<void()> &callback)
     return Err(std::string("timeSetEvent failed"));
   }
 
-  return Ok(0);
+  return Ok(true);
 }
 
-Result<int32_t, std::string> Timer::Stop() {
-  if (!this->_loop) return Ok(0);
+Result<bool, std::string> Timer::Stop() {
+  if (!this->_loop) return Ok(false);
   this->_loop = false;
 
   if (this->_high_resolution) {
     this->_main_thread.join();
-    return Ok(0);
+    return Ok(true);
   }
 
   const uint32_t u_resolution = 1;
   timeEndPeriod(u_resolution);
   if (!timeKillEvent(_timer_id)) return Err(std::string("timeKillEvent failed"));
 
-  return Ok(0);
+  return Ok(true);
 }
 
-Result<int32_t, std::string> Timer::InitTimer() {
+Result<bool, std::string> Timer::InitTimer() {
   this->_main_thread = std::thread([&] { MainLoop(); });
-  return Ok(0);
+  return Ok(true);
 }
 
 inline void MicroSleep(const int micro_sec) noexcept {

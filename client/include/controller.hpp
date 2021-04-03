@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/04/2021
+// Last Modified: 03/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -63,15 +63,10 @@ class Controller {
   virtual size_t remaining_in_buffer() = 0;
 
   /**
-   * @brief Return last error message
-   */
-  virtual std::string last_error() = 0;
-
-  /**
    * @brief Open device with a specific link.
    * @param[in] link Link
    */
-  virtual void OpenWith(LinkPtr link) = 0;
+  virtual Result<bool, std::string> OpenWith(LinkPtr link) = 0;
 
   /**
    * @brief Set silent mode
@@ -83,7 +78,8 @@ class Controller {
    * @param[in] config configuration
    * @return true if success to calibrate
    */
-  [[deprecated("please use Synchronize() instead")]] virtual bool Calibrate(Configuration config = Configuration::GetDefaultConfiguration()) = 0;
+  [[deprecated("please use Synchronize() instead")]] virtual Result<bool, std::string> Calibrate(
+      Configuration config = Configuration::GetDefaultConfiguration()) = 0;
 
   /**
    * @brief Synchronize all devices
@@ -91,23 +87,23 @@ class Controller {
    * @param[in] config configuration
    * @return true if success to synchronize
    */
-  virtual bool Synchronize(Configuration config = Configuration::GetDefaultConfiguration()) = 0;
+  virtual Result<bool, std::string> Synchronize(Configuration config = Configuration::GetDefaultConfiguration()) = 0;
 
   /**
    * @brief Clear all data in hardware
    * @return true if success to clear
    */
-  virtual bool Clear() = 0;
+  virtual Result<bool, std::string> Clear() = 0;
 
   /**
    * @brief Close the controller
    */
-  virtual bool Close() = 0;
+  virtual Result<bool, std::string> Close() = 0;
 
   /**
    * @brief Stop outputting
    */
-  virtual bool Stop() = 0;
+  virtual Result<bool, std::string> Stop() = 0;
   /**
    * @brief Append gain to the controller (non blocking)
    * @param[in] gain Gain to display
@@ -120,7 +116,7 @@ class Controller {
    * @param[in] wait_for_send if true, wait for the data to arrive on devices by handshaking
    * @details Gain will be build in this function.
    */
-  virtual bool AppendGainSync(GainPtr gain, bool wait_for_send = false) = 0;
+  virtual Result<bool, std::string> AppendGainSync(GainPtr gain, bool wait_for_send = false) = 0;
   /**
    * @brief Append modulation to the controller (non blocking)
    * @details Modulation will be sent in another thread
@@ -129,7 +125,7 @@ class Controller {
   /**
    * @brief Append modulation to the controller (blocking)
    */
-  virtual bool AppendModulationSync(ModulationPtr modulation) = 0;
+  virtual Result<bool, std::string> AppendModulationSync(ModulationPtr modulation) = 0;
   /**
    * @brief Append gain for STM
    */
@@ -146,7 +142,7 @@ class Controller {
    * example, about 1ms on Windows. Note that it is affected by interruptions,
    * and so on.
    */
-  virtual void StartSTModulation(Float freq) = 0;
+  virtual Result<bool, std::string> StartSTModulation(Float freq) = 0;
   /**
    * @brief Suspend Spatio-Temporal Modulation
    */
@@ -160,7 +156,7 @@ class Controller {
   /**
    * @brief Append sequence to the controller (blocking)
    */
-  virtual bool AppendSequence(SequencePtr seq) = 0;
+  virtual Result<bool, std::string> AppendSequence(SequencePtr seq) = 0;
 
   /**
    * @brief Flush the buffer

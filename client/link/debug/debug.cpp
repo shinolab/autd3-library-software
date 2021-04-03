@@ -3,7 +3,7 @@
 // Created Date: 22/12/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/04/2021
+// Last Modified: 03/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -94,19 +94,19 @@ LinkPtr DebugLink::Create(std::ostream &out) {
 }
 DebugLink::DebugLink(std::ostream &out) : _out(out) {}
 
-bool DebugLink::Open() {
+Result<bool, std::string> DebugLink::Open() {
   this->_out << "Call: Open()" << std::endl;
   _is_open = true;
-  return true;
+  return Ok(true);
 }
 
-bool DebugLink::Close() {
+Result<bool, std::string> DebugLink::Close() {
   this->_out << "Call: Close()" << std::endl;
   _is_open = false;
-  return true;
+  return Ok(true);
 }
 
-std::optional<std::string> DebugLink::Send(const size_t size, const std::unique_ptr<uint8_t[]> buf) {
+Result<bool, std::string> DebugLink::Send(const size_t size, const std::unique_ptr<uint8_t[]> buf) {
   this->_out << "Call: Send()" << std::endl;
 
   _last_msg_id = buf[0];
@@ -142,12 +142,12 @@ std::optional<std::string> DebugLink::Send(const size_t size, const std::unique_
     }
   }
 
-  return std::nullopt;
+  return Ok(true);
 }
 
-std::optional<std::string> DebugLink::Read(uint8_t *rx, const uint32_t buffer_len) {
+Result<bool, std::string> DebugLink::Read(uint8_t *rx, const uint32_t buffer_len) {
   std::memset(rx, _last_msg_id, buffer_len);
-  return std::nullopt;
+  return Ok(true);
 }
 
 bool DebugLink::is_open() { return _is_open; }

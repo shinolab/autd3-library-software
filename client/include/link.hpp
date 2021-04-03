@@ -15,6 +15,8 @@
 #include <optional>
 #include <string>
 
+#include "result.hpp"
+
 namespace autd {
 namespace link {
 /**
@@ -29,18 +31,18 @@ class Link {
   Link(Link&& obj) = delete;
   Link& operator=(Link&& obj) = delete;
 
-  virtual bool Open() = 0;
-  virtual bool Close() = 0;
+  virtual Result<bool, std::string> Open() = 0;
+  virtual Result<bool, std::string> Close() = 0;
   /**
    * @brief  Send data to devices
-   * @return return nullopt if no error, otherwise return error message.
+   * @return return whether success to send data, or Err with error message if some unrecoverable error ocurred
    */
-  virtual std::optional<std::string> Send(size_t size, std::unique_ptr<uint8_t[]> buf) = 0;
+  virtual Result<bool, std::string> Send(size_t size, std::unique_ptr<uint8_t[]> buf) = 0;
   /**
    * @brief  Read data from devices
-   * @return return nullopt if no error, otherwise return error message.
+   * @return return whether success to read data, or Err with error message if some unrecoverable error ocurred
    */
-  virtual std::optional<std::string> Read(uint8_t* rx, uint32_t buffer_len) = 0;
+  virtual Result<bool, std::string> Read(uint8_t* rx, uint32_t buffer_len) = 0;
   virtual bool is_open() = 0;
 };
 }  // namespace link

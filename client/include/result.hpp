@@ -12,6 +12,7 @@
 #pragma once
 
 #include <stdexcept>
+#include <utility>
 
 template <typename T, typename E>
 struct Result {
@@ -25,59 +26,70 @@ struct Result {
   };
 
  public:
-  ~Result() {
-    if (_t == tag::RESULT_OK) {
-      _ok.~T();
-    } else {
-      _err.~E();
-    }
-  }
+  Result() : Result(tag::RESULT_OK) {}
+  ~Result() { _t == tag::RESULT_OK ? _ok.~T() : _err.~E(); }
   Result(const Result& obj) : _t(obj._t) {
-    if (_t == tag::RESULT_OK) {
-      _ok = obj._ok;
-    } else {
-      _err = obj._err;
-    }
+    if (_t == tag::RESULT_OK)
+      _ok = std::move(obj._ok);
+    else
+      _err = std::move(obj._err);
   }
   Result& operator=(const Result& obj) { return *this; }
-  Result(Result&& obj) = default;
-  Result& operator=(Result&& obj) = default;
+  Result(Result&& obj) noexcept(false) {
+    _t = obj._t;
+    if (_t == tag::RESULT_OK)
+      _ok = std::move(obj._ok);
+    else
+      _err = std::move(obj._err);
+  };
+  Result& operator=(Result&& obj) noexcept(false) {
+    _t == tag::RESULT_OK ? _ok.~T() : _err.~E();
+    _t = obj._t;
+    if (_t == tag::RESULT_OK)
+      _ok = std::move(obj._ok);
+    else
+      _err = std::move(obj._err);
+    return *this;
+  }
 
-  static Result Ok(const T& ok) {
+  static Result Ok(T ok) {
     Result result(tag::RESULT_OK);
-    result._ok = ok;
+    result._ok = std::move(ok);
     return result;
   }
 
-  static Result Err(const E& err) {
+  static Result Err(E err) {
     Result result(tag::RESULT_ERROR);
-    result._err = err;
+    result._err = std::move(err);
     return result;
   }
 
   [[nodiscard]] bool is_ok() const { return _t == tag::RESULT_OK; }
   [[nodiscard]] bool is_err() const { return _t == tag::RESULT_ERROR; }
 
-  [[nodiscard]] T const& unwrap() const {
+  [[nodiscard]] T unwrap() {
     if (_t != tag::RESULT_OK) throw std::runtime_error("cannot unwrap");
-
-    return _ok;
+    return std::move(_ok);
   }
 
-  [[nodiscard]] E const& unwrap_err() const {
+  [[nodiscard]] E unwrap_err() {
     if (_t != tag::RESULT_ERROR) throw std::runtime_error("cannot unwrap_err");
+    return std::move(_err);
+  }
 
-    return _err;
+  [[nodiscard]] T unwrap_or(T v) {
+    if (_t != tag::RESULT_OK) return v;
+    return std::move(_ok);
   }
 };
 
 template <typename T>
 struct _Ok {
-  explicit _Ok(T t) : _t(t) {}
+  explicit _Ok(T t) : _t(std::move(t)) {}
 
   template <typename E>
-  operator Result<T, E>() const {
-    return Result<T, E>::Ok(_t);
+  operator Result<T, E>() {
+    return Result<T, E>::Ok(std::move(_t));
   }
 
  private:
@@ -86,11 +98,11 @@ struct _Ok {
 
 template <typename T>
 struct _Err {
-  explicit _Err(T t) : _t(t) {}
+  explicit _Err(T t) : _t(std::move(t)) {}
 
   template <typename V>
-  operator Result<V, T>() const {
-    return Result<V, T>::Err(_t);
+  operator Result<V, T>() {
+    return Result<V, T>::Err(std::move(_t));
   }
 
  private:
@@ -99,10 +111,10 @@ struct _Err {
 
 template <typename T>
 _Ok<T> Ok(T t) {
-  return _Ok<T>(t);
+  return _Ok<T>(std::move(t));
 }
 
 template <typename T>
 _Err<T> Err(T t) {
-  return _Err<T>(t);
+  return _Err<T>(std::move(t));
 }
