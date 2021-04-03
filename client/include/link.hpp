@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 01/04/2021
+// Last Modified: 03/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -23,7 +23,7 @@ namespace link {
 class Link {
  public:
   Link() = default;
-  virtual ~Link() = default;
+  virtual ~Link() noexcept(false) = default;
   Link(const Link& v) = delete;
   Link& operator=(const Link& obj) = delete;
   Link(Link&& obj) = delete;
