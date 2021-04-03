@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki and Saya Mizutani
 // -----
-// Last Modified: 01/04/2021
+// Last Modified: 03/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -16,7 +16,6 @@
 #include <atomic>
 #include <future>
 #include <iostream>
-#include <stdexcept>
 
 namespace autd {
 
@@ -30,13 +29,15 @@ Timer::Timer(const bool high_resolution) noexcept : _interval_us(1), _high_resol
 
 Timer::~Timer() noexcept(false) { this->Stop(); }
 
-void Timer::SetInterval(uint32_t &interval_us) {
+bool Timer::SetInterval(uint32_t &interval_us) {
+  auto result = true;
   if (!this->_high_resolution && interval_us % 1000 != 0) {
     interval_us = (interval_us / 1000) * 1000;
-    std::cerr << "The accuracy of the Windows timer is 1 ms. The interval is set to " << interval_us << " us.\n";
+    result = false;
   }
 
   this->_interval_us = interval_us;
+  return result;
 }
 
 void Timer::Start(const std::function<void()> &callback) {
@@ -48,9 +49,17 @@ void Timer::Start(const std::function<void()> &callback) {
   } else {
     const uint32_t u_resolution = 1;
     timeBeginPeriod(u_resolution);
+
+    auto *const h_process = GetCurrentProcess();
+    if (!SetPriorityClass(h_process, REALTIME_PRIORITY_CLASS)) {
+      // result = false;
+    }
+
     _timer_id = timeSetEvent(this->_interval_us / 1000, u_resolution, static_cast<LPTIMECALLBACK>(TimerThread), reinterpret_cast<DWORD_PTR>(this),
                              TIME_PERIODIC);
-    if (_timer_id == 0) throw std::runtime_error("timeSetEvent failed.");
+    if (_timer_id == 0) {
+      std::cerr << "timeSetEvent failed." << std::endl;
+    }
   }
 }
 

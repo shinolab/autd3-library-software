@@ -3,7 +3,7 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/04/2021
+// Last Modified: 03/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -12,8 +12,11 @@
 #pragma once
 
 #include <memory>
+#include <queue>
 #include <string>
 #include <vector>
+
+#include "timer.hpp"
 
 namespace autdsoem {
 
@@ -27,21 +30,39 @@ struct ECConfig {
 
 class SOEMController {
  public:
-  static std::unique_ptr<SOEMController> Create();
-  SOEMController() = default;
-  virtual ~SOEMController() = default;
+  SOEMController();
+  ~SOEMController();
   SOEMController(const SOEMController& v) noexcept = delete;
   SOEMController& operator=(const SOEMController& obj) = delete;
-  SOEMController(SOEMController&& obj) = default;
-  SOEMController& operator=(SOEMController&& obj) = default;
+  SOEMController(SOEMController&& obj) = delete;
+  SOEMController& operator=(SOEMController&& obj) = delete;
 
-  virtual bool Open(const char* ifname, size_t dev_num, ECConfig config) = 0;
-  virtual bool Close() = 0;
+  bool Open(const char* ifname, size_t dev_num, ECConfig config);
+  bool Close();
 
-  virtual bool is_open() = 0;
+  bool is_open() const;
 
-  virtual void Send(size_t size, std::unique_ptr<uint8_t[]> buf) = 0;
-  virtual void Read(uint8_t* rx) = 0;
+  void Send(size_t size, std::unique_ptr<uint8_t[]> buf);
+  void Read(uint8_t* rx) const;
+
+ private:
+  void CreateSendThread(size_t header_size, size_t body_size);
+  void SetupSync0(bool activate, uint32_t cycle_time_ns) const;
+
+  uint8_t* _io_map;
+  size_t _io_map_size = 0;
+  size_t _output_frame_size = 0;
+  uint32_t _sync0_cyc_time = 0;
+  size_t _dev_num = 0;
+  ECConfig _config;
+  bool _is_open = false;
+
+  std::queue<std::pair<std::unique_ptr<uint8_t[]>, size_t>> _send_q;
+  std::thread _send_thread;
+  std::condition_variable _send_cond;
+  std::mutex _send_mtx;
+
+  autd::Timer _timer;
 };
 
 struct EtherCATAdapterInfo final {

@@ -121,6 +121,8 @@ if(ENABLE_BLAS)
   endif()
 endif()
 
+add_subdirectory(osal_timer)
+
 # Gain
 if(WIN32 AND BUILD_MATLAB_GAIN)
   add_subdirectory(gain/matlab)

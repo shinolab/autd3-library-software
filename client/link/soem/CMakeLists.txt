@@ -2,12 +2,9 @@ cmake_minimum_required(VERSION 3.10)
 
 set (CMAKE_CXX_STANDARD 17)
 
-if(APPLE)
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -arch arm64 -arch x86_64")
-endif()
-
 include_directories(
   ${PROJECT_SOURCE_DIR}/include
+  ${PROJECT_SOURCE_DIR}/osal_timer
   ${SOEM_PATH}/soem
   ${SOEM_PATH}/osal
   ${SOEM_PATH}/osal/${OS}
@@ -35,7 +32,9 @@ add_library(link_soem STATIC
   ${SOEM_SRC_FILES}
   ${PROJECT_SOURCE_DIR}/include/link/soem.hpp
 )
-# target_link_libraries(link_soem soem)
+
+target_link_libraries(link_soem osal_timer)
+
 if(WIN32)
   if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     add_custom_command(TARGET link_soem
@@ -53,7 +52,7 @@ if(WIN32)
 	)
   endif()
 
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd26451 /wd6385  /wd6386 /wd6011 /wd26495 /wd4996 /wd6001 /wd4200")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd26451 /wd6385 /wd6386 /wd6011 /wd26495 /wd4996 /wd6001 /wd4200")
 endif()
 
 set_target_properties(link_soem
