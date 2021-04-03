@@ -59,7 +59,7 @@ class AUTDController final : public Controller {
   void StopSTModulation() override;
   void FinishSTModulation() override;
   Result<bool, std::string> AppendSequence(SequencePtr seq) override;
-  std::vector<FirmwareInfo> firmware_info_list() override;
+  Result<std::vector<FirmwareInfo>, std::string> firmware_info_list() override;
 
  private:
   std::unique_ptr<AUTDControllerSync> _sync_cnt;

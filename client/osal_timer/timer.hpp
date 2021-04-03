@@ -31,8 +31,8 @@ class Timer {
   explicit Timer(bool high_resolution) noexcept;
   ~Timer() noexcept(false);
   bool SetInterval(uint32_t &interval_us);
-  Result<bool, std::string> Start(const std::function<void()> &callback);
-  Result<bool, std::string> Stop();
+  [[nodiscard]] Result<bool, std::string> Start(const std::function<void()> &callback);
+  [[nodiscard]] Result<bool, std::string> Stop();
 
   Timer(const Timer &) = delete;
   Timer(Timer &&) = delete;
@@ -64,6 +64,6 @@ class Timer {
   static void MainLoop(int signum);
   static void Notify(union sigval sv);
 #endif
-  Result<bool, std::string> InitTimer();
+  [[nodiscard]] Result<bool, std::string> InitTimer();
 };
 }  // namespace autd

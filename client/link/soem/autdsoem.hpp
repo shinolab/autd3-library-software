@@ -38,13 +38,13 @@ class SOEMController {
   SOEMController(SOEMController&& obj) = delete;
   SOEMController& operator=(SOEMController&& obj) = delete;
 
-  Result<bool, std::string> Open(const char* ifname, size_t dev_num, ECConfig config);
-  Result<bool, std::string> Close();
+  [[nodiscard]] Result<bool, std::string> Open(const char* ifname, size_t dev_num, ECConfig config);
+  [[nodiscard]] Result<bool, std::string> Close();
 
   [[nodiscard]] bool is_open() const;
 
-  Result<bool, std::string> Send(size_t size, std::unique_ptr<uint8_t[]> buf);
-  Result<bool, std::string> Read(uint8_t* rx) const;
+  [[nodiscard]] Result<bool, std::string> Send(size_t size, std::unique_ptr<uint8_t[]> buf);
+  [[nodiscard]] Result<bool, std::string> Read(uint8_t* rx) const;
 
  private:
   void CreateSendThread(size_t header_size, size_t body_size);

@@ -53,7 +53,7 @@ class Modulation {
    * @brief Generate empty modulation, which produce static pressure
    */
   static ModulationPtr Create(uint8_t amp = 0xff);
-  virtual Result<bool, std::string> Build(Configuration config);
+  [[nodiscard]] virtual Result<bool, std::string> Build(Configuration config);
   std::vector<uint8_t> buffer;
   size_t& sent();
 
