@@ -3,7 +3,7 @@
 // Created Date: 20/09/2016
 // Author:Seki Inoue
 // -----
-// Last Modified: 27/12/2020
+// Last Modified: 03/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -22,17 +22,17 @@
 
 namespace autd::gain {
 
-GainPtr MatlabGain::Create(const std::string &filename, const std::string &var_name) {
+Result<GainPtr, std::string> MatlabGain::Create(const std::string &filename, const std::string &var_name) {
 #ifndef MATLAB_ENABLED
-  throw std::runtime_error("MatlabGain requires Matlab libraries. Recompile with Matlab Environment.");
+  return Err(std::string("MatlabGain requires Matlab libraries. Recompile with Matlab Environment."));
 #else
-  GainPtr ptr = std::make_shared<MatlabGain>(filename, var_name);
-  return ptr;
+  const GainPtr ptr = std::make_shared<MatlabGain>(filename, var_name);
+  return Ok(ptr);
 #endif
 }
 
-void MatlabGain::Build() {
-  if (this->built()) return;
+Result<bool, std::string> MatlabGain::Build() {
+  if (this->built()) return Ok(false);
 
   const auto geometry = this->geometry();
 
@@ -42,15 +42,11 @@ void MatlabGain::Build() {
   const auto num_trans = this->geometry()->num_transducers();
 
   const auto p_mat = matOpen(_filename.c_str(), "r");
-  if (p_mat == nullptr) {
-    throw std::runtime_error("Cannot open a file " + _filename);
-  }
+  if (p_mat == nullptr) return Err(std::string("Cannot open a file " + _filename));
 
   const auto arr = matGetVariable(p_mat, _var_name.c_str());
   const auto num_elems = mxGetNumberOfElements(arr);
-  if (num_trans < num_elems) {
-    throw std::runtime_error("Insufficient number of data in mat file");
-  }
+  if (num_trans < num_elems) return Err(std::string("Insufficient number of data in mat file"));
 
   const auto array = mxGetComplexDoubles(arr);
 
@@ -84,5 +80,6 @@ void MatlabGain::Build() {
 #endif
 
   this->_built = true;
+  return Ok(true);
 }
 }  // namespace autd::gain

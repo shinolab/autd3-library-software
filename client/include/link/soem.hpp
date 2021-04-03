@@ -52,10 +52,10 @@ class SOEMLink : virtual public Link {
   SOEMLink(SOEMLink&& obj) = delete;
   SOEMLink& operator=(SOEMLink&& obj) = delete;
 
-  bool Open() override = 0;
-  bool Close() override = 0;
-  std::optional<std::string> Send(size_t size, std::unique_ptr<uint8_t[]> buf) override = 0;
-  std::optional<std::string> Read(uint8_t* rx, uint32_t buffer_len) override = 0;
+  Result<bool, std::string> Open() override = 0;
+  Result<bool, std::string> Close() override = 0;
+  Result<bool, std::string> Send(size_t size, std::unique_ptr<uint8_t[]> buf) override = 0;
+  Result<bool, std::string> Read(uint8_t* rx, uint32_t buffer_len) override = 0;
   bool is_open() override = 0;
 };
 }  // namespace autd::link

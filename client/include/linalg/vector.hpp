@@ -3,7 +3,7 @@
 // Created Date: 27/02/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/03/2021
+// Last Modified: 03/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -33,12 +33,12 @@ struct VectorX {
     return *this;
   }
 
-  T l2_norm_squared() const { return _Helper::l2_norm_squared<T, VectorX>(*this); }
-  T l2_norm() const { return std::sqrt(l2_norm_squared()); }
-  T norm() const { return l2_norm(); }
+  [[nodiscard]] T l2_norm_squared() const { return _Helper::l2_norm_squared<T, VectorX>(*this); }
+  [[nodiscard]] T l2_norm() const { return std::sqrt(l2_norm_squared()); }
+  [[nodiscard]] T norm() const { return l2_norm(); }
 
   void normalize() { *this /= l2_norm(); }
-  VectorX& normalized() const { return *this / this->l2_norm(); }
+  [[nodiscard]] VectorX& normalized() const { return *this / this->l2_norm(); }
 
   static VectorX Zero(size_t size) {
     VectorX v(size);
@@ -52,18 +52,18 @@ struct VectorX {
     return v;
   }
 
-  T dot(const VectorX& rhs) const { return _Helper::dot<T, VectorX, VectorX>(*this, rhs); }
+  [[nodiscard]] T dot(const VectorX& rhs) const { return _Helper::dot<T, VectorX, VectorX>(*this, rhs); }
 
   T& at(size_t i) { return _data[i]; }
-  const T& at(size_t i) const { return _data[i]; }
+  [[nodiscard]] const T& at(size_t i) const { return _data[i]; }
 
   T& operator()(size_t i) { return _data[i]; }
   const T& operator()(size_t i) const { return _data[i]; }
 
   T* data() { return _data.get(); }
-  const T* data() const { return _data.get(); }
+  [[nodiscard]] const T* data() const { return _data.get(); }
 
-  size_t size() const noexcept { return _size; }
+  [[nodiscard]] size_t size() const noexcept { return _size; }
   template <typename Ts>
   friend std::ostream& operator<<(std::ostream&, const VectorX<Ts>&);
   template <typename Ts>

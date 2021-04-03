@@ -40,22 +40,23 @@ bool Timer::SetInterval(uint32_t &interval_us) {
   return true;
 }
 
-Result<int32_t, std::string> Timer::Start(const std::function<void()> &callback) {
+Result<bool, std::string> Timer::Start(const std::function<void()> &callback) {
   this->Stop();
   this->_cb = callback;
   this->_loop = true;
   return this->InitTimer();
 }
 
-Result<int32_t, std::string> Timer::Stop() {
-  if (!this->_loop) {
-    dispatch_source_cancel(_timer);
-    this->_loop = false;
-  }
-  return Ok(0);
+Result<bool, std::string> Timer::Stop() {
+  if (!this->_loop) return Ok(false);
+
+  dispatch_source_cancel(_timer);
+  this->_loop = false;
+
+  return Ok(true);
 }
 
-Result<int32_t, std::string> Timer::InitTimer() {
+Result<bool, std::string> Timer::InitTimer() {
   _queue = dispatch_queue_create("timerQueue", 0);
 
   _timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _queue);
@@ -72,7 +73,7 @@ Result<int32_t, std::string> Timer::InitTimer() {
   dispatch_source_set_timer(_timer, start, this->_interval_us * TIME_SCALE, 0);
   dispatch_resume(_timer);
 
-  return Ok(0);
+  return Ok(true);
 }
 
 void Timer::MainLoop(Timer *ptr) {

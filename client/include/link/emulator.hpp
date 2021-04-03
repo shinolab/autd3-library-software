@@ -39,10 +39,10 @@ class EmulatorLink final : public Link {
   EmulatorLink(EmulatorLink&& obj) = delete;
   EmulatorLink& operator=(EmulatorLink&& obj) = delete;
 
-  bool Open() override;
-  bool Close() override;
-  std::optional<std::string> Send(size_t size, std::unique_ptr<uint8_t[]> buf) override;
-  std::optional<std::string> Read(uint8_t* rx, uint32_t buffer_len) override;
+  Result<bool, std::string> Open() override;
+  Result<bool, std::string> Close() override;
+  Result<bool, std::string> Send(size_t size, std::unique_ptr<uint8_t[]> buf) override;
+  Result<bool, std::string> Read(uint8_t* rx, uint32_t buffer_len) override;
   bool is_open() override;
   void SetGeometry();
 

@@ -3,7 +3,7 @@
 // Created Date: 04/11/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/03/2021
+// Last Modified: 03/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -14,11 +14,13 @@
 #include <cmath>
 #include <limits>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "autd_types.hpp"
 #include "configuration.hpp"
 #include "consts.hpp"
+#include "result.hpp"
 
 namespace autd {
 
@@ -51,7 +53,7 @@ class Modulation {
    * @brief Generate empty modulation, which produce static pressure
    */
   static ModulationPtr Create(uint8_t amp = 0xff);
-  virtual void Build(Configuration config);
+  virtual Result<bool, std::string> Build(Configuration config);
   std::vector<uint8_t> buffer;
   size_t& sent();
 
@@ -72,7 +74,7 @@ class SineModulation final : public Modulation {
    * @details The sine wave oscillate from offset-amp/2 to offset+amp/2
    */
   static ModulationPtr Create(int freq, Float amp = 1.0, Float offset = 0.5);
-  void Build(Configuration config) override;
+  Result<bool, std::string> Build(Configuration config) override;
   SineModulation(const int freq, const Float amp, const Float offset) : Modulation(), _freq(freq), _amp(amp), _offset(offset) {}
 
  private:
@@ -93,7 +95,7 @@ class SquareModulation final : public Modulation {
    * @param[in] high high level
    */
   static ModulationPtr Create(int freq, uint8_t low = 0, uint8_t high = 0xff);
-  void Build(Configuration config) override;
+  Result<bool, std::string> Build(Configuration config) override;
   SquareModulation(const int freq, const uint8_t low, const uint8_t high) : Modulation(), _freq(freq), _low(low), _high(high) {}
 
  private:
@@ -112,7 +114,7 @@ class SawModulation final : public Modulation {
    * @param[in] freq Frequency of the sawtooth wave
    */
   static ModulationPtr Create(int freq);
-  void Build(Configuration config) override;
+  Result<bool, std::string> Build(Configuration config) override;
   explicit SawModulation(const int freq) : Modulation(), _freq(freq) {}
 
  private:

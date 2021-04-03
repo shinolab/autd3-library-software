@@ -65,22 +65,27 @@ static std::atomic<bool> AUTD3_LIB_RT_THREAD_LOCK(false);
 
 bool SOEMController::is_open() const { return _is_open; }
 
-void SOEMController::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
-  if (buf != nullptr && _is_open) {
-    {
-      std::unique_lock<std::mutex> lk(_send_mtx);
-      _send_q.push(std::pair(std::move(buf), size));
-    }
-    _send_cond.notify_all();
+Result<bool, std::string> SOEMController::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
+  if (buf == nullptr) return Err(std::string("data is null"));
+  if (!_is_open) return Err(std::string("link is closed"));
+
+  {
+    std::unique_lock<std::mutex> lk(_send_mtx);
+    _send_q.push(std::pair(std::move(buf), size));
   }
+  _send_cond.notify_all();
+  return Ok(true);
 }
 
-void SOEMController::Read(uint8_t* rx) const {
+Result<bool, std::string> SOEMController::Read(uint8_t* rx) const {
+  if (!_is_open) return Err(std::string("link is closed"));
+
   const auto input_frame_idx = this->_output_frame_size;
   for (size_t i = 0; i < _dev_num; i++) {
     rx[2 * i] = _io_map[input_frame_idx + 2 * i];
     rx[2 * i + 1] = _io_map[input_frame_idx + 2 * i + 1];
   }
+  return Ok(true);
 }
 
 void SOEMController::SetupSync0(const bool activate, const uint32_t cycle_time_ns) const {
@@ -92,7 +97,7 @@ void SOEMController::SetupSync0(const bool activate, const uint32_t cycle_time_n
   }
 }
 
-bool SOEMController::Open(const char* ifname, const size_t dev_num, const ECConfig config) {
+Result<bool, std::string> SOEMController::Open(const char* ifname, const size_t dev_num, const ECConfig config) {
   _dev_num = dev_num;
   _config = config;
   _output_frame_size = (config.header_size + config.body_size) * _dev_num;
@@ -108,15 +113,15 @@ bool SOEMController::Open(const char* ifname, const size_t dev_num, const ECConf
 
   _sync0_cyc_time = config.ec_sync0_cycle_time_ns;
 
-  if (ec_init(ifname) <= 0) throw std::runtime_error("No socket connection on " + std::string(ifname));
+  if (ec_init(ifname) <= 0) return Err(std::string("No socket connection on ") + std::string(ifname));
 
   const auto wc = ec_config(0, _io_map);
-  if (wc <= 0) throw std::runtime_error("No slaves found!");
+  if (wc <= 0) return Err(std::string("No slaves found!"));
 
   if (static_cast<size_t>(wc) != dev_num) {
     std::stringstream ss;
     ss << "The number of slaves you added: " << dev_num << ", but found: " << wc;
-    throw std::runtime_error(ss.str());
+    return Err(ss.str());
   }
 
   ec_configdc();
@@ -134,14 +139,14 @@ bool SOEMController::Open(const char* ifname, const size_t dev_num, const ECConf
     ec_statecheck(0, EC_STATE_OPERATIONAL, 50000);
   } while (chk-- && ec_slave[0].state != EC_STATE_OPERATIONAL);
 
-  if (ec_slave[0].state != EC_STATE_OPERATIONAL) throw std::runtime_error("One ore more slaves are not responding.");
+  if (ec_slave[0].state != EC_STATE_OPERATIONAL) return Err(std::string("One ore more slaves are not responding"));
 
   SetupSync0(true, _sync0_cyc_time);
 
   auto interval_us = config.ec_sm3_cycle_time_ns / 1000;
   this->_timer.SetInterval(interval_us);
 
-  this->_timer.Start([]() {
+  const auto res = this->_timer.Start([]() {
     auto expected = false;
     if (AUTD3_LIB_RT_THREAD_LOCK.compare_exchange_weak(expected, true)) {
       const auto pre = AUTD3_LIB_SEND_COND.load(std::memory_order_acquire);
@@ -154,38 +159,40 @@ bool SOEMController::Open(const char* ifname, const size_t dev_num, const ECConf
     }
   });
 
+  if (res.is_err()) return res;
+
   _is_open = true;
   CreateSendThread(config.header_size, config.body_size);
 
-  return true;
+  return Ok(true);
 }
 
-bool SOEMController::Close() {
-  const auto res = true;
-  if (_is_open) {
-    _is_open = false;
+Result<bool, std::string> SOEMController::Close() {
+  if (!_is_open) return Ok(false);
+  _is_open = false;
 
-    _send_cond.notify_all();
-    if (std::this_thread::get_id() != _send_thread.get_id() && this->_send_thread.joinable()) this->_send_thread.join();
-    {
-      std::unique_lock<std::mutex> lk(_send_mtx);
-      std::queue<std::pair<std::unique_ptr<uint8_t[]>, size_t>>().swap(_send_q);
-    }
-
-    memset(_io_map, 0x00, _output_frame_size);
-
-    this->_timer.Stop();
-
-    SetupSync0(false, _sync0_cyc_time);
-
-    ec_slave[0].state = EC_STATE_INIT;
-    ec_writestate(0);
-
-    ec_statecheck(0, EC_STATE_INIT, EC_TIMEOUTSTATE);
-
-    ec_close();
+  _send_cond.notify_all();
+  if (std::this_thread::get_id() != _send_thread.get_id() && this->_send_thread.joinable()) this->_send_thread.join();
+  {
+    std::unique_lock<std::mutex> lk(_send_mtx);
+    std::queue<std::pair<std::unique_ptr<uint8_t[]>, size_t>>().swap(_send_q);
   }
-  return res;
+
+  memset(_io_map, 0x00, _output_frame_size);
+
+  const auto res = this->_timer.Stop();
+  if (res.is_err()) return res;
+
+  SetupSync0(false, _sync0_cyc_time);
+
+  ec_slave[0].state = EC_STATE_INIT;
+  ec_writestate(0);
+
+  ec_statecheck(0, EC_STATE_INIT, EC_TIMEOUTSTATE);
+
+  ec_close();
+
+  return Ok(true);
 }
 
 void SOEMController::CreateSendThread(size_t header_size, size_t body_size) {

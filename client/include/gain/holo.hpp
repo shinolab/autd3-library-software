@@ -3,7 +3,7 @@
 // Created Date: 06/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/04/2021
+// Last Modified: 03/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -104,33 +104,36 @@ class HoloGain final : public Gain {
     return ptr;
   }
 
-  void Build() override {
-    if (this->built()) return;
+  Result<bool, std::string> Build() override {
+    if (this->built()) return Ok(false);
     const auto geo = this->geometry();
 
     CheckAndInit(geo, &this->_data);
 
+    Result<bool, std::string> res;
     switch (this->_method) {
       case OPT_METHOD::SDP:
-        SDP();
+        res = SDP();
         break;
       case OPT_METHOD::EVD:
-        EVD();
+        res = EVD();
         break;
       case OPT_METHOD::NAIVE:
-        NAIVE();
+        res = NAIVE();
         break;
       case OPT_METHOD::GS:
-        GS();
+        res = GS();
         break;
       case OPT_METHOD::GSPAT:
-        GSPAT();
+        res = GSPAT();
         break;
       case OPT_METHOD::LM:
-        LM();
+        res = LM();
         break;
     }
-    this->_built = true;
+
+    if (res.is_ok()) this->_built = true;
+    return res;
   }
 
   HoloGain(std::vector<Vector3> foci, std::vector<Float> amps, const OPT_METHOD method = OPT_METHOD::SDP, void* params = nullptr)
@@ -191,8 +194,8 @@ class HoloGain final : public Gain {
     }
   }
 
-  std::complex<Float> transfer(const Vector3& trans_pos, const Vector3& trans_norm, const Vector3& target_pos, const Float wave_number,
-                               const Float attenuation = 0) const {
+  [[nodiscard]] std::complex<Float> transfer(const Vector3& trans_pos, const Vector3& trans_norm, const Vector3& target_pos, const Float wave_number,
+                                             const Float attenuation = 0) const {
     const auto diff = target_pos - trans_pos;
     const auto dist = diff.norm();
     const auto theta = atan2(diff.dot(trans_norm), dist * trans_norm.norm()) * 180 / PI;
@@ -243,8 +246,8 @@ class HoloGain final : public Gain {
     _backend.matMul(TRANSPOSE::NoTrans, TRANSPOSE::ConjTrans, std::complex<Float>(1, 0), t, t, std::complex<Float>(0, 0), tth);
   }
 
-  void SDP() {
-    if (!_backend.supports_SVD() || !_backend.supports_EVD()) throw std::runtime_error("This backend does not support this method.");
+  Result<bool, std::string> SDP() {
+    if (!_backend.supports_SVD() || !_backend.supports_EVD()) return Err(std::string("This backend does not support this method."));
 
     auto alpha = Float{1e-3};
     auto lambda = Float{0.9};
@@ -307,10 +310,11 @@ class HoloGain final : public Gain {
 
     const auto max_coeff = _backend.cmaxCoeff(q);
     SetFromComplexDrive(_data, q, normalize, max_coeff);
+    return Ok(true);
   }
 
-  void EVD() {
-    if (!_backend.supports_EVD() || !_backend.supports_solve()) throw std::runtime_error("This backend does not support this method.");
+  Result<bool, std::string> EVD() {
+    if (!_backend.supports_EVD() || !_backend.supports_solve()) return Err(std::string("This backend does not support this method."));
 
     Float gamma = 1;
     auto normalize = true;
@@ -370,9 +374,10 @@ class HoloGain final : public Gain {
 
     const auto max_coeff = _backend.cmaxCoeff(gtf);
     SetFromComplexDrive(_data, gtf, normalize, max_coeff);
+    return Ok(true);
   }
 
-  void NAIVE() {
+  Result<bool, std::string> NAIVE() {
     const auto m = _foci.size();
     const auto n = _geometry->num_transducers();
 
@@ -384,9 +389,10 @@ class HoloGain final : public Gain {
     _backend.matVecMul(TRANSPOSE::ConjTrans, std::complex<Float>(1, 0), g, p, std::complex<Float>(0, 0), &q);
 
     SetFromComplexDrive(_data, q, true, 1.0);
+    return Ok(true);
   }
 
-  void GS() {
+  Result<bool, std::string> GS() {
     const int32_t repeat = _params == nullptr ? 100 : *static_cast<uint32_t*>(_params);
 
     const auto m = _foci.size();
@@ -408,9 +414,10 @@ class HoloGain final : public Gain {
     }
 
     SetFromComplexDrive(_data, q, true, 1.0);
+    return Ok(true);
   }
 
-  void GSPAT() {
+  Result<bool, std::string> GSPAT() {
     const int32_t repeat = _params == nullptr ? 100 : *static_cast<uint32_t*>(_params);
 
     const auto m = _foci.size();
@@ -452,10 +459,11 @@ class HoloGain final : public Gain {
     matrixVecMul(b, p, &q);
 
     SetFromComplexDrive(_data, q, true, 1.0);
+    return Ok(true);
   }
 
-  void LM() {
-    if (!_backend.supports_solve()) throw std::runtime_error("This backend does not support this method.");
+  Result<bool, std::string> LM() {
+    if (!_backend.supports_solve()) return Err(std::string("This backend does not support this method."));
 
     auto eps_1 = Float{1e-8};
     auto eps_2 = Float{1e-8};
@@ -577,6 +585,7 @@ class HoloGain final : public Gain {
         trans_idx = 0;
       }
     }
+    return Ok(true);
   }
 };
 

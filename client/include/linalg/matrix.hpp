@@ -3,7 +3,7 @@
 // Created Date: 27/02/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/03/2021
+// Last Modified: 03/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -49,19 +49,19 @@ struct MatrixX {
   }
 
   T& at(const size_t row, const size_t col) { return _data[col * _num_row + row]; }
-  const T& at(const size_t row, const size_t col) const { return _data[col * _num_row + row]; }
+  [[nodiscard]] const T& at(const size_t row, const size_t col) const { return _data[col * _num_row + row]; }
 
   T& operator()(const size_t row, const size_t col) { return _data[col * _num_row + row]; }
   const T& operator()(const size_t row, const size_t col) const { return _data[col * _num_row + row]; }
 
   T* data() { return _data.get(); }
-  const T* data() const { return _data.get(); }
+  [[nodiscard]] const T* data() const { return _data.get(); }
 
-  size_t rows() const noexcept { return _num_row; }
-  size_t cols() const noexcept { return _num_col; }
-  size_t size() const noexcept { return _num_row * _num_col; }
+  [[nodiscard]] size_t rows() const noexcept { return _num_row; }
+  [[nodiscard]] size_t cols() const noexcept { return _num_col; }
+  [[nodiscard]] size_t size() const noexcept { return _num_row * _num_col; }
 
-  VectorX<T> col(const size_t idx) const noexcept {
+  [[nodiscard]] VectorX<T> col(const size_t idx) const noexcept {
     VectorX<T> v(_num_row);
     for (size_t i = 0; i < _num_row; i++) {
       v(i) = at(i, idx);
@@ -69,7 +69,7 @@ struct MatrixX {
     return v;
   }
 
-  VectorX<T> row(const size_t idx) const noexcept {
+  [[nodiscard]] VectorX<T> row(const size_t idx) const noexcept {
     VectorX<T> v(_num_col);
     std::memcpy(v.data(), _data[idx * _num_col], _num_col * sizeof(T));
     return v;

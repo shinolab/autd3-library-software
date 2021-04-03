@@ -40,24 +40,24 @@ bool Timer::SetInterval(uint32_t &interval_us) {
   return true;
 }
 
-Result<int32_t, std::string> Timer::Start(const std::function<void()> &callback) {
+Result<bool, std::string> Timer::Start(const std::function<void()> &callback) {
   this->Stop();
   this->_cb = callback;
   this->_loop = true;
   return this->InitTimer();
 }
 
-Result<int32_t, std::string> Timer::Stop() {
-  if (!this->_loop) return Ok(0);
+Result<bool, std::string> Timer::Stop() {
+  if (!this->_loop) return Ok(false);
 
   const auto r = timer_delete(_timer_id);
   if (r < 0) return Err(std::string("timer_delete failed"));
 
   this->_loop = false;
-  return Ok(0);
+  return Ok(true);
 }
 
-Result<int32_t, std::string> Timer::InitTimer() {
+Result<bool, std::string> Timer::InitTimer() {
   struct sigaction act;
   struct itimerspec itval;
   struct sigevent se;
@@ -82,7 +82,7 @@ Result<int32_t, std::string> Timer::InitTimer() {
 
   if (timer_settime(_timer_id, 0, &itval, NULL) < 0) return Err(std::string("timer_settime failed"));
 
-  return Ok(0);
+  return Ok(true);
 }
 
 void Timer::MainLoop(int signum) {}

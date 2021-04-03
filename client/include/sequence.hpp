@@ -3,7 +3,7 @@
 // Created Date: 01/07/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/02/2021
+// Last Modified: 03/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -16,6 +16,7 @@
 
 #include "autd_types.hpp"
 #include "geometry.hpp"
+#include "result.hpp"
 
 namespace autd {
 
@@ -52,13 +53,15 @@ class PointSequence {
    * @param[in] point control point
    * @details The maximum number of control points is 2000.
    */
-  void AppendPoint(const Vector3& point);
+
+  Result<bool, std::string> AppendPoint(const Vector3& point);
   /**
    * @brief Append control points
    * @param[in] points control points
    * @details The maximum number of control points is 2000.
    */
-  void AppendPoints(const std::vector<Vector3>& points);
+
+  Result<bool, std::string> AppendPoints(const std::vector<Vector3>& points);
 
   /**
    * @return std::vector<Vector3> Control points of the sequence
