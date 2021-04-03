@@ -22,8 +22,8 @@ namespace link {
  */
 class Link {
  public:
-  Link() = default;
-  virtual ~Link() noexcept(false) = default;
+  Link() {}
+  virtual ~Link() noexcept(false) {}
   Link(const Link& v) = delete;
   Link& operator=(const Link& obj) = delete;
   Link(Link&& obj) = delete;
