@@ -3,7 +3,7 @@
 // Created Date: 06/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/03/2021
+// Last Modified: 03/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -45,7 +45,7 @@ constexpr float DIR_COEFF_D[] = {0.f,
                                  -4.79372835035e-06f};
 #endif
 
-static Float directivityT4010A1(Float theta_deg) {
+static inline Float directivityT4010A1(Float theta_deg) {
   theta_deg = abs(theta_deg);
 
   while (theta_deg > 90) {

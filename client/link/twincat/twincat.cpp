@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 01/04/2021
+// Last Modified: 03/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -171,7 +171,9 @@ class LocalTwinCATLinkImpl final : public LocalTwinCATLink {
   std::string _ipv4_addr;
   long _port = 0L;  // NOLINT
   AmsNetId _net_id;
+#ifdef _WIN32
   HMODULE _lib = nullptr;
+#endif
 };
 
 LinkPtr LocalTwinCATLink::Create() {
@@ -267,8 +269,16 @@ bool LocalTwinCATLinkImpl::Open() {
   return false;
 }
 bool LocalTwinCATLinkImpl::Close() { return false; }
-std::optional<std::string> LocalTwinCATLinkImpl::Send(size_t size, std::unique_ptr<uint8_t[]> buf) { return std::nullopt; }
-std::optional<std::string> LocalTwinCATLinkImpl::Read(uint8_t* rx, uint32_t buffer_len) { return std::nullopt; }
+std::optional<std::string> LocalTwinCATLinkImpl::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
+  (void)size;
+  (void)buf;
+  return std::nullopt;
+}
+std::optional<std::string> LocalTwinCATLinkImpl::Read(uint8_t* rx, uint32_t buffer_len) {
+  (void)rx;
+  (void)buffer_len;
+  return std::nullopt;
+}
 #endif  // TC_ADS
 
 }  // namespace autd::link
