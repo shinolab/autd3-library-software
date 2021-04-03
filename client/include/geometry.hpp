@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 31/03/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -56,7 +56,7 @@ class Geometry {
    * @param idx Index of the device to delete.
    * @return an index of deleted device
    */
-  virtual size_t DelDevice(const size_t idx) = 0;
+  virtual size_t DelDevice(size_t idx) = 0;
 
   /**
    * @brief Clear all devices

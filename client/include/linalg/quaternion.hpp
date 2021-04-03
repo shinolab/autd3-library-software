@@ -3,7 +3,7 @@
 // Created Date: 27/02/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/03/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -21,12 +21,12 @@ namespace autd::_utils {
  */
 template <typename T>
 class Quaternion {
- private:
   Vector3<T> _v;
   T _w;
 
  public:
   Quaternion() = default;
+  ~Quaternion() = default;
   Quaternion(T w, T x, T y, T z) {
     this->_v = Vector3(x, y, z);
     this->_w = w;
@@ -37,6 +37,8 @@ class Quaternion {
   }
   Quaternion(const Quaternion& v) = default;
   Quaternion& operator=(const Quaternion& obj) = default;
+  Quaternion(const Quaternion&& v) = default;
+  Quaternion& operator=(Quaternion&& obj) = default;
 
   Vector3<T>& v() noexcept { return _v; }
   const Vector3<T>& v() const noexcept { return _v; }

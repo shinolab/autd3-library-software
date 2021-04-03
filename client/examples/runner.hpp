@@ -3,7 +3,7 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/04/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -46,16 +46,10 @@ inline int Run(autd::ControllerPtr& autd) {
 
   autd->geometry()->set_wavelength(ULTRASOUND_WAVELENGTH);
 
-  try {
-    autd->Clear();
-    autd->Synchronize();
-  } catch (std::exception& e) {
-    autd->Close();
-    std::cerr << e.what() << std::endl;
-    return ENXIO;
-  }
+  autd->Clear().unwrap();
+  autd->Synchronize().unwrap();
 
-  auto firm_info_list = autd->firmware_info_list();
+  auto firm_info_list = autd->firmware_info_list().unwrap();
   for (auto& firm_info : firm_info_list) cout << firm_info << endl;
 
   while (true) {
@@ -81,12 +75,12 @@ inline int Run(autd::ControllerPtr& autd) {
     cin.ignore();
 
     cout << "finish." << endl;
-    autd->FinishSTModulation();
-    autd->Stop();
+    autd->FinishSTModulation().unwrap();
+    autd->Stop().unwrap();
   }
 
-  autd->Clear();
-  autd->Close();
+  autd->Clear().unwrap();
+  autd->Close().unwrap();
 
   return 0;
 }

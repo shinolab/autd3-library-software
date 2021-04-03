@@ -3,7 +3,7 @@
 // Created Date: 27/02/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/04/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -23,8 +23,8 @@ namespace autd::_utils {
 
 template <typename T>
 struct MatrixX {
- public:
   MatrixX(const size_t row, const size_t col) : _num_row(row), _num_col(col) { _data = std::make_unique<T[]>(row * col); }
+  ~MatrixX() = default;
   MatrixX(const MatrixX& obj) {
     _num_row = obj._num_row;
     _num_col = obj._num_col;
@@ -34,6 +34,8 @@ struct MatrixX {
     std::memcpy(_data.get(), obj.data(), size() * sizeof(T));
     return *this;
   }
+  MatrixX(MatrixX&& obj) = default;
+  MatrixX& operator=(MatrixX&& obj) = default;
 
   static MatrixX Zero(size_t row, size_t col) {
     MatrixX v(row, col);

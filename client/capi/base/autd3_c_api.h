@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 02/04/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -19,7 +19,7 @@
 #define EXPORT_AUTD __attribute__((visibility("default")))
 #endif
 
-#define VOID_PTR void*
+using VOID_PTR = void*;
 
 extern "C" {
 

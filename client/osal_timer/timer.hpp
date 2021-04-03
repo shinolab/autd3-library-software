@@ -3,7 +3,7 @@
 // Created Date:02/07/2018
 // Author: Shun Suzuki and Saya Mizutani
 // -----
-// Last Modified: 03/04/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -29,7 +29,7 @@ class Timer {
  public:
   Timer() noexcept;
   explicit Timer(bool high_resolution) noexcept;
-  ~Timer() noexcept(false);
+  ~Timer();
   bool SetInterval(uint32_t &interval_us);
   [[nodiscard]] Result<bool, std::string> Start(const std::function<void()> &callback);
   [[nodiscard]] Result<bool, std::string> Stop();

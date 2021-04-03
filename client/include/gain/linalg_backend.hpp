@@ -3,7 +3,7 @@
 // Created Date: 06/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/03/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -57,7 +57,7 @@ class Backend {
   virtual void matCpy(const MatrixX& a, MatrixX* b) = 0;
   virtual void vecCpy(const VectorX& a, VectorX* b) = 0;
 
-  virtual ~Backend() {}
+  virtual ~Backend() = default;
 };
 
 #ifndef DISABLE_EIGEN

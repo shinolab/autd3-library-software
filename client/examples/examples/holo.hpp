@@ -3,7 +3,7 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/03/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -44,7 +44,7 @@ inline void HoloTest(const autd::ControllerPtr& autd) {
   autd->SetSilentMode(true);
 
   const auto m = autd::modulation::SineModulation::Create(150);  // 150Hz AM
-  autd->AppendModulationSync(m);
+  autd->AppendModulationSync(m).unwrap();
 
   const auto center = autd::Vector3(TRANS_SIZE_MM * ((NUM_TRANS_X - 1) / 2.0f), TRANS_SIZE_MM * ((NUM_TRANS_Y - 1) / 2.0f), 150.0f);
   const std::vector<autd::Vector3> foci = {
@@ -55,5 +55,5 @@ inline void HoloTest(const autd::ControllerPtr& autd) {
 
   const auto opt = SelectOpt();
   const auto g = HoloGainE::Create(foci, amps, opt);
-  autd->AppendGainSync(g);
+  autd->AppendGainSync(g).unwrap();
 }

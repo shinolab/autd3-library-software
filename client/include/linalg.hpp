@@ -3,7 +3,7 @@
 // Created Date: 20/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/04/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -13,9 +13,8 @@
 
 #ifndef DISABLE_EIGEN
 #if WIN32
-#include <codeanalysis/warnings.h>  // NOLINT
 #pragma warning(push)
-#pragma warning(disable : ALL_CODE_ANALYSIS_WARNINGS)
+#pragma warning(disable : 26450 26495 26812)
 #endif
 #ifdef linux
 #pragma GCC diagnostic push

@@ -3,7 +3,7 @@
 // Created Date: 01/07/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/04/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -37,6 +37,7 @@ Result<bool, std::string> PointSequence::AppendPoint(const Vector3& point) {
     return Err(std::string("Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX)));
 
   this->_control_points.emplace_back(point);
+  return Ok(true);
 }
 
 Result<bool, std::string> PointSequence::AppendPoints(const std::vector<Vector3>& points) {
@@ -44,9 +45,9 @@ Result<bool, std::string> PointSequence::AppendPoints(const std::vector<Vector3>
     return Err(std::string("Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX)));
 
   this->_control_points.reserve(this->_control_points.size() + points.size());
-  for (const auto& p : points) {
-    this->_control_points.emplace_back(p);
-  }
+  for (const auto& p : points) this->_control_points.emplace_back(p);
+
+  return Ok(true);
 }
 
 std::vector<Vector3> PointSequence::control_points() const { return this->_control_points; }

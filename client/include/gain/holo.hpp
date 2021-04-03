@@ -3,7 +3,7 @@
 // Created Date: 06/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/04/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -12,14 +12,10 @@
 #pragma once
 
 #include <algorithm>
-#include <cassert>
 #include <cmath>
-#include <iostream>
-#include <map>
 #include <memory>
 #include <mutex>
 #include <random>
-#include <stdexcept>
 #include <string>
 #include <utility>
 #include <vector>
@@ -110,30 +106,22 @@ class HoloGain final : public Gain {
 
     CheckAndInit(geo, &this->_data);
 
-    Result<bool, std::string> res;
+    this->_built = true;
     switch (this->_method) {
       case OPT_METHOD::SDP:
-        res = SDP();
-        break;
+        return SDP();
       case OPT_METHOD::EVD:
-        res = EVD();
-        break;
+        return EVD();
       case OPT_METHOD::NAIVE:
-        res = NAIVE();
-        break;
+        return NAIVE();
       case OPT_METHOD::GS:
-        res = GS();
-        break;
+        return GS();
       case OPT_METHOD::GSPAT:
-        res = GSPAT();
-        break;
+        return GSPAT();
       case OPT_METHOD::LM:
-        res = LM();
-        break;
+        return LM();
     }
-
-    if (res.is_ok()) this->_built = true;
-    return res;
+    return Ok(false);
   }
 
   HoloGain(std::vector<Vector3> foci, std::vector<Float> amps, const OPT_METHOD method = OPT_METHOD::SDP, void* params = nullptr)

@@ -3,7 +3,7 @@
 // Created Date: 22/12/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/04/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -52,8 +52,8 @@ class AUTDLogic {
 
   [[nodiscard]] Result<bool, std::string> OpenWith(LinkPtr link);
 
-  void BuildGain(const GainPtr& gain);
-  void BuildModulation(const ModulationPtr& mod) const;
+  [[nodiscard]] Result<bool, std::string> BuildGain(const GainPtr& gain);
+  [[nodiscard]] Result<bool, std::string> BuildModulation(const ModulationPtr& mod) const;
 
   [[nodiscard]] Result<bool, std::string> Send(const GainPtr& gain, const ModulationPtr& mod);
   [[nodiscard]] Result<bool, std::string> SendBlocking(const GainPtr& gain, const ModulationPtr& mod);

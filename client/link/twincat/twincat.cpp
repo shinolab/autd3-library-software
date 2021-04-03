@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 03/04/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -11,14 +11,9 @@
 
 #include "link/twincat.hpp"
 
-#if _WINDOWS
-#include <codeanalysis/warnings.h>  // NOLINT
-#pragma warning(push)
-#pragma warning(disable : ALL_CODE_ANALYSIS_WARNINGS)
-#endif
 #include <AdsLib.h>
+
 #if _WINDOWS
-#pragma warning(pop)
 #define NOMINMAX
 #include <Windows.h>
 #include <winnt.h>
@@ -27,7 +22,6 @@ typedef void* HMODULE;
 #endif
 
 #include <exception>
-#include <iostream>
 #include <sstream>
 #include <stdexcept>
 #include <string>
