@@ -40,32 +40,32 @@ bool Timer::SetInterval(uint32_t &interval_us) {
   return true;
 }
 
-void Timer::Start(const std::function<void()> &callback) {
+Result<int32_t, std::string> Timer::Start(const std::function<void()> &callback) {
   this->Stop();
   this->_cb = callback;
   this->_loop = true;
-  this->InitTimer();
+  return this->InitTimer();
 }
 
-void Timer::Stop() {
-  if (this->_loop) {
-    timer_delete(_timer_id);
-    this->_loop = false;
-  }
+Result<int32_t, std::string> Timer::Stop() {
+  if (!this->_loop) return Ok(0);
+
+  const auto r = timer_delete(_timer_id);
+  if (r < 0) return Err(std::string("timer_delete failed"));
+
+  this->_loop = false;
+  return Ok(0);
 }
 
-void Timer::InitTimer() {
+Result<int32_t, std::string> Timer::InitTimer() {
   struct sigaction act;
   struct itimerspec itval;
   struct sigevent se;
 
   memset(&act, 0, sizeof(struct sigaction));
-
   act.sa_handler = MainLoop;
   act.sa_flags = SA_RESTART;
-  if (sigaction(SIGALRM, &act, NULL) < 0) {
-    std::cerr << "Error: sigaction()." << std::endl;
-  }
+  if (sigaction(SIGALRM, &act, NULL) < 0) return Err(std::string("sigaction failed"));
 
   itval.it_value.tv_sec = 0;
   itval.it_value.tv_nsec = this->_interval_us * TIME_SCALE;
@@ -78,13 +78,11 @@ void Timer::InitTimer() {
   se.sigev_notify_function = Notify;
   se.sigev_notify_attributes = NULL;
 
-  if (timer_create(CLOCK_REALTIME, &se, &_timer_id) < 0) {
-    std::cerr << "Error: timer_create." << std::endl;
-  }
+  if (timer_create(CLOCK_REALTIME, &se, &_timer_id) < 0) return Err(std::string("timer_create failed"));
 
-  if (timer_settime(_timer_id, 0, &itval, NULL) < 0) {
-    std::cerr << "Error: timer_settime." << std::endl;
-  }
+  if (timer_settime(_timer_id, 0, &itval, NULL) < 0) return Err(std::string("timer_settime failed"));
+
+  return Ok(0);
 }
 
 void Timer::MainLoop(int signum) {}
