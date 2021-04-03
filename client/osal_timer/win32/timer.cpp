@@ -40,48 +40,48 @@ bool Timer::SetInterval(uint32_t &interval_us) {
   return result;
 }
 
-void Timer::Start(const std::function<void()> &callback) {
+Result<int32_t, std::string> Timer::Start(const std::function<void()> &callback) {
   this->Stop();
   this->_cb = callback;
   this->_loop = true;
-  if (this->_high_resolution) {
-    this->InitTimer();
-  } else {
-    const uint32_t u_resolution = 1;
-    timeBeginPeriod(u_resolution);
 
-    auto *const h_process = GetCurrentProcess();
-    if (!SetPriorityClass(h_process, REALTIME_PRIORITY_CLASS)) {
-      // result = false;
-    }
+  if (this->_high_resolution) return this->InitTimer();
 
-    _timer_id = timeSetEvent(this->_interval_us / 1000, u_resolution, static_cast<LPTIMECALLBACK>(TimerThread), reinterpret_cast<DWORD_PTR>(this),
-                             TIME_PERIODIC);
-    if (_timer_id == 0) {
-      std::cerr << "timeSetEvent failed." << std::endl;
-    }
-  }
-}
+  const uint32_t u_resolution = 1;
+  timeBeginPeriod(u_resolution);
 
-void Timer::Stop() {
-  if (this->_loop) {
+  auto *const h_process = GetCurrentProcess();
+  SetPriorityClass(h_process, REALTIME_PRIORITY_CLASS);
+
+  _timer_id = timeSetEvent(this->_interval_us / 1000, u_resolution, static_cast<LPTIMECALLBACK>(TimerThread), reinterpret_cast<DWORD_PTR>(this),
+                           TIME_PERIODIC);
+  if (_timer_id == 0) {
     this->_loop = false;
-
-    if (this->_high_resolution) {
-      this->_main_thread.join();
-
-    } else {
-      if (_timer_id != 0) {
-        const uint32_t u_resolution = 1;
-        timeKillEvent(_timer_id);
-        timeEndPeriod(u_resolution);
-      }
-    }
+    return Err(std::string("timeSetEvent failed"));
   }
+
+  return Ok(0);
 }
 
-void Timer::InitTimer() {
+Result<int32_t, std::string> Timer::Stop() {
+  if (!this->_loop) return Ok(0);
+  this->_loop = false;
+
+  if (this->_high_resolution) {
+    this->_main_thread.join();
+    return Ok(0);
+  }
+
+  const uint32_t u_resolution = 1;
+  timeEndPeriod(u_resolution);
+  if (!timeKillEvent(_timer_id)) return Err(std::string("timeKillEvent failed"));
+
+  return Ok(0);
+}
+
+Result<int32_t, std::string> Timer::InitTimer() {
   this->_main_thread = std::thread([&] { MainLoop(); });
+  return Ok(0);
 }
 
 inline void MicroSleep(const int micro_sec) noexcept {

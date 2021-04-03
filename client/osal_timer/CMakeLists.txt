@@ -12,6 +12,7 @@ set(SOURCE_LIST
   ${include_files}
 )
 
+include_directories(${PROJECT_SOURCE_DIR}/include)
 add_library(osal_timer STATIC ${SOURCE_LIST})
 
 if(WIN32)
