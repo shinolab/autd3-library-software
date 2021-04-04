@@ -30,7 +30,7 @@ SequencePtr PointSequence::Create(const std::vector<Vector3>& control_points) no
   return ptr;
 }
 
-Result<bool, std::string> PointSequence::AppendPoint(const Vector3& point) {
+Result<bool, std::string> PointSequence::AddPoint(const Vector3& point) {
   if (this->_control_points.size() + 1 > POINT_SEQ_BUFFER_SIZE_MAX)
     return Err(std::string("Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX)));
 
@@ -38,7 +38,7 @@ Result<bool, std::string> PointSequence::AppendPoint(const Vector3& point) {
   return Ok(true);
 }
 
-Result<bool, std::string> PointSequence::AppendPoints(const std::vector<Vector3>& points) {
+Result<bool, std::string> PointSequence::AddPoints(const std::vector<Vector3>& points) {
   if (this->_control_points.size() + points.size() > POINT_SEQ_BUFFER_SIZE_MAX)
     return Err(std::string("Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX)));
 

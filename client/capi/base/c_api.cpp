@@ -241,17 +241,17 @@ void AUTDSequence(void** out) {
   auto* s = SequencePtrCreate(autd::sequence::PointSequence::Create());
   *out = s;
 }
-bool AUTDSequenceAppendPoint(void* const seq, const autd::Float x, const autd::Float y, const autd::Float z) {
+bool AUTDSequenceAddPoint(void* const seq, const autd::Float x, const autd::Float y, const autd::Float z) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
-  auto res = seq_w->ptr->AppendPoint(autd::Vector3(x, y, z));
+  auto res = seq_w->ptr->AddPoint(autd::Vector3(x, y, z));
   if (res.is_err()) LAST_ERROR() = res.unwrap_err();
   return res.unwrap_or(false);
 }
-bool AUTDSequenceAppendPoints(void* const seq, const autd::Float* points, const uint64_t size) {
+bool AUTDSequenceAddPoints(void* const seq, const autd::Float* points, const uint64_t size) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
   std::vector<autd::Vector3> p;
   for (size_t i = 0; i < size; i++) p.emplace_back(autd::Vector3(points[3 * i], points[3 * i + 1], points[3 * i + 2]));
-  auto res = seq_w->ptr->AppendPoints(p);
+  auto res = seq_w->ptr->AddPoints(p);
   if (res.is_err()) LAST_ERROR() = res.unwrap_err();
   return res.unwrap_or(false);
 }
@@ -312,10 +312,10 @@ bool AUTDAppendModulationSync(void* const handle, void* const mod) {
   if (res.is_err()) LAST_ERROR() = res.unwrap_err();
   return res.unwrap_or(false);
 }
-void AUTDAppendSTMGain(void* const handle, void* const gain) {
+void AUTDAddSTMGain(void* const handle, void* const gain) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   auto* g = static_cast<GainWrapper*>(gain);
-  cnt->ptr->AppendSTMGain(g->ptr);
+  cnt->ptr->AddSTMGain(g->ptr);
 }
 bool AUTDStartSTModulation(void* const handle, const autd::Float freq) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);

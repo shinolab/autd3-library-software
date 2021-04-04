@@ -71,14 +71,6 @@ class Controller {
    * @brief Set silent mode
    */
   virtual void SetSilentMode(bool silent) noexcept = 0;
-  /**
-   * @brief Calibrate
-   * @details Call this function only once after OpenWith(). It takes several seconds and blocks the thread in the meantime.
-   * @param[in] config configuration
-   * @return true if success to calibrate
-   */
-  [[deprecated("please use Synchronize() instead")]] [[nodiscard]] virtual Result<bool, std::string> Calibrate(
-      Configuration config = Configuration::GetDefaultConfiguration()) = 0;
 
   /**
    * @brief Synchronize all devices
@@ -128,16 +120,16 @@ class Controller {
   /**
    * @brief Append gain for STM
    */
-  virtual void AppendSTMGain(GainPtr gain) = 0;
+  virtual void AddSTMGain(GainPtr gain) = 0;
   /**
    * @brief Append gain for STM
    */
-  virtual void AppendSTMGain(const std::vector<GainPtr>& gain_list) = 0;
+  virtual void AddSTMGain(const std::vector<GainPtr>& gain_list) = 0;
   /**
    * @brief Start Spatio-Temporal Modulation
    * @param[in] freq Frequency of STM modulation
    * @details Generate STM modulation by switching gains appended by
-   * AppendSTMGain() at the freq. The accuracy depends on the computer, for
+   * AddSTMGain() at the freq. The accuracy depends on the computer, for
    * example, about 1ms on Windows. Note that it is affected by interruptions,
    * and so on.
    */

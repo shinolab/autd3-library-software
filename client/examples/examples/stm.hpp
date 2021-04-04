@@ -28,7 +28,7 @@ inline void STMTest(const autd::ControllerPtr& autd) {
     const auto theta = 2.0f * PI * static_cast<float>(i) / point_num;
     const auto pos = radius * autd::Vector3(cos(theta), sin(theta), 0.0);
     const auto g = autd::gain::FocalPointGain::Create(center + pos);
-    autd->AppendSTMGain(g);
+    autd->AddSTMGain(g);
   }
 
   autd->StartSTModulation(1).unwrap();  // 1 Hz
