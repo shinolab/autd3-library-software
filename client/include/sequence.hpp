@@ -41,27 +41,29 @@ class PointSequence {
  public:
   PointSequence() noexcept;
   explicit PointSequence(std::vector<Vector3> control_points) noexcept;
+
   /**
    * @brief Generate empty PointSequence.
    */
   static SequencePtr Create() noexcept;
+
   /**
    * @brief Generate PointSequence with control points.
    */
   static SequencePtr Create(const std::vector<Vector3>& control_points) noexcept;
+
   /**
-   * @brief Append control point
+   * @brief Add control point
    * @param[in] point control point
-   * @details The maximum number of control points is 2000.
+   * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
    */
-
   [[nodiscard]] Result<bool, std::string> AddPoint(const Vector3& point);
-  /**
-   * @brief Append control points
-   * @param[in] points control points
-   * @details The maximum number of control points is 2000.
-   */
 
+  /**
+   * @brief Add control points
+   * @param[in] points control point
+   * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
+   */
   [[nodiscard]] Result<bool, std::string> AddPoints(const std::vector<Vector3>& points);
 
   /**

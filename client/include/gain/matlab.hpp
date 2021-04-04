@@ -3,7 +3,7 @@
 // Created Date: 20/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/04/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -29,6 +29,7 @@ class MatlabGain final : public Gain {
    * @brief Generate function
    * @param[in] filename mat file path
    * @param[in] var_name variable name in mat file
+   * @return return Ok(GainPtr) if succeeded, or Err(error msg) if failed to read the file
    */
   static Result<GainPtr, std::string> Create(const std::string& filename, const std::string& var_name);
   Result<bool, std::string> Build() override;
