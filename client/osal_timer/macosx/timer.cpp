@@ -32,7 +32,10 @@ static std::atomic<bool> AUTD3_LIB_TIMER_LOCK(false);
 
 Timer::Timer() noexcept : Timer::Timer(false) {}
 
-Timer::Timer(bool high_resolution) noexcept { this->_interval_us = 1; }
+Timer::Timer(bool high_resolution) noexcept {
+  (void)high_resolution;
+  this->_interval_us = 1;
+}
 Timer::~Timer() { (void)this->Stop(); }
 
 bool Timer::SetInterval(uint32_t &interval_us) {

@@ -45,7 +45,7 @@ constexpr float DIR_COEFF_D[] = {0.f,
                                  -4.79372835035e-06f};
 #endif
 
-static Float directivityT4010A1(Float theta_deg) {
+static inline Float directivityT4010A1(Float theta_deg) {
   theta_deg = abs(theta_deg);
 
   while (theta_deg > 90) theta_deg = abs(180 - theta_deg);
