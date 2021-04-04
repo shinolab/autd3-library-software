@@ -44,7 +44,7 @@ class Link {
    * @brief  Send data to devices
    * @return return Ok(whether succeeded to send), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] virtual Result<bool, std::string> Send(size_t size, std::unique_ptr<uint8_t[]> buf) = 0;
+  [[nodiscard]] virtual Result<bool, std::string> Send(size_t size, const uint8_t* buf) = 0;
   /**
    * @brief  Read data from devices
    * @return return Ok(whether succeeded to read), or Err(error msg) if some unrecoverable error occurred

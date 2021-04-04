@@ -49,7 +49,7 @@ class SOEMLinkImpl final : public SOEMLink {
  protected:
   Result<bool, std::string> Open() override;
   Result<bool, std::string> Close() override;
-  Result<bool, std::string> Send(size_t size, std::unique_ptr<uint8_t[]> buf) override;
+  Result<bool, std::string> Send(size_t size, const uint8_t* buf) override;
   Result<bool, std::string> Read(uint8_t* rx, uint32_t buffer_len) override;
   bool is_open() override;
 
@@ -78,10 +78,10 @@ Result<bool, std::string> SOEMLinkImpl::Open() {
 
 Result<bool, std::string> SOEMLinkImpl::Close() { return _cnt.Close(); }
 
-Result<bool, std::string> SOEMLinkImpl::Send(const size_t size, std::unique_ptr<uint8_t[]> buf) {
+Result<bool, std::string> SOEMLinkImpl::Send(const size_t size, const uint8_t* buf) {
   if (!_cnt.is_open()) return Ok(false);
 
-  return _cnt.Send(size, std::move(buf));
+  return _cnt.Send(size, buf);
 }
 
 Result<bool, std::string> SOEMLinkImpl::Read(uint8_t* rx, [[maybe_unused]] uint32_t buffer_len) {

@@ -3,7 +3,7 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/04/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -11,7 +11,6 @@
 
 #pragma once
 
-#include <memory>
 #include <queue>
 #include <string>
 #include <utility>
@@ -43,7 +42,7 @@ class SOEMController {
 
   [[nodiscard]] bool is_open() const;
 
-  [[nodiscard]] Result<bool, std::string> Send(size_t size, std::unique_ptr<uint8_t[]> buf);
+  [[nodiscard]] Result<bool, std::string> Send(size_t size, const uint8_t* buf);
   [[nodiscard]] Result<bool, std::string> Read(uint8_t* rx) const;
 
  private:
@@ -58,7 +57,7 @@ class SOEMController {
   ECConfig _config;
   bool _is_open = false;
 
-  std::queue<std::pair<std::unique_ptr<uint8_t[]>, size_t>> _send_q;
+  std::queue<std::pair<const uint8_t*, size_t>> _send_q;
   std::thread _send_thread;
   std::condition_variable _send_cond;
   std::mutex _send_mtx;

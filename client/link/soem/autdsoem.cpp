@@ -64,13 +64,13 @@ static std::atomic<bool> AUTD3_LIB_RT_THREAD_LOCK(false);
 
 bool SOEMController::is_open() const { return _is_open; }
 
-Result<bool, std::string> SOEMController::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
+Result<bool, std::string> SOEMController::Send(size_t size, const uint8_t* buf) {
   if (buf == nullptr) return Err(std::string("data is null"));
   if (!_is_open) return Err(std::string("link is closed"));
 
   {
     std::unique_lock<std::mutex> lk(_send_mtx);
-    _send_q.push(std::pair(std::move(buf), size));
+    _send_q.push(std::pair(buf, size));
   }
   _send_cond.notify_all();
   return Ok(true);
@@ -174,7 +174,7 @@ Result<bool, std::string> SOEMController::Close() {
   if (std::this_thread::get_id() != _send_thread.get_id() && this->_send_thread.joinable()) this->_send_thread.join();
   {
     std::unique_lock<std::mutex> lk(_send_mtx);
-    std::queue<std::pair<std::unique_ptr<uint8_t[]>, size_t>>().swap(_send_q);
+    std::queue<std::pair<const uint8_t*, size_t>>().swap(_send_q);
   }
 
   memset(_io_map, 0x00, _output_frame_size);
@@ -197,14 +197,14 @@ Result<bool, std::string> SOEMController::Close() {
 void SOEMController::CreateSendThread(size_t header_size, size_t body_size) {
   _send_thread = std::thread([this, header_size, body_size]() {
     while (_is_open) {
-      std::unique_ptr<uint8_t[]> buf = nullptr;
+      const uint8_t* buf = nullptr;
       size_t size = 0;
       {
         std::unique_lock<std::mutex> lk(_send_mtx);
         _send_cond.wait(lk, [&] { return !_send_q.empty() || !_is_open; });
         if (!_send_q.empty()) {
           auto [fst, snd] = move(_send_q.front());
-          buf = move(fst);
+          buf = fst;
           size = snd;
         }
       }

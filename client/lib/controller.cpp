@@ -261,10 +261,7 @@ class AUTDControllerStm {
     size_t idx = 0;
     return this->_stm_timer.Start([this, idx, len]() mutable {
       const auto body_size = this->_stm_body_sizes[idx];
-      auto body_copy = std::make_unique<uint8_t[]>(body_size);
-      auto* const p = this->_stm_bodies[idx];
-      std::memcpy(body_copy.get(), p, body_size);
-      const auto res = this->_autd_logic->SendData(body_size, move(body_copy));
+      const auto res = this->_autd_logic->SendData(body_size, this->_stm_bodies[idx]);
       if (res.is_err()) return;
       idx = (idx + 1) % len;
     });

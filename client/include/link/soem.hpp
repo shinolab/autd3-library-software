@@ -54,7 +54,7 @@ class SOEMLink : virtual public Link {
 
   Result<bool, std::string> Open() override = 0;
   Result<bool, std::string> Close() override = 0;
-  Result<bool, std::string> Send(size_t size, std::unique_ptr<uint8_t[]> buf) override = 0;
+  Result<bool, std::string> Send(size_t size, const uint8_t* buf) override = 0;
   Result<bool, std::string> Read(uint8_t* rx, uint32_t buffer_len) override = 0;
   bool is_open() override = 0;
 };

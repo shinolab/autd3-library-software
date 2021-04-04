@@ -58,8 +58,8 @@ class AUTDLogic {
   [[nodiscard]] Result<bool, std::string> Send(const GainPtr& gain, const ModulationPtr& mod);
   [[nodiscard]] Result<bool, std::string> SendBlocking(const GainPtr& gain, const ModulationPtr& mod);
   [[nodiscard]] Result<bool, std::string> SendBlocking(const SequencePtr& seq);
-  [[nodiscard]] Result<bool, std::string> SendBlocking(size_t size, unique_ptr<uint8_t[]> data, size_t trial);
-  [[nodiscard]] Result<bool, std::string> SendData(size_t size, unique_ptr<uint8_t[]> data) const;
+  [[nodiscard]] Result<bool, std::string> SendBlocking(size_t size, const uint8_t* data, size_t trial);
+  [[nodiscard]] Result<bool, std::string> SendData(size_t size, const uint8_t* data) const;
 
   [[nodiscard]] Result<bool, std::string> WaitMsgProcessed(uint8_t msg_id, size_t max_trial = 200, uint8_t mask = 0xFF);
   [[nodiscard]] Result<bool, std::string> Synchronize(Configuration config);
