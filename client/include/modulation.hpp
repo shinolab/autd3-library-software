@@ -3,7 +3,7 @@
 // Created Date: 04/11/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/04/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -114,6 +114,10 @@ class SawModulation final : public Modulation {
    * @param[in] freq Frequency of the sawtooth wave
    */
   static ModulationPtr Create(int freq);
+  /**
+   * @brief Build Modulation
+   * @return return Ok(whether succeeded to build), or Err(error msg) if some unrecoverable error occurred
+   */
   Result<bool, std::string> Build(Configuration config) override;
   explicit SawModulation(const int freq) : Modulation(), _freq(freq) {}
 

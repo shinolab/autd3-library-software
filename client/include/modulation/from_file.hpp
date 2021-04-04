@@ -3,7 +3,7 @@
 // Created Date: 20/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/04/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -30,6 +30,7 @@ class RawPCMModulation final : public Modulation {
    * No modulation beyond the Nyquist frequency can be produced.
    * If samplingFreq is less than the Nyquist frequency, the data will be upsampled.
    * The maximum modulation buffer size is shown in autd::MOD_BUF_SIZE. Only the data up to MOD_BUF_SIZE/MOD_SAMPLING_FREQ seconds can be output.
+   * @return return Ok(ModulationPtr) if succeeded, or Err(error msg) if failed to read the file
    */
   static Result<ModulationPtr, std::string> Create(const std::string& filename, Float sampling_freq = 0.0);
   Result<bool, std::string> Build(Configuration config) override;
@@ -53,6 +54,7 @@ class WavModulation final : public Modulation {
    * No modulation beyond the Nyquist frequency can be produced.
    * If samplingFreq is less than the Nyquist frequency, the data will be upsampled.
    * The maximum modulation buffer size is shown in autd::MOD_BUF_SIZE. Only the data up to MOD_BUF_SIZE/MOD_SAMPLING_FREQ seconds can be output.
+   * @return return Ok(ModulationPtr) if succeeded, or Err(error msg) if failed to read the file
    */
   static Result<ModulationPtr, std::string> Create(const std::string& filename);
   Result<bool, std::string> Build(Configuration config) override;

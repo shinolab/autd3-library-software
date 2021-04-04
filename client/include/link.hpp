@@ -30,16 +30,24 @@ class Link {
   Link(Link&& obj) = delete;
   Link& operator=(Link&& obj) = delete;
 
+  /**
+   * @brief Open link
+   * @return return Ok(whether succeeded to open), or Err(error msg) if some unrecoverable error occurred
+   */
   [[nodiscard]] virtual Result<bool, std::string> Open() = 0;
+  /**
+   * @brief Close link
+   * @return return Ok(whether succeeded to close), or Err(error msg) if some unrecoverable error occurred
+   */
   [[nodiscard]] virtual Result<bool, std::string> Close() = 0;
   /**
    * @brief  Send data to devices
-   * @return return whether success to send data, or Err with error message if some unrecoverable error occurred
+   * @return return Ok(whether succeeded to send), or Err(error msg) if some unrecoverable error occurred
    */
   [[nodiscard]] virtual Result<bool, std::string> Send(size_t size, std::unique_ptr<uint8_t[]> buf) = 0;
   /**
    * @brief  Read data from devices
-   * @return return whether success to read data, or Err with error message if some unrecoverable error occurred
+   * @return return Ok(whether succeeded to read), or Err(error msg) if some unrecoverable error occurred
    */
   [[nodiscard]] virtual Result<bool, std::string> Read(uint8_t* rx, uint32_t buffer_len) = 0;
   [[nodiscard]] virtual bool is_open() = 0;
