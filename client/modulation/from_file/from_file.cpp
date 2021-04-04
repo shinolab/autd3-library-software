@@ -83,12 +83,12 @@ Result<bool, std::string> RawPCMModulation::Build(const Configuration config) {
 
 namespace {
 template <class T>
-T ReadFromStream(std::ifstream& fsp) {
+Result<T, std::string> ReadFromStream(std::ifstream& fsp) {
   char buf[sizeof(T)];
-  if (!fsp.read(buf, sizeof(T))) throw std::runtime_error("Invalid data length.");
+  if (!fsp.read(buf, sizeof(T))) return Err(std::string("Invalid data length."));
   T v{};
   std::memcpy(&v, buf, sizeof(T));
-  return v;
+  return Ok(v);
 }
 }  // namespace
 
@@ -97,48 +97,46 @@ Result<ModulationPtr, std::string> WavModulation::Create(const std::string& file
   fs.open(filename, std::ios::binary);
   if (fs.fail()) return Err(std::string("Error on opening file."));
 
-  const auto riff_tag = ReadFromStream<uint32_t>(fs);
+  const auto riff_tag = ReadFromStream<uint32_t>(fs).unwrap_or(0);
   if (riff_tag != 0x46464952u) return Err(std::string("Invalid data format."));
 
   [[maybe_unused]] const auto chunk_size = ReadFromStream<uint32_t>(fs);
 
-  const auto wav_desc = ReadFromStream<uint32_t>(fs);
+  const auto wav_desc = ReadFromStream<uint32_t>(fs).unwrap_or(0);
   if (wav_desc != 0x45564157u) return Err(std::string("Invalid data format."));
 
-  const auto fmt_desc = ReadFromStream<uint32_t>(fs);
+  const auto fmt_desc = ReadFromStream<uint32_t>(fs).unwrap_or(0);
   if (fmt_desc != 0x20746d66u) return Err(std::string("Invalid data format."));
 
-  const auto fmt_chunk_size = ReadFromStream<uint32_t>(fs);
+  const auto fmt_chunk_size = ReadFromStream<uint32_t>(fs).unwrap_or(0);
   if (fmt_chunk_size != 0x00000010u) return Err(std::string("Invalid data format."));
 
-  const auto wave_fmt = ReadFromStream<uint16_t>(fs);
+  const auto wave_fmt = ReadFromStream<uint16_t>(fs).unwrap_or(0);
   if (wave_fmt != 0x0001u) return Err(std::string("Invalid data format. This supports only uncompressed linear PCM data."));
 
-  const auto channel = ReadFromStream<uint16_t>(fs);
+  const auto channel = ReadFromStream<uint16_t>(fs).unwrap_or(0);
   if (channel != 0x0001u) return Err(std::string("Invalid data format. This supports only monaural audio."));
 
-  const auto sample_freq = ReadFromStream<uint32_t>(fs);
-  [[maybe_unused]] const auto bytes_per_sec = ReadFromStream<uint32_t>(fs);
-  [[maybe_unused]] const auto block_size = ReadFromStream<uint16_t>(fs);
-  const auto bits_per_sample = ReadFromStream<uint16_t>(fs);
+  const auto sample_freq = ReadFromStream<uint32_t>(fs).unwrap_or(0);
+  [[maybe_unused]] const auto bytes_per_sec = ReadFromStream<uint32_t>(fs).unwrap_or(0);
+  [[maybe_unused]] const auto block_size = ReadFromStream<uint16_t>(fs).unwrap_or(0);
+  const auto bits_per_sample = ReadFromStream<uint16_t>(fs).unwrap_or(0);
 
-  const auto data_desc = ReadFromStream<uint32_t>(fs);
+  const auto data_desc = ReadFromStream<uint32_t>(fs).unwrap_or(0);
   if (data_desc != 0x61746164u) return Err(std::string("Invalid data format."));
 
-  const auto data_chunk_size = ReadFromStream<uint32_t>(fs);
+  const auto data_chunk_size = ReadFromStream<uint32_t>(fs).unwrap_or(0);
 
-  if (bits_per_sample != 8 && bits_per_sample != 16) {
-    return Err(std::string("This only supports 8 or 16 bits per sampling data."));
-  }
+  if (bits_per_sample != 8 && bits_per_sample != 16) return Err(std::string("This only supports 8 or 16 bits per sampling data."));
 
   std::vector<uint8_t> tmp;
   const auto data_size = data_chunk_size / (bits_per_sample / 8);
   for (size_t i = 0; i < data_size; i++) {
     if (bits_per_sample == 8) {
-      auto d = ReadFromStream<uint8_t>(fs);
+      auto d = ReadFromStream<uint8_t>(fs).unwrap_or(0);
       tmp.emplace_back(d);
     } else if (bits_per_sample == 16) {
-      const auto d32 = static_cast<int32_t>(ReadFromStream<int16_t>(fs)) - std::numeric_limits<int16_t>::min();
+      const auto d32 = static_cast<int32_t>(ReadFromStream<int16_t>(fs).unwrap_or(0)) - std::numeric_limits<int16_t>::min();
       auto d8 = static_cast<uint8_t>(static_cast<float>(d32) / std::numeric_limits<uint16_t>::max() * std::numeric_limits<uint8_t>::max());
       tmp.emplace_back(d8);
     }
