@@ -18,9 +18,6 @@
 #else
 #define EXPORT_AUTD __attribute__((visibility("default")))
 #endif
-
-using VOID_PTR = void*;
-
 extern "C" {
-EXPORT_AUTD void AUTDHoloGain(VOID_PTR* gain, const float* points, const float* amps, int32_t size, int32_t method, VOID_PTR params);
+EXPORT_AUTD void AUTDHoloGain(void** gain, const float* points, const float* amps, int32_t size, int32_t method, void* params);
 }

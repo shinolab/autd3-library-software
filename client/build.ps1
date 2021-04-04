@@ -4,7 +4,7 @@
 # Created Date: 25/08/2019
 # Author: Shun Suzuki
 # -----
-# Last Modified: 21/02/2020
+# Last Modified: 04/04/2021
 # Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 # -----
 # Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -15,7 +15,6 @@ Param(
     [string]$BUILD_DIR = "./build",
     [ValidateSet(2017 , 2019)]$VS_VERSION = 2019,
     [string]$ARCH = "x64",
-    [switch]$BUILD_ALL = $FALSE,
     [switch]$USE_DOUBLE = $FALSE
 )
 
@@ -139,12 +138,7 @@ if ($VS_VERSION -ne 2017) {
     $command += " -A " + $ARCH
 }
 
-if ($BUILD_ALL) {
-    $command += " -D BUILD_ALL=ON"
-}
-else {
-    $command += " -D BUILD_ALL=OFF"
-}
+$command += " -D BUILD_ALL=ON"
 
 if ($USE_DOUBLE) {
     $command += " -D USE_DOUBLE=ON"

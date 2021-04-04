@@ -3,7 +3,7 @@
 // Created Date: 08/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 03/04/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -122,7 +122,7 @@ void AUTDGeometry::ClearDevices() { std::vector<Device>().swap(this->_devices); 
 Float AUTDGeometry::wavelength() noexcept { return this->_wavelength; }
 void AUTDGeometry::set_wavelength(const Float wavelength) noexcept { this->_wavelength = wavelength; }
 Float AUTDGeometry::attenuation_coeff() noexcept { return this->_attenuation; }
-void AUTDGeometry::set_attenuation_coeff(const Float attenuation) noexcept { this->_attenuation = attenuation; }
+void AUTDGeometry::set_attenuation_coeff(const Float attenuation_coeff) noexcept { this->_attenuation = attenuation_coeff; }
 
 size_t AUTDGeometry::num_devices() noexcept { return this->_devices.size(); }
 

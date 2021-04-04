@@ -84,10 +84,10 @@ struct MatrixX {
   template <typename Ts>
   friend bool operator!=(const MatrixX<Ts>& lhs, const MatrixX<Ts>& rhs);
 
-  MatrixX& operator+=(const MatrixX& rhs) { return _Helper::add<T, MatrixX>(*this, rhs); }
-  MatrixX& operator-=(const MatrixX& rhs) { return _Helper::sub<T, MatrixX>(*this, rhs); }
-  MatrixX& operator*=(T rhs) { return _Helper::mul<T, MatrixX>(*this, rhs); }
-  MatrixX& operator/=(T rhs) { return _Helper::div<T, MatrixX>(*this, rhs); }
+  MatrixX& operator+=(const MatrixX& rhs) { return _Helper::add<T, MatrixX>(this, rhs); }
+  MatrixX& operator-=(const MatrixX& rhs) { return _Helper::sub<T, MatrixX>(this, rhs); }
+  MatrixX& operator*=(T rhs) { return _Helper::mul<T, MatrixX>(this, rhs); }
+  MatrixX& operator/=(T rhs) { return _Helper::div<T, MatrixX>(this, rhs); }
 
   MatrixX operator-() const { return _Helper::neg<T, MatrixX>(*this); }
 
@@ -123,10 +123,10 @@ class Matrix4x4 : public MatrixX<T> {
  public:
   Matrix4x4() : MatrixX<T>(4, 4) {}
 
-  Matrix4x4& operator+=(const Matrix4x4& rhs) { return _Helper::add<T, Matrix4x4>(*this, rhs); }
-  Matrix4x4& operator-=(const Matrix4x4& rhs) { return _Helper::sub<T, Matrix4x4>(*this, rhs); }
-  Matrix4x4& operator*=(const T& rhs) { return _Helper::mul<T, Matrix4x4>(*this, rhs); }
-  Matrix4x4& operator/=(const T& rhs) { return _Helper::div<T, Matrix4x4>(*this, rhs); }
+  Matrix4x4& operator+=(const Matrix4x4& rhs) { return _Helper::add<T, Matrix4x4>(this, rhs); }
+  Matrix4x4& operator-=(const Matrix4x4& rhs) { return _Helper::sub<T, Matrix4x4>(this, rhs); }
+  Matrix4x4& operator*=(const T& rhs) { return _Helper::mul<T, Matrix4x4>(this, rhs); }
+  Matrix4x4& operator/=(const T& rhs) { return _Helper::div<T, Matrix4x4>(this, rhs); }
 
   Matrix4x4 operator-() const { return _Helper::neg<T, Matrix4x4>(*this); }
 

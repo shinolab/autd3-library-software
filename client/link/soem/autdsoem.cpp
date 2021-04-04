@@ -50,7 +50,6 @@
 #include <mutex>
 #include <queue>
 #include <sstream>
-#include <stdexcept>
 #include <thread>
 #include <utility>
 #include <vector>

@@ -3,7 +3,7 @@
 // Created Date: 04/09/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/04/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -32,8 +32,8 @@ static std::atomic<bool> AUTD3_LIB_TIMER_LOCK(false);
 
 Timer::Timer() noexcept : Timer::Timer(false) {}
 
-Timer::Timer(bool high_resolusion) noexcept { this->_interval_us = 1; }
-Timer::~Timer() noexcept(false) { this->Stop(); }
+Timer::Timer(bool high_resolution) noexcept { this->_interval_us = 1; }
+Timer::~Timer() { (void)this->Stop(); }
 
 bool Timer::SetInterval(uint32_t &interval_us) {
   this->_interval_us = interval_us;
@@ -41,7 +41,9 @@ bool Timer::SetInterval(uint32_t &interval_us) {
 }
 
 Result<bool, std::string> Timer::Start(const std::function<void()> &callback) {
-  this->Stop();
+  auto res = this->Stop();
+  if (res.is_err()) return res;
+
   this->_cb = callback;
   this->_loop = true;
   return this->InitTimer();

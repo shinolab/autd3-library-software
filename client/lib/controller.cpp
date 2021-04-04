@@ -170,15 +170,12 @@ class AUTDControllerAsync {
         }
 
         if (mod == nullptr) continue;
-        {
-          auto res = this->_autd_logic->BuildModulation(mod);
-          if (res.is_ok() && res.unwrap())
 
-          {
-            unique_lock<mutex> lk(_send_mtx);
-            _send_mod_q.push(mod);
-            _send_cond.notify_all();
-          }
+        auto res = this->_autd_logic->BuildModulation(mod);
+        if (res.is_ok() && res.unwrap()) {
+          unique_lock<mutex> lk(_send_mtx);
+          _send_mod_q.push(mod);
+          _send_cond.notify_all();
         }
       }
     });

@@ -19,8 +19,6 @@
 #define EXPORT_AUTD __attribute__((visibility("default")))
 #endif
 
-using VOID_PTR = void*;
-
 extern "C" {
-EXPORT_AUTD void AUTDEmulatorLink(VOID_PTR* out, const char* addr, uint16_t port, VOID_PTR handle);
+EXPORT_AUTD void AUTDEmulatorLink(void** out, const char* addr, uint16_t port, void* handle);
 }

@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include <sstream>
 #include <stdexcept>
 #include <utility>
 
@@ -30,11 +31,18 @@ struct Result {
   ~Result() { _t == tag::RESULT_OK ? _ok.~T() : _err.~E(); }
   Result(const Result& obj) : _t(obj._t) {
     if (_t == tag::RESULT_OK)
-      _ok = std::move(obj._ok);
+      _ok = obj._ok;
     else
-      _err = std::move(obj._err);
+      _err = obj._err;
   }
-  Result& operator=(const Result& obj) { return *this; }
+  Result& operator=(const Result& obj) {
+    _t = obj._t;
+    if (_t == tag::RESULT_OK)
+      _ok = obj._ok;
+    else
+      _err = obj._err;
+    return *this;
+  }
   Result(Result&& obj) noexcept(false) {
     _t = obj._t;
     if (_t == tag::RESULT_OK)
@@ -68,11 +76,7 @@ struct Result {
   }
 
   E unwrap_err() {
-    if (_t != tag::RESULT_ERROR) {
-      std::stringstream ss;
-      ss << "cannot unwrap_err: " << _ok;
-      throw std::runtime_error(ss.str());
-    }
+    if (_t != tag::RESULT_ERROR) throw std::runtime_error("cannot unwrap_err");
     return std::move(_err);
   }
 

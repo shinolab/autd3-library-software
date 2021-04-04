@@ -3,7 +3,7 @@
 // Created Date: 09/06/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/02/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -16,10 +16,6 @@
 
 #include "controller.hpp"
 #include "firmware_version.hpp"
-#include "wrapper_gain.hpp"
-#include "wrapper_link.hpp"
-#include "wrapper_modulation.hpp"
-#include "wrapper_sequence.hpp"
 
 typedef struct {
   autd::ControllerPtr ptr;
