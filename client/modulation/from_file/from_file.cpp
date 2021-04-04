@@ -13,7 +13,6 @@
 
 #include <cstring>
 #include <fstream>
-#include <iostream>
 
 namespace autd::modulation {
 

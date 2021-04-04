@@ -95,7 +95,7 @@ class HoloGain final : public Gain {
    * @param[in] params pointer to optimization parameters
    */
   static std::shared_ptr<HoloGain> Create(const std::vector<Vector3>& foci, const std::vector<Float>& amps, OPT_METHOD method = OPT_METHOD::SDP,
-                                          void* params = nullptr) {
+                                          const void* params = nullptr) {
     std::shared_ptr<HoloGain> ptr = std::make_shared<HoloGain>(foci, amps, method, params);
     return ptr;
   }
@@ -124,7 +124,7 @@ class HoloGain final : public Gain {
     return Ok(false);
   }
 
-  HoloGain(std::vector<Vector3> foci, std::vector<Float> amps, const OPT_METHOD method = OPT_METHOD::SDP, void* params = nullptr)
+  HoloGain(std::vector<Vector3> foci, std::vector<Float> amps, const OPT_METHOD method = OPT_METHOD::SDP, const void* params = nullptr)
       : Gain(), _foci(std::move(foci)), _amps(std::move(amps)), _method(method), _params(params) {}
   ~HoloGain() override = default;
   HoloGain(const HoloGain& v) noexcept = default;
@@ -143,7 +143,7 @@ class HoloGain final : public Gain {
   std::vector<Vector3> _foci;
   std::vector<Float> _amps;
   OPT_METHOD _method = OPT_METHOD::SDP;
-  void* _params = nullptr;
+  const void* _params = nullptr;
   B _backend;
 
  private:
@@ -243,7 +243,7 @@ class HoloGain final : public Gain {
     auto normalize = true;
 
     if (_params != nullptr) {
-      auto* const sdp_params = static_cast<SDPParams*>(_params);
+      auto* const sdp_params = static_cast<const SDPParams*>(_params);
       alpha = sdp_params->regularization < 0 ? alpha : sdp_params->regularization;
       repeat = sdp_params->repeat < 0 ? repeat : sdp_params->repeat;
       lambda = sdp_params->lambda < 0 ? lambda : sdp_params->lambda;
@@ -308,7 +308,7 @@ class HoloGain final : public Gain {
     auto normalize = true;
 
     if (_params != nullptr) {
-      auto* const evd_params = static_cast<EVDParams*>(_params);
+      auto* const evd_params = static_cast<const EVDParams*>(_params);
       gamma = evd_params->regularization < 0 ? gamma : evd_params->regularization;
       normalize = evd_params->normalize_amp;
     }
@@ -381,7 +381,7 @@ class HoloGain final : public Gain {
   }
 
   Result<bool, std::string> GS() {
-    const int32_t repeat = _params == nullptr ? 100 : *static_cast<uint32_t*>(_params);
+    const int32_t repeat = _params == nullptr ? 100 : *static_cast<const uint32_t*>(_params);
 
     const auto m = _foci.size();
     const auto n = _geometry->num_transducers();
@@ -406,7 +406,7 @@ class HoloGain final : public Gain {
   }
 
   Result<bool, std::string> GSPAT() {
-    const int32_t repeat = _params == nullptr ? 100 : *static_cast<uint32_t*>(_params);
+    const int32_t repeat = _params == nullptr ? 100 : *static_cast<const uint32_t*>(_params);
 
     const auto m = _foci.size();
     const auto n = _geometry->num_transducers();
@@ -460,7 +460,7 @@ class HoloGain final : public Gain {
     Float* initial = nullptr;
 
     if (_params != nullptr) {
-      auto* const nlp_params = static_cast<NLSParams*>(_params);
+      auto* const nlp_params = static_cast<const NLSParams*>(_params);
       eps_1 = nlp_params->eps_1 < 0 ? eps_1 : nlp_params->eps_1;
       eps_2 = nlp_params->eps_2 < 0 ? eps_2 : nlp_params->eps_2;
       k_max = nlp_params->k_max < 0 ? k_max : nlp_params->k_max;
@@ -552,8 +552,8 @@ class HoloGain final : public Gain {
             g(i) = tmp;
           }
           is_found = _backend.maxCoeff(g) <= eps_1;
-          mu *= std::max(Float{1. / 3.}, pow(1 - (2 * rho - 1), Float{3.}));
-          nu = 2.0;
+          mu *= std::max(Float{1. / 3.}, std::pow(1 - (2 * rho - 1), Float{3}));
+          nu = 2;
         } else {
           mu *= nu;
           nu *= 2;

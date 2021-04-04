@@ -17,9 +17,7 @@
 #define EXPORT_AUTD __attribute__((visibility("default")))
 #endif
 
-using VOID_PTR = void*;
-
 extern "C" {
-EXPORT_AUTD void AUTDRawPCMModulation(VOID_PTR* mod, const char* filename, float sampling_freq);
-EXPORT_AUTD void AUTDWavModulation(VOID_PTR* mod, const char* filename);
+EXPORT_AUTD bool AUTDRawPCMModulation(void** mod, const char* filename, float sampling_freq, char* error);
+EXPORT_AUTD bool AUTDWavModulation(void** mod, const char* filename, char* error);
 }

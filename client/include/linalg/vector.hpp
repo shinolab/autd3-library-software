@@ -70,10 +70,10 @@ struct VectorX {
   template <typename Ts>
   friend bool operator!=(const VectorX<Ts>& lhs, const VectorX<Ts>& rhs);
 
-  VectorX& operator+=(const VectorX& rhs) { return _Helper::add<T, VectorX>(*this, rhs); }
-  VectorX& operator-=(const VectorX& rhs) { return _Helper::sub<T, VectorX>(*this, rhs); }
-  VectorX& operator*=(T rhs) { return _Helper::mul<T, VectorX>(*this, rhs); }
-  VectorX& operator/=(T rhs) { return _Helper::div<T, VectorX>(*this, rhs); }
+  VectorX& operator+=(const VectorX& rhs) { return _Helper::add<T, VectorX>(this, rhs); }
+  VectorX& operator-=(const VectorX& rhs) { return _Helper::sub<T, VectorX>(this, rhs); }
+  VectorX& operator*=(T rhs) { return _Helper::mul<T, VectorX>(this, rhs); }
+  VectorX& operator/=(T rhs) { return _Helper::div<T, VectorX>(this, rhs); }
 
   VectorX operator-() const { return _Helper::neg<T, VectorX>(*this); }
 
@@ -142,10 +142,10 @@ class Vector3 : public VectorX<T> {
     return acos(cos);
   }
 
-  Vector3& operator+=(const Vector3& rhs) { return _Helper::add<T, Vector3>(*this, rhs); }
-  Vector3& operator-=(const Vector3& rhs) { return _Helper::sub<T, Vector3>(*this, rhs); }
-  Vector3& operator*=(const T& rhs) { return _Helper::mul<T, Vector3>(*this, rhs); }
-  Vector3& operator/=(const T& rhs) { return _Helper::div<T, Vector3>(*this, rhs); }
+  Vector3& operator+=(const Vector3& rhs) { return _Helper::add<T, Vector3>(this, rhs); }
+  Vector3& operator-=(const Vector3& rhs) { return _Helper::sub<T, Vector3>(this, rhs); }
+  Vector3& operator*=(const T& rhs) { return _Helper::mul<T, Vector3>(this, rhs); }
+  Vector3& operator/=(const T& rhs) { return _Helper::div<T, Vector3>(this, rhs); }
 
   Vector3 operator-() const { return _Helper::neg<T, Vector3>(*this); }
 
@@ -185,10 +185,10 @@ class Vector4 : public VectorX<T> {
 
   Vector4 normalized() const { return *this / this->l2_norm(); }
 
-  Vector4& operator+=(const Vector4& rhs) { return _Helper::add<T, Vector4>(*this, rhs); }
-  Vector4& operator-=(const Vector4& rhs) { return _Helper::sub<T, Vector4>(*this, rhs); }
-  Vector4& operator*=(const T& rhs) { return _Helper::mul<T, Vector4>(*this, rhs); }
-  Vector4& operator/=(const T& rhs) { return _Helper::div<T, Vector4>(*this, rhs); }
+  Vector4& operator+=(const Vector4& rhs) { return _Helper::add<T, Vector4>(this, rhs); }
+  Vector4& operator-=(const Vector4& rhs) { return _Helper::sub<T, Vector4>(this, rhs); }
+  Vector4& operator*=(const T& rhs) { return _Helper::mul<T, Vector4>(this, rhs); }
+  Vector4& operator/=(const T& rhs) { return _Helper::div<T, Vector4>(this, rhs); }
 
   Vector4 operator-() const { return _Helper::neg<T, Vector4>(*this); }
 

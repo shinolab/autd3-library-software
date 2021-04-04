@@ -57,7 +57,12 @@ class Backend {
   virtual void matCpy(const MatrixX& a, MatrixX* b) = 0;
   virtual void vecCpy(const VectorX& a, VectorX* b) = 0;
 
+  Backend() = default;
   virtual ~Backend() = default;
+  Backend(const Backend& obj) = delete;
+  Backend& operator=(const Backend& obj) = delete;
+  Backend(const Backend&& v) = delete;
+  Backend& operator=(Backend&& obj) = delete;
 };
 
 #ifndef DISABLE_EIGEN

@@ -12,7 +12,6 @@
 #pragma once
 
 #include <memory>
-#include <optional>
 #include <string>
 
 #include "result.hpp"
@@ -25,7 +24,7 @@ namespace link {
 class Link {
  public:
   Link() = default;
-  virtual ~Link() noexcept(false) = default;
+  virtual ~Link() = default;
   Link(const Link& v) = delete;
   Link& operator=(const Link& obj) = delete;
   Link(Link&& obj) = delete;

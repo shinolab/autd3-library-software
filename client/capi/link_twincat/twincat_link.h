@@ -17,9 +17,7 @@
 #define EXPORT_AUTD __attribute__((visibility("default")))
 #endif
 
-using VOID_PTR = void*;
-
 extern "C" {
-EXPORT_AUTD void AUTDTwinCATLink(VOID_PTR* out, const char* ipv4_addr, const char* ams_net_id);
-EXPORT_AUTD void AUTDLocalTwinCATLink(VOID_PTR* out);
+EXPORT_AUTD void AUTDTwinCATLink(void** out, const char* ipv4_addr, const char* ams_net_id);
+EXPORT_AUTD void AUTDLocalTwinCATLink(void** out);
 }
