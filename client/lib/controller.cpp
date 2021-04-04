@@ -312,7 +312,6 @@ class AUTDController final : public Controller {
   void SetSilentMode(bool silent) noexcept override;
 
   Result<bool, std::string> OpenWith(LinkPtr link) override;
-  Result<bool, std::string> Calibrate(Configuration config) override;
   Result<bool, std::string> Synchronize(Configuration config) override;
   Result<bool, std::string> Clear() override;
   Result<bool, std::string> Close() override;
@@ -323,8 +322,8 @@ class AUTDController final : public Controller {
   Result<bool, std::string> AppendGainSync(GainPtr gain, bool wait_for_send = false) override;
   Result<bool, std::string> AppendModulation(ModulationPtr mod) override;
   Result<bool, std::string> AppendModulationSync(ModulationPtr mod) override;
-  void AppendSTMGain(GainPtr gain) override;
-  void AppendSTMGain(const std::vector<GainPtr>& gain_list) override;
+  void AddSTMGain(GainPtr gain) override;
+  void AddSTMGain(const std::vector<GainPtr>& gain_list) override;
   Result<bool, std::string> StartSTModulation(Float freq) override;
   Result<bool, std::string> StopSTModulation() override;
   Result<bool, std::string> FinishSTModulation() override;
@@ -361,7 +360,7 @@ Result<bool, std::string> AUTDController::OpenWith(LinkPtr link) {
   this->_async_cnt.InitPipeline();
   return Ok(true);
 }
-Result<bool, std::string> AUTDController::Calibrate(const Configuration config) { return Synchronize(config); }
+
 Result<bool, std::string> AUTDController::Synchronize(const Configuration config) { return this->_autd_logic->Synchronize(config); }
 
 Result<bool, std::string> AUTDController::Clear() { return this->_autd_logic->Clear(); }
@@ -407,8 +406,8 @@ Result<bool, std::string> AUTDController::AppendGainSync(const GainPtr gain, con
 Result<bool, std::string> AUTDController::AppendModulation(const ModulationPtr mod) { return this->_sync_cnt.AppendModulation(mod); }
 Result<bool, std::string> AUTDController::AppendModulationSync(const ModulationPtr mod) { return this->_sync_cnt.AppendModulation(mod); }
 
-void AUTDController::AppendSTMGain(const GainPtr gain) { this->_stm_cnt.AppendGain(gain); }
-void AUTDController::AppendSTMGain(const std::vector<GainPtr>& gain_list) { this->_stm_cnt.AppendGain(gain_list); }
+void AUTDController::AddSTMGain(const GainPtr gain) { this->_stm_cnt.AppendGain(gain); }
+void AUTDController::AddSTMGain(const std::vector<GainPtr>& gain_list) { this->_stm_cnt.AppendGain(gain_list); }
 Result<bool, std::string> AUTDController::StartSTModulation(const Float freq) { return this->_stm_cnt.Start(freq); }
 Result<bool, std::string> AUTDController::StopSTModulation() { return this->_stm_cnt.Stop(); }
 Result<bool, std::string> AUTDController::FinishSTModulation() { return this->_stm_cnt.Finish(); }

@@ -74,8 +74,8 @@ EXPORT_AUTD void AUTDSquareModulation(void** mod, int32_t freq, uint8_t low, uin
 
 #pragma region Sequence
 EXPORT_AUTD void AUTDSequence(void** out);
-EXPORT_AUTD bool AUTDSequenceAppendPoint(void* seq, autd::Float x, autd::Float y, autd::Float z);
-EXPORT_AUTD bool AUTDSequenceAppendPoints(void* seq, const autd::Float* points, uint64_t size);
+EXPORT_AUTD bool AUTDSequenceAddPoint(void* seq, autd::Float x, autd::Float y, autd::Float z);
+EXPORT_AUTD bool AUTDSequenceAddPoints(void* seq, const autd::Float* points, uint64_t size);
 EXPORT_AUTD autd::Float AUTDSequenceSetFreq(void* seq, autd::Float freq);
 EXPORT_AUTD autd::Float AUTDSequenceFreq(void* seq);
 EXPORT_AUTD autd::Float AUTDSequenceSamplingFreq(void* seq);
@@ -90,7 +90,7 @@ EXPORT_AUTD bool AUTDAppendGain(void* handle, void* gain);
 EXPORT_AUTD bool AUTDAppendGainSync(void* handle, void* gain, bool wait_for_send);
 EXPORT_AUTD bool AUTDAppendModulation(void* handle, void* mod);
 EXPORT_AUTD bool AUTDAppendModulationSync(void* handle, void* mod);
-EXPORT_AUTD void AUTDAppendSTMGain(void* handle, void* gain);
+EXPORT_AUTD void AUTDAddSTMGain(void* handle, void* gain);
 EXPORT_AUTD bool AUTDStartSTModulation(void* handle, autd::Float freq);
 EXPORT_AUTD bool AUTDStopSTModulation(void* handle);
 EXPORT_AUTD bool AUTDFinishSTModulation(void* handle);
