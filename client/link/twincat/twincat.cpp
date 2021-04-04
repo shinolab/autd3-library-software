@@ -62,7 +62,7 @@ class TwinCATLinkImpl final : public TwinCATLink {
 
   Result<bool, std::string> Open() override;
   Result<bool, std::string> Close() override;
-  Result<bool, std::string> Send(size_t size, std::unique_ptr<uint8_t[]> buf) override;
+  Result<bool, std::string> Send(size_t size, const uint8_t* buf) override;
   Result<bool, std::string> Read(uint8_t* rx, uint32_t buffer_len) override;
   bool is_open() override;
 
@@ -112,7 +112,7 @@ Result<bool, std::string> TwinCATLinkImpl::Close() {
 
 bool TwinCATLinkImpl::is_open() { return this->_port > 0; }
 
-Result<bool, std::string> TwinCATLinkImpl::Send(const size_t size, const std::unique_ptr<uint8_t[]> buf) {
+Result<bool, std::string> TwinCATLinkImpl::Send(const size_t size, const uint8_t* buf) {
   const AmsAddr p_addr = {this->_net_id, PORT};
   const auto ret = AdsSyncWriteReqEx(this->_port,  // NOLINT
                                      &p_addr, INDEX_GROUP, INDEX_OFFSET_BASE, static_cast<uint32_t>(size), &buf[0]);
@@ -153,7 +153,7 @@ class LocalTwinCATLinkImpl final : public LocalTwinCATLink {
  protected:
   Result<bool, std::string> Open() override;
   Result<bool, std::string> Close() override;
-  Result<bool, std::string> Send(size_t size, std::unique_ptr<uint8_t[]> buf) override;
+  Result<bool, std::string> Send(size_t size, const uint8_t* buf) override;
   Result<bool, std::string> Read(uint8_t* rx, uint32_t buffer_len) override;
   bool is_open() override;
 
@@ -225,13 +225,13 @@ Result<bool, std::string> LocalTwinCATLinkImpl::Close() {
   ss << "Error on closing (local): " << std::hex << res;
   return Err(ss.str());
 }
-Result<bool, std::string> LocalTwinCATLinkImpl::Send(const size_t size, const std::unique_ptr<uint8_t[]> buf) {
+Result<bool, std::string> LocalTwinCATLinkImpl::Send(const size_t size, const uint8_t* buf) {
   AmsAddr addr = {this->_net_id, PORT};
   const auto write = reinterpret_cast<TcAdsSyncWriteReqEx>(GetProcAddress(this->_lib, TCADS_ADS_SYNC_WRITE_REQ_EX));
   const auto ret = write(this->_port,  // NOLINT
                          &addr, INDEX_GROUP, INDEX_OFFSET_BASE,
                          static_cast<unsigned long>(size),  // NOLINT
-                         &buf[0]);
+                         const_cast<void*>(static_cast<const void*>(buf)));
 
   if (ret == 0) return Ok(true);
   // https://infosys.beckhoff.com/english.php?content=../content/1033/tcadscommon/html/tcadscommon_intro.htm&id=
@@ -260,7 +260,7 @@ Result<bool, std::string> LocalTwinCATLinkImpl::Open() {
   return Err(std::string("Link to localhost has not been compiled. Rebuild this library on a Twincat3 host machine with TcADS-DLL."));
 }
 Result<bool, std::string> LocalTwinCATLinkImpl::Close() { return Ok(false); }
-Result<bool, std::string> LocalTwinCATLinkImpl::Send(size_t size, std::unique_ptr<uint8_t[]> buf) {
+Result<bool, std::string> LocalTwinCATLinkImpl::Send(size_t size, const uint8_t* buf) {
   (void)size;
   (void)buf;
   return Ok(false);

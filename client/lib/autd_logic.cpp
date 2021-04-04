@@ -69,8 +69,8 @@ Result<bool, std::string> AUTDLogic::Send(const GainPtr &gain, const ModulationP
 
   size_t body_size = 0;
   uint8_t msg_id = 0;
-  auto body = this->MakeBody(gain, mod, &body_size, &msg_id);
-  return this->SendData(body_size, move(body));
+  const auto body = this->MakeBody(gain, mod, &body_size, &msg_id);
+  return this->SendData(body_size, &body[0]);
 }
 
 Result<bool, std::string> AUTDLogic::SendBlocking(const GainPtr &gain, const ModulationPtr &mod) {
@@ -78,8 +78,8 @@ Result<bool, std::string> AUTDLogic::SendBlocking(const GainPtr &gain, const Mod
 
   size_t body_size = 0;
   uint8_t msg_id = 0;
-  auto body = this->MakeBody(gain, mod, &body_size, &msg_id);
-  auto res = this->SendData(body_size, move(body));
+  const auto body = this->MakeBody(gain, mod, &body_size, &msg_id);
+  auto res = this->SendData(body_size, &body[0]);
   if (res.is_err()) return res;
   return WaitMsgProcessed(msg_id);
 }
@@ -89,8 +89,8 @@ Result<bool, std::string> AUTDLogic::SendBlocking(const SequencePtr &seq) {
 
   size_t body_size = 0;
   uint8_t msg_id = 0;
-  auto body = this->MakeBody(seq, &body_size, &msg_id);
-  auto res = this->SendData(body_size, move(body));
+  const auto body = this->MakeBody(seq, &body_size, &msg_id);
+  auto res = this->SendData(body_size, &body[0]);
   if (res.is_err()) return res;
 
   if (seq->sent() == seq->control_points().size()) return this->WaitMsgProcessed(0xC0, 2000, 0xE0);
@@ -98,19 +98,19 @@ Result<bool, std::string> AUTDLogic::SendBlocking(const SequencePtr &seq) {
   return this->WaitMsgProcessed(msg_id, 200);
 }
 
-Result<bool, std::string> AUTDLogic::SendBlocking(const size_t size, unique_ptr<uint8_t[]> data, const size_t trial) {
+Result<bool, std::string> AUTDLogic::SendBlocking(const size_t size, const uint8_t *data, const size_t trial) {
   const auto msg_id = data[0];
 
-  auto res = this->SendData(size, move(data));
+  auto res = this->SendData(size, data);
   if (res.is_err()) return res;
 
   return this->WaitMsgProcessed(msg_id, trial, 0xFF);
 }
 
-Result<bool, std::string> AUTDLogic::SendData(const size_t size, unique_ptr<uint8_t[]> data) const {
+Result<bool, std::string> AUTDLogic::SendData(const size_t size, const uint8_t *data) const {
   if (this->_link == nullptr || !this->_link->is_open()) return Ok(false);
 
-  return this->_link->Send(size, move(data));
+  return this->_link->Send(size, data);
 }
 
 Result<bool, std::string> AUTDLogic::WaitMsgProcessed(const uint8_t msg_id, const size_t max_trial, const uint8_t mask) {
@@ -144,7 +144,7 @@ Result<bool, std::string> AUTDLogic::Synchronize(const Configuration config) {
   auto res = this->MakeCalibBody(config, &size);
   if (res.is_err()) return Err(res.unwrap_err());
 
-  return this->SendBlocking(size, res.unwrap(), 5000);
+  return this->SendBlocking(size, &res.unwrap()[0], 5000);
 }
 
 Result<bool, std::string> AUTDLogic::SynchronizeSeq() {
@@ -170,8 +170,8 @@ Result<bool, std::string> AUTDLogic::SynchronizeSeq() {
   }
 
   size_t body_size = 0;
-  auto calib_body = this->MakeCalibSeqBody(diffs, &body_size);
-  auto res = this->SendData(body_size, move(calib_body));
+  const auto calib_body = this->MakeCalibSeqBody(diffs, &body_size);
+  auto res = this->SendData(body_size, &calib_body[0]);
   if (res.is_err()) return res;
 
   return this->WaitMsgProcessed(0xE0, 200, 0xE0);
@@ -181,13 +181,13 @@ Result<bool, std::string> AUTDLogic::Clear() {
   this->_config = Configuration::GetDefaultConfiguration();
 
   const auto size = sizeof(RxGlobalHeader);
-  auto body = std::make_unique<uint8_t[]>(size);
+  const auto body = std::make_unique<uint8_t[]>(size);
 
   auto *header = reinterpret_cast<RxGlobalHeader *>(&body[0]);
   header->msg_id = CMD_CLEAR;
   header->command = CMD_CLEAR;
 
-  return this->SendBlocking(size, move(body), 200);
+  return this->SendBlocking(size, &body[0], 200);
 }
 
 Result<bool, std::string> AUTDLogic::Close() {
@@ -221,7 +221,7 @@ Result<std::vector<FirmwareInfo>, std::string> AUTDLogic::firmware_info_list() {
 
   const auto send_size = sizeof(RxGlobalHeader);
   auto header = make_header(CMD_READ_CPU_VER_LSB);
-  auto res = this->SendData(send_size, move(header));
+  auto res = this->SendData(send_size, &header[0]);
   if (res.is_err()) return Err(res.unwrap_err());
 
   res = WaitMsgProcessed(CMD_READ_CPU_VER_LSB, 50);
@@ -230,7 +230,7 @@ Result<std::vector<FirmwareInfo>, std::string> AUTDLogic::firmware_info_list() {
   for (size_t i = 0; i < size; i++) cpu_versions[i] = _rx_data[2 * i];
 
   header = make_header(CMD_READ_CPU_VER_MSB);
-  res = this->SendData(send_size, move(header));
+  res = this->SendData(send_size, &header[0]);
   if (res.is_err()) return Err(res.unwrap_err());
   res = WaitMsgProcessed(CMD_READ_CPU_VER_MSB, 50);
   if (res.is_err()) return Err(res.unwrap_err());
@@ -238,7 +238,7 @@ Result<std::vector<FirmwareInfo>, std::string> AUTDLogic::firmware_info_list() {
   for (size_t i = 0; i < size; i++) cpu_versions[i] = ConcatByte(_rx_data[2 * i], cpu_versions[i]);
 
   header = make_header(CMD_READ_FPGA_VER_LSB);
-  res = this->SendData(send_size, move(header));
+  res = this->SendData(send_size, &header[0]);
   if (res.is_err()) return Err(res.unwrap_err());
 
   res = WaitMsgProcessed(CMD_READ_FPGA_VER_LSB, 50);
@@ -247,7 +247,7 @@ Result<std::vector<FirmwareInfo>, std::string> AUTDLogic::firmware_info_list() {
   for (size_t i = 0; i < size; i++) fpga_versions[i] = _rx_data[2 * i];
 
   header = make_header(CMD_READ_FPGA_VER_MSB);
-  res = this->SendData(send_size, move(header));
+  res = this->SendData(send_size, &header[0]);
 
   if (res.is_err()) return Err(res.unwrap_err());
   res = WaitMsgProcessed(CMD_READ_FPGA_VER_MSB, 50);
