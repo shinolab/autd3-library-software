@@ -3,7 +3,7 @@
 // Created Date: 03/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 05/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -19,44 +19,47 @@ template <typename T, typename E>
 struct Result {
  private:
   enum class tag { RESULT_OK, RESULT_ERROR };
-  explicit Result(T t) : _t(tag::RESULT_OK), _ok(std::move(t)) {}
-  explicit Result(E e) : _t(tag::RESULT_ERROR), _err(std::move(e)) {}
+  explicit Result(T t) : _t(tag::RESULT_OK), _ok(std::move(t)), _err() {}
+  explicit Result(E e) : _t(tag::RESULT_ERROR), _ok(), _err(std::move(e)) {}
   tag _t;
-  union {
-    T _ok;
-    E _err;
-  };
+  T _ok;
+  E _err;
 
  public:
   ~Result() { _t == tag::RESULT_OK ? _ok.~T() : _err.~E(); }
   Result(const Result& obj) : _t(obj._t) {
     if (_t == tag::RESULT_OK)
       _ok = obj._ok;
-    else
+    else if (_t == tag::RESULT_ERROR)
       _err = obj._err;
   }
   Result& operator=(const Result& obj) {
     _t = obj._t;
     if (_t == tag::RESULT_OK)
       _ok = obj._ok;
-    else
+    else if (_t == tag::RESULT_ERROR)
       _err = obj._err;
     return *this;
   }
-  Result(Result&& obj) noexcept(false) {
-    _t = obj._t;
-    if (_t == tag::RESULT_OK)
-      _ok = std::move(obj._ok);
-    else
-      _err = std::move(obj._err);
-  }
-  Result& operator=(Result&& obj) noexcept(false) {
-    _t == tag::RESULT_OK ? _ok.~T() : _err.~E();
-    _t = obj._t;
-    if (_t == tag::RESULT_OK)
-      _ok = std::move(obj._ok);
-    else
-      _err = std::move(obj._err);
+  Result(Result&& obj) noexcept { *this = std::move(obj); }
+  Result& operator=(Result&& obj) noexcept {
+    if (this != &obj) {
+      if (_t == tag::RESULT_OK)
+        _ok.~T();
+      else if (_t == tag::RESULT_ERROR)
+        _err.~E();
+
+      _t = obj._t;
+      if (_t == tag::RESULT_OK)
+        _ok = std::move(obj._ok);
+      else if (_t == tag::RESULT_ERROR)
+        _err = std::move(obj._err);
+
+      if (obj._t == tag::RESULT_OK)
+        obj._ok.~T();
+      else if (_t == tag::RESULT_ERROR)
+        obj._err.~E();
+    }
     return *this;
   }
 
