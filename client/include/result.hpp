@@ -26,13 +26,8 @@ struct Result {
   E _err;
 
  public:
-  ~Result() { _t == tag::RESULT_OK ? _ok.~T() : _err.~E(); }
-  Result(const Result& obj) : _t(obj._t) {
-    if (_t == tag::RESULT_OK)
-      _ok = obj._ok;
-    else if (_t == tag::RESULT_ERROR)
-      _err = obj._err;
-  }
+  ~Result() = default;
+  Result(const Result& obj) { *this = obj; }
   Result& operator=(const Result& obj) {
     _t = obj._t;
     if (_t == tag::RESULT_OK)
@@ -44,21 +39,11 @@ struct Result {
   Result(Result&& obj) noexcept { *this = std::move(obj); }
   Result& operator=(Result&& obj) noexcept {
     if (this != &obj) {
-      if (_t == tag::RESULT_OK)
-        _ok.~T();
-      else if (_t == tag::RESULT_ERROR)
-        _err.~E();
-
       _t = obj._t;
       if (_t == tag::RESULT_OK)
         _ok = std::move(obj._ok);
       else if (_t == tag::RESULT_ERROR)
         _err = std::move(obj._err);
-
-      if (obj._t == tag::RESULT_OK)
-        obj._ok.~T();
-      else if (_t == tag::RESULT_ERROR)
-        obj._err.~E();
     }
     return *this;
   }
