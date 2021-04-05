@@ -147,12 +147,9 @@ Result<bool, std::string> SOEMController::Open(const char* ifname, const size_t 
   this->_timer.SetInterval(interval_us);
 
   auto res = this->_timer.Start([]() {
-    auto expected = false;
     const auto pre = AUTD3_LIB_SEND_COND.load(std::memory_order_acquire);
     ec_send_processdata();
-    if (!pre) {
-      AUTD3_LIB_SEND_COND.store(true, std::memory_order_release);
-    }
+    if (!pre) AUTD3_LIB_SEND_COND.store(true, std::memory_order_release);
     ec_receive_processdata(EC_TIMEOUTRET);
   });
 
