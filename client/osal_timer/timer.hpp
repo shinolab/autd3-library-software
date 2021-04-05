@@ -3,7 +3,7 @@
 // Created Date:02/07/2018
 // Author: Shun Suzuki and Saya Mizutani
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 05/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include <atomic>
 #include <future>
 
 #if WIN32
@@ -42,6 +43,7 @@ class Timer {
  private:
   uint32_t _interval_us;
   std::function<void()> _cb;
+  std::atomic<bool> _lock;
 
 #if WIN32
   uint32_t _timer_id = 0;
