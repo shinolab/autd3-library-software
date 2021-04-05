@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/04/2021
+// Last Modified: 06/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -39,7 +39,7 @@ EXPORT_AUTD bool AUTDStop(void* handle);
 EXPORT_AUTD int32_t AUTDGetFirmwareInfoListPointer(void* handle, void** out);
 EXPORT_AUTD void AUTDGetFirmwareInfo(void* p_firm_info_list, int32_t index, char* cpu_ver, char* fpga_ver);
 EXPORT_AUTD void AUTDFreeFirmwareInfoListPointer(void* p_firm_info_list);
-EXPORT_AUTD void AUTDGetLastError(char* error);
+EXPORT_AUTD int32_t AUTDGetLastError(char* error);
 #pragma endregion
 
 #pragma region Property

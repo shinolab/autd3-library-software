@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/04/2021
+// Last Modified: 06/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -114,8 +114,8 @@ int32_t AUTDGetFirmwareInfoListPointer(void* const handle, void** out) {
 }
 void AUTDGetFirmwareInfo(void* const p_firm_info_list, const int32_t index, char* cpu_ver, char* fpga_ver) {
   auto* wrapper = static_cast<FirmwareInfoListWrapper*>(p_firm_info_list);
-  const auto cpu_ver_ = wrapper->list[index].cpu_version();
-  const auto fpga_ver_ = wrapper->list[index].fpga_version();
+  const auto& cpu_ver_ = wrapper->list[index].cpu_version();
+  const auto& fpga_ver_ = wrapper->list[index].fpga_version();
   std::char_traits<char>::copy(cpu_ver, cpu_ver_.c_str(), cpu_ver_.size() + 1);
   std::char_traits<char>::copy(fpga_ver, fpga_ver_.c_str(), fpga_ver_.size() + 1);
 }
@@ -123,7 +123,13 @@ void AUTDFreeFirmwareInfoListPointer(void* const p_firm_info_list) {
   auto* wrapper = static_cast<FirmwareInfoListWrapper*>(p_firm_info_list);
   FirmwareInfoListDelete(wrapper);
 }
-void AUTDGetLastError(char* error) { std::char_traits<char>::copy(error, LAST_ERROR().c_str(), LAST_ERROR().size() + 1); }
+int32_t AUTDGetLastError(char* error) {
+  const auto& error_ = LAST_ERROR();
+  const int32_t size = static_cast<int32_t>(error_.size() + 1);
+  if (error == nullptr) return size;
+  std::char_traits<char>::copy(error, error_.c_str(), size);
+  return size;
+}
 #pragma endregion
 
 #pragma region Property
