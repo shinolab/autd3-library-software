@@ -3,7 +3,7 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 05/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -50,12 +50,11 @@ inline int Run(autd::ControllerPtr& autd) {
   autd->Synchronize().unwrap();
 
   auto firm_info_list = autd->firmware_info_list().unwrap();
-  for (auto& firm_info : firm_info_list) cout << firm_info << endl;
+  for (auto&& firm_info : firm_info_list) cout << firm_info << endl;
 
   while (true) {
-    for (size_t i = 0; i < examples.size(); i++) {
-      cout << "[" << i << "]: " << examples[i].second << endl;
-    }
+    for (size_t i = 0; i < examples.size(); i++) cout << "[" << i << "]: " << examples[i].second << endl;
+
     cout << "[Others]: finish." << endl;
 
     cout << "Choose number: ";
@@ -64,9 +63,7 @@ inline int Run(autd::ControllerPtr& autd) {
     getline(cin, in);
     std::stringstream s(in);
     const auto empty = in == "\n";
-    if (!(s >> idx) || idx >= examples.size() || empty) {
-      break;
-    }
+    if (!(s >> idx) || idx >= examples.size() || empty) break;
 
     auto fn = examples[idx].first;
     fn(autd);
