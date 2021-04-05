@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki and Saya Mizutani
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 05/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -75,7 +75,7 @@ Result<bool, std::string> Timer::Stop() {
 
   const uint32_t u_resolution = 1;
   timeEndPeriod(u_resolution);
-  if (!timeKillEvent(_timer_id)) return Err(std::string("timeKillEvent failed"));
+  if (timeKillEvent(_timer_id) != TIMERR_NOERROR) return Err(std::string("timeKillEvent failed"));
 
   return Ok(true);
 }
