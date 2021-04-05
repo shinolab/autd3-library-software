@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki and Saya Mizutani
 // -----
-// Last Modified: 05/04/2021
+// Last Modified: 06/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -21,7 +21,7 @@ static constexpr auto TIME_SCALE = 1000 * 1000L;  // us
 
 Timer::Timer() noexcept : Timer(false) {}
 
-Timer::Timer(const bool high_resolution) noexcept : _interval_us(1), _high_resolution(high_resolution), _lock(false) {}
+Timer::Timer(const bool high_resolution) noexcept : _interval_us(1), _high_resolution(high_resolution) {}
 
 Timer::~Timer() { (void)this->Stop(); }
 
@@ -126,11 +126,6 @@ void Timer::MainLoop() const {
 void Timer::TimerThread([[maybe_unused]] UINT u_timer_id, [[maybe_unused]] UINT u_msg, const DWORD_PTR dw_user, [[maybe_unused]] DWORD_PTR dw1,
                         [[maybe_unused]] DWORD_PTR dw2) {
   auto *const timer = reinterpret_cast<Timer *>(dw_user);
-  auto expected = false;
-  if (timer->_lock.compare_exchange_weak(expected, true)) {
-    auto *const timer = reinterpret_cast<Timer *>(dw_user);
-    timer->_cb();
-    timer->_lock.store(false, std::memory_order_release);
-  }
+  timer->_cb();
 }
 }  // namespace autd

@@ -3,7 +3,7 @@
 // Created Date: 04/09/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/04/2021
+// Last Modified: 06/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -28,7 +28,7 @@ static constexpr auto TIME_SCALE = 1000L;  // us
 
 Timer::Timer() noexcept : Timer::Timer(false) {}
 
-Timer::Timer(bool high_resolution) noexcept : _interval_us(1), _lock(false) { (void)high_resolution; }
+Timer::Timer(bool high_resolution) noexcept : _interval_us(1) { (void)high_resolution; }
 Timer::~Timer() { (void)this->Stop(); }
 
 bool Timer::SetInterval(uint32_t &interval_us) {
@@ -74,11 +74,5 @@ Result<bool, std::string> Timer::InitTimer() {
   return Ok(true);
 }
 
-void Timer::MainLoop(Timer *ptr) {
-  bool expected = false;
-  if (ptr->_lock.compare_exchange_weak(expected, true)) {
-    ptr->_cb();
-    ptr->_lock.store(false, std::memory_order_release);
-  }
-}
+void Timer::MainLoop(Timer *ptr) { ptr->_cb(); }
 }  // namespace autd

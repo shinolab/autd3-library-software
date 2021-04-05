@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/04/2021
+// Last Modified: 06/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -60,6 +60,7 @@
 
 namespace autdsoem {
 
+static std::atomic<bool> AUTD3_RT_LOCK(false);
 static std::atomic<bool> AUTD3_LIB_SEND_COND(false);
 
 bool SOEMController::is_open() const { return _is_open; }
@@ -147,10 +148,14 @@ Result<bool, std::string> SOEMController::Open(const char* ifname, const size_t 
   this->_timer.SetInterval(interval_us);
 
   auto res = this->_timer.Start([]() {
-    const auto pre = AUTD3_LIB_SEND_COND.load(std::memory_order_acquire);
-    ec_send_processdata();
-    if (!pre) AUTD3_LIB_SEND_COND.store(true, std::memory_order_release);
-    ec_receive_processdata(EC_TIMEOUTRET);
+    auto expected = false;
+    if (AUTD3_RT_LOCK.compare_exchange_weak(expected, true)) {
+      const auto pre = AUTD3_LIB_SEND_COND.load(std::memory_order_acquire);
+      ec_send_processdata();
+      if (!pre) AUTD3_LIB_SEND_COND.store(true, std::memory_order_release);
+      AUTD3_RT_LOCK.store(false, std::memory_order_release);
+      ec_receive_processdata(EC_TIMEOUTRET);
+    }
   });
 
   if (res.is_err()) return res;
