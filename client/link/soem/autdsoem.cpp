@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 05/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -45,6 +45,7 @@
 #include <chrono>
 #include <condition_variable>
 #include <cstdint>
+#include <cstring>
 #include <iostream>
 #include <memory>
 #include <mutex>
@@ -67,10 +68,11 @@ bool SOEMController::is_open() const { return _is_open; }
 Result<bool, std::string> SOEMController::Send(size_t size, const uint8_t* buf) {
   if (buf == nullptr) return Err(std::string("data is null"));
   if (!_is_open) return Err(std::string("link is closed"));
-
   {
+    auto buf_ = std::make_unique<uint8_t[]>(size);
+    std::memcpy(&buf_[0], &buf[0], size);
     std::unique_lock<std::mutex> lk(_send_mtx);
-    _send_q.push(std::pair(buf, size));
+    _send_q.push(std::pair(std::move(buf_), size));
   }
   _send_cond.notify_all();
   return Ok(true);
@@ -107,7 +109,7 @@ Result<bool, std::string> SOEMController::Open(const char* ifname, const size_t 
 
     delete[] _io_map;
     _io_map = new uint8_t[size];
-    memset(_io_map, 0x00, _io_map_size);
+    std::memset(_io_map, 0x00, _io_map_size);
   }
 
   _sync0_cyc_time = config.ec_sync0_cycle_time_ns;
@@ -174,10 +176,10 @@ Result<bool, std::string> SOEMController::Close() {
   if (std::this_thread::get_id() != _send_thread.get_id() && this->_send_thread.joinable()) this->_send_thread.join();
   {
     std::unique_lock<std::mutex> lk(_send_mtx);
-    std::queue<std::pair<const uint8_t*, size_t>>().swap(_send_q);
+    std::queue<std::pair<std::unique_ptr<uint8_t[]>, size_t>>().swap(_send_q);
   }
 
-  memset(_io_map, 0x00, _output_frame_size);
+  std::memset(_io_map, 0x00, _output_frame_size);
 
   auto res = this->_timer.Stop();
   if (res.is_err()) return res;
@@ -197,14 +199,14 @@ Result<bool, std::string> SOEMController::Close() {
 void SOEMController::CreateSendThread(size_t header_size, size_t body_size) {
   _send_thread = std::thread([this, header_size, body_size]() {
     while (_is_open) {
-      const uint8_t* buf = nullptr;
+      std::unique_ptr<uint8_t[]> buf = nullptr;
       size_t size = 0;
       {
         std::unique_lock<std::mutex> lk(_send_mtx);
         _send_cond.wait(lk, [&] { return !_send_q.empty() || !_is_open; });
         if (!_send_q.empty()) {
           auto [fst, snd] = move(_send_q.front());
-          buf = fst;
+          buf = std::move(fst);
           size = snd;
         }
       }
@@ -214,8 +216,8 @@ void SOEMController::CreateSendThread(size_t header_size, size_t body_size) {
         const auto output_frame_size = header_size + body_size;
 
         for (size_t i = 0; i < _dev_num; i++) {
-          if (includes_gain) memcpy(&_io_map[output_frame_size * i], &buf[header_size + body_size * i], body_size);
-          memcpy(&_io_map[output_frame_size * i + body_size], &buf[0], header_size);
+          if (includes_gain) std::memcpy(&_io_map[output_frame_size * i], &buf[header_size + body_size * i], body_size);
+          std::memcpy(&_io_map[output_frame_size * i + body_size], &buf[0], header_size);
         }
 
         {
