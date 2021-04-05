@@ -61,7 +61,6 @@
 namespace autdsoem {
 
 static std::atomic<bool> AUTD3_LIB_SEND_COND(false);
-static std::atomic<bool> AUTD3_LIB_RT_THREAD_LOCK(false);
 
 bool SOEMController::is_open() const { return _is_open; }
 
@@ -149,15 +148,12 @@ Result<bool, std::string> SOEMController::Open(const char* ifname, const size_t 
 
   auto res = this->_timer.Start([]() {
     auto expected = false;
-    if (AUTD3_LIB_RT_THREAD_LOCK.compare_exchange_weak(expected, true)) {
-      const auto pre = AUTD3_LIB_SEND_COND.load(std::memory_order_acquire);
-      ec_send_processdata();
-      if (!pre) {
-        AUTD3_LIB_SEND_COND.store(true, std::memory_order_release);
-      }
-      AUTD3_LIB_RT_THREAD_LOCK.store(false, std::memory_order_release);
-      ec_receive_processdata(EC_TIMEOUTRET);
+    const auto pre = AUTD3_LIB_SEND_COND.load(std::memory_order_acquire);
+    ec_send_processdata();
+    if (!pre) {
+      AUTD3_LIB_SEND_COND.store(true, std::memory_order_release);
     }
+    ec_receive_processdata(EC_TIMEOUTRET);
   });
 
   if (res.is_err()) return res;

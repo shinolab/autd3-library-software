@@ -3,7 +3,7 @@
 // Created Date: 04/09/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 05/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -15,10 +15,8 @@
 #include <string.h>
 #include <time.h>
 
-#include <atomic>
 #include <chrono>
 #include <cmath>
-#include <future>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -28,11 +26,9 @@ namespace autd {
 
 static constexpr auto TIME_SCALE = 1000L;  // us to ns
 
-static std::atomic<bool> AUTD3_LIB_TIMER_LOCK(false);
-
 Timer::Timer() noexcept : Timer::Timer(false) {}
 
-Timer::Timer(bool high_resolution) noexcept { this->_interval_us = 1; }
+Timer::Timer(bool high_resolution) noexcept : _interval_us(1), _lock(false) {}
 Timer::~Timer() { (void)this->Stop(); }
 
 bool Timer::SetInterval(uint32_t &interval_us) {
@@ -90,10 +86,11 @@ Result<bool, std::string> Timer::InitTimer() {
 void Timer::MainLoop(int signum) {}
 
 void Timer::Notify(union sigval sv) {
+  auto *timer = reinterpret_cast<Timer *>(sv.sival_ptr);
   bool expected = false;
-  if (AUTD3_LIB_TIMER_LOCK.compare_exchange_weak(expected, true)) {
-    (reinterpret_cast<Timer *>(sv.sival_ptr))->_cb();
-    AUTD3_LIB_TIMER_LOCK.store(false, std::memory_order_release);
+  if (timer->_lock.compare_exchange_weak(expected, true)) {
+    timer->_cb();
+    timer->_lock.store(false, std::memory_order_release);
   }
 }
 }  // namespace autd

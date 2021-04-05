@@ -13,19 +13,15 @@
 
 #include <Windows.h>
 
-#include <atomic>
-#include <future>
 #include <iostream>
 
 namespace autd {
 
 static constexpr auto TIME_SCALE = 1000 * 1000L;  // us
 
-static std::atomic<bool> AUTD3_LIB_TIMER_LOCK(false);
-
 Timer::Timer() noexcept : Timer(false) {}
 
-Timer::Timer(const bool high_resolution) noexcept : _interval_us(1), _high_resolution(high_resolution) {}
+Timer::Timer(const bool high_resolution) noexcept : _interval_us(1), _high_resolution(high_resolution), _lock(false) {}
 
 Timer::~Timer() { (void)this->Stop(); }
 
@@ -129,11 +125,12 @@ void Timer::MainLoop() const {
 
 void Timer::TimerThread([[maybe_unused]] UINT u_timer_id, [[maybe_unused]] UINT u_msg, const DWORD_PTR dw_user, [[maybe_unused]] DWORD_PTR dw1,
                         [[maybe_unused]] DWORD_PTR dw2) {
+  auto *const timer = reinterpret_cast<Timer *>(dw_user);
   auto expected = false;
-  if (AUTD3_LIB_TIMER_LOCK.compare_exchange_weak(expected, true)) {
+  if (timer->_lock.compare_exchange_weak(expected, true)) {
     auto *const timer = reinterpret_cast<Timer *>(dw_user);
     timer->_cb();
-    AUTD3_LIB_TIMER_LOCK.store(false, std::memory_order_release);
+    timer->_lock.store(false, std::memory_order_release);
   }
 }
 }  // namespace autd
