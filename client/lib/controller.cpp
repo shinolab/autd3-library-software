@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 05/04/2021
+// Last Modified: 06/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -223,7 +223,7 @@ class AUTDControllerAsync {
 
 class AUTDControllerStm {
  public:
-  explicit AUTDControllerStm(const shared_ptr<AUTDLogic>& logic) : _autd_logic(logic) {}
+  explicit AUTDControllerStm(const shared_ptr<AUTDLogic>& logic) : _autd_logic(logic), _lock(false) {}
 
   void AppendGain(const GainPtr& gain) { _stm_gains.emplace_back(gain); }
   void AppendGain(const vector<GainPtr>& gain_list) {
@@ -255,10 +255,14 @@ class AUTDControllerStm {
 
     size_t idx = 0;
     return this->_stm_timer.Start([this, idx, len]() mutable {
-      const auto body_size = this->_stm_body_sizes[idx];
-      const auto res = this->_autd_logic->SendData(body_size, this->_stm_bodies[idx]);
-      if (res.is_err()) return;
-      idx = (idx + 1) % len;
+      auto expected = false;
+      if (this->_lock.compare_exchange_weak(expected, true)) {
+        const auto body_size = this->_stm_body_sizes[idx];
+        const auto res = this->_autd_logic->SendData(body_size, this->_stm_bodies[idx]);
+        if (res.is_err()) return;
+        idx = (idx + 1) % len;
+        this->_lock.store(false, std::memory_order_release);
+      }
     });
   }
 
@@ -285,6 +289,7 @@ class AUTDControllerStm {
   vector<uint8_t*> _stm_bodies;
   vector<size_t> _stm_body_sizes;
   Timer _stm_timer;
+  std::atomic<bool> _lock;
 };
 
 class AUTDController final : public Controller {
