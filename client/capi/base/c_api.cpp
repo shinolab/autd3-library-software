@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 05/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -164,7 +164,7 @@ void AUTDNullGain(void** gain) {
   auto* g = GainCreate(autd::gain::NullGain::Create());
   *gain = g;
 }
-void AUTDGroupedGain(void** gain, const int32_t* group_ids, void* const* in_gains, const int32_t size) {
+void AUTDGroupedGain(void** gain, int32_t* group_ids, void* const* in_gains, const int32_t size) {
   std::map<size_t, autd::GainPtr> gain_map;
 
   for (auto i = 0; i < size; i++) {
@@ -196,7 +196,7 @@ void AUTDPlaneWaveGain(void** gain, const float n_x, const float n_y, const floa
   auto* g = GainCreate(autd::gain::PlaneWaveGain::Create(autd::Vector3(n_x, n_y, n_z), duty));
   *gain = g;
 }
-void AUTDCustomGain(void** gain, const uint16_t* data, const int32_t data_length) {
+void AUTDCustomGain(void** gain, uint16_t* data, const int32_t data_length) {
   auto* g = GainCreate(autd::gain::CustomGain::Create(data, data_length));
   *gain = g;
 }
@@ -216,7 +216,7 @@ void AUTDDeleteModulation(void* const mod) {
   auto* m = static_cast<ModulationWrapper*>(mod);
   ModulationDelete(m);
 }
-void AUTDCustomModulation(void** mod, const uint8_t* buf, const uint32_t size) {
+void AUTDCustomModulation(void** mod, uint8_t* buf, const uint32_t size) {
   auto* m = ModulationCreate(autd::modulation::Modulation::Create(0));
   m->ptr->buffer.resize(size, 0);
   std::memcpy(&m->ptr->buffer[0], buf, size);
@@ -247,7 +247,7 @@ bool AUTDSequenceAddPoint(void* const seq, const autd::Float x, const autd::Floa
   if (res.is_err()) LAST_ERROR() = res.unwrap_err();
   return res.unwrap_or(false);
 }
-bool AUTDSequenceAddPoints(void* const seq, const autd::Float* points, const uint64_t size) {
+bool AUTDSequenceAddPoints(void* const seq, autd::Float* points, const uint64_t size) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
   std::vector<autd::Vector3> p;
   for (size_t i = 0; i < size; i++) p.emplace_back(autd::Vector3(points[3 * i], points[3 * i + 1], points[3 * i + 2]));

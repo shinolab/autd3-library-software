@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 05/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -54,19 +54,19 @@ EXPORT_AUTD uint64_t AUTDRemainingInBuffer(void* handle);
 
 #pragma region Gain
 EXPORT_AUTD void AUTDNullGain(void** gain);
-EXPORT_AUTD void AUTDGroupedGain(void** gain, const int32_t* group_ids, void* const* in_gains, int32_t size);
+EXPORT_AUTD void AUTDGroupedGain(void** gain, int32_t* group_ids, void** in_gains, int32_t size);
 EXPORT_AUTD void AUTDDeleteGain(void* gain);
 EXPORT_AUTD void AUTDFocalPointGain(void** gain, float x, float y, float z, uint8_t duty);
 EXPORT_AUTD void AUTDBesselBeamGain(void** gain, float x, float y, float z, float n_x, float n_y, float n_z, float theta_z, uint8_t duty);
 EXPORT_AUTD void AUTDPlaneWaveGain(void** gain, float n_x, float n_y, float n_z, uint8_t duty);
-EXPORT_AUTD void AUTDCustomGain(void** gain, const uint16_t* data, int32_t data_length);
+EXPORT_AUTD void AUTDCustomGain(void** gain, uint16_t* data, int32_t data_length);
 EXPORT_AUTD void AUTDTransducerTestGain(void** gain, int32_t idx, uint8_t duty, uint8_t phase);
 #pragma endregion
 
 #pragma region Modulation
 EXPORT_AUTD void AUTDModulation(void** mod, uint8_t amp);
 EXPORT_AUTD void AUTDDeleteModulation(void* mod);
-EXPORT_AUTD void AUTDCustomModulation(void** mod, const uint8_t* buf, uint32_t size);
+EXPORT_AUTD void AUTDCustomModulation(void** mod, uint8_t* buf, uint32_t size);
 EXPORT_AUTD void AUTDSawModulation(void** mod, int32_t freq);
 EXPORT_AUTD void AUTDSineModulation(void** mod, int32_t freq, float amp, float offset);
 EXPORT_AUTD void AUTDSquareModulation(void** mod, int32_t freq, uint8_t low, uint8_t high);
@@ -75,7 +75,7 @@ EXPORT_AUTD void AUTDSquareModulation(void** mod, int32_t freq, uint8_t low, uin
 #pragma region Sequence
 EXPORT_AUTD void AUTDSequence(void** out);
 EXPORT_AUTD bool AUTDSequenceAddPoint(void* seq, autd::Float x, autd::Float y, autd::Float z);
-EXPORT_AUTD bool AUTDSequenceAddPoints(void* seq, const autd::Float* points, uint64_t size);
+EXPORT_AUTD bool AUTDSequenceAddPoints(void* seq, autd::Float* points, uint64_t size);
 EXPORT_AUTD autd::Float AUTDSequenceSetFreq(void* seq, autd::Float freq);
 EXPORT_AUTD autd::Float AUTDSequenceFreq(void* seq);
 EXPORT_AUTD autd::Float AUTDSequenceSamplingFreq(void* seq);
