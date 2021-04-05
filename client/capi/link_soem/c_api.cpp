@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 05/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -26,14 +26,14 @@ int32_t AUTDGetAdapterPointer(void** out) {
   *out = EtherCATAdaptersCreate(adapters);
   return static_cast<int32_t>(size);
 }
-void AUTDGetAdapter(void* const p_adapter, const int32_t index, char* desc, char* name) {
+void AUTDGetAdapter(void* p_adapter, const int32_t index, char* desc, char* name) {
   auto* wrapper = static_cast<EtherCATAdaptersWrapper*>(p_adapter);
   const auto& desc_ = wrapper->adapters[index].first;
   const auto& name_ = wrapper->adapters[index].second;
   std::char_traits<char>::copy(desc, desc_.c_str(), desc_.size() + 1);
   std::char_traits<char>::copy(name, name_.c_str(), name_.size() + 1);
 }
-void AUTDFreeAdapterPointer(void* const p_adapter) {
+void AUTDFreeAdapterPointer(void* p_adapter) {
   auto* wrapper = static_cast<EtherCATAdaptersWrapper*>(p_adapter);
   EtherCATAdaptersDelete(wrapper);
 }

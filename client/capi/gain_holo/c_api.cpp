@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 05/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -13,7 +13,7 @@
 #include "./gain_holo.h"
 #include "gain/holo.hpp"
 
-void AUTDHoloGain(void** gain, const autd::Float* points, const autd::Float* amps, const int32_t size, int32_t method, const void* params) {
+void AUTDHoloGain(void** gain, autd::Float* points, autd::Float* amps, const int32_t size, int32_t method, void* params) {
   std::vector<autd::Vector3> holo;
   std::vector<autd::Float> amps_;
   for (auto i = 0; i < size; i++) {
