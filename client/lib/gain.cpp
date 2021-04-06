@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 06/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -94,13 +94,13 @@ Result<bool, std::string> PlaneWaveGain::Build() {
 
   const auto dir = this->_direction.normalized();
 
-  const auto ULTRASOUND_WAVELENGTH = geometry->wavelength();
+  const auto ultrasound_wavelength = geometry->wavelength();
   const uint16_t duty = static_cast<uint16_t>(this->_duty) << 8 & 0xFF00;
   for (size_t dev = 0; dev < geometry->num_devices(); dev++)
     for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
       const auto trp = geometry->position(dev, i);
       const auto dist = trp.dot(dir);
-      const auto f_phase = PosMod(dist, ULTRASOUND_WAVELENGTH) / ULTRASOUND_WAVELENGTH;
+      const auto f_phase = PosMod(dist, ultrasound_wavelength) / ultrasound_wavelength;
       const auto phase = static_cast<uint16_t>(round(255 * (1 - f_phase)));
       this->_data[dev][i] = duty | phase;
     }
@@ -162,7 +162,7 @@ Result<bool, std::string> BesselBeamGain::Build() {
 
   const auto theta_w = asin(v.norm());
 
-  const auto ULTRASOUND_WAVELENGTH = geometry->wavelength();
+  const auto ultrasound_wavelength = geometry->wavelength();
   const uint16_t duty = static_cast<uint16_t>(this->_duty) << 8 & 0xFF00;
   for (size_t dev = 0; dev < geometry->num_devices(); dev++)
     for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
@@ -171,7 +171,7 @@ Result<bool, std::string> BesselBeamGain::Build() {
       const auto v_x_r = r.cross(v);
       const auto rr = cos(theta_w) * r + sin(theta_w) * v_x_r + v.dot(r) * (1 - cos(theta_w)) * v;
       const auto f_phase =
-          fmod(sin(_theta_z) * sqrt(rr.x() * rr.x() + rr.y() * rr.y()) - cos(_theta_z) * rr.z(), ULTRASOUND_WAVELENGTH) / ULTRASOUND_WAVELENGTH;
+          fmod(sin(_theta_z) * sqrt(rr.x() * rr.x() + rr.y() * rr.y()) - cos(_theta_z) * rr.z(), ultrasound_wavelength) / ultrasound_wavelength;
       const auto phase = static_cast<uint16_t>(round(255 * (1 - f_phase)));
       this->_data[dev][i] = duty | phase;
     }

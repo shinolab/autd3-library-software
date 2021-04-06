@@ -3,7 +3,7 @@
 // Created Date: 20/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 06/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -39,21 +39,21 @@ namespace autd {
 #ifndef DISABLE_EIGEN
 using Vector3 = Eigen::Matrix<Float, 3, 1>;
 using Vector4 = Eigen::Matrix<Float, 4, 1>;
-using Matrix4x4 = Eigen::Matrix<Float, 4, 4>;
+using Matrix4X4 = Eigen::Matrix<Float, 4, 4>;
 using Quaternion = Eigen::Quaternion<Float>;
 inline Quaternion AngleAxis(const Float a, const Vector3& v) { return Quaternion(Eigen::AngleAxis<Float>(a, v)); }
-inline Matrix4x4 Translation(const Vector3& v, const Quaternion& q) {
+inline Matrix4X4 Translation(const Vector3& v, const Quaternion& q) {
   const Eigen::Transform<Float, 3, Eigen::Affine> transform_matrix = Eigen::Translation<Float, 3>(v) * q;
   return transform_matrix.matrix();
 }
 #else
 using Vector3 = _utils::Vector3<Float>;
 using Vector4 = _utils::Vector4<Float>;
-using Matrix4x4 = _utils::Matrix4x4<Float>;
+using Matrix4X4 = _utils::Matrix4X4<Float>;
 using Quaternion = _utils::Quaternion<Float>;
 
 inline Quaternion AngleAxis(const Float a, const Vector3& v) { return Quaternion::AngleAxis(a, v); }
-inline Matrix4x4 Translation(const Vector3& v, const Quaternion& q) { return Matrix4x4::Translation(v, q); }
+inline Matrix4X4 Translation(const Vector3& v, const Quaternion& q) { return Matrix4X4::Translation(v, q); }
 #endif
 template <typename V>
 Vector3 ToVector3(const V& v) {

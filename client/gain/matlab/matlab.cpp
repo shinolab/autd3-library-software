@@ -59,7 +59,7 @@ Result<bool, std::string> MatlabGain::Build() {
   }
 
   for (size_t i = 0; i < num_elems; i++) {
-    const auto re = static_cast<Float>(array[i].real);
+    const auto re = static_cast<Float>(array[i].Real);
     const auto im = static_cast<Float>(array[i].imag);
     const auto f_amp = std::sqrt(re * re + im * im);
     const auto amp = static_cast<uint16_t>(std::clamp<Float>(f_amp, 0, 1) * 255);

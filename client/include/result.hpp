@@ -19,10 +19,10 @@ namespace autd {
 template <typename T, typename E>
 struct Result {
  private:
-  enum class tag { RESULT_OK, RESULT_ERROR };
-  explicit Result(T t) : _t(tag::RESULT_OK), _ok(std::move(t)), _err() {}
-  explicit Result(E e) : _t(tag::RESULT_ERROR), _ok(), _err(std::move(e)) {}
-  tag _t;
+  enum class TAG { RESULT_OK, RESULT_ERROR };
+  explicit Result(T t) : _t(TAG::RESULT_OK), _ok(std::move(t)), _err() {}
+  explicit Result(E e) : _t(TAG::RESULT_ERROR), _ok(), _err(std::move(e)) {}
+  TAG _t;
   T _ok;
   E _err;
 
@@ -31,9 +31,9 @@ struct Result {
   Result(const Result& obj) { *this = obj; }
   Result& operator=(const Result& obj) {
     _t = obj._t;
-    if (_t == tag::RESULT_OK)
+    if (_t == TAG::RESULT_OK)
       _ok = obj._ok;
-    else if (_t == tag::RESULT_ERROR)
+    else if (_t == TAG::RESULT_ERROR)
       _err = obj._err;
     return *this;
   }
@@ -41,9 +41,9 @@ struct Result {
   Result& operator=(Result&& obj) noexcept {
     if (this != &obj) {
       _t = obj._t;
-      if (_t == tag::RESULT_OK)
+      if (_t == TAG::RESULT_OK)
         _ok = std::move(obj._ok);
-      else if (_t == tag::RESULT_ERROR)
+      else if (_t == TAG::RESULT_ERROR)
         _err = std::move(obj._err);
     }
     return *this;
@@ -52,11 +52,11 @@ struct Result {
   static Result Ok(T ok) { return Result(std::move(ok)); }
   static Result Err(E err) { return Result(std::move(err)); }
 
-  [[nodiscard]] bool is_ok() const { return _t == tag::RESULT_OK; }
-  [[nodiscard]] bool is_err() const { return _t == tag::RESULT_ERROR; }
+  [[nodiscard]] bool is_ok() const { return _t == TAG::RESULT_OK; }
+  [[nodiscard]] bool is_err() const { return _t == TAG::RESULT_ERROR; }
 
   T unwrap() {
-    if (_t != tag::RESULT_OK) {
+    if (_t != TAG::RESULT_OK) {
       std::stringstream ss;
       ss << "cannot unwrap: " << _err;
       throw std::runtime_error(ss.str());
@@ -65,12 +65,12 @@ struct Result {
   }
 
   E unwrap_err() {
-    if (_t != tag::RESULT_ERROR) throw std::runtime_error("cannot unwrap_err");
+    if (_t != TAG::RESULT_ERROR) throw std::runtime_error("cannot unwrap_err");
     return std::move(_err);
   }
 
   [[nodiscard]] T unwrap_or(T v) {
-    if (_t != tag::RESULT_OK) return v;
+    if (_t != TAG::RESULT_OK) return v;
     return std::move(_ok);
   }
 };
