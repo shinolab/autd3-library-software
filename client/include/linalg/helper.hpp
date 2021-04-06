@@ -1,9 +1,9 @@
 // File: helper.hpp
-// Project: eigen-linalg
+// Project: linalg
 // Created Date: 25/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 06/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -13,9 +13,9 @@
 
 #include <ostream>
 
-namespace autd::_utils {
+namespace autd::utils {
 
-class _Helper {
+class LinalgHelper {
  public:
   template <typename T, typename V>
   static V& add(V& dst, const V& src) {
@@ -163,4 +163,4 @@ class _Helper {
   }
 };
 
-}  // namespace autd::_utils
+}  // namespace autd::utils

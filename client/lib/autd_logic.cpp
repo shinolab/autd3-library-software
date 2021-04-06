@@ -3,7 +3,7 @@
 // Created Date: 22/12/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 06/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -326,16 +326,16 @@ unique_ptr<uint8_t[]> AUTDLogic::MakeBody(const SequencePtr &seq, size_t *const 
   }
 
   auto *cursor = &body[0] + sizeof(RxGlobalHeader);
-  const auto FIXED_NUM_UNIT = _geometry->wavelength() / 256;
+  const auto fixed_num_unit = _geometry->wavelength() / 256;
   for (size_t device = 0; device < num_devices; device++) {
     std::vector<uint8_t> foci;
     foci.reserve(static_cast<size_t>(send_size) * 10);
 
     for (size_t i = 0; i < send_size; i++) {
       auto v64 = this->_geometry->local_position(device, seq->control_points()[seq->sent() + i]);
-      const auto x = static_cast<uint32_t>(static_cast<int32_t>(v64.x() / FIXED_NUM_UNIT));
-      const auto y = static_cast<uint32_t>(static_cast<int32_t>(v64.y() / FIXED_NUM_UNIT));
-      const auto z = static_cast<uint32_t>(static_cast<int32_t>(v64.z() / FIXED_NUM_UNIT));
+      const auto x = static_cast<uint32_t>(static_cast<int32_t>(v64.x() / fixed_num_unit));
+      const auto y = static_cast<uint32_t>(static_cast<int32_t>(v64.y() / fixed_num_unit));
+      const auto z = static_cast<uint32_t>(static_cast<int32_t>(v64.z() / fixed_num_unit));
       foci.emplace_back(static_cast<uint8_t>(x & 0x000000FF));
       foci.emplace_back(static_cast<uint8_t>((x & 0x0000FF00) >> 8));
       foci.emplace_back(static_cast<uint8_t>((x & 0x80000000) >> 24 | (x & 0x007F0000) >> 16));

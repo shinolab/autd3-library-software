@@ -3,7 +3,7 @@
 // Created Date: 27/02/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 06/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -19,18 +19,16 @@
 #include "quaternion.hpp"
 #include "vector.hpp"
 
-namespace autd::_utils {
+namespace autd::utils {
 
 template <typename T>
 struct MatrixX {
   MatrixX(const size_t row, const size_t col) : _num_row(row), _num_col(col) { _data = std::make_unique<T[]>(row * col); }
   ~MatrixX() = default;
-  MatrixX(const MatrixX& obj) {
+  MatrixX(const MatrixX& obj) { *this = obj; }
+  MatrixX& operator=(const MatrixX& obj) {
     _num_row = obj._num_row;
     _num_col = obj._num_col;
-    std::memcpy(_data.get(), obj.data(), size() * sizeof(T));
-  }
-  MatrixX& operator=(const MatrixX& obj) {
     std::memcpy(_data.get(), obj.data(), size() * sizeof(T));
     return *this;
   }
@@ -84,20 +82,20 @@ struct MatrixX {
   template <typename Ts>
   friend bool operator!=(const MatrixX<Ts>& lhs, const MatrixX<Ts>& rhs);
 
-  MatrixX& operator+=(const MatrixX& rhs) { return _Helper::add<T, MatrixX>(this, rhs); }
-  MatrixX& operator-=(const MatrixX& rhs) { return _Helper::sub<T, MatrixX>(this, rhs); }
-  MatrixX& operator*=(T rhs) { return _Helper::mul<T, MatrixX>(this, rhs); }
-  MatrixX& operator/=(T rhs) { return _Helper::div<T, MatrixX>(this, rhs); }
+  MatrixX& operator+=(const MatrixX& rhs) { return LinalgHelper::add<T, MatrixX>(this, rhs); }
+  MatrixX& operator-=(const MatrixX& rhs) { return LinalgHelper::sub<T, MatrixX>(this, rhs); }
+  MatrixX& operator*=(T rhs) { return LinalgHelper::mul<T, MatrixX>(this, rhs); }
+  MatrixX& operator/=(T rhs) { return LinalgHelper::div<T, MatrixX>(this, rhs); }
 
-  MatrixX operator-() const { return _Helper::neg<T, MatrixX>(*this); }
+  MatrixX operator-() const { return LinalgHelper::neg<T, MatrixX>(*this); }
 
-  friend MatrixX operator+(const MatrixX& lhs, const MatrixX& rhs) { return _Helper::add<T, MatrixX>(lhs, rhs); }
-  friend MatrixX operator-(const MatrixX& lhs, const MatrixX& rhs) { return _Helper::sub<T, MatrixX>(lhs, rhs); }
-  friend MatrixX operator*(const MatrixX& lhs, const T& rhs) { return _Helper::mul<T, MatrixX>(lhs, rhs); }
-  friend MatrixX operator*(const T& lhs, const MatrixX& rhs) { return _Helper::mul<T, MatrixX>(rhs, lhs); }
-  friend MatrixX operator/(const MatrixX& lhs, const T& rhs) { return _Helper::div<T, MatrixX>(lhs, rhs); }
+  friend MatrixX operator+(const MatrixX& lhs, const MatrixX& rhs) { return LinalgHelper::add<T, MatrixX>(lhs, rhs); }
+  friend MatrixX operator-(const MatrixX& lhs, const MatrixX& rhs) { return LinalgHelper::sub<T, MatrixX>(lhs, rhs); }
+  friend MatrixX operator*(const MatrixX& lhs, const T& rhs) { return LinalgHelper::mul<T, MatrixX>(lhs, rhs); }
+  friend MatrixX operator*(const T& lhs, const MatrixX& rhs) { return LinalgHelper::mul<T, MatrixX>(rhs, lhs); }
+  friend MatrixX operator/(const MatrixX& lhs, const T& rhs) { return LinalgHelper::div<T, MatrixX>(lhs, rhs); }
 
-  friend VectorX<T> operator*(const MatrixX& lhs, const VectorX<T>& rhs) { return _Helper::mat_vec_mul<T, MatrixX, VectorX<T>>(lhs, rhs); }
+  friend VectorX<T> operator*(const MatrixX& lhs, const VectorX<T>& rhs) { return LinalgHelper::mat_vec_mul<T, MatrixX, VectorX<T>>(lhs, rhs); }
 
  private:
   size_t _num_row;
@@ -107,11 +105,11 @@ struct MatrixX {
 
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const MatrixX<T>& obj) {
-  return _Helper::mat_show(os, obj);
+  return LinalgHelper::mat_show(os, obj);
 }
 template <typename T>
 bool operator==(const MatrixX<T>& lhs, const MatrixX<T>& rhs) {
-  return _Helper::mat_equals(lhs, rhs);
+  return LinalgHelper::mat_equals(lhs, rhs);
 }
 template <typename T>
 bool operator!=(const MatrixX<T>& lhs, const MatrixX<T>& rhs) {
@@ -123,19 +121,19 @@ class Matrix4x4 : public MatrixX<T> {
  public:
   Matrix4x4() : MatrixX<T>(4, 4) {}
 
-  Matrix4x4& operator+=(const Matrix4x4& rhs) { return _Helper::add<T, Matrix4x4>(this, rhs); }
-  Matrix4x4& operator-=(const Matrix4x4& rhs) { return _Helper::sub<T, Matrix4x4>(this, rhs); }
-  Matrix4x4& operator*=(const T& rhs) { return _Helper::mul<T, Matrix4x4>(this, rhs); }
-  Matrix4x4& operator/=(const T& rhs) { return _Helper::div<T, Matrix4x4>(this, rhs); }
+  Matrix4x4& operator+=(const Matrix4x4& rhs) { return LinalgHelper::add<T, Matrix4x4>(this, rhs); }
+  Matrix4x4& operator-=(const Matrix4x4& rhs) { return LinalgHelper::sub<T, Matrix4x4>(this, rhs); }
+  Matrix4x4& operator*=(const T& rhs) { return LinalgHelper::mul<T, Matrix4x4>(this, rhs); }
+  Matrix4x4& operator/=(const T& rhs) { return LinalgHelper::div<T, Matrix4x4>(this, rhs); }
 
-  Matrix4x4 operator-() const { return _Helper::neg<T, Matrix4x4>(*this); }
+  Matrix4x4 operator-() const { return LinalgHelper::neg<T, Matrix4x4>(*this); }
 
-  friend Matrix4x4 operator+(const Matrix4x4& lhs, const Matrix4x4& rhs) { return _Helper::add<T, Matrix4x4>(lhs, rhs); }
+  friend Matrix4x4 operator+(const Matrix4x4& lhs, const Matrix4x4& rhs) { return LinalgHelper::add<T, Matrix4x4>(lhs, rhs); }
 
-  friend Matrix4x4 operator-(const Matrix4x4& lhs, const Matrix4x4& rhs) { return _Helper::sub<T, Matrix4x4>(lhs, rhs); }
-  friend Matrix4x4 operator*(const Matrix4x4& lhs, const T& rhs) { return _Helper::mul<T, Matrix4x4>(lhs, rhs); }
-  friend Matrix4x4 operator*(const T& lhs, Matrix4x4 rhs) { return _Helper::mul<T, Matrix4x4>(rhs, lhs); }
-  friend Matrix4x4 operator/(const Matrix4x4& lhs, const T& rhs) { return _Helper::div<T, Matrix4x4>(rhs, lhs); }
+  friend Matrix4x4 operator-(const Matrix4x4& lhs, const Matrix4x4& rhs) { return LinalgHelper::sub<T, Matrix4x4>(lhs, rhs); }
+  friend Matrix4x4 operator*(const Matrix4x4& lhs, const T& rhs) { return LinalgHelper::mul<T, Matrix4x4>(lhs, rhs); }
+  friend Matrix4x4 operator*(const T& lhs, Matrix4x4 rhs) { return LinalgHelper::mul<T, Matrix4x4>(rhs, lhs); }
+  friend Matrix4x4 operator/(const Matrix4x4& lhs, const T& rhs) { return LinalgHelper::div<T, Matrix4x4>(rhs, lhs); }
 
   static Matrix4x4 Translation(const Vector3<T>& v, const Quaternion<T>& q) {
     Matrix4x4 transform_matrix;
@@ -159,4 +157,4 @@ class Matrix4x4 : public MatrixX<T> {
   }
 };
 
-}  // namespace autd::_utils
+}  // namespace autd::utils

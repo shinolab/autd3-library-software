@@ -3,7 +3,7 @@
 // Created Date: 29/04/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 06/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -12,9 +12,9 @@
 #include "link/emulator.hpp"
 
 #if _WINDOWS
+#include <WS2tcpip.h>
+#include <WinSock2.h>
 #include <atlstr.h>
-#include <winsock2.h>
-#include <ws2tcpip.h>
 #endif
 
 #include <bitset>

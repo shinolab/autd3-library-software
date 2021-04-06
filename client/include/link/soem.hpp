@@ -3,7 +3,7 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 06/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -11,14 +11,9 @@
 
 #pragma once
 
-#ifndef __STDC_LIMIT_MACROS
-#define __STDC_LIMIT_MACROS  // NOLINT
-#endif
-
-#include <memory>
-#include <string>
-#include <utility>
 #include <vector>
+#include <utility>
+#include <string>
 
 #include "link.hpp"
 

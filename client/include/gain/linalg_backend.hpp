@@ -3,7 +3,7 @@
 // Created Date: 06/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 06/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -41,9 +41,9 @@ class Backend {
   virtual void pseudoInverseSVD(MatrixXc* matrix, Float alpha, MatrixXc* result) = 0;
   virtual VectorXc maxEigenVector(MatrixXc* matrix) = 0;
   virtual void matAdd(Float alpha, const MatrixX& a, Float beta, MatrixX* b) = 0;
-  virtual void matMul(TRANSPOSE transA, TRANSPOSE transB, std::complex<Float> alpha, const MatrixXc& a, const MatrixXc& b, std::complex<Float> beta,
+  virtual void matMul(TRANSPOSE trans_a, TRANSPOSE trans_b, std::complex<Float> alpha, const MatrixXc& a, const MatrixXc& b, std::complex<Float> beta,
                       MatrixXc* c) = 0;
-  virtual void matVecMul(TRANSPOSE transA, std::complex<Float> alpha, const MatrixXc& a, const VectorXc& b, std::complex<Float> beta,
+  virtual void matVecMul(TRANSPOSE trans_a, std::complex<Float> alpha, const MatrixXc& a, const VectorXc& b, std::complex<Float> beta,
                          VectorXc* c) = 0;
   virtual void vecAdd(Float alpha, const VectorX& a, Float beta, VectorX* b) = 0;
   virtual void csolveh(MatrixXc* a, VectorXc* b) = 0;
@@ -77,9 +77,9 @@ class Eigen3Backend final : public Backend<Eigen::Matrix<std::complex<Float>, -1
   void pseudoInverseSVD(MatrixXc* matrix, Float alpha, MatrixXc* result) override;
   VectorXc maxEigenVector(MatrixXc* matrix) override;
   void matAdd(Float alpha, const MatrixX& a, Float beta, MatrixX* b) override;
-  void matMul(TRANSPOSE transA, TRANSPOSE transB, std::complex<Float> alpha, const MatrixXc& a, const MatrixXc& b, std::complex<Float> beta,
+  void matMul(TRANSPOSE trans_a, TRANSPOSE trans_b, std::complex<Float> alpha, const MatrixXc& a, const MatrixXc& b, std::complex<Float> beta,
               MatrixXc* c) override;
-  void matVecMul(TRANSPOSE transA, std::complex<Float> alpha, const MatrixXc& a, const VectorXc& b, std::complex<Float> beta, VectorXc* c) override;
+  void matVecMul(TRANSPOSE trans_a, std::complex<Float> alpha, const MatrixXc& a, const VectorXc& b, std::complex<Float> beta, VectorXc* c) override;
   void vecAdd(Float alpha, const VectorX& a, Float beta, VectorX* b) override;
   void csolveh(MatrixXc* a, VectorXc* b) override;
   void solveg(MatrixX* a, VectorX* b, VectorX* c) override;
@@ -96,7 +96,7 @@ class Eigen3Backend final : public Backend<Eigen::Matrix<std::complex<Float>, -1
 
 #ifdef ENABLE_BLAS
 class BLASBackend final
-    : public Backend<_utils::MatrixX<std::complex<Float>>, _utils::VectorX<std::complex<Float>>, _utils::MatrixX<Float>, _utils::VectorX<Float>> {
+    : public Backend<utils::MatrixX<std::complex<Float>>, utils::VectorX<std::complex<Float>>, utils::MatrixX<Float>, utils::VectorX<Float>> {
  public:
   bool supports_SVD() override { return true; }
   bool supports_EVD() override { return true; }
@@ -106,9 +106,9 @@ class BLASBackend final
   void pseudoInverseSVD(MatrixXc* matrix, Float alpha, MatrixXc* result) override;
   VectorXc maxEigenVector(MatrixXc* matrix) override;
   void matAdd(Float alpha, const MatrixX& a, Float beta, MatrixX* b) override;
-  void matMul(TRANSPOSE transA, TRANSPOSE transB, std::complex<Float> alpha, const MatrixXc& a, const MatrixXc& b, std::complex<Float> beta,
+  void matMul(TRANSPOSE trans_a, TRANSPOSE trans_b, std::complex<Float> alpha, const MatrixXc& a, const MatrixXc& b, std::complex<Float> beta,
               MatrixXc* c) override;
-  void matVecMul(TRANSPOSE transA, std::complex<Float> alpha, const MatrixXc& a, const VectorXc& b, std::complex<Float> beta, VectorXc* c) override;
+  void matVecMul(TRANSPOSE trans_a, std::complex<Float> alpha, const MatrixXc& a, const VectorXc& b, std::complex<Float> beta, VectorXc* c) override;
   void vecAdd(Float alpha, const VectorX& a, Float beta, VectorX* b) override;
   void csolveh(MatrixXc* a, VectorXc* b) override;
   void solveg(MatrixX* a, VectorX* b, VectorX* c) override;

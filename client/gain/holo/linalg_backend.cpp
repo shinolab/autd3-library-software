@@ -3,7 +3,7 @@
 // Created Date: 06/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 06/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -48,12 +48,12 @@ void Eigen3Backend::matAdd(const Float alpha, const MatrixX& a, const Float beta
   *b *= beta;
   (*b).noalias() += alpha * a;
 }
-void Eigen3Backend::matMul(const TRANSPOSE transA, const TRANSPOSE transB, const std::complex<Float> alpha, const MatrixXc& a, const MatrixXc& b,
+void Eigen3Backend::matMul(const TRANSPOSE trans_a, const TRANSPOSE trans_b, const std::complex<Float> alpha, const MatrixXc& a, const MatrixXc& b,
                            const std::complex<Float> beta, MatrixXc* c) {
   *c *= beta;
-  switch (transA) {
+  switch (trans_a) {
     case TRANSPOSE::ConjTrans:
-      switch (transB) {
+      switch (trans_b) {
         case TRANSPOSE::ConjTrans:
           (*c).noalias() += alpha * (a.adjoint() * b.adjoint());
           break;
@@ -69,7 +69,7 @@ void Eigen3Backend::matMul(const TRANSPOSE transA, const TRANSPOSE transB, const
       }
       break;
     case TRANSPOSE::Trans:
-      switch (transB) {
+      switch (trans_b) {
         case TRANSPOSE::ConjTrans:
           (*c).noalias() += alpha * (a.transpose() * b.adjoint());
           break;
@@ -85,7 +85,7 @@ void Eigen3Backend::matMul(const TRANSPOSE transA, const TRANSPOSE transB, const
       }
       break;
     case TRANSPOSE::ConjNoTrans:
-      switch (transB) {
+      switch (trans_b) {
         case TRANSPOSE::ConjTrans:
           (*c).noalias() += alpha * (a.conjugate() * b.adjoint());
           break;
@@ -101,7 +101,7 @@ void Eigen3Backend::matMul(const TRANSPOSE transA, const TRANSPOSE transB, const
       }
       break;
     case TRANSPOSE::NoTrans:
-      switch (transB) {
+      switch (trans_b) {
         case TRANSPOSE::ConjTrans:
           (*c).noalias() += alpha * (a * b.adjoint());
           break;
@@ -247,23 +247,23 @@ void BLASBackend::matAdd(const Float alpha, const MatrixX& a, Float beta, Matrix
   AUTD_axpy(static_cast<int>(a.size()), alpha, a.data(), 1, b->data(), 1);
 }
 
-void BLASBackend::matMul(const TRANSPOSE transA, const TRANSPOSE transB, std::complex<Float> alpha, const MatrixXc& a, const MatrixXc& b,
+void BLASBackend::matMul(const TRANSPOSE trans_a, const TRANSPOSE trans_b, std::complex<Float> alpha, const MatrixXc& a, const MatrixXc& b,
                          std::complex<Float> beta, MatrixXc* c) {
   const auto LDA = static_cast<int>(a.rows());
   const auto LDB = static_cast<int>(b.rows());
-  const auto M = (transA == TRANSPOSE::NoTrans || transA == TRANSPOSE::ConjNoTrans) ? static_cast<int>(a.rows()) : static_cast<int>(a.cols());
-  const auto N = (transB == TRANSPOSE::NoTrans || transB == TRANSPOSE::ConjNoTrans) ? static_cast<int>(b.cols()) : static_cast<int>(b.rows());
-  const auto K = (transA == TRANSPOSE::NoTrans || transA == TRANSPOSE::ConjNoTrans) ? static_cast<int>(a.cols()) : static_cast<int>(a.rows());
-  AUTD_gemm(CblasColMajor, static_cast<CBLAS_TRANSPOSE>(transA), static_cast<CBLAS_TRANSPOSE>(transB), M, N, K, &alpha, a.data(), LDA, b.data(), LDB,
-            &beta, c->data(), M);
+  const auto M = (trans_a == TRANSPOSE::NoTrans || trans_a == TRANSPOSE::ConjNoTrans) ? static_cast<int>(a.rows()) : static_cast<int>(a.cols());
+  const auto N = (trans_b == TRANSPOSE::NoTrans || trans_b == TRANSPOSE::ConjNoTrans) ? static_cast<int>(b.cols()) : static_cast<int>(b.rows());
+  const auto K = (trans_a == TRANSPOSE::NoTrans || trans_a == TRANSPOSE::ConjNoTrans) ? static_cast<int>(a.cols()) : static_cast<int>(a.rows());
+  AUTD_gemm(CblasColMajor, static_cast<CBLAS_TRANSPOSE>(trans_a), static_cast<CBLAS_TRANSPOSE>(trans_b), M, N, K, &alpha, a.data(), LDA, b.data(),
+            LDB, &beta, c->data(), M);
 }
 
-void BLASBackend::matVecMul(const TRANSPOSE transA, std::complex<Float> alpha, const MatrixXc& a, const VectorXc& b, std::complex<Float> beta,
+void BLASBackend::matVecMul(const TRANSPOSE trans_a, std::complex<Float> alpha, const MatrixXc& a, const VectorXc& b, std::complex<Float> beta,
                             VectorXc* c) {
   const auto LDA = static_cast<int>(a.rows());
   const auto M = static_cast<int>(a.rows());
   const auto N = static_cast<int>(a.cols());
-  AUTD_gemv(CblasColMajor, static_cast<CBLAS_TRANSPOSE>(transA), M, N, &alpha, a.data(), LDA, b.data(), 1, &beta, c->data(), 1);
+  AUTD_gemv(CblasColMajor, static_cast<CBLAS_TRANSPOSE>(trans_a), M, N, &alpha, a.data(), LDA, b.data(), 1, &beta, c->data(), 1);
 }
 void BLASBackend::vecAdd(const Float alpha, const VectorX& a, Float beta, VectorX* b) {
   AUTD_axpy(static_cast<int>(a.size()), alpha, a.data(), 1, b->data(), 1);

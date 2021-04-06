@@ -3,21 +3,19 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 06/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
 //
 
-#include "link/soem.hpp"
+#ifdef _WINDOWS
+#ifndef __STDC_LIMIT_MACROS
+#define __STDC_LIMIT_MACROS  // NOLINT
+#endif
+#endif
 
-#include <algorithm>
-#include <bitset>
-#include <chrono>
-#include <memory>
-#include <string>
-#include <utility>
-#include <vector>
+#include "link/soem.hpp"
 
 #include "../lib/ec_config.hpp"
 #include "autdsoem.hpp"

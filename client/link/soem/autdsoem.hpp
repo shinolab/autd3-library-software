@@ -3,7 +3,7 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/04/2021
+// Last Modified: 06/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -11,15 +11,17 @@
 
 #pragma once
 
+#include <condition_variable>
+#include <memory>
+#include <mutex>
 #include <queue>
 #include <string>
 #include <utility>
 #include <vector>
-#include <memory>
 
 #include "timer.hpp"
 
-namespace autdsoem {
+namespace autd::autdsoem {
 
 struct ECConfig {
   uint32_t ec_sm3_cycle_time_ns;
@@ -82,4 +84,4 @@ struct EtherCATAdapterInfo final {
   std::string desc;
   std::string name;
 };
-}  // namespace autdsoem
+}  // namespace autd::autdsoem
