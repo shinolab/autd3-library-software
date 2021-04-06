@@ -3,7 +3,7 @@
 // Created Date: 03/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/04/2021
+// Last Modified: 06/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -15,6 +15,7 @@
 #include <stdexcept>
 #include <utility>
 
+namespace autd {
 template <typename T, typename E>
 struct Result {
  private:
@@ -75,8 +76,8 @@ struct Result {
 };
 
 template <typename T>
-struct _Ok {
-  explicit _Ok(T t) : _t(std::move(t)) {}
+struct OkType {
+  explicit OkType(T t) : _t(std::move(t)) {}
 
   template <typename E>
   operator Result<T, E>() {
@@ -88,8 +89,8 @@ struct _Ok {
 };
 
 template <typename T>
-struct _Err {
-  explicit _Err(T t) : _t(std::move(t)) {}
+struct ErrType {
+  explicit ErrType(T t) : _t(std::move(t)) {}
 
   template <typename V>
   operator Result<V, T>() {
@@ -101,11 +102,12 @@ struct _Err {
 };
 
 template <typename T>
-_Ok<T> Ok(T t) {
-  return _Ok<T>(std::move(t));
+OkType<T> Ok(T t) {
+  return OkType<T>(std::move(t));
 }
 
 template <typename T>
-_Err<T> Err(T t) {
-  return _Err<T>(std::move(t));
+ErrType<T> Err(T t) {
+  return ErrType<T>(std::move(t));
 }
+}  // namespace autd

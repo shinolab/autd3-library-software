@@ -11,10 +11,6 @@
 
 #include "../timer.hpp"
 
-#include <Windows.h>
-
-#include <iostream>
-
 namespace autd {
 
 static constexpr auto TIME_SCALE = 1000 * 1000L;  // us

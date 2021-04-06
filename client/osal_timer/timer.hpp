@@ -11,8 +11,6 @@
 
 #pragma once
 
-#include <future>
-
 #if WIN32
 #include <Windows.h>
 #elif __APPLE__
@@ -21,6 +19,9 @@
 #include <signal.h>
 #include <time.h>
 #endif
+
+#include <functional>
+#include <thread>
 
 #include "result.hpp"
 

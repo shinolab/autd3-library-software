@@ -9,36 +9,10 @@
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
 //
 
-#if (_WIN32 || _WIN64)
-#ifndef WINDOWS
-#define WINDOWS
-#endif
-#elif defined __APPLE__
-#ifndef MACOSX
-#define MACOSX
-#endif
-#elif defined __linux__
-#ifndef LINUX
-#define LINUX
-#endif
-#else
-#error "Not supported."
-#endif
-
-#ifdef WINDOWS
+#ifdef _WINDOWS
+#ifndef __STDC_LIMIT_MACROS
 #define __STDC_LIMIT_MACROS  // NOLINT
-#include <winerror.h>
-#else
-#include <signal.h>
-#include <stdio.h>
-#include <string.h>
-#include <sys/mman.h>
-#include <time.h>
-#include <unistd.h>
 #endif
-
-#ifdef MACOSX
-#include <dispatch/dispatch.h>
 #endif
 
 #include <atomic>
@@ -51,6 +25,7 @@
 #include <mutex>
 #include <queue>
 #include <sstream>
+#include <string>
 #include <thread>
 #include <utility>
 #include <vector>
@@ -58,7 +33,7 @@
 #include "./ethercat.h"
 #include "autdsoem.hpp"
 
-namespace autdsoem {
+namespace autd::autdsoem {
 
 static std::atomic<bool> AUTD3_RT_LOCK(false);
 static std::atomic<bool> AUTD3_LIB_SEND_COND(false);
@@ -90,10 +65,10 @@ Result<bool, std::string> SOEMController::Read(uint8_t* rx) const {
 }
 
 void SOEMController::SetupSync0(const bool activate, const uint32_t cycle_time_ns) const {
-  using std::chrono::system_clock, std::chrono::duration_cast, std::chrono::nanoseconds;
-  const auto ref_time = system_clock::now();
+  using std::chrono::high_resolution_clock, std::chrono::duration_cast, std::chrono::nanoseconds;
+  const auto ref_time = high_resolution_clock::now();
   for (size_t slave = 1; slave <= _dev_num; slave++) {
-    const auto elapsed = duration_cast<nanoseconds>(ref_time - system_clock::now()).count();
+    const auto elapsed = duration_cast<nanoseconds>(ref_time - high_resolution_clock::now()).count();
     ec_dcsync0(static_cast<uint16_t>(slave), activate, cycle_time_ns, static_cast<int32>(elapsed / cycle_time_ns * cycle_time_ns));
   }
 }
@@ -253,4 +228,4 @@ std::vector<EtherCATAdapterInfo> EtherCATAdapterInfo::EnumerateAdapters() {
   }
   return adapters;
 }
-}  // namespace autdsoem
+}  // namespace autd::autdsoem

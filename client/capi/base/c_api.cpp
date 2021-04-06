@@ -23,7 +23,7 @@
 #include "wrapper_sequence.hpp"
 
 namespace {
-std::string& LAST_ERROR() {
+std::string& LastError() {
   static std::string msg("");
   return msg;
 }
@@ -40,7 +40,7 @@ bool AUTDOpenControllerWith(void* const handle, void* const p_link) {
   auto* link = static_cast<LinkWrapper*>(p_link);
   auto res = cnt->ptr->OpenWith(move(link->ptr));
   LinkDelete(link);
-  if (res.is_err()) LAST_ERROR() = res.unwrap_err();
+  if (res.is_err()) LastError() = res.unwrap_err();
   return res.unwrap_or(false);
 }
 int32_t AUTDAddDevice(void* const handle, const autd::Float x, const autd::Float y, const autd::Float z, const autd::Float rz1, const autd::Float ry,
@@ -70,19 +70,19 @@ bool AUTDSynchronize(void* const handle, int32_t smpl_freq, int32_t buf_size) {
   config.set_mod_sampling_freq(static_cast<autd::MOD_SAMPLING_FREQ>(smpl_freq));
   config.set_mod_buf_size(static_cast<autd::MOD_BUF_SIZE>(buf_size));
   auto res = cnt->ptr->Synchronize(config);
-  if (res.is_err()) LAST_ERROR() = res.unwrap_err();
+  if (res.is_err()) LastError() = res.unwrap_err();
   return res.unwrap_or(false);
 }
 bool AUTDCloseController(void* const handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   auto res = cnt->ptr->Close();
-  if (res.is_err()) LAST_ERROR() = res.unwrap_err();
+  if (res.is_err()) LastError() = res.unwrap_err();
   return res.unwrap_or(false);
 }
 bool AUTDClear(void* const handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   auto res = cnt->ptr->Clear();
-  if (res.is_err()) LAST_ERROR() = res.unwrap_err();
+  if (res.is_err()) LastError() = res.unwrap_err();
   return res.unwrap_or(false);
 }
 void AUTDFreeController(void* const handle) {
@@ -96,7 +96,7 @@ void AUTDSetSilentMode(void* const handle, const bool mode) {
 bool AUTDStop(void* const handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   auto res = cnt->ptr->Stop();
-  if (res.is_err()) LAST_ERROR() = res.unwrap_err();
+  if (res.is_err()) LastError() = res.unwrap_err();
   return res.unwrap_or(false);
 }
 int32_t AUTDGetFirmwareInfoListPointer(void* const handle, void** out) {
@@ -104,7 +104,7 @@ int32_t AUTDGetFirmwareInfoListPointer(void* const handle, void** out) {
   const auto size = static_cast<int32_t>(cnt->ptr->geometry()->num_devices());
   auto res = cnt->ptr->firmware_info_list();
   if (res.is_err()) {
-    LAST_ERROR() = res.unwrap_err();
+    LastError() = res.unwrap_err();
     return -1;
   }
 
@@ -124,8 +124,8 @@ void AUTDFreeFirmwareInfoListPointer(void* const p_firm_info_list) {
   FirmwareInfoListDelete(wrapper);
 }
 int32_t AUTDGetLastError(char* error) {
-  const auto& error_ = LAST_ERROR();
-  const int32_t size = static_cast<int32_t>(error_.size() + 1);
+  const auto& error_ = LastError();
+  const auto size = static_cast<int32_t>(error_.size() + 1);
   if (error == nullptr) return size;
   std::char_traits<char>::copy(error, error_.c_str(), size);
   return size;
@@ -170,7 +170,7 @@ void AUTDNullGain(void** gain) {
   auto* g = GainCreate(autd::gain::NullGain::Create());
   *gain = g;
 }
-void AUTDGroupedGain(void** gain, int32_t* group_ids, void* const* in_gains, const int32_t size) {
+void AUTDGroupedGain(void** gain, int32_t* const group_ids, void* const* in_gains, const int32_t size) {
   std::map<size_t, autd::GainPtr> gain_map;
 
   for (auto i = 0; i < size; i++) {
@@ -250,7 +250,7 @@ void AUTDSequence(void** out) {
 bool AUTDSequenceAddPoint(void* const seq, const autd::Float x, const autd::Float y, const autd::Float z) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
   auto res = seq_w->ptr->AddPoint(autd::Vector3(x, y, z));
-  if (res.is_err()) LAST_ERROR() = res.unwrap_err();
+  if (res.is_err()) LastError() = res.unwrap_err();
   return res.unwrap_or(false);
 }
 bool AUTDSequenceAddPoints(void* const seq, autd::Float* points, const uint64_t size) {
@@ -258,7 +258,7 @@ bool AUTDSequenceAddPoints(void* const seq, autd::Float* points, const uint64_t 
   std::vector<autd::Vector3> p;
   for (size_t i = 0; i < size; i++) p.emplace_back(autd::Vector3(points[3 * i], points[3 * i + 1], points[3 * i + 2]));
   auto res = seq_w->ptr->AddPoints(p);
-  if (res.is_err()) LAST_ERROR() = res.unwrap_err();
+  if (res.is_err()) LastError() = res.unwrap_err();
   return res.unwrap_or(false);
 }
 autd::Float AUTDSequenceSetFreq(void* const seq, const autd::Float freq) {
@@ -293,7 +293,7 @@ bool AUTDAppendGain(void* const handle, void* const gain) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   auto* g = static_cast<GainWrapper*>(gain);
   auto res = cnt->ptr->AppendGain(g->ptr);
-  if (res.is_err()) LAST_ERROR() = res.unwrap_err();
+  if (res.is_err()) LastError() = res.unwrap_err();
   return res.unwrap_or(false);
 }
 
@@ -301,21 +301,21 @@ bool AUTDAppendGainSync(void* const handle, void* const gain, const bool wait_fo
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   auto* g = static_cast<GainWrapper*>(gain);
   auto res = cnt->ptr->AppendGainSync(g->ptr, wait_for_send);
-  if (res.is_err()) LAST_ERROR() = res.unwrap_err();
+  if (res.is_err()) LastError() = res.unwrap_err();
   return res.unwrap_or(false);
 }
 bool AUTDAppendModulation(void* const handle, void* const mod) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   auto* m = static_cast<ModulationWrapper*>(mod);
   auto res = cnt->ptr->AppendModulation(m->ptr);
-  if (res.is_err()) LAST_ERROR() = res.unwrap_err();
+  if (res.is_err()) LastError() = res.unwrap_err();
   return res.unwrap_or(false);
 }
 bool AUTDAppendModulationSync(void* const handle, void* const mod) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   auto* m = static_cast<ModulationWrapper*>(mod);
   auto res = cnt->ptr->AppendModulationSync(m->ptr);
-  if (res.is_err()) LAST_ERROR() = res.unwrap_err();
+  if (res.is_err()) LastError() = res.unwrap_err();
   return res.unwrap_or(false);
 }
 void AUTDAddSTMGain(void* const handle, void* const gain) {
@@ -326,26 +326,26 @@ void AUTDAddSTMGain(void* const handle, void* const gain) {
 bool AUTDStartSTModulation(void* const handle, const autd::Float freq) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   auto res = cnt->ptr->StartSTModulation(freq);
-  if (res.is_err()) LAST_ERROR() = res.unwrap_err();
+  if (res.is_err()) LastError() = res.unwrap_err();
   return res.unwrap_or(false);
 }
 bool AUTDStopSTModulation(void* const handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   auto res = cnt->ptr->StopSTModulation();
-  if (res.is_err()) LAST_ERROR() = res.unwrap_err();
+  if (res.is_err()) LastError() = res.unwrap_err();
   return res.unwrap_or(false);
 }
 bool AUTDFinishSTModulation(void* const handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   auto res = cnt->ptr->FinishSTModulation();
-  if (res.is_err()) LAST_ERROR() = res.unwrap_err();
+  if (res.is_err()) LastError() = res.unwrap_err();
   return res.unwrap_or(false);
 }
 bool AUTDAppendSequence(void* const handle, void* const seq) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   auto* s = static_cast<SequenceWrapper*>(seq);
   auto res = cnt->ptr->AppendSequence(s->ptr);
-  if (res.is_err()) LAST_ERROR() = res.unwrap_err();
+  if (res.is_err()) LastError() = res.unwrap_err();
   return res.unwrap_or(false);
 }
 void AUTDFlush(void* const handle) {

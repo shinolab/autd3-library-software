@@ -3,7 +3,7 @@
 // Created Date: 27/02/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 06/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -15,7 +15,7 @@
 
 #include "vector.hpp"
 
-namespace autd::_utils {
+namespace autd::utils {
 /**
  * @brief Simple quaternion class
  */
@@ -35,10 +35,20 @@ class Quaternion {
     this->_v = v;
     this->_w = w;
   }
-  Quaternion(const Quaternion& v) = default;
-  Quaternion& operator=(const Quaternion& obj) = default;
-  Quaternion(const Quaternion&& v) = default;
-  Quaternion& operator=(Quaternion&& obj) = default;
+  Quaternion(const Quaternion& obj) { *this = obj; }
+  Quaternion& operator=(const Quaternion& obj) {
+    _w = obj._w;
+    _v = obj._v;
+    return *this;
+  }
+  Quaternion(const Quaternion&& obj) noexcept { *this = std::move(obj); }
+  Quaternion& operator=(Quaternion&& obj) noexcept {
+    if (this != &obj) {
+      _w = obj._w;
+      _v = std::move(obj._v);
+    }
+    return *this;
+  }
 
   Vector3<T>& v() noexcept { return _v; }
   const Vector3<T>& v() const noexcept { return _v; }
@@ -153,4 +163,4 @@ bool operator!=(const Quaternion<T>& lhs, const Quaternion<T>& rhs) {
   return !(lhs == rhs);
 }
 
-}  // namespace autd::_utils
+}  // namespace autd::utils
