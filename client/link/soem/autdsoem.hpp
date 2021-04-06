@@ -65,7 +65,7 @@ class SOEMController {
   std::condition_variable _send_cond;
   std::mutex _send_mtx;
 
-  autd::Timer _timer;
+  Timer _timer;
 };
 
 struct EtherCATAdapterInfo final {

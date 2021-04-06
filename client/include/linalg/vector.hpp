@@ -29,7 +29,7 @@ struct VectorX {
     std::memcpy(_data.get(), obj.data(), _size * sizeof(T));
     return *this;
   }
-  VectorX(const VectorX&& obj) noexcept { *this = std::move(obj); }
+  VectorX(const VectorX&& obj) noexcept : _size(obj._size) { *this = std::move(obj); }
   VectorX& operator=(VectorX&& obj) noexcept {
     if (this != &obj) {
       _size = obj._size;
@@ -69,12 +69,6 @@ struct VectorX {
   [[nodiscard]] const T* data() const { return _data.get(); }
 
   [[nodiscard]] size_t size() const noexcept { return _size; }
-  template <typename Ts>
-  friend std::ostream& operator<<(std::ostream&, const VectorX<Ts>&);
-  template <typename Ts>
-  friend bool operator==(const VectorX<Ts>& lhs, const VectorX<Ts>& rhs);
-  template <typename Ts>
-  friend bool operator!=(const VectorX<Ts>& lhs, const VectorX<Ts>& rhs);
 
   VectorX& operator+=(const VectorX& rhs) { return LinalgHelper::add<T, VectorX>(this, rhs); }
   VectorX& operator-=(const VectorX& rhs) { return LinalgHelper::sub<T, VectorX>(this, rhs); }

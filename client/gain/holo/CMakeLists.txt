@@ -16,7 +16,11 @@ endif()
 
 if(ENABLE_BLAS)
   include_directories(${BLAS_INCLUDE_DIR})
+  target_link_directories(gain_holo PUBLIC ${BLAS_DEPEND_LIB_DIR})
   target_link_libraries(gain_holo ${BLAS_LIBRARIES})
+  if(NOT WIN32)
+    target_link_libraries(gain_holo gfortran)
+  endif()
 endif()
 
 set_target_properties(gain_holo
@@ -26,8 +30,7 @@ set_target_properties(gain_holo
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
 )
 
-target_link_directories(gain_holo PUBLIC ${BLAS_DEPEND_LIB_DIR})
-if (WIN32)
+if(WIN32)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4190")
 else()
   set_target_properties(gain_holo PROPERTIES POSITION_INDEPENDENT_CODE ON)

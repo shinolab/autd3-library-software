@@ -81,6 +81,10 @@ class AUTDControllerSync {
 class AUTDControllerAsync {
  public:
   explicit AUTDControllerAsync(const shared_ptr<AUTDLogic>& logic) : _is_running(false), _autd_logic(logic) {}
+  AUTDControllerAsync(const AUTDControllerAsync& obj) = delete;
+  AUTDControllerAsync& operator=(const AUTDControllerAsync& obj) = delete;
+  AUTDControllerAsync(const AUTDControllerAsync&& obj) noexcept = delete;
+  AUTDControllerAsync& operator=(AUTDControllerAsync&& obj) noexcept = delete;
 
   ~AUTDControllerAsync() { this->Close(); }
 
