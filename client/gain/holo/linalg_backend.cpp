@@ -3,7 +3,7 @@
 // Created Date: 06/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/04/2021
+// Last Modified: 08/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -164,7 +164,7 @@ Eigen3Backend::MatrixXc Eigen3Backend::ConcatCol(const MatrixXc& a, const Matrix
 }
 void Eigen3Backend::MatCpy(const MatrixX& a, MatrixX* b) { *b = a; }
 void Eigen3Backend::VecCpy(const VectorX& a, VectorX* b) { *b = a; }
-
+void Eigen3Backend::VecCpyC(const VectorXc& a, VectorXc* b) { *b = a; }
 #endif
 
 #ifdef ENABLE_BLAS
@@ -181,6 +181,7 @@ constexpr auto AUTD_IMAXC = cblas_izamax;
 constexpr auto AUTD_SYSV = LAPACKE_dsysv;
 constexpr auto AUTD_POSVC = LAPACKE_zposv;
 constexpr auto AUTD_CPY = LAPACKE_dlacpy;
+constexpr auto AUTD_CPYC = LAPACKE_zlacpy;
 #else
 constexpr auto AUTD_GESVD = LAPACKE_cgesdd;
 constexpr auto AUTD_HEEV = LAPACKE_cheev;
@@ -193,6 +194,7 @@ constexpr auto AUTD_IMAXC = cblas_icamax;
 constexpr auto AUTD_SYSV = LAPACKE_ssysv;
 constexpr auto AUTD_POSVC = LAPACKE_cposv;
 constexpr auto AUTD_CPY = LAPACKE_slacpy;
+constexpr auto AUTD_CPYC = LAPACKE_clacpy;
 #endif
 
 void BLASBackend::HadamardProduct(const MatrixXc& a, const MatrixXc& b, MatrixXc* c) {
@@ -330,6 +332,9 @@ void BLASBackend::MatCpy(const MatrixX& a, MatrixX* b) {
 }
 void BLASBackend::VecCpy(const VectorX& a, VectorX* b) {
   AUTD_CPY(LAPACK_COL_MAJOR, 'A', static_cast<int>(a.size()), 1, a.data(), static_cast<int>(a.size()), b->data(), 1);
+}
+void BLASBackend::VecCpyC(const VectorXc& a, VectorXc* b) {
+  AUTD_CPYC(LAPACK_COL_MAJOR, 'A', static_cast<int>(a.size()), 1, a.data(), static_cast<int>(a.size()), b->data(), 1);
 }
 #endif
 

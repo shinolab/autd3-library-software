@@ -3,7 +3,7 @@
 // Created Date: 06/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/04/2021
+// Last Modified: 08/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -390,7 +390,9 @@ class HoloGain final : public Gain {
 
     typename B::VectorXc q0 = B::VectorXc::Ones(n);
 
-    typename B::VectorXc q = q0;
+    typename B::VectorXc q(n);
+    _backend.VecCpyC(q0, &q);
+
     typename B::VectorXc gamma(m);
     typename B::VectorXc p(m);
     typename B::VectorXc xi(n);

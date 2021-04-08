@@ -3,7 +3,7 @@
 // Created Date: 01/07/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 08/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -69,7 +69,7 @@ class PointSequence {
   /**
    * @return std::vector<Vector3> Control points of the sequence
    */
-  [[nodiscard]] std::vector<Vector3> control_points() const;
+  [[nodiscard]] std::vector<Vector3>& control_points();
 
   /**
    * @brief Set frequency of the sequence

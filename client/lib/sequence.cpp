@@ -3,7 +3,7 @@
 // Created Date: 01/07/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 08/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -48,7 +48,7 @@ Result<bool, std::string> PointSequence::AddPoints(const std::vector<Vector3>& p
   return Ok(true);
 }
 
-std::vector<Vector3> PointSequence::control_points() const { return this->_control_points; }
+std::vector<Vector3>& PointSequence::control_points() { return this->_control_points; }
 
 Float PointSequence::SetFrequency(const Float freq) {
   const auto sample_freq = std::min(static_cast<Float>(this->_control_points.size()) * freq, POINT_SEQ_BASE_FREQ);
