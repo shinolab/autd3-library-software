@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/04/2021
+// Last Modified: 08/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -11,7 +11,7 @@
 
 #ifdef _WINDOWS
 #ifndef __STDC_LIMIT_MACROS
-#define __STDC_LIMIT_MACROS  // NOLINT
+#define __STDC_LIMIT_MACROS
 #endif
 #endif
 
@@ -218,7 +218,7 @@ SOEMController::~SOEMController() {
 
 std::vector<EtherCATAdapterInfo> EtherCATAdapterInfo::EnumerateAdapters() {
   auto* adapter = ec_find_adapters();
-  auto adapters = std::vector<EtherCATAdapterInfo>();
+  std::vector<EtherCATAdapterInfo> adapters;
   while (adapter != nullptr) {
     auto* info = new EtherCATAdapterInfo;
     info->desc = std::string(adapter->desc);

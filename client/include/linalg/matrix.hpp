@@ -3,7 +3,7 @@
 // Created Date: 27/02/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/04/2021
+// Last Modified: 08/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -25,13 +25,15 @@ template <typename T>
 struct MatrixX {
   MatrixX(const size_t row, const size_t col) : _num_row(row), _num_col(col) { _data = std::make_unique<T[]>(row * col); }
   ~MatrixX() = default;
-  MatrixX(const MatrixX& obj) { *this = obj; }
-  MatrixX& operator=(const MatrixX& obj) {
-    _num_row = obj._num_row;
-    _num_col = obj._num_col;
-    std::memcpy(_data.get(), obj.data(), size() * sizeof(T));
-    return *this;
+  MatrixX(const MatrixX& obj) {
+    if (this != &obj) {
+      _num_row = obj._num_row;
+      _num_col = obj._num_col;
+      _data = std::make_unique<T[]>(_num_row * _num_col);
+      std::memcpy(_data.get(), obj._data.get(), _num_row * _num_col * sizeof(T));
+    }
   }
+  MatrixX& operator=(MatrixX& obj) = delete;
   MatrixX(MatrixX&& obj) = default;
   MatrixX& operator=(MatrixX&& obj) = default;
 

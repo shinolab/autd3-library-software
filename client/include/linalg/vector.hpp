@@ -3,7 +3,7 @@
 // Created Date: 27/02/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/04/2021
+// Last Modified: 08/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -12,7 +12,6 @@
 #pragma once
 
 #include <cmath>
-#include <cstring>
 #include <memory>
 #include <utility>
 
@@ -25,12 +24,15 @@ template <typename T>
 struct VectorX {
   explicit VectorX(const size_t size) : _size(size) { _data = std::make_unique<T[]>(size); }
   ~VectorX() = default;
-  VectorX(const VectorX& obj) : VectorX(obj.size()) { *this = obj; }
-  VectorX& operator=(const VectorX& obj) {
-    std::memcpy(_data.get(), obj.data(), _size * sizeof(T));
-    return *this;
+  VectorX(const VectorX& obj) {
+    if (this != &obj) {
+      _size = obj._size;
+      _data = std::make_unique<T[]>(_size);
+      std::memcpy(_data.get(), obj._data.get(), _size * sizeof(T));
+    }
   }
-  VectorX(const VectorX&& obj) noexcept : _size(obj._size) { *this = std::move(obj); }
+  VectorX& operator=(VectorX& obj) = delete;
+  VectorX(VectorX&& obj) noexcept : _size(obj._size) { *this = std::move(obj); }
   VectorX& operator=(VectorX&& obj) noexcept {
     if (this != &obj) {
       _size = obj._size;

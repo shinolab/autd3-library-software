@@ -3,7 +3,7 @@
 // Created Date: 06/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/04/2021
+// Last Modified: 08/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -56,6 +56,7 @@ class Backend {
   virtual MatrixXc ConcatCol(const MatrixXc& a, const MatrixXc& b) = 0;
   virtual void MatCpy(const MatrixX& a, MatrixX* b) = 0;
   virtual void VecCpy(const VectorX& a, VectorX* b) = 0;
+  virtual void VecCpyC(const VectorXc& a, VectorXc* b) = 0;
 
   Backend() = default;
   virtual ~Backend() = default;
@@ -91,6 +92,7 @@ class Eigen3Backend final : public Backend<Eigen::Matrix<std::complex<Float>, -1
   MatrixXc ConcatCol(const MatrixXc& a, const MatrixXc& b) override;
   void MatCpy(const MatrixX& a, MatrixX* b) override;
   void VecCpy(const VectorX& a, VectorX* b) override;
+  void VecCpyC(const VectorXc& a, VectorXc* b) override;
 };
 #endif
 
@@ -120,6 +122,7 @@ class BLASBackend final
   MatrixXc ConcatCol(const MatrixXc& a, const MatrixXc& b) override;
   void MatCpy(const MatrixX& a, MatrixX* b) override;
   void VecCpy(const VectorX& a, VectorX* b) override;
+  void VecCpyC(const VectorXc& a, VectorXc* b) override;
 };
 #endif
 }  // namespace autd::gain::holo

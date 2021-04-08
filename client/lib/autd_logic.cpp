@@ -3,7 +3,7 @@
 // Created Date: 22/12/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/04/2021
+// Last Modified: 08/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -259,7 +259,7 @@ Result<std::vector<FirmwareInfo>, std::string> AUTDLogic::firmware_info_list() {
     auto info = FirmwareInfo(static_cast<uint16_t>(i), cpu_versions[i], fpga_versions[i]);
     infos.emplace_back(info);
   }
-  return Ok(infos);
+  return Ok(std::move(infos));
 }
 
 unique_ptr<uint8_t[]> AUTDLogic::MakeBody(const GainPtr &gain, const ModulationPtr &mod, size_t *const size, uint8_t *const send_msg_id) const {

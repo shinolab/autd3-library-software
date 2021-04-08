@@ -3,7 +3,7 @@
 // Created Date: 20/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 08/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -31,8 +31,8 @@ Result<ModulationPtr, std::string> RawPCMModulation::Create(const std::string& f
     tmp.emplace_back(value);
   }
 
-  const ModulationPtr mod = std::make_shared<RawPCMModulation>(sampling_freq, tmp);
-  return Ok(mod);
+  ModulationPtr mod = std::make_shared<RawPCMModulation>(sampling_freq, tmp);
+  return Ok(std::move(mod));
 }
 
 Result<bool, std::string> RawPCMModulation::Build(const Configuration config) {
@@ -142,8 +142,8 @@ Result<ModulationPtr, std::string> WavModulation::Create(const std::string& file
     }
   }
 
-  const ModulationPtr mod = std::make_shared<WavModulation>(sample_freq, tmp);
-  return Ok(mod);
+  ModulationPtr mod = std::make_shared<WavModulation>(sample_freq, tmp);
+  return Ok(std::move(mod));
 }
 
 Result<bool, std::string> WavModulation::Build(const Configuration config) {
@@ -162,7 +162,7 @@ Result<bool, std::string> WavModulation::Build(const Configuration config) {
     sample_buf.at(i) = _buf.at(idx);
   }
 
-  this->buffer = sample_buf;
+  this->buffer = std::move(sample_buf);
   return Ok(true);
 }
 #pragma endregion
