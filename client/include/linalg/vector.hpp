@@ -3,7 +3,7 @@
 // Created Date: 27/02/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/04/2021
+// Last Modified: 14/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -113,6 +113,23 @@ class Vector3 : public VectorX<T> {
     this->_data[1] = y;
     this->_data[2] = z;
   }
+  Vector3(const Vector3& obj) : VectorX<T>(3) { *this = obj; }
+  Vector3& operator=(const Vector3& obj) {
+    if (this != &obj) {
+      this->_data[0] = obj._data[0];
+      this->_data[1] = obj._data[1];
+      this->_data[2] = obj._data[2];
+    }
+    return *this;
+  }
+  Vector3(const Vector3&& obj) noexcept : VectorX<T>(3) { *this = std::move(obj); }
+  Vector3& operator=(Vector3&& obj) noexcept {
+    if (this != &obj) {
+      this->_data = std::move(obj._data);
+    }
+    return *this;
+  }
+  ~Vector3() = default;
 
   T& x() noexcept { return this->at(0); }
   T& y() noexcept { return this->at(1); }

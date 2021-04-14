@@ -109,6 +109,8 @@ if(NOT DISABLE_EIGEN)
   endif()
   add_definitions(-DEIGEN_MPL2_ONLY)
   set(EIGEN_PATH ${PROJECT_SOURCE_DIR}/deps/Eigen3)
+else()
+  add_definitions(-DDISABLE_EIGEN)
 endif()
 
 if(ENABLE_BLAS)
@@ -162,7 +164,7 @@ add_subdirectory(lib)
 
 if(BUILD_CAPI)
   add_subdirectory(capi/base)
-  if(BUILD_HOLO_GAIN)
+  if(BUILD_HOLO_GAIN AND (NOT DISABLE_EIGEN))
     add_subdirectory(capi/gain_holo)
   endif()
   

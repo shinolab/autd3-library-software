@@ -3,7 +3,7 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/04/2021
+// Last Modified: 14/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -20,7 +20,9 @@
 
 #include "autd3.hpp"
 #include "examples/bessel.hpp"
+#ifdef BUILD_HOLO_GAIN
 #include "examples/holo.hpp"
+#endif
 #include "examples/seq.hpp"
 #include "examples/simple.hpp"
 #include "examples/stm.hpp"
