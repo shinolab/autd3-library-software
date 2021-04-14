@@ -3,7 +3,7 @@
 // Created Date: 25/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/04/2021
+// Last Modified: 14/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -18,11 +18,11 @@ namespace autd::utils {
 class LinalgHelper {
  public:
   template <typename T, typename V>
-  static V& add(V& dst, const V& src) {
+  static V& add(V* dst, const V& src) {
     T* dp = dst.data();
     const T* sp = src.data();
     for (size_t i = 0; i < dst.size(); i++) *dp++ += *sp++;
-    return dst;
+    return *dst;
   }
   template <typename T, typename V>
   static V add(const V& lhs, const V& rhs) {
@@ -32,6 +32,7 @@ class LinalgHelper {
     for (size_t i = 0; i < dst.size(); i++) *dp++ += *rp++;
     return dst;
   }
+
   template <typename T, typename V>
   static V neg(const V& src) {
     V dst(src);
@@ -44,11 +45,11 @@ class LinalgHelper {
   }
 
   template <typename T, typename V>
-  static V& sub(V& dst, const V& src) {
-    T* dp = dst.data();
+  static V& sub(V* dst, const V& src) {
+    T* dp = dst->data();
     const T* sp = src.data();
-    for (size_t i = 0; i < dst.size(); i++) *dp++ -= *sp++;
-    return dst;
+    for (size_t i = 0; i < dst->size(); i++) *dp++ -= *sp++;
+    return *dst;
   }
 
   template <typename T, typename V>
@@ -61,14 +62,14 @@ class LinalgHelper {
   }
 
   template <typename T, typename V>
-  static V& mul(V& dst, const T& src) {
-    T* dp = dst.data();
+  static V& mul(V* dst, T src) {
+    T* dp = dst->data();
     for (size_t i = 0; i < dst.size(); i++) *dp++ *= src;
-    return dst;
+    return *dst;
   }
 
   template <typename T, typename V>
-  static V mul(const V& lhs, const T& rhs) {
+  static V mul(const V& lhs, T rhs) {
     V dst(lhs);
     T* dp = dst.data();
     for (size_t i = 0; i < dst.size(); i++) *dp++ *= rhs;
@@ -76,14 +77,14 @@ class LinalgHelper {
   }
 
   template <typename T, typename V>
-  static V& div(V& dst, const T& src) {
-    T* dp = dst.data();
-    for (size_t i = 0; i < dst.size(); i++) *dp++ /= src;
-    return dst;
+  static V& div(V* dst, T src) {
+    T* dp = dst->data();
+    for (size_t i = 0; i < dst->size(); i++) *dp++ /= src;
+    return *dst;
   }
 
   template <typename T, typename V>
-  static V div(const V& lhs, const T& rhs) {
+  static V div(const V& lhs, T rhs) {
     V dst(lhs);
     T* dp = dst.data();
     for (size_t i = 0; i < dst.size(); i++) *dp++ /= rhs;
