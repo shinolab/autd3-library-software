@@ -3,21 +3,19 @@
 // Created Date: 24/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 27/12/2020
+// Last Modified: 08/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
 //
 
-#include "link/soem.hpp"
+#ifdef _WINDOWS
+#ifndef __STDC_LIMIT_MACROS
+#define __STDC_LIMIT_MACROS
+#endif
+#endif
 
-#include <algorithm>
-#include <bitset>
-#include <chrono>
-#include <memory>
-#include <string>
-#include <utility>
-#include <vector>
+#include "link/soem.hpp"
 
 #include "../lib/ec_config.hpp"
 #include "autdsoem.hpp"
@@ -47,14 +45,14 @@ class SOEMLinkImpl final : public SOEMLink {
   SOEMLinkImpl& operator=(SOEMLinkImpl&& obj) = delete;
 
  protected:
-  void Open() override;
-  void Close() override;
-  std::optional<int32_t> Send(size_t size, std::unique_ptr<uint8_t[]> buf) override;
-  std::optional<int32_t> Read(uint8_t* rx, uint32_t buffer_len) override;
+  Result<bool, std::string> Open() override;
+  Result<bool, std::string> Close() override;
+  Result<bool, std::string> Send(size_t size, const uint8_t* buf) override;
+  Result<bool, std::string> Read(uint8_t* rx, uint32_t buffer_len) override;
   bool is_open() override;
 
  private:
-  std::unique_ptr<autdsoem::SOEMController> _cnt;
+  autdsoem::SOEMController _cnt;
   size_t _device_num = 0;
   std::string _ifname;
   autdsoem::ECConfig _config{};
@@ -65,9 +63,7 @@ LinkPtr SOEMLink::Create(const std::string& ifname, const size_t device_num) {
   return link;
 }
 
-void SOEMLinkImpl::Open() {
-  _cnt = autdsoem::SOEMController::Create();
-
+Result<bool, std::string> SOEMLinkImpl::Open() {
   _config = autdsoem::ECConfig{};
   _config.ec_sm3_cycle_time_ns = EC_SM3_CYCLE_TIME_NANO_SEC;
   _config.ec_sync0_cycle_time_ns = EC_SYNC0_CYCLE_TIME_NANO_SEC;
@@ -75,26 +71,22 @@ void SOEMLinkImpl::Open() {
   _config.body_size = 498;
   _config.input_frame_size = EC_INPUT_FRAME_SIZE;
 
-  _cnt->Open(_ifname.c_str(), _device_num, _config);
+  return _cnt.Open(_ifname.c_str(), _device_num, _config);
 }
 
-void SOEMLinkImpl::Close() {
-  if (_cnt->is_open()) {
-    _cnt->Close();
-  }
+Result<bool, std::string> SOEMLinkImpl::Close() { return _cnt.Close(); }
+
+Result<bool, std::string> SOEMLinkImpl::Send(const size_t size, const uint8_t* buf) {
+  if (!_cnt.is_open()) return Ok(false);
+
+  return _cnt.Send(size, buf);
 }
 
-std::optional<int32_t> SOEMLinkImpl::Send(const size_t size, std::unique_ptr<uint8_t[]> buf) {
-  if (_cnt->is_open()) {
-    _cnt->Send(size, std::move(buf));
-  }
-  return std::nullopt;
+Result<bool, std::string> SOEMLinkImpl::Read(uint8_t* rx, [[maybe_unused]] uint32_t buffer_len) {
+  if (!_cnt.is_open()) return Ok(false);
+
+  return _cnt.Read(rx);
 }
 
-std::optional<int32_t> SOEMLinkImpl::Read(uint8_t* rx, [[maybe_unused]] uint32_t buffer_len) {
-  _cnt->Read(rx);
-  return std::nullopt;
-}
-
-bool SOEMLinkImpl::is_open() { return _cnt->is_open(); }
+bool SOEMLinkImpl::is_open() { return _cnt.is_open(); }
 }  // namespace autd::link

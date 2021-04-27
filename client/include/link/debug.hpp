@@ -3,7 +3,7 @@
 // Created Date: 22/12/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 27/12/2020
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -13,6 +13,7 @@
 
 #include <memory>
 #include <ostream>
+#include <string>
 
 #include "link.hpp"
 
@@ -31,10 +32,10 @@ class DebugLink final : public Link {
   DebugLink(DebugLink&& obj) = delete;
   DebugLink& operator=(DebugLink&& obj) = delete;
 
-  void Open() override;
-  void Close() override;
-  std::optional<int32_t> Send(size_t size, std::unique_ptr<uint8_t[]> buf) override;
-  std::optional<int32_t> Read(uint8_t* rx, uint32_t buffer_len) override;
+  Result<bool, std::string> Open() override;
+  Result<bool, std::string> Close() override;
+  Result<bool, std::string> Send(size_t size, const uint8_t* buf) override;
+  Result<bool, std::string> Read(uint8_t* rx, uint32_t buffer_len) override;
   bool is_open() override;
 
  private:

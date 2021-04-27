@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 27/12/2020
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -46,10 +46,10 @@ class TwinCATLink : public Link {
   TwinCATLink(TwinCATLink&& obj) = delete;
   TwinCATLink& operator=(TwinCATLink&& obj) = delete;
 
-  void Open() override = 0;
-  void Close() override = 0;
-  std::optional<int32_t> Send(size_t size, std::unique_ptr<uint8_t[]> buf) override = 0;
-  std::optional<int32_t> Read(uint8_t* rx, uint32_t buffer_len) override = 0;
+  Result<bool, std::string> Open() override = 0;
+  Result<bool, std::string> Close() override = 0;
+  Result<bool, std::string> Send(size_t size, const uint8_t* buf) override = 0;
+  Result<bool, std::string> Read(uint8_t* rx, uint32_t buffer_len) override = 0;
   bool is_open() override = 0;
 };
 
@@ -69,10 +69,10 @@ class LocalTwinCATLink : public Link {
   LocalTwinCATLink(LocalTwinCATLink&& obj) = delete;
   LocalTwinCATLink& operator=(LocalTwinCATLink&& obj) = delete;
 
-  void Open() override = 0;
-  void Close() override = 0;
-  std::optional<int32_t> Send(size_t size, std::unique_ptr<uint8_t[]> buf) override = 0;
-  std::optional<int32_t> Read(uint8_t* rx, uint32_t buffer_len) override = 0;
+  Result<bool, std::string> Open() override = 0;
+  Result<bool, std::string> Close() override = 0;
+  Result<bool, std::string> Send(size_t size, const uint8_t* buf) override = 0;
+  Result<bool, std::string> Read(uint8_t* rx, uint32_t buffer_len) override = 0;
   bool is_open() override = 0;
 };
 }  // namespace autd::link

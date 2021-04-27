@@ -3,14 +3,14 @@ cmake_minimum_required(VERSION 3.10)
 project(autd3)
 set(VERSION_MAJOR   0   CACHE STRING "Project major version number.")
 set(VERSION_MINOR   9   CACHE STRING "Project minor version number.")
-set(VERSION_PATCH   0   CACHE STRING "Project patch version number.")
+set(VERSION_PATCH   1   CACHE STRING "Project patch version number.")
 mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
 
 option(BUILD_ALL "BUILD_ALL" OFF)
 
 option(BUILD_DOC "BUILD_DOC" OFF)
 option(USE_DOUBLE "USE_DOUBLE" OFF)
-option(ENABLE_EIGEN "ENABLE_EIGEN" ON)
+option(DISABLE_EIGEN "DISABLE_EIGEN" OFF)
 option(ENABLE_BLAS "ENABLE_BLAS" OFF)
 option(USE_MKL "USE_MKL" OFF)
 
@@ -103,13 +103,14 @@ if(NOT Git_FOUND)
   message(WARNING "Git not found.")
 endif()
 
-if(ENABLE_EIGEN)
+if(NOT DISABLE_EIGEN)
   if(Git_FOUND)
     execute_process(COMMAND git -C ${PROJECT_SOURCE_DIR} submodule update --init --recursive -- ${PROJECT_SOURCE_DIR}/deps/Eigen3)
   endif()
-  add_definitions(-DENABLE_EIGEN)
   add_definitions(-DEIGEN_MPL2_ONLY)
   set(EIGEN_PATH ${PROJECT_SOURCE_DIR}/deps/Eigen3)
+else()
+  add_definitions(-DDISABLE_EIGEN)
 endif()
 
 if(ENABLE_BLAS)
@@ -121,6 +122,8 @@ if(ENABLE_BLAS)
     add_definitions(-DUSE_BLAS_MKL)
   endif()
 endif()
+
+add_subdirectory(osal_timer)
 
 # Gain
 if(WIN32 AND BUILD_MATLAB_GAIN)
@@ -161,7 +164,7 @@ add_subdirectory(lib)
 
 if(BUILD_CAPI)
   add_subdirectory(capi/base)
-  if(BUILD_HOLO_GAIN)
+  if(BUILD_HOLO_GAIN AND (NOT DISABLE_EIGEN))
     add_subdirectory(capi/gain_holo)
   endif()
   

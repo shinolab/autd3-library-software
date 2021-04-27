@@ -4,9 +4,9 @@ set (CMAKE_CXX_STANDARD 17)
 
 include_directories(${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH} examples)
 
-file(GLOB hpp_files examples/*.hpp)
+file(GLOB hpp_files examples/*.hpp runner.hpp)
 
-if(BUILD_HOLO_GAIN AND ENABLE_EIGEN)
+if(BUILD_HOLO_GAIN AND (NOT DISABLE_EIGEN))
   add_definitions(-DBUILD_HOLO_GAIN)
 endif()
 

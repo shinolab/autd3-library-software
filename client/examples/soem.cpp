@@ -3,17 +3,18 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/12/2020
+// Last Modified: 05/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
 //
 
+#include "link/soem.hpp"
+
 #include <iostream>
 
 #include "autd3.hpp"
 #include "runner.hpp"
-#include "link/soem.hpp"
 
 using namespace std;
 
@@ -34,15 +35,35 @@ string GetAdapterName() {
 }
 
 int main() {
-  auto autd = autd::Controller::Create();
-  autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
-  // autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+  try {
+    auto autd = autd::Controller::Create();
+    autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+    // autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+    // autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+    // autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+    // autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+    // autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+    // autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+    // autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+    // autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
 
-  // If you have already recognized the EtherCAT adapter name, you can write it directly like below.
-  // auto ifname = "\\Device\\NPF_{B5B631C6-ED16-4780-9C4C-3941AE8120A6}";
-  const auto ifname = GetAdapterName();
-  autd->OpenWith(autd::link::SOEMLink::Create(ifname, autd->geometry()->num_devices()));
-  if (!autd->is_open()) return ENXIO;
+    // If you have already recognized the EtherCAT adapter name, you can write it directly like below.
+    // auto ifname = "\\Device\\NPF_{B5B631C6-ED16-4780-9C4C-3941AE8120A6}";
 
-  return Run(autd);
+    const auto ifname = GetAdapterName();
+    auto res = autd->OpenWith(autd::link::SOEMLink::Create(ifname, autd->geometry()->num_devices()));
+    if (res.is_err()) {
+      std::cerr << res.unwrap_err() << std::endl;
+      return ENXIO;
+    }
+    if (!res.unwrap()) {
+      std::cerr << "Failed to open." << std::endl;
+      return ENXIO;
+    }
+
+    return Run(autd);
+  } catch (exception& e) {
+    std::cerr << e.what() << std::endl;
+    return ENXIO;
+  }
 }

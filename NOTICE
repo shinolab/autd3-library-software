@@ -3,7 +3,7 @@ THIRD PARTY NOTICES
 * This program uses Eigen3 library (https://gitlab.com/libeigen/eigen). Also,
   * TwinCATLink uses ADS library (https://github.com/Beckhoff/ADS) 
   * SOEMLink uses SOEM library (https://github.com/OpenEtherCATsociety/SOEM)
-* If you want to disable Eigen3, you must make ENABLE_EIGEN macro undefined.
+* If you want to disable Eigen3, you must degine DISABLE_EIGEN macro.
 * The licenses of these libraries are shown below.
 
 ********************** ADS ***********************
