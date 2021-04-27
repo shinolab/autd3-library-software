@@ -158,12 +158,12 @@ Vector3 AUTDGeometry::x_direction(const size_t device_idx) {
 }
 
 Vector3 AUTDGeometry::y_direction(const size_t device_idx) {
-  const auto& dir = this->_devices[device_idx].x_direction;
+  const auto& dir = this->_devices[device_idx].y_direction;
   return dir;
 }
 
 Vector3 AUTDGeometry::z_direction(const size_t device_idx) {
-  const auto& dir = this->_devices[device_idx].x_direction;
+  const auto& dir = this->_devices[device_idx].z_direction;
   return dir;
 }
 
