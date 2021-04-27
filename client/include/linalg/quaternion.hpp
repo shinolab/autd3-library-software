@@ -3,7 +3,7 @@
 // Created Date: 27/02/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/03/2021
+// Last Modified: 06/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -12,21 +12,22 @@
 #pragma once
 
 #include <cmath>
+#include <utility>
 
 #include "vector.hpp"
 
-namespace autd::_utils {
+namespace autd::utils {
 /**
  * @brief Simple quaternion class
  */
 template <typename T>
 class Quaternion {
- private:
   Vector3<T> _v;
   T _w;
 
  public:
   Quaternion() = default;
+  ~Quaternion() = default;
   Quaternion(T w, T x, T y, T z) {
     this->_v = Vector3(x, y, z);
     this->_w = w;
@@ -35,8 +36,20 @@ class Quaternion {
     this->_v = v;
     this->_w = w;
   }
-  Quaternion(const Quaternion& v) = default;
-  Quaternion& operator=(const Quaternion& obj) = default;
+  Quaternion(const Quaternion& obj) { *this = obj; }
+  Quaternion& operator=(const Quaternion& obj) {
+    _w = obj._w;
+    _v = obj._v;
+    return *this;
+  }
+  Quaternion(const Quaternion&& obj) noexcept { *this = std::move(obj); }
+  Quaternion& operator=(Quaternion&& obj) noexcept {
+    if (this != &obj) {
+      _w = obj._w;
+      _v = std::move(obj._v);
+    }
+    return *this;
+  }
 
   Vector3<T>& v() noexcept { return _v; }
   const Vector3<T>& v() const noexcept { return _v; }
@@ -151,4 +164,4 @@ bool operator!=(const Quaternion<T>& lhs, const Quaternion<T>& rhs) {
   return !(lhs == rhs);
 }
 
-}  // namespace autd::_utils
+}  // namespace autd::utils

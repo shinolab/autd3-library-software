@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 27/12/2020
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -12,7 +12,9 @@
 #pragma once
 
 #include <memory>
-#include <optional>
+#include <string>
+
+#include "result.hpp"
 
 namespace autd {
 namespace link {
@@ -28,19 +30,27 @@ class Link {
   Link(Link&& obj) = delete;
   Link& operator=(Link&& obj) = delete;
 
-  virtual void Open() = 0;
-  virtual void Close() = 0;
+  /**
+   * @brief Open link
+   * @return return Ok(whether succeeded to open), or Err(error msg) if some unrecoverable error occurred
+   */
+  [[nodiscard]] virtual Result<bool, std::string> Open() = 0;
+  /**
+   * @brief Close link
+   * @return return Ok(whether succeeded to close), or Err(error msg) if some unrecoverable error occurred
+   */
+  [[nodiscard]] virtual Result<bool, std::string> Close() = 0;
   /**
    * @brief  Send data to devices
-   * @return return nullopt if no error, otherwise return error code.
+   * @return return Ok(whether succeeded to send), or Err(error msg) if some unrecoverable error occurred
    */
-  virtual std::optional<int32_t> Send(size_t size, std::unique_ptr<uint8_t[]> buf) = 0;
+  [[nodiscard]] virtual Result<bool, std::string> Send(size_t size, const uint8_t* buf) = 0;
   /**
    * @brief  Read data from devices
-   * @return return nullopt if no error, otherwise return error code.
+   * @return return Ok(whether succeeded to read), or Err(error msg) if some unrecoverable error occurred
    */
-  virtual std::optional<int32_t> Read(uint8_t* rx, uint32_t buffer_len) = 0;
-  virtual bool is_open() = 0;
+  [[nodiscard]] virtual Result<bool, std::string> Read(uint8_t* rx, uint32_t buffer_len) = 0;
+  [[nodiscard]] virtual bool is_open() = 0;
 };
 }  // namespace link
 using LinkPtr = std::unique_ptr<link::Link>;

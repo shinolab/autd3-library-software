@@ -1,9 +1,9 @@
 // File: helper.hpp
-// Project: eigen-linalg
+// Project: linalg
 // Created Date: 25/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/03/2021
+// Last Modified: 14/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -13,16 +13,16 @@
 
 #include <ostream>
 
-namespace autd::_utils {
+namespace autd::utils {
 
-class _Helper {
+class LinalgHelper {
  public:
   template <typename T, typename V>
-  static V& add(V& dst, const V& src) {
+  static V& add(V* dst, const V& src) {
     T* dp = dst.data();
     const T* sp = src.data();
     for (size_t i = 0; i < dst.size(); i++) *dp++ += *sp++;
-    return dst;
+    return *dst;
   }
   template <typename T, typename V>
   static V add(const V& lhs, const V& rhs) {
@@ -32,6 +32,7 @@ class _Helper {
     for (size_t i = 0; i < dst.size(); i++) *dp++ += *rp++;
     return dst;
   }
+
   template <typename T, typename V>
   static V neg(const V& src) {
     V dst(src);
@@ -44,11 +45,11 @@ class _Helper {
   }
 
   template <typename T, typename V>
-  static V& sub(V& dst, const V& src) {
-    T* dp = dst.data();
+  static V& sub(V* dst, const V& src) {
+    T* dp = dst->data();
     const T* sp = src.data();
-    for (size_t i = 0; i < dst.size(); i++) *dp++ -= *sp++;
-    return dst;
+    for (size_t i = 0; i < dst->size(); i++) *dp++ -= *sp++;
+    return *dst;
   }
 
   template <typename T, typename V>
@@ -61,14 +62,14 @@ class _Helper {
   }
 
   template <typename T, typename V>
-  static V& mul(V& dst, const T& src) {
-    T* dp = dst.data();
+  static V& mul(V* dst, T src) {
+    T* dp = dst->data();
     for (size_t i = 0; i < dst.size(); i++) *dp++ *= src;
-    return dst;
+    return *dst;
   }
 
   template <typename T, typename V>
-  static V mul(const V& lhs, const T& rhs) {
+  static V mul(const V& lhs, T rhs) {
     V dst(lhs);
     T* dp = dst.data();
     for (size_t i = 0; i < dst.size(); i++) *dp++ *= rhs;
@@ -76,14 +77,14 @@ class _Helper {
   }
 
   template <typename T, typename V>
-  static V& div(V& dst, const T& src) {
-    T* dp = dst.data();
-    for (size_t i = 0; i < dst.size(); i++) *dp++ /= src;
-    return dst;
+  static V& div(V* dst, T src) {
+    T* dp = dst->data();
+    for (size_t i = 0; i < dst->size(); i++) *dp++ /= src;
+    return *dst;
   }
 
   template <typename T, typename V>
-  static V div(const V& lhs, const T& rhs) {
+  static V div(const V& lhs, T rhs) {
     V dst(lhs);
     T* dp = dst.data();
     for (size_t i = 0; i < dst.size(); i++) *dp++ /= rhs;
@@ -96,7 +97,7 @@ class _Helper {
     auto r = true;
     const auto* lp = lhs.data();
     const auto* rp = rhs.data();
-    for (size_t i = 0; i < lhs.size(); i++) r = r && (*lp++ == *rp++);
+    for (size_t i = 0; i < lhs.size(); i++) r = r && *lp++ == *rp++;
     return r;
   }
 
@@ -107,7 +108,7 @@ class _Helper {
     auto r = true;
     const auto* lp = lhs.data();
     const auto* rp = rhs.data();
-    for (size_t i = 0; i < lhs.size(); i++) r = r && (*lp++ == *rp++);
+    for (size_t i = 0; i < lhs.size(); i++) r = r && *lp++ == *rp++;
     return r;
   }
 
@@ -133,7 +134,7 @@ class _Helper {
     T d = 0;
     const T* lp = lhs.data();
     const T* rp = rhs.data();
-    for (size_t i = 0; i < lhs.size(); i++) d += *(lp++) * *(rp++);
+    for (size_t i = 0; i < lhs.size(); i++) d += *lp++ * *rp++;
     return d;
   }
 
@@ -163,4 +164,4 @@ class _Helper {
   }
 };
 
-}  // namespace autd::_utils
+}  // namespace autd::utils

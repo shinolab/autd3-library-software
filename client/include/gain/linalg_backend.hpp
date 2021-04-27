@@ -3,7 +3,7 @@
 // Created Date: 06/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/03/2021
+// Last Modified: 08/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -23,7 +23,7 @@
 
 namespace autd::gain::holo {
 
-enum class TRANSPOSE { NoTrans = 111, Trans = 112, ConjTrans = 113, ConjNoTrans = 114 };
+enum class TRANSPOSE { NO_TRANS = 111, TRANS = 112, CONJ_TRANS = 113, CONJ_NO_TRANS = 114 };
 
 template <typename MCx, typename VCx, typename Mx, typename Vx>
 class Backend {
@@ -33,88 +33,96 @@ class Backend {
   using MatrixX = Mx;
   using VectorX = Vx;
 
-  virtual bool supports_SVD() = 0;
-  virtual bool supports_EVD() = 0;
-  virtual bool supports_solve() = 0;
-  virtual void hadamardProduct(const MatrixXc& a, const MatrixXc& b, MatrixXc* c) = 0;
-  virtual void real(const MatrixXc& a, MatrixX* b) = 0;
-  virtual void pseudoInverseSVD(MatrixXc* matrix, Float alpha, MatrixXc* result) = 0;
-  virtual VectorXc maxEigenVector(MatrixXc* matrix) = 0;
-  virtual void matAdd(Float alpha, const MatrixX& a, Float beta, MatrixX* b) = 0;
-  virtual void matMul(TRANSPOSE transA, TRANSPOSE transB, std::complex<Float> alpha, const MatrixXc& a, const MatrixXc& b, std::complex<Float> beta,
+  virtual bool SupportsSvd() = 0;
+  virtual bool SupportsEVD() = 0;
+  virtual bool SupportsSolve() = 0;
+  virtual void HadamardProduct(const MatrixXc& a, const MatrixXc& b, MatrixXc* c) = 0;
+  virtual void Real(const MatrixXc& a, MatrixX* b) = 0;
+  virtual void PseudoInverseSvd(MatrixXc* matrix, Float alpha, MatrixXc* result) = 0;
+  virtual VectorXc MaxEigenVector(MatrixXc* matrix) = 0;
+  virtual void MatAdd(Float alpha, const MatrixX& a, Float beta, MatrixX* b) = 0;
+  virtual void MatMul(TRANSPOSE trans_a, TRANSPOSE trans_b, std::complex<Float> alpha, const MatrixXc& a, const MatrixXc& b, std::complex<Float> beta,
                       MatrixXc* c) = 0;
-  virtual void matVecMul(TRANSPOSE transA, std::complex<Float> alpha, const MatrixXc& a, const VectorXc& b, std::complex<Float> beta,
+  virtual void MatVecMul(TRANSPOSE trans_a, std::complex<Float> alpha, const MatrixXc& a, const VectorXc& b, std::complex<Float> beta,
                          VectorXc* c) = 0;
-  virtual void vecAdd(Float alpha, const VectorX& a, Float beta, VectorX* b) = 0;
-  virtual void csolveh(MatrixXc* a, VectorXc* b) = 0;
-  virtual void solveg(MatrixX* a, VectorX* b, VectorX* c) = 0;
-  virtual Float dot(const VectorX& a, const VectorX& b) = 0;
-  virtual std::complex<Float> cdot(const VectorXc& a, const VectorXc& b) = 0;
-  virtual Float maxCoeff(const VectorX& v) = 0;
-  virtual Float cmaxCoeff(const VectorXc& v) = 0;
-  virtual MatrixXc concatRow(const MatrixXc& a, const MatrixXc& b) = 0;
-  virtual MatrixXc concatCol(const MatrixXc& a, const MatrixXc& b) = 0;
-  virtual void matCpy(const MatrixX& a, MatrixX* b) = 0;
-  virtual void vecCpy(const VectorX& a, VectorX* b) = 0;
+  virtual void VecAdd(Float alpha, const VectorX& a, Float beta, VectorX* b) = 0;
+  virtual void SolveCh(MatrixXc* a, VectorXc* b) = 0;
+  virtual void Solveg(MatrixX* a, VectorX* b, VectorX* c) = 0;
+  virtual Float Dot(const VectorX& a, const VectorX& b) = 0;
+  virtual std::complex<Float> DotC(const VectorXc& a, const VectorXc& b) = 0;
+  virtual Float MaxCoeff(const VectorX& v) = 0;
+  virtual Float MaxCoeffC(const VectorXc& v) = 0;
+  virtual MatrixXc ConcatRow(const MatrixXc& a, const MatrixXc& b) = 0;
+  virtual MatrixXc ConcatCol(const MatrixXc& a, const MatrixXc& b) = 0;
+  virtual void MatCpy(const MatrixX& a, MatrixX* b) = 0;
+  virtual void VecCpy(const VectorX& a, VectorX* b) = 0;
+  virtual void VecCpyC(const VectorXc& a, VectorXc* b) = 0;
 
-  virtual ~Backend() {}
+  Backend() = default;
+  virtual ~Backend() = default;
+  Backend(const Backend& obj) = delete;
+  Backend& operator=(const Backend& obj) = delete;
+  Backend(const Backend&& v) = delete;
+  Backend& operator=(Backend&& obj) = delete;
 };
 
-#ifdef ENABLE_EIGEN
+#ifndef DISABLE_EIGEN
 class Eigen3Backend final : public Backend<Eigen::Matrix<std::complex<Float>, -1, -1>, Eigen::Matrix<std::complex<Float>, -1, 1>,
                                            Eigen::Matrix<Float, -1, -1>, Eigen::Matrix<Float, -1, 1>> {
  public:
-  bool supports_SVD() override { return true; }
-  bool supports_EVD() override { return true; }
-  bool supports_solve() override { return true; }
-  void hadamardProduct(const MatrixXc& a, const MatrixXc& b, MatrixXc* c) override;
-  void real(const MatrixXc& a, MatrixX* b) override;
-  void pseudoInverseSVD(MatrixXc* matrix, Float alpha, MatrixXc* result) override;
-  VectorXc maxEigenVector(MatrixXc* matrix) override;
-  void matAdd(Float alpha, const MatrixX& a, Float beta, MatrixX* b) override;
-  void matMul(TRANSPOSE transA, TRANSPOSE transB, std::complex<Float> alpha, const MatrixXc& a, const MatrixXc& b, std::complex<Float> beta,
+  bool SupportsSvd() override { return true; }
+  bool SupportsEVD() override { return true; }
+  bool SupportsSolve() override { return true; }
+  void HadamardProduct(const MatrixXc& a, const MatrixXc& b, MatrixXc* c) override;
+  void Real(const MatrixXc& a, MatrixX* b) override;
+  void PseudoInverseSvd(MatrixXc* matrix, Float alpha, MatrixXc* result) override;
+  VectorXc MaxEigenVector(MatrixXc* matrix) override;
+  void MatAdd(Float alpha, const MatrixX& a, Float beta, MatrixX* b) override;
+  void MatMul(TRANSPOSE trans_a, TRANSPOSE trans_b, std::complex<Float> alpha, const MatrixXc& a, const MatrixXc& b, std::complex<Float> beta,
               MatrixXc* c) override;
-  void matVecMul(TRANSPOSE transA, std::complex<Float> alpha, const MatrixXc& a, const VectorXc& b, std::complex<Float> beta, VectorXc* c) override;
-  void vecAdd(Float alpha, const VectorX& a, Float beta, VectorX* b) override;
-  void csolveh(MatrixXc* a, VectorXc* b) override;
-  void solveg(MatrixX* a, VectorX* b, VectorX* c) override;
-  Float dot(const VectorX& a, const VectorX& b) override;
-  std::complex<Float> cdot(const VectorXc& a, const VectorXc& b) override;
-  Float maxCoeff(const VectorX& v) override;
-  Float cmaxCoeff(const VectorXc& v) override;
-  MatrixXc concatRow(const MatrixXc& a, const MatrixXc& b) override;
-  MatrixXc concatCol(const MatrixXc& a, const MatrixXc& b) override;
-  void matCpy(const MatrixX& a, MatrixX* b) override;
-  void vecCpy(const VectorX& a, VectorX* b) override;
+  void MatVecMul(TRANSPOSE trans_a, std::complex<Float> alpha, const MatrixXc& a, const VectorXc& b, std::complex<Float> beta, VectorXc* c) override;
+  void VecAdd(Float alpha, const VectorX& a, Float beta, VectorX* b) override;
+  void SolveCh(MatrixXc* a, VectorXc* b) override;
+  void Solveg(MatrixX* a, VectorX* b, VectorX* c) override;
+  Float Dot(const VectorX& a, const VectorX& b) override;
+  std::complex<Float> DotC(const VectorXc& a, const VectorXc& b) override;
+  Float MaxCoeff(const VectorX& v) override;
+  Float MaxCoeffC(const VectorXc& v) override;
+  MatrixXc ConcatRow(const MatrixXc& a, const MatrixXc& b) override;
+  MatrixXc ConcatCol(const MatrixXc& a, const MatrixXc& b) override;
+  void MatCpy(const MatrixX& a, MatrixX* b) override;
+  void VecCpy(const VectorX& a, VectorX* b) override;
+  void VecCpyC(const VectorXc& a, VectorXc* b) override;
 };
 #endif
 
 #ifdef ENABLE_BLAS
 class BLASBackend final
-    : public Backend<_utils::MatrixX<std::complex<Float>>, _utils::VectorX<std::complex<Float>>, _utils::MatrixX<Float>, _utils::VectorX<Float>> {
+    : public Backend<utils::MatrixX<std::complex<Float>>, utils::VectorX<std::complex<Float>>, utils::MatrixX<Float>, utils::VectorX<Float>> {
  public:
-  bool supports_SVD() override { return true; }
-  bool supports_EVD() override { return true; }
-  bool supports_solve() override { return true; }
-  void hadamardProduct(const MatrixXc& a, const MatrixXc& b, MatrixXc* c) override;
-  void real(const MatrixXc& a, MatrixX* b) override;
-  void pseudoInverseSVD(MatrixXc* matrix, Float alpha, MatrixXc* result) override;
-  VectorXc maxEigenVector(MatrixXc* matrix) override;
-  void matAdd(Float alpha, const MatrixX& a, Float beta, MatrixX* b) override;
-  void matMul(TRANSPOSE transA, TRANSPOSE transB, std::complex<Float> alpha, const MatrixXc& a, const MatrixXc& b, std::complex<Float> beta,
+  bool SupportsSvd() override { return true; }
+  bool SupportsEVD() override { return true; }
+  bool SupportsSolve() override { return true; }
+  void HadamardProduct(const MatrixXc& a, const MatrixXc& b, MatrixXc* c) override;
+  void Real(const MatrixXc& a, MatrixX* b) override;
+  void PseudoInverseSvd(MatrixXc* matrix, Float alpha, MatrixXc* result) override;
+  VectorXc MaxEigenVector(MatrixXc* matrix) override;
+  void MatAdd(Float alpha, const MatrixX& a, Float beta, MatrixX* b) override;
+  void MatMul(TRANSPOSE trans_a, TRANSPOSE trans_b, std::complex<Float> alpha, const MatrixXc& a, const MatrixXc& b, std::complex<Float> beta,
               MatrixXc* c) override;
-  void matVecMul(TRANSPOSE transA, std::complex<Float> alpha, const MatrixXc& a, const VectorXc& b, std::complex<Float> beta, VectorXc* c) override;
-  void vecAdd(Float alpha, const VectorX& a, Float beta, VectorX* b) override;
-  void csolveh(MatrixXc* a, VectorXc* b) override;
-  void solveg(MatrixX* a, VectorX* b, VectorX* c) override;
-  Float dot(const VectorX& a, const VectorX& b) override;
-  std::complex<Float> cdot(const VectorXc& a, const VectorXc& b) override;
-  Float maxCoeff(const VectorX& v) override;
-  Float cmaxCoeff(const VectorXc& v) override;
-  MatrixXc concatRow(const MatrixXc& a, const MatrixXc& b) override;
-  MatrixXc concatCol(const MatrixXc& a, const MatrixXc& b) override;
-  void matCpy(const MatrixX& a, MatrixX* b) override;
-  void vecCpy(const VectorX& a, VectorX* b) override;
+  void MatVecMul(TRANSPOSE trans_a, std::complex<Float> alpha, const MatrixXc& a, const VectorXc& b, std::complex<Float> beta, VectorXc* c) override;
+  void VecAdd(Float alpha, const VectorX& a, Float beta, VectorX* b) override;
+  void SolveCh(MatrixXc* a, VectorXc* b) override;
+  void Solveg(MatrixX* a, VectorX* b, VectorX* c) override;
+  Float Dot(const VectorX& a, const VectorX& b) override;
+  std::complex<Float> DotC(const VectorXc& a, const VectorXc& b) override;
+  Float MaxCoeff(const VectorX& v) override;
+  Float MaxCoeffC(const VectorXc& v) override;
+  MatrixXc ConcatRow(const MatrixXc& a, const MatrixXc& b) override;
+  MatrixXc ConcatCol(const MatrixXc& a, const MatrixXc& b) override;
+  void MatCpy(const MatrixX& a, MatrixX* b) override;
+  void VecCpy(const VectorX& a, VectorX* b) override;
+  void VecCpyC(const VectorXc& a, VectorXc* b) override;
 };
 #endif
 }  // namespace autd::gain::holo

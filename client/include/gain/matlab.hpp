@@ -3,7 +3,7 @@
 // Created Date: 20/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/02/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "gain.hpp"
+#include "result.hpp"
 
 namespace autd {
 namespace gain {
@@ -28,9 +29,10 @@ class MatlabGain final : public Gain {
    * @brief Generate function
    * @param[in] filename mat file path
    * @param[in] var_name variable name in mat file
+   * @return return Ok(GainPtr) if succeeded, or Err(error msg) if failed to read the file
    */
-  static GainPtr Create(const std::string& filename, const std::string& var_name);
-  void Build() override;
+  static Result<GainPtr, std::string> Create(const std::string& filename, const std::string& var_name);
+  Result<bool, std::string> Build() override;
   MatlabGain(std::string filename, std::string var_name) : Gain(), _filename(std::move(filename)), _var_name(std::move(var_name)) {}
   ~MatlabGain() override = default;
   MatlabGain(const MatlabGain& v) noexcept = default;

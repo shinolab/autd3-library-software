@@ -3,7 +3,7 @@
 // Created Date: 08/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 06/03/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -14,7 +14,6 @@
 #include <map>
 
 #include "autd3.hpp"
-#include "autd_logic.hpp"
 #include "linalg.hpp"
 
 using autd::IsMissingTransducer;
@@ -70,6 +69,9 @@ class AUTDGeometry final : public Geometry {
   size_t AddDevice(Vector3 position, Vector3 euler_angles, size_t group = 0) override;
   size_t AddDeviceQuaternion(Vector3 position, Quaternion quaternion, size_t group = 0) override;
 
+  size_t DelDevice(size_t idx) override;
+  void ClearDevices() override;
+
   Float wavelength() noexcept override;
   void set_wavelength(Float wavelength) noexcept override;
   Float attenuation_coeff() noexcept override;
@@ -111,10 +113,16 @@ size_t AUTDGeometry::AddDeviceQuaternion(const Vector3 position, const Quaternio
   return device_id;
 }
 
+size_t AUTDGeometry::DelDevice(const size_t idx) {
+  this->_devices.erase(this->_devices.begin() + idx);
+  return idx;
+}
+void AUTDGeometry::ClearDevices() { std::vector<Device>().swap(this->_devices); }
+
 Float AUTDGeometry::wavelength() noexcept { return this->_wavelength; }
 void AUTDGeometry::set_wavelength(const Float wavelength) noexcept { this->_wavelength = wavelength; }
 Float AUTDGeometry::attenuation_coeff() noexcept { return this->_attenuation; }
-void AUTDGeometry::set_attenuation_coeff(const Float attenuation) noexcept { this->_attenuation = attenuation; }
+void AUTDGeometry::set_attenuation_coeff(const Float attenuation_coeff) noexcept { this->_attenuation = attenuation_coeff; }
 
 size_t AUTDGeometry::num_devices() noexcept { return this->_devices.size(); }
 
@@ -150,12 +158,12 @@ Vector3 AUTDGeometry::x_direction(const size_t device_idx) {
 }
 
 Vector3 AUTDGeometry::y_direction(const size_t device_idx) {
-  const auto& dir = this->_devices[device_idx].x_direction;
+  const auto& dir = this->_devices[device_idx].y_direction;
   return dir;
 }
 
 Vector3 AUTDGeometry::z_direction(const size_t device_idx) {
-  const auto& dir = this->_devices[device_idx].x_direction;
+  const auto& dir = this->_devices[device_idx].z_direction;
   return dir;
 }
 

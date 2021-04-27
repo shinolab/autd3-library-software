@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/03/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -50,6 +50,18 @@ class Geometry {
    * @return an id of added device, which is used to delete or do other device specific controls.
    */
   virtual size_t AddDeviceQuaternion(Vector3 position, Quaternion quaternion, size_t group = 0) = 0;
+
+  /**
+   * @brief Delete device
+   * @param idx Index of the device to delete.
+   * @return an index of deleted device
+   */
+  virtual size_t DelDevice(size_t idx) = 0;
+
+  /**
+   * @brief Clear all devices
+   */
+  virtual void ClearDevices() = 0;
 
   /**
    * @brief ultrasound wavelength

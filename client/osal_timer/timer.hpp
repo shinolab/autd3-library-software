@@ -3,14 +3,13 @@
 // Created Date:02/07/2018
 // Author: Shun Suzuki and Saya Mizutani
 // -----
-// Last Modified: 26/12/2020
+// Last Modified: 06/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
 //
 
 #pragma once
-#include <future>
 
 #if WIN32
 #include <Windows.h>
@@ -21,15 +20,20 @@
 #include <time.h>
 #endif
 
+#include <functional>
+#include <thread>
+
+#include "result.hpp"
+
 namespace autd {
 class Timer {
  public:
   Timer() noexcept;
   explicit Timer(bool high_resolution) noexcept;
-  ~Timer() noexcept(false);
-  void SetInterval(uint32_t interval_us);
-  void Start(const std::function<void()> &callback);
-  void Stop();
+  ~Timer();
+  bool SetInterval(uint32_t &interval_us);
+  [[nodiscard]] Result<bool, std::string> Start(const std::function<void()> &callback);
+  [[nodiscard]] Result<bool, std::string> Stop();
 
   Timer(const Timer &) = delete;
   Timer(Timer &&) = delete;
@@ -61,6 +65,6 @@ class Timer {
   static void MainLoop(int signum);
   static void Notify(union sigval sv);
 #endif
-  void InitTimer();
+  [[nodiscard]] Result<bool, std::string> InitTimer();
 };
 }  // namespace autd

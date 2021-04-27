@@ -3,7 +3,7 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/03/2021
+// Last Modified: 14/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -19,11 +19,13 @@
 #include <vector>
 
 #include "autd3.hpp"
-#include "bessel.hpp"
-#include "holo.hpp"
-#include "seq.hpp"
-#include "simple.hpp"
-#include "stm.hpp"
+#include "examples/bessel.hpp"
+#ifdef BUILD_HOLO_GAIN
+#include "examples/holo.hpp"
+#endif
+#include "examples/seq.hpp"
+#include "examples/simple.hpp"
+#include "examples/stm.hpp"
 
 using std::cin;
 using std::cout;
@@ -46,20 +48,15 @@ inline int Run(autd::ControllerPtr& autd) {
 
   autd->geometry()->set_wavelength(ULTRASOUND_WAVELENGTH);
 
-  autd->Clear();
+  autd->Clear().unwrap();
+  autd->Synchronize().unwrap();
 
-  auto config = autd::Configuration::GetDefaultConfiguration();
-  config.set_mod_buf_size(autd::MOD_BUF_SIZE::BUF_4000);
-  config.set_mod_sampling_freq(autd::MOD_SAMPLING_FREQ::SMPL_4_KHZ);
-  autd->Calibrate(config);
-
-  auto firm_info_list = autd->firmware_info_list();
-  for (auto& firm_info : firm_info_list) cout << firm_info << endl;
+  auto firm_info_list = autd->firmware_info_list().unwrap();
+  for (auto&& firm_info : firm_info_list) cout << firm_info << endl;
 
   while (true) {
-    for (size_t i = 0; i < examples.size(); i++) {
-      cout << "[" << i << "]: " << examples[i].second << endl;
-    }
+    for (size_t i = 0; i < examples.size(); i++) cout << "[" << i << "]: " << examples[i].second << endl;
+
     cout << "[Others]: finish." << endl;
 
     cout << "Choose number: ";
@@ -68,23 +65,21 @@ inline int Run(autd::ControllerPtr& autd) {
     getline(cin, in);
     std::stringstream s(in);
     const auto empty = in == "\n";
-    if (!(s >> idx) || idx >= examples.size() || empty) {
-      break;
-    }
+    if (!(s >> idx) || idx >= examples.size() || empty) break;
 
     auto fn = examples[idx].first;
     fn(autd);
 
     cout << "press any key to finish..." << endl;
-    auto _ = getchar();
+    cin.ignore();
 
     cout << "finish." << endl;
-    autd->FinishSTModulation();
-    autd->Stop();
+    autd->FinishSTModulation().unwrap();
+    autd->Stop().unwrap();
   }
 
-  autd->Clear();
-  autd->Close();
+  autd->Clear().unwrap();
+  autd->Close().unwrap();
 
   return 0;
 }

@@ -3,7 +3,7 @@
 // Created Date: 11/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 06/03/2021
+// Last Modified: 04/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -27,7 +27,10 @@ ModulationPtr Modulation::Create(const uint8_t amp) {
   return mod;
 }
 
-void Modulation::Build(Configuration config) {}
+Result<bool, std::string> Modulation::Build(Configuration config) {
+  (void)config;
+  return Ok(true);
+}
 
 size_t& Modulation::sent() { return _sent; }
 
@@ -37,7 +40,7 @@ ModulationPtr SineModulation::Create(const int freq, const Float amp, const Floa
   return mod;
 }
 
-void SineModulation::Build(const Configuration config) {
+Result<bool, std::string> SineModulation::Build(const Configuration config) {
   const auto sf = static_cast<int32_t>(config.mod_sampling_freq());
   const auto mod_buf_size = static_cast<int32_t>(config.mod_buf_size());
 
@@ -56,6 +59,7 @@ void SineModulation::Build(const Configuration config) {
     tamp = std::clamp(this->_offset + (tamp - Float{0.5}) * this->_amp, Float{0}, Float{1});
     this->buffer.at(i) = static_cast<uint8_t>(tamp * 255);
   }
+  return Ok(true);
 }
 #pragma endregion
 
@@ -65,7 +69,7 @@ ModulationPtr SquareModulation::Create(int freq, uint8_t low, uint8_t high) {
   return mod;
 }
 
-void SquareModulation::Build(const Configuration config) {
+Result<bool, std::string> SquareModulation::Build(const Configuration config) {
   const auto sf = static_cast<int32_t>(config.mod_sampling_freq());
   const auto mod_buf_size = static_cast<int32_t>(config.mod_buf_size());
 
@@ -77,6 +81,7 @@ void SquareModulation::Build(const Configuration config) {
 
   this->buffer.resize(n, this->_high);
   std::memset(&this->buffer[0], this->_low, n / 2);
+  return Ok(true);
 }
 #pragma endregion
 
@@ -86,7 +91,7 @@ ModulationPtr SawModulation::Create(const int freq) {
   return mod;
 }
 
-void SawModulation::Build(const Configuration config) {
+Result<bool, std::string> SawModulation::Build(const Configuration config) {
   const auto sf = static_cast<int32_t>(config.mod_sampling_freq());
   const auto mod_buf_size = static_cast<int32_t>(config.mod_buf_size());
 
@@ -100,9 +105,10 @@ void SawModulation::Build(const Configuration config) {
   this->buffer.resize(n, 0);
 
   for (size_t i = 0; i < n; i++) {
-    const auto tamp = fmod(static_cast<double>(rep * i) / static_cast<double>(n), 1.0);
-    this->buffer.at(i) = static_cast<uint8_t>(asin(tamp) / M_PI * 510.0);
+    const auto tamp = std::fmod(static_cast<Float>(rep * i) / static_cast<Float>(n), Float{1});
+    this->buffer.at(i) = static_cast<uint8_t>(std::asin(tamp) / PI * Float{510});
   }
+  return Ok(true);
 }
 #pragma endregion
 }  // namespace autd::modulation

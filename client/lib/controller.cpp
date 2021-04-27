@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 06/03/2021
+// Last Modified: 06/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -20,7 +20,7 @@
 #include <utility>
 #include <vector>
 
-#include "controller_impl.hpp"
+#include "autd_logic.hpp"
 #include "firmware_version.hpp"
 #include "link.hpp"
 #include "sequence.hpp"
@@ -30,35 +30,48 @@ namespace autd {
 namespace internal {
 
 using std::move;
+using std::shared_ptr;
 using std::thread, std::queue;
-using std::unique_ptr, std::shared_ptr;
 using std::vector, std::condition_variable, std::unique_lock, std::mutex;
 
 class AUTDControllerSync {
  public:
   explicit AUTDControllerSync(const shared_ptr<AUTDLogic>& logic) : _autd_logic(logic) {}
 
-  void AppendGain(const GainPtr& gain, const bool wait_for_send) const {
-    this->_autd_logic->BuildGain(gain);
-    if (wait_for_send) {
-      this->_autd_logic->SendBlocking(gain, nullptr);
-    } else {
-      this->_autd_logic->Send(gain, nullptr);
-    }
-  }
-  void AppendModulation(const ModulationPtr& mod) const {
-    this->_autd_logic->BuildModulation(mod);
-    while (mod->buffer.size() > mod->sent()) {
-      _autd_logic->SendBlocking(nullptr, mod);
-    }
-    mod->sent() = 0;
+  [[nodiscard]] Result<bool, std::string> AppendGain(const GainPtr& gain, const bool wait_for_send) const {
+    auto res = this->_autd_logic->BuildGain(gain);
+    if (res.is_err()) return res;
+
+    if (wait_for_send) return this->_autd_logic->SendBlocking(gain, nullptr);
+
+    return this->_autd_logic->Send(gain, nullptr);
   }
 
-  void AppendSeq(const SequencePtr& seq) const {
-    while (seq->sent() < seq->control_points().size()) {
-      this->_autd_logic->SendBlocking(seq);
+  [[nodiscard]] Result<bool, std::string> AppendModulation(const ModulationPtr& mod) const {
+    auto success = true;
+    auto res = this->_autd_logic->BuildModulation(mod);
+    if (res.is_err()) return res;
+
+    while (mod->buffer.size() > mod->sent()) {
+      res = _autd_logic->SendBlocking(nullptr, mod);
+      if (res.is_err()) return res;
+      success &= res.unwrap();
     }
-    this->_autd_logic->CalibrateSeq();
+    mod->sent() = 0;
+    return Ok(success);
+  }
+
+  [[nodiscard]] Result<bool, std::string> AppendSeq(const SequencePtr& seq) const {
+    auto success = true;
+    while (seq->sent() < seq->control_points().size()) {
+      auto res = this->_autd_logic->SendBlocking(seq);
+      if (res.is_err()) return res;
+      success &= res.unwrap();
+    }
+    auto sync_res = this->_autd_logic->SynchronizeSeq();
+    if (sync_res.is_err()) return sync_res;
+
+    return Ok(success && sync_res.unwrap());
   }
 
  private:
@@ -67,17 +80,13 @@ class AUTDControllerSync {
 
 class AUTDControllerAsync {
  public:
-  explicit AUTDControllerAsync(const shared_ptr<AUTDLogic>& logic) : _autd_logic(logic) { this->_is_running = false; }
+  explicit AUTDControllerAsync(const shared_ptr<AUTDLogic>& logic) : _is_running(false), _autd_logic(logic) {}
   AUTDControllerAsync(const AUTDControllerAsync& obj) = delete;
-  AUTDControllerAsync(AUTDControllerAsync&& obj) = delete;
   AUTDControllerAsync& operator=(const AUTDControllerAsync& obj) = delete;
-  AUTDControllerAsync& operator=(AUTDControllerAsync&& obj) = delete;
+  AUTDControllerAsync(const AUTDControllerAsync&& obj) noexcept = delete;
+  AUTDControllerAsync& operator=(AUTDControllerAsync&& obj) noexcept = delete;
 
-  ~AUTDControllerAsync() {
-    if (std::this_thread::get_id() != this->_build_gain_thr.get_id() && this->_build_gain_thr.joinable()) this->_build_gain_thr.join();
-    if (std::this_thread::get_id() != this->_build_mod_thr.get_id() && this->_build_mod_thr.joinable()) this->_build_mod_thr.join();
-    if (std::this_thread::get_id() != this->_send_thr.get_id() && this->_send_thr.joinable()) this->_send_thr.join();
-  }
+  ~AUTDControllerAsync() { this->Close(); }
 
   [[nodiscard]] size_t remaining_in_buffer() const {
     return this->_send_gain_q.size() + this->_send_mod_q.size() + this->_build_gain_q.size() + this->_build_mod_q.size();
@@ -135,13 +144,13 @@ class AUTDControllerAsync {
           }
         }
 
-        if (gain != nullptr) {
-          this->_autd_logic->BuildGain(gain);
-          {
-            std::unique_lock<std::mutex> lk(_send_mtx);
-            _send_gain_q.push(gain);
-            _send_cond.notify_all();
-          }
+        if (gain == nullptr) continue;
+
+        auto res = this->_autd_logic->BuildGain(gain);
+        if (res.is_ok() && res.unwrap()) {
+          std::unique_lock<std::mutex> lk(_send_mtx);
+          _send_gain_q.push(gain);
+          _send_cond.notify_all();
         }
       }
     });
@@ -160,13 +169,13 @@ class AUTDControllerAsync {
           }
         }
 
-        if (mod != nullptr) {
-          this->_autd_logic->BuildModulation(mod);
-          {
-            unique_lock<mutex> lk(_send_mtx);
-            _send_mod_q.push(mod);
-            _send_cond.notify_all();
-          }
+        if (mod == nullptr) continue;
+
+        auto res = this->_autd_logic->BuildModulation(mod);
+        if (res.is_ok() && res.unwrap()) {
+          unique_lock<mutex> lk(_send_mtx);
+          _send_mod_q.push(mod);
+          _send_cond.notify_all();
         }
       }
     });
@@ -182,13 +191,14 @@ class AUTDControllerAsync {
           if (!_send_gain_q.empty()) gain = _send_gain_q.front();
           if (!_send_mod_q.empty()) mod = _send_mod_q.front();
         }
-        this->_autd_logic->Send(gain, mod);
-
-        unique_lock<mutex> lk(_send_mtx);
-        if (gain != nullptr) _send_gain_q.pop();
-        if (mod != nullptr && mod->buffer.size() <= mod->sent()) {
-          mod->sent() = 0;
-          _send_mod_q.pop();
+        auto res = this->_autd_logic->Send(gain, mod);
+        if (res.is_ok() && res.unwrap()) {
+          unique_lock<mutex> lk(_send_mtx);
+          if (gain != nullptr) _send_gain_q.pop();
+          if (mod != nullptr && mod->buffer.size() <= mod->sent()) {
+            mod->sent() = 0;
+            _send_mod_q.pop();
+          }
         }
       }
     });
@@ -216,25 +226,17 @@ class AUTDControllerAsync {
 
 class AUTDControllerStm {
  public:
-  explicit AUTDControllerStm(const shared_ptr<AUTDLogic>& logic) : _autd_logic(logic) { this->_p_stm_timer = std::make_unique<Timer>(); }
-  AUTDControllerStm(const AUTDControllerStm& obj) = delete;
-  AUTDControllerStm(AUTDControllerStm&& obj) = delete;
-  AUTDControllerStm& operator=(const AUTDControllerStm& obj) = delete;
-  AUTDControllerStm& operator=(AUTDControllerStm&& obj) = delete;
-
-  ~AUTDControllerStm() = default;
+  explicit AUTDControllerStm(const shared_ptr<AUTDLogic>& logic) : _autd_logic(logic), _lock(false) {}
 
   void AppendGain(const GainPtr& gain) { _stm_gains.emplace_back(gain); }
   void AppendGain(const vector<GainPtr>& gain_list) {
-    for (const auto& g : gain_list) {
-      this->AppendGain(g);
-    }
+    for (const auto& g : gain_list) this->AppendGain(g);
   }
 
-  void Start(const Float freq) {
+  [[nodiscard]] Result<bool, std::string> Start(const Float freq) {
     auto len = this->_stm_gains.size();
-    const auto interval_us = static_cast<int>(1000000. / static_cast<double>(freq) / static_cast<double>(len));
-    this->_p_stm_timer->SetInterval(interval_us);
+    auto interval_us = static_cast<uint32_t>(1000000. / static_cast<double>(freq) / static_cast<double>(len));
+    this->_stm_timer.SetInterval(interval_us);
 
     const auto current_size = this->_stm_bodies.size();
     this->_stm_bodies.resize(len);
@@ -242,7 +244,8 @@ class AUTDControllerStm {
 
     for (auto i = current_size; i < len; i++) {
       auto& g = this->_stm_gains[i];
-      this->_autd_logic->BuildGain(g);
+      auto res = this->_autd_logic->BuildGain(g);
+      if (res.is_err()) return res;
 
       size_t body_size = 0;
       uint8_t msg_id = 0;
@@ -254,29 +257,33 @@ class AUTDControllerStm {
     }
 
     size_t idx = 0;
-    this->_p_stm_timer->Start([this, idx, len]() mutable {
-      const auto body_size = this->_stm_body_sizes[idx];
-      auto body_copy = std::make_unique<uint8_t[]>(body_size);
-      auto* const p = this->_stm_bodies[idx];
-      std::memcpy(body_copy.get(), p, body_size);
-      this->_autd_logic->SendData(body_size, move(body_copy));
-      idx = (idx + 1) % len;
+    return this->_stm_timer.Start([this, idx, len]() mutable {
+      auto expected = false;
+      if (this->_lock.compare_exchange_weak(expected, true)) {
+        const auto body_size = this->_stm_body_sizes[idx];
+        const auto res = this->_autd_logic->SendData(body_size, this->_stm_bodies[idx]);
+        if (res.is_err()) return;
+        idx = (idx + 1) % len;
+        this->_lock.store(false, std::memory_order_release);
+      }
     });
   }
 
-  void Stop() const { this->_p_stm_timer->Stop(); }
+  [[nodiscard]] Result<bool, std::string> Stop() { return this->_stm_timer.Stop(); }
 
-  void Finish() {
-    this->Stop();
+  [[nodiscard]] Result<bool, std::string> Finish() {
+    auto res = this->Stop();
+    if (res.is_err()) return res;
+
     vector<GainPtr>().swap(this->_stm_gains);
-    for (auto* p : this->_stm_bodies) {
-      delete[] p;
-    }
+    for (auto* p : this->_stm_bodies) delete[] p;
     vector<uint8_t*>().swap(this->_stm_bodies);
     vector<size_t>().swap(this->_stm_body_sizes);
+
+    return Ok(true);
   }
 
-  void Close() { this->Finish(); }
+  [[nodiscard]] Result<bool, std::string> Close() { return this->Finish(); }
 
  private:
   shared_ptr<AUTDLogic> _autd_logic;
@@ -284,14 +291,57 @@ class AUTDControllerStm {
   vector<GainPtr> _stm_gains;
   vector<uint8_t*> _stm_bodies;
   vector<size_t> _stm_body_sizes;
-  unique_ptr<Timer> _p_stm_timer;
+  Timer _stm_timer;
+  std::atomic<bool> _lock;
+};
+
+class AUTDController final : public Controller {
+ public:
+  AUTDController();
+  ~AUTDController() override;
+  AUTDController(const AUTDController& v) noexcept = delete;
+  AUTDController& operator=(const AUTDController& obj) = delete;
+  AUTDController(AUTDController&& obj) = delete;
+  AUTDController& operator=(AUTDController&& obj) = delete;
+
+  bool is_open() override;
+  GeometryPtr geometry() noexcept override;
+  bool silent_mode() noexcept override;
+  size_t remaining_in_buffer() override;
+
+  void SetSilentMode(bool silent) noexcept override;
+
+  Result<bool, std::string> OpenWith(LinkPtr link) override;
+  Result<bool, std::string> Synchronize(Configuration config) override;
+  Result<bool, std::string> Clear() override;
+  Result<bool, std::string> Close() override;
+  void Flush() override;
+
+  Result<bool, std::string> Stop() override;
+  Result<bool, std::string> AppendGain(GainPtr gain) override;
+  Result<bool, std::string> AppendGainSync(GainPtr gain, bool wait_for_send = false) override;
+  Result<bool, std::string> AppendModulation(ModulationPtr mod) override;
+  Result<bool, std::string> AppendModulationSync(ModulationPtr mod) override;
+  void AddSTMGain(GainPtr gain) override;
+  void AddSTMGain(const std::vector<GainPtr>& gain_list) override;
+  Result<bool, std::string> StartSTModulation(Float freq) override;
+  Result<bool, std::string> StopSTModulation() override;
+  Result<bool, std::string> FinishSTModulation() override;
+  Result<bool, std::string> AppendSequence(SequencePtr seq) override;
+  Result<std::vector<FirmwareInfo>, std::string> firmware_info_list() override;
+
+ private:
+  unique_ptr<AUTDControllerSync> _sync_cnt;
+  unique_ptr<AUTDControllerAsync> _async_cnt;
+  unique_ptr<AUTDControllerStm> _stm_cnt;
+  std::shared_ptr<AUTDLogic> _autd_logic;
 };
 
 AUTDController::AUTDController() {
-  this->_autd_logic = std::make_shared<AUTDLogic>();
-  this->_sync_cnt = std::make_unique<AUTDControllerSync>(this->_autd_logic);
-  this->_async_cnt = std::make_unique<AUTDControllerAsync>(this->_autd_logic);
-  this->_stm_cnt = std::make_unique<AUTDControllerStm>(this->_autd_logic);
+  _autd_logic = std::make_shared<AUTDLogic>();
+  _sync_cnt = std::make_unique<AUTDControllerSync>(_autd_logic);
+  _async_cnt = std::make_unique<AUTDControllerAsync>(_autd_logic);
+  _stm_cnt = std::make_unique<AUTDControllerStm>(_autd_logic);
 }
 
 AUTDController::~AUTDController() = default;
@@ -306,55 +356,73 @@ size_t AUTDController::remaining_in_buffer() { return this->_async_cnt->remainin
 
 void AUTDController::SetSilentMode(const bool silent) noexcept { this->_autd_logic->silent_mode() = silent; }
 
-void AUTDController::OpenWith(LinkPtr link) {
-  this->Close();
-  this->_autd_logic->OpenWith(move(link));
-  if (this->_autd_logic->is_open()) this->_async_cnt->InitPipeline();
+Result<bool, std::string> AUTDController::OpenWith(LinkPtr link) {
+  if (is_open()) {
+    auto close_res = this->Close();
+    if (close_res.is_err()) return close_res;
+  }
+
+  auto res = this->_autd_logic->OpenWith(move(link));
+  if (res.is_err()) return res;
+
+  this->_async_cnt->InitPipeline();
+  return Ok(true);
 }
 
-bool AUTDController::Calibrate(const Configuration config) { return this->_autd_logic->Calibrate(config); }
+Result<bool, std::string> AUTDController::Synchronize(const Configuration config) { return this->_autd_logic->Synchronize(config); }
 
-bool AUTDController::Clear() { return this->_autd_logic->Clear(); }
+Result<bool, std::string> AUTDController::Clear() { return this->_autd_logic->Clear(); }
 
-void AUTDController::Close() {
-  this->_stm_cnt->Close();
+Result<bool, std::string> AUTDController::Close() {
+  auto stm_close_res = this->_stm_cnt->Close();
+  if (stm_close_res.is_err()) return stm_close_res;
+
   this->_async_cnt->Close();
-  this->Stop();
-  this->Clear();
-  this->_autd_logic->Close();
+
+  auto stop_res = this->Stop();
+  if (stop_res.is_err()) return stop_res;
+
+  auto clear_res = this->Clear();
+  if (clear_res.is_err()) return clear_res;
+
+  auto close_res = this->_autd_logic->Close();
+  if (close_res.is_err()) return close_res;
+
+  return Ok(stm_close_res.unwrap_or(false) && stop_res.unwrap_or(false) && clear_res.unwrap_or(false) && close_res.unwrap());
 }
 
 void AUTDController::Flush() { this->_async_cnt->Flush(); }
 
-void AUTDController::Stop() {
+Result<bool, std::string> AUTDController::Stop() {
   const auto null_gain = gain::NullGain::Create();
-  this->AppendGainSync(null_gain, true);
+  return this->AppendGainSync(null_gain, true);
 }
 
-void AUTDController::AppendGain(const GainPtr gain) {
-  this->_stm_cnt->Stop();
+Result<bool, std::string> AUTDController::AppendGain(const GainPtr gain) {
+  auto res = this->_stm_cnt->Stop();
+  if (res.is_err()) return res;
   this->_async_cnt->AppendGain(gain);
+  return Ok(true);
 }
-void AUTDController::AppendGainSync(const GainPtr gain, const bool wait_for_send) {
-  this->_stm_cnt->Stop();
-  this->_sync_cnt->AppendGain(gain, wait_for_send);
+Result<bool, std::string> AUTDController::AppendGainSync(const GainPtr gain, const bool wait_for_send) {
+  auto stm_stop = this->_stm_cnt->Stop();
+  if (stm_stop.is_err()) return stm_stop;
+
+  return this->_sync_cnt->AppendGain(gain, wait_for_send);
 }
 
-void AUTDController::AppendModulation(const ModulationPtr mod) { this->_sync_cnt->AppendModulation(mod); }
-void AUTDController::AppendModulationSync(const ModulationPtr mod) { this->_sync_cnt->AppendModulation(mod); }
+Result<bool, std::string> AUTDController::AppendModulation(const ModulationPtr mod) { return this->_sync_cnt->AppendModulation(mod); }
+Result<bool, std::string> AUTDController::AppendModulationSync(const ModulationPtr mod) { return this->_sync_cnt->AppendModulation(mod); }
 
-void AUTDController::AppendSTMGain(const GainPtr gain) { this->_stm_cnt->AppendGain(gain); }
-void AUTDController::AppendSTMGain(const std::vector<GainPtr>& gain_list) { this->_stm_cnt->AppendGain(gain_list); }
-void AUTDController::StartSTModulation(const Float freq) { this->_stm_cnt->Start(freq); }
-void AUTDController::StopSTModulation() {
-  this->_stm_cnt->Stop();
-  this->Stop();
-}
-void AUTDController::FinishSTModulation() { this->_stm_cnt->Finish(); }
+void AUTDController::AddSTMGain(const GainPtr gain) { this->_stm_cnt->AppendGain(gain); }
+void AUTDController::AddSTMGain(const std::vector<GainPtr>& gain_list) { this->_stm_cnt->AppendGain(gain_list); }
+Result<bool, std::string> AUTDController::StartSTModulation(const Float freq) { return this->_stm_cnt->Start(freq); }
+Result<bool, std::string> AUTDController::StopSTModulation() { return this->_stm_cnt->Stop(); }
+Result<bool, std::string> AUTDController::FinishSTModulation() { return this->_stm_cnt->Finish(); }
 
-void AUTDController::AppendSequence(const SequencePtr seq) { this->_sync_cnt->AppendSeq(seq); }
+Result<bool, std::string> AUTDController::AppendSequence(const SequencePtr seq) { return this->_sync_cnt->AppendSeq(seq); }
 
-std::vector<FirmwareInfo> AUTDController::firmware_info_list() { return this->_autd_logic->firmware_info_list(); }
+Result<std::vector<FirmwareInfo>, std::string> AUTDController::firmware_info_list() { return this->_autd_logic->firmware_info_list(); }
 }  // namespace internal
 
 ControllerPtr Controller::Create() { return std::make_unique<internal::AUTDController>(); }

@@ -3,7 +3,7 @@
 // Created Date: 01/07/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/02/2021
+// Last Modified: 08/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -13,7 +13,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <iostream>
 #include <string>
 #include <utility>
 
@@ -31,27 +30,25 @@ SequencePtr PointSequence::Create(const std::vector<Vector3>& control_points) no
   return ptr;
 }
 
-void PointSequence::AppendPoint(const Vector3& point) {
-  if (this->_control_points.size() + 1 > POINT_SEQ_BUFFER_SIZE_MAX) {
-    std::cerr << "Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX) + ".\n";
-    return;
-  }
+Result<bool, std::string> PointSequence::AddPoint(const Vector3& point) {
+  if (this->_control_points.size() + 1 > POINT_SEQ_BUFFER_SIZE_MAX)
+    return Err(std::string("Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX)));
 
   this->_control_points.emplace_back(point);
+  return Ok(true);
 }
-void PointSequence::AppendPoints(const std::vector<Vector3>& points) {
-  if (this->_control_points.size() + points.size() > POINT_SEQ_BUFFER_SIZE_MAX) {
-    std::cerr << "Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX) + ".\n";
-    return;
-  }
+
+Result<bool, std::string> PointSequence::AddPoints(const std::vector<Vector3>& points) {
+  if (this->_control_points.size() + points.size() > POINT_SEQ_BUFFER_SIZE_MAX)
+    return Err(std::string("Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX)));
 
   this->_control_points.reserve(this->_control_points.size() + points.size());
-  for (const auto& p : points) {
-    this->_control_points.emplace_back(p);
-  }
+  for (const auto& p : points) this->_control_points.emplace_back(p);
+
+  return Ok(true);
 }
 
-std::vector<Vector3> PointSequence::control_points() const { return this->_control_points; }
+std::vector<Vector3>& PointSequence::control_points() { return this->_control_points; }
 
 Float PointSequence::SetFrequency(const Float freq) {
   const auto sample_freq = std::min(static_cast<Float>(this->_control_points.size()) * freq, POINT_SEQ_BASE_FREQ);

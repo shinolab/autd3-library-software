@@ -3,7 +3,7 @@
 // Created Date: 20/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/02/2021
+// Last Modified: 05/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,17 +11,13 @@
 
 #pragma once
 
-#include <cstdint>
-
 #if WIN32
 #define EXPORT_AUTD __declspec(dllexport)
 #else
 #define EXPORT_AUTD __attribute__((visibility("default")))
 #endif
 
-#define VOID_PTR void*
-
 extern "C" {
-EXPORT_AUTD void AUTDRawPCMModulation(VOID_PTR* mod, const char* filename, float sampling_freq);
-EXPORT_AUTD void AUTDWavModulation(VOID_PTR* mod, const char* filename);
+EXPORT_AUTD bool AUTDRawPCMModulation(void** mod, const char* filename, float sampling_freq, char* error);
+EXPORT_AUTD bool AUTDWavModulation(void** mod, const char* filename, char* error);
 }

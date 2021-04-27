@@ -3,7 +3,7 @@
 // Created Date: 29/04/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 27/12/2020
+// Last Modified: 06/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -12,18 +12,15 @@
 #include "link/emulator.hpp"
 
 #if _WINDOWS
+#include <WS2tcpip.h>
+#include <WinSock2.h>
 #include <atlstr.h>
-#include <winsock2.h>
-#include <ws2tcpip.h>
 #endif
 
-#include <algorithm>
 #include <bitset>
 #include <cstring>
-#include <iostream>
 #include <memory>
 #include <string>
-#include <utility>
 
 #include "autd_types.hpp"
 #include "consts.hpp"
@@ -36,7 +33,7 @@ LinkPtr EmulatorLink::Create(const std::string &ip_addr, const uint16_t port, co
   return link;
 }
 
-void EmulatorLink::Open() {
+Result<bool, std::string> EmulatorLink::Open() {
 #if _WINDOWS
 #pragma warning(push)
 #pragma warning(disable : 6031)
@@ -51,33 +48,37 @@ void EmulatorLink::Open() {
 #endif
   SetGeometry();
   _is_open = true;
+  return Ok(true);
 }
 
-void EmulatorLink::Close() {
+Result<bool, std::string> EmulatorLink::Close() {
   if (_is_open) {
-    auto buf = std::make_unique<uint8_t[]>(1);
+    const auto buf = std::make_unique<uint8_t[]>(1);
     buf[0] = 0x00;
-    Send(1, std::move(buf));
+    Send(1, &buf[0]);
 #if _WINDOWS
     closesocket(_socket);
     WSACleanup();
 #endif
     _is_open = false;
   }
+  return Ok(true);
 }
 
-std::optional<int32_t> EmulatorLink::Send(const size_t size, std::unique_ptr<uint8_t[]> buf) {
+Result<bool, std::string> EmulatorLink::Send(const size_t size, const uint8_t *buf) {
   _last_msg_id = buf[0];
-  const std::unique_ptr<const uint8_t[]> send_buf = std::move(buf);
 #if _WINDOWS
-  sendto(_socket, reinterpret_cast<const char *>(send_buf.get()), static_cast<int>(size), 0, reinterpret_cast<sockaddr *>(&_addr), sizeof _addr);
+  sendto(_socket, reinterpret_cast<const char *>(buf), static_cast<int>(size), 0, reinterpret_cast<sockaddr *>(&_addr), sizeof _addr);
+#else
+  (void)size;
+  (void)_port;
 #endif
-  return std::nullopt;
+  return Ok(true);
 }
 
-std::optional<int32_t> EmulatorLink::Read(uint8_t *rx, const uint32_t buffer_len) {
+Result<bool, std::string> EmulatorLink::Read(uint8_t *rx, const uint32_t buffer_len) {
   std::memset(rx, _last_msg_id, buffer_len);
-  return std::nullopt;
+  return Ok(true);
 }
 
 bool EmulatorLink::is_open() { return _is_open; }
@@ -86,7 +87,7 @@ void EmulatorLink::SetGeometry() {
   auto geometry = this->_geometry;
   const auto vec_size = 3 * sizeof(Vector3) / sizeof(Float) * sizeof(float);
   const auto size = geometry->num_devices() * vec_size + sizeof(float);
-  auto buf = std::make_unique<uint8_t[]>(size);
+  const auto buf = std::make_unique<uint8_t[]>(size);
   float header{};
   auto *const uh = reinterpret_cast<uint8_t *>(&header);
   uh[0] = 0xff;
@@ -114,6 +115,6 @@ void EmulatorLink::SetGeometry() {
     float_buf[9 * i + 8] = static_cast<float>(up.z());
   }
 
-  Send(size, std::move(buf));
+  Send(size, &buf[0]);
 }
 }  // namespace autd::link
