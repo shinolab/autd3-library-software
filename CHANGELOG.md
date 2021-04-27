@@ -3,11 +3,12 @@
 * Make Eigen enable by default
 * Add `HoloGainE` and `HoloGainB` alias for `HoloGain<Eigen3Backend>` and `HoloGain<BLASBackend>`, respectively
 * Add `Geometry::DelDevice` and `Geometry::ClearDevices`
-* Functions that may fail now return a Result value
-* `Calibrate()` is now deleted, please use `Synchronize` instead
-* Add a function to get the error that occurred last for capi
+* Functions that may fail now return a `Result` value
+* `Calibrate` is now deleted, please use `Synchronize` instead
+* Add a function to get the error that occurred last in capi
 * Rename `AppendSTMGain` to `AddSTMGain`
 * Rename `AppendPoint` to `AddPoint`
+* Fix issue #1
 
 # 0.9.0
 * Add BLAS backend in HoloGain
