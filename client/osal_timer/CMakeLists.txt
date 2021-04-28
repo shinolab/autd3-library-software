@@ -25,6 +25,13 @@ else()
   target_link_libraries(osal_timer -static-libgcc -static-libstdc++)
 endif()
 
+set_target_properties(osal_timer
+  PROPERTIES
+  ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+)
+
 if (NOT WIN32)
   set_target_properties(osal_timer PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
