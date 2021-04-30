@@ -208,8 +208,7 @@ class HoloGain final : public Gain {
     M g(m, n);
 
     const auto wave_number = 2 * PI / _geometry->wavelength();
-    const auto attenuation = _geometry->attenuation_coeff();
-    if constexpr (sizeof(Float) == sizeof(HoloFloat))
+    if constexpr (const auto attenuation = _geometry->attenuation_coeff(); sizeof(Float) == sizeof(HoloFloat))
       for (size_t i = 0; i < m; i++) {
         const auto& tp = _foci[i];
         for (size_t j = 0; j < n; j++) {
@@ -292,7 +291,7 @@ class HoloGain final : public Gain {
     std::uniform_real_distribution<double> range(0, 1);
     typename B::VectorXc zero = B::VectorXc::Zero(m);
     for (auto i = 0; i < repeat; i++) {
-      auto ii = static_cast<size_t>(m * static_cast<double>(range(mt)));
+      auto ii = static_cast<size_t>(m * range(mt));
 
       typename B::VectorXc mmc = mm.col(ii);
       mmc(ii) = 0;

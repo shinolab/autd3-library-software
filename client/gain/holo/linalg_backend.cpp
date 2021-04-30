@@ -31,7 +31,7 @@ namespace autd::gain::holo {
 void Eigen3Backend::HadamardProduct(const MatrixXc& a, const MatrixXc& b, MatrixXc* c) { (*c).noalias() = a.cwiseProduct(b); }
 void Eigen3Backend::Real(const MatrixXc& a, MatrixX* b) { (*b).noalias() = a.real(); }
 void Eigen3Backend::PseudoInverseSvd(MatrixXc* matrix, const HoloFloat alpha, MatrixXc* result) {
-  const Eigen::BDCSVD<MatrixXc> svd(*matrix, Eigen::ComputeThinU | Eigen::ComputeThinV);
+  const Eigen::BDCSVD svd(*matrix, Eigen::ComputeThinU | Eigen::ComputeThinV);
   auto singular_values_inv = svd.singularValues();
   for (auto i = 0; i < singular_values_inv.size(); i++) {
     singular_values_inv(i) = singular_values_inv(i) / (singular_values_inv(i) * singular_values_inv(i) + alpha);
