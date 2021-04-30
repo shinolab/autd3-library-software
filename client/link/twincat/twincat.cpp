@@ -3,7 +3,7 @@
 // Created Date: 01/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 30/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -104,8 +104,7 @@ Result<bool, std::string> TwinCATLinkImpl::Open() {
 
 Result<bool, std::string> TwinCATLinkImpl::Close() {
   this->_port = 0;
-  const auto res = AdsPortCloseEx(this->_port);
-  if (res == 0) return Ok(true);
+  if (const auto res = AdsPortCloseEx(this->_port); res == 0) return Ok(true);
 
   return Err(std::string("Error: Failed to close"));
 }
@@ -206,8 +205,7 @@ Result<bool, std::string> LocalTwinCATLinkImpl::Open() {
 
   AmsAddr addr;
   const auto get_addr = reinterpret_cast<TcAdsGetLocalAddressEx>(GetProcAddress(this->_lib, TCADS_ADS_GET_LOCAL_ADDRESS_EX));
-  const auto ret = get_addr(this->_port, &addr);  // NOLINT
-  if (ret) {
+  if (const auto ret = get_addr(this->_port, &addr); ret) {
     std::stringstream ss;
     ss << "Error: AdsGetLocalAddress: " << std::hex << ret;
     return Err(ss.str());

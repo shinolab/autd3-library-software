@@ -3,7 +3,7 @@
 // Created Date: 25/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/04/2021
+// Last Modified: 30/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -19,9 +19,9 @@ class LinalgHelper {
  public:
   template <typename T, typename V>
   static V& add(V* dst, const V& src) {
-    T* dp = dst.data();
+    T* dp = dst->data();
     const T* sp = src.data();
-    for (size_t i = 0; i < dst.size(); i++) *dp++ += *sp++;
+    for (size_t i = 0; i < dst->size(); i++) *dp++ += *sp++;
     return *dst;
   }
   template <typename T, typename V>
@@ -64,7 +64,7 @@ class LinalgHelper {
   template <typename T, typename V>
   static V& mul(V* dst, T src) {
     T* dp = dst->data();
-    for (size_t i = 0; i < dst.size(); i++) *dp++ *= src;
+    for (size_t i = 0; i < dst->size(); i++) *dp++ *= src;
     return *dst;
   }
 

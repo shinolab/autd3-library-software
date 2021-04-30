@@ -3,7 +3,7 @@
 // Created Date: 22/12/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/04/2021
+// Last Modified: 30/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -79,8 +79,7 @@ Result<bool, std::string> AUTDLogic::SendBlocking(const GainPtr &gain, const Mod
   size_t body_size = 0;
   uint8_t msg_id = 0;
   const auto body = this->MakeBody(gain, mod, &body_size, &msg_id);
-  auto res = this->SendData(body_size, &body[0]);
-  if (res.is_err()) return res;
+  if (auto res = this->SendData(body_size, &body[0]); res.is_err()) return res;
   return WaitMsgProcessed(msg_id);
 }
 
@@ -90,8 +89,7 @@ Result<bool, std::string> AUTDLogic::SendBlocking(const SequencePtr &seq) {
   size_t body_size = 0;
   uint8_t msg_id = 0;
   const auto body = this->MakeBody(seq, &body_size, &msg_id);
-  auto res = this->SendData(body_size, &body[0]);
-  if (res.is_err()) return res;
+  if (auto res = this->SendData(body_size, &body[0]); res.is_err()) return res;
 
   if (seq->sent() == seq->control_points().size()) return this->WaitMsgProcessed(0xC0, 2000, 0xE0);
 
@@ -101,8 +99,7 @@ Result<bool, std::string> AUTDLogic::SendBlocking(const SequencePtr &seq) {
 Result<bool, std::string> AUTDLogic::SendBlocking(const size_t size, const uint8_t *data, const size_t trial) {
   const auto msg_id = data[0];
 
-  auto res = this->SendData(size, data);
-  if (res.is_err()) return res;
+  if (auto res = this->SendData(size, data); res.is_err()) return res;
 
   return this->WaitMsgProcessed(msg_id, trial, 0xFF);
 }
@@ -120,14 +117,11 @@ Result<bool, std::string> AUTDLogic::WaitMsgProcessed(const uint8_t msg_id, cons
   const auto buffer_len = num_dev * EC_INPUT_FRAME_SIZE;
   _rx_data.resize(buffer_len);
   for (size_t i = 0; i < max_trial; i++) {
-    auto res = this->_link->Read(&_rx_data[0], static_cast<uint32_t>(buffer_len));
-    if (res.is_err()) return res;
+    if (auto res = this->_link->Read(&_rx_data[0], static_cast<uint32_t>(buffer_len)); res.is_err()) return res;
 
     size_t processed = 0;
-    for (size_t dev = 0; dev < num_dev; dev++) {
-      const uint8_t proc_id = _rx_data[dev * 2 + 1] & mask;
-      if (proc_id == msg_id) processed++;
-    }
+    for (size_t dev = 0; dev < num_dev; dev++)
+      if (const uint8_t proc_id = _rx_data[dev * 2 + 1] & mask; proc_id == msg_id) processed++;
 
     if (processed == num_dev) return Ok(true);
 
@@ -171,8 +165,7 @@ Result<bool, std::string> AUTDLogic::SynchronizeSeq() {
 
   size_t body_size = 0;
   const auto calib_body = this->MakeCalibSeqBody(diffs, &body_size);
-  auto res = this->SendData(body_size, &calib_body[0]);
-  if (res.is_err()) return res;
+  if (auto res = this->SendData(body_size, &calib_body[0]); res.is_err()) return res;
 
   return this->WaitMsgProcessed(0xE0, 200, 0xE0);
 }

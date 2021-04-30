@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki and Saya Mizutani
 // -----
-// Last Modified: 06/04/2021
+// Last Modified: 30/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -33,8 +33,7 @@ bool Timer::SetInterval(uint32_t &interval_us) {
 }
 
 Result<bool, std::string> Timer::Start(const std::function<void()> &callback) {
-  auto res = this->Stop();
-  if (res.is_err()) return res;
+  if (auto res = this->Stop(); res.is_err()) return res;
   this->_cb = callback;
   this->_loop = true;
 
@@ -46,8 +45,7 @@ Result<bool, std::string> Timer::Start(const std::function<void()> &callback) {
   auto *const h_process = GetCurrentProcess();
   SetPriorityClass(h_process, REALTIME_PRIORITY_CLASS);
 
-  _timer_id = timeSetEvent(this->_interval_us / 1000, u_resolution, static_cast<LPTIMECALLBACK>(TimerThread), reinterpret_cast<DWORD_PTR>(this),
-                           TIME_PERIODIC);
+  _timer_id = timeSetEvent(this->_interval_us / 1000, u_resolution, TimerThread, reinterpret_cast<DWORD_PTR>(this), TIME_PERIODIC);
   if (_timer_id == 0) {
     this->_loop = false;
     return Err(std::string("timeSetEvent failed"));
@@ -112,8 +110,7 @@ void Timer::MainLoop() const {
     QueryPerformanceCounter(&now);
     const auto elapsed = static_cast<double>(now.QuadPart - start.QuadPart) / static_cast<double>(freq.QuadPart) * TIME_SCALE;
 
-    const auto sleep_t = static_cast<int>(this->_interval_us * ++count - elapsed);
-    if (sleep_t > 0) {
+    if (const auto sleep_t = static_cast<int>(this->_interval_us * ++count - elapsed); sleep_t > 0) {
       MicroSleep(sleep_t);
     }
   }

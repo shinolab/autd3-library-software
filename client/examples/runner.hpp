@@ -3,7 +3,7 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/04/2021
+// Last Modified: 30/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -64,8 +64,7 @@ inline int Run(autd::ControllerPtr& autd) {
     size_t idx = 0;
     getline(cin, in);
     std::stringstream s(in);
-    const auto empty = in == "\n";
-    if (!(s >> idx) || idx >= examples.size() || empty) break;
+    if (const auto empty = in == "\n"; !(s >> idx) || idx >= examples.size() || empty) break;
 
     auto fn = examples[idx].first;
     fn(autd);
