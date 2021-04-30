@@ -37,8 +37,8 @@
 
 namespace autd::autdsoem {
 
-static std::atomic<bool> AUTD3_RT_LOCK(false);
-static std::atomic<bool> AUTD3_LIB_SEND_COND(false);
+static std::atomic AUTD3_RT_LOCK(false);
+static std::atomic AUTD3_LIB_SEND_COND(false);
 
 bool SOEMController::is_open() const { return _is_open; }
 
@@ -48,7 +48,7 @@ Result<bool, std::string> SOEMController::Send(size_t size, const uint8_t* buf) 
   {
     auto buf_ = std::make_unique<uint8_t[]>(size);
     std::memcpy(&buf_[0], &buf[0], size);
-    std::unique_lock<std::mutex> lk(_send_mtx);
+    std::unique_lock lk(_send_mtx);
     _send_q.push(std::pair(std::move(buf_), size));
   }
   _send_cond.notify_all();
@@ -148,7 +148,7 @@ Result<bool, std::string> SOEMController::Close() {
   _send_cond.notify_all();
   if (std::this_thread::get_id() != _send_thread.get_id() && this->_send_thread.joinable()) this->_send_thread.join();
   {
-    std::unique_lock<std::mutex> lk(_send_mtx);
+    std::unique_lock lk(_send_mtx);
     std::queue<std::pair<std::unique_ptr<uint8_t[]>, size_t>>().swap(_send_q);
   }
 
@@ -174,7 +174,7 @@ void SOEMController::CreateSendThread(size_t header_size, size_t body_size) {
       std::unique_ptr<uint8_t[]> buf = nullptr;
       size_t size = 0;
       {
-        std::unique_lock<std::mutex> lk(_send_mtx);
+        std::unique_lock lk(_send_mtx);
         _send_cond.wait(lk, [&] { return !_send_q.empty() || !_is_open; });
         if (!_send_q.empty()) {
           auto [fst, snd] = move(_send_q.front());
