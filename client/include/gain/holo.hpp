@@ -208,7 +208,7 @@ class HoloGain final : public Gain {
     M g(m, n);
 
     const auto wave_number = 2 * PI / _geometry->wavelength();
-    if constexpr (const auto attenuation = _geometry->attenuation_coeff(); sizeof(Float) == sizeof(HoloFloat))
+    if constexpr (const auto attenuation = _geometry->attenuation_coeff(); sizeof(Float) == sizeof(HoloFloat)) {
       for (size_t i = 0; i < m; i++) {
         const auto& tp = _foci[i];
         for (size_t j = 0; j < n; j++) {
@@ -217,7 +217,7 @@ class HoloGain final : public Gain {
           g(i, j) = Transfer(pos, dir, tp, wave_number, attenuation);
         }
       }
-    else
+    } else {
       for (size_t i = 0; i < m; i++) {
         const auto& tp = _foci[i];
         for (size_t j = 0; j < n; j++) {
@@ -228,7 +228,7 @@ class HoloGain final : public Gain {
           g(i, j) = Transfer(pos, dir, tp, wave_number, attenuation);
         }
       }
-
+    }
     return g;
   }
 

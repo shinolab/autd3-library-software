@@ -90,7 +90,7 @@ if(ENABLE_LINT)
   ADD_CUSTOM_TARGET(cpplint
     python
     ${PROJECT_SOURCE_DIR}/deps/cpplint/cpplint.py
-    --filter=-runtime/references,-build/c++11,-whitespace/comments
+    --filter=-runtime/references,-build/c++11,-whitespace/comments,-readability/braces
     --linelength=150
     ${lint_files}
   )
