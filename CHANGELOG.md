@@ -1,3 +1,6 @@
+# 0.9.2
+* Add `FORCE_DOUBLE_IN_HOLO` flag
+
 # 0.9.1
 * Fix bugs in `autdsoem`
 * Make Eigen enable by default
