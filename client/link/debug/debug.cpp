@@ -3,7 +3,7 @@
 // Created Date: 22/12/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 30/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -128,14 +128,11 @@ Result<bool, std::string> DebugLink::Send(const size_t size, const uint8_t *buf)
     this->_out << "\tseq_div  : " << static_cast<int>(header->seq_div) << std::endl;
   }
 
-  const auto num_device = (size - sizeof(RxGlobalHeader)) / (2 * NUM_TRANS_IN_UNIT);
-  auto idx = sizeof(RxGlobalHeader);
-  if (num_device != 0) {
+  if (const auto num_device = (size - sizeof(RxGlobalHeader)) / (2 * NUM_TRANS_IN_UNIT); num_device != 0) {
+    auto idx = sizeof(RxGlobalHeader);
     for (size_t i = 0; i < num_device; i++) {
       this->_out << "Body[" << i << "]: " << std::hex;
-      for (size_t j = 0; j < 2 * NUM_TRANS_IN_UNIT; j++) {
-        this->_out << static_cast<int>(buf[idx + j]) << ", ";
-      }
+      for (size_t j = 0; j < 2 * NUM_TRANS_IN_UNIT; j++) this->_out << static_cast<int>(buf[idx + j]) << ", ";
       idx += 2 * NUM_TRANS_IN_UNIT;
       this->_out << std::endl;
     }
