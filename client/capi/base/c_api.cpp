@@ -3,13 +3,12 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/04/2021
+// Last Modified: 30/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
 //
 
-#include <cerrno>
 #include <cstdint>
 #include <cstring>
 #include <utility>
@@ -161,7 +160,7 @@ int32_t AUTDNumTransducers(void* const handle) {
 }
 uint64_t AUTDRemainingInBuffer(void* const handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
-  return static_cast<uint64_t>(cnt->ptr->remaining_in_buffer());
+  return cnt->ptr->remaining_in_buffer();
 }
 #pragma endregion
 
@@ -170,7 +169,7 @@ void AUTDNullGain(void** gain) {
   auto* g = GainCreate(autd::gain::NullGain::Create());
   *gain = g;
 }
-void AUTDGroupedGain(void** gain, int32_t* const group_ids, void* const* in_gains, const int32_t size) {
+void AUTDGroupedGain(void** gain, int32_t* const group_ids, void** in_gains, const int32_t size) {
   std::map<size_t, autd::GainPtr> gain_map;
 
   for (auto i = 0; i < size; i++) {
@@ -283,7 +282,7 @@ void AUTDDeleteSequence(void* const seq) {
 }
 void AUTDCircumSequence(void** out, const autd::Float x, const autd::Float y, const autd::Float z, const autd::Float nx, const autd::Float ny,
                         const autd::Float nz, const autd::Float radius, const uint64_t n) {
-  auto* s = SequencePtrCreate(autd::sequence::CircumSeq::Create(autd::Vector3(x, y, z), autd::Vector3(nx, ny, nz), radius, static_cast<size_t>(n)));
+  auto* s = SequencePtrCreate(autd::sequence::CircumSeq::Create(autd::Vector3(x, y, z), autd::Vector3(nx, ny, nz), radius, n));
   *out = s;
 }
 #pragma endredion

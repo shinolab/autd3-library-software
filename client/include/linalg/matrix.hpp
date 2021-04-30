@@ -3,7 +3,7 @@
 // Created Date: 27/02/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/04/2021
+// Last Modified: 30/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -127,7 +127,7 @@ class Matrix4X4 : public MatrixX<T> {
 
   friend Matrix4X4 operator-(const Matrix4X4& lhs, const Matrix4X4& rhs) { return LinalgHelper::sub<T, Matrix4X4>(lhs, rhs); }
   friend Matrix4X4 operator*(const Matrix4X4& lhs, const T& rhs) { return LinalgHelper::mul<T, Matrix4X4>(lhs, rhs); }
-  friend Matrix4X4 operator*(const T& lhs, Matrix4X4 rhs) { return LinalgHelper::mul<T, Matrix4X4>(rhs, lhs); }
+  friend Matrix4X4 operator*(const T& lhs, const Matrix4X4& rhs) { return LinalgHelper::mul<T, Matrix4X4>(rhs, lhs); }
   friend Matrix4X4 operator/(const Matrix4X4& lhs, const T& rhs) { return LinalgHelper::div<T, Matrix4X4>(rhs, lhs); }
 
   static Matrix4X4 Translation(const Vector3<T>& v, const Quaternion<T>& q) {

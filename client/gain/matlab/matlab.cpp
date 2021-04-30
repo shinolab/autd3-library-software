@@ -3,7 +3,7 @@
 // Created Date: 20/09/2016
 // Author:Seki Inoue
 // -----
-// Last Modified: 14/04/2021
+// Last Modified: 30/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -72,8 +72,7 @@ Result<bool, std::string> MatlabGain::Build() {
       const auto y = static_cast<Float>(pos_arr[i * 3 + 1]);
       const auto z = static_cast<Float>(pos_arr[i * 3 + 2]);
       auto mtp = Vector3(x, y, z) * 10.0;
-      auto trp = this->geometry()->position(i);
-      if ((mtp - trp).norm() > 10) {
+      if (auto trp = this->geometry()->position(i); (mtp - trp).norm() > 10) {
         std::cout << "Warning: position mismatch at " << i << std::endl << mtp << std::endl << trp << std::endl;
       }
     }

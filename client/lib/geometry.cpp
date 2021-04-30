@@ -3,7 +3,7 @@
 // Created Date: 08/06/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 30/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -136,16 +136,16 @@ Vector3 AUTDGeometry::position(const size_t global_transducer_idx) {
 }
 
 Vector3 AUTDGeometry::position(const size_t device, const size_t local_transducer_idx) {
-  const auto& dev = this->_devices[device];
-  return dev.global_trans_positions[local_transducer_idx];
+  const auto& [_x, _y, _z, global_trans_positions] = this->_devices[device];
+  return global_trans_positions[local_transducer_idx];
 }
 
 Vector3 AUTDGeometry::local_position(const size_t device_idx, const Vector3 global_position) {
-  const auto& device = this->_devices[device_idx];
-  const auto& local_origin = device.global_trans_positions[0];
-  const auto& x_dir = device.x_direction;
-  const auto& y_dir = device.y_direction;
-  const auto& z_dir = device.z_direction;
+  const auto& [x_direction, y_direction, z_direction, global_trans_positions] = this->_devices[device_idx];
+  const auto& local_origin = global_trans_positions[0];
+  const auto& x_dir = x_direction;
+  const auto& y_dir = y_direction;
+  const auto& z_dir = z_direction;
   const auto rv = global_position - local_origin;
   return Vector3(rv.dot(x_dir), rv.dot(y_dir), rv.dot(z_dir));
 }
