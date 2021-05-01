@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/04/2021
+// Last Modified: 01/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -24,10 +24,9 @@ extern "C" {
 #pragma region Controller
 EXPORT_AUTD void AUTDCreateController(void** out);
 EXPORT_AUTD bool AUTDOpenControllerWith(void* handle, void* p_link);
-EXPORT_AUTD int32_t AUTDAddDevice(void* handle, autd::Float x, autd::Float y, autd::Float z, autd::Float rz1, autd::Float ry, autd::Float rz2,
-                                  int32_t group_id);
-EXPORT_AUTD int32_t AUTDAddDeviceQuaternion(void* handle, autd::Float x, autd::Float y, autd::Float z, autd::Float qua_w, autd::Float qua_x,
-                                            autd::Float qua_y, autd::Float qua_z, int32_t group_id);
+EXPORT_AUTD int32_t AUTDAddDevice(void* handle, float x, float y, float z, float rz1, float ry, float rz2, int32_t group_id);
+EXPORT_AUTD int32_t AUTDAddDeviceQuaternion(void* handle, float x, float y, float z, float qua_w, float qua_x, float qua_y, float qua_z,
+                                            int32_t group_id);
 EXPORT_AUTD int32_t AUTDDeleteDevice(void* handle, int32_t idx);
 EXPORT_AUTD void AUTDClearDevices(void* handle);
 EXPORT_AUTD bool AUTDSynchronize(void* handle, int32_t smpl_freq, int32_t buf_size);
@@ -45,8 +44,8 @@ EXPORT_AUTD int32_t AUTDGetLastError(char* error);
 #pragma region Property
 EXPORT_AUTD bool AUTDIsOpen(void* handle);
 EXPORT_AUTD bool AUTDIsSilentMode(void* handle);
-EXPORT_AUTD autd::Float AUTDWavelength(void* handle);
-EXPORT_AUTD void AUTDSetWavelength(void* handle, autd::Float wavelength);
+EXPORT_AUTD float AUTDWavelength(void* handle);
+EXPORT_AUTD void AUTDSetWavelength(void* handle, float wavelength);
 EXPORT_AUTD int32_t AUTDNumDevices(void* handle);
 EXPORT_AUTD int32_t AUTDNumTransducers(void* handle);
 EXPORT_AUTD uint64_t AUTDRemainingInBuffer(void* handle);
@@ -74,15 +73,14 @@ EXPORT_AUTD void AUTDSquareModulation(void** mod, int32_t freq, uint8_t low, uin
 
 #pragma region Sequence
 EXPORT_AUTD void AUTDSequence(void** out);
-EXPORT_AUTD bool AUTDSequenceAddPoint(void* seq, autd::Float x, autd::Float y, autd::Float z);
-EXPORT_AUTD bool AUTDSequenceAddPoints(void* seq, autd::Float* points, uint64_t size);
-EXPORT_AUTD autd::Float AUTDSequenceSetFreq(void* seq, autd::Float freq);
-EXPORT_AUTD autd::Float AUTDSequenceFreq(void* seq);
-EXPORT_AUTD autd::Float AUTDSequenceSamplingFreq(void* seq);
+EXPORT_AUTD bool AUTDSequenceAddPoint(void* seq, float x, float y, float z);
+EXPORT_AUTD bool AUTDSequenceAddPoints(void* seq, float* points, uint64_t size);
+EXPORT_AUTD float AUTDSequenceSetFreq(void* seq, float freq);
+EXPORT_AUTD float AUTDSequenceFreq(void* seq);
+EXPORT_AUTD float AUTDSequenceSamplingFreq(void* seq);
 EXPORT_AUTD uint16_t AUTDSequenceSamplingFreqDiv(void* seq);
 EXPORT_AUTD void AUTDDeleteSequence(void* seq);
-EXPORT_AUTD void AUTDCircumSequence(void** out, autd::Float x, autd::Float y, autd::Float z, autd::Float nx, autd::Float ny, autd::Float nz,
-                                    autd::Float radius, uint64_t n);
+EXPORT_AUTD void AUTDCircumSequence(void** out, float x, float y, float z, float nx, float ny, float nz, float radius, uint64_t n);
 #pragma endredion
 
 #pragma region LowLevelInterface
@@ -91,14 +89,14 @@ EXPORT_AUTD bool AUTDAppendGainSync(void* handle, void* gain, bool wait_for_send
 EXPORT_AUTD bool AUTDAppendModulation(void* handle, void* mod);
 EXPORT_AUTD bool AUTDAppendModulationSync(void* handle, void* mod);
 EXPORT_AUTD void AUTDAddSTMGain(void* handle, void* gain);
-EXPORT_AUTD bool AUTDStartSTModulation(void* handle, autd::Float freq);
+EXPORT_AUTD bool AUTDStartSTModulation(void* handle, float freq);
 EXPORT_AUTD bool AUTDStopSTModulation(void* handle);
 EXPORT_AUTD bool AUTDFinishSTModulation(void* handle);
 EXPORT_AUTD bool AUTDAppendSequence(void* handle, void* seq);
 EXPORT_AUTD void AUTDFlush(void* handle);
 EXPORT_AUTD int32_t AUTDDeviceIdxForTransIdx(void* handle, int32_t global_trans_idx);
-EXPORT_AUTD autd::Float* AUTDTransPositionByGlobal(void* handle, int32_t global_trans_idx);
-EXPORT_AUTD autd::Float* AUTDTransPositionByLocal(void* handle, int32_t device_idx, int32_t local_trans_idx);
-EXPORT_AUTD autd::Float* AUTDDeviceDirection(void* handle, int32_t device_idx);
+EXPORT_AUTD void AUTDTransPositionByGlobal(void* handle, int32_t global_trans_idx, float* x, float* y, float* z);
+EXPORT_AUTD void AUTDTransPositionByLocal(void* handle, int32_t device_idx, int32_t local_trans_idx, float* x, float* y, float* z);
+EXPORT_AUTD void AUTDDeviceDirection(void* handle, int32_t device_idx, float* x, float* y, float* z);
 #pragma endregion
 }

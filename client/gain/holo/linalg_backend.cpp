@@ -3,7 +3,7 @@
 // Created Date: 06/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/04/2021
+// Last Modified: 01/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -14,7 +14,7 @@
 #include "gain/holo.hpp"
 
 #ifdef ENABLE_BLAS
-#define lapack_complex_HoloFloat std::complex<HoloFloat>
+#define lapack_complex_float std::complex<float>
 #define lapack_complex_double std::complex<double>
 #ifdef USE_BLAS_MKL
 #include "mkl_cblas.h"
@@ -30,7 +30,7 @@ namespace autd::gain::holo {
 #ifndef DISABLE_EIGEN
 void Eigen3Backend::HadamardProduct(const MatrixXc& a, const MatrixXc& b, MatrixXc* c) { (*c).noalias() = a.cwiseProduct(b); }
 void Eigen3Backend::Real(const MatrixXc& a, MatrixX* b) { (*b).noalias() = a.real(); }
-void Eigen3Backend::PseudoInverseSvd(MatrixXc* matrix, const HoloFloat alpha, MatrixXc* result) {
+void Eigen3Backend::PseudoInverseSvd(MatrixXc* matrix, const Float alpha, MatrixXc* result) {
   const Eigen::BDCSVD svd(*matrix, Eigen::ComputeThinU | Eigen::ComputeThinV);
   auto singular_values_inv = svd.singularValues();
   for (auto i = 0; i < singular_values_inv.size(); i++) {
@@ -44,12 +44,12 @@ Eigen3Backend::VectorXc Eigen3Backend::MaxEigenVector(MatrixXc* matrix) {
   ces.eigenvalues().cwiseAbs2().maxCoeff(&idx);
   return ces.eigenvectors().col(idx);
 }
-void Eigen3Backend::MatAdd(const HoloFloat alpha, const MatrixX& a, const HoloFloat beta, MatrixX* b) {
+void Eigen3Backend::MatAdd(const Float alpha, const MatrixX& a, const Float beta, MatrixX* b) {
   *b *= beta;
   (*b).noalias() += alpha * a;
 }
-void Eigen3Backend::MatMul(const TRANSPOSE trans_a, const TRANSPOSE trans_b, const std::complex<HoloFloat> alpha, const MatrixXc& a,
-                           const MatrixXc& b, const std::complex<HoloFloat> beta, MatrixXc* c) {
+void Eigen3Backend::MatMul(const TRANSPOSE trans_a, const TRANSPOSE trans_b, const std::complex<Float> alpha, const MatrixXc& a, const MatrixXc& b,
+                           const std::complex<Float> beta, MatrixXc* c) {
   *c *= beta;
   switch (trans_a) {
     case TRANSPOSE::CONJ_TRANS:
@@ -118,8 +118,8 @@ void Eigen3Backend::MatMul(const TRANSPOSE trans_a, const TRANSPOSE trans_b, con
       break;
   }
 }
-void Eigen3Backend::MatVecMul(const TRANSPOSE trans_a, const std::complex<HoloFloat> alpha, const MatrixXc& a, const VectorXc& b,
-                              const std::complex<HoloFloat> beta, VectorXc* c) {
+void Eigen3Backend::MatVecMul(const TRANSPOSE trans_a, const std::complex<Float> alpha, const MatrixXc& a, const VectorXc& b,
+                              const std::complex<Float> beta, VectorXc* c) {
   *c *= beta;
   switch (trans_a) {
     case TRANSPOSE::CONJ_TRANS:
@@ -136,7 +136,7 @@ void Eigen3Backend::MatVecMul(const TRANSPOSE trans_a, const std::complex<HoloFl
       break;
   }
 }
-void Eigen3Backend::VecAdd(const HoloFloat alpha, const VectorX& a, const HoloFloat beta, VectorX* b) {
+void Eigen3Backend::VecAdd(const Float alpha, const VectorX& a, const Float beta, VectorX* b) {
   *b *= beta;
   (*b).noalias() += alpha * a;
 }
@@ -148,10 +148,10 @@ void Eigen3Backend::SolveCh(MatrixXc* a, VectorXc* b) {
   const Eigen::LLT<MatrixXc> llt(*a);
   llt.solveInPlace(*b);
 }
-HoloFloat Eigen3Backend::Dot(const VectorX& a, const VectorX& b) { return a.dot(b); }
-std::complex<HoloFloat> Eigen3Backend::DotC(const VectorXc& a, const VectorXc& b) { return a.conjugate().dot(b); }
-HoloFloat Eigen3Backend::MaxCoeffC(const VectorXc& v) { return sqrt(v.cwiseAbs2().maxCoeff()); }
-HoloFloat Eigen3Backend::MaxCoeff(const VectorX& v) { return v.maxCoeff(); }
+Float Eigen3Backend::Dot(const VectorX& a, const VectorX& b) { return a.dot(b); }
+std::complex<Float> Eigen3Backend::DotC(const VectorXc& a, const VectorXc& b) { return a.conjugate().dot(b); }
+Float Eigen3Backend::MaxCoeffC(const VectorXc& v) { return sqrt(v.cwiseAbs2().maxCoeff()); }
+Float Eigen3Backend::MaxCoeff(const VectorX& v) { return v.maxCoeff(); }
 Eigen3Backend::MatrixXc Eigen3Backend::ConcatRow(const MatrixXc& a, const MatrixXc& b) {
   MatrixXc c(a.rows() + b.rows(), b.cols());
   c << a, b;
@@ -168,7 +168,8 @@ void Eigen3Backend::VecCpyC(const VectorXc& a, VectorXc* b) { *b = a; }
 #endif
 
 #ifdef ENABLE_BLAS
-#if defined(USE_DOUBLE_AUTD) || defined(FORCE_DOUBLE_IN_HOLO)
+
+#ifndef USE_SINGLE_FLOAT_AUTD
 constexpr auto AUTD_GESVD = LAPACKE_zgesdd;
 constexpr auto AUTD_HEEV = LAPACKE_zheev;
 constexpr auto AUTD_AXPY = cblas_daxpy;
@@ -211,7 +212,7 @@ void BLASBackend::Real(const MatrixXc& a, MatrixX* b) {
     *bp++ = (*ap++).real();
   }
 }
-void BLASBackend::PseudoInverseSvd(MatrixXc* matrix, const HoloFloat alpha, MatrixXc* result) {
+void BLASBackend::PseudoInverseSvd(MatrixXc* matrix, const Float alpha, MatrixXc* result) {
   const auto nc = matrix->cols();
   const auto nr = matrix->rows();
 
@@ -220,7 +221,7 @@ void BLASBackend::PseudoInverseSvd(MatrixXc* matrix, const HoloFloat alpha, Matr
   const auto ldvt = static_cast<int>(nc);
 
   const auto s_size = std::min(nr, nc);
-  const auto s = std::make_unique<HoloFloat[]>(s_size);
+  const auto s = std::make_unique<Float[]>(s_size);
   auto u = MatrixXc(nr, nr);
   auto vt = MatrixXc(nc, nc);
 
@@ -230,25 +231,24 @@ void BLASBackend::PseudoInverseSvd(MatrixXc* matrix, const HoloFloat alpha, Matr
   for (size_t i = 0; i < s_size; i++) singular_inv(i, i) = s[i] / (s[i] * s[i] + alpha);
 
   auto tmp = MatrixXc(nc, nr);
-  BLASBackend::MatMul(TRANSPOSE::NO_TRANS, TRANSPOSE::CONJ_TRANS, std::complex<HoloFloat>(1, 0), singular_inv, u, std::complex<HoloFloat>(0, 0),
-                      &tmp);
-  BLASBackend::MatMul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, std::complex<HoloFloat>(1, 0), vt, tmp, std::complex<HoloFloat>(0, 0), result);
+  BLASBackend::MatMul(TRANSPOSE::NO_TRANS, TRANSPOSE::CONJ_TRANS, std::complex<Float>(1, 0), singular_inv, u, std::complex<Float>(0, 0), &tmp);
+  BLASBackend::MatMul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, std::complex<Float>(1, 0), vt, tmp, std::complex<Float>(0, 0), result);
 }
 
 BLASBackend::VectorXc BLASBackend::MaxEigenVector(MatrixXc* matrix) {
   const auto size = matrix->cols();
-  const auto eigenvalues = std::make_unique<HoloFloat[]>(size);
+  const auto eigenvalues = std::make_unique<Float[]>(size);
   AUTD_HEEV(CblasColMajor, 'V', 'U', static_cast<int>(size), matrix->data(), static_cast<int>(size), eigenvalues.get());
 
   return matrix->col(size - 1);
 }
 
-void BLASBackend::MatAdd(const HoloFloat alpha, const MatrixX& a, HoloFloat beta, MatrixX* b) {
+void BLASBackend::MatAdd(const Float alpha, const MatrixX& a, Float beta, MatrixX* b) {
   AUTD_AXPY(static_cast<int>(a.size()), alpha, a.data(), 1, b->data(), 1);
 }
 
-void BLASBackend::MatMul(const TRANSPOSE trans_a, const TRANSPOSE trans_b, std::complex<HoloFloat> alpha, const MatrixXc& a, const MatrixXc& b,
-                         std::complex<HoloFloat> beta, MatrixXc* c) {
+void BLASBackend::MatMul(const TRANSPOSE trans_a, const TRANSPOSE trans_b, std::complex<Float> alpha, const MatrixXc& a, const MatrixXc& b,
+                         std::complex<Float> beta, MatrixXc* c) {
   const auto lda = static_cast<int>(a.rows());
   const auto ldb = static_cast<int>(b.rows());
   const auto ldc = trans_a == TRANSPOSE::NO_TRANS || trans_a == TRANSPOSE::CONJ_NO_TRANS ? static_cast<int>(a.rows()) : static_cast<int>(a.cols());
@@ -258,21 +258,21 @@ void BLASBackend::MatMul(const TRANSPOSE trans_a, const TRANSPOSE trans_b, std::
             ldb, &beta, c->data(), ldc);
 }
 
-void BLASBackend::MatVecMul(const TRANSPOSE trans_a, std::complex<HoloFloat> alpha, const MatrixXc& a, const VectorXc& b,
-                            std::complex<HoloFloat> beta, VectorXc* c) {
+void BLASBackend::MatVecMul(const TRANSPOSE trans_a, std::complex<Float> alpha, const MatrixXc& a, const VectorXc& b, std::complex<Float> beta,
+                            VectorXc* c) {
   const auto lda = static_cast<int>(a.rows());
   const auto m = static_cast<int>(a.rows());
   const auto n = static_cast<int>(a.cols());
   AUTD_GEMV(CblasColMajor, static_cast<CBLAS_TRANSPOSE>(trans_a), m, n, &alpha, a.data(), lda, b.data(), 1, &beta, c->data(), 1);
 }
-void BLASBackend::VecAdd(const HoloFloat alpha, const VectorX& a, HoloFloat beta, VectorX* b) {
+void BLASBackend::VecAdd(const Float alpha, const VectorX& a, Float beta, VectorX* b) {
   AUTD_AXPY(static_cast<int>(a.size()), alpha, a.data(), 1, b->data(), 1);
 }
 void BLASBackend::Solveg(MatrixX* a, VectorX* b, VectorX* c) {
   const auto n = static_cast<int>(a->cols());
   const auto lda = static_cast<int>(a->rows());
   const auto ldb = static_cast<int>(b->size());
-  std::memcpy(c->data(), b->data(), ldb * sizeof(HoloFloat));
+  std::memcpy(c->data(), b->data(), ldb * sizeof(Float));
   const auto ipiv = std::make_unique<int[]>(n);
   AUTD_SYSV(CblasColMajor, 'U', n, 1, a->data(), lda, ipiv.get(), c->data(), ldb);
 }
@@ -284,22 +284,22 @@ void BLASBackend::SolveCh(MatrixXc* a, VectorXc* b) {
   AUTD_POSVC(CblasColMajor, 'U', n, 1, a->data(), lda, b->data(), ldb);
 }
 
-HoloFloat BLASBackend::Dot(const VectorX& a, const VectorX& b) { return AUTD_DOT(static_cast<int>(a.size()), a.data(), 1, b.data(), 1); }
+Float BLASBackend::Dot(const VectorX& a, const VectorX& b) { return AUTD_DOT(static_cast<int>(a.size()), a.data(), 1, b.data(), 1); }
 
-std::complex<HoloFloat> BLASBackend::DotC(const VectorXc& a, const VectorXc& b) {
-  std::complex<HoloFloat> d;
+std::complex<Float> BLASBackend::DotC(const VectorXc& a, const VectorXc& b) {
+  std::complex<Float> d;
   AUTD_DOTC(static_cast<int>(a.size()), a.data(), 1, b.data(), 1, &d);
   return d;
 }
 
-HoloFloat BLASBackend::MaxCoeff(const VectorX& v) {
+Float BLASBackend::MaxCoeff(const VectorX& v) {
   auto max_value = v(0);
   for (size_t i = 1; i < v.size(); i++) {
     max_value = std::max(max_value, v(i));
   }
   return max_value;
 }
-HoloFloat BLASBackend::MaxCoeffC(const VectorXc& v) {
+Float BLASBackend::MaxCoeffC(const VectorXc& v) {
   const auto idx = AUTD_IMAXC(static_cast<int>(v.size()), v.data(), 1);
   return abs(v(idx));
 }
@@ -309,10 +309,10 @@ BLASBackend::MatrixXc BLASBackend::ConcatRow(const MatrixXc& a, const MatrixXc& 
   const auto* bp = b.data();
   auto* cp = c.data();
   for (size_t i = 0; i < a.cols(); i++) {
-    std::memcpy(cp, ap, a.rows() * sizeof(std::complex<HoloFloat>));
+    std::memcpy(cp, ap, a.rows() * sizeof(std::complex<Float>));
     ap += a.rows();
     cp += a.rows();
-    std::memcpy(cp, bp, b.rows() * sizeof(std::complex<HoloFloat>));
+    std::memcpy(cp, bp, b.rows() * sizeof(std::complex<Float>));
     bp += b.rows();
     cp += b.rows();
   }
@@ -321,9 +321,9 @@ BLASBackend::MatrixXc BLASBackend::ConcatRow(const MatrixXc& a, const MatrixXc& 
 BLASBackend::MatrixXc BLASBackend::ConcatCol(const MatrixXc& a, const MatrixXc& b) {
   MatrixXc c(a.rows(), a.cols() + b.cols());
   auto* cp = c.data();
-  std::memcpy(cp, a.data(), a.size() * sizeof(std::complex<HoloFloat>));
+  std::memcpy(cp, a.data(), a.size() * sizeof(std::complex<Float>));
   cp += a.size();
-  std::memcpy(cp, b.data(), b.size() * sizeof(std::complex<HoloFloat>));
+  std::memcpy(cp, b.data(), b.size() * sizeof(std::complex<Float>));
   return c;
 }
 void BLASBackend::MatCpy(const MatrixX& a, MatrixX* b) {
