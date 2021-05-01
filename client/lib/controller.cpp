@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 06/04/2021
+// Last Modified: 30/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -39,14 +39,12 @@ class AUTDControllerSync {
   explicit AUTDControllerSync(const shared_ptr<AUTDLogic>& logic) : _autd_logic(logic) {}
 
   [[nodiscard]] Result<bool, std::string> AppendGain(const GainPtr& gain, const bool wait_for_send) const {
-    auto res = this->_autd_logic->BuildGain(gain);
-    if (res.is_err()) return res;
+    if (auto res = this->_autd_logic->BuildGain(gain); res.is_err()) return res;
 
     if (wait_for_send) return this->_autd_logic->SendBlocking(gain, nullptr);
 
     return this->_autd_logic->Send(gain, nullptr);
   }
-
   [[nodiscard]] Result<bool, std::string> AppendModulation(const ModulationPtr& mod) const {
     auto success = true;
     auto res = this->_autd_logic->BuildModulation(mod);
@@ -93,9 +91,9 @@ class AUTDControllerAsync {
   }
 
   void Flush() {
-    unique_lock<mutex> lk0(_send_mtx);
-    unique_lock<mutex> lk1(_build_gain_mtx);
-    unique_lock<mutex> lk2(_build_mod_mtx);
+    unique_lock lk0(_send_mtx);
+    unique_lock lk1(_build_gain_mtx);
+    unique_lock lk2(_build_mod_mtx);
     queue<GainPtr>().swap(_build_gain_q);
     queue<ModulationPtr>().swap(_build_mod_q);
     queue<GainPtr>().swap(_send_gain_q);
@@ -115,14 +113,14 @@ class AUTDControllerAsync {
 
   void AppendGain(const GainPtr& gain) {
     {
-      unique_lock<mutex> lk(_build_gain_mtx);
+      unique_lock lk(_build_gain_mtx);
       _build_gain_q.push(gain);
     }
     _build_gain_cond.notify_all();
   }
   void AppendModulation(const ModulationPtr& mod) {
     {
-      unique_lock<mutex> lk(_build_mod_mtx);
+      unique_lock lk(_build_mod_mtx);
       _build_mod_q.push(mod);
     }
     _build_mod_cond.notify_all();
@@ -134,7 +132,7 @@ class AUTDControllerAsync {
       while (this->_is_running) {
         GainPtr gain = nullptr;
         {
-          unique_lock<mutex> lk(_build_gain_mtx);
+          unique_lock lk(_build_gain_mtx);
 
           _build_gain_cond.wait(lk, [&] { return !_build_gain_q.empty() || !this->_is_running; });
 
@@ -146,9 +144,8 @@ class AUTDControllerAsync {
 
         if (gain == nullptr) continue;
 
-        auto res = this->_autd_logic->BuildGain(gain);
-        if (res.is_ok() && res.unwrap()) {
-          std::unique_lock<std::mutex> lk(_send_mtx);
+        if (auto res = this->_autd_logic->BuildGain(gain); res.is_ok() && res.unwrap()) {
+          std::unique_lock lk(_send_mtx);
           _send_gain_q.push(gain);
           _send_cond.notify_all();
         }
@@ -159,7 +156,7 @@ class AUTDControllerAsync {
       while (this->_is_running) {
         ModulationPtr mod = nullptr;
         {
-          unique_lock<mutex> lk(_build_mod_mtx);
+          unique_lock lk(_build_mod_mtx);
 
           _build_mod_cond.wait(lk, [&] { return !_build_mod_q.empty() || !_is_running; });
 
@@ -171,9 +168,8 @@ class AUTDControllerAsync {
 
         if (mod == nullptr) continue;
 
-        auto res = this->_autd_logic->BuildModulation(mod);
-        if (res.is_ok() && res.unwrap()) {
-          unique_lock<mutex> lk(_send_mtx);
+        if (auto res = this->_autd_logic->BuildModulation(mod); res.is_ok() && res.unwrap()) {
+          unique_lock lk(_send_mtx);
           _send_mod_q.push(mod);
           _send_cond.notify_all();
         }
@@ -186,14 +182,13 @@ class AUTDControllerAsync {
         ModulationPtr mod = nullptr;
 
         {
-          unique_lock<mutex> lk(_send_mtx);
+          unique_lock lk(_send_mtx);
           _send_cond.wait(lk, [&] { return !_send_gain_q.empty() || !_send_mod_q.empty() || !this->_is_running; });
           if (!_send_gain_q.empty()) gain = _send_gain_q.front();
           if (!_send_mod_q.empty()) mod = _send_mod_q.front();
         }
-        auto res = this->_autd_logic->Send(gain, mod);
-        if (res.is_ok() && res.unwrap()) {
-          unique_lock<mutex> lk(_send_mtx);
+        if (auto res = this->_autd_logic->Send(gain, mod); res.is_ok() && res.unwrap()) {
+          unique_lock lk(_send_mtx);
           if (gain != nullptr) _send_gain_q.pop();
           if (mod != nullptr && mod->buffer.size() <= mod->sent()) {
             mod->sent() = 0;
@@ -244,8 +239,7 @@ class AUTDControllerStm {
 
     for (auto i = current_size; i < len; i++) {
       auto& g = this->_stm_gains[i];
-      auto res = this->_autd_logic->BuildGain(g);
-      if (res.is_err()) return res;
+      if (auto res = this->_autd_logic->BuildGain(g); res.is_err()) return res;
 
       size_t body_size = 0;
       uint8_t msg_id = 0;
@@ -258,11 +252,9 @@ class AUTDControllerStm {
 
     size_t idx = 0;
     return this->_stm_timer.Start([this, idx, len]() mutable {
-      auto expected = false;
-      if (this->_lock.compare_exchange_weak(expected, true)) {
+      if (auto expected = false; this->_lock.compare_exchange_weak(expected, true)) {
         const auto body_size = this->_stm_body_sizes[idx];
-        const auto res = this->_autd_logic->SendData(body_size, this->_stm_bodies[idx]);
-        if (res.is_err()) return;
+        if (const auto res = this->_autd_logic->SendData(body_size, this->_stm_bodies[idx]); res.is_err()) return;
         idx = (idx + 1) % len;
         this->_lock.store(false, std::memory_order_release);
       }
@@ -272,8 +264,7 @@ class AUTDControllerStm {
   [[nodiscard]] Result<bool, std::string> Stop() { return this->_stm_timer.Stop(); }
 
   [[nodiscard]] Result<bool, std::string> Finish() {
-    auto res = this->Stop();
-    if (res.is_err()) return res;
+    if (auto res = this->Stop(); res.is_err()) return res;
 
     vector<GainPtr>().swap(this->_stm_gains);
     for (auto* p : this->_stm_bodies) delete[] p;
@@ -357,13 +348,10 @@ size_t AUTDController::remaining_in_buffer() { return this->_async_cnt->remainin
 void AUTDController::SetSilentMode(const bool silent) noexcept { this->_autd_logic->silent_mode() = silent; }
 
 Result<bool, std::string> AUTDController::OpenWith(LinkPtr link) {
-  if (is_open()) {
-    auto close_res = this->Close();
-    if (close_res.is_err()) return close_res;
-  }
+  if (is_open())
+    if (auto close_res = this->Close(); close_res.is_err()) return close_res;
 
-  auto res = this->_autd_logic->OpenWith(move(link));
-  if (res.is_err()) return res;
+  if (auto res = this->_autd_logic->OpenWith(move(link)); res.is_err()) return res;
 
   this->_async_cnt->InitPipeline();
   return Ok(true);
@@ -399,14 +387,12 @@ Result<bool, std::string> AUTDController::Stop() {
 }
 
 Result<bool, std::string> AUTDController::AppendGain(const GainPtr gain) {
-  auto res = this->_stm_cnt->Stop();
-  if (res.is_err()) return res;
+  if (auto res = this->_stm_cnt->Stop(); res.is_err()) return res;
   this->_async_cnt->AppendGain(gain);
   return Ok(true);
 }
 Result<bool, std::string> AUTDController::AppendGainSync(const GainPtr gain, const bool wait_for_send) {
-  auto stm_stop = this->_stm_cnt->Stop();
-  if (stm_stop.is_err()) return stm_stop;
+  if (auto stm_stop = this->_stm_cnt->Stop(); stm_stop.is_err()) return stm_stop;
 
   return this->_sync_cnt->AppendGain(gain, wait_for_send);
 }

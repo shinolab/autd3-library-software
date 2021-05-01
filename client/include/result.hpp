@@ -3,7 +3,7 @@
 // Created Date: 03/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/04/2021
+// Last Modified: 01/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -12,66 +12,40 @@
 #pragma once
 
 #include <sstream>
-#include <stdexcept>
 #include <utility>
+#include <variant>
 
 namespace autd {
-template <typename T, typename E>
-struct Result {
+template <class T, class E>
+class Result : public std::variant<T, E> {
  private:
-  enum class TAG { RESULT_OK, RESULT_ERROR };
-  explicit Result(T t) : _t(TAG::RESULT_OK), _ok(std::forward<T>(t)), _err() {}
-  explicit Result(E e) : _t(TAG::RESULT_ERROR), _ok(), _err(std::forward<E>(e)) {}
-  TAG _t;
-  T _ok;
-  E _err;
+  explicit Result(T t) : std::variant<T, E>(std::forward<T>(t)) {}
+  explicit Result(E e) : std::variant<T, E>(std::forward<E>(e)) {}
 
  public:
-  ~Result() = default;
-  Result(const Result& obj) { *this = obj; }
-  Result& operator=(const Result& obj) {
-    _t = obj._t;
-    if (_t == TAG::RESULT_OK)
-      _ok = obj._ok;
-    else if (_t == TAG::RESULT_ERROR)
-      _err = obj._err;
-    return *this;
-  }
-  Result(Result&& obj) noexcept { *this = std::move(obj); }
-  Result& operator=(Result&& obj) noexcept {
-    if (this != &obj) {
-      _t = obj._t;
-      if (_t == TAG::RESULT_OK)
-        _ok = std::move(obj._ok);
-      else if (_t == TAG::RESULT_ERROR)
-        _err = std::move(obj._err);
-    }
-    return *this;
-  }
+  [[nodiscard]] bool is_ok() const { return std::holds_alternative<T>(*this); }
+  [[nodiscard]] bool is_err() const { return std::holds_alternative<E>(*this); }
 
   static Result Ok(T ok) { return Result(std::forward<T>(ok)); }
   static Result Err(E err) { return Result(std::forward<E>(err)); }
 
-  [[nodiscard]] bool is_ok() const { return _t == TAG::RESULT_OK; }
-  [[nodiscard]] bool is_err() const { return _t == TAG::RESULT_ERROR; }
-
   T unwrap() {
-    if (_t != TAG::RESULT_OK) {
+    if (this->is_err()) {
       std::stringstream ss;
-      ss << "cannot unwrap: " << _err;
+      ss << "cannot unwrap: " << std::get<E>(*this);
       throw std::runtime_error(ss.str());
     }
-    return std::forward<T>(_ok);
+    return std::forward<T>(std::get<T>(*this));
   }
 
   E unwrap_err() {
-    if (_t != TAG::RESULT_ERROR) throw std::runtime_error("cannot unwrap_err");
-    return std::forward<E>(_err);
+    if (this->is_ok()) throw std::runtime_error("cannot unwrap_err");
+    return std::forward<E>(std::get<E>(*this));
   }
 
   [[nodiscard]] T unwrap_or(T v) {
-    if (_t != TAG::RESULT_OK) return std::forward<T>(v);
-    return std::forward<T>(_ok);
+    if (this->is_err()) return std::forward<T>(v);
+    return std::get<T>(*this);
   }
 };
 

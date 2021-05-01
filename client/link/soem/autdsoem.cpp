@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/04/2021
+// Last Modified: 30/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -31,12 +31,14 @@
 #include <vector>
 
 #include "./ethercat.h"
+
+// "ethercat.h" must be included before followings
 #include "autdsoem.hpp"
 
 namespace autd::autdsoem {
 
-static std::atomic<bool> AUTD3_RT_LOCK(false);
-static std::atomic<bool> AUTD3_LIB_SEND_COND(false);
+static std::atomic AUTD3_RT_LOCK(false);
+static std::atomic AUTD3_LIB_SEND_COND(false);
 
 bool SOEMController::is_open() const { return _is_open; }
 
@@ -46,7 +48,7 @@ Result<bool, std::string> SOEMController::Send(size_t size, const uint8_t* buf) 
   {
     auto buf_ = std::make_unique<uint8_t[]>(size);
     std::memcpy(&buf_[0], &buf[0], size);
-    std::unique_lock<std::mutex> lk(_send_mtx);
+    std::unique_lock lk(_send_mtx);
     _send_q.push(std::pair(std::move(buf_), size));
   }
   _send_cond.notify_all();
@@ -78,8 +80,7 @@ Result<bool, std::string> SOEMController::Open(const char* ifname, const size_t 
   _config = config;
   _output_frame_size = (config.header_size + config.body_size) * _dev_num;
 
-  const auto size = _output_frame_size + config.input_frame_size * _dev_num;
-  if (size != _io_map_size) {
+  if (const auto size = _output_frame_size + config.input_frame_size * _dev_num; size != _io_map_size) {
     _io_map_size = size;
 
     delete[] _io_map;
@@ -122,18 +123,17 @@ Result<bool, std::string> SOEMController::Open(const char* ifname, const size_t 
   auto interval_us = config.ec_sm3_cycle_time_ns / 1000;
   this->_timer.SetInterval(interval_us);
 
-  auto res = this->_timer.Start([]() {
-    auto expected = false;
-    if (AUTD3_RT_LOCK.compare_exchange_weak(expected, true)) {
-      const auto pre = AUTD3_LIB_SEND_COND.load(std::memory_order_acquire);
-      ec_send_processdata();
-      if (!pre) AUTD3_LIB_SEND_COND.store(true, std::memory_order_release);
-      AUTD3_RT_LOCK.store(false, std::memory_order_release);
-      ec_receive_processdata(EC_TIMEOUTRET);
-    }
-  });
-
-  if (res.is_err()) return res;
+  if (auto res = this->_timer.Start([]() {
+        if (auto expected = false; AUTD3_RT_LOCK.compare_exchange_weak(expected, true)) {
+          const auto pre = AUTD3_LIB_SEND_COND.load(std::memory_order_acquire);
+          ec_send_processdata();
+          if (!pre) AUTD3_LIB_SEND_COND.store(true, std::memory_order_release);
+          AUTD3_RT_LOCK.store(false, std::memory_order_release);
+          ec_receive_processdata(EC_TIMEOUTRET);
+        }
+      });
+      res.is_err())
+    return res;
 
   _is_open = true;
   CreateSendThread(config.header_size, config.body_size);
@@ -148,14 +148,13 @@ Result<bool, std::string> SOEMController::Close() {
   _send_cond.notify_all();
   if (std::this_thread::get_id() != _send_thread.get_id() && this->_send_thread.joinable()) this->_send_thread.join();
   {
-    std::unique_lock<std::mutex> lk(_send_mtx);
+    std::unique_lock lk(_send_mtx);
     std::queue<std::pair<std::unique_ptr<uint8_t[]>, size_t>>().swap(_send_q);
   }
 
   std::memset(_io_map, 0x00, _output_frame_size);
 
-  auto res = this->_timer.Stop();
-  if (res.is_err()) return res;
+  if (auto res = this->_timer.Stop(); res.is_err()) return res;
 
   SetupSync0(false, _sync0_cyc_time);
 
@@ -175,7 +174,7 @@ void SOEMController::CreateSendThread(size_t header_size, size_t body_size) {
       std::unique_ptr<uint8_t[]> buf = nullptr;
       size_t size = 0;
       {
-        std::unique_lock<std::mutex> lk(_send_mtx);
+        std::unique_lock lk(_send_mtx);
         _send_cond.wait(lk, [&] { return !_send_q.empty() || !_is_open; });
         if (!_send_q.empty()) {
           auto [fst, snd] = move(_send_q.front());
