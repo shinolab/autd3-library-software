@@ -39,28 +39,14 @@ int main() {
     auto autd = autd::Controller::Create();
     autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
     // autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
-    // autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
-    // autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
-    // autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
-    // autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
-    // autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
-    // autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
-    // autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
-
+   
     // If you have already recognized the EtherCAT adapter name, you can write it directly like below.
     // auto ifname = "\\Device\\NPF_{B5B631C6-ED16-4780-9C4C-3941AE8120A6}";
-
     const auto ifname = GetAdapterName();
-    auto res = autd->OpenWith(autd::link::SOEMLink::Create(ifname, autd->geometry()->num_devices()));
-    if (res.is_err()) {
+    if (auto res = autd->OpenWith(autd::link::SOEMLink::Create(ifname, autd->geometry()->num_devices())); res.is_err()) {
       std::cerr << res.unwrap_err() << std::endl;
       return ENXIO;
     }
-    if (!res.unwrap()) {
-      std::cerr << "Failed to open." << std::endl;
-      return ENXIO;
-    }
-
     return Run(autd);
   } catch (exception& e) {
     std::cerr << e.what() << std::endl;
