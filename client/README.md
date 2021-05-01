@@ -6,7 +6,7 @@
 
 * -BUILD_ALL = [OFF]
 * -BUILD_DOC = [OFF]
-* -USE_DOUBLE = [OFF]
+* -USE_SINGLE_FLOAT = [OFF]
 * -FORCE_DOUBLE_IN_HOLO = [ON]
 * -DISABLE_EIGEN = [OFF]
 * -ENABLE_BLAS = [OFF]
@@ -36,7 +36,6 @@ run `build.ps1` or run CMake, then open `autd3.sln` in `BUILD_DIR` (default `./b
 * -VS_VERSION = 2017, [2019]
 * -ARCH = [x64]
 * -BUILD_ALL = [False]
-* -USE_DOUBLE = [False]
 
 ## Mac/Linux
 
@@ -91,10 +90,11 @@ cmake .. -DENABLE_BLAS=ON -DBLAS_LIB_DIR=<your BLAS library path> -DBLAS_INCLUDE
         set "CPATH=%CONDA_PREFIX%\Library\include;%CPATH%"
         mkdir build
         cd build
-        cmake .. -G "Ninja" -DCMAKE_CXX_COMPILER=clang-cl -DCMAKE_C_COMPILER=clang-cl -DCMAKE_Fortran_COMPILER=flang -DBUILD_WITHOUT_LAPACK=no -DNOFORTRAN=0 -DDYNAMIC_ARCH=ON -DCMAKE_BUILD_TYPE=Release
+        cmake .. -G "Ninja" -DCMAKE_CXX_COMPILER=clang-cl -DCMAKE_C_COMPILER=clang-cl -DCMAKE_Fortran_COMPILER=flang -DCMAKE_MT=mt -DBUILD_WITHOUT_LAPACK=no -DNOFORTRAN=0 -DDYNAMIC_ARCH=ON -DCMAKE_BUILD_TYPE=Release
         cmake --build . --config Release
         cmake --install . --prefix c:\opt -v
         ```
+    * Also, you may have to add `%CONDA_HOME%\Library\bin` to PATH, where `CONDA_HOME` is a home directory path of Anaconda (or miniconda).
 
 # Author
 
