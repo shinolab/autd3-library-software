@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 30/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -35,8 +35,9 @@ namespace autd::gain {
 
 inline Float PosMod(const Float a, const Float b) { return a - floor(a / b) * b; }
 
-inline uint8_t ToDuty(const Float amp) noexcept {
-  const auto d = asin(amp) / PI;  //  duty (0 ~ 0.5)
+template <typename T>
+uint8_t ToDuty(const T amp) noexcept {
+  const auto d = std::asin(amp) / static_cast<T>(3.14159265358979323846);  //  duty (0 ~ 0.5)
   return static_cast<uint8_t>(511 * d);
 }
 

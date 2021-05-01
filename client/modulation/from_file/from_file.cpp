@@ -3,7 +3,7 @@
 // Created Date: 20/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/04/2021
+// Last Modified: 30/04/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -97,33 +97,29 @@ Result<ModulationPtr, std::string> WavModulation::Create(const std::string& file
   fs.open(filename, std::ios::binary);
   if (fs.fail()) return Err(std::string("Error on opening file."));
 
-  const auto riff_tag = ReadFromStream<uint32_t>(fs).unwrap_or(0);
-  if (riff_tag != 0x46464952u) return Err(std::string("Invalid data format."));
+  if (const auto riff_tag = ReadFromStream<uint32_t>(fs).unwrap_or(0); riff_tag != 0x46464952u) return Err(std::string("Invalid data format."));
 
   [[maybe_unused]] const auto chunk_size = ReadFromStream<uint32_t>(fs);
 
-  const auto wav_desc = ReadFromStream<uint32_t>(fs).unwrap_or(0);
-  if (wav_desc != 0x45564157u) return Err(std::string("Invalid data format."));
+  if (const auto wav_desc = ReadFromStream<uint32_t>(fs).unwrap_or(0); wav_desc != 0x45564157u) return Err(std::string("Invalid data format."));
 
-  const auto fmt_desc = ReadFromStream<uint32_t>(fs).unwrap_or(0);
-  if (fmt_desc != 0x20746d66u) return Err(std::string("Invalid data format."));
+  if (const auto fmt_desc = ReadFromStream<uint32_t>(fs).unwrap_or(0); fmt_desc != 0x20746d66u) return Err(std::string("Invalid data format."));
 
-  const auto fmt_chunk_size = ReadFromStream<uint32_t>(fs).unwrap_or(0);
-  if (fmt_chunk_size != 0x00000010u) return Err(std::string("Invalid data format."));
+  if (const auto fmt_chunk_size = ReadFromStream<uint32_t>(fs).unwrap_or(0); fmt_chunk_size != 0x00000010u)
+    return Err(std::string("Invalid data format."));
 
-  const auto wave_fmt = ReadFromStream<uint16_t>(fs).unwrap_or(0);
-  if (wave_fmt != 0x0001u) return Err(std::string("Invalid data format. This supports only uncompressed linear PCM data."));
+  if (const auto wave_fmt = ReadFromStream<uint16_t>(fs).unwrap_or(0); wave_fmt != 0x0001u)
+    return Err(std::string("Invalid data format. This supports only uncompressed linear PCM data."));
 
-  const auto channel = ReadFromStream<uint16_t>(fs).unwrap_or(0);
-  if (channel != 0x0001u) return Err(std::string("Invalid data format. This supports only monaural audio."));
+  if (const auto channel = ReadFromStream<uint16_t>(fs).unwrap_or(0); channel != 0x0001u)
+    return Err(std::string("Invalid data format. This supports only monaural audio."));
 
   const auto sample_freq = ReadFromStream<uint32_t>(fs).unwrap_or(0);
   [[maybe_unused]] const auto bytes_per_sec = ReadFromStream<uint32_t>(fs).unwrap_or(0);
   [[maybe_unused]] const auto block_size = ReadFromStream<uint16_t>(fs).unwrap_or(0);
   const auto bits_per_sample = ReadFromStream<uint16_t>(fs).unwrap_or(0);
 
-  const auto data_desc = ReadFromStream<uint32_t>(fs).unwrap_or(0);
-  if (data_desc != 0x61746164u) return Err(std::string("Invalid data format."));
+  if (const auto data_desc = ReadFromStream<uint32_t>(fs).unwrap_or(0); data_desc != 0x61746164u) return Err(std::string("Invalid data format."));
 
   const auto data_chunk_size = ReadFromStream<uint32_t>(fs).unwrap_or(0);
 

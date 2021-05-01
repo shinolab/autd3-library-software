@@ -3,13 +3,14 @@ cmake_minimum_required(VERSION 3.10)
 project(autd3)
 set(VERSION_MAJOR   0   CACHE STRING "Project major version number.")
 set(VERSION_MINOR   9   CACHE STRING "Project minor version number.")
-set(VERSION_PATCH   1   CACHE STRING "Project patch version number.")
+set(VERSION_PATCH   2   CACHE STRING "Project patch version number.")
 mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
 
 option(BUILD_ALL "BUILD_ALL" OFF)
 
 option(BUILD_DOC "BUILD_DOC" OFF)
 option(USE_DOUBLE "USE_DOUBLE" OFF)
+option(FORCE_DOUBLE_IN_HOLO "FORCE_DOUBLE_IN_HOLO" ON)
 option(DISABLE_EIGEN "DISABLE_EIGEN" OFF)
 option(ENABLE_BLAS "ENABLE_BLAS" OFF)
 option(USE_MKL "USE_MKL" OFF)
@@ -58,6 +59,11 @@ if(USE_DOUBLE)
   add_definitions(-DUSE_DOUBLE_AUTD)
 endif()
 
+if(FORCE_DOUBLE_IN_HOLO)
+  message(STATUS "Use double precision floating point number in HoloGain")
+  add_definitions(-DFORCE_DOUBLE_IN_HOLO)
+endif()
+
 if(WIN32)
   set(OS win32)
   include(cmakes/win_vs.cmake)
@@ -84,7 +90,7 @@ if(ENABLE_LINT)
   ADD_CUSTOM_TARGET(cpplint
     python
     ${PROJECT_SOURCE_DIR}/deps/cpplint/cpplint.py
-    --filter=-runtime/references,-build/c++11,-whitespace/comments
+    --filter=-runtime/references,-build/c++11,-whitespace/comments,-readability/braces
     --linelength=150
     ${lint_files}
   )
