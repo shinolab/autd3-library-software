@@ -21,16 +21,10 @@ int main() {
     auto autd = autd::Controller::Create();
     autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
 
-    auto res = autd->OpenWith(autd::link::LocalTwinCATLink::Create());
-    if (res.is_err()) {
+    if (auto res = autd->OpenWith(autd::link::LocalTwinCATLink::Create()); res.is_err()) {
       std::cerr << res.unwrap_err() << std::endl;
       return ENXIO;
     }
-    if (!res.unwrap()) {
-      std::cerr << "Failed to open." << std::endl;
-      return ENXIO;
-    }
-
     return Run(autd);
   } catch (exception& e) {
     std::cerr << e.what() << std::endl;
