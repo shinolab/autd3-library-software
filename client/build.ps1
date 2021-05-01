@@ -4,7 +4,7 @@
 # Created Date: 25/08/2019
 # Author: Shun Suzuki
 # -----
-# Last Modified: 04/04/2021
+# Last Modified: 01/05/2021
 # Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 # -----
 # Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -14,8 +14,7 @@
 Param(
     [string]$BUILD_DIR = "./build",
     [ValidateSet(2017 , 2019)]$VS_VERSION = 2019,
-    [string]$ARCH = "x64",
-    [switch]$USE_DOUBLE = $FALSE
+    [string]$ARCH = "x64"
 )
 
 Start-Transcript "build.log" | Out-Null
@@ -139,13 +138,6 @@ if ($VS_VERSION -ne 2017) {
 }
 
 $command += " -D BUILD_ALL=ON"
-
-if ($USE_DOUBLE) {
-    $command += " -D USE_DOUBLE=ON"
-}
-else {
-    $command += " -D USE_DOUBLE=OFF"
-}
 
 Invoke-Expression $command | Tee-Object -FilePath "build.log"
 Pop-Location
