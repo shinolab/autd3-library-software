@@ -9,8 +9,7 @@ mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
 option(BUILD_ALL "BUILD_ALL" OFF)
 
 option(BUILD_DOC "BUILD_DOC" OFF)
-option(USE_DOUBLE "USE_DOUBLE" OFF)
-option(FORCE_DOUBLE_IN_HOLO "FORCE_DOUBLE_IN_HOLO" ON)
+option(USE_SINGLE_FLOAT "USE_SINGLE_FLOAT" OFF)
 option(DISABLE_EIGEN "DISABLE_EIGEN" OFF)
 option(ENABLE_BLAS "ENABLE_BLAS" OFF)
 option(USE_MKL "USE_MKL" OFF)
@@ -54,14 +53,9 @@ if(BUILD_DOC)
   endif()
 endif()
 
-if(USE_DOUBLE)
-  message(STATUS "Use double precision floating point number")
-  add_definitions(-DUSE_DOUBLE_AUTD)
-endif()
-
-if(FORCE_DOUBLE_IN_HOLO)
-  message(STATUS "Use double precision floating point number in HoloGain")
-  add_definitions(-DFORCE_DOUBLE_IN_HOLO)
+if(USE_SINGLE_FLOAT)
+  message(STATUS "Use single-precision floating point number")
+  add_definitions(-DUSE_SINGLE_FLOAT_AUTD)
 endif()
 
 if(WIN32)
@@ -85,7 +79,15 @@ else()
   endif()
 endif()
 
+find_package(Git)
+if(NOT Git_FOUND)
+  message(WARNING "Git not found.")
+endif()
+
 if(ENABLE_LINT)
+  if(Git_FOUND)
+  execute_process(COMMAND git -C ${PROJECT_SOURCE_DIR} submodule update --init --recursive -- ${PROJECT_SOURCE_DIR}/deps/cpplint)
+  endif()
   file(GLOB_RECURSE lint_files lib/*.cpp lib/*.hpp include/*.hpp capi/*.cpp capi/*.hpp capi/*.h link/*.cpp link/*.hpp)
   ADD_CUSTOM_TARGET(cpplint
     python
@@ -102,11 +104,6 @@ endif()
 
 if(POLICY CMP0079)
   cmake_policy(SET CMP0079 NEW)
-endif()
-
-find_package(Git)
-if(NOT Git_FOUND)
-  message(WARNING "Git not found.")
 endif()
 
 if(NOT DISABLE_EIGEN)

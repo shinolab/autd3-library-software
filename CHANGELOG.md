@@ -1,5 +1,7 @@
 # 0.9.2
-* Add `FORCE_DOUBLE_IN_HOLO` flag
+* Make double-precision float default
+    * `USE_DOUBLE_AUTD` was removed, and `USE_SINGLE_FLOAT_AUTD` was added
+    * capi still use single-precision float in its interface, but it uses double internally
 
 # 0.9.1
 * Fix bugs in `autdsoem`
