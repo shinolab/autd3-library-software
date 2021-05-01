@@ -366,7 +366,6 @@ void AUTDTransPositionByGlobal(void* const handle, const int32_t global_trans_id
 void AUTDTransPositionByLocal(void* const handle, const int32_t device_idx, const int32_t local_trans_idx, float* x, float* y, float* z) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   const auto pos = cnt->ptr->geometry()->position(device_idx, local_trans_idx);
-  auto* array = new float[3];
   *x = static_cast<float>(pos.x());
   *y = static_cast<float>(pos.y());
   *z = static_cast<float>(pos.z());
@@ -374,7 +373,6 @@ void AUTDTransPositionByLocal(void* const handle, const int32_t device_idx, cons
 void AUTDDeviceDirection(void* const handle, const int32_t device_idx, float* x, float* y, float* z) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   const auto dir = cnt->ptr->geometry()->direction(device_idx);
-  auto* array = new float[3];
   *x = static_cast<float>(dir.x());
   *y = static_cast<float>(dir.y());
   *z = static_cast<float>(dir.z());
