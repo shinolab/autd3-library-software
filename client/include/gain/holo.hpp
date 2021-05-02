@@ -3,7 +3,7 @@
 // Created Date: 06/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/05/2021
+// Last Modified: 02/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -261,7 +261,7 @@ class HoloGain final : public Gain {
 
     typename B::MatrixXc mm = B::MatrixXc::Identity(m, m);
     _backend.MatMul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, std::complex<Float>(1, 0), b, pseudo_inv_b, std::complex<Float>(-1, 0), &mm);
-    typename B::MatrixXc tmp(m, m);
+    typename B::MatrixXc tmp = B::MatrixXc::Zero(m, m);
     MatrixMul(p, mm, &tmp);
     MatrixMul(tmp, p, &mm);
     typename B::MatrixXc x_mat = B::MatrixXc::Identity(m, m);
@@ -270,13 +270,13 @@ class HoloGain final : public Gain {
     std::mt19937 mt(rnd());
     std::uniform_real_distribution<double> range(0, 1);
     typename B::VectorXc zero = B::VectorXc::Zero(m);
+    typename B::VectorXc x = B::VectorXc::Zero(m);
     for (auto i = 0; i < repeat; i++) {
       auto ii = static_cast<size_t>(m * range(mt));
 
       typename B::VectorXc mmc = mm.col(ii);
       mmc(ii) = 0;
 
-      typename B::VectorXc x(m);
       MatrixVecMul(x_mat, mmc, &x);
       if (std::complex<Float> gamma = _backend.DotC(x, mmc); gamma.real() > 0) {
         x = -x * sqrt(lambda / gamma.real());
@@ -288,10 +288,10 @@ class HoloGain final : public Gain {
 
     typename B::VectorXc u = _backend.MaxEigenVector(&x_mat);
 
-    typename B::VectorXc ut(m);
+    typename B::VectorXc ut = B::VectorXc::Zero(m);
     MatrixVecMul(p, u, &ut);
 
-    typename B::VectorXc q(n);
+    typename B::VectorXc q = B::VectorXc::Zero(n);
     MatrixVecMul(pseudo_inv_b, ut, &q);
 
     const auto max_coeff = _backend.MaxCoeffC(q);
@@ -332,7 +332,7 @@ class HoloGain final : public Gain {
         x(j, i) = c * std::conj(g(i, j));
       }
     }
-    typename B::MatrixXc r(m, m);
+    typename B::MatrixXc r = B::MatrixXc::Zero(m, m);
     MatrixMul(g, x, &r);
     typename B::VectorXc max_ev = _backend.MaxEigenVector(&r);
 
@@ -350,10 +350,10 @@ class HoloGain final : public Gain {
     typename B::VectorXc f = B::VectorXc::Zero(m + n);
     for (size_t i = 0; i < m; i++) f(i) = _amps[i] * max_ev(i) / abs(max_ev(i));
 
-    typename B::MatrixXc gtg(n, n);
+    typename B::MatrixXc gtg = B::MatrixXc::Zero(n, n);
     _backend.MatMul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, std::complex<Float>(1, 0), gr, gr, std::complex<Float>(0, 0), &gtg);
 
-    typename B::VectorXc gtf(n);
+    typename B::VectorXc gtf = B::VectorXc::Zero(n);
     _backend.MatVecMul(TRANSPOSE::CONJ_TRANS, std::complex<Float>(1, 0), gr, f, std::complex<Float>(0, 0), &gtf);
 
     _backend.SolveCh(&gtg, &gtf);
@@ -371,7 +371,7 @@ class HoloGain final : public Gain {
     typename B::VectorXc p(m);
     for (size_t i = 0; i < m; i++) p(i) = std::complex<Float>(_amps[i], 0);
 
-    typename B::VectorXc q(n);
+    typename B::VectorXc q = B::VectorXc::Zero(n);
     _backend.MatVecMul(TRANSPOSE::CONJ_TRANS, std::complex<Float>(1, 0), g, p, std::complex<Float>(0, 0), &q);
 
     SetFromComplexDrive(_data, q, true, 1.0);
@@ -391,7 +391,7 @@ class HoloGain final : public Gain {
     typename B::VectorXc q(n);
     _backend.VecCpyC(q0, &q);
 
-    typename B::VectorXc gamma(m);
+    typename B::VectorXc gamma = B::VectorXc::Zero(m);
     typename B::VectorXc p(m);
     typename B::VectorXc xi(n);
     for (auto k = 0; k < repeat; k++) {
@@ -428,13 +428,13 @@ class HoloGain final : public Gain {
       }
     }
 
-    typename B::MatrixXc r(m, m);
+    typename B::MatrixXc r = B::MatrixXc::Zero(m, m);
     MatrixMul(g, b, &r);
 
     typename B::VectorXc p(m);
     for (size_t i = 0; i < m; i++) p(i) = std::complex<Float>(_amps[i], 0);
 
-    typename B::VectorXc gamma(m);
+    typename B::VectorXc gamma = B::VectorXc::Zero(m);
     MatrixVecMul(r, p, &gamma);
     for (auto k = 0; k < repeat; k++) {
       for (size_t i = 0; i < m; i++) p(i) = gamma(i) / abs(gamma(i)) * _amps[i];
@@ -443,7 +443,7 @@ class HoloGain final : public Gain {
 
     for (size_t i = 0; i < m; i++) p(i) = gamma(i) / (abs(gamma(i)) * abs(gamma(i))) * _amps[i] * _amps[i];
 
-    typename B::VectorXc q(n);
+    typename B::VectorXc q = B::VectorXc::Zero(n);
     MatrixVecMul(b, p, &q);
 
     SetFromComplexDrive(_data, q, true, 1.0);
@@ -472,19 +472,15 @@ class HoloGain final : public Gain {
     const auto n = _geometry->num_transducers();
     const auto n_param = n + m;
 
-    typename B::MatrixXc bhb(n_param, n_param);
+    typename B::MatrixXc bhb = B::MatrixXc::Zero(n_param, n_param);
     MakeBhB<typename B::MatrixXc>(&bhb);
 
-    typename B::VectorX x(n_param);
-    if (initial == nullptr) {
-      std::memset(x.data(), 0, x.size() * sizeof(Float));
-    } else {
-      std::memcpy(x.data(), initial, x.size() * sizeof(Float));
-    }
+    typename B::VectorX x = B::VectorX::Zero(n_param);
+    if (initial != nullptr) std::memcpy(x.data(), initial, x.size() * sizeof(Float));
 
     auto nu = Float{2};
 
-    typename B::MatrixXc tth(n_param, n_param);
+    typename B::MatrixXc tth = B::MatrixXc::Zero(n_param, n_param);
     CalcTTh<typename B::MatrixXc, typename B::VectorX>(x, &tth);
 
     typename B::MatrixXc bhb_tth(n_param, n_param);
@@ -510,7 +506,7 @@ class HoloGain final : public Gain {
     typename B::VectorXc t(n_param);
     for (size_t i = 0; i < n_param; i++) t(i) = exp(std::complex<Float>(0, x(i)));
 
-    typename B::VectorXc tmp_vec_c(n_param);
+    typename B::VectorXc tmp_vec_c = B::VectorXc::Zero(n_param);
     MatrixVecMul(bhb, t, &tmp_vec_c);
     Float fx = _backend.DotC(t, tmp_vec_c).real();
 
