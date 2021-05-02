@@ -393,7 +393,7 @@ class HoloGain final : public Gain {
 
     typename B::VectorXc gamma = B::VectorXc::Zero(m);
     typename B::VectorXc p(m);
-    typename B::VectorXc xi(n);
+    typename B::VectorXc xi = B::VectorXc::Zero(n);
     for (auto k = 0; k < repeat; k++) {
       MatrixVecMul(g, q, &gamma);
       for (size_t i = 0; i < m; i++) p(i) = gamma(i) / abs(gamma(i)) * _amps[i];
