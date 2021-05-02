@@ -3,7 +3,7 @@
 // Created Date: 03/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/05/2021
+// Last Modified: 02/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -18,7 +18,6 @@
 namespace autd {
 template <class T, class E>
 class Result : public std::variant<T, E> {
- private:
   explicit Result(T t) : std::variant<T, E>(std::forward<T>(t)) {}
   explicit Result(E e) : std::variant<T, E>(std::forward<E>(e)) {}
 

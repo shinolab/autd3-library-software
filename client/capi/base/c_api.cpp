@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/05/2021
+// Last Modified: 02/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -45,13 +45,19 @@ bool AUTDOpenControllerWith(void* const handle, void* const p_link) {
 int32_t AUTDAddDevice(void* const handle, const float x, const float y, const float z, const float rz1, const float ry, const float rz2,
                       const int32_t group_id) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
-  const auto res = cnt->ptr->geometry()->AddDevice(autd::Vector3(x, y, z), autd::Vector3(rz1, ry, rz2), group_id);
+  const auto res = cnt->ptr->geometry()->AddDevice(
+      autd::Vector3(static_cast<autd::Float>(x), static_cast<autd::Float>(y), static_cast<autd::Float>(z)),
+      autd::Vector3(static_cast<autd::Float>(rz1), static_cast<autd::Float>(ry), static_cast<autd::Float>(rz2)), group_id);
   return static_cast<int32_t>(res);
 }
 int32_t AUTDAddDeviceQuaternion(void* const handle, const float x, const float y, const float z, const float qua_w, const float qua_x,
                                 const float qua_y, const float qua_z, const int32_t group_id) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
-  const auto res = cnt->ptr->geometry()->AddDeviceQuaternion(autd::Vector3(x, y, z), autd::Quaternion(qua_w, qua_x, qua_y, qua_z), group_id);
+  const auto res =
+      cnt->ptr->geometry()->AddDeviceQuaternion(autd::Vector3(static_cast<autd::Float>(x), static_cast<autd::Float>(y), static_cast<autd::Float>(z)),
+                                                autd::Quaternion(static_cast<autd::Float>(qua_w), static_cast<autd::Float>(qua_x),
+                                                                 static_cast<autd::Float>(qua_y), static_cast<autd::Float>(qua_z)),
+                                                group_id);
   return static_cast<int32_t>(res);
 }
 int32_t AUTDDeleteDevice(void* const handle, const int32_t idx) {
@@ -146,7 +152,7 @@ float AUTDWavelength(void* const handle) {
 }
 void AUTDSetWavelength(void* const handle, const float wavelength) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
-  return cnt->ptr->geometry()->set_wavelength(static_cast<autd::Float>(wavelength));
+  cnt->ptr->geometry()->set_wavelength(static_cast<autd::Float>(wavelength));
 }
 int32_t AUTDNumDevices(void* const handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
@@ -188,17 +194,21 @@ void AUTDDeleteGain(void* const gain) {
   GainDelete(g);
 }
 void AUTDFocalPointGain(void** gain, const float x, const float y, const float z, const uint8_t duty) {
-  auto* g = GainCreate(autd::gain::FocalPointGain::Create(autd::Vector3(x, y, z), duty));
+  auto* g = GainCreate(
+      autd::gain::FocalPointGain::Create(autd::Vector3(static_cast<autd::Float>(x), static_cast<autd::Float>(y), static_cast<autd::Float>(z)), duty));
   *gain = g;
 }
-
 void AUTDBesselBeamGain(void** gain, const float x, const float y, const float z, const float n_x, const float n_y, const float n_z,
                         const float theta_z, const uint8_t duty) {
-  auto* g = GainCreate(autd::gain::BesselBeamGain::Create(autd::Vector3(x, y, z), autd::Vector3(n_x, n_y, n_z), theta_z, duty));
+  auto* g = GainCreate(
+      autd::gain::BesselBeamGain::Create(autd::Vector3(static_cast<autd::Float>(x), static_cast<autd::Float>(y), static_cast<autd::Float>(z)),
+                                         autd::Vector3(static_cast<autd::Float>(n_x), static_cast<autd::Float>(n_y), static_cast<autd::Float>(n_z)),
+                                         static_cast<autd::Float>(theta_z), duty));
   *gain = g;
 }
 void AUTDPlaneWaveGain(void** gain, const float n_x, const float n_y, const float n_z, const uint8_t duty) {
-  auto* g = GainCreate(autd::gain::PlaneWaveGain::Create(autd::Vector3(n_x, n_y, n_z), duty));
+  auto* g = GainCreate(autd::gain::PlaneWaveGain::Create(
+      autd::Vector3(static_cast<autd::Float>(n_x), static_cast<autd::Float>(n_y), static_cast<autd::Float>(n_z)), duty));
   *gain = g;
 }
 void AUTDCustomGain(void** gain, uint16_t* data, const int32_t data_length) {
@@ -236,7 +246,7 @@ void AUTDSawModulation(void** mod, const int32_t freq) {
   *mod = m;
 }
 void AUTDSineModulation(void** mod, const int32_t freq, const float amp, const float offset) {
-  auto* m = ModulationCreate(autd::modulation::SineModulation::Create(freq, amp, offset));
+  auto* m = ModulationCreate(autd::modulation::SineModulation::Create(freq, static_cast<autd::Float>(amp), static_cast<autd::Float>(offset)));
   *mod = m;
 }
 #pragma endregion
@@ -248,21 +258,23 @@ void AUTDSequence(void** out) {
 }
 bool AUTDSequenceAddPoint(void* const seq, const float x, const float y, const float z) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
-  auto res = seq_w->ptr->AddPoint(autd::Vector3(x, y, z));
+  auto res = seq_w->ptr->AddPoint(autd::Vector3(static_cast<autd::Float>(x), static_cast<autd::Float>(y), static_cast<autd::Float>(z)));
   if (res.is_err()) LastError() = res.unwrap_err();
   return res.unwrap_or(false);
 }
 bool AUTDSequenceAddPoints(void* const seq, float* points, const uint64_t size) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
   std::vector<autd::Vector3> p;
-  for (size_t i = 0; i < size; i++) p.emplace_back(autd::Vector3(points[3 * i], points[3 * i + 1], points[3 * i + 2]));
+  for (size_t i = 0; i < size; i++)
+    p.emplace_back(autd::Vector3(static_cast<autd::Float>(points[3 * i]), static_cast<autd::Float>(points[3 * i + 1]),
+                                 static_cast<autd::Float>(points[3 * i + 2])));
   auto res = seq_w->ptr->AddPoints(p);
   if (res.is_err()) LastError() = res.unwrap_err();
   return res.unwrap_or(false);
 }
 float AUTDSequenceSetFreq(void* const seq, const float freq) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
-  return static_cast<float>(seq_w->ptr->SetFrequency(freq));
+  return static_cast<float>(seq_w->ptr->SetFrequency(static_cast<autd::Float>(freq)));
 }
 float AUTDSequenceFreq(void* const seq) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
@@ -282,7 +294,9 @@ void AUTDDeleteSequence(void* const seq) {
 }
 void AUTDCircumSequence(void** out, const float x, const float y, const float z, const float nx, const float ny, const float nz, const float radius,
                         const uint64_t n) {
-  auto* s = SequencePtrCreate(autd::sequence::CircumSeq::Create(autd::Vector3(x, y, z), autd::Vector3(nx, ny, nz), radius, n));
+  auto* s = SequencePtrCreate(autd::sequence::CircumSeq::Create(
+      autd::Vector3(static_cast<autd::Float>(x), static_cast<autd::Float>(y), static_cast<autd::Float>(z)),
+      autd::Vector3(static_cast<autd::Float>(nx), static_cast<autd::Float>(ny), static_cast<autd::Float>(nz)), static_cast<autd::Float>(radius), n));
   *out = s;
 }
 #pragma endredion
@@ -324,7 +338,7 @@ void AUTDAddSTMGain(void* const handle, void* const gain) {
 }
 bool AUTDStartSTModulation(void* const handle, const float freq) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
-  auto res = cnt->ptr->StartSTModulation(freq);
+  auto res = cnt->ptr->StartSTModulation(static_cast<autd::Float>(freq));
   if (res.is_err()) LastError() = res.unwrap_err();
   return res.unwrap_or(false);
 }
