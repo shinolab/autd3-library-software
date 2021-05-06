@@ -3,7 +3,7 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/05/2021
+// Last Modified: 06/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -18,9 +18,9 @@
 #include "gain/holo.hpp"
 
 using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SIZE_MM;
-using autd::gain::holo::HoloGainE, autd::gain::holo::OPT_METHOD;
+using autd::gain::holo::Eigen3Backend;
 
-inline OPT_METHOD SelectOpt() {
+inline autd::GainPtr SelectOpt(const std::vector<autd::Vector3> foci, const std::vector<autd::Float> amps) {
   std::cout << "Select Optimization Method (default is SDP)" << std::endl;
   const std::vector<std::string> opts = {"SDP", "EVD", "GS", "GS-PAT", "NAIVE", "LM"};
   for (size_t i = 0; i < opts.size(); i++) {
@@ -36,7 +36,22 @@ inline OPT_METHOD SelectOpt() {
     idx = 0;
   }
 
-  return static_cast<OPT_METHOD>(idx);
+  switch (idx) {
+    case 0:
+      return autd::gain::holo::HoloGainSDP<Eigen3Backend>::Create(foci, amps);
+    case 1:
+      return autd::gain::holo::HoloGainEVD<Eigen3Backend>::Create(foci, amps);
+    case 2:
+      return autd::gain::holo::HoloGainGS<Eigen3Backend>::Create(foci, amps);
+    case 3:
+      return autd::gain::holo::HoloGainGSPAT<Eigen3Backend>::Create(foci, amps);
+    case 4:
+      return autd::gain::holo::HoloGainNaive<Eigen3Backend>::Create(foci, amps);
+    case 5:
+      return autd::gain::holo::HoloGainLM<Eigen3Backend>::Create(foci, amps);
+    default:
+      return autd::gain::holo::HoloGainSDP<Eigen3Backend>::Create(foci, amps);
+  }
 }
 
 inline void HoloTest(const autd::ControllerPtr& autd) {
@@ -49,7 +64,6 @@ inline void HoloTest(const autd::ControllerPtr& autd) {
   const std::vector<autd::Vector3> foci = {center - autd::Vector3::UnitX() * 30.0, center + autd::Vector3::UnitX() * 30.0};
   const std::vector<autd::Float> amps = {1, 1};
 
-  const auto opt = SelectOpt();
-  const auto g = HoloGainE::Create(foci, amps, opt);
+  const auto g = SelectOpt(foci, amps);
   autd->AppendGainSync(g).unwrap();
 }
