@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/04/2021
+// Last Modified: 06/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -64,6 +64,13 @@ class Gain {
    */
   [[nodiscard]] virtual Result<bool, std::string> Build();
   /**
+   * @brief Re-calculate amplitude and phase of each transducer
+   */
+  [[nodiscard]] Result<bool, std::string> Rebuild() {
+    this->_built = false;
+    return this->Build();
+  }
+  /**
    * @brief Set AUTD Geometry which is required to build gain
    */
   void SetGeometry(const GeometryPtr& geometry) noexcept;
@@ -105,10 +112,7 @@ class GroupedGain final : public Gain {
    * @details group ID must be specified in Geometry::AddDevice() in advance
    */
   static GainPtr Create(const std::map<size_t, GainPtr>& gain_map);
-  /**
-   * @brief Build Gain
-   * @return return Ok(whether succeeded to build), or Err(error msg) if some unrecoverable error occurred
-   */
+
   Result<bool, std::string> Build() override;
   explicit GroupedGain(std::map<size_t, GainPtr> gain_map) : Gain(), _gain_map(std::move(gain_map)) {}
   ~GroupedGain() override = default;
