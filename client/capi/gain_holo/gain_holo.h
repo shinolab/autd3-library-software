@@ -3,7 +3,7 @@
 // Created Date: 20/02/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/05/2021
+// Last Modified: 06/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -18,5 +18,11 @@
 #endif
 
 extern "C" {
-EXPORT_AUTD void AUTDHoloGain(void** gain, float* points, float* amps, int32_t size, int32_t method, void* params);
+EXPORT_AUTD void AUTDHoloGainSDP(void** gain, float* points, float* amps, int32_t size, float alpha, float lambda, uint64_t repeat, bool normalize);
+EXPORT_AUTD void AUTDHoloGainEVD(void** gain, float* points, float* amps, int32_t size, float gamma, bool normalize);
+EXPORT_AUTD void AUTDHoloGainNaive(void** gain, float* points, float* amps, int32_t size);
+EXPORT_AUTD void AUTDHoloGainGS(void** gain, float* points, float* amps, int32_t size, uint64_t repeat);
+EXPORT_AUTD void AUTDHoloGainGSPAT(void** gain, float* points, float* amps, int32_t size, uint64_t repeat);
+EXPORT_AUTD void AUTDHoloGainLM(void** gain, float* points, float* amps, int32_t size, float eps_1, float eps_2, float tau, uint64_t k_max,
+                                float* initial, int32_t initial_size);
 }
