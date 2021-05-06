@@ -13,90 +13,72 @@
 #include "./gain_holo.h"
 #include "gain/holo.hpp"
 
-void AUTDHoloGainSDP(void** gain, float* points, float* amps, const int32_t size, const float alpha, const float lambda, const uint64_t repeat,
-                     const bool normalize) {
+namespace {
+std::vector<autd::Vector3> pack_foci(const float* const points, const int32_t size) {
   std::vector<autd::Vector3> holo;
-  std::vector<autd::Float> amps_;
+  holo.reserve(size);
   for (auto i = 0; i < size; i++) {
     const auto x = static_cast<autd::Float>(points[3 * i]);
     const auto y = static_cast<autd::Float>(points[3 * i + 1]);
     const auto z = static_cast<autd::Float>(points[3 * i + 2]);
     holo.emplace_back(autd::Vector3(x, y, z));
+  }
+  return holo;
+}
+
+std::vector<autd::Float> pack_amps(const float* const amps, const int32_t size) {
+  std::vector<autd::Float> amps_;
+  amps_.reserve(size);
+  for (auto i = 0; i < size; i++) {
     amps_.emplace_back(static_cast<autd::Float>(amps[i]));
   }
+  return amps_;
+}
+}  // namespace
+
+void AUTDHoloGainSDP(void** gain, float* points, float* amps, const int32_t size, const float alpha, const float lambda, const uint64_t repeat,
+                     const bool normalize) {
+  const auto holo = pack_foci(points, size);
+  const auto amps_ = pack_amps(amps, size);
   auto* g = GainCreate(autd::gain::holo::HoloGainSDP<autd::gain::holo::Eigen3Backend>::Create(holo, amps_, static_cast<autd::Float>(alpha),
                                                                                               static_cast<autd::Float>(lambda), repeat, normalize));
   *gain = g;
 }
 
 void AUTDHoloGainEVD(void** gain, float* points, float* amps, const int32_t size, const float gamma, const bool normalize) {
-  std::vector<autd::Vector3> holo;
-  std::vector<autd::Float> amps_;
-  for (auto i = 0; i < size; i++) {
-    const auto x = static_cast<autd::Float>(points[3 * i]);
-    const auto y = static_cast<autd::Float>(points[3 * i + 1]);
-    const auto z = static_cast<autd::Float>(points[3 * i + 2]);
-    holo.emplace_back(autd::Vector3(x, y, z));
-    amps_.emplace_back(static_cast<autd::Float>(amps[i]));
-  }
+  const auto holo = pack_foci(points, size);
+  const auto amps_ = pack_amps(amps, size);
   auto* g =
       GainCreate(autd::gain::holo::HoloGainEVD<autd::gain::holo::Eigen3Backend>::Create(holo, amps_, static_cast<autd::Float>(gamma), normalize));
   *gain = g;
 }
 
 void AUTDHoloGainNaive(void** gain, float* points, float* amps, const int32_t size) {
-  std::vector<autd::Vector3> holo;
-  std::vector<autd::Float> amps_;
-  for (auto i = 0; i < size; i++) {
-    const auto x = static_cast<autd::Float>(points[3 * i]);
-    const auto y = static_cast<autd::Float>(points[3 * i + 1]);
-    const auto z = static_cast<autd::Float>(points[3 * i + 2]);
-    holo.emplace_back(autd::Vector3(x, y, z));
-    amps_.emplace_back(static_cast<autd::Float>(amps[i]));
-  }
+  const auto holo = pack_foci(points, size);
+  const auto amps_ = pack_amps(amps, size);
   auto* g = GainCreate(autd::gain::holo::HoloGainNaive<autd::gain::holo::Eigen3Backend>::Create(holo, amps_));
   *gain = g;
 }
 
 void AUTDHoloGainGS(void** gain, float* points, float* amps, const int32_t size, const uint64_t repeat) {
-  std::vector<autd::Vector3> holo;
-  std::vector<autd::Float> amps_;
-  for (auto i = 0; i < size; i++) {
-    const auto x = static_cast<autd::Float>(points[3 * i]);
-    const auto y = static_cast<autd::Float>(points[3 * i + 1]);
-    const auto z = static_cast<autd::Float>(points[3 * i + 2]);
-    holo.emplace_back(autd::Vector3(x, y, z));
-    amps_.emplace_back(static_cast<autd::Float>(amps[i]));
-  }
+  const auto holo = pack_foci(points, size);
+  const auto amps_ = pack_amps(amps, size);
   auto* g = GainCreate(autd::gain::holo::HoloGainGS<autd::gain::holo::Eigen3Backend>::Create(holo, amps_, repeat));
   *gain = g;
 }
 
 void AUTDHoloGainGSPAT(void** gain, float* points, float* amps, const int32_t size, const uint64_t repeat) {
-  std::vector<autd::Vector3> holo;
-  std::vector<autd::Float> amps_;
-  for (auto i = 0; i < size; i++) {
-    const auto x = static_cast<autd::Float>(points[3 * i]);
-    const auto y = static_cast<autd::Float>(points[3 * i + 1]);
-    const auto z = static_cast<autd::Float>(points[3 * i + 2]);
-    holo.emplace_back(autd::Vector3(x, y, z));
-    amps_.emplace_back(static_cast<autd::Float>(amps[i]));
-  }
+  const auto holo = pack_foci(points, size);
+  const auto amps_ = pack_amps(amps, size);
   auto* g = GainCreate(autd::gain::holo::HoloGainGSPAT<autd::gain::holo::Eigen3Backend>::Create(holo, amps_, repeat));
   *gain = g;
 }
 
 void AUTDHoloGainLM(void** gain, float* points, float* amps, const int32_t size, const float eps_1, const float eps_2, const float tau,
                     const uint64_t k_max, float* initial, const int32_t initial_size) {
-  std::vector<autd::Vector3> holo;
-  std::vector<autd::Float> amps_;
-  for (auto i = 0; i < size; i++) {
-    const auto x = static_cast<autd::Float>(points[3 * i]);
-    const auto y = static_cast<autd::Float>(points[3 * i + 1]);
-    const auto z = static_cast<autd::Float>(points[3 * i + 2]);
-    holo.emplace_back(autd::Vector3(x, y, z));
-    amps_.emplace_back(static_cast<autd::Float>(amps[i]));
-  }
+  const auto holo = pack_foci(points, size);
+  const auto amps_ = pack_amps(amps, size);
+
   std::vector<autd::Float> initial_;
   initial_.reserve(initial_size);
   for (auto i = 0; i < initial_size; i++) initial_.emplace_back(static_cast<autd::Float>(initial[i]));

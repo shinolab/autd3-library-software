@@ -143,7 +143,7 @@ class HoloGainSDP final : public HoloGain<B> {
     typename B::MatrixXc p = B::MatrixXc::Zero(m, m);
     for (size_t i = 0; i < m; i++) p(i, i) = std::complex<Float>(this->_amps[i], 0);
 
-    typename B::MatrixXc b = this->template TransferMatrix<typename B::MatrixXc>();
+    auto b = this->template TransferMatrix<typename B::MatrixXc>();
     typename B::MatrixXc pseudo_inv_b(n, m);
     this->_backend.PseudoInverseSvd(&b, _alpha, &pseudo_inv_b);
 
@@ -160,7 +160,7 @@ class HoloGainSDP final : public HoloGain<B> {
     typename B::VectorXc zero = B::VectorXc::Zero(m);
     typename B::VectorXc x = B::VectorXc::Zero(m);
     for (size_t i = 0; i < _repeat; i++) {
-      auto ii = static_cast<size_t>(m * range(mt));
+      auto ii = static_cast<size_t>(static_cast<Float>(m) * range(mt));
 
       typename B::VectorXc mmc = mm.col(ii);
       mmc(ii) = 0;
@@ -189,10 +189,11 @@ class HoloGainSDP final : public HoloGain<B> {
     return Ok(true);
   }
 
-  HoloGainSDP(std::vector<Vector3> foci, std::vector<Float> amps, const Float alpha, const Float lambda, const size_t repeat, const bool normalize)
+  HoloGainSDP(const std::vector<Vector3>& foci, const std::vector<Float>& amps, const Float alpha, const Float lambda, const size_t repeat,
+              const bool normalize)
       : HoloGain<B>(), _alpha(alpha), _lambda(lambda), _repeat(repeat), _normalize(normalize) {
-    this->_foci = std::move(foci);
-    this->_amps = std::move(amps);
+    this->_foci = foci;
+    this->_amps = amps;
   }
 
  private:
@@ -208,7 +209,7 @@ class HoloGainSDP final : public HoloGain<B> {
   Float _alpha;
   Float _lambda;
   size_t _repeat;
-  Float _normalize;
+  bool _normalize;
 };
 
 /**
@@ -240,7 +241,7 @@ class HoloGainEVD final : public HoloGain<B> {
     const auto m = this->_foci.size();
     const auto n = this->_geometry->num_transducers();
 
-    const typename B::MatrixXc g = this->template TransferMatrix<typename B::MatrixXc>();
+    const auto g = this->template TransferMatrix<typename B::MatrixXc>();
 
     typename B::VectorXc denominator(m);
     for (size_t i = 0; i < m; i++) {
@@ -291,15 +292,15 @@ class HoloGainEVD final : public HoloGain<B> {
     return Ok(true);
   }
 
-  HoloGainEVD(std::vector<Vector3> foci, std::vector<Float> amps, const Float gamma, const bool normalize)
+  HoloGainEVD(const std::vector<Vector3>& foci, const std::vector<Float>& amps, const Float gamma, const bool normalize)
       : HoloGain<B>(), _gamma(gamma), _normalize(normalize) {
-    this->_foci = std::move(foci);
-    this->_amps = std::move(amps);
+    this->_foci = foci;
+    this->_amps = amps;
   }
 
  private:
   Float _gamma;
-  Float _normalize;
+  bool _normalize;
 };
 
 /**
@@ -326,7 +327,7 @@ class HoloGainNaive final : public HoloGain<B> {
     const auto m = this->_foci.size();
     const auto n = this->_geometry->num_transducers();
 
-    const typename B::MatrixXc g = this->template TransferMatrix<typename B::MatrixXc>();
+    const auto g = this->template TransferMatrix<typename B::MatrixXc>();
     typename B::VectorXc p(m);
     for (size_t i = 0; i < m; i++) p(i) = std::complex<Float>(this->_amps[i], 0);
 
@@ -339,9 +340,9 @@ class HoloGainNaive final : public HoloGain<B> {
     return Ok(true);
   }
 
-  HoloGainNaive(std::vector<Vector3> foci, std::vector<Float> amps) : HoloGain<B>() {
-    this->_foci = std::move(foci);
-    this->_amps = std::move(amps);
+  HoloGainNaive(const std::vector<Vector3>& foci, const std::vector<Float>& amps) : HoloGain<B>() {
+    this->_foci = foci;
+    this->_amps = amps;
   }
 };
 
@@ -372,7 +373,7 @@ class HoloGainGS final : public HoloGain<B> {
     const auto m = this->_foci.size();
     const auto n = this->_geometry->num_transducers();
 
-    const typename B::MatrixXc g = this->template TransferMatrix<typename B::MatrixXc>();
+    const auto g = this->template TransferMatrix<typename B::MatrixXc>();
 
     typename B::VectorXc q0 = B::VectorXc::Ones(n);
 
@@ -395,9 +396,9 @@ class HoloGainGS final : public HoloGain<B> {
     return Ok(true);
   }
 
-  HoloGainGS(std::vector<Vector3> foci, std::vector<Float> amps, const size_t repeat) : HoloGain<B>(), _repeat(repeat) {
-    this->_foci = std::move(foci);
-    this->_amps = std::move(amps);
+  HoloGainGS(const std::vector<Vector3>& foci, const std::vector<Float>& amps, const size_t repeat) : HoloGain<B>(), _repeat(repeat) {
+    this->_foci = foci;
+    this->_amps = amps;
   }
 
  private:
@@ -432,7 +433,7 @@ class HoloGainGSPAT final : public HoloGain<B> {
     const auto m = this->_foci.size();
     const auto n = this->_geometry->num_transducers();
 
-    const typename B::MatrixXc g = this->template TransferMatrix<typename B::MatrixXc>();
+    const auto g = this->template TransferMatrix<typename B::MatrixXc>();
 
     typename B::VectorXc denominator(m);
     for (size_t i = 0; i < m; i++) {
@@ -473,9 +474,9 @@ class HoloGainGSPAT final : public HoloGain<B> {
     return Ok(true);
   }
 
-  HoloGainGSPAT(std::vector<Vector3> foci, std::vector<Float> amps, const size_t repeat) : HoloGain<B>(), _repeat(repeat) {
-    this->_foci = std::move(foci);
-    this->_amps = std::move(amps);
+  HoloGainGSPAT(const std::vector<Vector3>& foci, const std::vector<Float>& amps, const size_t repeat) : HoloGain<B>(), _repeat(repeat) {
+    this->_foci = foci;
+    this->_amps = amps;
   }
 
  private:
@@ -623,11 +624,11 @@ class HoloGainLM final : public HoloGain<B> {
     return Ok(true);
   }
 
-  HoloGainLM(std::vector<Vector3> foci, std::vector<Float> amps, const Float eps_1, const Float eps_2, const Float tau, const size_t k_max,
-             std::vector<Float> initial)
+  HoloGainLM(const std::vector<Vector3>& foci, const std::vector<Float>& amps, const Float eps_1, const Float eps_2, const Float tau,
+             const size_t k_max, std::vector<Float> initial)
       : HoloGain<B>(), _eps_1(eps_1), _eps_2(eps_2), _tau(tau), _k_max(k_max), _initial(std::move(initial)) {
-    this->_foci = std::move(foci);
-    this->_amps = std::move(amps);
+    this->_foci = foci;
+    this->_amps = amps;
   }
 
  private:
