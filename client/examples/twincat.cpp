@@ -21,7 +21,7 @@ int main() {
     auto autd = autd::Controller::Create();
     autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
 
-    if (auto res = autd->OpenWith(autd::link::LocalTwinCATLink::Create()); res.is_err()) {
+    if (auto res = autd->OpenWith(autd::link::TwinCATLink::Create()); res.is_err()) {
       std::cerr << res.unwrap_err() << std::endl;
       return ENXIO;
     }
