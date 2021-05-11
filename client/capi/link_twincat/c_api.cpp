@@ -18,6 +18,6 @@ void AUTDTwinCATLink(void** out, const char* ipv4_addr, const char* ams_net_id) 
   *out = link;
 }
 void AUTDLocalTwinCATLink(void** out) {
-  auto* link = LinkCreate(autd::link::LocalTwinCATLink::Create());
+  auto* link = LinkCreate(autd::link::TwinCATLink::Create());
   *out = link;
 }

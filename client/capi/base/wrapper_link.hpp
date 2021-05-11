@@ -13,12 +13,14 @@
 
 #include <utility>
 
-#include "link.hpp"
+#include "core/link.hpp"
 
 typedef struct {
-  autd::LinkPtr ptr;
+  autd::core::LinkPtr ptr;
 } LinkWrapper;
 
-inline LinkWrapper* LinkCreate(autd::LinkPtr ptr) { return new LinkWrapper{std::move(ptr)}; }
+inline LinkWrapper* LinkCreate(autd::core::LinkPtr ptr) {
+  return new LinkWrapper{std::move(ptr)};
+}
 
 inline void LinkDelete(LinkWrapper* ptr) { delete ptr; }
