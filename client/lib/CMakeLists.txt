@@ -6,7 +6,7 @@ find_package(Threads REQUIRED)
 
 file(GLOB cpp_files *.cpp)
 file(GLOB hpp_files *.hpp)
-file(GLOB include_files ${PROJECT_SOURCE_DIR}/include/*.hpp ${PROJECT_SOURCE_DIR}/include/linalg/*.hpp)
+file(GLOB include_files ${PROJECT_SOURCE_DIR}/include/*.hpp ${PROJECT_SOURCE_DIR}/include/core/*.hpp)
 
 set(SOURCE_LIST 
   ${cpp_files}
@@ -23,14 +23,14 @@ endif()
 
 if(WIN32)
   source_group("gain" FILES
-    gain.cpp
+    primitive_gain.cpp
     grouped_gain.cpp
-    ${PROJECT_SOURCE_DIR}/include/gain.hpp
+    ${PROJECT_SOURCE_DIR}/include/primitive_gain.hpp
   )
 
   source_group("modulation" FILES
-    modulation.cpp
-    ${PROJECT_SOURCE_DIR}/include/modulation.hpp
+    primitive_modulation.cpp
+    ${PROJECT_SOURCE_DIR}/include/primitive_modulation.hpp
   )
 
   source_group("controller" FILES
@@ -45,12 +45,8 @@ if(WIN32)
     ${PROJECT_SOURCE_DIR}/include/geometry.hpp
   )
 
-  source_group("linalg" FILES
-    ${PROJECT_SOURCE_DIR}/include/linalg.hpp
-    ${PROJECT_SOURCE_DIR}/include/linalg/helper.hpp
-    ${PROJECT_SOURCE_DIR}/include/linalg/matrix.hpp
-    ${PROJECT_SOURCE_DIR}/include/linalg/quaternion.hpp
-    ${PROJECT_SOURCE_DIR}/include/linalg/vector.hpp
+  source_group("core" FILES
+    ${PROJECT_SOURCE_DIR}/include/core/*.hpp
   )
 endif()
 
