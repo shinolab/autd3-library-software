@@ -37,6 +37,7 @@ Result<bool, std::string> Controller::OpenWith(core::LinkPtr link) {
   if (is_open())
     if (auto close_res = this->Close(); close_res.is_err()) return close_res;
 
+  this->_link = link;
   auto res = this->_link->Open();
   if (res.is_err()) return res;
 
@@ -44,6 +45,7 @@ Result<bool, std::string> Controller::OpenWith(core::LinkPtr link) {
 }
 
 Result<bool, std::string> Controller::Synchronize(const core::Configuration config) {
+  this->_config = config;
   return core::Logic::Synchronize(this->_link, this->_geometry->num_devices(), &_tx_buf[0], &_rx_buf[0], _config);
 }
 
