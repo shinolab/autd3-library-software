@@ -13,7 +13,7 @@
 
 #include "autd3.hpp"
 
-using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SIZE_MM, autd::PI;
+using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SPACING_MM;
 
 inline void BesselTest(const autd::ControllerPtr& autd) {
   autd->SetSilentMode(true);
@@ -21,7 +21,7 @@ inline void BesselTest(const autd::ControllerPtr& autd) {
   const auto m = autd::modulation::SineModulation::Create(150);  // 150Hz AM
   autd->AppendModulationSync(m).unwrap();
 
-  const auto center = autd::Vector3(TRANS_SIZE_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SIZE_MM * ((NUM_TRANS_Y - 1) / 2.0), 0);
-  const auto g = autd::gain::BesselBeamGain::Create(center, autd::Vector3::UnitZ(), 13.0 / 180.0 * PI);
+  const auto center = autd::Vector3(TRANS_SPACING_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SPACING_MM * ((NUM_TRANS_Y - 1) / 2.0), 0);
+  const auto g = autd::gain::BesselBeamGain::Create(center, autd::Vector3::UnitZ(), 13.0 / 180.0 * M_PI);
   autd->AppendGainSync(g).unwrap();
 }
