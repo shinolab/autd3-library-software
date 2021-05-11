@@ -1,41 +1,30 @@
-﻿// File: modulation.cpp
+﻿// File: primitive_modulation.cpp
 // Project: lib
-// Created Date: 11/06/2016
-// Author: Seki Inoue
+// Created Date: 14/04/2021
+// Author: Shun Suzuki
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 11/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
-// Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
+// Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
-#include "modulation.hpp"
+#include "primitive_modulation.hpp"
 
 #include <algorithm>
 #include <cmath>
 #include <cstring>
 #include <numeric>
 
-#include "configuration.hpp"
+#include "core/configuration.hpp"
+#include "core/result.hpp"
 
 namespace autd::modulation {
-Modulation::Modulation() noexcept { this->_sent = 0; }
 
-ModulationPtr Modulation::Create(const uint8_t amp) {
-  auto mod = std::make_shared<Modulation>();
-  mod->buffer.resize(1, amp);
-  return mod;
-}
-
-Result<bool, std::string> Modulation::Build(Configuration config) {
-  (void)config;
-  return Ok(true);
-}
-
-size_t& Modulation::sent() { return _sent; }
+using core::Configuration;
 
 #pragma region SineModulation
-ModulationPtr SineModulation::Create(const int freq, const Float amp, const Float offset) {
+ModulationPtr SineModulation::Create(const int freq, const double amp, const double offset) {
   ModulationPtr mod = std::make_shared<SineModulation>(freq, amp, offset);
   return mod;
 }
@@ -51,13 +40,13 @@ Result<bool, std::string> SineModulation::Build(const Configuration config) {
   const size_t n = mod_buf_size / d / (mod_buf_size / sf);
   const size_t rep = freq / d;
 
-  this->buffer.resize(n, 0);
+  this->_buffer.resize(n, 0);
 
   for (size_t i = 0; i < n; i++) {
-    auto tamp = std::fmod(static_cast<Float>(2 * rep * i) / static_cast<Float>(n), Float{2});
+    auto tamp = std::fmod(static_cast<double>(2 * rep * i) / static_cast<double>(n), double{2});
     tamp = tamp > 1 ? 2 - tamp : tamp;
-    tamp = std::clamp(this->_offset + (tamp - Float{0.5}) * this->_amp, Float{0}, Float{1});
-    this->buffer.at(i) = static_cast<uint8_t>(tamp * 255);
+    tamp = std::clamp(this->_offset + (tamp - double{0.5}) * this->_amp, double{0}, double{1});
+    this->_buffer.at(i) = static_cast<uint8_t>(tamp * 255);
   }
   return Ok(true);
 }
@@ -79,8 +68,8 @@ Result<bool, std::string> SquareModulation::Build(const Configuration config) {
 
   const size_t n = mod_buf_size / d / (mod_buf_size / sf);
 
-  this->buffer.resize(n, this->_high);
-  std::memset(&this->buffer[0], this->_low, n / 2);
+  this->_buffer.resize(n, this->_high);
+  std::memset(&this->_buffer[0], this->_low, n / 2);
   return Ok(true);
 }
 #pragma endregion
@@ -102,11 +91,11 @@ Result<bool, std::string> SawModulation::Build(const Configuration config) {
   const size_t n = mod_buf_size / d / (mod_buf_size / sf);
   const auto rep = freq / d;
 
-  this->buffer.resize(n, 0);
+  this->_buffer.resize(n, 0);
 
   for (size_t i = 0; i < n; i++) {
-    const auto tamp = std::fmod(static_cast<Float>(rep * i) / static_cast<Float>(n), Float{1});
-    this->buffer.at(i) = static_cast<uint8_t>(std::asin(tamp) / PI * Float{510});
+    const auto tamp = std::fmod(static_cast<double>(rep * i) / static_cast<double>(n), double{1});
+    this->_buffer.at(i) = static_cast<uint8_t>(std::asin(tamp) / M_PI * double{510});
   }
   return Ok(true);
 }

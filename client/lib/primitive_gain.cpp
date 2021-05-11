@@ -1,59 +1,40 @@
-﻿// File: gain.cpp
+﻿// File: primitive_gain.cpp
 // Project: lib
-// Created Date: 01/06/2016
-// Author: Seki Inoue
+// Created Date: 14/04/2021
+// Author: Shun Suzuki
 // -----
-// Last Modified: 30/04/2021
+// Last Modified: 11/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
-// Copyright (c) 2020 Hapis Lab. All rights reserved.
+// Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
-#include "gain.hpp"
+#include "primitive_gain.hpp"
 
 #include <memory>
 #include <vector>
 
-#include "consts.hpp"
-
 namespace autd::gain {
 
-GainPtr Gain::Create() { return std::make_shared<Gain>(); }
+using core::AUTDDataArray;
+using core::NUM_TRANS_IN_UNIT;
+using core::Vector3;
 
-Gain::Gain() noexcept : _built(false), _geometry(nullptr) {}
-Gain::Gain(std::vector<AUTDDataArray> data) noexcept : _built(false), _geometry(nullptr), _data(std::move(data)) {}
+inline double pos_mod(const double a, const double b) { return a - floor(a / b) * b; }
 
-Result<bool, std::string> Gain::Build() {
-  if (this->built()) return Ok(false);
-  auto geometry = this->geometry();
-
-  CheckAndInit(geometry, &this->_data);
-
-  for (size_t i = 0; i < geometry->num_devices(); i++) this->_data[i].fill(0x0000);
-
-  this->_built = true;
-  return Ok(true);
+template <typename T>
+uint8_t to_duty(const T amp) noexcept {
+  const auto d = std::asin(amp) / static_cast<T>(M_PI);  //  duty (0 ~ 0.5)
+  return static_cast<uint8_t>(511 * d);
 }
-
-bool Gain::built() const noexcept { return this->_built; }
-
-GeometryPtr Gain::geometry() const noexcept { return this->_geometry; }
-
-void Gain::SetGeometry(const GeometryPtr& geometry) noexcept { this->_geometry = geometry; }
-
-std::vector<AUTDDataArray>& Gain::data() { return this->_data; }
 
 GainPtr GroupedGain::Create(const std::map<size_t, GainPtr>& gain_map) {
   GainPtr gain = std::make_shared<GroupedGain>(gain_map);
   return gain;
 }
 
-Result<bool, std::string> GroupedGain::Build() {
-  if (this->built()) return Ok(false);
-
+Result<bool, std::string> GroupedGain::Calc() {
   auto geometry = this->geometry();
-
-  CheckAndInit(geometry, &this->_data);
 
   for (const auto& [fst, g] : this->_gain_map) {
     g->SetGeometry(geometry);
@@ -73,8 +54,8 @@ Result<bool, std::string> GroupedGain::Build() {
   return Ok(true);
 }
 
-GainPtr PlaneWaveGain::Create(const Vector3& direction, const Float amp) {
-  const auto d = ToDuty(amp);
+GainPtr PlaneWaveGain::Create(const Vector3& direction, const double amp) {
+  const auto d = to_duty(amp);
   return Create(direction, d);
 }
 
@@ -83,12 +64,8 @@ GainPtr PlaneWaveGain::Create(const Vector3& direction, uint8_t duty) {
   return ptr;
 }
 
-Result<bool, std::string> PlaneWaveGain::Build() {
-  if (this->built()) return Ok(false);
-
+Result<bool, std::string> PlaneWaveGain::Calc() {
   auto geometry = this->geometry();
-
-  CheckAndInit(geometry, &this->_data);
 
   const auto dir = this->_direction.normalized();
 
@@ -98,7 +75,7 @@ Result<bool, std::string> PlaneWaveGain::Build() {
     for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
       const auto trp = geometry->position(dev, i);
       const auto dist = trp.dot(dir);
-      const auto f_phase = PosMod(dist, ultrasound_wavelength) / ultrasound_wavelength;
+      const auto f_phase = pos_mod(dist, ultrasound_wavelength) / ultrasound_wavelength;
       const auto phase = static_cast<uint16_t>(round(255 * (1 - f_phase)));
       this->_data[dev][i] = duty | phase;
     }
@@ -107,8 +84,8 @@ Result<bool, std::string> PlaneWaveGain::Build() {
   return Ok(true);
 }
 
-GainPtr FocalPointGain::Create(const Vector3& point, const Float amp) {
-  const auto d = ToDuty(amp);
+GainPtr FocalPointGain::Create(const Vector3& point, const double amp) {
+  const auto d = to_duty(amp);
   return Create(point, d);
 }
 
@@ -117,12 +94,8 @@ GainPtr FocalPointGain::Create(const Vector3& point, uint8_t duty) {
   return gain;
 }
 
-Result<bool, std::string> FocalPointGain::Build() {
-  if (this->built()) return Ok(false);
-
+Result<bool, std::string> FocalPointGain::Calc() {
   auto geometry = this->geometry();
-
-  CheckAndInit(geometry, &this->_data);
 
   const auto ULTRASOUND_WAVELENGTH = geometry->wavelength();
   const uint16_t duty = static_cast<uint16_t>(this->_duty) << 8 & 0xFF00;
@@ -139,21 +112,18 @@ Result<bool, std::string> FocalPointGain::Build() {
   return Ok(true);
 }
 
-GainPtr BesselBeamGain::Create(const Vector3& point, const Vector3& vec_n, const Float theta_z, const Float amp) {
-  const auto duty = ToDuty(amp);
+GainPtr BesselBeamGain::Create(const Vector3& point, const Vector3& vec_n, const double theta_z, const double amp) {
+  const auto duty = to_duty(amp);
   return Create(point, vec_n, theta_z, duty);
 }
 
-GainPtr BesselBeamGain::Create(const Vector3& point, const Vector3& vec_n, Float theta_z, uint8_t duty) {
+GainPtr BesselBeamGain::Create(const Vector3& point, const Vector3& vec_n, double theta_z, uint8_t duty) {
   GainPtr gain = std::make_shared<BesselBeamGain>(point, vec_n, theta_z, duty);
   return gain;
 }
 
-Result<bool, std::string> BesselBeamGain::Build() {
-  if (this->built()) return Ok(false);
+Result<bool, std::string> BesselBeamGain::Calc() {
   auto geometry = this->geometry();
-
-  CheckAndInit(geometry, &this->_data);
 
   if (_vec_n.norm() > 0) _vec_n = _vec_n.normalized();
   const Vector3 v(_vec_n.y(), -_vec_n.x(), 0.);
@@ -199,7 +169,7 @@ GainPtr CustomGain::Create(const std::vector<AUTDDataArray>& data) {
   return gain;
 }
 
-Result<bool, std::string> CustomGain::Build() {
+Result<bool, std::string> CustomGain::Calc() {
   this->_built = true;
   return Ok(true);
 }
@@ -209,11 +179,8 @@ GainPtr TransducerTestGain::Create(const size_t transducer_index, const uint8_t 
   return gain;
 }
 
-Result<bool, std::string> TransducerTestGain::Build() {
-  if (this->built()) return Ok(false);
+Result<bool, std::string> TransducerTestGain::Calc() {
   auto geometry = this->geometry();
-
-  CheckAndInit(geometry, &this->_data);
 
   const uint16_t d = static_cast<uint16_t>(this->_duty) << 8 & 0xFF00;
   const uint16_t s = static_cast<uint16_t>(this->_phase) & 0x00FF;
