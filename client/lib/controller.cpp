@@ -3,7 +3,7 @@
 // Created Date: 13/05/2016
 // Author: Seki Inoue
 // -----
-// Last Modified: 30/04/2021
+// Last Modified: 11/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
@@ -214,7 +214,7 @@ class AUTDControllerStm {
     for (const auto& g : gain_list) this->AppendGain(g);
   }
 
-  [[nodiscard]] Result<bool, std::string> Start(const Float freq) {
+  [[nodiscard]] Result<bool, std::string> Start(const double freq) {
     auto len = this->_stm_gains.size();
     auto interval_us = static_cast<uint32_t>(1000000. / static_cast<double>(freq) / static_cast<double>(len));
     this->_stm_timer.SetInterval(interval_us);
@@ -301,7 +301,7 @@ class AUTDController final : public Controller {
   Result<bool, std::string> AppendModulationSync(ModulationPtr mod) override;
   void AddSTMGain(GainPtr gain) override;
   void AddSTMGain(const std::vector<GainPtr>& gain_list) override;
-  Result<bool, std::string> StartSTModulation(Float freq) override;
+  Result<bool, std::string> StartSTModulation(double freq) override;
   Result<bool, std::string> StopSTModulation() override;
   Result<bool, std::string> FinishSTModulation() override;
   Result<std::vector<FirmwareInfo>, std::string> firmware_info_list() override;
@@ -387,7 +387,7 @@ Result<bool, std::string> AUTDController::AppendModulationSync(const ModulationP
 
 void AUTDController::AddSTMGain(const GainPtr gain) { this->_stm_cnt->AppendGain(gain); }
 void AUTDController::AddSTMGain(const std::vector<GainPtr>& gain_list) { this->_stm_cnt->AppendGain(gain_list); }
-Result<bool, std::string> AUTDController::StartSTModulation(const Float freq) { return this->_stm_cnt->Start(freq); }
+Result<bool, std::string> AUTDController::StartSTModulation(const double freq) { return this->_stm_cnt->Start(freq); }
 Result<bool, std::string> AUTDController::StopSTModulation() { return this->_stm_cnt->Stop(); }
 Result<bool, std::string> AUTDController::FinishSTModulation() { return this->_stm_cnt->Finish(); }
 

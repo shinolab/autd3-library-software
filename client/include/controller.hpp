@@ -3,7 +3,7 @@
 // Created Date: 11/04/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 11/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -15,12 +15,12 @@
 #include <string>
 #include <vector>
 
-#include "configuration.hpp"
-#include "firmware_version.hpp"
-#include "gain.hpp"
-#include "geometry.hpp"
-#include "link.hpp"
-#include "modulation.hpp"
+#include "core/configuration.hpp"
+#include "core/firmware_version.hpp"
+#include "core/gain.hpp"
+#include "core/geometry.hpp"
+#include "core/link.hpp"
+#include "core/modulation.hpp"
 
 namespace autd {
 
@@ -142,7 +142,7 @@ class Controller {
    * and so on.
    * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] virtual Result<bool, std::string> StartSTModulation(Float freq) = 0;
+  [[nodiscard]] virtual Result<bool, std::string> StartSTModulation(double freq) = 0;
 
   /**
    * @brief Suspend Spatio-Temporal Modulation
