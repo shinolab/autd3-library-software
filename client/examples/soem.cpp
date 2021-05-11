@@ -39,7 +39,13 @@ int main() {
     auto autd = autd::Controller::Create();
     autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
     // autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
-   
+
+  	auto x = autd::Vector3(0, 1, 2);
+    auto* p = x.data();
+        std::cout << p[0] << std::endl;
+    std::cout << p[1] << std::endl;
+    std::cout << p[2] << std::endl;
+  	
     // If you have already recognized the EtherCAT adapter name, you can write it directly like below.
     // auto ifname = "\\Device\\NPF_{B5B631C6-ED16-4780-9C4C-3941AE8120A6}";
     const auto ifname = GetAdapterName();

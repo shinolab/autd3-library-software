@@ -6,14 +6,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH} examples)
 
 file(GLOB hpp_files examples/*.hpp runner.hpp)
 
-if(BUILD_HOLO_GAIN AND (NOT DISABLE_EIGEN))
-  add_definitions(-DBUILD_HOLO_GAIN)
-endif()
-
 link_libraries(autd3)
-if(BUILD_HOLO_GAIN)
-  link_libraries(gain_holo)
-endif()
 if(WIN32)
   link_libraries(ws2_32.lib)
   link_libraries(winmm.lib)

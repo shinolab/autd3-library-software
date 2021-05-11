@@ -3,7 +3,7 @@
 // Created Date: 19/05/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/05/2021
+// Last Modified: 11/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2020 Hapis Lab. All rights reserved.
@@ -20,9 +20,6 @@
 
 #include "autd3.hpp"
 #include "examples/bessel.hpp"
-#ifdef BUILD_HOLO_GAIN
-#include "examples/holo.hpp"
-#endif
 #include "examples/simple.hpp"
 #include "examples/stm.hpp"
 
@@ -42,9 +39,6 @@ inline int Run(autd::ControllerPtr& autd) {
       pair(F{SimpleTest}, "Single Focal Point Test"),
       pair(F{BesselTest}, "BesselBeam Test"),
       pair(F{STMTest}, "Spatio-Temporal Modulation Test"),
-#ifdef BUILD_HOLO_GAIN
-      pair(F{HoloTest}, "Multiple Focal Points Test"),
-#endif
   };
 
   autd->geometry()->set_wavelength(ULTRASOUND_WAVELENGTH);
