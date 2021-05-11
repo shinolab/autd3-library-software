@@ -1,12 +1,12 @@
 // File: firmware_version.hpp
-// Project: include
-// Created Date: 30/03/2020
+// Project: core
+// Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/05/2021
+// Last Modified: 11/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
-// Copyright (c) 2020 Hapis Lab. All rights reserved.
+// Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
 #pragma once

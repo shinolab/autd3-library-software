@@ -27,6 +27,7 @@
 #pragma GCC diagnostic pop
 #endif
 
+#include <map>
 #include <memory>
 
 #include "hardware_defined.hpp"
@@ -80,7 +81,7 @@ struct Device {
  */
 class Geometry {
  public:
-  Geometry() = default;
+  Geometry() : _wavelength(8.5), _attenuation(0) {}
   ~Geometry() = default;
   Geometry(const Geometry& v) noexcept = default;
   Geometry& operator=(const Geometry& obj) = default;

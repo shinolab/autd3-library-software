@@ -1,12 +1,12 @@
 ﻿// File: link.hpp
-// Project: lib
-// Created Date: 01/06/2016
-// Author: Seki Inoue
+// Project: core
+// Created Date: 14/04/2021
+// Author: Shun Suzuki
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 11/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
-// Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
+// Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
 #pragma once
@@ -16,8 +16,11 @@
 
 #include "result.hpp"
 
-namespace autd {
-namespace link {
+namespace autd::core {
+
+class Link;
+using LinkPtr = std::unique_ptr<Link>;
+
 /**
  * @brief Link is the interface to the AUTD device
  */
@@ -50,8 +53,7 @@ class Link {
    * @return return Ok(whether succeeded to read), or Err(error msg) if some unrecoverable error occurred
    */
   [[nodiscard]] virtual Result<bool, std::string> Read(uint8_t* rx, uint32_t buffer_len) = 0;
+
   [[nodiscard]] virtual bool is_open() = 0;
 };
-}  // namespace link
-using LinkPtr = std::unique_ptr<link::Link>;
-}  // namespace autd
+}  // namespace autd::core

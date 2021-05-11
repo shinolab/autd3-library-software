@@ -1,105 +1,34 @@
-﻿// File: gain.hpp
+﻿// File: primitive_gain.hpp
 // Project: include
-// Created Date: 11/04/2018
+// Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/05/2021
+// Last Modified: 11/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
-// Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
+// Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
 #pragma once
 
-#include <cassert>
 #include <map>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "autd_types.hpp"
-#include "consts.hpp"
-#include "geometry.hpp"
-#include "linalg.hpp"
-#include "result.hpp"
-
-namespace autd {
-namespace gain {
-class Gain;
-}
-using GainPtr = std::shared_ptr<gain::Gain>;
-}  // namespace autd
+#include "core/gain.hpp"
+#include "core/hardware_defined.hpp"
+#include "core/result.hpp"
 
 namespace autd::gain {
 
-inline Float PosMod(const Float a, const Float b) { return a - floor(a / b) * b; }
-
-template <typename T>
-uint8_t ToDuty(const T amp) noexcept {
-  const auto d = std::asin(amp) / static_cast<T>(3.14159265358979323846);  //  duty (0 ~ 0.5)
-  return static_cast<uint8_t>(511 * d);
-}
-
-inline void CheckAndInit(const GeometryPtr& geometry, std::vector<AUTDDataArray>* data) {
-  assert(geometry != nullptr);
-
-  data->clear();
-
-  const auto num_device = geometry->num_devices();
-  data->resize(num_device);
-}
-
-/**
- * @brief Gain controls the amplitude and phase of each transducer in the AUTD
- */
-class Gain {
- public:
-  /**
-   * @brief Generate empty gain
-   */
-  static GainPtr Create();
-  /**
-   * @brief Calculate amplitude and phase of each transducer
-   */
-  [[nodiscard]] virtual Result<bool, std::string> Build();
-  /**
-   * @brief Re-calculate amplitude and phase of each transducer
-   */
-  [[nodiscard]] Result<bool, std::string> Rebuild() {
-    this->_built = false;
-    return this->Build();
-  }
-  /**
-   * @brief Set AUTD Geometry which is required to build gain
-   */
-  void SetGeometry(const GeometryPtr& geometry) noexcept;
-  /**
-   * @brief Get AUTD Geometry
-   */
-  [[nodiscard]] GeometryPtr geometry() const noexcept;
-  /**
-   * @brief Getter function for the data of amplitude and phase of each transducers
-   * @details Each data is 16 bit unsigned integer, where MSB represents amplitude and LSB represents phase
-   */
-  std::vector<AUTDDataArray>& data();
-
-  Gain() noexcept;
-  virtual ~Gain() = default;
-  Gain(const Gain& v) noexcept = default;
-  Gain& operator=(const Gain& obj) = default;
-  Gain(Gain&& obj) = default;
-  Gain& operator=(Gain&& obj) = default;
-
- protected:
-  explicit Gain(std::vector<AUTDDataArray> data) noexcept;
-  bool _built;
-  GeometryPtr _geometry;
-  std::vector<AUTDDataArray> _data;
-  [[nodiscard]] bool built() const noexcept;
-};
-
+using core::Gain;
+using core::GainPtr;
 using NullGain = Gain;
+
+using core::AUTDDataArray;
+using core::Vector3;
 
 /**
  * @brief Gain to group some gains
@@ -113,7 +42,7 @@ class GroupedGain final : public Gain {
    */
   static GainPtr Create(const std::map<size_t, GainPtr>& gain_map);
 
-  Result<bool, std::string> Build() override;
+  Result<bool, std::string> Calc() override;
   explicit GroupedGain(std::map<size_t, GainPtr> gain_map) : Gain(), _gain_map(std::move(gain_map)) {}
   ~GroupedGain() override = default;
   GroupedGain(const GroupedGain& v) noexcept = default;
@@ -141,9 +70,9 @@ class PlaneWaveGain final : public Gain {
    * @param[in] direction wave direction
    * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
    */
-  static GainPtr Create(const Vector3& direction, Float amp);
+  static GainPtr Create(const Vector3& direction, double amp);
 
-  Result<bool, std::string> Build() override;
+  Result<bool, std::string> Calc() override;
   explicit PlaneWaveGain(Vector3 direction, const uint8_t duty) : Gain(), _direction(std::move(direction)), _duty(duty) {}
   ~PlaneWaveGain() override = default;
   PlaneWaveGain(const PlaneWaveGain& v) noexcept = default;
@@ -172,9 +101,9 @@ class FocalPointGain final : public Gain {
    * @param[in] point focal point
    * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
    */
-  static GainPtr Create(const Vector3& point, Float amp);
+  static GainPtr Create(const Vector3& point, double amp);
 
-  Result<bool, std::string> Build() override;
+  Result<bool, std::string> Calc() override;
   explicit FocalPointGain(Vector3 point, const uint8_t duty) : Gain(), _point(std::move(point)), _duty(duty) {}
   ~FocalPointGain() override = default;
   FocalPointGain(const FocalPointGain& v) noexcept = default;
@@ -199,7 +128,7 @@ class BesselBeamGain final : public Gain {
    * @param[in] theta_z angle between the conical wavefront of the beam and the direction
    * @param[in] duty duty ratio of driving signal
    */
-  static GainPtr Create(const Vector3& point, const Vector3& vec_n, Float theta_z, uint8_t duty = 0xff);
+  static GainPtr Create(const Vector3& point, const Vector3& vec_n, double theta_z, uint8_t duty = 0xff);
   /**
    * @brief Generate function
    * @param[in] point start point of the beam
@@ -207,10 +136,10 @@ class BesselBeamGain final : public Gain {
    * @param[in] theta_z angle between the conical wavefront of the beam and the direction
    * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
    */
-  static GainPtr Create(const Vector3& point, const Vector3& vec_n, Float theta_z, Float amp);
+  static GainPtr Create(const Vector3& point, const Vector3& vec_n, double theta_z, double amp);
 
-  Result<bool, std::string> Build() override;
-  explicit BesselBeamGain(Vector3 point, Vector3 vec_n, const Float theta_z, const uint8_t duty)
+  Result<bool, std::string> Calc() override;
+  explicit BesselBeamGain(Vector3 point, Vector3 vec_n, const double theta_z, const uint8_t duty)
       : Gain(), _point(std::move(point)), _vec_n(std::move(vec_n)), _theta_z(theta_z), _duty(duty) {}
   ~BesselBeamGain() override = default;
   BesselBeamGain(const BesselBeamGain& v) noexcept = default;
@@ -221,7 +150,7 @@ class BesselBeamGain final : public Gain {
  private:
   Vector3 _point = Vector3::Zero();
   Vector3 _vec_n = Vector3::UnitZ();
-  Float _theta_z = 0;
+  double _theta_z = 0;
   uint8_t _duty = 0xff;
 };
 
@@ -245,8 +174,8 @@ class CustomGain final : public Gain {
    * amplitude and LSB represents phase
    */
   static GainPtr Create(const uint16_t* data, size_t data_length);
-  Result<bool, std::string> Build() override;
-  explicit CustomGain(std::vector<AUTDDataArray> data) : Gain(std::move(data)) {}
+  Result<bool, std::string> Calc() override;
+  explicit CustomGain(std::vector<AUTDDataArray> data) : Gain() { this->_data = std::move(data); }
   ~CustomGain() override = default;
   CustomGain(const CustomGain& v) noexcept = default;
   CustomGain& operator=(const CustomGain& obj) = default;
@@ -266,7 +195,7 @@ class TransducerTestGain final : public Gain {
    * @param[in] phase phase of the phase
    */
   static GainPtr Create(size_t transducer_index, uint8_t duty, uint8_t phase);
-  Result<bool, std::string> Build() override;
+  Result<bool, std::string> Calc() override;
   TransducerTestGain(const size_t transducer_index, const uint8_t duty, const uint8_t phase)
       : Gain(), _transducer_idx(transducer_index), _duty(duty), _phase(phase) {}
   ~TransducerTestGain() override = default;

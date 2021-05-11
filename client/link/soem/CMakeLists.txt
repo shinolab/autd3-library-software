@@ -15,6 +15,15 @@ if(WIN32)
   include_directories(
     ${SOEM_PATH}/oshw/${OS}/wpcap/Include
     ${SOEM_PATH}/oshw/${OS}/wpcap/Include/pcap
+    ${PROJECT_SOURCE_DIR}/osal_timer/win32
+  )
+elseif(APPLE)
+  include_directories(
+    ${PROJECT_SOURCE_DIR}/osal_timer/macosx
+  )
+else()
+  include_directories(
+    ${PROJECT_SOURCE_DIR}/linux/win32
   )
 endif()
 
@@ -33,7 +42,6 @@ add_library(link_soem STATIC
   ${PROJECT_SOURCE_DIR}/include/link/soem.hpp
 )
 
-target_link_libraries(link_soem osal_timer)
 
 if(WIN32)
   if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")

@@ -1,65 +1,29 @@
-﻿// File: modulation.hpp
+﻿// File: primitive_modulation.hpp
 // Project: include
-// Created Date: 04/11/2018
+// Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 11/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
-// Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
+// Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
 #pragma once
 
-#include <cmath>
-#include <limits>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "autd_types.hpp"
-#include "configuration.hpp"
-#include "consts.hpp"
-#include "result.hpp"
+#include "core/configuration.hpp"
+#include "core/modulation.hpp"
+#include "core/result.hpp"
 
-namespace autd {
+namespace autd::modulation {
 
-namespace modulation {
-class Modulation;
-}
-
-using ModulationPtr = std::shared_ptr<modulation::Modulation>;
-
-namespace modulation {
-
-inline Float Sinc(const Float x) noexcept {
-  if (fabs(x) < std::numeric_limits<Float>::epsilon()) return 1;
-  return std::sin(PI * x) / (PI * x);
-}
-
-/**
- * @brief Modulation controls the amplitude modulation
- */
-class Modulation {
- public:
-  Modulation() noexcept;
-  virtual ~Modulation() = default;
-  Modulation(const Modulation& v) noexcept = default;
-  Modulation& operator=(const Modulation& obj) = default;
-  Modulation(Modulation&& obj) = default;
-  Modulation& operator=(Modulation&& obj) = default;
-
-  /**
-   * @brief Generate empty modulation, which produce static pressure
-   */
-  static ModulationPtr Create(uint8_t amp = 0xff);
-  [[nodiscard]] virtual Result<bool, std::string> Build(Configuration config);
-  std::vector<uint8_t> buffer;
-  size_t& sent();
-
- private:
-  size_t _sent;
-};
+using core::Configuration;
+using core::Modulation;
+using core::ModulationPtr;
 
 /**
  * @brief Sine wave modulation
@@ -73,14 +37,14 @@ class SineModulation final : public Modulation {
    * @param[in] offset offset of the wave
    * @details The sine wave oscillate from offset-amp/2 to offset+amp/2
    */
-  static ModulationPtr Create(int freq, Float amp = 1.0, Float offset = 0.5);
+  static ModulationPtr Create(int freq, double amp = 1.0, double offset = 0.5);
   Result<bool, std::string> Build(Configuration config) override;
-  SineModulation(const int freq, const Float amp, const Float offset) : Modulation(), _freq(freq), _amp(amp), _offset(offset) {}
+  SineModulation(const int freq, const double amp, const double offset) : Modulation(), _freq(freq), _amp(amp), _offset(offset) {}
 
  private:
   int _freq = 0;
-  Float _amp = 1.0;
-  Float _offset = 0.5;
+  double _amp = 1.0;
+  double _offset = 0.5;
 };
 
 /**
@@ -124,5 +88,4 @@ class SawModulation final : public Modulation {
  private:
   int _freq = 0;
 };
-}  // namespace modulation
-}  // namespace autd
+}  // namespace autd::modulation
