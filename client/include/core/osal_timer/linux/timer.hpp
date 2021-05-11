@@ -60,7 +60,6 @@ class Timer {
 
   timer_t _timer_id;
 
-  std::thread _main_thread;
   bool _loop = false;
 
   static void Notify(union sigval sv) {

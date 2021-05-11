@@ -58,8 +58,9 @@ class Timer {
   dispatch_queue_t _queue;
   dispatch_source_t _timer;
 
-  std::thread _main_thread;
-  bool _loop = false;
+  bool _loop;
+
+  void MainLoop(Timer *ptr) { ptr->_cb(); }
 
   [[nodiscard]] Result<bool, std::string> InitTimer() {
     _queue = dispatch_queue_create("timerQueue", 0);
