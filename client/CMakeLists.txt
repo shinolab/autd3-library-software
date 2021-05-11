@@ -7,10 +7,7 @@ set(VERSION_PATCH   0   CACHE STRING "Project patch version number.")
 mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
 
 option(BUILD_ALL "BUILD_ALL" OFF)
-
 option(BUILD_DOC "BUILD_DOC" OFF)
-option(USE_SINGLE_FLOAT "USE_SINGLE_FLOAT" OFF)
-option(USE_MKL "USE_MKL" OFF)
 
 option(BUILD_HOLO_GAIN "BUILD_HOLO_GAIN" ON)
 
@@ -20,10 +17,6 @@ option(BUILD_TWINCAT_LINK "BUILD_TWINCAT_LINK" OFF)
 option(IGNORE_EXAMPLE "IGNORE_EXAMPLE" OFF)
 option(BUILD_CAPI "BUILD_CAPI" OFF)
 option(ENABLE_LINT "ENABLE_LINT" OFF)
-
-set(BLAS_LIB_DIR CACHE PATH "BLAS library directory")
-set(BLAS_DEPEND_LIB_DIR CACHE PATH "Additional library directory for BLAS")
-set(BLAS_INCLUDE_DIR CACHE PATH "BLAS include directory")
 
 if(BUILD_ALL)
   set(BUILD_HOLO_GAIN ON)
@@ -40,11 +33,6 @@ if(BUILD_DOC)
     message(STATUS "Doxygen is needed to build the documentation. Skip building doc...")
     set(BUILD_DOC OFF)
   endif()
-endif()
-
-if(USE_SINGLE_FLOAT)
-  message(STATUS "Use single-precision floating point number")
-  add_definitions(-DUSE_SINGLE_FLOAT_AUTD)
 endif()
 
 if(WIN32)
@@ -66,6 +54,11 @@ else()
   else()
     include(cmakes/linux.cmake)
   endif()
+endif()
+
+add_compile_definitions(_USE_MATH_DEFINES)
+if(WIN32)
+  add_compile_definitions(__STDC_LIMIT_MACROS)
 endif()
 
 find_package(Git)
@@ -101,14 +94,8 @@ endif()
 add_definitions(-DEIGEN_MPL2_ONLY)
 set(EIGEN_PATH ${PROJECT_SOURCE_DIR}/deps/Eigen3)
 
-add_subdirectory(osal_timer)
-
 # Link
 if(BUILD_TWINCAT_LINK)
-  if(Git_FOUND)
-    execute_process(COMMAND git -C ${PROJECT_SOURCE_DIR} submodule update --init --recursive -- ${PROJECT_SOURCE_DIR}/deps/BeckhoffADS/ADS)
-  endif()
-  set (ADS_PATH ${PROJECT_SOURCE_DIR}/deps/BeckhoffADS/ADS)
   add_subdirectory(link/twincat)
 endif()
 if(BUILD_SOEM_LINK)
