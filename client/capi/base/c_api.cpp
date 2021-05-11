@@ -3,7 +3,7 @@
 // Created Date: 02/07/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 02/05/2021
+// Last Modified: 11/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -44,19 +44,17 @@ bool AUTDOpenControllerWith(void* const handle, void* const p_link) {
 int32_t AUTDAddDevice(void* const handle, const float x, const float y, const float z, const float rz1, const float ry, const float rz2,
                       const int32_t group_id) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
-  const auto res = cnt->ptr->geometry()->AddDevice(
-      autd::Vector3(static_cast<autd::Float>(x), static_cast<autd::Float>(y), static_cast<autd::Float>(z)),
-      autd::Vector3(static_cast<autd::Float>(rz1), static_cast<autd::Float>(ry), static_cast<autd::Float>(rz2)), group_id);
+  const auto res =
+      cnt->ptr->geometry()->AddDevice(autd::Vector3(static_cast<double>(x), static_cast<double>(y), static_cast<double>(z)),
+                                      autd::Vector3(static_cast<double>(rz1), static_cast<double>(ry), static_cast<double>(rz2)), group_id);
   return static_cast<int32_t>(res);
 }
 int32_t AUTDAddDeviceQuaternion(void* const handle, const float x, const float y, const float z, const float qua_w, const float qua_x,
                                 const float qua_y, const float qua_z, const int32_t group_id) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
-  const auto res =
-      cnt->ptr->geometry()->AddDeviceQuaternion(autd::Vector3(static_cast<autd::Float>(x), static_cast<autd::Float>(y), static_cast<autd::Float>(z)),
-                                                autd::Quaternion(static_cast<autd::Float>(qua_w), static_cast<autd::Float>(qua_x),
-                                                                 static_cast<autd::Float>(qua_y), static_cast<autd::Float>(qua_z)),
-                                                group_id);
+  const auto res = cnt->ptr->geometry()->AddDeviceQuaternion(
+      autd::Vector3(static_cast<double>(x), static_cast<double>(y), static_cast<double>(z)),
+      autd::Quaternion(static_cast<double>(qua_w), static_cast<double>(qua_x), static_cast<double>(qua_y), static_cast<double>(qua_z)), group_id);
   return static_cast<int32_t>(res);
 }
 int32_t AUTDDeleteDevice(void* const handle, const int32_t idx) {
@@ -151,7 +149,7 @@ float AUTDWavelength(void* const handle) {
 }
 void AUTDSetWavelength(void* const handle, const float wavelength) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
-  cnt->ptr->geometry()->set_wavelength(static_cast<autd::Float>(wavelength));
+  cnt->ptr->geometry()->set_wavelength(static_cast<double>(wavelength));
 }
 int32_t AUTDNumDevices(void* const handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
@@ -193,21 +191,20 @@ void AUTDDeleteGain(void* const gain) {
   GainDelete(g);
 }
 void AUTDFocalPointGain(void** gain, const float x, const float y, const float z, const uint8_t duty) {
-  auto* g = GainCreate(
-      autd::gain::FocalPointGain::Create(autd::Vector3(static_cast<autd::Float>(x), static_cast<autd::Float>(y), static_cast<autd::Float>(z)), duty));
+  auto* g =
+      GainCreate(autd::gain::FocalPointGain::Create(autd::Vector3(static_cast<double>(x), static_cast<double>(y), static_cast<double>(z)), duty));
   *gain = g;
 }
 void AUTDBesselBeamGain(void** gain, const float x, const float y, const float z, const float n_x, const float n_y, const float n_z,
                         const float theta_z, const uint8_t duty) {
-  auto* g = GainCreate(
-      autd::gain::BesselBeamGain::Create(autd::Vector3(static_cast<autd::Float>(x), static_cast<autd::Float>(y), static_cast<autd::Float>(z)),
-                                         autd::Vector3(static_cast<autd::Float>(n_x), static_cast<autd::Float>(n_y), static_cast<autd::Float>(n_z)),
-                                         static_cast<autd::Float>(theta_z), duty));
+  auto* g = GainCreate(autd::gain::BesselBeamGain::Create(autd::Vector3(static_cast<double>(x), static_cast<double>(y), static_cast<double>(z)),
+                                                          autd::Vector3(static_cast<double>(n_x), static_cast<double>(n_y), static_cast<double>(n_z)),
+                                                          static_cast<double>(theta_z), duty));
   *gain = g;
 }
 void AUTDPlaneWaveGain(void** gain, const float n_x, const float n_y, const float n_z, const uint8_t duty) {
-  auto* g = GainCreate(autd::gain::PlaneWaveGain::Create(
-      autd::Vector3(static_cast<autd::Float>(n_x), static_cast<autd::Float>(n_y), static_cast<autd::Float>(n_z)), duty));
+  auto* g = GainCreate(
+      autd::gain::PlaneWaveGain::Create(autd::Vector3(static_cast<double>(n_x), static_cast<double>(n_y), static_cast<double>(n_z)), duty));
   *gain = g;
 }
 void AUTDCustomGain(void** gain, uint16_t* data, const int32_t data_length) {
@@ -245,7 +242,7 @@ void AUTDSawModulation(void** mod, const int32_t freq) {
   *mod = m;
 }
 void AUTDSineModulation(void** mod, const int32_t freq, const float amp, const float offset) {
-  auto* m = ModulationCreate(autd::modulation::SineModulation::Create(freq, static_cast<autd::Float>(amp), static_cast<autd::Float>(offset)));
+  auto* m = ModulationCreate(autd::modulation::SineModulation::Create(freq, static_cast<double>(amp), static_cast<double>(offset)));
   *mod = m;
 }
 #pragma endregion
@@ -287,7 +284,7 @@ void AUTDAddSTMGain(void* const handle, void* const gain) {
 }
 bool AUTDStartSTModulation(void* const handle, const float freq) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
-  auto res = cnt->ptr->StartSTModulation(static_cast<autd::Float>(freq));
+  auto res = cnt->ptr->StartSTModulation(static_cast<double>(freq));
   if (res.is_err()) LastError() = res.unwrap_err();
   return res.unwrap_or(false);
 }
