@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/05/2021
+// Last Modified: 12/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -68,8 +68,8 @@ void AUTDClearDevices(void* const handle) {
 bool AUTDSynchronize(void* const handle, int32_t smpl_freq, int32_t buf_size) {
   auto* cnt = static_cast<autd::Controller*>(handle);
   auto config = autd::core::Configuration::GetDefaultConfiguration();
-  config.set_mod_sampling_freq(static_cast<autd::core::MOD_SAMPLING_FREQ>(smpl_freq));
-  config.set_mod_buf_size(static_cast<autd::core::MOD_BUF_SIZE>(buf_size));
+  config.mod_sampling_freq() = static_cast<autd::core::MOD_SAMPLING_FREQ>(smpl_freq);
+  config.mod_buf_size() = static_cast<autd::core::MOD_BUF_SIZE>(buf_size);
   auto res = cnt->Synchronize(config);
   if (res.is_err()) LastError() = res.unwrap_err();
   return res.unwrap_or(false);
@@ -254,23 +254,23 @@ bool AUTDSend(void* const handle, void* const gain, void* const modulation) {
 void AUTDAddSTMGain(void* const handle, void* const gain) {
   auto* cnt = static_cast<autd::Controller*>(handle);
   auto* g = static_cast<GainWrapper*>(gain);
-  cnt->stm().AddGain(g->ptr);
+  cnt->stm()->AddGain(g->ptr);
 }
 bool AUTDStartSTModulation(void* const handle, const float freq) {
   auto* cnt = static_cast<autd::Controller*>(handle);
-  auto res = cnt->stm().Start(static_cast<double>(freq));
+  auto res = cnt->stm()->Start(static_cast<double>(freq));
   if (res.is_err()) LastError() = res.unwrap_err();
   return res.unwrap_or(false);
 }
 bool AUTDStopSTModulation(void* const handle) {
   auto* cnt = static_cast<autd::Controller*>(handle);
-  auto res = cnt->stm().Stop();
+  auto res = cnt->stm()->Stop();
   if (res.is_err()) LastError() = res.unwrap_err();
   return res.unwrap_or(false);
 }
 bool AUTDFinishSTModulation(void* const handle) {
   auto* cnt = static_cast<autd::Controller*>(handle);
-  auto res = cnt->stm().Finish();
+  auto res = cnt->stm()->Finish();
   if (res.is_err()) LastError() = res.unwrap_err();
   return res.unwrap_or(false);
 }
