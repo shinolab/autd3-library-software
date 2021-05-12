@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/05/2021
+// Last Modified: 12/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -15,6 +15,7 @@
 #include <mutex>
 #include <queue>
 #include <thread>
+#include <utility>
 #include <vector>
 
 #include "core/logic.hpp"
@@ -37,11 +38,12 @@ Result<bool, std::string> Controller::OpenWith(core::LinkPtr link) {
   if (is_open())
     if (auto close_res = this->Close(); close_res.is_err()) return close_res;
 
-  this->_link = link;
-  auto res = this->_link->Open();
-  if (res.is_err()) return res;
+  this->_tx_buf = std::make_unique<uint8_t[]>(this->_geometry->num_devices() * core::EC_OUTPUT_FRAME_SIZE);
+  this->_rx_buf = std::make_unique<uint8_t[]>(this->_geometry->num_devices() * core::EC_INPUT_FRAME_SIZE);
 
-  return Ok(res.unwrap());
+  this->_link = link;
+  this->_stm = std::make_shared<STMController>(this->_link, this->_geometry, &this->_silent_mode);
+  return this->_link->Open();
 }
 
 Result<bool, std::string> Controller::Synchronize(const core::Configuration config) {
@@ -49,19 +51,27 @@ Result<bool, std::string> Controller::Synchronize(const core::Configuration conf
   return core::Logic::Synchronize(this->_link, this->_geometry->num_devices(), &_tx_buf[0], &_rx_buf[0], _config);
 }
 
-Result<bool, std::string> Controller::Clear() { return core::Logic::Clear(this->_link, this->_geometry->num_devices(), &_tx_buf[0], &_rx_buf[0]); }
+Result<bool, std::string> Controller::Clear() const {
+  return core::Logic::Clear(this->_link, this->_geometry->num_devices(), &_tx_buf[0], &_rx_buf[0]);
+}
 
 Result<bool, std::string> Controller::Close() {
-  auto stm_close_res = this->_stm.Finish();
-  if (stm_close_res.is_err()) return stm_close_res;
+  Result<bool, std::string> res = Ok(true);
+  res = this->_stm->Finish();
+  if (res.is_err()) return res;
 
-  auto stop_res = this->Stop();
-  if (stop_res.is_err()) return stop_res;
+  res = this->Stop();
+  if (res.is_err()) return res;
 
-  auto clear_res = this->Clear();
-  if (clear_res.is_err()) return clear_res;
+  res = this->Clear();
+  if (res.is_err()) return res;
 
-  return Ok(stm_close_res.unwrap() && stop_res.unwrap() && clear_res.unwrap());
+  res = this->_link->Close();
+  this->_link = nullptr;
+  this->_tx_buf = nullptr;
+  this->_rx_buf = nullptr;
+
+  return res;
 }
 
 Result<bool, std::string> Controller::Stop() {
@@ -72,7 +82,7 @@ Result<bool, std::string> Controller::Stop() {
 Result<bool, std::string> Controller::Send(const core::GainPtr gain, const core::ModulationPtr mod, const bool wait_for_sent) {
   Result<bool, std::string> res = Ok(true);
 
-  res = this->_stm.Stop();
+  res = this->_stm->Stop();
   if (res.is_err()) return res;
 
   if (mod != nullptr) {
@@ -84,8 +94,7 @@ Result<bool, std::string> Controller::Send(const core::GainPtr gain, const core:
   core::Logic::PackHeader(mod, this->_silent_mode, this->_seq_mode, &this->_tx_buf[0], &msg_id);
 
   if (gain != nullptr) {
-    gain->SetGeometry(this->_geometry);
-    res = gain->Build();
+    res = gain->Build(this->_geometry);
     if (res.is_err()) return res;
   }
 
@@ -100,10 +109,10 @@ Result<bool, std::string> Controller::Send(const core::GainPtr gain, const core:
 }
 
 Result<std::vector<FirmwareInfo>, std::string> Controller::firmware_info_list() const {
-  return core::Logic::firmware_info_list(this->_link, this->_geometry->num_devices());
+  return core::Logic::firmware_info_list(this->_link, this->_geometry->num_devices(), &this->_tx_buf[0], &this->_rx_buf[0]);
 }
 
-Controller::STMController& Controller::stm() { return this->_stm; }
+std::shared_ptr<Controller::STMController> Controller::stm() const { return this->_stm; }
 
 void Controller::STMController::AddGain(core::GainPtr gain) { _gains.emplace_back(gain); }
 void Controller::STMController::AddGains(const std::vector<core::GainPtr>& gains) {
@@ -121,7 +130,7 @@ void Controller::STMController::AddGains(const std::vector<core::GainPtr>& gains
 
   for (auto i = current_size; i < len; i++) {
     auto& g = this->_gains[i];
-    if (auto res = g->Build(); res.is_err()) return res;
+    if (auto res = g->Build(this->_geometry); res.is_err()) return res;
 
     size_t body_size = 0;
     uint8_t msg_id = 0;

@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/05/2021
+// Last Modified: 12/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -37,47 +37,34 @@ class Gain {
   /**
    * @brief Calculate amplitude and phase of each transducer
    */
-  [[nodiscard]] virtual Result<bool, std::string> Calc() {
-    for (size_t i = 0; i < this->_geometry->num_devices(); i++) this->_data[i].fill(0x0000);
+  [[nodiscard]] virtual Result<bool, std::string> Calc(GeometryPtr geometry) {
+    for (size_t i = 0; i < geometry->num_devices(); i++) this->_data[i].fill(0x0000);
     return Ok(true);
   }
 
   /**
    * @brief Initialize data and calculate amplitude and phase of each transducer
    */
-  [[nodiscard]] Result<bool, std::string> Build() {
+  [[nodiscard]] Result<bool, std::string> Build(GeometryPtr geometry) {
     if (this->_built) return Ok(true);
 
-    const auto num_device = this->_geometry->num_devices();
+    const auto num_device = geometry->num_devices();
 
     this->_data.clear();
     this->_data.resize(num_device);
 
-    auto res = this->Calc();
-    if (res.is_err()) return res;
-
-    this->_built = true;
-    return Ok(res.unwrap());
+    auto res = this->Calc(geometry);
+    this->_built = res.unwrap_or(false);
+    return res;
   }
 
   /**
    * @brief Re-calculate amplitude and phase of each transducer
    */
-  [[nodiscard]] Result<bool, std::string> Rebuild() {
+  [[nodiscard]] Result<bool, std::string> Rebuild(GeometryPtr geometry) {
     this->_built = false;
-    return this->Build();
+    return this->Build(geometry);
   }
-
-  /**
-   * @brief Set AUTD Geometry which is required to build gain
-   */
-
-  void SetGeometry(const GeometryPtr& geometry) noexcept { this->_geometry = geometry; }
-
-  /**
-   * @brief Get AUTD Geometry
-   */
-  [[nodiscard]] GeometryPtr geometry() const noexcept { return _geometry; }
 
   /**
    * @brief Getter function for the data of amplitude and phase of each transducers
@@ -85,7 +72,7 @@ class Gain {
    */
   std::vector<AUTDDataArray>& data() { return _data; }
 
-  Gain() noexcept : _built(false), _geometry(nullptr) {}
+  Gain() noexcept : _built(false) {}
   virtual ~Gain() = default;
   Gain(const Gain& v) noexcept = default;
   Gain& operator=(const Gain& obj) = default;
@@ -94,7 +81,6 @@ class Gain {
 
  protected:
   bool _built;
-  GeometryPtr _geometry;
   std::vector<AUTDDataArray> _data;
 };  // namespace autd::gain
 }  // namespace autd::core

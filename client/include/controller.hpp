@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/05/2021
+// Last Modified: 12/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -40,7 +40,7 @@ class Controller {
         _seq_mode(false),
         _tx_buf(nullptr),
         _rx_buf(nullptr),
-        _stm(&this->silent_mode()) {}
+        _stm(nullptr) {}
   ~Controller() = default;
   Controller(const Controller& v) noexcept = delete;
   Controller& operator=(const Controller& obj) = delete;
@@ -81,7 +81,7 @@ class Controller {
    * @brief Clear all data in hardware
    * @return return Ok(whether succeeded to clear), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Result<bool, std::string> Clear();
+  [[nodiscard]] Result<bool, std::string> Clear() const;
 
   /**
    * @brief Close the controller
@@ -110,11 +110,13 @@ class Controller {
    */
   [[nodiscard]] Result<std::vector<FirmwareInfo>, std::string> firmware_info_list() const;
 
-  STMController& stm();
+  std::shared_ptr<STMController> stm() const;
 
   class STMController {
    public:
-    explicit STMController(bool* silent_mode) : _silent_mode(silent_mode) {}
+    STMController() : STMController(nullptr, nullptr, nullptr) {}
+    explicit STMController(const core::LinkPtr link, const core::GeometryPtr geometry, bool* silent_mode)
+        : _link(link), _geometry(geometry), _silent_mode(silent_mode) {}
 
     /**
      * @brief Add gain for STM
@@ -152,6 +154,7 @@ class Controller {
 
    private:
     core::LinkPtr _link;
+    core::GeometryPtr _geometry;
     std::vector<core::GainPtr> _gains;
     std::vector<uint8_t*> _bodies;
     std::vector<size_t> _body_sizes;
@@ -170,6 +173,6 @@ class Controller {
   std::unique_ptr<uint8_t[]> _tx_buf;
   std::unique_ptr<uint8_t[]> _rx_buf;
 
-  STMController _stm;
+  std::shared_ptr<STMController> _stm;
 };
 }  // namespace autd
