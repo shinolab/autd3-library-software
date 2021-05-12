@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/05/2021
+// Last Modified: 12/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -43,17 +43,21 @@ class FirmwareInfo {
   static std::string firmware_version_map(const uint16_t version_number) {
     if (version_number == 0) {
       return "older than v0.4";
-    } else if (version_number <= 6) {
+    }
+    if (version_number <= 6) {
       std::stringstream ss;
       ss << "v0." << version_number + 3;
       return ss.str();
-    } else if (version_number == 0x000A) {
+    }
+    if (version_number == 0x000A) {
       return "v1.0";
-    } else if ((version_number & 0xF000) == 0x1000) {
+    }
+    if ((version_number & 0xF000) == 0x1000) {
       std::stringstream ss;
       ss << "v" << version_number - 0x1000 + 1 << "-lite";
       return ss.str();
-    } else if ((version_number & 0xF000) == 0xF000) {
+    }
+    if ((version_number & 0xF000) == 0xF000) {
       std::stringstream ss;
       ss << "v0." << version_number - 0xF000 + 1 << "-freq-shift";
       return ss.str();

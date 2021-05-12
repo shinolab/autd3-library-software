@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/05/2021
+// Last Modified: 12/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -98,7 +98,7 @@ class Geometry {
    * @param group Grouping ID of the device used in gain::GroupedGain
    * @return an id of added device, which is used to delete or do other device specific controls.
    */
-  size_t AddDevice(Vector3 position, Vector3 euler_angles, size_t group = 0) {
+  size_t AddDevice(const Vector3& position, const Vector3& euler_angles, const size_t group = 0) {
     const auto device_id = this->_devices.size();
     this->_devices.emplace_back(Device::Create(position, euler_angles));
     this->_group_map[device_id] = group;
@@ -113,7 +113,7 @@ class Geometry {
    * @param group Grouping ID of the device used in gain::GroupedGain
    * @return an id of added device, which is used to delete or do other device specific controls.
    */
-  size_t AddDevice(Vector3 position, Quaternion quaternion, size_t group = 0) {
+  size_t AddDevice(const Vector3& position, const Quaternion& quaternion, const size_t group = 0) {
     const auto device_id = this->_devices.size();
     this->_devices.emplace_back(Device::Create(position, quaternion));
     this->_group_map[device_id] = group;
@@ -125,7 +125,7 @@ class Geometry {
    * @param idx Index of the device to delete.
    * @return an index of deleted device
    */
-  size_t DelDevice(size_t idx) {
+  size_t DelDevice(const size_t idx) {
     this->_devices.erase(this->_devices.begin() + idx);
     return idx;
   }
@@ -143,35 +143,35 @@ class Geometry {
   /**
    * @brief attenuation coefficient
    */
-  double& attenuation_coeff() noexcept { return this->_attenuation; }
+  double& attenuation_coefficient() noexcept { return this->_attenuation; }
 
   /**
    * @brief Number of devices
    */
-  size_t num_devices() noexcept { return this->_devices.size(); }
+  [[nodiscard]] size_t num_devices() const noexcept { return this->_devices.size(); }
 
   /**
    * @brief Number of transducers
    */
-  size_t num_transducers() noexcept { return this->num_devices() * NUM_TRANS_IN_UNIT; }
+  [[nodiscard]] size_t num_transducers() const noexcept { return this->num_devices() * NUM_TRANS_IN_UNIT; }
 
   /**
    * @brief Convert device ID into group ID
    */
-  size_t group_id_for_device_idx(size_t device_idx) { return this->_group_map[device_idx]; }
+  size_t group_id_for_device_idx(const size_t device_idx) { return this->_group_map[device_idx]; }
 
   /**
    * @brief Position of a transducer specified by id
    */
-  Vector3 position(size_t global_transducer_idx) {
+  Vector3 position(const size_t global_transducer_idx) {
     const auto local_trans_id = global_transducer_idx % NUM_TRANS_IN_UNIT;
-    return position(this->device_idx_for_trans_idx(global_transducer_idx), local_trans_id);
+    return position(device_idx_for_trans_idx(global_transducer_idx), local_trans_id);
   }
 
   /**
    * @brief Position of a transducer specified by id
    */
-  Vector3 position(size_t device_idx, size_t local_transducer_idx) {
+  Vector3 position(const size_t device_idx, const size_t local_transducer_idx) {
     const auto& [_x, _y, _z, global_trans_positions] = this->_devices[device_idx];
     return global_trans_positions[local_transducer_idx];
   }
@@ -179,7 +179,7 @@ class Geometry {
   /**
    * @brief Convert a global position to a local position
    */
-  Vector3 local_position(size_t device_idx, Vector3 global_position) {
+  Vector3 local_position(const size_t device_idx, const Vector3& global_position) {
     const auto& [x_direction, y_direction, z_direction, global_trans_positions] = this->_devices[device_idx];
     const auto& local_origin = global_trans_positions[0];
     const auto& x_dir = x_direction;
@@ -192,26 +192,26 @@ class Geometry {
   /**
    * @brief Normalized direction of a device
    */
-  Vector3 direction(size_t device_idx) { return this->_devices[device_idx].z_direction; }
+  Vector3 direction(const size_t device_idx) { return this->_devices[device_idx].z_direction; }
   /**
    * @brief Normalized long-axis direction of a device
    */
-  Vector3 x_direction(size_t device_idx) { return this->_devices[device_idx].x_direction; }
+  Vector3 x_direction(const size_t device_idx) { return this->_devices[device_idx].x_direction; }
 
   /**
    * @brief Normalized short-axis direction of a device
    */
-  Vector3 y_direction(size_t device_idx) { return this->_devices[device_idx].y_direction; }
+  Vector3 y_direction(const size_t device_idx) { return this->_devices[device_idx].y_direction; }
 
   /**
    * @brief Same as the direction()
    */
-  Vector3 z_direction(size_t device_idx) { return this->_devices[device_idx].z_direction; }
+  Vector3 z_direction(const size_t device_idx) { return this->_devices[device_idx].z_direction; }
 
   /**
    * @brief Convert transducer index into device ID
    */
-  size_t device_idx_for_trans_idx(size_t transducer_idx) { return transducer_idx / NUM_TRANS_IN_UNIT; }
+  static size_t device_idx_for_trans_idx(const size_t transducer_idx) { return transducer_idx / NUM_TRANS_IN_UNIT; }
 
  private:
   std::vector<Device> _devices;

@@ -37,7 +37,7 @@ class Gain {
   /**
    * @brief Calculate amplitude and phase of each transducer
    */
-  [[nodiscard]] virtual Result<bool, std::string> Calc(GeometryPtr geometry) {
+  [[nodiscard]] virtual Result<bool, std::string> Calc(const GeometryPtr geometry) {
     for (size_t i = 0; i < geometry->num_devices(); i++) this->_data[i].fill(0x0000);
     return Ok(true);
   }
@@ -45,7 +45,7 @@ class Gain {
   /**
    * @brief Initialize data and calculate amplitude and phase of each transducer
    */
-  [[nodiscard]] Result<bool, std::string> Build(GeometryPtr geometry) {
+  [[nodiscard]] Result<bool, std::string> Build(const GeometryPtr geometry) {
     if (this->_built) return Ok(true);
 
     const auto num_device = geometry->num_devices();
@@ -61,7 +61,7 @@ class Gain {
   /**
    * @brief Re-calculate amplitude and phase of each transducer
    */
-  [[nodiscard]] Result<bool, std::string> Rebuild(GeometryPtr geometry) {
+  [[nodiscard]] Result<bool, std::string> Rebuild(const GeometryPtr geometry) {
     this->_built = false;
     return this->Build(geometry);
   }

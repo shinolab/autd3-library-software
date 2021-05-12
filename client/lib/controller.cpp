@@ -12,10 +12,7 @@
 #include "controller.hpp"
 
 #include <condition_variable>
-#include <mutex>
 #include <queue>
-#include <thread>
-#include <utility>
 #include <vector>
 
 #include "core/logic.hpp"
@@ -23,18 +20,13 @@
 
 namespace autd {
 
-using std::move;
-using std::shared_ptr;
-using std::thread, std::queue;
-using std::vector, std::condition_variable, std::unique_lock, std::mutex;
-
 bool Controller::is_open() const { return this->_link != nullptr && this->_link->is_open(); }
 
 core::GeometryPtr Controller::geometry() const noexcept { return this->_geometry; }
 
 bool& Controller::silent_mode() noexcept { return this->_silent_mode; }
 
-Result<bool, std::string> Controller::OpenWith(core::LinkPtr link) {
+Result<bool, std::string> Controller::OpenWith(const core::LinkPtr link) {
   if (is_open())
     if (auto close_res = this->Close(); close_res.is_err()) return close_res;
 
@@ -74,12 +66,12 @@ Result<bool, std::string> Controller::Close() {
   return res;
 }
 
-Result<bool, std::string> Controller::Stop() {
+Result<bool, std::string> Controller::Stop() const {
   const auto null_gain = gain::NullGain::Create();
   return this->Send(null_gain, nullptr, false);
 }
 
-Result<bool, std::string> Controller::Send(const core::GainPtr gain, const core::ModulationPtr mod, const bool wait_for_sent) {
+Result<bool, std::string> Controller::Send(const core::GainPtr gain, const core::ModulationPtr mod, const bool wait_for_sent) const {
   Result<bool, std::string> res = Ok(true);
 
   res = this->_stm->Stop();
@@ -114,7 +106,7 @@ Result<std::vector<FirmwareInfo>, std::string> Controller::firmware_info_list() 
 
 std::shared_ptr<Controller::STMController> Controller::stm() const { return this->_stm; }
 
-void Controller::STMController::AddGain(core::GainPtr gain) { _gains.emplace_back(gain); }
+void Controller::STMController::AddGain(const core::GainPtr gain) { _gains.emplace_back(gain); }
 void Controller::STMController::AddGains(const std::vector<core::GainPtr>& gains) {
   for (const auto& g : gains) this->AddGain(g);
 }
@@ -156,10 +148,10 @@ void Controller::STMController::AddGains(const std::vector<core::GainPtr>& gains
 [[nodiscard]] Result<bool, std::string> Controller::STMController::Finish() {
   if (auto res = this->Stop(); res.is_err()) return res;
 
-  vector<core::GainPtr>().swap(this->_gains);
+  std::vector<core::GainPtr>().swap(this->_gains);
   for (auto* p : this->_bodies) delete[] p;
-  vector<uint8_t*>().swap(this->_bodies);
-  vector<size_t>().swap(this->_body_sizes);
+  std::vector<uint8_t*>().swap(this->_bodies);
+  std::vector<size_t>().swap(this->_body_sizes);
 
   return Ok(true);
 }

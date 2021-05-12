@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 02/05/2021
+// Last Modified: 12/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -75,9 +75,9 @@ EXPORT_AUTD bool AUTDAppendGainSync(void* handle, void* gain, bool wait_for_send
 EXPORT_AUTD bool AUTDAppendModulation(void* handle, void* mod);
 EXPORT_AUTD bool AUTDAppendModulationSync(void* handle, void* mod);
 EXPORT_AUTD void AUTDAddSTMGain(void* handle, void* gain);
-EXPORT_AUTD bool AUTDStartSTModulation(void* handle, float freq);
-EXPORT_AUTD bool AUTDStopSTModulation(void* handle);
-EXPORT_AUTD bool AUTDFinishSTModulation(void* handle);
+EXPORT_AUTD bool AUTDStartSTM(void* handle, float freq);
+EXPORT_AUTD bool AUTDStopSTM(void* handle);
+EXPORT_AUTD bool AUTDFinishSTM(void* handle);
 EXPORT_AUTD void AUTDFlush(void* handle);
 EXPORT_AUTD int32_t AUTDDeviceIdxForTransIdx(void* handle, int32_t global_trans_idx);
 EXPORT_AUTD void AUTDTransPositionByGlobal(void* handle, int32_t global_trans_idx, float* x, float* y, float* z);

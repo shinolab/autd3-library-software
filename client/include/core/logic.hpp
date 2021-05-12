@@ -44,12 +44,11 @@ class Logic {
     return SendHeader(link, num_devices, CMD_CLEAR, tx, rx);
   }
 
-  static Result<bool, std::string> Synchronize(const LinkPtr link, const size_t num_devices, uint8_t* tx, uint8_t* rx, Configuration config) {
+  static Result<bool, std::string> Synchronize(const LinkPtr link, const size_t num_devices, uint8_t* tx, uint8_t* rx, const Configuration config) {
     uint8_t msg_id = 0;
     PackHeader(CMD_INIT_FPGA_REF_CLOCK, false, false, tx, &msg_id);
     size_t size = 0;
-    auto res = PackSyncBody(config, num_devices, tx, &size);
-    if (res.is_err()) return res;
+    if (auto res = PackSyncBody(config, num_devices, tx, &size); res.is_err()) return res;
 
     return WaitMsgProcessed(link, msg_id, num_devices, rx, 5000);
   }

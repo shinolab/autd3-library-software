@@ -20,10 +20,10 @@ using core::AUTDDataArray;
 using core::NUM_TRANS_IN_UNIT;
 using core::Vector3;
 
-inline double pos_mod(const double a, const double b) { return a - floor(a / b) * b; }
+inline double PosMod(const double a, const double b) { return a - floor(a / b) * b; }
 
 template <typename T>
-uint8_t to_duty(const T amp) noexcept {
+uint8_t ToDuty(const T amp) noexcept {
   const auto d = std::asin(amp) / static_cast<T>(M_PI);  //  duty (0 ~ 0.5)
   return static_cast<uint8_t>(511 * d);
 }
@@ -52,7 +52,7 @@ Result<bool, std::string> GroupedGain::Calc(core::GeometryPtr geometry) {
 }
 
 GainPtr PlaneWaveGain::Create(const Vector3& direction, const double amp) {
-  const auto d = to_duty(amp);
+  const auto d = ToDuty(amp);
   return Create(direction, d);
 }
 
@@ -70,7 +70,7 @@ Result<bool, std::string> PlaneWaveGain::Calc(core::GeometryPtr geometry) {
     for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
       const auto trp = geometry->position(dev, i);
       const auto dist = trp.dot(dir);
-      const auto f_phase = pos_mod(dist, ultrasound_wavelength) / ultrasound_wavelength;
+      const auto f_phase = PosMod(dist, ultrasound_wavelength) / ultrasound_wavelength;
       const auto phase = static_cast<uint16_t>(round(255 * (1 - f_phase)));
       this->_data[dev][i] = duty | phase;
     }
@@ -80,7 +80,7 @@ Result<bool, std::string> PlaneWaveGain::Calc(core::GeometryPtr geometry) {
 }
 
 GainPtr FocalPointGain::Create(const Vector3& point, const double amp) {
-  const auto d = to_duty(amp);
+  const auto d = ToDuty(amp);
   return Create(point, d);
 }
 
@@ -90,13 +90,13 @@ GainPtr FocalPointGain::Create(const Vector3& point, uint8_t duty) {
 }
 
 Result<bool, std::string> FocalPointGain::Calc(core::GeometryPtr geometry) {
-  const auto ULTRASOUND_WAVELENGTH = geometry->wavelength();
+  const auto ultrasound_wavelength = geometry->wavelength();
   const uint16_t duty = static_cast<uint16_t>(this->_duty) << 8 & 0xFF00;
   for (size_t dev = 0; dev < geometry->num_devices(); dev++)
     for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
       const auto trp = geometry->position(dev, i);
       const auto dist = (trp - this->_point).norm();
-      const auto f_phase = fmod(dist, ULTRASOUND_WAVELENGTH) / ULTRASOUND_WAVELENGTH;
+      const auto f_phase = fmod(dist, ultrasound_wavelength) / ultrasound_wavelength;
       const auto phase = static_cast<uint16_t>(round(255 * (1 - f_phase)));
       this->_data[dev][i] = duty | phase;
     }
@@ -106,7 +106,7 @@ Result<bool, std::string> FocalPointGain::Calc(core::GeometryPtr geometry) {
 }
 
 GainPtr BesselBeamGain::Create(const Vector3& point, const Vector3& vec_n, const double theta_z, const double amp) {
-  const auto duty = to_duty(amp);
+  const auto duty = ToDuty(amp);
   return Create(point, vec_n, theta_z, duty);
 }
 
