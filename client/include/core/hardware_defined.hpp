@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/05/2021
+// Last Modified: 13/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -31,7 +31,7 @@ constexpr auto FPGA_CLOCK = 20400000;
 constexpr auto ULTRASOUND_FREQUENCY = 40000;
 
 constexpr uint32_t MOD_SAMPLING_FREQ_BASE = 8000;
-constexpr size_t MOD_FRAME_SIZE = 128;
+constexpr size_t MOD_FRAME_SIZE = 124;
 
 constexpr auto POINT_SEQ_BUFFER_SIZE_MAX = 40000;
 constexpr auto POINT_SEQ_CLK_IDX_MAX = 40000;
@@ -50,10 +50,21 @@ enum RX_GLOBAL_CONTROL_FLAGS {
   SEQ_END = 1 << 7
 };
 
+enum class COMMAND : uint8_t {
+  OP = 0x00,
+  READ_CPU_VER_LSB = 0x02,
+  READ_CPU_VER_MSB = 0x03,
+  READ_FPGA_VER_LSB = 0x04,
+  READ_FPGA_VER_MSB = 0x05,
+  SEQ_MODE = 0x06,
+  INIT_FPGA_REF_CLOCK = 0x07,
+  CLEAR = 0x09,
+};
+
 struct RxGlobalHeader {
   uint8_t msg_id;
   uint8_t control_flags;
-  uint8_t command;
+  COMMAND command;
   uint8_t mod_size;
   uint8_t mod[MOD_FRAME_SIZE];
 };
@@ -79,4 +90,5 @@ enum class MOD_BUF_SIZE {
   BUF_16000 = 16000,
   BUF_32000 = 32000,
 };
+
 }  // namespace autd::core

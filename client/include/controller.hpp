@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 12/05/2021
+// Last Modified: 13/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -163,6 +163,9 @@ class Controller {
   };
 
  private:
+  Result<bool, std::string> SendHeader(core::COMMAND cmd) const;
+  Result<bool, std::string> WaitMsgProcessed(uint8_t msg_id, size_t max_trial = 200) const;
+
   core::LinkPtr _link;
   core::GeometryPtr _geometry;
   bool _silent_mode;
