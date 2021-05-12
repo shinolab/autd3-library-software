@@ -55,7 +55,7 @@ class Controller {
   /**
    * @brief Geometry of the devices
    */
-  core::GeometryPtr geometry() const noexcept;
+  [[nodiscard]] core::GeometryPtr geometry() const noexcept;
 
   /**
    * @brief Silent mode
@@ -93,7 +93,7 @@ class Controller {
    * @brief Stop outputting
    * @return return Ok(whether succeeded to stop), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Result<bool, std::string> Stop();
+  [[nodiscard]] Result<bool, std::string> Stop() const;
 
   /**
    * @brief Send gain to the controller
@@ -102,7 +102,7 @@ class Controller {
    * @param[in] wait_for_sent if true, this function will wait for the data is sent to the devices and processed.
    * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Result<bool, std::string> Send(core::GainPtr gain, core::ModulationPtr mod, bool wait_for_sent = false);
+  [[nodiscard]] Result<bool, std::string> Send(core::GainPtr gain, core::ModulationPtr mod, bool wait_for_sent = false) const;
 
   /**
    * @brief Enumerate firmware information
@@ -110,11 +110,10 @@ class Controller {
    */
   [[nodiscard]] Result<std::vector<FirmwareInfo>, std::string> firmware_info_list() const;
 
-  std::shared_ptr<STMController> stm() const;
+  [[nodiscard]] std::shared_ptr<STMController> stm() const;
 
   class STMController {
    public:
-    STMController() : STMController(nullptr, nullptr, nullptr) {}
     explicit STMController(const core::LinkPtr link, const core::GeometryPtr geometry, bool* silent_mode)
         : _link(link), _geometry(geometry), _silent_mode(silent_mode) {}
 

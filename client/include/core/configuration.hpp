@@ -31,8 +31,8 @@ class Configuration {
 
   MOD_SAMPLING_FREQ& mod_sampling_freq() noexcept { return this->_mod_sampling_freq; }
   MOD_BUF_SIZE& mod_buf_size() noexcept { return this->_mod_buf_size; }
-  MOD_SAMPLING_FREQ mod_sampling_freq() const noexcept { return this->_mod_sampling_freq; }
-  MOD_BUF_SIZE mod_buf_size() const noexcept { return this->_mod_buf_size; }
+  [[nodiscard]] MOD_SAMPLING_FREQ mod_sampling_freq() const noexcept { return this->_mod_sampling_freq; }
+  [[nodiscard]] MOD_BUF_SIZE mod_buf_size() const noexcept { return this->_mod_buf_size; }
 
  private:
   MOD_SAMPLING_FREQ _mod_sampling_freq;

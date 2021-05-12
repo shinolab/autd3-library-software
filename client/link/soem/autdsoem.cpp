@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/04/2021
+// Last Modified: 12/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -37,8 +37,8 @@
 
 namespace autd::autdsoem {
 
-static std::atomic AUTD3_RT_LOCK(false);
-static std::atomic AUTD3_LIB_SEND_COND(false);
+static std::atomic autd3_rt_lock(false);
+static std::atomic autd3_lib_send_cond(false);
 
 bool SOEMController::is_open() const { return _is_open; }
 
@@ -124,11 +124,11 @@ Result<bool, std::string> SOEMController::Open(const char* ifname, const size_t 
   this->_timer.SetInterval(interval_us);
 
   if (auto res = this->_timer.Start([]() {
-        if (auto expected = false; AUTD3_RT_LOCK.compare_exchange_weak(expected, true)) {
-          const auto pre = AUTD3_LIB_SEND_COND.load(std::memory_order_acquire);
+        if (auto expected = false; autd3_rt_lock.compare_exchange_weak(expected, true)) {
+          const auto pre = autd3_lib_send_cond.load(std::memory_order_acquire);
           ec_send_processdata();
-          if (!pre) AUTD3_LIB_SEND_COND.store(true, std::memory_order_release);
-          AUTD3_RT_LOCK.store(false, std::memory_order_release);
+          if (!pre) autd3_lib_send_cond.store(true, std::memory_order_release);
+          autd3_rt_lock.store(false, std::memory_order_release);
           ec_receive_processdata(EC_TIMEOUTRET);
         }
       });
@@ -193,8 +193,8 @@ void SOEMController::CreateSendThread(size_t header_size, size_t body_size) {
         }
 
         {
-          AUTD3_LIB_SEND_COND.store(false, std::memory_order_release);
-          while (!AUTD3_LIB_SEND_COND.load(std::memory_order_acquire) && _is_open) {
+          autd3_lib_send_cond.store(false, std::memory_order_release);
+          while (!autd3_lib_send_cond.load(std::memory_order_acquire) && _is_open) {
           }
         }
 
