@@ -12,8 +12,6 @@
 #include "controller.hpp"
 
 #include <condition_variable>
-#include <iostream>
-#include <queue>
 #include <vector>
 
 #include "core/ec_config.hpp"
@@ -47,15 +45,6 @@ Result<bool, std::string> Controller::Synchronize(const core::Configuration conf
   size_t size = 0;
   const auto num_devices = this->_geometry->num_devices();
   if (auto res = core::Logic::PackSyncBody(config, num_devices, &_tx_buf[0], &size); res.is_err()) return res;
-  std::cout << (int)sizeof(core::RxGlobalHeader) << ", ";
-
-  for (auto i = 0; i < 128; i++) {
-    std::cout << (int)_tx_buf[i] << ", ";
-  }
-  std::cout << "\n";
-  for (auto i = 128; i < 626; i++) {
-    std::cout << (int)_tx_buf[i] << ", ";
-  }
   if (auto res = this->_link->Send(size, &_tx_buf[0]); res.is_err()) return res;
   return WaitMsgProcessed(msg_id, 5000);
 }
@@ -123,25 +112,19 @@ Result<bool, std::string> Controller::Send(const core::GainPtr gain, const core:
   res = this->_stm->Stop();
   if (res.is_err()) return res;
 
-  if (mod != nullptr) {
-    res = mod->Build(this->_config);
-    if (res.is_err()) return res;
-  }
+  if (mod != nullptr) res = mod->Build(this->_config);
+  if (res.is_err()) return res;
 
   uint8_t msg_id = 0;
   core::Logic::PackHeader(mod, this->_silent_mode, this->_seq_mode, &this->_tx_buf[0], &msg_id);
 
-  if (gain != nullptr) {
-    res = gain->Build(this->_geometry);
-    if (res.is_err()) return res;
-  }
+  if (gain != nullptr) res = gain->Build(this->_geometry);
+  if (res.is_err()) return res;
 
   size_t size = 0;
   core::Logic::PackBody(gain, &this->_tx_buf[0], &size);
   res = this->_link->Send(size, &this->_tx_buf[0]);
-  if (res.is_err()) return res;
-
-  if (!wait_for_sent) return res;
+  if (res.is_err() || !wait_for_sent) return res;
 
   return WaitMsgProcessed(msg_id);
 }
@@ -187,25 +170,25 @@ void Controller::STMController::AddGains(const std::vector<core::GainPtr>& gains
 
   const auto current_size = this->_bodies.size();
   this->_bodies.resize(len);
-  this->_body_sizes.resize(len);
+  this->_sizes.resize(len);
 
   for (auto i = current_size; i < len; i++) {
     auto& g = this->_gains[i];
     if (auto res = g->Build(this->_geometry); res.is_err()) return res;
 
-    size_t body_size = 0;
     uint8_t msg_id = 0;
-    this->_bodies[i] = new uint8_t[body_size];
-    core::Logic::PackHeader(nullptr, *this->_silent_mode, false, this->_bodies[i], &msg_id);
-    core::Logic::PackBody(g, this->_bodies[i], &body_size);
-    this->_body_sizes[i] = body_size;
+    this->_bodies[i] = std::make_unique<uint8_t[]>(this->_geometry->num_devices() * core::EC_OUTPUT_FRAME_SIZE);
+    core::Logic::PackHeader(nullptr, *this->_silent_mode, false, &this->_bodies[i][0], &msg_id);
+    size_t size = 0;
+    core::Logic::PackBody(g, &this->_bodies[i][0], &size);
+    this->_sizes[i] = size;
   }
 
   size_t idx = 0;
   return this->_timer.Start([this, idx, len]() mutable {
     if (auto expected = false; this->_lock.compare_exchange_weak(expected, true)) {
-      const auto body_size = this->_body_sizes[idx];
-      if (const auto res = this->_link->Send(body_size, this->_bodies[idx]); res.is_err()) return;
+      const auto body_size = this->_sizes[idx];
+      if (const auto res = this->_link->Send(body_size, &this->_bodies[idx][0]); res.is_err()) return;
       idx = (idx + 1) % len;
       this->_lock.store(false, std::memory_order_release);
     }
@@ -218,9 +201,8 @@ void Controller::STMController::AddGains(const std::vector<core::GainPtr>& gains
   if (auto res = this->Stop(); res.is_err()) return res;
 
   std::vector<core::GainPtr>().swap(this->_gains);
-  for (auto* p : this->_bodies) delete[] p;
-  std::vector<uint8_t*>().swap(this->_bodies);
-  std::vector<size_t>().swap(this->_body_sizes);
+  std::vector<std::unique_ptr<uint8_t[]>>().swap(this->_bodies);
+  std::vector<size_t>().swap(this->_sizes);
 
   return Ok(true);
 }

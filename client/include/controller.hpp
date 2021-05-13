@@ -155,16 +155,16 @@ class Controller {
     core::LinkPtr _link;
     core::GeometryPtr _geometry;
     std::vector<core::GainPtr> _gains;
-    std::vector<uint8_t*> _bodies;
-    std::vector<size_t> _body_sizes;
+    std::vector<std::unique_ptr<uint8_t[]>> _bodies;
+    std::vector<size_t> _sizes;
     Timer _timer;
     std::atomic<bool> _lock;
     bool* _silent_mode;
   };
 
  private:
-  Result<bool, std::string> SendHeader(core::COMMAND cmd) const;
-  Result<bool, std::string> WaitMsgProcessed(uint8_t msg_id, size_t max_trial = 200) const;
+  [[nodiscard]] Result<bool, std::string> SendHeader(core::COMMAND cmd) const;
+  [[nodiscard]] Result<bool, std::string> WaitMsgProcessed(uint8_t msg_id, size_t max_trial = 200) const;
 
   core::LinkPtr _link;
   core::GeometryPtr _geometry;
