@@ -25,6 +25,8 @@ using core::Configuration;
 using core::Modulation;
 using core::ModulationPtr;
 
+using Static = Modulation;
+	
 /**
  * @brief Sine wave modulation
  */
