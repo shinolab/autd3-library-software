@@ -3,7 +3,7 @@
 // Created Date: 03/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/05/2021
+// Last Modified: 14/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -20,6 +20,7 @@
 
 #include "autd3.hpp"
 #include "examples/bessel.hpp"
+#include "examples/seq.hpp"
 #include "examples/simple.hpp"
 #include "examples/stm.hpp"
 
@@ -39,6 +40,7 @@ inline int Run(autd::Controller& autd) {
       pair(F{SimpleTest}, "Single Focal Point Test"),
       pair(F{BesselTest}, "BesselBeam Test"),
       pair(F{STMTest}, "Spatio-Temporal Modulation Test"),
+      pair(F{SeqTest}, "Sequence (hardware STM) Test"),
   };
 
   autd.geometry()->wavelength() = ULTRASOUND_WAVELENGTH;

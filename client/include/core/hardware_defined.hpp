@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/05/2021
+// Last Modified: 14/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -42,7 +42,7 @@ using AUTDDataArray = std::array<uint16_t, NUM_TRANS_IN_UNIT>;
 enum RX_GLOBAL_CONTROL_FLAGS {
   MOD_BEGIN = 1 << 0,
   MOD_END = 1 << 1,
-  //
+  READ_FPGA_INFO = 1 << 2,
   SILENT = 1 << 3,
   FORCE_FAN = 1 << 4,
   SEQ_MODE = 1 << 5,
@@ -67,6 +67,14 @@ struct RxGlobalHeader {
   COMMAND command;
   uint8_t mod_size;
   uint8_t mod[MOD_FRAME_SIZE];
+};
+
+struct SeqFocus {
+  uint16_t x15_0;
+  uint16_t y7_0_x23_16;
+  uint16_t y23_8;
+  uint16_t z15_0;
+  uint16_t duty_z23_16;
 };
 
 enum class MOD_SAMPLING_FREQ {

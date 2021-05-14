@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 12/05/2021
+// Last Modified: 14/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -15,8 +15,10 @@
 #include "core/gain.hpp"
 #include "core/hardware_defined.hpp"
 #include "core/modulation.hpp"
+#include "core/sequence.hpp"
 #include "primitive_gain.hpp"
 #include "primitive_modulation.hpp"
+#include "primitive_sequence.hpp"
 
 namespace autd {
 using Matrix4X4 = core::Matrix4X4;
@@ -25,6 +27,7 @@ using Vector3 = core::Vector3;
 using LinkPtr = core::LinkPtr;
 using ModulationPtr = core::ModulationPtr;
 using GainPtr = core::GainPtr;
+using SequencePtr = core::SequencePtr;
 
 constexpr auto NUM_TRANS_IN_UNIT = core::NUM_TRANS_IN_UNIT;
 constexpr auto NUM_TRANS_X = core::NUM_TRANS_X;
