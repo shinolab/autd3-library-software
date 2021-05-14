@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/05/2021
+// Last Modified: 14/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -20,11 +20,18 @@
 
 namespace autd {
 
+namespace {
+bool ModSentFinished(const core::ModulationPtr& mod) { return mod == nullptr || (mod->sent() == mod->buffer().size()); }
+bool SeqSentFinished(const core::SequencePtr& seq) { return seq == nullptr || (seq->sent() == seq->control_points().size()); }
+}  // namespace
+
 bool Controller::is_open() const { return this->_link != nullptr && this->_link->is_open(); }
 
 core::GeometryPtr Controller::geometry() const noexcept { return this->_geometry; }
 
 bool& Controller::silent_mode() noexcept { return this->_silent_mode; }
+
+Result<bool, std::string> Controller::update_ctrl_flag() { return this->Send(nullptr, nullptr, true); }
 
 Result<bool, std::string> Controller::OpenWith(const core::LinkPtr link) {
   if (is_open())
@@ -101,12 +108,18 @@ Result<bool, std::string> Controller::Close() {
   return res;
 }
 
-Result<bool, std::string> Controller::Stop() const {
+Result<bool, std::string> Controller::Stop() {
   const auto null_gain = gain::NullGain::Create();
   return this->Send(null_gain, nullptr, false);
 }
 
-Result<bool, std::string> Controller::Send(const core::GainPtr gain, const core::ModulationPtr mod, const bool wait_for_sent) const {
+Result<bool, std::string> Controller::Send(const core::GainPtr gain, const bool wait_for_sent) { return this->Send(gain, nullptr, wait_for_sent); }
+
+Result<bool, std::string> Controller::Send(const core::ModulationPtr mod, const bool wait_for_sent) {
+  return this->Send(nullptr, mod, wait_for_sent);
+}
+
+Result<bool, std::string> Controller::Send(const core::GainPtr gain, const core::ModulationPtr mod, const bool wait_for_sent) {
   Result<bool, std::string> res = Ok(true);
 
   res = this->_stm->Stop();
@@ -115,18 +128,50 @@ Result<bool, std::string> Controller::Send(const core::GainPtr gain, const core:
   if (mod != nullptr) res = mod->Build(this->_config);
   if (res.is_err()) return res;
 
-  uint8_t msg_id = 0;
-  core::Logic::PackHeader(mod, this->_silent_mode, this->_seq_mode, &this->_tx_buf[0], &msg_id);
-
-  if (gain != nullptr) res = gain->Build(this->_geometry);
+  if (gain != nullptr) {
+    this->_seq_mode = false;
+    res = gain->Build(this->_geometry);
+  }
   if (res.is_err()) return res;
 
   size_t size = 0;
   core::Logic::PackBody(gain, &this->_tx_buf[0], &size);
-  res = this->_link->Send(size, &this->_tx_buf[0]);
-  if (res.is_err() || !wait_for_sent) return res;
 
-  return WaitMsgProcessed(msg_id);
+  while (true) {
+    uint8_t msg_id = 0;
+    core::Logic::PackHeader(mod, this->_silent_mode, this->_seq_mode, &this->_tx_buf[0], &msg_id);
+    res = this->_link->Send(size, &this->_tx_buf[0]);
+    if (res.is_err()) return res;
+
+    const auto mod_finished = ModSentFinished(mod);
+    if (mod_finished & !wait_for_sent) return res;
+
+    res = WaitMsgProcessed(msg_id);
+    if (res.is_err() || mod_finished) return res;
+  }
+}
+
+Result<bool, std::string> Controller::Send(core::SequencePtr seq) {
+  Result<bool, std::string> res = Ok(true);
+
+  res = this->_stm->Stop();
+  if (res.is_err()) return res;
+
+  this->_seq_mode = true;
+  while (true) {
+    uint8_t msg_id = 0;
+    core::Logic::PackHeader(core::COMMAND::SEQ_MODE, this->_silent_mode, this->_seq_mode, &this->_tx_buf[0], &msg_id);
+    size_t size = 0;
+    core::Logic::PackBody(seq, this->_geometry, &this->_tx_buf[0], &size);
+
+    res = this->_link->Send(size, &this->_tx_buf[0]);
+    if (res.is_err()) return res;
+
+    if (SeqSentFinished(seq)) return WaitMsgProcessed(msg_id, 5000);
+
+    res = WaitMsgProcessed(msg_id);
+    if (res.is_err()) return res;
+  }
 }
 
 Result<std::vector<FirmwareInfo>, std::string> Controller::firmware_info_list() const {

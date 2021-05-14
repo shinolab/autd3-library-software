@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/05/2021
+// Last Modified: 14/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -23,6 +23,7 @@
 #include "core/logic.hpp"
 #include "core/modulation.hpp"
 #include "core/osal_timer.hpp"
+#include "core/sequence.hpp"
 
 namespace autd {
 
@@ -63,6 +64,11 @@ class Controller {
   bool& silent_mode() noexcept;
 
   /**
+   * @brief Update control flag
+   */
+  Result<bool, std::string> update_ctrl_flag();
+
+  /**
    * @brief Open device with a link.
    * @param[in] link Link
    * @return return Ok(whether succeeded to open), or Err(error msg) if some unrecoverable error occurred
@@ -93,16 +99,39 @@ class Controller {
    * @brief Stop outputting
    * @return return Ok(whether succeeded to stop), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Result<bool, std::string> Stop() const;
+  [[nodiscard]] Result<bool, std::string> Stop();
 
   /**
-   * @brief Send gain to the controller
+   * @brief Send gain to the device
+   * @param[in] gain Gain to display
+   * @param[in] wait_for_sent if true, this function will wait for the data is sent to the devices and processed.
+   * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
+   */
+  [[nodiscard]] Result<bool, std::string> Send(core::GainPtr gain, bool wait_for_sent = false);
+
+  /**
+   * @brief Send modulation to the device
+   * @param[in] mod Amplitude modulation to display
+   * @param[in] wait_for_sent if true, this function will wait for the data is sent to the devices and processed.
+   * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
+   */
+  [[nodiscard]] Result<bool, std::string> Send(core::ModulationPtr mod, bool wait_for_sent = false);
+
+  /**
+   * @brief Send gain and modulation to the device
    * @param[in] gain Gain to display
    * @param[in] mod Amplitude modulation to display
    * @param[in] wait_for_sent if true, this function will wait for the data is sent to the devices and processed.
    * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Result<bool, std::string> Send(core::GainPtr gain, core::ModulationPtr mod, bool wait_for_sent = false) const;
+  [[nodiscard]] Result<bool, std::string> Send(core::GainPtr gain, core::ModulationPtr mod, bool wait_for_sent = false);
+
+  /**
+   * @brief Send sequence and modulation to the device
+   * @param[in] seq Sequence to display
+   * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
+   */
+  [[nodiscard]] Result<bool, std::string> Send(core::SequencePtr seq);
 
   /**
    * @brief Enumerate firmware information
