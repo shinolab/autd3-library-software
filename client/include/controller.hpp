@@ -21,7 +21,6 @@
 #include "geometry.hpp"
 #include "link.hpp"
 #include "modulation.hpp"
-#include "sequence.hpp"
 
 namespace autd {
 
@@ -157,12 +156,6 @@ class Controller {
    * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
    */
   [[nodiscard]] virtual Result<bool, std::string> FinishSTModulation() = 0;
-
-  /**
-   * @brief Append sequence to the controller (blocking)
-   * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
-   */
-  [[nodiscard]] virtual Result<bool, std::string> AppendSequence(SequencePtr seq) = 0;
 
   /**
    * @brief Flush the buffer

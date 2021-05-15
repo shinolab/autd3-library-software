@@ -116,6 +116,8 @@ class Vector3 : public VectorX<T> {
   Vector3(const Vector3& obj) : VectorX<T>(3) { *this = obj; }
   Vector3& operator=(const Vector3& obj) {
     if (this != &obj) {
+      this->_data = std::make_unique<T[]>(3);
+      this->_size = 3;
       this->_data[0] = obj._data[0];
       this->_data[1] = obj._data[1];
       this->_data[2] = obj._data[2];
@@ -125,6 +127,7 @@ class Vector3 : public VectorX<T> {
   Vector3(const Vector3&& obj) noexcept : VectorX<T>(3) { *this = std::move(obj); }
   Vector3& operator=(Vector3&& obj) noexcept {
     if (this != &obj) {
+      this->_size = 3;
       this->_data = std::move(obj._data);
     }
     return *this;

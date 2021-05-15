@@ -33,11 +33,6 @@ if(WIN32)
     ${PROJECT_SOURCE_DIR}/include/modulation.hpp
   )
 
-  source_group("sequence" FILES
-    sequence.cpp
-    ${PROJECT_SOURCE_DIR}/include/sequence.hpp
-  )
- 
   source_group("controller" FILES
     controller.cpp
     autd_logic.cpp

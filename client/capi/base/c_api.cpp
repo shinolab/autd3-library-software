@@ -19,7 +19,6 @@
 #include "wrapper_gain.hpp"
 #include "wrapper_link.hpp"
 #include "wrapper_modulation.hpp"
-#include "wrapper_sequence.hpp"
 
 namespace {
 std::string& LastError() {
@@ -251,56 +250,6 @@ void AUTDSineModulation(void** mod, const int32_t freq, const float amp, const f
 }
 #pragma endregion
 
-#pragma region Sequence
-void AUTDSequence(void** out) {
-  auto* s = SequencePtrCreate(autd::sequence::PointSequence::Create());
-  *out = s;
-}
-bool AUTDSequenceAddPoint(void* const seq, const float x, const float y, const float z) {
-  auto* seq_w = static_cast<SequenceWrapper*>(seq);
-  auto res = seq_w->ptr->AddPoint(autd::Vector3(static_cast<autd::Float>(x), static_cast<autd::Float>(y), static_cast<autd::Float>(z)));
-  if (res.is_err()) LastError() = res.unwrap_err();
-  return res.unwrap_or(false);
-}
-bool AUTDSequenceAddPoints(void* const seq, float* points, const uint64_t size) {
-  auto* seq_w = static_cast<SequenceWrapper*>(seq);
-  std::vector<autd::Vector3> p;
-  for (size_t i = 0; i < size; i++)
-    p.emplace_back(autd::Vector3(static_cast<autd::Float>(points[3 * i]), static_cast<autd::Float>(points[3 * i + 1]),
-                                 static_cast<autd::Float>(points[3 * i + 2])));
-  auto res = seq_w->ptr->AddPoints(p);
-  if (res.is_err()) LastError() = res.unwrap_err();
-  return res.unwrap_or(false);
-}
-float AUTDSequenceSetFreq(void* const seq, const float freq) {
-  auto* seq_w = static_cast<SequenceWrapper*>(seq);
-  return static_cast<float>(seq_w->ptr->SetFrequency(static_cast<autd::Float>(freq)));
-}
-float AUTDSequenceFreq(void* const seq) {
-  auto* seq_w = static_cast<SequenceWrapper*>(seq);
-  return static_cast<float>(seq_w->ptr->frequency());
-}
-float AUTDSequenceSamplingFreq(void* const seq) {
-  auto* seq_w = static_cast<SequenceWrapper*>(seq);
-  return static_cast<float>(seq_w->ptr->sampling_frequency());
-}
-uint16_t AUTDSequenceSamplingFreqDiv(void* const seq) {
-  auto* seq_w = static_cast<SequenceWrapper*>(seq);
-  return seq_w->ptr->sampling_frequency_division();
-}
-void AUTDDeleteSequence(void* const seq) {
-  auto* seq_w = static_cast<SequenceWrapper*>(seq);
-  SequenceDelete(seq_w);
-}
-void AUTDCircumSequence(void** out, const float x, const float y, const float z, const float nx, const float ny, const float nz, const float radius,
-                        const uint64_t n) {
-  auto* s = SequencePtrCreate(autd::sequence::CircumSeq::Create(
-      autd::Vector3(static_cast<autd::Float>(x), static_cast<autd::Float>(y), static_cast<autd::Float>(z)),
-      autd::Vector3(static_cast<autd::Float>(nx), static_cast<autd::Float>(ny), static_cast<autd::Float>(nz)), static_cast<autd::Float>(radius), n));
-  *out = s;
-}
-#pragma endredion
-
 #pragma region LowLevelInterface
 bool AUTDAppendGain(void* const handle, void* const gain) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
@@ -351,13 +300,6 @@ bool AUTDStopSTModulation(void* const handle) {
 bool AUTDFinishSTModulation(void* const handle) {
   auto* cnt = static_cast<ControllerWrapper*>(handle);
   auto res = cnt->ptr->FinishSTModulation();
-  if (res.is_err()) LastError() = res.unwrap_err();
-  return res.unwrap_or(false);
-}
-bool AUTDAppendSequence(void* const handle, void* const seq) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  auto* s = static_cast<SequenceWrapper*>(seq);
-  auto res = cnt->ptr->AppendSequence(s->ptr);
   if (res.is_err()) LastError() = res.unwrap_err();
   return res.unwrap_or(false);
 }

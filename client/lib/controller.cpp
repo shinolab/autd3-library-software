@@ -23,7 +23,6 @@
 #include "autd_logic.hpp"
 #include "firmware_version.hpp"
 #include "link.hpp"
-#include "sequence.hpp"
 #include "timer.hpp"
 
 namespace autd {
@@ -57,19 +56,6 @@ class AUTDControllerSync {
     }
     mod->sent() = 0;
     return Ok(success);
-  }
-
-  [[nodiscard]] Result<bool, std::string> AppendSeq(const SequencePtr& seq) const {
-    auto success = true;
-    while (seq->sent() < seq->control_points().size()) {
-      auto res = this->_autd_logic->SendBlocking(seq);
-      if (res.is_err()) return res;
-      success &= res.unwrap();
-    }
-    auto sync_res = this->_autd_logic->SynchronizeSeq();
-    if (sync_res.is_err()) return sync_res;
-
-    return Ok(success && sync_res.unwrap());
   }
 
  private:
@@ -318,7 +304,6 @@ class AUTDController final : public Controller {
   Result<bool, std::string> StartSTModulation(Float freq) override;
   Result<bool, std::string> StopSTModulation() override;
   Result<bool, std::string> FinishSTModulation() override;
-  Result<bool, std::string> AppendSequence(SequencePtr seq) override;
   Result<std::vector<FirmwareInfo>, std::string> firmware_info_list() override;
 
  private:
@@ -405,8 +390,6 @@ void AUTDController::AddSTMGain(const std::vector<GainPtr>& gain_list) { this->_
 Result<bool, std::string> AUTDController::StartSTModulation(const Float freq) { return this->_stm_cnt->Start(freq); }
 Result<bool, std::string> AUTDController::StopSTModulation() { return this->_stm_cnt->Stop(); }
 Result<bool, std::string> AUTDController::FinishSTModulation() { return this->_stm_cnt->Finish(); }
-
-Result<bool, std::string> AUTDController::AppendSequence(const SequencePtr seq) { return this->_sync_cnt->AppendSeq(seq); }
 
 Result<std::vector<FirmwareInfo>, std::string> AUTDController::firmware_info_list() { return this->_autd_logic->firmware_info_list(); }
 }  // namespace internal
