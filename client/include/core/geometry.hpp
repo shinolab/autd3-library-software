@@ -11,19 +11,19 @@
 
 #pragma once
 
-#if WIN32
+#if _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 26450 26495 26812)
 #endif
-#ifdef linux
+#if defined(__GNUC__) && !defined(__llvm__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #endif
 #include <Eigen/Dense>
-#if WIN32
+#if _MSC_VER
 #pragma warning(pop)
 #endif
-#ifdef linux
+#if defined(__GNUC__) && !defined(__llvm__)
 #pragma GCC diagnostic pop
 #endif
 
