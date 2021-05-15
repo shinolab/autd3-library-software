@@ -4,7 +4,6 @@ set (CMAKE_CXX_STANDARD 17)
 
 include_directories(
   ${PROJECT_SOURCE_DIR}/include
-  ${PROJECT_SOURCE_DIR}/osal_timer
   ${SOEM_PATH}/soem
   ${SOEM_PATH}/osal
   ${SOEM_PATH}/osal/${OS}
@@ -15,16 +14,15 @@ if(WIN32)
   include_directories(
     ${SOEM_PATH}/oshw/${OS}/wpcap/Include
     ${SOEM_PATH}/oshw/${OS}/wpcap/Include/pcap
-    ${PROJECT_SOURCE_DIR}/osal_timer/win32
   )
+endif()
+
+if(WIN32)
+  include_directories(${PROJECT_SOURCE_DIR}/osal_timer/win32)
 elseif(APPLE)
-  include_directories(
-    ${PROJECT_SOURCE_DIR}/osal_timer/macosx
-  )
+  include_directories(${PROJECT_SOURCE_DIR}/osal_timer/macosx)
 else()
-  include_directories(
-    ${PROJECT_SOURCE_DIR}/linux/win32
-  )
+  include_directories(${PROJECT_SOURCE_DIR}/linux/win32)
 endif()
 
 if(WIN32)
@@ -39,7 +37,7 @@ add_library(link_soem STATIC
   autdsoem.hpp
   soem.cpp
   ${SOEM_SRC_FILES}
-  ${PROJECT_SOURCE_DIR}/include/link/soem.hpp
+  ${PROJECT_SOURCE_DIR}/include/link_soem.hpp
 )
 
 

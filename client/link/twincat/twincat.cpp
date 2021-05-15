@@ -1,20 +1,20 @@
-﻿// File: ethercat_link.cpp
-// Project: lib
-// Created Date: 01/06/2016
-// Author: Seki Inoue
+﻿// File: twincat.cpp
+// Project: twincat
+// Created Date: 08/03/2021
+// Author: Shun Suzuki
 // -----
 // Last Modified: 11/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
-// Copyright (c) 2016-2020 Hapis Lab. All rights reserved.
+// Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
-
-#include "link/twincat.hpp"
 
 #include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
+
+#include "link_twincat.hpp"
 
 namespace autd::link {
 
@@ -24,7 +24,7 @@ constexpr uint32_t INDEX_OFFSET_BASE_READ = 0x80000000;
 constexpr uint16_t PORT = 301;
 
 core::LinkPtr TwinCATLink::Create() {
-  core::LinkPtr link = std::make_unique<TwinCATLink>();
+  core::LinkPtr link = std::make_shared<TwinCATLink>();
   return link;
 }
 
@@ -96,13 +96,13 @@ Result<bool, std::string> TwinCATLink::Send(const size_t size, const uint8_t* bu
   return Err(ss.str());
 }
 
-Result<bool, std::string> TwinCATLink::Read(uint8_t* rx, const uint32_t buffer_len) {
+Result<bool, std::string> TwinCATLink::Read(uint8_t* rx, const size_t buffer_len) {
   AmsAddr addr = {this->_net_id, PORT};
   const auto read = reinterpret_cast<TcAdsSyncReadReqEx>(GetProcAddress(this->_lib, TCADS_ADS_SYNC_READ_REQ_EX));
 
   unsigned long read_bytes;           // NOLINT
   const auto ret = read(this->_port,  // NOLINT
-                        &addr, INDEX_GROUP, INDEX_OFFSET_BASE_READ, buffer_len, rx, &read_bytes);
+                        &addr, INDEX_GROUP, INDEX_OFFSET_BASE_READ, static_cast<uint32_t>(buffer_len), rx, &read_bytes);
   if (ret == 0) return Ok(true);
 
   std::stringstream ss;
@@ -120,7 +120,7 @@ Result<bool, std::string> TwinCATLink::Send(size_t size, const uint8_t* buf) {
   (void)buf;
   return Ok(false);
 }
-Result<bool, std::string> TwinCATLink::Read(uint8_t* rx, uint32_t buffer_len) {
+Result<bool, std::string> TwinCATLink::Read(uint8_t* rx, size_t buffer_len) {
   (void)rx;
   (void)buffer_len;
   return Ok(false);

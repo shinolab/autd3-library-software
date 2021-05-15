@@ -1,12 +1,12 @@
 // File: runner.hpp
 // Project: examples
-// Created Date: 19/05/2020
+// Created Date: 03/04/2021
 // Author: Shun Suzuki
 // -----
 // Last Modified: 11/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
-// Copyright (c) 2020 Hapis Lab. All rights reserved.
+// Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
 #pragma once
@@ -33,20 +33,20 @@ using std::vector;
 
 constexpr auto ULTRASOUND_WAVELENGTH = 8.5;
 
-inline int Run(autd::ControllerPtr& autd) {
-  using F = function<void(autd::ControllerPtr&)>;
+inline int Run(autd::Controller& autd) {
+  using F = function<void(autd::Controller&)>;
   vector<pair<F, string>> examples = {
       pair(F{SimpleTest}, "Single Focal Point Test"),
       pair(F{BesselTest}, "BesselBeam Test"),
       pair(F{STMTest}, "Spatio-Temporal Modulation Test"),
   };
 
-  autd->geometry()->set_wavelength(ULTRASOUND_WAVELENGTH);
+  autd.geometry()->wavelength() = ULTRASOUND_WAVELENGTH;
 
-  autd->Clear().unwrap();
-  autd->Synchronize().unwrap();
+  autd.Clear().unwrap();
+  autd.Synchronize().unwrap();
 
-  auto firm_info_list = autd->firmware_info_list().unwrap();
+  auto firm_info_list = autd.firmware_info_list().unwrap();
   for (auto&& firm_info : firm_info_list) cout << firm_info << endl;
 
   while (true) {
@@ -68,12 +68,11 @@ inline int Run(autd::ControllerPtr& autd) {
     cin.ignore();
 
     cout << "finish." << endl;
-    autd->FinishSTModulation().unwrap();
-    autd->Stop().unwrap();
+    autd.Stop().unwrap();
   }
 
-  autd->Clear().unwrap();
-  autd->Close().unwrap();
+  autd.Clear().unwrap();
+  autd.Close().unwrap();
 
   return 0;
 }

@@ -1,12 +1,12 @@
-﻿// File: soem_link.hpp
-// Project: lib
-// Created Date: 24/08/2019
+﻿// File: link_soem.hpp
+// Project: include
+// Created Date: 10/05/2021
 // Author: Shun Suzuki
 // -----
 // Last Modified: 11/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
-// Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
+// Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
 #pragma once
@@ -50,7 +50,7 @@ class SOEMLink : virtual public core::Link {
   Result<bool, std::string> Open() override = 0;
   Result<bool, std::string> Close() override = 0;
   Result<bool, std::string> Send(size_t size, const uint8_t* buf) override = 0;
-  Result<bool, std::string> Read(uint8_t* rx, uint32_t buffer_len) override = 0;
+  Result<bool, std::string> Read(uint8_t* rx, size_t buffer_len) override = 0;
   bool is_open() override = 0;
 };
 }  // namespace autd::link

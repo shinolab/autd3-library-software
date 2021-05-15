@@ -1,17 +1,17 @@
 ﻿// File: c_api.cpp
-// Project: capi
-// Created Date: 02/07/2018
+// Project: link_soem
+// Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/04/2021
+// Last Modified: 11/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
-// Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
+// Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
 #include "../base/wrapper_link.hpp"
 #include "./soem_link.h"
-#include "link/soem.hpp"
+#include "link_soem.hpp"
 
 typedef struct {
   autd::link::EtherCATAdapters adapters;

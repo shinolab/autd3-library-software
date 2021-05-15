@@ -29,6 +29,8 @@
 
 #include <map>
 #include <memory>
+#include <utility>
+#include <vector>
 
 #include "hardware_defined.hpp"
 

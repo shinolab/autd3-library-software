@@ -8,7 +8,7 @@ include_directories(
 
 add_library(link_twincat STATIC
   twincat.cpp
-  ${PROJECT_SOURCE_DIR}/include/link/twincat.hpp
+  ${PROJECT_SOURCE_DIR}/include/link_twincat.hpp
 )
 
 set_target_properties(link_twincat

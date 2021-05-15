@@ -14,6 +14,7 @@
 #include <Windows.h>
 
 #include <functional>
+#include <string>
 #include <thread>
 
 #include "core/result.hpp"
@@ -82,6 +83,5 @@ class Timer {
   uint32_t _timer_id = 0;
   std::thread _main_thread;
   bool _loop = false;
-  bool _high_resolution;
 };
 }  // namespace autd

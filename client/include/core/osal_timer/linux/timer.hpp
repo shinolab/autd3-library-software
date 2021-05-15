@@ -1,5 +1,5 @@
 ﻿// File: timer.hpp
-// Project: macosx
+// Project: linux
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
@@ -11,18 +11,16 @@
 
 #pragma once
 
-#include <dispatch/dispatch.h>
+#include <signal.h>
+#include <time.h>
 
 #include <functional>
+#include <string>
 #include <thread>
 
 #include "result.hpp"
 
 namespace autd {
-
-namespace {
-static constexpr auto TIME_SCALE = 1000L;  // us
-}
 
 class Timer {
  public:
@@ -43,9 +41,10 @@ class Timer {
   [[nodiscard]] Result<bool, std::string> Stop() {
     if (!this->_loop) return Ok(false);
 
-    dispatch_source_cancel(_timer);
-    this->_loop = false;
+    const auto r = timer_delete(_timer_id);
+    if (r < 0) return Err(std::string("timer_delete failed"));
 
+    this->_loop = false;
     return Ok(true);
   }
 
@@ -58,28 +57,40 @@ class Timer {
   uint32_t _interval_us;
   std::function<void()> _cb;
 
-  dispatch_queue_t _queue;
-  dispatch_source_t _timer;
+  timer_t _timer_id;
 
   std::thread _main_thread;
   bool _loop = false;
 
+  static void Notify(union sigval sv) {
+    auto *timer = reinterpret_cast<Timer *>(sv.sival_ptr);
+    timer->_cb();
+  }
+
   [[nodiscard]] Result<bool, std::string> InitTimer() {
-    _queue = dispatch_queue_create("timerQueue", 0);
+    struct sigaction act;
+    struct itimerspec itval;
+    struct sigevent se;
 
-    _timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _queue);
-    dispatch_source_set_event_handler(_timer, ^{
-      MainLoop(this);
-    });
+    memset(&act, 0, sizeof(struct sigaction));
+    act.sa_handler = MainLoop;
+    act.sa_flags = SA_RESTART;
+    if (sigaction(SIGALRM, &act, NULL) < 0) return Err(std::string("sigaction failed"));
 
-    dispatch_source_set_cancel_handler(_timer, ^{
-      dispatch_release(_timer);
-      dispatch_release(_queue);
-    });
+    itval.it_value.tv_sec = 0;
+    itval.it_value.tv_nsec = this->_interval_us * 1000L;
+    itval.it_interval.tv_sec = 0;
+    itval.it_interval.tv_nsec = this->_interval_us * 1000L;
 
-    dispatch_time_t start = dispatch_time(DISPATCH_TIME_NOW, 0);
-    dispatch_source_set_timer(_timer, start, this->_interval_us * TIME_SCALE, 0);
-    dispatch_resume(_timer);
+    memset(&se, 0, sizeof(se));
+    se.sigev_value.sival_ptr = this;
+    se.sigev_notify = SIGEV_THREAD;
+    se.sigev_notify_function = Notify;
+    se.sigev_notify_attributes = NULL;
+
+    if (timer_create(CLOCK_REALTIME, &se, &_timer_id) < 0) return Err(std::string("timer_create failed"));
+
+    if (timer_settime(_timer_id, 0, &itval, NULL) < 0) return Err(std::string("timer_settime failed"));
 
     return Ok(true);
   }

@@ -1,12 +1,12 @@
 ﻿// File: controller.hpp
 // Project: include
-// Created Date: 11/04/2018
+// Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
 // Last Modified: 11/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
-// Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
+// Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
 #pragma once
@@ -20,57 +20,54 @@
 #include "core/gain.hpp"
 #include "core/geometry.hpp"
 #include "core/link.hpp"
+#include "core/logic.hpp"
 #include "core/modulation.hpp"
+#include "core/osal_timer.hpp"
 
 namespace autd {
-
-class Controller;
-using ControllerPtr = std::unique_ptr<Controller>;
 
 /**
  * @brief AUTD Controller
  */
 class Controller {
  public:
-  Controller() noexcept = default;
-  virtual ~Controller() = default;
+  class STMController;
+
+  Controller() noexcept
+      : _link(nullptr),
+        _geometry(std::make_shared<core::Geometry>()),
+        _silent_mode(true),
+        _seq_mode(false),
+        _tx_buf(nullptr),
+        _rx_buf(nullptr),
+        _stm(&this->silent_mode()) {}
+  ~Controller() = default;
   Controller(const Controller& v) noexcept = delete;
   Controller& operator=(const Controller& obj) = delete;
   Controller(Controller&& obj) = delete;
   Controller& operator=(Controller&& obj) = delete;
 
   /**
-   * @brief Create controller
+   * @brief Verify the device is properly connected
    */
-  static ControllerPtr Create();
-  /**
-   * @brief Verify that the device is properly connected
-   */
-  virtual bool is_open() = 0;
+  [[nodiscard]] bool is_open() const;
+
   /**
    * @brief Geometry of the devices
    */
-  virtual GeometryPtr geometry() noexcept = 0;
-  /**
-   * @brief Check silent mode
-   */
-  virtual bool silent_mode() noexcept = 0;
-  /**
-   * @brief Count the remaining data (Gain and Modulation) in buffer
-   */
-  virtual size_t remaining_in_buffer() = 0;
+  core::GeometryPtr geometry() const noexcept;
 
   /**
-   * @brief Open device with a specific link.
+   * @brief Silent mode
+   */
+  bool& silent_mode() noexcept;
+
+  /**
+   * @brief Open device with a link.
    * @param[in] link Link
    * @return return Ok(whether succeeded to open), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] virtual Result<bool, std::string> OpenWith(LinkPtr link) = 0;
-
-  /**
-   * @brief Set silent mode
-   */
-  virtual void SetSilentMode(bool silent) noexcept = 0;
+  [[nodiscard]] Result<bool, std::string> OpenWith(core::LinkPtr link);
 
   /**
    * @brief Synchronize all devices
@@ -78,93 +75,101 @@ class Controller {
    * @param[in] config configuration
    * @return return Ok(whether succeeded to synchronize), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] virtual Result<bool, std::string> Synchronize(Configuration config = Configuration::GetDefaultConfiguration()) = 0;
+  [[nodiscard]] Result<bool, std::string> Synchronize(core::Configuration config = core::Configuration::GetDefaultConfiguration());
 
   /**
    * @brief Clear all data in hardware
    * @return return Ok(whether succeeded to clear), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] virtual Result<bool, std::string> Clear() = 0;
+  [[nodiscard]] Result<bool, std::string> Clear();
 
   /**
    * @brief Close the controller
    * @return return Ok(whether succeeded to close), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] virtual Result<bool, std::string> Close() = 0;
+  [[nodiscard]] Result<bool, std::string> Close();
 
   /**
    * @brief Stop outputting
    * @return return Ok(whether succeeded to stop), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] virtual Result<bool, std::string> Stop() = 0;
+  [[nodiscard]] Result<bool, std::string> Stop();
+
   /**
-   * @brief Append gain to the controller (non blocking)
+   * @brief Send gain to the controller
    * @param[in] gain Gain to display
-   * @details Gain will be sent in another thread
+   * @param[in] mod Amplitude modulation to display
+   * @param[in] wait_for_sent if true, this function will wait for the data is sent to the devices and processed.
    * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] virtual Result<bool, std::string> AppendGain(GainPtr gain) = 0;
-  /**
-   * @brief Append gain to the controller (blocking)
-   * @param[in] gain Gain to display
-   * @param[in] wait_for_send if true, wait for the data to arrive on devices by handshaking
-   * @details Gain will be build in this function.
-   * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
-   */
-  [[nodiscard]] virtual Result<bool, std::string> AppendGainSync(GainPtr gain, bool wait_for_send = false) = 0;
-  /**
-   * @brief Append modulation to the controller (non blocking)
-   * @details Modulation will be sent in another thread
-   * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
-   */
-  [[nodiscard]] virtual Result<bool, std::string> AppendModulation(ModulationPtr modulation) = 0;
-  /**
-   * @brief Append modulation to the controller (blocking)
-   * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
-   */
-  [[nodiscard]] virtual Result<bool, std::string> AppendModulationSync(ModulationPtr modulation) = 0;
+  [[nodiscard]] Result<bool, std::string> Send(core::GainPtr gain, core::ModulationPtr mod, bool wait_for_sent = false);
 
-  /**
-   * @brief Add gain for STM
-   */
-  virtual void AddSTMGain(GainPtr gain) = 0;
-  /**
-   * @brief Add gain for STM
-   */
-  virtual void AddSTMGain(const std::vector<GainPtr>& gain_list) = 0;
-
-  /**
-   * @brief Start Spatio-Temporal Modulation
-   * @param[in] freq Frequency of STM modulation
-   * @details Generate STM modulation by switching gains appended by
-   * AddSTMGain() at the freq. The accuracy depends on the computer, for
-   * example, about 1ms on Windows. Note that it is affected by interruptions,
-   * and so on.
-   * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
-   */
-  [[nodiscard]] virtual Result<bool, std::string> StartSTModulation(double freq) = 0;
-
-  /**
-   * @brief Suspend Spatio-Temporal Modulation
-   * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
-   */
-  [[nodiscard]] virtual Result<bool, std::string> StopSTModulation() = 0;
-
-  /**
-   * @brief Finish Spatio-Temporal Modulation
-   * @details Appended gains will be removed.
-   * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
-   */
-  [[nodiscard]] virtual Result<bool, std::string> FinishSTModulation() = 0;
-
-  /**
-   * @brief Flush the buffer
-   */
-  virtual void Flush() = 0;
   /**
    * @brief Enumerate firmware information
    * @return return Ok(firmware_info_list), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] virtual Result<std::vector<FirmwareInfo>, std::string> firmware_info_list() = 0;
+  [[nodiscard]] Result<std::vector<FirmwareInfo>, std::string> firmware_info_list() const;
+
+  STMController& stm();
+
+  class STMController {
+   public:
+    explicit STMController(bool* silent_mode) : _silent_mode(silent_mode) {}
+
+    /**
+     * @brief Add gain for STM
+     */
+    void AddGain(core::GainPtr gain);
+
+    /**
+     * @brief Add gains for STM
+     */
+    void AddGains(const std::vector<core::GainPtr>& gains);
+
+    /**
+     * @brief Start Spatio-Temporal Modulation
+     * @param[in] freq Frequency of STM modulation
+     * @details Generate STM modulation by switching gains appended by
+     * AddSTMGain() at the freq. The accuracy depends on the computer, for
+     * example, about 1ms on Windows. Note that it is affected by interruptions,
+     * and so on.
+     * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
+     */
+    [[nodiscard]] Result<bool, std::string> Start(double freq);
+
+    /**
+     * @brief Suspend Spatio-Temporal Modulation
+     * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
+     */
+    [[nodiscard]] Result<bool, std::string> Stop();
+
+    /**
+     * @brief Finish Spatio-Temporal Modulation
+     * @details Appended gains will be removed.
+     * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
+     */
+    [[nodiscard]] Result<bool, std::string> Finish();
+
+   private:
+    core::LinkPtr _link;
+    std::vector<core::GainPtr> _gains;
+    std::vector<uint8_t*> _bodies;
+    std::vector<size_t> _body_sizes;
+    Timer _timer;
+    std::atomic<bool> _lock;
+    bool* _silent_mode;
+  };
+
+ private:
+  core::LinkPtr _link;
+  core::GeometryPtr _geometry;
+  bool _silent_mode;
+  bool _seq_mode;
+  core::Configuration _config;
+
+  std::unique_ptr<uint8_t[]> _tx_buf;
+  std::unique_ptr<uint8_t[]> _rx_buf;
+
+  STMController _stm;
 };
 }  // namespace autd
