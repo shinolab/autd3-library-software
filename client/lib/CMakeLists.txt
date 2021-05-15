@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.10)
 
 set (CMAKE_CXX_STANDARD 17)
 
-find_package(Threads REQUIRED)
-
 file(GLOB cpp_files *.cpp)
 file(GLOB hpp_files *.hpp)
 file(GLOB include_files ${PROJECT_SOURCE_DIR}/include/*.hpp ${PROJECT_SOURCE_DIR}/include/core/*.hpp)
@@ -14,12 +12,16 @@ set(SOURCE_LIST
   ${include_files}
 )
 
-add_library(autd3 STATIC ${SOURCE_LIST})
-
-include_directories(${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/osal_timer)
-if(NOT DISABLE_EIGEN)
-  include_directories(${EIGEN_PATH})
+include_directories(${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
+if(WIN32)
+  include_directories(${PROJECT_SOURCE_DIR}/osal_timer/win32)
+elseif(APPLE)
+  include_directories(${PROJECT_SOURCE_DIR}/osal_timer/macosx)
+else()
+  include_directories(${PROJECT_SOURCE_DIR}/linux/win32)
 endif()
+
+add_library(autd3 STATIC ${SOURCE_LIST})
 
 if(WIN32)
   source_group("gain" FILES
@@ -49,9 +51,6 @@ if(WIN32)
     ${PROJECT_SOURCE_DIR}/include/core/*.hpp
   )
 endif()
-
-target_link_libraries(autd3 ${CMAKE_THREAD_LIBS_INIT})
-target_link_libraries(autd3 osal_timer)
 
 if (WIN32)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4068 /wd4819")

@@ -1,12 +1,12 @@
 // File: autdsoem.hpp
-// Project: include
-// Created Date: 24/08/2019
+// Project: soem
+// Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
 // Last Modified: 11/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
-// Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
+// Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
 #pragma once
@@ -19,8 +19,8 @@
 #include <utility>
 #include <vector>
 
+#include "core/osal_timer.hpp"
 #include "core/result.hpp"
-#include "timer.hpp"
 
 namespace autd::autdsoem {
 

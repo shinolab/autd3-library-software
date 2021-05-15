@@ -1,27 +1,26 @@
 // File: twincat.cpp
 // Project: examples
-// Created Date: 19/05/2020
+// Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 11/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
-// Copyright (c) 2020 Hapis Lab. All rights reserved.
+// Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
-#include "link/twincat.hpp"
-
 #include "autd3.hpp"
+#include "link_twincat.hpp"
 #include "runner.hpp"
 
 using namespace std;
 
 int main() {
   try {
-    auto autd = autd::Controller::Create();
-    autd->geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+    autd::Controller autd;
+    autd.geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
 
-    if (auto res = autd->OpenWith(autd::link::TwinCATLink::Create()); res.is_err()) {
+    if (auto res = autd.OpenWith(autd::link::TwinCATLink::Create()); res.is_err()) {
       std::cerr << res.unwrap_err() << std::endl;
       return ENXIO;
     }

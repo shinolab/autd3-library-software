@@ -1,6 +1,6 @@
 ﻿// File: link.hpp
 // Project: core
-// Created Date: 14/04/2021
+// Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
 // Last Modified: 11/05/2021
@@ -19,7 +19,7 @@
 namespace autd::core {
 
 class Link;
-using LinkPtr = std::unique_ptr<Link>;
+using LinkPtr = std::shared_ptr<Link>;
 
 /**
  * @brief Link is the interface to the AUTD device
@@ -52,7 +52,7 @@ class Link {
    * @brief  Read data from devices
    * @return return Ok(whether succeeded to read), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] virtual Result<bool, std::string> Read(uint8_t* rx, uint32_t buffer_len) = 0;
+  [[nodiscard]] virtual Result<bool, std::string> Read(uint8_t* rx, size_t buffer_len) = 0;
 
   [[nodiscard]] virtual bool is_open() = 0;
 };

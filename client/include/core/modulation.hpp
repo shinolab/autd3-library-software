@@ -11,6 +11,12 @@
 
 #pragma once
 
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "result.hpp"
+
 namespace autd::core {
 
 class Modulation;
@@ -31,9 +37,9 @@ class Modulation {
   /**
    * @brief Generate empty modulation, which produce static pressure
    */
-  static ModulationPtr Create(uint8_t amp = 0xff) {
+  static ModulationPtr Create(const uint8_t duty = 0xff) {
     auto mod = std::make_shared<Modulation>();
-    mod->_buffer.resize(1, amp);
+    mod->_buffer.resize(1, duty);
     return mod;
   }
 
@@ -43,6 +49,7 @@ class Modulation {
   }
 
   size_t& sent() { return _sent; }
+  std::vector<uint8_t>& buffer() { return _buffer; }
 
  protected:
   size_t _sent;

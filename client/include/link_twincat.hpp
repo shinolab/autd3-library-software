@@ -1,6 +1,6 @@
-﻿// File: twincat.hpp
-// Project: link
-// Created Date: 01/05/2021
+﻿// File: link_twincat.hpp
+// Project: include
+// Created Date: 10/05/2021
 // Author: Shun Suzuki
 // -----
 // Last Modified: 11/05/2021
@@ -17,8 +17,6 @@
 #if _WINDOWS
 #define NOMINMAX
 #include <Windows.h>
-#else
-typedef void* HMODULE;
 #endif
 
 #include "core/link.hpp"
@@ -40,7 +38,7 @@ struct AmsAddr {
 class TwinCATLink : public core::Link {
  public:
   /**
-   * @brief Create LocalTwinCATLink.
+   * @brief Create TwinCATLink.
    */
   static core::LinkPtr Create();
 
@@ -51,11 +49,11 @@ class TwinCATLink : public core::Link {
   TwinCATLink(TwinCATLink&& obj) = delete;
   TwinCATLink& operator=(TwinCATLink&& obj) = delete;
 
-  Result<bool, std::string> Open() override = 0;
-  Result<bool, std::string> Close() override = 0;
-  Result<bool, std::string> Send(size_t size, const uint8_t* buf) override = 0;
-  Result<bool, std::string> Read(uint8_t* rx, uint32_t buffer_len) override = 0;
-  bool is_open() override = 0;
+  Result<bool, std::string> Open() override;
+  Result<bool, std::string> Close() override;
+  Result<bool, std::string> Send(size_t size, const uint8_t* buf) override;
+  Result<bool, std::string> Read(uint8_t* rx, size_t buffer_len) override;
+  bool is_open() override;
 
  private:
   long _port;  // NOLINT
