@@ -19,4 +19,3 @@
 #include "gain.hpp"
 #include "geometry.hpp"
 #include "modulation.hpp"
-#include "sequence.hpp"

@@ -22,7 +22,6 @@
 #include "link.hpp"
 #include "modulation.hpp"
 #include "result.hpp"
-#include "sequence.hpp"
 
 namespace autd::internal {
 
@@ -57,21 +56,17 @@ class AUTDLogic {
 
   [[nodiscard]] Result<bool, std::string> Send(const GainPtr& gain, const ModulationPtr& mod);
   [[nodiscard]] Result<bool, std::string> SendBlocking(const GainPtr& gain, const ModulationPtr& mod);
-  [[nodiscard]] Result<bool, std::string> SendBlocking(const SequencePtr& seq);
   [[nodiscard]] Result<bool, std::string> SendBlocking(size_t size, const uint8_t* data, size_t trial);
   [[nodiscard]] Result<bool, std::string> SendData(size_t size, const uint8_t* data) const;
 
   [[nodiscard]] Result<bool, std::string> WaitMsgProcessed(uint8_t msg_id, size_t max_trial = 200, uint8_t mask = 0xFF);
   [[nodiscard]] Result<bool, std::string> Synchronize(Configuration config);
-  [[nodiscard]] Result<bool, std::string> SynchronizeSeq();
   [[nodiscard]] Result<bool, std::string> Clear();
   [[nodiscard]] Result<bool, std::string> Close();
   [[nodiscard]] Result<std::vector<FirmwareInfo>, std::string> firmware_info_list();
 
   unique_ptr<uint8_t[]> MakeBody(const GainPtr& gain, const ModulationPtr& mod, size_t* size, uint8_t* send_msg_id) const;
-  unique_ptr<uint8_t[]> MakeBody(const SequencePtr& seq, size_t* size, uint8_t* send_msg_id) const;
   [[nodiscard]] Result<unique_ptr<uint8_t[]>, std::string> MakeCalibBody(Configuration config, size_t* size);
-  unique_ptr<uint8_t[]> MakeCalibSeqBody(const std::vector<uint16_t>& comps, size_t* size) const;
 
  private:
   static uint8_t get_id() {
