@@ -3,7 +3,7 @@
 // Created Date: 14/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/05/2021
+// Last Modified: 15/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -32,7 +32,7 @@ inline void SeqTest(autd::Controller& autd) {
     seq->AddPoint(center + p).unwrap();
   }
 
-  const auto actual_freq = seq->SetFrequency(200);
+  const auto actual_freq = seq->SetFrequency(1);
   std::cout << "Actual frequency is " << actual_freq << " Hz\n";
   autd.Send(seq).unwrap();
 }

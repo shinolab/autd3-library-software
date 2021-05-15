@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/05/2021
+// Last Modified: 15/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -88,7 +88,7 @@ class Logic {
     if (seq->sent() + send_size >= seq->control_points().size()) header->control_flags |= SEQ_END;
 
     auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(RxGlobalHeader));
-    const auto fixed_num_unit = geometry->wavelength() / 255;
+    const auto fixed_num_unit = 255 / geometry->wavelength();
     for (size_t device = 0; device < num_devices; device++) {
       cursor[0] = send_size;
       cursor[1] = seq->sampling_frequency_division();
@@ -96,16 +96,10 @@ class Logic {
       auto* focus_cursor = reinterpret_cast<SeqFocus*>(&cursor[4]);
       for (size_t i = 0; i < send_size; i++) {
         auto v64 = geometry->local_position(device, seq->control_points()[seq->sent() + i]);
-        const auto x = static_cast<uint32_t>(static_cast<int32_t>(v64.x() / fixed_num_unit));
-        const auto y = static_cast<uint32_t>(static_cast<int32_t>(v64.y() / fixed_num_unit));
-        const auto z = static_cast<uint32_t>(static_cast<int32_t>(v64.z() / fixed_num_unit));
-        SeqFocus focus;
-        focus.x15_0 = x & 0xFFFF;
-        focus.y7_0_x23_16 = ((y << 8) & 0xFF00) | ((x >> 24) & 0x80) | ((x >> 16) & 0x7F);
-        focus.y23_8 = ((x >> 16) & 0x8000) | ((x >> 8) & 0x7FFF);
-        focus.z15_0 = z & 0xFFFF;
-        focus.duty_z23_16 = 0xFF00 | ((z >> 24) & 0x80) | ((z >> 16) & 0x7F);  // duty = 0xFF
-        *focus_cursor = focus;
+        const auto x = static_cast<uint32_t>(static_cast<int32_t>(v64.x() * fixed_num_unit));
+        const auto y = static_cast<uint32_t>(static_cast<int32_t>(v64.y() * fixed_num_unit));
+        const auto z = static_cast<uint32_t>(static_cast<int32_t>(v64.z() * fixed_num_unit));
+        focus_cursor->set(x, y, z, 0xFF);
         focus_cursor++;
       }
       cursor += NUM_TRANS_IN_UNIT;
