@@ -18,11 +18,6 @@
 
 namespace autd::link {
 
-constexpr uint32_t INDEX_GROUP = 0x3040030;
-constexpr uint32_t INDEX_OFFSET_BASE = 0x81000000;
-constexpr uint32_t INDEX_OFFSET_BASE_READ = 0x80000000;
-constexpr uint16_t PORT = 301;
-
 core::LinkPtr TwinCATLink::Create() {
   core::LinkPtr link = std::make_shared<TwinCATLink>();
   return link;
@@ -31,6 +26,12 @@ core::LinkPtr TwinCATLink::Create() {
 bool TwinCATLink::is_open() { return this->_port > 0; }
 
 #ifdef _WIN32
+
+constexpr uint32_t INDEX_GROUP = 0x3040030;
+constexpr uint32_t INDEX_OFFSET_BASE = 0x81000000;
+constexpr uint32_t INDEX_OFFSET_BASE_READ = 0x80000000;
+constexpr uint16_t PORT = 301;
+
 typedef long(_stdcall* TcAdsPortOpenEx)();                       // NOLINT
 typedef long(_stdcall* TcAdsPortCloseEx)(long);                  // NOLINT
 typedef long(_stdcall* TcAdsGetLocalAddressEx)(long, AmsAddr*);  // NOLINT

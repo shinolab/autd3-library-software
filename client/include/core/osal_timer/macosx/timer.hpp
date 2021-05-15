@@ -17,7 +17,7 @@
 #include <string>
 #include <thread>
 
-#include "result.hpp"
+#include "core/result.hpp"
 
 namespace autd {
 

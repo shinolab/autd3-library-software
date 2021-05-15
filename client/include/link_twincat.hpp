@@ -42,7 +42,7 @@ class TwinCATLink : public core::Link {
    */
   static core::LinkPtr Create();
 
-  TwinCATLink() : _port(0), _net_id() {}
+  TwinCATLink() : _port(0) {}
   ~TwinCATLink() override = default;
   TwinCATLink(const TwinCATLink& v) noexcept = delete;
   TwinCATLink& operator=(const TwinCATLink& obj) = delete;
@@ -57,8 +57,8 @@ class TwinCATLink : public core::Link {
 
  private:
   long _port;  // NOLINT
-  AmsNetId _net_id;
 #ifdef _WIN32
+  AmsNetId _net_id{};
   HMODULE _lib = nullptr;
 #endif
 };

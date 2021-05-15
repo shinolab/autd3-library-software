@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 
 set (CMAKE_CXX_STANDARD 17)
 
+find_package(Threads REQUIRED)
+
 include_directories(
   ${PROJECT_SOURCE_DIR}/include
   ${SOEM_PATH}/soem
@@ -40,7 +42,6 @@ add_library(link_soem STATIC
   ${PROJECT_SOURCE_DIR}/include/link_soem.hpp
 )
 
-
 if(WIN32)
   if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     add_custom_command(TARGET link_soem
@@ -59,6 +60,17 @@ if(WIN32)
   endif()
 
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd26451 /wd6385 /wd6386 /wd6011 /wd26495 /wd4996 /wd6001 /wd4200")
+endif()
+
+target_link_libraries(link_soem ${CMAKE_THREAD_LIBS_INIT})
+if(WIN32)
+  target_link_libraries(link_soem ws2_32.lib)
+  target_link_libraries(link_soem winmm.lib)
+elseif(APPLE)
+  target_link_libraries(link_soem pcap)
+else()
+  target_link_libraries(link_soem rt)
+  target_link_libraries(link_soem -static-libgcc -static-libstdc++)
 endif()
 
 set_target_properties(link_soem

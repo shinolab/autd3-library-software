@@ -14,11 +14,12 @@
 #include <signal.h>
 #include <time.h>
 
+#include <cstring>
 #include <functional>
 #include <string>
 #include <thread>
 
-#include "result.hpp"
+#include "core/result.hpp"
 
 namespace autd {
 
@@ -68,14 +69,8 @@ class Timer {
   }
 
   [[nodiscard]] Result<bool, std::string> InitTimer() {
-    struct sigaction act;
     struct itimerspec itval;
     struct sigevent se;
-
-    memset(&act, 0, sizeof(struct sigaction));
-    act.sa_handler = MainLoop;
-    act.sa_flags = SA_RESTART;
-    if (sigaction(SIGALRM, &act, NULL) < 0) return Err(std::string("sigaction failed"));
 
     itval.it_value.tv_sec = 0;
     itval.it_value.tv_nsec = this->_interval_us * 1000L;
