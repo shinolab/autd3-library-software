@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/05/2021
+// Last Modified: 16/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -23,13 +23,12 @@ namespace autd::modulation {
 
 using core::Configuration;
 
-#pragma region SineModulation
-ModulationPtr SineModulation::Create(const int freq, const double amp, const double offset) {
-  ModulationPtr mod = std::make_shared<SineModulation>(freq, amp, offset);
+ModulationPtr Sine::Create(const int freq, const double amp, const double offset) {
+  ModulationPtr mod = std::make_shared<Sine>(freq, amp, offset);
   return mod;
 }
 
-Result<bool, std::string> SineModulation::Build(const Configuration config) {
+Result<bool, std::string> Sine::Build(const Configuration config) {
   const auto sf = static_cast<int32_t>(config.mod_sampling_freq());
   const auto mod_buf_size = static_cast<int32_t>(config.mod_buf_size());
 
@@ -50,15 +49,23 @@ Result<bool, std::string> SineModulation::Build(const Configuration config) {
   }
   return Ok(true);
 }
-#pragma endregion
 
-#pragma region SquareModulation
-ModulationPtr SquareModulation::Create(int freq, uint8_t low, uint8_t high) {
-  ModulationPtr mod = std::make_shared<SquareModulation>(freq, low, high);
+ModulationPtr Square::Create(int freq, uint8_t low, uint8_t high) {
+  ModulationPtr mod = std::make_shared<Square>(freq, low, high);
   return mod;
 }
 
-Result<bool, std::string> SquareModulation::Build(const Configuration config) {
+ModulationPtr Custom::Create(const std::vector<uint8_t>& buffer) {
+  ModulationPtr mod = std::make_shared<Custom>(buffer);
+  return mod;
+}
+
+Result<bool, std::string> Custom::Build(const Configuration config) {
+  (void)config;
+  return Ok(true);
+}
+
+Result<bool, std::string> Square::Build(const Configuration config) {
   const auto sf = static_cast<int32_t>(config.mod_sampling_freq());
   const auto mod_buf_size = static_cast<int32_t>(config.mod_buf_size());
 
@@ -72,15 +79,13 @@ Result<bool, std::string> SquareModulation::Build(const Configuration config) {
   std::memset(&this->_buffer[0], this->_low, n / 2);
   return Ok(true);
 }
-#pragma endregion
 
-#pragma region SawModulation
-ModulationPtr SawModulation::Create(const int freq) {
-  ModulationPtr mod = std::make_shared<SawModulation>(freq);
+ModulationPtr Saw::Create(const int freq) {
+  ModulationPtr mod = std::make_shared<Saw>(freq);
   return mod;
 }
 
-Result<bool, std::string> SawModulation::Build(const Configuration config) {
+Result<bool, std::string> Saw::Build(const Configuration config) {
   const auto sf = static_cast<int32_t>(config.mod_sampling_freq());
   const auto mod_buf_size = static_cast<int32_t>(config.mod_buf_size());
 
@@ -99,5 +104,4 @@ Result<bool, std::string> SawModulation::Build(const Configuration config) {
   }
   return Ok(true);
 }
-#pragma endregion
 }  // namespace autd::modulation

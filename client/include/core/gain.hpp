@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 12/05/2021
+// Last Modified: 16/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -37,7 +37,7 @@ class Gain {
   /**
    * @brief Calculate amplitude and phase of each transducer
    */
-  [[nodiscard]] virtual Result<bool, std::string> Calc(const GeometryPtr geometry) {
+  [[nodiscard]] virtual Result<bool, std::string> Calc(const GeometryPtr& geometry) {
     for (size_t i = 0; i < geometry->num_devices(); i++) this->_data[i].fill(0x0000);
     return Ok(true);
   }
@@ -45,7 +45,7 @@ class Gain {
   /**
    * @brief Initialize data and calculate amplitude and phase of each transducer
    */
-  [[nodiscard]] Result<bool, std::string> Build(const GeometryPtr geometry) {
+  [[nodiscard]] Result<bool, std::string> Build(const GeometryPtr& geometry) {
     if (this->_built) return Ok(true);
 
     const auto num_device = geometry->num_devices();
@@ -61,7 +61,7 @@ class Gain {
   /**
    * @brief Re-calculate amplitude and phase of each transducer
    */
-  [[nodiscard]] Result<bool, std::string> Rebuild(const GeometryPtr geometry) {
+  [[nodiscard]] Result<bool, std::string> Rebuild(const GeometryPtr& geometry) {
     this->_built = false;
     return this->Build(geometry);
   }

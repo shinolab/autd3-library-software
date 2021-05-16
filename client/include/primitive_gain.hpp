@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 12/05/2021
+// Last Modified: 16/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -33,7 +33,7 @@ using core::Vector3;
 /**
  * @brief Gain to group some gains
  */
-class GroupedGain final : public Gain {
+class Grouped final : public Gain {
  public:
   /**
    * @brief Generate function
@@ -42,13 +42,13 @@ class GroupedGain final : public Gain {
    */
   static GainPtr Create(const std::map<size_t, GainPtr>& gain_map);
 
-  Result<bool, std::string> Calc(core::GeometryPtr geometry) override;
-  explicit GroupedGain(std::map<size_t, GainPtr> gain_map) : Gain(), _gain_map(std::move(gain_map)) {}
-  ~GroupedGain() override = default;
-  GroupedGain(const GroupedGain& v) noexcept = default;
-  GroupedGain& operator=(const GroupedGain& obj) = default;
-  GroupedGain(GroupedGain&& obj) = default;
-  GroupedGain& operator=(GroupedGain&& obj) = default;
+  Result<bool, std::string> Calc(const core::GeometryPtr& geometry) override;
+  explicit Grouped(std::map<size_t, GainPtr> gain_map) : Gain(), _gain_map(std::move(gain_map)) {}
+  ~Grouped() override = default;
+  Grouped(const Grouped& v) noexcept = default;
+  Grouped& operator=(const Grouped& obj) = default;
+  Grouped(Grouped&& obj) = default;
+  Grouped& operator=(Grouped&& obj) = default;
 
  private:
   std::map<size_t, GainPtr> _gain_map;
@@ -57,7 +57,7 @@ class GroupedGain final : public Gain {
 /**
  * @brief Gain to create plane wave
  */
-class PlaneWaveGain final : public Gain {
+class PlaneWave final : public Gain {
  public:
   /**
    * @brief Generate function
@@ -72,13 +72,13 @@ class PlaneWaveGain final : public Gain {
    */
   static GainPtr Create(const Vector3& direction, double amp);
 
-  Result<bool, std::string> Calc(core::GeometryPtr geometry) override;
-  explicit PlaneWaveGain(Vector3 direction, const uint8_t duty) : Gain(), _direction(std::move(direction)), _duty(duty) {}
-  ~PlaneWaveGain() override = default;
-  PlaneWaveGain(const PlaneWaveGain& v) noexcept = default;
-  PlaneWaveGain& operator=(const PlaneWaveGain& obj) = default;
-  PlaneWaveGain(PlaneWaveGain&& obj) = default;
-  PlaneWaveGain& operator=(PlaneWaveGain&& obj) = default;
+  Result<bool, std::string> Calc(const core::GeometryPtr& geometry) override;
+  explicit PlaneWave(Vector3 direction, const uint8_t duty) : Gain(), _direction(std::move(direction)), _duty(duty) {}
+  ~PlaneWave() override = default;
+  PlaneWave(const PlaneWave& v) noexcept = default;
+  PlaneWave& operator=(const PlaneWave& obj) = default;
+  PlaneWave(PlaneWave&& obj) = default;
+  PlaneWave& operator=(PlaneWave&& obj) = default;
 
  private:
   Vector3 _direction = Vector3::UnitZ();
@@ -88,7 +88,7 @@ class PlaneWaveGain final : public Gain {
 /**
  * @brief Gain to produce single focal point
  */
-class FocalPointGain final : public Gain {
+class FocalPoint final : public Gain {
  public:
   /**
    * @brief Generate function
@@ -103,13 +103,13 @@ class FocalPointGain final : public Gain {
    */
   static GainPtr Create(const Vector3& point, double amp);
 
-  Result<bool, std::string> Calc(core::GeometryPtr geometry) override;
-  explicit FocalPointGain(Vector3 point, const uint8_t duty) : Gain(), _point(std::move(point)), _duty(duty) {}
-  ~FocalPointGain() override = default;
-  FocalPointGain(const FocalPointGain& v) noexcept = default;
-  FocalPointGain& operator=(const FocalPointGain& obj) = default;
-  FocalPointGain(FocalPointGain&& obj) = default;
-  FocalPointGain& operator=(FocalPointGain&& obj) = default;
+  Result<bool, std::string> Calc(const core::GeometryPtr& geometry) override;
+  explicit FocalPoint(Vector3 point, const uint8_t duty) : Gain(), _point(std::move(point)), _duty(duty) {}
+  ~FocalPoint() override = default;
+  FocalPoint(const FocalPoint& v) noexcept = default;
+  FocalPoint& operator=(const FocalPoint& obj) = default;
+  FocalPoint(FocalPoint&& obj) = default;
+  FocalPoint& operator=(FocalPoint&& obj) = default;
 
  private:
   Vector3 _point = Vector3::Zero();
@@ -119,7 +119,7 @@ class FocalPointGain final : public Gain {
 /**
  * @brief Gain to produce Bessel Beam
  */
-class BesselBeamGain final : public Gain {
+class BesselBeam final : public Gain {
  public:
   /**
    * @brief Generate function
@@ -138,14 +138,14 @@ class BesselBeamGain final : public Gain {
    */
   static GainPtr Create(const Vector3& point, const Vector3& vec_n, double theta_z, double amp);
 
-  Result<bool, std::string> Calc(core::GeometryPtr geometry) override;
-  explicit BesselBeamGain(Vector3 point, Vector3 vec_n, const double theta_z, const uint8_t duty)
+  Result<bool, std::string> Calc(const core::GeometryPtr& geometry) override;
+  explicit BesselBeam(Vector3 point, Vector3 vec_n, const double theta_z, const uint8_t duty)
       : Gain(), _point(std::move(point)), _vec_n(std::move(vec_n)), _theta_z(theta_z), _duty(duty) {}
-  ~BesselBeamGain() override = default;
-  BesselBeamGain(const BesselBeamGain& v) noexcept = default;
-  BesselBeamGain& operator=(const BesselBeamGain& obj) = default;
-  BesselBeamGain(BesselBeamGain&& obj) = default;
-  BesselBeamGain& operator=(BesselBeamGain&& obj) = default;
+  ~BesselBeam() override = default;
+  BesselBeam(const BesselBeam& v) noexcept = default;
+  BesselBeam& operator=(const BesselBeam& obj) = default;
+  BesselBeam(BesselBeam&& obj) = default;
+  BesselBeam& operator=(BesselBeam&& obj) = default;
 
  private:
   Vector3 _point = Vector3::Zero();
@@ -157,7 +157,7 @@ class BesselBeamGain final : public Gain {
 /**
  * @brief Gain that can set the phase and amplitude freely
  */
-class CustomGain final : public Gain {
+class Custom final : public Gain {
  public:
   /**
    * @brief Generate function
@@ -174,19 +174,19 @@ class CustomGain final : public Gain {
    * amplitude and LSB represents phase
    */
   static GainPtr Create(const uint16_t* data, size_t data_length);
-  Result<bool, std::string> Calc(core::GeometryPtr geometry) override;
-  explicit CustomGain(std::vector<AUTDDataArray> data) : Gain() { this->_data = std::move(data); }
-  ~CustomGain() override = default;
-  CustomGain(const CustomGain& v) noexcept = default;
-  CustomGain& operator=(const CustomGain& obj) = default;
-  CustomGain(CustomGain&& obj) = default;
-  CustomGain& operator=(CustomGain&& obj) = default;
+  Result<bool, std::string> Calc(const core::GeometryPtr& geometry) override;
+  explicit Custom(std::vector<AUTDDataArray> data) : Gain() { this->_data = std::move(data); }
+  ~Custom() override = default;
+  Custom(const Custom& v) noexcept = default;
+  Custom& operator=(const Custom& obj) = default;
+  Custom(Custom&& obj) = default;
+  Custom& operator=(Custom&& obj) = default;
 };
 
 /**
  * @brief Gain to test a transducer
  */
-class TransducerTestGain final : public Gain {
+class TransducerTest final : public Gain {
  public:
   /**
    * @brief Generate function
@@ -195,14 +195,14 @@ class TransducerTestGain final : public Gain {
    * @param[in] phase phase of the phase
    */
   static GainPtr Create(size_t transducer_index, uint8_t duty, uint8_t phase);
-  Result<bool, std::string> Calc(core::GeometryPtr geometry) override;
-  TransducerTestGain(const size_t transducer_index, const uint8_t duty, const uint8_t phase)
+  Result<bool, std::string> Calc(const core::GeometryPtr& geometry) override;
+  TransducerTest(const size_t transducer_index, const uint8_t duty, const uint8_t phase)
       : Gain(), _transducer_idx(transducer_index), _duty(duty), _phase(phase) {}
-  ~TransducerTestGain() override = default;
-  TransducerTestGain(const TransducerTestGain& v) noexcept = default;
-  TransducerTestGain& operator=(const TransducerTestGain& obj) = default;
-  TransducerTestGain(TransducerTestGain&& obj) = default;
-  TransducerTestGain& operator=(TransducerTestGain&& obj) = default;
+  ~TransducerTest() override = default;
+  TransducerTest(const TransducerTest& v) noexcept = default;
+  TransducerTest& operator=(const TransducerTest& obj) = default;
+  TransducerTest(TransducerTest&& obj) = default;
+  TransducerTest& operator=(TransducerTest&& obj) = default;
 
  protected:
   size_t _transducer_idx = 0;

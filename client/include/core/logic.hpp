@@ -78,7 +78,7 @@ class Logic {
     }
   }
 
-  void static PackBody(const SequencePtr seq, const GeometryPtr geometry, uint8_t* data, size_t* const size) {
+  static void PackBody(const SequencePtr& seq, const GeometryPtr& geometry, uint8_t* data, size_t* const size) {
     const auto num_devices = seq != nullptr ? geometry->num_devices() : 0;
 
     *size = sizeof(RxGlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;

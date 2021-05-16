@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 12/05/2021
+// Last Modified: 16/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -45,7 +45,7 @@ void AUTDCreateController(void** out) {
 bool AUTDOpenControllerWith(void* const handle, void* const p_link) {
   auto* cnt = static_cast<autd::Controller*>(handle);
   auto* link = static_cast<LinkWrapper*>(p_link);
-  auto res = cnt->OpenWith(move(link->ptr));
+  auto res = cnt->OpenWith(link->ptr);
   LinkDelete(link);
   if (res.is_err()) LastError() = res.unwrap_err();
   return res.unwrap_or(false);
@@ -183,7 +183,7 @@ void AUTDGroupedGain(void** gain, int32_t* const group_ids, void** in_gains, con
     gain_map[id] = g->ptr;
   }
 
-  auto* g_gain = GainCreate(autd::gain::GroupedGain::Create(gain_map));
+  auto* g_gain = GainCreate(autd::gain::Grouped::Create(gain_map));
 
   *gain = g_gain;
 }
@@ -192,25 +192,25 @@ void AUTDDeleteGain(void* const gain) {
   GainDelete(g);
 }
 void AUTDFocalPointGain(void** gain, const float x, const float y, const float z, const uint8_t duty) {
-  auto* g = GainCreate(autd::gain::FocalPointGain::Create(ToVec3(x, y, z), duty));
+  auto* g = GainCreate(autd::gain::FocalPoint::Create(ToVec3(x, y, z), duty));
   *gain = g;
 }
 void AUTDBesselBeamGain(void** gain, const float x, const float y, const float z, const float n_x, const float n_y, const float n_z,
                         const float theta_z, const uint8_t duty) {
-  auto* g = GainCreate(autd::gain::BesselBeamGain::Create(ToVec3(x, y, z), ToVec3(n_x, n_y, n_z), static_cast<double>(theta_z), duty));
+  auto* g = GainCreate(autd::gain::BesselBeam::Create(ToVec3(x, y, z), ToVec3(n_x, n_y, n_z), static_cast<double>(theta_z), duty));
   *gain = g;
 }
 void AUTDPlaneWaveGain(void** gain, const float n_x, const float n_y, const float n_z, const uint8_t duty) {
-  auto* g = GainCreate(autd::gain::PlaneWaveGain::Create(ToVec3(n_x, n_y, n_z), duty));
+  auto* g = GainCreate(autd::gain::PlaneWave::Create(ToVec3(n_x, n_y, n_z), duty));
   *gain = g;
 }
 void AUTDCustomGain(void** gain, uint16_t* data, const int32_t data_length) {
-  auto* g = GainCreate(autd::gain::CustomGain::Create(data, data_length));
+  auto* g = GainCreate(autd::gain::Custom::Create(data, data_length));
   *gain = g;
 }
 
 void AUTDTransducerTestGain(void** gain, const int32_t idx, const uint8_t duty, const uint8_t phase) {
-  auto* g = GainCreate(autd::gain::TransducerTestGain::Create(idx, duty, phase));
+  auto* g = GainCreate(autd::gain::TransducerTest::Create(idx, duty, phase));
   *gain = g;
 }
 #pragma endregion
@@ -231,15 +231,15 @@ void AUTDCustomModulation(void** mod, uint8_t* buf, const uint32_t size) {
   *mod = m;
 }
 void AUTDSquareModulation(void** mod, const int32_t freq, const uint8_t low, const uint8_t high) {
-  auto* m = ModulationCreate(autd::modulation::SquareModulation::Create(freq, low, high));
+  auto* m = ModulationCreate(autd::modulation::Square::Create(freq, low, high));
   *mod = m;
 }
 void AUTDSawModulation(void** mod, const int32_t freq) {
-  auto* m = ModulationCreate(autd::modulation::SawModulation::Create(freq));
+  auto* m = ModulationCreate(autd::modulation::Saw::Create(freq));
   *mod = m;
 }
 void AUTDSineModulation(void** mod, const int32_t freq, const float amp, const float offset) {
-  auto* m = ModulationCreate(autd::modulation::SineModulation::Create(freq, static_cast<double>(amp), static_cast<double>(offset)));
+  auto* m = ModulationCreate(autd::modulation::Sine::Create(freq, static_cast<double>(amp), static_cast<double>(offset)));
   *mod = m;
 }
 #pragma endregion

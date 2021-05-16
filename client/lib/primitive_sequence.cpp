@@ -1,0 +1,45 @@
+// File: primitive_sequence.cpp
+// Project: lib
+// Created Date: 16/05/2021
+// Author: Shun Suzuki
+// -----
+// Last Modified: 16/05/2021
+// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
+// -----
+// Copyright (c) 2021 Hapis Lab. All rights reserved.
+//
+
+#include "primitive_sequence.hpp"
+
+#include "core/sequence.hpp"
+
+namespace autd::sequence {
+
+static core::Vector3 GetOrthogonal(const core::Vector3& v) {
+  const auto a = core::Vector3::UnitX();
+  if (std::acos(v.dot(a)) < M_PI / 2) {
+    const auto b = core::Vector3::UnitY();
+    return v.cross(b);
+  }
+  return v.cross(a);
+}
+
+SequencePtr CreateImpl(const core::Vector3& center, const core::Vector3& normal, const double radius, const size_t n) {
+  const auto normal_ = normal.normalized();
+  const auto n1 = GetOrthogonal(normal_).normalized();
+  const auto n2 = normal_.cross(n1).normalized();
+
+  std::vector<core::Vector3> control_points;
+  for (size_t i = 0; i < n; i++) {
+    const auto theta = 2 * M_PI / static_cast<double>(n) * static_cast<double>(i);
+    auto x = n1 * radius * cos(theta);
+    auto y = n2 * radius * sin(theta);
+    control_points.emplace_back(center + x + y);
+  }
+  return core::PointSequence::Create(control_points);
+}
+
+SequencePtr Circumference::Create(const core::Vector3& center, const core::Vector3& normal, const double radius, const size_t n) {
+  return CreateImpl(center, normal, radius, n);
+}
+}  // namespace autd::sequence

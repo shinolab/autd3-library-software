@@ -21,8 +21,8 @@
 namespace autd {
 
 namespace {
-bool ModSentFinished(const core::ModulationPtr& mod) { return mod == nullptr || (mod->sent() == mod->buffer().size()); }
-bool SeqSentFinished(const core::SequencePtr& seq) { return seq == nullptr || (seq->sent() == seq->control_points().size()); }
+bool ModSentFinished(const core::ModulationPtr& mod) { return mod == nullptr || mod->sent() == mod->buffer().size(); }
+bool SeqSentFinished(const core::SequencePtr& seq) { return seq == nullptr || seq->sent() == seq->control_points().size(); }
 }  // namespace
 
 bool Controller::is_open() const { return this->_link != nullptr && this->_link->is_open(); }
@@ -42,7 +42,7 @@ Result<std::vector<uint8_t>, std::string> Controller::fpga_info() {
 
 Result<bool, std::string> Controller::update_ctrl_flag() { return this->Send(nullptr, nullptr, true); }
 
-Result<bool, std::string> Controller::OpenWith(const core::LinkPtr link) {
+Result<bool, std::string> Controller::OpenWith(const core::LinkPtr& link) {
   if (is_open())
     if (auto close_res = this->Close(); close_res.is_err()) return close_res;
 
@@ -126,13 +126,11 @@ Result<bool, std::string> Controller::Stop() {
   return this->Send(null_gain, nullptr, false);
 }
 
-Result<bool, std::string> Controller::Send(const core::GainPtr gain, const bool wait_for_sent) { return this->Send(gain, nullptr, wait_for_sent); }
+Result<bool, std::string> Controller::Send(const core::GainPtr& gain, const bool wait_for_sent) { return this->Send(gain, nullptr, wait_for_sent); }
 
-Result<bool, std::string> Controller::Send(const core::ModulationPtr mod, const bool wait_for_sent) {
-  return this->Send(nullptr, mod, wait_for_sent);
-}
+Result<bool, std::string> Controller::Send(const core::ModulationPtr& mod) { return this->Send(nullptr, mod, true); }
 
-Result<bool, std::string> Controller::Send(const core::GainPtr gain, const core::ModulationPtr mod, const bool wait_for_sent) {
+Result<bool, std::string> Controller::Send(const core::GainPtr& gain, const core::ModulationPtr& mod, const bool wait_for_sent) {
   if (!this->is_open()) return Err(std::string("Link is not opened."));
 
   Result<bool, std::string> res = Ok(true);
@@ -166,7 +164,7 @@ Result<bool, std::string> Controller::Send(const core::GainPtr gain, const core:
   }
 }
 
-Result<bool, std::string> Controller::Send(core::SequencePtr seq) {
+Result<bool, std::string> Controller::Send(const core::SequencePtr& seq) {
   if (!this->is_open()) return Err(std::string("Link is not opened."));
 
   Result<bool, std::string> res = Ok(true);
@@ -220,7 +218,7 @@ Result<std::vector<FirmwareInfo>, std::string> Controller::firmware_info_list() 
 
 std::shared_ptr<Controller::STMController> Controller::stm() const { return this->_stm; }
 
-void Controller::STMController::AddGain(const core::GainPtr gain) { _gains.emplace_back(gain); }
+void Controller::STMController::AddGain(const core::GainPtr& gain) { _gains.emplace_back(gain); }
 void Controller::STMController::AddGains(const std::vector<core::GainPtr>& gains) {
   for (const auto& g : gains) this->AddGain(g);
 }
