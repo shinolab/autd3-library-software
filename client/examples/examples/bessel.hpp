@@ -12,8 +12,8 @@
 #pragma once
 
 #include "autd3.hpp"
-#include "primitive_modulation.hpp"
 #include "primitive_gain.hpp"
+#include "primitive_modulation.hpp"
 
 using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SPACING_MM;
 
@@ -22,7 +22,7 @@ inline void BesselTest(autd::Controller& autd) {
 
   const auto m = autd::modulation::Sine::Create(150);  // 150Hz AM
 
-  const auto center = autd::Vector3(TRANS_SPACING_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SPACING_MM * ((NUM_TRANS_Y - 1) / 2.0), 0);
+  const autd::Vector3 center(TRANS_SPACING_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SPACING_MM * ((NUM_TRANS_Y - 1) / 2.0), 150.0);
   const auto g = autd::gain::BesselBeam::Create(center, autd::Vector3::UnitZ(), 13.0 / 180.0 * M_PI);
   autd.Send(g, m).unwrap();
 }

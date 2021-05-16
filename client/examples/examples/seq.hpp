@@ -12,8 +12,8 @@
 #pragma once
 
 #include "autd3.hpp"
-#include "primitive_sequence.hpp"
 #include "primitive_modulation.hpp"
+#include "primitive_sequence.hpp"
 
 using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SPACING_MM;
 
@@ -25,12 +25,12 @@ inline void SeqTest(autd::Controller& autd) {
 
   auto seq = autd::sequence::PointSequence::Create();
 
-  const auto center = autd::Vector3(TRANS_SPACING_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SPACING_MM * ((NUM_TRANS_Y - 1) / 2.0), 150.0);
+  const autd::Vector3 center(TRANS_SPACING_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SPACING_MM * ((NUM_TRANS_Y - 1) / 2.0), 150.0);
   const auto point_num = 200;
   for (auto i = 0; i < point_num; i++) {
     const auto radius = 30.0;
     const auto theta = 2.0 * M_PI * static_cast<double>(i) / static_cast<double>(point_num);
-    const auto p = radius * autd::Vector3(std::cos(theta), std::sin(theta), 0);
+    const autd::Vector3 p(radius * std::cos(theta), radius * std::sin(theta), 0);
     seq->AddPoint(center + p).unwrap();
   }
 
