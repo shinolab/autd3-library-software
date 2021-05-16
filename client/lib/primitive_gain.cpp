@@ -22,12 +22,6 @@ using core::Vector3;
 
 inline double PosMod(const double a, const double b) { return a - floor(a / b) * b; }
 
-template <typename T>
-uint8_t ToDuty(const T amp) noexcept {
-  const auto d = std::asin(amp) / static_cast<T>(M_PI);  //  duty (0 ~ 0.5)
-  return static_cast<uint8_t>(511 * d);
-}
-
 GainPtr Grouped::Create(const std::map<size_t, GainPtr>& gain_map) {
   GainPtr gain = std::make_shared<Grouped>(gain_map);
   return gain;
@@ -52,7 +46,7 @@ Result<bool, std::string> Grouped::Calc(const core::GeometryPtr& geometry) {
 }
 
 GainPtr PlaneWave::Create(const Vector3& direction, const double amp) {
-  const auto d = ToDuty(amp);
+  const auto d = core::ToDuty(amp);
   return Create(direction, d);
 }
 
@@ -80,7 +74,7 @@ Result<bool, std::string> PlaneWave::Calc(const core::GeometryPtr& geometry) {
 }
 
 GainPtr FocalPoint::Create(const Vector3& point, const double amp) {
-  const auto d = ToDuty(amp);
+  const auto d = core::ToDuty(amp);
   return Create(point, d);
 }
 
@@ -106,7 +100,7 @@ Result<bool, std::string> FocalPoint::Calc(const core::GeometryPtr& geometry) {
 }
 
 GainPtr BesselBeam::Create(const Vector3& point, const Vector3& vec_n, const double theta_z, const double amp) {
-  const auto duty = ToDuty(amp);
+  const auto duty = core::ToDuty(amp);
   return Create(point, vec_n, theta_z, duty);
 }
 

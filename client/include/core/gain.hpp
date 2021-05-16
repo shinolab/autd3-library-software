@@ -24,6 +24,12 @@ namespace autd::core {
 class Gain;
 using GainPtr = std::shared_ptr<Gain>;
 
+template <typename T>
+uint8_t ToDuty(const T amp) noexcept {
+  const auto d = std::asin(amp) / static_cast<T>(M_PI);  //  duty (0 ~ 0.5)
+  return static_cast<uint8_t>(511 * d);
+}
+
 /**
  * @brief Gain controls the amplitude and phase of each transducer in the AUTD
  */

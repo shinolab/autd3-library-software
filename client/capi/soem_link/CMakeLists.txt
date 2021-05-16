@@ -6,7 +6,7 @@ set(INCLUDE_LIST
   ${PROJECT_SOURCE_DIR}/include
 )
 
-add_library(autd3capi-link-soem SHARED
+add_library(autd3capi-soem-link SHARED
   c_api.cpp
   soem_link.h
   ../base/wrapper_link.hpp
@@ -14,18 +14,18 @@ add_library(autd3capi-link-soem SHARED
 
 include_directories(${INCLUDE_LIST})
 
-target_link_libraries(autd3capi-link-soem soem_link)
+target_link_libraries(autd3capi-soem-link soem_link)
 if(WIN32)
-  target_link_libraries(autd3capi-link-soem ws2_32.lib)
-  target_link_libraries(autd3capi-link-soem winmm.lib)
+  target_link_libraries(autd3capi-soem-link ws2_32.lib)
+  target_link_libraries(autd3capi-soem-link winmm.lib)
 elseif(APPLE)
-  target_link_libraries(autd3capi-link-soem pcap)
+  target_link_libraries(autd3capi-soem-link pcap)
 else()
-  target_link_libraries(autd3capi-link-soem rt)
-  target_link_libraries(autd3capi-link-soem -static-libgcc -static-libstdc++)
+  target_link_libraries(autd3capi-soem-link rt)
+  target_link_libraries(autd3capi-soem-link -static-libgcc -static-libstdc++)
 endif()
 
-set_target_properties(autd3capi-link-soem
+set_target_properties(autd3capi-soem-link
   PROPERTIES
   ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
@@ -33,5 +33,5 @@ set_target_properties(autd3capi-link-soem
 )
 
 if(NOT WIN32)
-  set_target_properties(autd3capi-link-soem PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  set_target_properties(autd3capi-soem-link PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
