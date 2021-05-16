@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 15/05/2021
+// Last Modified: 16/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -36,7 +36,8 @@ class Logic {
     return id.load();
   }
 
-  static void PackHeader(const COMMAND cmd, const bool silent_mode, const bool seq_mode, uint8_t* data, uint8_t* const msg_id) {
+  static void PackHeader(const COMMAND cmd, const bool silent_mode, const bool seq_mode, const bool read_fpga_info, uint8_t* data,
+                         uint8_t* const msg_id) {
     auto* header = reinterpret_cast<RxGlobalHeader*>(data);
     *msg_id = get_id();
     header->msg_id = *msg_id;
@@ -46,10 +47,12 @@ class Logic {
 
     if (seq_mode) header->control_flags |= SEQ_MODE;
     if (silent_mode) header->control_flags |= SILENT;
+    if (read_fpga_info) header->control_flags |= READ_FPGA_INFO;
   }
 
-  static void PackHeader(const ModulationPtr& mod, const bool silent_mode, const bool seq_mode, uint8_t* data, uint8_t* const msg_id) {
-    PackHeader(COMMAND::OP, silent_mode, seq_mode, data, msg_id);
+  static void PackHeader(const ModulationPtr& mod, const bool silent_mode, const bool seq_mode, const bool read_fpga_info, uint8_t* data,
+                         uint8_t* const msg_id) {
+    PackHeader(COMMAND::OP, silent_mode, seq_mode, read_fpga_info, data, msg_id);
     if (mod == nullptr) return;
     auto* header = reinterpret_cast<RxGlobalHeader*>(data);
     const auto mod_size = static_cast<uint8_t>(std::clamp(mod->buffer().size() - mod->sent(), size_t{0}, MOD_FRAME_SIZE));
