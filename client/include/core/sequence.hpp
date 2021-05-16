@@ -3,7 +3,7 @@
 // Created Date: 14/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/05/2021
+// Last Modified: 16/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -26,11 +26,10 @@ using SequencePtr = std::shared_ptr<PointSequence>;
 /**
  * @brief PointSequence provides a function to display the focus sequentially and periodically.
  * @details PointSequence uses a timer on the FPGA to ensure that the focus is precisely timed.
- * PointSequence currently has the following four limitations.
+ * PointSequence currently has the following three limitations.
  * 1. The maximum number of control points is 40000.
  * 2. the sampling interval of Control Points is an integer multiple of 25us.
- * 3. (number of Control Points) x (sampling interval) must be less than or equal 1 second.
- * 4. Only a single focus can be displayed at a certain moment.
+ * 3. Only a single focus can be displayed at a certain moment.
  */
 class PointSequence {
  public:
@@ -46,10 +45,7 @@ class PointSequence {
   /**
    * @brief Generate PointSequence with control points.
    */
-  static SequencePtr Create(const std::vector<Vector3>& control_points) noexcept {
-    return std::make_shared<PointSequence>(control_points);
-    ;
-  }
+  static SequencePtr Create(const std::vector<Vector3>& control_points) noexcept { return std::make_shared<PointSequence>(control_points); }
 
   /**
    * @brief Add control point
@@ -87,14 +83,13 @@ class PointSequence {
   /**
    * @brief Set frequency of the sequence
    * @param[in] freq Frequency of the sequence
-   * @details The Point Sequence Mode has three constraints, which determine the actual frequency of the sequence.
+   * @details The Point Sequence Mode has two constraints, which determine the actual frequency of the sequence.
    * 1. The maximum number of control points is 40000.
-   * 2. the sampling interval of Control Points is an integer multiple of 25us.
-   * 3. (number of Control Points) x (sampling interval) must be less than or equal 1 second.
+   * 2. the sampling interval of Control Points is an integer multiple of 25us and less than 25us x 65536.
    * @return double Actual frequency of sequence
    */
-  double SetFrequency(double freq) {
-    const auto sample_freq = std::min(static_cast<double>(this->_control_points.size()) * freq, static_cast<double>(POINT_SEQ_BASE_FREQ));
+  double SetFrequency(const double freq) {
+    const auto sample_freq = static_cast<double>(this->_control_points.size()) * freq;
     this->_sampling_freq_div = static_cast<uint16_t>(static_cast<double>(POINT_SEQ_BASE_FREQ) / sample_freq);
     return this->frequency();
   }
