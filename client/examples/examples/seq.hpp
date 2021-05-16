@@ -12,6 +12,8 @@
 #pragma once
 
 #include "autd3.hpp"
+#include "primitive_sequence.hpp"
+#include "primitive_modulation.hpp"
 
 using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SPACING_MM;
 
