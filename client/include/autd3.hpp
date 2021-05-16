@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/05/2021
+// Last Modified: 16/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -16,9 +16,6 @@
 #include "core/hardware_defined.hpp"
 #include "core/modulation.hpp"
 #include "core/sequence.hpp"
-#include "primitive_gain.hpp"
-#include "primitive_modulation.hpp"
-#include "primitive_sequence.hpp"
 
 namespace autd {
 using Matrix4X4 = core::Matrix4X4;
