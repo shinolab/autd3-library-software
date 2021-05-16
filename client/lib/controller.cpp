@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/05/2021
+// Last Modified: 16/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -30,6 +30,15 @@ bool Controller::is_open() const { return this->_link != nullptr && this->_link-
 core::GeometryPtr Controller::geometry() const noexcept { return this->_geometry; }
 
 bool& Controller::silent_mode() noexcept { return this->_silent_mode; }
+bool& Controller::reads_fpga_info() noexcept { return this->_read_fpga_info; }
+
+Result<std::vector<uint8_t>, std::string> Controller::fpga_info() {
+  const auto num_devices = this->_geometry->num_devices();
+  this->_fpga_infos.resize(num_devices);
+  if (auto res = this->_link->Read(&_rx_buf[0], num_devices * core::EC_INPUT_FRAME_SIZE); res.is_err()) return Err(res.unwrap_err());
+  for (size_t i = 0; i < num_devices; i++) this->_fpga_infos[i] = _rx_buf[2 * i];
+  return Ok(_fpga_infos);
+}
 
 Result<bool, std::string> Controller::update_ctrl_flag() { return this->Send(nullptr, nullptr, true); }
 
@@ -41,14 +50,16 @@ Result<bool, std::string> Controller::OpenWith(const core::LinkPtr link) {
   this->_rx_buf = std::make_unique<uint8_t[]>(this->_geometry->num_devices() * core::EC_INPUT_FRAME_SIZE);
 
   this->_link = link;
-  this->_stm = std::make_shared<STMController>(this->_link, this->_geometry, &this->_silent_mode);
+  this->_stm = std::make_shared<STMController>(this->_link, this->_geometry, &this->_silent_mode, &this->_read_fpga_info);
   return this->_link->Open();
 }
 
 Result<bool, std::string> Controller::Synchronize(const core::Configuration config) {
+  if (!this->is_open()) return Err(std::string("Link is not opened."));
+
   this->_config = config;
   uint8_t msg_id = 0;
-  core::Logic::PackHeader(core::COMMAND::INIT_FPGA_REF_CLOCK, false, false, &_tx_buf[0], &msg_id);
+  core::Logic::PackHeader(core::COMMAND::INIT_FPGA_REF_CLOCK, this->_silent_mode, this->_seq_mode, this->_read_fpga_info, &_tx_buf[0], &msg_id);
   size_t size = 0;
   const auto num_devices = this->_geometry->num_devices();
   if (auto res = core::Logic::PackSyncBody(config, num_devices, &_tx_buf[0], &size); res.is_err()) return res;
@@ -59,9 +70,11 @@ Result<bool, std::string> Controller::Synchronize(const core::Configuration conf
 Result<bool, std::string> Controller::Clear() const { return SendHeader(core::COMMAND::CLEAR); }
 
 Result<bool, std::string> Controller::SendHeader(const core::COMMAND cmd) const {
+  if (!this->is_open()) return Err(std::string("Link is not opened."));
+
   const auto send_size = sizeof(core::RxGlobalHeader);
   uint8_t msg_id = 0;
-  core::Logic::PackHeader(cmd, false, false, &_tx_buf[0], &msg_id);
+  core::Logic::PackHeader(cmd, this->_silent_mode, this->_seq_mode, this->_read_fpga_info, &_tx_buf[0], &msg_id);
   if (auto res = _link->Send(send_size, &_tx_buf[0]); res.is_err()) return res;
   return WaitMsgProcessed(msg_id, 50);
 }
@@ -73,7 +86,7 @@ Result<bool, std::string> Controller::WaitMsgProcessed(const uint8_t msg_id, con
 
   const auto buffer_len = num_devices * core::EC_INPUT_FRAME_SIZE;
   for (size_t i = 0; i < max_trial; i++) {
-    if (auto res = _link->Read(&_rx_buf[0], buffer_len); res.is_err()) return res;
+    if (auto res = this->_link->Read(&_rx_buf[0], buffer_len); res.is_err()) return res;
 
     size_t processed = 0;
     for (size_t dev = 0; dev < num_devices; dev++)
@@ -120,6 +133,8 @@ Result<bool, std::string> Controller::Send(const core::ModulationPtr mod, const 
 }
 
 Result<bool, std::string> Controller::Send(const core::GainPtr gain, const core::ModulationPtr mod, const bool wait_for_sent) {
+  if (!this->is_open()) return Err(std::string("Link is not opened."));
+
   Result<bool, std::string> res = Ok(true);
 
   res = this->_stm->Stop();
@@ -139,7 +154,7 @@ Result<bool, std::string> Controller::Send(const core::GainPtr gain, const core:
 
   while (true) {
     uint8_t msg_id = 0;
-    core::Logic::PackHeader(mod, this->_silent_mode, this->_seq_mode, &this->_tx_buf[0], &msg_id);
+    core::Logic::PackHeader(mod, this->_silent_mode, this->_seq_mode, this->_read_fpga_info, &this->_tx_buf[0], &msg_id);
     res = this->_link->Send(size, &this->_tx_buf[0]);
     if (res.is_err()) return res;
 
@@ -152,6 +167,8 @@ Result<bool, std::string> Controller::Send(const core::GainPtr gain, const core:
 }
 
 Result<bool, std::string> Controller::Send(core::SequencePtr seq) {
+  if (!this->is_open()) return Err(std::string("Link is not opened."));
+
   Result<bool, std::string> res = Ok(true);
 
   res = this->_stm->Stop();
@@ -160,7 +177,7 @@ Result<bool, std::string> Controller::Send(core::SequencePtr seq) {
   this->_seq_mode = true;
   while (true) {
     uint8_t msg_id = 0;
-    core::Logic::PackHeader(core::COMMAND::SEQ_MODE, this->_silent_mode, this->_seq_mode, &this->_tx_buf[0], &msg_id);
+    core::Logic::PackHeader(core::COMMAND::SEQ_MODE, this->_silent_mode, this->_seq_mode, this->_read_fpga_info, &this->_tx_buf[0], &msg_id);
     size_t size = 0;
     core::Logic::PackBody(seq, this->_geometry, &this->_tx_buf[0], &size);
 
@@ -223,7 +240,7 @@ void Controller::STMController::AddGains(const std::vector<core::GainPtr>& gains
 
     uint8_t msg_id = 0;
     this->_bodies[i] = std::make_unique<uint8_t[]>(this->_geometry->num_devices() * core::EC_OUTPUT_FRAME_SIZE);
-    core::Logic::PackHeader(nullptr, *this->_silent_mode, false, &this->_bodies[i][0], &msg_id);
+    core::Logic::PackHeader(nullptr, *this->_silent_mode, false, *this->_read_fpga_info, &this->_bodies[i][0], &msg_id);
     size_t size = 0;
     core::Logic::PackBody(g, &this->_bodies[i][0], &size);
     this->_sizes[i] = size;

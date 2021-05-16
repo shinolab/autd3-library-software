@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/05/2021
+// Last Modified: 16/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -39,6 +39,7 @@ class Controller {
         _geometry(std::make_shared<core::Geometry>()),
         _silent_mode(true),
         _seq_mode(false),
+        _read_fpga_info(false),
         _tx_buf(nullptr),
         _rx_buf(nullptr),
         _stm(nullptr) {}
@@ -62,6 +63,16 @@ class Controller {
    * @brief Silent mode
    */
   bool& silent_mode() noexcept;
+
+  /**
+   * @brief If true, the devices return FPGA info in all frames. The FPGA info can be read by fpga_info().
+   */
+  bool& reads_fpga_info() noexcept;
+
+  /**
+   * @brief FPGA info
+   */
+  Result<std::vector<uint8_t>, std::string> fpga_info();
 
   /**
    * @brief Update control flag
@@ -143,8 +154,8 @@ class Controller {
 
   class STMController {
    public:
-    explicit STMController(const core::LinkPtr link, const core::GeometryPtr geometry, bool* silent_mode)
-        : _link(link), _geometry(geometry), _silent_mode(silent_mode) {}
+    explicit STMController(const core::LinkPtr link, const core::GeometryPtr geometry, bool* silent_mode, bool* read_fpga_info)
+        : _link(link), _geometry(geometry), _silent_mode(silent_mode), _read_fpga_info(read_fpga_info) {}
 
     /**
      * @brief Add gain for STM
@@ -189,6 +200,7 @@ class Controller {
     Timer _timer;
     std::atomic<bool> _lock;
     bool* _silent_mode;
+    bool* _read_fpga_info;
   };
 
  private:
@@ -198,11 +210,13 @@ class Controller {
   core::LinkPtr _link;
   core::GeometryPtr _geometry;
   bool _silent_mode;
+  bool _read_fpga_info;
   bool _seq_mode;
   core::Configuration _config;
 
   std::unique_ptr<uint8_t[]> _tx_buf;
   std::unique_ptr<uint8_t[]> _rx_buf;
+  std::vector<uint8_t> _fpga_infos;
 
   std::shared_ptr<STMController> _stm;
 };
