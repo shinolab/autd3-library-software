@@ -94,6 +94,11 @@ endif()
 add_definitions(-DEIGEN_MPL2_ONLY)
 set(EIGEN_PATH ${PROJECT_SOURCE_DIR}/deps/Eigen3)
 
+# Gain
+if(BUILD_HOLO_GAIN)
+  add_subdirectory(holo_gain)
+endif()
+
 # Link
 if(BUILD_TWINCAT_LINK)
   add_subdirectory(link/twincat)
