@@ -13,6 +13,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "core/configuration.hpp"
@@ -38,8 +39,8 @@ class Controller {
       : _link(nullptr),
         _geometry(std::make_shared<core::Geometry>()),
         _silent_mode(true),
-        _seq_mode(false),
         _read_fpga_info(false),
+        _seq_mode(false),
         _tx_buf(nullptr),
         _rx_buf(nullptr),
         _stm(nullptr) {}
@@ -84,7 +85,7 @@ class Controller {
    * @param[in] link Link
    * @return return Ok(whether succeeded to open), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Result<bool, std::string> OpenWith(core::LinkPtr link);
+  [[nodiscard]] Result<bool, std::string> OpenWith(const core::LinkPtr& link);
 
   /**
    * @brief Synchronize all devices
@@ -118,15 +119,14 @@ class Controller {
    * @param[in] wait_for_sent if true, this function will wait for the data is sent to the devices and processed.
    * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Result<bool, std::string> Send(core::GainPtr gain, bool wait_for_sent = false);
+  [[nodiscard]] Result<bool, std::string> Send(const core::GainPtr& gain, bool wait_for_sent = false);
 
   /**
    * @brief Send modulation to the device
    * @param[in] mod Amplitude modulation to display
-   * @param[in] wait_for_sent if true, this function will wait for the data is sent to the devices and processed.
    * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Result<bool, std::string> Send(core::ModulationPtr mod, bool wait_for_sent = false);
+  [[nodiscard]] Result<bool, std::string> Send(const core::ModulationPtr& mod);
 
   /**
    * @brief Send gain and modulation to the device
@@ -135,14 +135,14 @@ class Controller {
    * @param[in] wait_for_sent if true, this function will wait for the data is sent to the devices and processed.
    * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Result<bool, std::string> Send(core::GainPtr gain, core::ModulationPtr mod, bool wait_for_sent = false);
+  [[nodiscard]] Result<bool, std::string> Send(const core::GainPtr& gain, const core::ModulationPtr& mod, bool wait_for_sent = false);
 
   /**
    * @brief Send sequence and modulation to the device
    * @param[in] seq Sequence to display
    * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Result<bool, std::string> Send(core::SequencePtr seq);
+  [[nodiscard]] Result<bool, std::string> Send(const core::SequencePtr& seq);
 
   /**
    * @brief Enumerate firmware information
@@ -154,13 +154,13 @@ class Controller {
 
   class STMController {
    public:
-    explicit STMController(const core::LinkPtr link, const core::GeometryPtr geometry, bool* silent_mode, bool* read_fpga_info)
-        : _link(link), _geometry(geometry), _silent_mode(silent_mode), _read_fpga_info(read_fpga_info) {}
+    explicit STMController(core::LinkPtr link, core::GeometryPtr geometry, bool* silent_mode, bool* read_fpga_info)
+        : _link(std::move(link)), _geometry(std::move(geometry)), _silent_mode(silent_mode), _read_fpga_info(read_fpga_info) {}
 
     /**
      * @brief Add gain for STM
      */
-    void AddGain(core::GainPtr gain);
+    void AddGain(const core::GainPtr& gain);
 
     /**
      * @brief Add gains for STM
