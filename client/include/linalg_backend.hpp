@@ -12,6 +12,23 @@
 #pragma once
 
 #include <complex>
+#include <memory>
+
+#if _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 26450 26495 26812)
+#endif
+#if defined(__GNUC__) && !defined(__llvm__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
+#include <Eigen/Dense>
+#if _MSC_VER
+#pragma warning(pop)
+#endif
+#if defined(__GNUC__) && !defined(__llvm__)
+#pragma GCC diagnostic pop
+#endif
 
 namespace autd::gain::holo {
 
@@ -27,30 +44,30 @@ class Backend {
   using MatrixX = Eigen::Matrix<double, -1, -1>;
   using VectorX = Eigen::Matrix<double, -1, 1>;
 
-  virtual bool SupportsSvd() = 0;
-  virtual bool SupportsEVD() = 0;
-  virtual bool SupportsSolve() = 0;
-  virtual void HadamardProduct(const MatrixXc& a, const MatrixXc& b, MatrixXc* c) = 0;
-  virtual void Real(const MatrixXc& a, MatrixX* b) = 0;
-  virtual void PseudoInverseSVD(MatrixXc* matrix, double alpha, MatrixXc* result) = 0;
-  virtual VectorXc MaxEigenVector(MatrixXc* matrix) = 0;
-  virtual void MatAdd(double alpha, const MatrixX& a, double beta, MatrixX* b) = 0;
-  virtual void MatMul(TRANSPOSE trans_a, TRANSPOSE trans_b, std::complex<double> alpha, const MatrixXc& a, const MatrixXc& b,
-                      std::complex<double> beta, MatrixXc* c) = 0;
-  virtual void MatVecMul(TRANSPOSE trans_a, std::complex<double> alpha, const MatrixXc& a, const VectorXc& b, std::complex<double> beta,
-                         VectorXc* c) = 0;
-  virtual void VecAdd(double alpha, const VectorX& a, double beta, VectorX* b) = 0;
-  virtual void SolveCh(MatrixXc* a, VectorXc* b) = 0;
-  virtual void Solveg(MatrixX* a, VectorX* b, VectorX* c) = 0;
-  virtual double Dot(const VectorX& a, const VectorX& b) = 0;
-  virtual std::complex<double> DotC(const VectorXc& a, const VectorXc& b) = 0;
-  virtual double MaxCoeff(const VectorX& v) = 0;
-  virtual double MaxCoeffC(const VectorXc& v) = 0;
-  virtual MatrixXc ConcatRow(const MatrixXc& a, const MatrixXc& b) = 0;
-  virtual MatrixXc ConcatCol(const MatrixXc& a, const MatrixXc& b) = 0;
-  virtual void MatCpy(const MatrixX& a, MatrixX* b) = 0;
-  virtual void VecCpy(const VectorX& a, VectorX* b) = 0;
-  virtual void VecCpyC(const VectorXc& a, VectorXc* b) = 0;
+  virtual bool supports_svd() = 0;
+  virtual bool supports_evd() = 0;
+  virtual bool supports_solve() = 0;
+  virtual void hadamard_product(const MatrixXc& a, const MatrixXc& b, MatrixXc* c) = 0;
+  virtual void real(const MatrixXc& a, MatrixX* b) = 0;
+  virtual void pseudo_inverse_svd(MatrixXc* matrix, double alpha, MatrixXc* result) = 0;
+  virtual VectorXc max_eigen_vector(MatrixXc* matrix) = 0;
+  virtual void matrix_add(double alpha, const MatrixX& a, double beta, MatrixX* b) = 0;
+  virtual void matrix_mul(TRANSPOSE trans_a, TRANSPOSE trans_b, std::complex<double> alpha, const MatrixXc& a, const MatrixXc& b,
+                          std::complex<double> beta, MatrixXc* c) = 0;
+  virtual void matrix_vector_mul(TRANSPOSE trans_a, std::complex<double> alpha, const MatrixXc& a, const VectorXc& b, std::complex<double> beta,
+                                 VectorXc* c) = 0;
+  virtual void vector_add(double alpha, const VectorX& a, double beta, VectorX* b) = 0;
+  virtual void solve_ch(MatrixXc* a, VectorXc* b) = 0;
+  virtual void solve_g(MatrixX* a, VectorX* b, VectorX* c) = 0;
+  virtual double dot(const VectorX& a, const VectorX& b) = 0;
+  virtual std::complex<double> dot_c(const VectorXc& a, const VectorXc& b) = 0;
+  virtual double max_coefficient(const VectorX& v) = 0;
+  virtual double max_coefficient_c(const VectorXc& v) = 0;
+  virtual MatrixXc concat_row(const MatrixXc& a, const MatrixXc& b) = 0;
+  virtual MatrixXc concat_col(const MatrixXc& a, const MatrixXc& b) = 0;
+  virtual void mat_cpy(const MatrixX& a, MatrixX* b) = 0;
+  virtual void vec_cpy(const VectorX& a, VectorX* b) = 0;
+  virtual void vec_cpy_c(const VectorXc& a, VectorXc* b) = 0;
 
   Backend() = default;
   virtual ~Backend() = default;
