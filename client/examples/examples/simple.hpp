@@ -22,7 +22,7 @@ inline void SimpleTest(autd::Controller& autd) {
 
   const auto m = autd::modulation::Sine::Create(150);  // 150Hz AM
 
-  const auto center = autd::Vector3(TRANS_SPACING_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SPACING_MM * ((NUM_TRANS_Y - 1) / 2.0), 150.0);
+  const autd::Vector3 center(TRANS_SPACING_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SPACING_MM * ((NUM_TRANS_Y - 1) / 2.0), 150.0);
   const auto g = autd::gain::FocalPoint::Create(center);
 
   autd.Send(g, m).unwrap();
