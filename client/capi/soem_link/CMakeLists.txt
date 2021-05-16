@@ -14,7 +14,7 @@ add_library(autd3capi-link-soem SHARED
 
 include_directories(${INCLUDE_LIST})
 
-target_link_libraries(autd3capi-link-soem link_soem)
+target_link_libraries(autd3capi-link-soem soem_link)
 if(WIN32)
   target_link_libraries(autd3capi-link-soem ws2_32.lib)
   target_link_libraries(autd3capi-link-soem winmm.lib)

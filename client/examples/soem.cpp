@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/05/2021
+// Last Modified: 16/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -12,8 +12,8 @@
 #include <iostream>
 
 #include "autd3.hpp"
-#include "link_soem.hpp"
 #include "runner.hpp"
+#include "soem_link.hpp"
 
 using namespace std;
 

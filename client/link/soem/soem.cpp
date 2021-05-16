@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/05/2021
+// Last Modified: 16/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,7 +11,7 @@
 
 #include "autdsoem.hpp"
 #include "core/ec_config.hpp"
-#include "link_soem.hpp"
+#include "soem_link.hpp"
 
 namespace autd::link {
 

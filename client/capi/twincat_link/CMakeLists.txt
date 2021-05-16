@@ -14,7 +14,7 @@ add_library(autd3capi-link-twincat SHARED
 
 include_directories(${INCLUDE_LIST})
 
-target_link_libraries(autd3capi-link-twincat link_twincat)
+target_link_libraries(autd3capi-link-twincat twincat_link)
 if(WIN32)
   target_link_libraries(autd3capi-link-twincat ws2_32.lib)
 elseif(APPLE)

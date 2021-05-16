@@ -11,7 +11,6 @@
 
 #include <cstdint>
 #include <cstring>
-#include <utility>
 
 #include "./autd3_c_api.h"
 #include "autd3.hpp"
@@ -20,6 +19,7 @@
 #include "wrapper_gain.hpp"
 #include "wrapper_link.hpp"
 #include "wrapper_modulation.hpp"
+#include "primitive_modulation.hpp"
 
 namespace {
 std::string& LastError() {

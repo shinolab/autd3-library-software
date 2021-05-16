@@ -6,12 +6,12 @@ include_directories(
   ${PROJECT_SOURCE_DIR}/include
 )
 
-add_library(link_twincat STATIC
+add_library(twincat_link STATIC
   twincat.cpp
-  ${PROJECT_SOURCE_DIR}/include/link_twincat.hpp
+  ${PROJECT_SOURCE_DIR}/include/twincat_link.hpp
 )
 
-set_target_properties(link_twincat
+set_target_properties(twincat_link
   PROPERTIES
   ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
@@ -19,5 +19,5 @@ set_target_properties(link_twincat
 )
 
 if(NOT WIN32)
-  set_target_properties(link_twincat PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  set_target_properties(twincat_link PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
