@@ -46,59 +46,14 @@ class HoloGain : public core::Gain {
   std::vector<core::Vector3> _foci;
   std::vector<double> _amps;
 
-  void MatrixMul(const Backend::MatrixXc& a, const Backend::MatrixXc& b, Backend::MatrixXc* c) const {
-    this->_backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, std::complex<double>(1, 0), a, b, std::complex<double>(0, 0), c);
-  }
+  void MatrixMul(const Backend::MatrixXc& a, const Backend::MatrixXc& b, Backend::MatrixXc* c) const;
 
-  void MatrixVecMul(const Backend::MatrixXc& a, const Backend::VectorXc& b, Backend::VectorXc* c) const {
-    this->_backend->matrix_vector_mul(TRANSPOSE::NO_TRANS, std::complex<double>(1, 0), a, b, std::complex<double>(0, 0), c);
-  }
-
+  void MatrixVecMul(const Backend::MatrixXc& a, const Backend::VectorXc& b, Backend::VectorXc* c) const;
   static void SetFromComplexDrive(std::vector<core::AUTDDataArray>& data, const Backend::VectorXc& drive, const bool normalize,
-                                  const double max_coefficient) {
-    const size_t n = drive.size();
-    size_t dev_idx = 0;
-    size_t trans_idx = 0;
-    for (size_t j = 0; j < n; j++) {
-      const auto f_amp = normalize ? 1.0 : std::abs(drive(j)) / max_coefficient;
-      const auto f_phase = arg(drive(j)) / (2.0 * M_PI) + 0.5;
-      const auto phase = static_cast<uint16_t>((1.0 - f_phase) * 255.0);
-      const uint16_t duty = static_cast<uint16_t>(core::ToDuty(f_amp)) << 8 & 0xFF00;
-      data[dev_idx][trans_idx++] = duty | phase;
-      if (trans_idx == core::NUM_TRANS_IN_UNIT) {
-        dev_idx++;
-        trans_idx = 0;
-      }
-    }
-  }
-
+                                  const double max_coefficient);
   static std::complex<double> Transfer(const core::Vector3& trans_pos, const core::Vector3& trans_norm, const core::Vector3& target_pos,
-                                       const double wave_number, const double attenuation = 0) {
-    const auto diff = target_pos - trans_pos;
-    const auto dist = diff.norm();
-    const auto theta = std::atan2(diff.dot(trans_norm), dist * trans_norm.norm()) * 180.0 / M_PI;
-    const auto directivity = utils::DirectivityT4010A1(theta);
-    return directivity / dist * exp(std::complex<double>(-dist * attenuation, -wave_number * dist));
-  }
-
-  static Backend::MatrixXc TransferMatrix(const std::vector<core::Vector3>& foci, const core::GeometryPtr& geometry) {
-    const auto m = foci.size();
-    const auto n = geometry->num_transducers();
-
-    Backend::MatrixXc g(m, n);
-
-    const auto wave_number = 2.0 * M_PI / geometry->wavelength();
-    const auto attenuation = geometry->attenuation_coefficient();
-    for (size_t i = 0; i < m; i++) {
-      const auto& tp = foci[i];
-      for (size_t j = 0; j < n; j++) {
-        const auto pos = geometry->position(j);
-        const auto dir = geometry->direction(j / core::NUM_TRANS_IN_UNIT);
-        g(i, j) = Transfer(pos, dir, tp, wave_number, attenuation);
-      }
-    }
-    return g;
-  }
+                                       const double wave_number, const double attenuation = 0);
+  static Backend::MatrixXc TransferMatrix(const std::vector<core::Vector3>& foci, const core::GeometryPtr& geometry);
 };
 
 /**
