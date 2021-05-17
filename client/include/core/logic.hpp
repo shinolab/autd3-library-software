@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 16/05/2021
+// Last Modified: 17/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -110,26 +110,15 @@ class Logic {
     seq->sent() += send_size;
   }
 
-  [[nodiscard]] static Result<bool, std::string> PackSyncBody(const Configuration config, const size_t num_devices, uint8_t* data,
-                                                              size_t* const size) {
+  static void PackSyncBody(const Configuration config, const size_t num_devices, uint8_t* data, size_t* const size) {
     *size = sizeof(RxGlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;
-
-    const auto mod_sampling_freq = static_cast<uint32_t>(config.mod_sampling_freq());
-    const auto mod_buf_size = static_cast<uint32_t>(config.mod_buf_size());
-
-    if (mod_buf_size < mod_sampling_freq) return Err(std::string("Modulation buffer size must be not less than sampling frequency"));
-
-    const auto mod_idx_shift = Log2U(MOD_SAMPLING_FREQ_BASE / mod_sampling_freq);
-    const auto ref_clk_cyc_shift = Log2U(mod_buf_size / mod_sampling_freq);
 
     auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(RxGlobalHeader));
     for (size_t i = 0; i < num_devices; i++) {
-      cursor[0] = mod_idx_shift;
-      cursor[1] = ref_clk_cyc_shift;
+      cursor[0] = config.mod_buf_size();
+      cursor[1] = config.mod_sampling_freq_div();
       cursor += NUM_TRANS_IN_UNIT;
     }
-
-    return Ok(true);
   }
 
  private:

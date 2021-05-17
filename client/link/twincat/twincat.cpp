@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 16/05/2021
+// Last Modified: 17/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -51,7 +51,7 @@ constexpr auto TCADS_ADS_PORT_CLOSE_EX = "AdsPortCloseEx";
 constexpr auto TCADS_ADS_SYNC_WRITE_REQ_EX = "AdsSyncWriteReqEx";
 constexpr auto TCADS_ADS_SYNC_READ_REQ_EX = "AdsSyncReadReqEx2";
 
-Result<bool, std::string> TwinCATLink::Open() {
+Error TwinCATLink::Open() {
   this->_lib = LoadLibrary("TcAdsDll.dll");
   if (_lib == nullptr) return Err(std::string("couldn't find TcADS-DLL"));
 
@@ -68,18 +68,18 @@ Result<bool, std::string> TwinCATLink::Open() {
   }
 
   this->_net_id = addr.net_id;
-  return Ok(true);
+  return Ok();
 }
-Result<bool, std::string> TwinCATLink::Close() {
+Error TwinCATLink::Close() {
   this->_port = 0;
   const auto port_close = reinterpret_cast<TcAdsPortCloseEx>(GetProcAddress(this->_lib, TCADS_ADS_PORT_CLOSE_EX));
   const auto res = (*port_close)(this->_port);
-  if (res == 0) return Ok(true);
+  if (res == 0) return Ok();
   std::stringstream ss;
   ss << "Error on closing (local): " << std::hex << res;
   return Err(ss.str());
 }
-Result<bool, std::string> TwinCATLink::Send(const size_t size, const uint8_t* buf) {
+Error TwinCATLink::Send(const size_t size, const uint8_t* buf) {
   AmsAddr addr = {this->_net_id, PORT};
   const auto write = reinterpret_cast<TcAdsSyncWriteReqEx>(GetProcAddress(this->_lib, TCADS_ADS_SYNC_WRITE_REQ_EX));
   const auto ret = write(this->_port,  // NOLINT
@@ -87,7 +87,7 @@ Result<bool, std::string> TwinCATLink::Send(const size_t size, const uint8_t* bu
                          static_cast<unsigned long>(size),  // NOLINT
                          const_cast<void*>(static_cast<const void*>(buf)));
 
-  if (ret == 0) return Ok(true);
+  if (ret == 0) return Ok();
   // https://infosys.beckhoff.com/english.php?content=../content/1033/tcadscommon/html/tcadscommon_intro.htm&id=
   // 6 : target port not found
   std::stringstream ss;
@@ -95,14 +95,14 @@ Result<bool, std::string> TwinCATLink::Send(const size_t size, const uint8_t* bu
   return Err(ss.str());
 }
 
-Result<bool, std::string> TwinCATLink::Read(uint8_t* rx, const size_t buffer_len) {
+Error TwinCATLink::Read(uint8_t* rx, const size_t buffer_len) {
   AmsAddr addr = {this->_net_id, PORT};
   const auto read = reinterpret_cast<TcAdsSyncReadReqEx>(GetProcAddress(this->_lib, TCADS_ADS_SYNC_READ_REQ_EX));
 
   unsigned long read_bytes;           // NOLINT
   const auto ret = read(this->_port,  // NOLINT
                         &addr, INDEX_GROUP, INDEX_OFFSET_BASE_READ, static_cast<uint32_t>(buffer_len), rx, &read_bytes);
-  if (ret == 0) return Ok(true);
+  if (ret == 0) return Ok();
 
   std::stringstream ss;
   ss << "Error on reading data: " << std::hex << ret;
@@ -110,19 +110,19 @@ Result<bool, std::string> TwinCATLink::Read(uint8_t* rx, const size_t buffer_len
 }
 
 #else
-Result<bool, std::string> TwinCATLink::Open() {
+Error TwinCATLink::Open() {
   return Err(std::string("Link to localhost has not been compiled. Rebuild this library on a Twincat3 host machine with TcADS-DLL."));
 }
-Result<bool, std::string> TwinCATLink::Close() { return Ok(false); }
-Result<bool, std::string> TwinCATLink::Send(size_t size, const uint8_t* buf) {
+Error TwinCATLink::Close() { return Ok(); }
+Error TwinCATLink::Send(size_t size, const uint8_t* buf) {
   (void)size;
   (void)buf;
-  return Ok(false);
+  return Ok();
 }
-Result<bool, std::string> TwinCATLink::Read(uint8_t* rx, size_t buffer_len) {
+Error TwinCATLink::Read(uint8_t* rx, size_t buffer_len) {
   (void)rx;
   (void)buffer_len;
-  return Ok(false);
+  return Ok();
 }
 #endif  // TC_ADS
 

@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 12/05/2021
+// Last Modified: 17/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -19,23 +19,24 @@ namespace autd::core {
  */
 class Configuration {
  public:
-  Configuration() {
-    _mod_sampling_freq = MOD_SAMPLING_FREQ::SMPL_4_KHZ;
-    _mod_buf_size = MOD_BUF_SIZE::BUF_4000;
+  Configuration(const uint16_t sampling_freq_div, const uint16_t buf_size) {
+    _mod_sampling_freq_div = sampling_freq_div;
+    _mod_buf_size = std::min(buf_size, MOD_BUF_SIZE_MAX);
   }
 
   static Configuration GetDefaultConfiguration() {
-    const Configuration config;
+    const Configuration config(10, 4000);
     return config;
   }
 
-  MOD_SAMPLING_FREQ& mod_sampling_freq() noexcept { return this->_mod_sampling_freq; }
-  MOD_BUF_SIZE& mod_buf_size() noexcept { return this->_mod_buf_size; }
-  [[nodiscard]] MOD_SAMPLING_FREQ mod_sampling_freq() const noexcept { return this->_mod_sampling_freq; }
-  [[nodiscard]] MOD_BUF_SIZE mod_buf_size() const noexcept { return this->_mod_buf_size; }
+  [[nodiscard]] double mod_sampling_freq() const noexcept {
+    return static_cast<double>(MOD_SAMPLING_FREQ_BASE) / static_cast<double>(this->_mod_sampling_freq_div);
+  }
+  [[nodiscard]] uint16_t mod_sampling_freq_div() const noexcept { return this->_mod_sampling_freq_div; }
+  [[nodiscard]] uint16_t mod_buf_size() const noexcept { return this->_mod_buf_size; }
 
  private:
-  MOD_SAMPLING_FREQ _mod_sampling_freq;
-  MOD_BUF_SIZE _mod_buf_size;
+  uint16_t _mod_sampling_freq_div;
+  uint16_t _mod_buf_size;
 };
 }  // namespace autd::core

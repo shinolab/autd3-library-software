@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 16/05/2021
+// Last Modified: 17/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -40,7 +40,7 @@ class Sine final : public Modulation {
    * @details The sine wave oscillate from offset-amp/2 to offset+amp/2
    */
   static ModulationPtr Create(int freq, double amp = 1.0, double offset = 0.5);
-  Result<bool, std::string> Build(Configuration config) override;
+  Error Build(Configuration config) override;
   Sine(const int freq, const double amp, const double offset) : Modulation(), _freq(freq), _amp(amp), _offset(offset) {}
 
  private:
@@ -59,7 +59,7 @@ class Custom final : public Modulation {
    * @param[in] buffer data of modulation
    */
   static ModulationPtr Create(const std::vector<uint8_t>& buffer);
-  Result<bool, std::string> Build(Configuration config) override;
+  Error Build(Configuration config) override;
   explicit Custom(const std::vector<uint8_t>& buffer) { this->_buffer = buffer; }
 };
 
@@ -75,7 +75,7 @@ class Square final : public Modulation {
    * @param[in] high high level
    */
   static ModulationPtr Create(int freq, uint8_t low = 0, uint8_t high = 0xff);
-  Result<bool, std::string> Build(Configuration config) override;
+  Error Build(Configuration config) override;
   Square(const int freq, const uint8_t low, const uint8_t high) : Modulation(), _freq(freq), _low(low), _high(high) {}
 
  private:
@@ -98,7 +98,7 @@ class Saw final : public Modulation {
    * @brief Build Modulation
    * @return return Ok(whether succeeded to build), or Err(error msg) if some unrecoverable error occurred
    */
-  Result<bool, std::string> Build(Configuration config) override;
+  Error Build(Configuration config) override;
   explicit Saw(const int freq) : Modulation(), _freq(freq) {}
 
  private:

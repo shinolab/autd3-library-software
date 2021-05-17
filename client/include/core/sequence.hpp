@@ -3,7 +3,7 @@
 // Created Date: 14/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 16/05/2021
+// Last Modified: 17/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -53,12 +53,12 @@ class PointSequence {
    * @param[in] point control point
    * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Result<bool, std::string> AddPoint(const Vector3& point) {
+  [[nodiscard]] Error AddPoint(const Vector3& point) {
     if (this->_control_points.size() + 1 > POINT_SEQ_BUFFER_SIZE_MAX)
       return Err(std::string("Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX)));
 
     this->_control_points.emplace_back(point);
-    return Ok(true);
+    return Ok();
   }
 
   /**
@@ -66,14 +66,14 @@ class PointSequence {
    * @param[in] points control point
    * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Result<bool, std::string> AddPoints(const std::vector<Vector3>& points) {
+  [[nodiscard]] Error AddPoints(const std::vector<Vector3>& points) {
     if (this->_control_points.size() + points.size() > POINT_SEQ_BUFFER_SIZE_MAX)
       return Err(std::string("Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX)));
 
     this->_control_points.reserve(this->_control_points.size() + points.size());
     for (const auto& p : points) this->_control_points.emplace_back(p);
 
-    return Ok(true);
+    return Ok();
   }
 
   /**
