@@ -12,7 +12,6 @@
 #pragma once
 
 #include <memory>
-#include <string>
 
 #if _WINDOWS
 #define NOMINMAX
