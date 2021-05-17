@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/05/2021
+// Last Modified: 17/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -13,6 +13,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "core/configuration.hpp"
@@ -38,7 +39,9 @@ class Controller {
       : _link(nullptr),
         _geometry(std::make_shared<core::Geometry>()),
         _silent_mode(true),
+        _read_fpga_info(false),
         _seq_mode(false),
+        _config(core::Configuration::GetDefaultConfiguration()),
         _tx_buf(nullptr),
         _rx_buf(nullptr),
         _stm(nullptr) {}
@@ -64,16 +67,26 @@ class Controller {
   bool& silent_mode() noexcept;
 
   /**
+   * @brief If true, the devices return FPGA info in all frames. The FPGA info can be read by fpga_info().
+   */
+  bool& reads_fpga_info() noexcept;
+
+  /**
+   * @brief FPGA info
+   */
+  Result<std::vector<uint8_t>, std::string> fpga_info();
+
+  /**
    * @brief Update control flag
    */
-  Result<bool, std::string> update_ctrl_flag();
+  Error update_ctrl_flag();
 
   /**
    * @brief Open device with a link.
    * @param[in] link Link
    * @return return Ok(whether succeeded to open), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Result<bool, std::string> OpenWith(core::LinkPtr link);
+  [[nodiscard]] Error OpenWith(const core::LinkPtr& link);
 
   /**
    * @brief Synchronize all devices
@@ -81,25 +94,25 @@ class Controller {
    * @param[in] config configuration
    * @return return Ok(whether succeeded to synchronize), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Result<bool, std::string> Synchronize(core::Configuration config = core::Configuration::GetDefaultConfiguration());
+  [[nodiscard]] Error Synchronize(core::Configuration config = core::Configuration::GetDefaultConfiguration());
 
   /**
    * @brief Clear all data in hardware
    * @return return Ok(whether succeeded to clear), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Result<bool, std::string> Clear() const;
+  [[nodiscard]] Error Clear() const;
 
   /**
    * @brief Close the controller
    * @return return Ok(whether succeeded to close), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Result<bool, std::string> Close();
+  [[nodiscard]] Error Close();
 
   /**
    * @brief Stop outputting
    * @return return Ok(whether succeeded to stop), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Result<bool, std::string> Stop();
+  [[nodiscard]] Error Stop();
 
   /**
    * @brief Send gain to the device
@@ -107,15 +120,14 @@ class Controller {
    * @param[in] wait_for_sent if true, this function will wait for the data is sent to the devices and processed.
    * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Result<bool, std::string> Send(core::GainPtr gain, bool wait_for_sent = false);
+  [[nodiscard]] Error Send(const core::GainPtr& gain, bool wait_for_sent = false);
 
   /**
    * @brief Send modulation to the device
    * @param[in] mod Amplitude modulation to display
-   * @param[in] wait_for_sent if true, this function will wait for the data is sent to the devices and processed.
    * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Result<bool, std::string> Send(core::ModulationPtr mod, bool wait_for_sent = false);
+  [[nodiscard]] Error Send(const core::ModulationPtr& mod);
 
   /**
    * @brief Send gain and modulation to the device
@@ -124,14 +136,14 @@ class Controller {
    * @param[in] wait_for_sent if true, this function will wait for the data is sent to the devices and processed.
    * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Result<bool, std::string> Send(core::GainPtr gain, core::ModulationPtr mod, bool wait_for_sent = false);
+  [[nodiscard]] Error Send(const core::GainPtr& gain, const core::ModulationPtr& mod, bool wait_for_sent = false);
 
   /**
    * @brief Send sequence and modulation to the device
    * @param[in] seq Sequence to display
    * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Result<bool, std::string> Send(core::SequencePtr seq);
+  [[nodiscard]] Error Send(const core::SequencePtr& seq);
 
   /**
    * @brief Enumerate firmware information
@@ -143,13 +155,13 @@ class Controller {
 
   class STMController {
    public:
-    explicit STMController(const core::LinkPtr link, const core::GeometryPtr geometry, bool* silent_mode)
-        : _link(link), _geometry(geometry), _silent_mode(silent_mode) {}
+    explicit STMController(core::LinkPtr link, core::GeometryPtr geometry, bool* silent_mode, bool* read_fpga_info)
+        : _link(std::move(link)), _geometry(std::move(geometry)), _silent_mode(silent_mode), _read_fpga_info(read_fpga_info) {}
 
     /**
      * @brief Add gain for STM
      */
-    void AddGain(core::GainPtr gain);
+    void AddGain(const core::GainPtr& gain);
 
     /**
      * @brief Add gains for STM
@@ -165,20 +177,20 @@ class Controller {
      * and so on.
      * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
      */
-    [[nodiscard]] Result<bool, std::string> Start(double freq);
+    [[nodiscard]] Error Start(double freq);
 
     /**
      * @brief Suspend Spatio-Temporal Modulation
      * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
      */
-    [[nodiscard]] Result<bool, std::string> Stop();
+    [[nodiscard]] Error Stop();
 
     /**
      * @brief Finish Spatio-Temporal Modulation
      * @details Appended gains will be removed.
      * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
      */
-    [[nodiscard]] Result<bool, std::string> Finish();
+    [[nodiscard]] Error Finish();
 
    private:
     core::LinkPtr _link;
@@ -189,20 +201,23 @@ class Controller {
     Timer _timer;
     std::atomic<bool> _lock;
     bool* _silent_mode;
+    bool* _read_fpga_info;
   };
 
  private:
-  [[nodiscard]] Result<bool, std::string> SendHeader(core::COMMAND cmd) const;
-  [[nodiscard]] Result<bool, std::string> WaitMsgProcessed(uint8_t msg_id, size_t max_trial = 200) const;
+  [[nodiscard]] Error SendHeader(core::COMMAND cmd) const;
+  [[nodiscard]] Error WaitMsgProcessed(uint8_t msg_id, size_t max_trial = 200) const;
 
   core::LinkPtr _link;
   core::GeometryPtr _geometry;
   bool _silent_mode;
+  bool _read_fpga_info;
   bool _seq_mode;
   core::Configuration _config;
 
   std::unique_ptr<uint8_t[]> _tx_buf;
   std::unique_ptr<uint8_t[]> _rx_buf;
+  std::vector<uint8_t> _fpga_infos;
 
   std::shared_ptr<STMController> _stm;
 };

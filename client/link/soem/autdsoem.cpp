@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 12/05/2021
+// Last Modified: 17/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -42,7 +42,7 @@ static std::atomic autd3_lib_send_cond(false);
 
 bool SOEMController::is_open() const { return _is_open; }
 
-Result<bool, std::string> SOEMController::Send(size_t size, const uint8_t* buf) {
+Error SOEMController::Send(size_t size, const uint8_t* buf) {
   if (buf == nullptr) return Err(std::string("data is null"));
   if (!_is_open) return Err(std::string("link is closed"));
   {
@@ -52,10 +52,10 @@ Result<bool, std::string> SOEMController::Send(size_t size, const uint8_t* buf) 
     _send_q.push(std::pair(std::move(buf_), size));
   }
   _send_cond.notify_all();
-  return Ok(true);
+  return Ok();
 }
 
-Result<bool, std::string> SOEMController::Read(uint8_t* rx) const {
+Error SOEMController::Read(uint8_t* rx) const {
   if (!_is_open) return Err(std::string("link is closed"));
 
   const auto input_frame_idx = this->_output_frame_size;
@@ -63,7 +63,7 @@ Result<bool, std::string> SOEMController::Read(uint8_t* rx) const {
     rx[2 * i] = _io_map[input_frame_idx + 2 * i];
     rx[2 * i + 1] = _io_map[input_frame_idx + 2 * i + 1];
   }
-  return Ok(true);
+  return Ok();
 }
 
 void SOEMController::SetupSync0(const bool activate, const uint32_t cycle_time_ns) const {
@@ -75,7 +75,7 @@ void SOEMController::SetupSync0(const bool activate, const uint32_t cycle_time_n
   }
 }
 
-Result<bool, std::string> SOEMController::Open(const char* ifname, const size_t dev_num, const ECConfig config) {
+Error SOEMController::Open(const char* ifname, const size_t dev_num, const ECConfig config) {
   _dev_num = dev_num;
   _config = config;
   _output_frame_size = (config.header_size + config.body_size) * _dev_num;
@@ -138,11 +138,11 @@ Result<bool, std::string> SOEMController::Open(const char* ifname, const size_t 
   _is_open = true;
   CreateSendThread(config.header_size, config.body_size);
 
-  return Ok(true);
+  return Ok();
 }
 
-Result<bool, std::string> SOEMController::Close() {
-  if (!_is_open) return Ok(false);
+Error SOEMController::Close() {
+  if (!_is_open) return Ok();
   _is_open = false;
 
   _send_cond.notify_all();
@@ -165,7 +165,7 @@ Result<bool, std::string> SOEMController::Close() {
 
   ec_close();
 
-  return Ok(true);
+  return Ok();
 }
 
 void SOEMController::CreateSendThread(size_t header_size, size_t body_size) {

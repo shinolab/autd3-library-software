@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/05/2021
+// Last Modified: 17/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -41,13 +41,13 @@ class SOEMController {
   SOEMController(SOEMController&& obj) = delete;
   SOEMController& operator=(SOEMController&& obj) = delete;
 
-  [[nodiscard]] Result<bool, std::string> Open(const char* ifname, size_t dev_num, ECConfig config);
-  [[nodiscard]] Result<bool, std::string> Close();
+  [[nodiscard]] Error Open(const char* ifname, size_t dev_num, ECConfig config);
+  [[nodiscard]] Error Close();
 
   [[nodiscard]] bool is_open() const;
 
-  [[nodiscard]] Result<bool, std::string> Send(size_t size, const uint8_t* buf);
-  [[nodiscard]] Result<bool, std::string> Read(uint8_t* rx) const;
+  [[nodiscard]] Error Send(size_t size, const uint8_t* buf);
+  [[nodiscard]] Error Read(uint8_t* rx) const;
 
  private:
   void CreateSendThread(size_t header_size, size_t body_size);

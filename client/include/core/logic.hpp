@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 15/05/2021
+// Last Modified: 17/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -13,14 +13,12 @@
 
 #include <atomic>
 #include <memory>
-#include <string>
 #include <thread>
 #include <vector>
 
 #include "gain.hpp"
 #include "geometry.hpp"
 #include "modulation.hpp"
-#include "result.hpp"
 #include "sequence.hpp"
 
 namespace autd::core {
@@ -36,7 +34,8 @@ class Logic {
     return id.load();
   }
 
-  static void PackHeader(const COMMAND cmd, const bool silent_mode, const bool seq_mode, uint8_t* data, uint8_t* const msg_id) {
+  static void PackHeader(const COMMAND cmd, const bool silent_mode, const bool seq_mode, const bool read_fpga_info, uint8_t* data,
+                         uint8_t* const msg_id) {
     auto* header = reinterpret_cast<RxGlobalHeader*>(data);
     *msg_id = get_id();
     header->msg_id = *msg_id;
@@ -46,10 +45,12 @@ class Logic {
 
     if (seq_mode) header->control_flags |= SEQ_MODE;
     if (silent_mode) header->control_flags |= SILENT;
+    if (read_fpga_info) header->control_flags |= READ_FPGA_INFO;
   }
 
-  static void PackHeader(const ModulationPtr& mod, const bool silent_mode, const bool seq_mode, uint8_t* data, uint8_t* const msg_id) {
-    PackHeader(COMMAND::OP, silent_mode, seq_mode, data, msg_id);
+  static void PackHeader(const ModulationPtr& mod, const bool silent_mode, const bool seq_mode, const bool read_fpga_info, uint8_t* data,
+                         uint8_t* const msg_id) {
+    PackHeader(COMMAND::OP, silent_mode, seq_mode, read_fpga_info, data, msg_id);
     if (mod == nullptr) return;
     auto* header = reinterpret_cast<RxGlobalHeader*>(data);
     const auto mod_size = static_cast<uint8_t>(std::clamp(mod->buffer().size() - mod->sent(), size_t{0}, MOD_FRAME_SIZE));
@@ -75,7 +76,7 @@ class Logic {
     }
   }
 
-  void static PackBody(const SequencePtr seq, const GeometryPtr geometry, uint8_t* data, size_t* const size) {
+  static void PackBody(const SequencePtr& seq, const GeometryPtr& geometry, uint8_t* data, size_t* const size) {
     const auto num_devices = seq != nullptr ? geometry->num_devices() : 0;
 
     *size = sizeof(RxGlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;
@@ -107,26 +108,15 @@ class Logic {
     seq->sent() += send_size;
   }
 
-  [[nodiscard]] static Result<bool, std::string> PackSyncBody(const Configuration config, const size_t num_devices, uint8_t* data,
-                                                              size_t* const size) {
+  static void PackSyncBody(const Configuration config, const size_t num_devices, uint8_t* data, size_t* const size) {
     *size = sizeof(RxGlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;
-
-    const auto mod_sampling_freq = static_cast<uint32_t>(config.mod_sampling_freq());
-    const auto mod_buf_size = static_cast<uint32_t>(config.mod_buf_size());
-
-    if (mod_buf_size < mod_sampling_freq) return Err(std::string("Modulation buffer size must be not less than sampling frequency"));
-
-    const auto mod_idx_shift = Log2U(MOD_SAMPLING_FREQ_BASE / mod_sampling_freq);
-    const auto ref_clk_cyc_shift = Log2U(mod_buf_size / mod_sampling_freq);
 
     auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(RxGlobalHeader));
     for (size_t i = 0; i < num_devices; i++) {
-      cursor[0] = mod_idx_shift;
-      cursor[1] = ref_clk_cyc_shift;
+      cursor[0] = config.mod_buf_size();
+      cursor[1] = config.mod_sampling_freq_div();
       cursor += NUM_TRANS_IN_UNIT;
     }
-
-    return Ok(true);
   }
 
  private:

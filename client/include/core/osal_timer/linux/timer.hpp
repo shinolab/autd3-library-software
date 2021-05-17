@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/05/2021
+// Last Modified: 17/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -31,7 +31,7 @@ class Timer {
     this->_interval_us = interval_us;
     return true;
   }
-  [[nodiscard]] Result<bool, std::string> Start(const std::function<void()> &callback) {
+  [[nodiscard]] Error Start(const std::function<void()> &callback) {
     auto res = this->Stop();
     if (res.is_err()) return res;
 
@@ -39,14 +39,14 @@ class Timer {
     this->_loop = true;
     return this->InitTimer();
   }
-  [[nodiscard]] Result<bool, std::string> Stop() {
-    if (!this->_loop) return Ok(false);
+  [[nodiscard]] Error Stop() {
+    if (!this->_loop) return Ok();
 
     const auto r = timer_delete(_timer_id);
     if (r < 0) return Err(std::string("timer_delete failed"));
 
     this->_loop = false;
-    return Ok(true);
+    return Ok();
   }
 
   Timer(const Timer &) = delete;
@@ -67,7 +67,7 @@ class Timer {
     timer->_cb();
   }
 
-  [[nodiscard]] Result<bool, std::string> InitTimer() {
+  [[nodiscard]] Error InitTimer() {
     struct itimerspec itval;
     struct sigevent se;
 
@@ -86,7 +86,7 @@ class Timer {
 
     if (timer_settime(_timer_id, 0, &itval, NULL) < 0) return Err(std::string("timer_settime failed"));
 
-    return Ok(true);
+    return Ok();
   }
 };
 }  // namespace autd

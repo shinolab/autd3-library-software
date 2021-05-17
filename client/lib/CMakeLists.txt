@@ -53,7 +53,7 @@ if(WIN32)
 endif()
 
 if (WIN32)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4068 /wd4819")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4068")
 else()
   set_target_properties(autd3 PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

@@ -3,7 +3,7 @@
 // Created Date: 01/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/05/2021
+// Last Modified: 17/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -34,7 +34,7 @@ class Timer {
     this->_interval_us = interval_us;
     return result;
   }
-  [[nodiscard]] Result<bool, std::string> Start(const std::function<void()> &callback) {
+  [[nodiscard]] Error Start(const std::function<void()> &callback) {
     if (auto res = this->Stop(); res.is_err()) return res;
     this->_cb = callback;
     this->_loop = true;
@@ -51,18 +51,18 @@ class Timer {
       return Err(std::string("timeSetEvent failed"));
     }
 
-    return Ok(true);
+    return Ok();
   }
 
-  [[nodiscard]] Result<bool, std::string> Stop() {
-    if (!this->_loop) return Ok(false);
+  [[nodiscard]] Error Stop() {
+    if (!this->_loop) return Ok();
     this->_loop = false;
 
     const uint32_t u_resolution = 1;
     timeEndPeriod(u_resolution);
     if (timeKillEvent(_timer_id) != TIMERR_NOERROR) return Err(std::string("timeKillEvent failed"));
 
-    return Ok(true);
+    return Ok();
   }
 
   Timer(const Timer &) = delete;
