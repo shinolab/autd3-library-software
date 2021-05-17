@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 16/05/2021
+// Last Modified: 17/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -15,11 +15,11 @@
 #include "./autd3_c_api.h"
 #include "autd3.hpp"
 #include "primitive_gain.hpp"
+#include "primitive_modulation.hpp"
 #include "wrapper.hpp"
 #include "wrapper_gain.hpp"
 #include "wrapper_link.hpp"
 #include "wrapper_modulation.hpp"
-#include "primitive_modulation.hpp"
 
 namespace {
 std::string& LastError() {
@@ -47,8 +47,11 @@ bool AUTDOpenControllerWith(void* const handle, void* const p_link) {
   auto* link = static_cast<LinkWrapper*>(p_link);
   auto res = cnt->OpenWith(link->ptr);
   LinkDelete(link);
-  if (res.is_err()) LastError() = res.unwrap_err();
-  return res.unwrap_or(false);
+  if (res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
 }
 int32_t AUTDAddDevice(void* const handle, const float x, const float y, const float z, const float rz1, const float ry, const float rz2,
                       const int32_t group_id) {
@@ -71,26 +74,30 @@ void AUTDClearDevices(void* const handle) {
   auto* cnt = static_cast<autd::Controller*>(handle);
   cnt->geometry()->ClearDevices();
 }
-bool AUTDSynchronize(void* const handle, int32_t smpl_freq, int32_t buf_size) {
+bool AUTDSynchronize(void* const handle, const uint16_t mod_smpl_freq_div, const uint16_t mod_buf_size) {
   auto* cnt = static_cast<autd::Controller*>(handle);
-  auto config = autd::core::Configuration::GetDefaultConfiguration();
-  config.mod_sampling_freq() = static_cast<autd::core::MOD_SAMPLING_FREQ>(smpl_freq);
-  config.mod_buf_size() = static_cast<autd::core::MOD_BUF_SIZE>(buf_size);
-  auto res = cnt->Synchronize(config);
-  if (res.is_err()) LastError() = res.unwrap_err();
-  return res.unwrap_or(false);
+  const autd::core::Configuration config(mod_smpl_freq_div, mod_buf_size);
+  if (auto res = cnt->Synchronize(config); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
 }
 bool AUTDCloseController(void* const handle) {
   auto* cnt = static_cast<autd::Controller*>(handle);
-  auto res = cnt->Close();
-  if (res.is_err()) LastError() = res.unwrap_err();
-  return res.unwrap_or(false);
+  if (auto res = cnt->Close(); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
 }
 bool AUTDClear(void* const handle) {
   auto* cnt = static_cast<autd::Controller*>(handle);
-  auto res = cnt->Clear();
-  if (res.is_err()) LastError() = res.unwrap_err();
-  return res.unwrap_or(false);
+  if (auto res = cnt->Clear(); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
 }
 void AUTDFreeController(void* const handle) {
   auto* cnt = static_cast<autd::Controller*>(handle);
@@ -102,9 +109,11 @@ void AUTDSetSilentMode(void* const handle, const bool mode) {
 }
 bool AUTDStop(void* const handle) {
   auto* cnt = static_cast<autd::Controller*>(handle);
-  auto res = cnt->Stop();
-  if (res.is_err()) LastError() = res.unwrap_err();
-  return res.unwrap_or(false);
+  if (auto res = cnt->Stop(); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
 }
 int32_t AUTDGetFirmwareInfoListPointer(void* const handle, void** out) {
   auto* cnt = static_cast<autd::Controller*>(handle);
@@ -249,9 +258,11 @@ bool AUTDSend(void* const handle, void* const gain, void* const modulation) {
   auto* cnt = static_cast<autd::Controller*>(handle);
   const auto g = gain == nullptr ? nullptr : static_cast<GainWrapper*>(gain)->ptr;
   const auto m = modulation == nullptr ? nullptr : static_cast<ModulationWrapper*>(modulation)->ptr;
-  auto res = cnt->Send(g, m);
-  if (res.is_err()) LastError() = res.unwrap_err();
-  return res.unwrap_or(false);
+  if (auto res = cnt->Send(g, m); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
 }
 void AUTDAddSTMGain(void* const handle, void* const gain) {
   auto* cnt = static_cast<autd::Controller*>(handle);
@@ -260,21 +271,27 @@ void AUTDAddSTMGain(void* const handle, void* const gain) {
 }
 bool AUTDStartSTM(void* const handle, const float freq) {
   auto* cnt = static_cast<autd::Controller*>(handle);
-  auto res = cnt->stm()->Start(static_cast<double>(freq));
-  if (res.is_err()) LastError() = res.unwrap_err();
-  return res.unwrap_or(false);
+  if (auto res = cnt->stm()->Start(static_cast<double>(freq)); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
 }
 bool AUTDStopSTM(void* const handle) {
   auto* cnt = static_cast<autd::Controller*>(handle);
-  auto res = cnt->stm()->Stop();
-  if (res.is_err()) LastError() = res.unwrap_err();
-  return res.unwrap_or(false);
+  if (auto res = cnt->stm()->Stop(); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
 }
 bool AUTDFinishSTM(void* const handle) {
   auto* cnt = static_cast<autd::Controller*>(handle);
-  auto res = cnt->stm()->Finish();
-  if (res.is_err()) LastError() = res.unwrap_err();
-  return res.unwrap_or(false);
+  if (auto res = cnt->stm()->Finish(); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
 }
 int32_t AUTDDeviceIdxForTransIdx(void* const handle, const int32_t global_trans_idx) {
   auto* cnt = static_cast<autd::Controller*>(handle);

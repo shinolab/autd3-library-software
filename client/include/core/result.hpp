@@ -3,7 +3,7 @@
 // Created Date: 01/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/05/2021
+// Last Modified: 17/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,7 +11,9 @@
 
 #pragma once
 
+#include <optional>
 #include <sstream>
+#include <string>
 #include <utility>
 #include <variant>
 
@@ -48,6 +50,8 @@ class Result : public std::variant<T, E> {
   }
 };
 
+using Error = Result<std::nullopt_t, std::string>;
+
 template <typename T>
 struct OkType {
   explicit OkType(T t) : _t(std::forward<T>(t)) {}
@@ -78,7 +82,7 @@ template <typename T>
 OkType<T> Ok(T t) {
   return OkType<T>(std::forward<T>(t));
 }
-
+inline OkType<std::nullopt_t> Ok() { return OkType(std::nullopt); }
 template <typename T>
 ErrType<T> Err(T t) {
   return ErrType<T>(std::forward<T>(t));

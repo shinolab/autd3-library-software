@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/05/2021
+// Last Modified: 17/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -43,9 +43,9 @@ class Modulation {
     return mod;
   }
 
-  [[nodiscard]] virtual Result<bool, std::string> Build(Configuration config) {
+  [[nodiscard]] virtual Error Build(Configuration config) {
     (void)config;
-    return Ok(true);
+    return Ok();
   }
 
   size_t& sent() { return _sent; }

@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 16/05/2021
+// Last Modified: 17/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -15,7 +15,7 @@
 
 namespace autd::gain::holo {
 
-Result<bool, std::string> HoloGainSDP::Calc(const core::GeometryPtr& geometry) {
+Error HoloGainSDP::Calc(const core::GeometryPtr& geometry) {
   if (!this->_backend->supports_svd() || !this->_backend->supports_evd()) return Err(std::string("This backend does not support this method."));
 
   auto set_bcd_result = [](Backend::MatrixXc& mat, const Backend::VectorXc& vec, const size_t idx) {
@@ -75,10 +75,10 @@ Result<bool, std::string> HoloGainSDP::Calc(const core::GeometryPtr& geometry) {
   SetFromComplexDrive(this->_data, q, _normalize, max_coefficient);
 
   this->_built = true;
-  return Ok(true);
+  return Ok();
 }
 
-Result<bool, std::string> HoloGainEVD::Calc(const core::GeometryPtr& geometry) {
+Error HoloGainEVD::Calc(const core::GeometryPtr& geometry) {
   const auto m = this->_foci.size();
   const auto n = geometry->num_transducers();
 
@@ -128,10 +128,10 @@ Result<bool, std::string> HoloGainEVD::Calc(const core::GeometryPtr& geometry) {
   SetFromComplexDrive(this->_data, gtf, _normalize, max_coefficient);
 
   this->_built = true;
-  return Ok(true);
+  return Ok();
 }
 
-Result<bool, std::string> HoloGainNaive::Calc(const core::GeometryPtr& geometry) {
+Error HoloGainNaive::Calc(const core::GeometryPtr& geometry) {
   const auto m = this->_foci.size();
   const auto n = geometry->num_transducers();
 
@@ -145,10 +145,10 @@ Result<bool, std::string> HoloGainNaive::Calc(const core::GeometryPtr& geometry)
   SetFromComplexDrive(this->_data, q, true, 1.0);
 
   this->_built = true;
-  return Ok(true);
+  return Ok();
 }
 
-Result<bool, std::string> HoloGainGS::Calc(const core::GeometryPtr& geometry) {
+Error HoloGainGS::Calc(const core::GeometryPtr& geometry) {
   const auto m = this->_foci.size();
   const auto n = geometry->num_transducers();
 
@@ -172,10 +172,10 @@ Result<bool, std::string> HoloGainGS::Calc(const core::GeometryPtr& geometry) {
   SetFromComplexDrive(this->_data, q, true, 1.0);
 
   this->_built = true;
-  return Ok(true);
+  return Ok();
 }
 
-Result<bool, std::string> HoloGainGSPAT::Calc(const core::GeometryPtr& geometry) {
+Error HoloGainGSPAT::Calc(const core::GeometryPtr& geometry) {
   const auto m = this->_foci.size();
   const auto n = geometry->num_transducers();
 
@@ -217,14 +217,14 @@ Result<bool, std::string> HoloGainGSPAT::Calc(const core::GeometryPtr& geometry)
   SetFromComplexDrive(this->_data, q, true, 1.0);
 
   this->_built = true;
-  return Ok(true);
+  return Ok();
 }
 
-Result<bool, std::string> HoloGainLM::Calc(const core::GeometryPtr& geometry) {
+Error HoloGainLM::Calc(const core::GeometryPtr& geometry) {
   if (!this->_backend->supports_solve()) return Err(std::string("This backend does not support this method."));
 
-  auto make_bhb = [](const BackendPtr& backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps,
-                     const core::GeometryPtr& geo, Backend::MatrixXc* bhb) {
+  auto make_bhb = [](const BackendPtr& backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps, const core::GeometryPtr& geo,
+                     Backend::MatrixXc* bhb) {
     const auto m = foci.size();
 
     Backend::MatrixXc p = Backend::MatrixXc::Zero(m, m);
@@ -253,7 +253,7 @@ Result<bool, std::string> HoloGainLM::Calc(const core::GeometryPtr& geometry) {
   Backend::VectorX x = Backend::VectorX::Zero(n_param);
   for (size_t i = 0; i < _initial.size(); i++) x[i] = _initial[i];
 
-  auto nu = double{2};
+  auto nu = 2.0;
 
   Backend::MatrixXc tth = Backend::MatrixXc::Zero(n_param, n_param);
   calc_t_th(this->_backend, x, &tth);
@@ -307,7 +307,7 @@ Result<bool, std::string> HoloGainLM::Calc(const core::GeometryPtr& geometry) {
       const double fx_new = this->_backend->dot_c(t, tmp_vec_c).real();
 
       this->_backend->vec_cpy(g, &tmp_vec);
-      this->_backend->vector_add(mu, h_lm, double{1.0}, &tmp_vec);
+      this->_backend->vector_add(mu, h_lm, 1.0, &tmp_vec);
       const double l0_lhlm = this->_backend->dot(h_lm, tmp_vec) / 2;
 
       const auto rho = (fx - fx_new) / l0_lhlm;
@@ -323,7 +323,7 @@ Result<bool, std::string> HoloGainLM::Calc(const core::GeometryPtr& geometry) {
           g(i) = tmp;
         }
         is_found = this->_backend->max_coefficient(g) <= _eps_1;
-        mu *= std::max(double{1. / 3.}, std::pow(1 - (2 * rho - 1), double{3}));
+        mu *= std::max(1. / 3., std::pow(1 - (2 * rho - 1), 3.0));
         nu = 2;
       } else {
         mu *= nu;
@@ -336,7 +336,7 @@ Result<bool, std::string> HoloGainLM::Calc(const core::GeometryPtr& geometry) {
   size_t trans_idx = 0;
   for (size_t j = 0; j < n; j++) {
     const uint16_t duty = 0xFF00;
-    const auto f_phase = fmod(x(j), 2 * M_PI) / (2 * M_PI);
+    const auto f_phase = std::fmod(x(j), 2 * M_PI) / (2 * M_PI);
     const auto phase = static_cast<uint16_t>((1 - f_phase) * 255.);
     this->_data[dev_idx][trans_idx++] = duty | phase;
     if (trans_idx == core::NUM_TRANS_IN_UNIT) {
@@ -346,7 +346,7 @@ Result<bool, std::string> HoloGainLM::Calc(const core::GeometryPtr& geometry) {
   }
 
   this->_built = true;
-  return Ok(true);
+  return Ok();
 }
 
 }  // namespace autd::gain::holo

@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 16/05/2021
+// Last Modified: 17/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -125,7 +125,7 @@ class HoloGainSDP final : public HoloGain {
     return std::make_shared<HoloGainSDP>(backend, foci, amps, alpha, lambda, repeat, normalize);
   }
 
-  Result<bool, std::string> Calc(const core::GeometryPtr& geometry) override;
+  Error Calc(const core::GeometryPtr& geometry) override;
   HoloGainSDP(BackendPtr backend, std::vector<core::Vector3>& foci, std::vector<double>& amps, const double alpha, const double lambda,
               const size_t repeat, const bool normalize)
       : HoloGain(std::move(backend), foci, amps), _alpha(alpha), _lambda(lambda), _repeat(repeat), _normalize(normalize) {}
@@ -157,7 +157,7 @@ class HoloGainEVD final : public HoloGain {
     return std::make_shared<HoloGainEVD>(backend, foci, amps, gamma, normalize);
   }
 
-  Result<bool, std::string> Calc(const core::GeometryPtr& geometry) override;
+  Error Calc(const core::GeometryPtr& geometry) override;
   HoloGainEVD(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps, const double gamma, const bool normalize)
       : HoloGain(backend, foci, amps), _gamma(gamma), _normalize(normalize) {}
 
@@ -181,7 +181,7 @@ class HoloGainNaive final : public HoloGain {
     return std::make_shared<HoloGainNaive>(backend, foci, amps);
   }
 
-  Result<bool, std::string> Calc(const core::GeometryPtr& geometry) override;
+  Error Calc(const core::GeometryPtr& geometry) override;
 
   HoloGainNaive(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps) : HoloGain(backend, foci, amps) {}
 };
@@ -205,7 +205,7 @@ class HoloGainGS final : public HoloGain {
     return std::make_shared<HoloGainGS>(backend, foci, amps, repeat);
   }
 
-  Result<bool, std::string> Calc(const core::GeometryPtr& geometry) override;
+  Error Calc(const core::GeometryPtr& geometry) override;
 
   HoloGainGS(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps, const size_t repeat)
       : HoloGain(backend, foci, amps), _repeat(repeat) {}
@@ -233,7 +233,7 @@ class HoloGainGSPAT final : public HoloGain {
                                                size_t repeat = 100) {
     return std::make_shared<HoloGainGSPAT>(backend, foci, amps, repeat);
   }
-  Result<bool, std::string> Calc(const core::GeometryPtr& geometry) override;
+  Error Calc(const core::GeometryPtr& geometry) override;
 
   HoloGainGSPAT(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps, const size_t repeat)
       : HoloGain(backend, foci, amps), _repeat(repeat) {}
@@ -269,7 +269,7 @@ class HoloGainLM final : public HoloGain {
     return std::make_shared<HoloGainLM>(backend, foci, amps, eps_1, eps_2, tau, k_max, initial);
   }
 
-  Result<bool, std::string> Calc(const core::GeometryPtr& geometry) override;
+  Error Calc(const core::GeometryPtr& geometry) override;
 
   HoloGainLM(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps, const double eps_1, const double eps_2,
              const double tau, const size_t k_max, std::vector<double> initial)

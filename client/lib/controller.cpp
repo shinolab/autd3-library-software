@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 16/05/2021
+// Last Modified: 17/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -40,9 +40,9 @@ Result<std::vector<uint8_t>, std::string> Controller::fpga_info() {
   return Ok(_fpga_infos);
 }
 
-Result<bool, std::string> Controller::update_ctrl_flag() { return this->Send(nullptr, nullptr, true); }
+Error Controller::update_ctrl_flag() { return this->Send(nullptr, nullptr, true); }
 
-Result<bool, std::string> Controller::OpenWith(const core::LinkPtr& link) {
+Error Controller::OpenWith(const core::LinkPtr& link) {
   if (is_open())
     if (auto close_res = this->Close(); close_res.is_err()) return close_res;
 
@@ -54,22 +54,23 @@ Result<bool, std::string> Controller::OpenWith(const core::LinkPtr& link) {
   return this->_link->Open();
 }
 
-Result<bool, std::string> Controller::Synchronize(const core::Configuration config) {
+Error Controller::Synchronize(const core::Configuration config) {
   if (!this->is_open()) return Err(std::string("Link is not opened."));
 
   this->_config = config;
   uint8_t msg_id = 0;
-  core::Logic::PackHeader(core::COMMAND::INIT_FPGA_REF_CLOCK, this->_silent_mode, this->_seq_mode, this->_read_fpga_info, &_tx_buf[0], &msg_id);
+  core::Logic::PackHeader(core::COMMAND::INIT_MOD_CLOCK, this->_silent_mode, this->_seq_mode, this->_read_fpga_info, &_tx_buf[0], &msg_id);
   size_t size = 0;
   const auto num_devices = this->_geometry->num_devices();
-  if (auto res = core::Logic::PackSyncBody(config, num_devices, &_tx_buf[0], &size); res.is_err()) return res;
+  core::Logic::PackSyncBody(config, num_devices, &_tx_buf[0], &size);
+
   if (auto res = this->_link->Send(size, &_tx_buf[0]); res.is_err()) return res;
   return WaitMsgProcessed(msg_id, 5000);
 }
 
-Result<bool, std::string> Controller::Clear() const { return SendHeader(core::COMMAND::CLEAR); }
+Error Controller::Clear() const { return SendHeader(core::COMMAND::CLEAR); }
 
-Result<bool, std::string> Controller::SendHeader(const core::COMMAND cmd) const {
+Error Controller::SendHeader(const core::COMMAND cmd) const {
   if (!this->is_open()) return Err(std::string("Link is not opened."));
 
   const auto send_size = sizeof(core::RxGlobalHeader);
@@ -79,8 +80,8 @@ Result<bool, std::string> Controller::SendHeader(const core::COMMAND cmd) const 
   return WaitMsgProcessed(msg_id, 50);
 }
 
-Result<bool, std::string> Controller::WaitMsgProcessed(const uint8_t msg_id, const size_t max_trial) const {
-  if (_link == nullptr || !_link->is_open()) return Ok(false);
+Error Controller::WaitMsgProcessed(const uint8_t msg_id, const size_t max_trial) const {
+  if (_link == nullptr || !_link->is_open()) return Ok();
 
   const auto num_devices = this->_geometry->num_devices();
 
@@ -92,18 +93,18 @@ Result<bool, std::string> Controller::WaitMsgProcessed(const uint8_t msg_id, con
     for (size_t dev = 0; dev < num_devices; dev++)
       if (const uint8_t proc_id = _rx_buf[dev * 2 + 1]; proc_id == msg_id) processed++;
 
-    if (processed == num_devices) return Ok(true);
+    if (processed == num_devices) return Ok();
 
     auto wait = static_cast<size_t>(
         std::ceil(static_cast<double>(core::EC_TRAFFIC_DELAY) * 1000 / core::EC_DEVICE_PER_FRAME * static_cast<double>(num_devices)));
     std::this_thread::sleep_for(std::chrono::milliseconds(wait));
   }
 
-  return Ok(false);
+  return Ok();
 }
 
-Result<bool, std::string> Controller::Close() {
-  Result<bool, std::string> res = Ok(true);
+Error Controller::Close() {
+  Error res = Ok();
   res = this->_stm->Finish();
   if (res.is_err()) return res;
 
@@ -121,19 +122,19 @@ Result<bool, std::string> Controller::Close() {
   return res;
 }
 
-Result<bool, std::string> Controller::Stop() {
+Error Controller::Stop() {
   const auto null_gain = gain::NullGain::Create();
   return this->Send(null_gain, nullptr, false);
 }
 
-Result<bool, std::string> Controller::Send(const core::GainPtr& gain, const bool wait_for_sent) { return this->Send(gain, nullptr, wait_for_sent); }
+Error Controller::Send(const core::GainPtr& gain, const bool wait_for_sent) { return this->Send(gain, nullptr, wait_for_sent); }
 
-Result<bool, std::string> Controller::Send(const core::ModulationPtr& mod) { return this->Send(nullptr, mod, true); }
+Error Controller::Send(const core::ModulationPtr& mod) { return this->Send(nullptr, mod, true); }
 
-Result<bool, std::string> Controller::Send(const core::GainPtr& gain, const core::ModulationPtr& mod, const bool wait_for_sent) {
+Error Controller::Send(const core::GainPtr& gain, const core::ModulationPtr& mod, const bool wait_for_sent) {
   if (!this->is_open()) return Err(std::string("Link is not opened."));
 
-  Result<bool, std::string> res = Ok(true);
+  Error res = Ok();
 
   res = this->_stm->Stop();
   if (res.is_err()) return res;
@@ -164,10 +165,10 @@ Result<bool, std::string> Controller::Send(const core::GainPtr& gain, const core
   }
 }
 
-Result<bool, std::string> Controller::Send(const core::SequencePtr& seq) {
+Error Controller::Send(const core::SequencePtr& seq) {
   if (!this->is_open()) return Err(std::string("Link is not opened."));
 
-  Result<bool, std::string> res = Ok(true);
+  Error res = Ok();
 
   res = this->_stm->Stop();
   if (res.is_err()) return res;
@@ -192,7 +193,7 @@ Result<bool, std::string> Controller::Send(const core::SequencePtr& seq) {
 Result<std::vector<FirmwareInfo>, std::string> Controller::firmware_info_list() const {
   auto concat_byte = [](const uint8_t high, const uint16_t low) { return static_cast<uint16_t>(static_cast<uint16_t>(high) << 8 | low); };
 
-  Result<bool, std::string> res = Ok(true);
+  Error res = Ok();
 
   const auto num_devices = this->_geometry->num_devices();
   std::vector<uint16_t> cpu_versions(num_devices);
@@ -223,7 +224,7 @@ void Controller::STMController::AddGains(const std::vector<core::GainPtr>& gains
   for (const auto& g : gains) this->AddGain(g);
 }
 
-[[nodiscard]] Result<bool, std::string> Controller::STMController::Start(const double freq) {
+[[nodiscard]] Error Controller::STMController::Start(const double freq) {
   auto len = this->_gains.size();
   auto interval_us = static_cast<uint32_t>(1000000. / static_cast<double>(freq) / static_cast<double>(len));
   this->_timer.SetInterval(interval_us);
@@ -255,15 +256,15 @@ void Controller::STMController::AddGains(const std::vector<core::GainPtr>& gains
   });
 }
 
-[[nodiscard]] Result<bool, std::string> Controller::STMController::Stop() { return this->_timer.Stop(); }
+[[nodiscard]] Error Controller::STMController::Stop() { return this->_timer.Stop(); }
 
-[[nodiscard]] Result<bool, std::string> Controller::STMController::Finish() {
+[[nodiscard]] Error Controller::STMController::Finish() {
   if (auto res = this->Stop(); res.is_err()) return res;
 
   std::vector<core::GainPtr>().swap(this->_gains);
   std::vector<std::unique_ptr<uint8_t[]>>().swap(this->_bodies);
   std::vector<size_t>().swap(this->_sizes);
 
-  return Ok(true);
+  return Ok();
 }
 }  // namespace autd

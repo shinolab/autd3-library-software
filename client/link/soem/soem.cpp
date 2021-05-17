@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 16/05/2021
+// Last Modified: 17/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -38,10 +38,10 @@ class SOEMLinkImpl final : public SOEMLink {
   SOEMLinkImpl& operator=(SOEMLinkImpl&& obj) = delete;
 
  protected:
-  Result<bool, std::string> Open() override;
-  Result<bool, std::string> Close() override;
-  Result<bool, std::string> Send(size_t size, const uint8_t* buf) override;
-  Result<bool, std::string> Read(uint8_t* rx, size_t buffer_len) override;
+  Error Open() override;
+  Error Close() override;
+  Error Send(size_t size, const uint8_t* buf) override;
+  Error Read(uint8_t* rx, size_t buffer_len) override;
   bool is_open() override;
 
  private:
@@ -56,7 +56,7 @@ core::LinkPtr SOEMLink::Create(const std::string& ifname, const size_t device_nu
   return link;
 }
 
-Result<bool, std::string> SOEMLinkImpl::Open() {
+Error SOEMLinkImpl::Open() {
   _config = autdsoem::ECConfig{};
   _config.ec_sm3_cycle_time_ns = core::EC_SM3_CYCLE_TIME_NANO_SEC;
   _config.ec_sync0_cycle_time_ns = core::EC_SYNC0_CYCLE_TIME_NANO_SEC;
@@ -67,16 +67,16 @@ Result<bool, std::string> SOEMLinkImpl::Open() {
   return _cnt.Open(_ifname.c_str(), _device_num, _config);
 }
 
-Result<bool, std::string> SOEMLinkImpl::Close() { return _cnt.Close(); }
+Error SOEMLinkImpl::Close() { return _cnt.Close(); }
 
-Result<bool, std::string> SOEMLinkImpl::Send(const size_t size, const uint8_t* buf) {
-  if (!_cnt.is_open()) return Ok(false);
+Error SOEMLinkImpl::Send(const size_t size, const uint8_t* buf) {
+  if (!_cnt.is_open()) return Ok();
 
   return _cnt.Send(size, buf);
 }
 
-Result<bool, std::string> SOEMLinkImpl::Read(uint8_t* rx, [[maybe_unused]] size_t buffer_len) {
-  if (!_cnt.is_open()) return Ok(false);
+Error SOEMLinkImpl::Read(uint8_t* rx, [[maybe_unused]] size_t buffer_len) {
+  if (!_cnt.is_open()) return Ok();
   return _cnt.Read(rx);
 }
 

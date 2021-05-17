@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 16/05/2021
+// Last Modified: 17/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -27,7 +27,7 @@ GainPtr Grouped::Create(const std::map<size_t, GainPtr>& gain_map) {
   return gain;
 }
 
-Result<bool, std::string> Grouped::Calc(const core::GeometryPtr& geometry) {
+Error Grouped::Calc(const core::GeometryPtr& geometry) {
   for (const auto& [fst, g] : this->_gain_map) {
     if (auto res = g->Build(geometry); res.is_err()) return res;
   }
@@ -42,7 +42,7 @@ Result<bool, std::string> Grouped::Calc(const core::GeometryPtr& geometry) {
   }
 
   this->_built = true;
-  return Ok(true);
+  return Ok();
 }
 
 GainPtr PlaneWave::Create(const Vector3& direction, const double amp) {
@@ -55,7 +55,7 @@ GainPtr PlaneWave::Create(const Vector3& direction, uint8_t duty) {
   return ptr;
 }
 
-Result<bool, std::string> PlaneWave::Calc(const core::GeometryPtr& geometry) {
+Error PlaneWave::Calc(const core::GeometryPtr& geometry) {
   const auto dir = this->_direction.normalized();
 
   const auto ultrasound_wavelength = geometry->wavelength();
@@ -70,7 +70,7 @@ Result<bool, std::string> PlaneWave::Calc(const core::GeometryPtr& geometry) {
     }
 
   this->_built = true;
-  return Ok(true);
+  return Ok();
 }
 
 GainPtr FocalPoint::Create(const Vector3& point, const double amp) {
@@ -83,7 +83,7 @@ GainPtr FocalPoint::Create(const Vector3& point, uint8_t duty) {
   return gain;
 }
 
-Result<bool, std::string> FocalPoint::Calc(const core::GeometryPtr& geometry) {
+Error FocalPoint::Calc(const core::GeometryPtr& geometry) {
   const auto ultrasound_wavelength = geometry->wavelength();
   const uint16_t duty = static_cast<uint16_t>(this->_duty) << 8 & 0xFF00;
   for (size_t dev = 0; dev < geometry->num_devices(); dev++)
@@ -96,7 +96,7 @@ Result<bool, std::string> FocalPoint::Calc(const core::GeometryPtr& geometry) {
     }
 
   this->_built = true;
-  return Ok(true);
+  return Ok();
 }
 
 GainPtr BesselBeam::Create(const Vector3& point, const Vector3& vec_n, const double theta_z, const double amp) {
@@ -109,7 +109,7 @@ GainPtr BesselBeam::Create(const Vector3& point, const Vector3& vec_n, double th
   return gain;
 }
 
-Result<bool, std::string> BesselBeam::Calc(const core::GeometryPtr& geometry) {
+Error BesselBeam::Calc(const core::GeometryPtr& geometry) {
   if (_vec_n.norm() > 0) _vec_n = _vec_n.normalized();
   const Vector3 v(_vec_n.y(), -_vec_n.x(), 0.);
 
@@ -129,7 +129,7 @@ Result<bool, std::string> BesselBeam::Calc(const core::GeometryPtr& geometry) {
       this->_data[dev][i] = duty | phase;
     }
   this->_built = true;
-  return Ok(true);
+  return Ok();
 }
 
 GainPtr Custom::Create(const uint16_t* data, const size_t data_length) {
@@ -154,9 +154,9 @@ GainPtr Custom::Create(const std::vector<AUTDDataArray>& data) {
   return gain;
 }
 
-Result<bool, std::string> Custom::Calc(const core::GeometryPtr& geometry) {
+Error Custom::Calc(const core::GeometryPtr& geometry) {
   this->_built = true;
-  return Ok(true);
+  return Ok();
 }
 
 GainPtr TransducerTest::Create(const size_t transducer_index, const uint8_t duty, const uint8_t phase) {
@@ -164,12 +164,12 @@ GainPtr TransducerTest::Create(const size_t transducer_index, const uint8_t duty
   return gain;
 }
 
-Result<bool, std::string> TransducerTest::Calc(const core::GeometryPtr& geometry) {
+Error TransducerTest::Calc(const core::GeometryPtr& geometry) {
   const uint16_t d = static_cast<uint16_t>(this->_duty) << 8 & 0xFF00;
   const uint16_t s = static_cast<uint16_t>(this->_phase) & 0x00FF;
   this->_data[geometry->device_idx_for_trans_idx(_transducer_idx)][_transducer_idx % NUM_TRANS_IN_UNIT] = d | s;
 
   this->_built = true;
-  return Ok(true);
+  return Ok();
 }
 }  // namespace autd::gain
