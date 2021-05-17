@@ -3,26 +3,15 @@
 
 # [AUTD3](https://hapislab.org/airborne-ultrasound-tactile-display?lang=en)
 
-Version: 0.9.3
+Version: 1.0.0
 
 ## :blue_book: **[Wiki for beginners](https://github.com/shinolab/autd3-library-software/wiki)**
 
 ## :books: [API document](https://shinolab.github.io/autd3-library-software/index.html)
 
-## :memo: Versioning
-
-The meanings of version number x.y.z are
-* x: Architecture version.
-* y: Firmware version.
-* z: Software version.
-
-If the number of x or y changes, the firmware of FPGA or CPU must be upgraded.
-
-This versioning was introduced after version 0.3.0.
-
 ## :fire: CAUTION
 
-* Before using, be sure to write the latest firmwares in `dist/firmware`. For more information, please see [README](/dist/firmware/Readme.md).
+* Before using, be sure to write the latest firmwares in `dist/firmware`. For more information, please see [README](/dist/firmware/README.md).
 
 ## :ballot_box_with_check: Requirements
 
