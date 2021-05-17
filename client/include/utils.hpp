@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 16/05/2021
+// Last Modified: 17/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -21,10 +21,10 @@ constexpr double DIR_COEFFICIENT_C[] = {
 constexpr double DIR_COEFFICIENT_D[] = {
     0., 0., 1.60125528528e-05, 2.9747624976e-06, 2.31910931569e-05, -1.1901034125e-05, 6.77743734332e-06, -5.99548024824e-06, -4.79372835035e-06};
 
-static double DirectivityT4010A1(double theta_deg) {
+inline double DirectivityT4010A1(double theta_deg) {
   theta_deg = std::abs(theta_deg);
   while (theta_deg > 90) theta_deg = std::abs(180 - theta_deg);
-  const auto i = static_cast<size_t>(ceil(theta_deg / 10));
+  const auto i = static_cast<size_t>(std::ceil(theta_deg / 10));
   if (i == 0) return 1;
   const auto a = DIR_COEFFICIENT_A[i - 1];
   const auto b = DIR_COEFFICIENT_B[i - 1];

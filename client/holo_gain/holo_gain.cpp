@@ -11,7 +11,10 @@
 
 #include "holo_gain.hpp"
 
+#include <random>
+
 #include "linalg_backend.hpp"
+#include "utils.hpp"
 
 namespace autd::gain::holo {
 
