@@ -13,14 +13,12 @@
 
 #include <atomic>
 #include <memory>
-#include <string>
 #include <thread>
 #include <vector>
 
 #include "gain.hpp"
 #include "geometry.hpp"
 #include "modulation.hpp"
-#include "result.hpp"
 #include "sequence.hpp"
 
 namespace autd::core {

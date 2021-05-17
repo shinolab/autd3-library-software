@@ -87,18 +87,14 @@ Error HoloGainEVD::Calc(const core::GeometryPtr& geometry) {
   Backend::VectorXc denominator(m);
   for (size_t i = 0; i < m; i++) {
     auto tmp = std::complex<double>(0, 0);
-    for (size_t j = 0; j < n; j++) {
-      tmp += g(i, j);
-    }
+    for (size_t j = 0; j < n; j++) tmp += g(i, j);
     denominator(i) = tmp;
   }
 
   Backend::MatrixXc x(n, m);
   for (size_t i = 0; i < m; i++) {
     auto c = std::complex<double>(this->_amps[i], 0) / denominator(i);
-    for (size_t j = 0; j < n; j++) {
-      x(j, i) = c * std::conj(g(i, j));
-    }
+    for (size_t j = 0; j < n; j++) x(j, i) = c * std::conj(g(i, j));
   }
   Backend::MatrixXc r = Backend::MatrixXc::Zero(m, m);
   this->MatrixMul(g, x, &r);
@@ -107,14 +103,14 @@ Error HoloGainEVD::Calc(const core::GeometryPtr& geometry) {
   Backend::MatrixXc sigma = Backend::MatrixXc::Zero(n, n);
   for (size_t j = 0; j < n; j++) {
     double tmp = 0;
-    for (size_t i = 0; i < m; i++) tmp += abs(g(i, j)) * this->_amps[i];
-    sigma(j, j) = std::complex<double>(pow(sqrt(tmp / static_cast<double>(m)), _gamma), 0.0);
+    for (size_t i = 0; i < m; i++) tmp += std::abs(g(i, j)) * this->_amps[i];
+    sigma(j, j) = std::complex<double>(std::pow(std::sqrt(tmp / static_cast<double>(m)), _gamma), 0.0);
   }
 
   const Backend::MatrixXc gr = this->_backend->concat_row(g, sigma);
 
   Backend::VectorXc f = Backend::VectorXc::Zero(m + n);
-  for (size_t i = 0; i < m; i++) f(i) = this->_amps[i] * max_ev(i) / abs(max_ev(i));
+  for (size_t i = 0; i < m; i++) f(i) = this->_amps[i] * max_ev(i) / std::abs(max_ev(i));
 
   Backend::MatrixXc gtg = Backend::MatrixXc::Zero(n, n);
   this->_backend->matrix_mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, std::complex<double>(1, 0), gr, gr, std::complex<double>(0, 0), &gtg);
@@ -164,9 +160,9 @@ Error HoloGainGS::Calc(const core::GeometryPtr& geometry) {
   Backend::VectorXc xi = Backend::VectorXc::Zero(n);
   for (size_t k = 0; k < _repeat; k++) {
     this->MatrixVecMul(g, q, &gamma);
-    for (size_t i = 0; i < m; i++) p(i) = gamma(i) / abs(gamma(i)) * this->_amps[i];
+    for (size_t i = 0; i < m; i++) p(i) = gamma(i) / std::abs(gamma(i)) * this->_amps[i];
     this->_backend->matrix_vector_mul(TRANSPOSE::CONJ_TRANS, std::complex<double>(1, 0), g, p, std::complex<double>(0, 0), &xi);
-    for (size_t j = 0; j < n; j++) q(j) = xi(j) / abs(xi(j)) * q0(j);
+    for (size_t j = 0; j < n; j++) q(j) = xi(j) / std::abs(xi(j)) * q0(j);
   }
 
   SetFromComplexDrive(this->_data, q, true, 1.0);
@@ -184,7 +180,7 @@ Error HoloGainGSPAT::Calc(const core::GeometryPtr& geometry) {
   Backend::VectorXc denominator(m);
   for (size_t i = 0; i < m; i++) {
     auto tmp = std::complex<double>(0, 0);
-    for (size_t j = 0; j < n; j++) tmp += abs(g(i, j));
+    for (size_t j = 0; j < n; j++) tmp += std::abs(g(i, j));
     denominator(i) = tmp;
   }
 
@@ -205,11 +201,11 @@ Error HoloGainGSPAT::Calc(const core::GeometryPtr& geometry) {
   Backend::VectorXc gamma = Backend::VectorXc::Zero(m);
   this->MatrixVecMul(r, p, &gamma);
   for (size_t k = 0; k < _repeat; k++) {
-    for (size_t i = 0; i < m; i++) p(i) = gamma(i) / abs(gamma(i)) * this->_amps[i];
+    for (size_t i = 0; i < m; i++) p(i) = gamma(i) / std::abs(gamma(i)) * this->_amps[i];
     this->MatrixVecMul(r, p, &gamma);
   }
 
-  for (size_t i = 0; i < m; i++) p(i) = gamma(i) / (abs(gamma(i)) * abs(gamma(i))) * this->_amps[i] * this->_amps[i];
+  for (size_t i = 0; i < m; i++) p(i) = gamma(i) / (std::abs(gamma(i)) * std::abs(gamma(i))) * this->_amps[i] * this->_amps[i];
 
   Backend::VectorXc q = Backend::VectorXc::Zero(n);
   this->MatrixVecMul(b, p, &q);
@@ -276,10 +272,8 @@ Error HoloGainLM::Calc(const core::GeometryPtr& geometry) {
 
   auto mu = _tau * a_max;
 
-  auto is_found = this->_backend->max_coefficient(g) <= _eps_1;
-
   Backend::VectorXc t(n_param);
-  for (size_t i = 0; i < n_param; i++) t(i) = exp(std::complex<double>(0, x(i)));
+  for (size_t i = 0; i < n_param; i++) t(i) = std::exp(std::complex<double>(0, x(i)));
 
   Backend::VectorXc tmp_vec_c = Backend::VectorXc::Zero(n_param);
   this->MatrixVecMul(bhb, t, &tmp_vec_c);
@@ -291,44 +285,41 @@ Error HoloGainLM::Calc(const core::GeometryPtr& geometry) {
   Backend::VectorX x_new(n_param);
   Backend::MatrixX tmp_mat(n_param, n_param);
   for (size_t k = 0; k < _k_max; k++) {
-    if (is_found) break;
+    if (this->_backend->max_coefficient(g) <= _eps_1) break;
 
     this->_backend->mat_cpy(a, &tmp_mat);
     this->_backend->matrix_add(mu, identity, double{1.0}, &tmp_mat);
     this->_backend->solve_g(&tmp_mat, &g, &h_lm);
-    if (h_lm.norm() <= _eps_2 * (x.norm() + _eps_2)) {
-      is_found = true;
-    } else {
-      this->_backend->vec_cpy(x, &x_new);
-      this->_backend->vector_add(double{-1.0}, h_lm, double{1.0}, &x_new);
-      for (size_t i = 0; i < n_param; i++) t(i) = exp(std::complex<double>(0, x_new(i)));
+    if (h_lm.norm() <= _eps_2 * (x.norm() + _eps_2)) break;
 
-      this->MatrixVecMul(bhb, t, &tmp_vec_c);
-      const double fx_new = this->_backend->dot_c(t, tmp_vec_c).real();
+    this->_backend->vec_cpy(x, &x_new);
+    this->_backend->vector_add(double{-1.0}, h_lm, double{1.0}, &x_new);
+    for (size_t i = 0; i < n_param; i++) t(i) = std::exp(std::complex<double>(0, x_new(i)));
 
-      this->_backend->vec_cpy(g, &tmp_vec);
-      this->_backend->vector_add(mu, h_lm, 1.0, &tmp_vec);
-      const double l0_lhlm = this->_backend->dot(h_lm, tmp_vec) / 2;
+    this->MatrixVecMul(bhb, t, &tmp_vec_c);
+    const double fx_new = this->_backend->dot_c(t, tmp_vec_c).real();
 
-      const auto rho = (fx - fx_new) / l0_lhlm;
-      fx = fx_new;
-      if (rho > 0) {
-        this->_backend->vec_cpy(x_new, &x);
-        calc_t_th(this->_backend, x, &tth);
-        this->_backend->hadamard_product(bhb, tth, &bhb_tth);
-        this->_backend->real(bhb_tth, &a);
-        for (size_t i = 0; i < n_param; i++) {
-          double tmp = 0;
-          for (size_t j = 0; j < n_param; j++) tmp += bhb_tth(i, j).imag();
-          g(i) = tmp;
-        }
-        is_found = this->_backend->max_coefficient(g) <= _eps_1;
-        mu *= std::max(1. / 3., std::pow(1 - (2 * rho - 1), 3.0));
-        nu = 2;
-      } else {
-        mu *= nu;
-        nu *= 2;
+    this->_backend->vec_cpy(g, &tmp_vec);
+    this->_backend->vector_add(mu, h_lm, 1.0, &tmp_vec);
+    const double l0_lhlm = this->_backend->dot(h_lm, tmp_vec) / 2;
+
+    const auto rho = (fx - fx_new) / l0_lhlm;
+    fx = fx_new;
+    if (rho > 0) {
+      this->_backend->vec_cpy(x_new, &x);
+      calc_t_th(this->_backend, x, &tth);
+      this->_backend->hadamard_product(bhb, tth, &bhb_tth);
+      this->_backend->real(bhb_tth, &a);
+      for (size_t i = 0; i < n_param; i++) {
+        double tmp = 0;
+        for (size_t j = 0; j < n_param; j++) tmp += bhb_tth(i, j).imag();
+        g(i) = tmp;
       }
+      mu *= std::max(1. / 3., std::pow(1 - (2 * rho - 1), 3.0));
+      nu = 2;
+    } else {
+      mu *= nu;
+      nu *= 2;
     }
   }
 
