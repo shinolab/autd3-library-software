@@ -24,15 +24,14 @@ run `build.ps1` or run CMake, then open `autd3.sln` in `BUILD_DIR` (default `./b
 * -BUILD_DIR = [./build]
 * -VS_VERSION = 2017, [2019]
 * -ARCH = [x64]
-* -BUILD_ALL = [False]
 
-## Mac/Linux
+## Linux/macOS
 
 ```
 mkdir build && cd build
 cmake ..
 make
-sudo examples/example_soem
+sudo ./examples/example_soem
 ```
 
 # Author
