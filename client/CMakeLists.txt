@@ -18,6 +18,8 @@ option(IGNORE_EXAMPLE "IGNORE_EXAMPLE" OFF)
 option(BUILD_CAPI "BUILD_CAPI" OFF)
 option(ENABLE_LINT "ENABLE_LINT" OFF)
 
+set(AUTD3_HOME_PATH ${PROJECT_SOURCE_DIR})
+
 if(BUILD_ALL)
   set(BUILD_HOLO_GAIN ON)
   set(BUILD_SOEM_LINK ON)
@@ -94,6 +96,11 @@ endif()
 add_definitions(-DEIGEN_MPL2_ONLY)
 set(EIGEN_PATH ${PROJECT_SOURCE_DIR}/deps/Eigen3)
 
+# Gain
+if(BUILD_HOLO_GAIN)
+  add_subdirectory(holo_gain)
+endif()
+
 # Link
 if(BUILD_TWINCAT_LINK)
   add_subdirectory(link/twincat)
@@ -111,10 +118,13 @@ add_subdirectory(lib)
 if(BUILD_CAPI)
   add_subdirectory(capi/base)
   if(BUILD_SOEM_LINK)
-    add_subdirectory(capi/link_soem)
+    add_subdirectory(capi/soem_link)
   endif()
   if(BUILD_TWINCAT_LINK)
-    add_subdirectory(capi/link_twincat)
+    add_subdirectory(capi/twincat_link)
+  endif()
+  if(BUILD_HOLO_GAIN)
+    add_subdirectory(capi/holo_gain)
   endif()
 endif()
 

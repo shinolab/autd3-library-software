@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 12/05/2021
+// Last Modified: 17/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -12,7 +12,6 @@
 #pragma once
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "geometry.hpp"
@@ -23,6 +22,12 @@ namespace autd::core {
 
 class Gain;
 using GainPtr = std::shared_ptr<Gain>;
+
+template <typename T>
+uint8_t ToDuty(const T amp) noexcept {
+  const auto d = std::asin(amp) / static_cast<T>(M_PI);  //  duty (0 ~ 0.5)
+  return static_cast<uint8_t>(511 * d);
+}
 
 /**
  * @brief Gain controls the amplitude and phase of each transducer in the AUTD
@@ -37,31 +42,29 @@ class Gain {
   /**
    * @brief Calculate amplitude and phase of each transducer
    */
-  [[nodiscard]] virtual Result<bool, std::string> Calc(const GeometryPtr geometry) {
+  [[nodiscard]] virtual Error Calc(const GeometryPtr& geometry) {
     for (size_t i = 0; i < geometry->num_devices(); i++) this->_data[i].fill(0x0000);
-    return Ok(true);
+    return Ok();
   }
 
   /**
    * @brief Initialize data and calculate amplitude and phase of each transducer
    */
-  [[nodiscard]] Result<bool, std::string> Build(const GeometryPtr geometry) {
-    if (this->_built) return Ok(true);
+  [[nodiscard]] Error Build(const GeometryPtr& geometry) {
+    if (this->_built) return Ok();
 
     const auto num_device = geometry->num_devices();
 
     this->_data.clear();
     this->_data.resize(num_device);
 
-    auto res = this->Calc(geometry);
-    this->_built = res.unwrap_or(false);
-    return res;
+    return this->Calc(geometry);
   }
 
   /**
    * @brief Re-calculate amplitude and phase of each transducer
    */
-  [[nodiscard]] Result<bool, std::string> Rebuild(const GeometryPtr geometry) {
+  [[nodiscard]] Error Rebuild(const GeometryPtr& geometry) {
     this->_built = false;
     return this->Build(geometry);
   }

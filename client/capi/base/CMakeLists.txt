@@ -41,7 +41,7 @@ set_target_properties(autd3capi
 )
 
 if (WIN32)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4068 /wd4819")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4068")
 endif()
 
 if(NOT WIN32)

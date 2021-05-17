@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/05/2021
+// Last Modified: 17/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -12,7 +12,6 @@
 #pragma once
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "core/configuration.hpp"
@@ -26,11 +25,11 @@ using core::Modulation;
 using core::ModulationPtr;
 
 using Static = Modulation;
-	
+
 /**
  * @brief Sine wave modulation
  */
-class SineModulation final : public Modulation {
+class Sine final : public Modulation {
  public:
   /**
    * @brief Generate function
@@ -40,8 +39,8 @@ class SineModulation final : public Modulation {
    * @details The sine wave oscillate from offset-amp/2 to offset+amp/2
    */
   static ModulationPtr Create(int freq, double amp = 1.0, double offset = 0.5);
-  Result<bool, std::string> Build(Configuration config) override;
-  SineModulation(const int freq, const double amp, const double offset) : Modulation(), _freq(freq), _amp(amp), _offset(offset) {}
+  Error Build(Configuration config) override;
+  Sine(const int freq, const double amp, const double offset) : Modulation(), _freq(freq), _amp(amp), _offset(offset) {}
 
  private:
   int _freq = 0;
@@ -50,9 +49,23 @@ class SineModulation final : public Modulation {
 };
 
 /**
+ * @brief Custom wave modulation
+ */
+class Custom final : public Modulation {
+ public:
+  /**
+   * @brief Generate function
+   * @param[in] buffer data of modulation
+   */
+  static ModulationPtr Create(const std::vector<uint8_t>& buffer);
+  Error Build(Configuration config) override;
+  explicit Custom(const std::vector<uint8_t>& buffer) { this->_buffer = buffer; }
+};
+
+/**
  * @brief Square wave modulation
  */
-class SquareModulation final : public Modulation {
+class Square final : public Modulation {
  public:
   /**
    * @brief Generate function
@@ -61,8 +74,8 @@ class SquareModulation final : public Modulation {
    * @param[in] high high level
    */
   static ModulationPtr Create(int freq, uint8_t low = 0, uint8_t high = 0xff);
-  Result<bool, std::string> Build(Configuration config) override;
-  SquareModulation(const int freq, const uint8_t low, const uint8_t high) : Modulation(), _freq(freq), _low(low), _high(high) {}
+  Error Build(Configuration config) override;
+  Square(const int freq, const uint8_t low, const uint8_t high) : Modulation(), _freq(freq), _low(low), _high(high) {}
 
  private:
   int _freq = 0;
@@ -73,7 +86,7 @@ class SquareModulation final : public Modulation {
 /**
  * @brief Sawtooth wave modulation
  */
-class SawModulation final : public Modulation {
+class Saw final : public Modulation {
  public:
   /**
    * @brief Generate function
@@ -84,8 +97,8 @@ class SawModulation final : public Modulation {
    * @brief Build Modulation
    * @return return Ok(whether succeeded to build), or Err(error msg) if some unrecoverable error occurred
    */
-  Result<bool, std::string> Build(Configuration config) override;
-  explicit SawModulation(const int freq) : Modulation(), _freq(freq) {}
+  Error Build(Configuration config) override;
+  explicit Saw(const int freq) : Modulation(), _freq(freq) {}
 
  private:
   int _freq = 0;
