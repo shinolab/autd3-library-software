@@ -46,14 +46,14 @@ if(WIN32)
   if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     add_custom_command(TARGET soem_link
 	  POST_BUILD
-	  COMMAND lib /OUT:$(OUTDIR)temp.lib $(TARGETPATH) $(SolutionDir)..\\deps\\SOEM\\SOEM\\oshw\\win32\\wpcap\\Lib\\*.lib /ignore:4006
+	  COMMAND lib /OUT:$(OUTDIR)temp.lib $(TARGETPATH) ${PROJECT_SOURCE_DIR}\\deps\\SOEM\\SOEM\\oshw\\win32\\wpcap\\Lib\\*.lib /ignore:4006
 	  COMMAND del $(TARGETPATH)
 	  COMMAND rename $(OUTDIR)temp.lib $(TargetFileName)
 	)
   else()
 	add_custom_command(TARGET soem_link
 	  POST_BUILD
-	  COMMAND lib /OUT:$(OUTDIR)temp.lib $(TARGETPATH) $(SolutionDir)..\\deps\\SOEM\\SOEM\\oshw\\win32\\wpcap\\Lib\\x64\\*.lib /ignore:4006
+	  COMMAND lib /OUT:$(OUTDIR)temp.lib $(TARGETPATH) ${PROJECT_SOURCE_DIR}\\deps\\SOEM\\SOEM\\oshw\\win32\\wpcap\\Lib\\x64\\*.lib /ignore:4006
 	  COMMAND del $(TARGETPATH)
 	  COMMAND rename $(OUTDIR)temp.lib $(TargetFileName)
 	)
