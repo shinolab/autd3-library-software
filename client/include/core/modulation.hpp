@@ -14,6 +14,7 @@
 #include <memory>
 #include <vector>
 
+#include "configuration.hpp"
 #include "result.hpp"
 
 namespace autd::core {
