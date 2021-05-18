@@ -10,7 +10,6 @@
 //
 
 #include <atomic>
-#include <chrono>
 #include <condition_variable>
 #include <cstdint>
 #include <cstring>
@@ -32,20 +31,18 @@
 namespace autd::autdsoem {
 
 static std::atomic autd3_rt_lock(false);
-static std::atomic autd3_lib_send_cond(false);
 
 bool SOEMController::is_open() const { return _is_open; }
 
-Error SOEMController::Send(size_t size, const uint8_t* buf) {
-  if (buf == nullptr) return Err(std::string("data is null"));
+Error SOEMController::Send(const size_t size, const uint8_t* buf) const {
   if (!_is_open) return Err(std::string("link is closed"));
 
-  auto buf_ = std::make_unique<uint8_t[]>(size);
-  std::memcpy(&buf_[0], &buf[0], size);
-  std::unique_lock lk(_send_mtx);
-  _send_q.push(std::pair(std::move(buf_), size));
-
-  _send_cond.notify_all();
+  const auto header_size = this->_config.header_size;
+  const auto body_size = this->_config.body_size;
+  const auto output_frame_size = header_size + body_size;
+  if (size > header_size)
+    for (size_t i = 0; i < _dev_num; i++) std::memcpy(&_io_map[output_frame_size * i], &buf[header_size + body_size * i], body_size);
+  for (size_t i = 0; i < _dev_num; i++) std::memcpy(&_io_map[output_frame_size * i + body_size], &buf[0], header_size);
   return Ok();
 }
 
@@ -106,12 +103,9 @@ Error SOEMController::Open(const char* ifname, const size_t dev_num, const ECCon
 
   auto interval_us = config.ec_sm3_cycle_time_ns / 1000;
   this->_timer.SetInterval(interval_us);
-
   if (auto res = this->_timer.Start([]() {
         if (auto expected = false; autd3_rt_lock.compare_exchange_weak(expected, true)) {
-          const auto pre = autd3_lib_send_cond.load(std::memory_order_acquire);
           ec_send_processdata();
-          if (!pre) autd3_lib_send_cond.store(true, std::memory_order_release);
           autd3_rt_lock.store(false, std::memory_order_release);
           ec_receive_processdata(EC_TIMEOUTRET);
         }
@@ -120,7 +114,6 @@ Error SOEMController::Open(const char* ifname, const size_t dev_num, const ECCon
     return res;
 
   _is_open = true;
-  CreateSendThread(config.header_size, config.body_size);
 
   return Ok();
 }
@@ -149,33 +142,6 @@ Error SOEMController::Close() {
   ec_close();
 
   return Ok();
-}
-
-void SOEMController::CreateSendThread(size_t header_size, size_t body_size) {
-  _send_thread = std::thread([this, header_size, body_size]() {
-    while (_is_open) {
-      {
-        std::unique_lock lk(_send_mtx);
-        _send_cond.wait(lk, [&] { return !_send_q.empty() || !_is_open; });
-      }
-
-      if (_send_q.empty() || !_is_open) continue;
-      auto [buf, size] = move(_send_q.front());
-
-      const auto includes_gain = (size - header_size) / body_size > 0;
-      const auto output_frame_size = header_size + body_size;
-      for (size_t i = 0; i < _dev_num; i++) {
-        if (includes_gain) std::memcpy(&_io_map[output_frame_size * i], &buf[header_size + body_size * i], body_size);
-        std::memcpy(&_io_map[output_frame_size * i + body_size], &buf[0], header_size);
-      }
-
-      autd3_lib_send_cond.store(false, std::memory_order_release);
-      while (!autd3_lib_send_cond.load(std::memory_order_acquire) && _is_open) {
-      }
-
-      _send_q.pop();
-    }
-  });
 }
 
 SOEMController::SOEMController() : _config() {
