@@ -1,3 +1,6 @@
+# 1.0.0
+* Major revisions have been performed, APIs have also been changed massively.
+
 # 0.9.3
 * Add `Rebuild()` method to Gain
 * Change the declaration of HoloGain. Selection by OPT_METHOD is deleted and introduced HoloGainSDP, HoloGainEVD, HoloGainNaive, HoloGainGS, HoloGainGSPAT, HoloGainLM classes.
