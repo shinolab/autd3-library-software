@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 17/05/2021
+// Last Modified: 18/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -17,9 +17,7 @@
 #include "primitive_gain.hpp"
 #include "primitive_modulation.hpp"
 #include "wrapper.hpp"
-#include "wrapper_gain.hpp"
 #include "wrapper_link.hpp"
-#include "wrapper_modulation.hpp"
 
 namespace {
 std::string& LastError() {

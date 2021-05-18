@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 16/05/2021
+// Last Modified: 18/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -14,22 +14,23 @@
 #include "soem_link.hpp"
 
 typedef struct {
-  autd::link::EtherCATAdapters adapters;
+  std::vector<autd::link::EtherCATAdapter> adapters;
 } EtherCATAdaptersWrapper;
 
-inline EtherCATAdaptersWrapper* EtherCATAdaptersCreate(const autd::link::EtherCATAdapters& adapters) { return new EtherCATAdaptersWrapper{adapters}; }
+inline EtherCATAdaptersWrapper* EtherCATAdaptersCreate(const std::vector<autd::link::EtherCATAdapter>& adapters) {
+  return new EtherCATAdaptersWrapper{adapters};
+}
 inline void EtherCATAdaptersDelete(EtherCATAdaptersWrapper* ptr) { delete ptr; }
 
 int32_t AUTDGetAdapterPointer(void** out) {
-  size_t size;
-  const auto adapters = autd::link::SOEMLink::EnumerateAdapters(&size);
+  const auto adapters = autd::link::SOEMLink::EnumerateAdapters();
   *out = EtherCATAdaptersCreate(adapters);
-  return static_cast<int32_t>(size);
+  return static_cast<int32_t>(adapters.size());
 }
 void AUTDGetAdapter(void* p_adapter, const int32_t index, char* desc, char* name) {
   auto* wrapper = static_cast<EtherCATAdaptersWrapper*>(p_adapter);
-  const auto& desc_ = wrapper->adapters[index].first;
-  const auto& name_ = wrapper->adapters[index].second;
+  const auto& desc_ = wrapper->adapters[index].desc;
+  const auto& name_ = wrapper->adapters[index].name;
   std::char_traits<char>::copy(desc, desc_.c_str(), desc_.size() + 1);
   std::char_traits<char>::copy(name, name_.c_str(), name_.size() + 1);
 }

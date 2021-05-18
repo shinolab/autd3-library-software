@@ -3,7 +3,7 @@
 // Created Date: 14/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 17/05/2021
+// Last Modified: 18/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -101,10 +101,20 @@ class PointSequence {
   [[nodiscard]] double frequency() const { return this->sampling_frequency() / static_cast<double>(this->_control_points.size()); }
 
   /**
+   * @return period of sequence
+   */
+  [[nodiscard]] size_t period_us() const { return this->sampling_period_us() * this->_control_points.size(); }
+
+  /**
    * The sampling period is limited to an integer multiple of 25us. Therefore, the sampling frequency is 40kHz/N.
    * @return double Sampling frequency of sequence
    */
   [[nodiscard]] double sampling_frequency() const { return static_cast<double>(POINT_SEQ_BASE_FREQ) / static_cast<double>(this->_sampling_freq_div); }
+
+  /**
+   * @return sampling period of sequence
+   */
+  [[nodiscard]] size_t sampling_period_us() const { return static_cast<size_t>(this->_sampling_freq_div) * 1000000 / POINT_SEQ_BASE_FREQ; }
 
   /**
    * The sampling frequency division means the "(sampling period)/25us".

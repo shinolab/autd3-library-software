@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 17/05/2021
+// Last Modified: 18/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -32,6 +32,13 @@ class Logic {
     id.compare_exchange_weak(expected, 0);
 
     return id.load();
+  }
+
+  static bool IsMsgProcessed(const size_t num_devices, const uint8_t msg_id, const uint8_t* const rx) {
+    size_t processed = 0;
+    for (size_t dev = 0; dev < num_devices; dev++)
+      if (const uint8_t proc_id = rx[dev * 2 + 1]; proc_id == msg_id) processed++;
+    return processed == num_devices;
   }
 
   static void PackHeader(const COMMAND cmd, const bool silent_mode, const bool seq_mode, const bool read_fpga_info, uint8_t* data,

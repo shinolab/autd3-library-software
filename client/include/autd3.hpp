@@ -25,6 +25,7 @@ using LinkPtr = core::LinkPtr;
 using ModulationPtr = core::ModulationPtr;
 using GainPtr = core::GainPtr;
 using SequencePtr = core::SequencePtr;
+using Configuration = core::Configuration;
 
 constexpr auto NUM_TRANS_IN_UNIT = core::NUM_TRANS_IN_UNIT;
 constexpr auto NUM_TRANS_X = core::NUM_TRANS_X;

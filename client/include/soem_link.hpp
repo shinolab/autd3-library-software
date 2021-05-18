@@ -3,7 +3,7 @@
 // Created Date: 10/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 17/05/2021
+// Last Modified: 18/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -12,14 +12,28 @@
 #pragma once
 
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "core/link.hpp"
 
 namespace autd::link {
-using EtherCATAdapter = std::pair<std::string, std::string>;
-using EtherCATAdapters = std::vector<EtherCATAdapter>;
+
+struct EtherCATAdapter final {
+  EtherCATAdapter() = default;
+  ~EtherCATAdapter() = default;
+  EtherCATAdapter(EtherCATAdapter& obj) = default;
+  EtherCATAdapter& operator=(const EtherCATAdapter& obj) = delete;
+  EtherCATAdapter(EtherCATAdapter&& obj) = default;
+  EtherCATAdapter& operator=(EtherCATAdapter&& obj) = default;
+
+  EtherCATAdapter(const std::string& desc, const std::string& name) {
+    this->desc = desc;
+    this->name = name;
+  }
+
+  std::string desc;
+  std::string name;
+};
 
 /**
  * @brief Link using [SOEM](https://github.com/OpenEtherCATsociety/SOEM)
@@ -39,7 +53,7 @@ class SOEMLink : virtual public core::Link {
   /**
    * @brief Enumerate Ethernet adapters of the computer.
    */
-  static EtherCATAdapters EnumerateAdapters(size_t* size);
+  static std::vector<EtherCATAdapter> EnumerateAdapters();
   SOEMLink() = default;
   ~SOEMLink() override = default;
   SOEMLink(const SOEMLink& v) noexcept = delete;

@@ -3,7 +3,7 @@
 // Created Date: 03/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 16/05/2021
+// Last Modified: 18/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -27,53 +27,41 @@
 #include "examples/holo.hpp"
 #endif
 
-using std::cin;
-using std::cout;
-using std::endl;
-using std::function;
-using std::pair;
-using std::string;
-using std::vector;
-
-constexpr auto ULTRASOUND_WAVELENGTH = 8.5;
-
 inline int Run(autd::Controller& autd) {
-  using F = function<void(autd::Controller&)>;
-  vector<pair<F, string>> examples = {
-      pair(F{SimpleTest}, "Single Focal Point Test"),      pair(F{BesselTest}, "BesselBeam Test"),
+  using F = std::function<void(autd::Controller&)>;
+  std::vector<std::pair<F, std::string>> examples = {
+      std::pair(F{SimpleTest}, "Single Focal Point Test"),      std::pair(F{BesselTest}, "BesselBeam Test"),
 #ifdef BUILD_HOLO_GAIN
-      pair(F{HoloTest}, "HoloGain (multiple foci) Test"),
+      std::pair(F{HoloTest}, "HoloGain (multiple foci) Test"),
 #endif
-      pair(F{STMTest}, "Spatio-Temporal Modulation Test"), pair(F{SeqTest}, "Sequence (hardware STM) Test"),
+      std::pair(F{STMTest}, "Spatio-Temporal Modulation Test"), std::pair(F{SeqTest}, "Sequence (hardware STM) Test"),
   };
 
-  autd.geometry()->wavelength() = ULTRASOUND_WAVELENGTH;
+  autd.geometry()->wavelength() = 8.5;  // mm
 
   autd.Clear().unwrap();
   autd.Synchronize().unwrap();
 
   auto firm_info_list = autd.firmware_info_list().unwrap();
-  for (auto&& firm_info : firm_info_list) cout << firm_info << endl;
+  for (auto&& firm_info : firm_info_list) std::cout << firm_info << std::endl;
 
   while (true) {
-    for (size_t i = 0; i < examples.size(); i++) cout << "[" << i << "]: " << examples[i].second << endl;
+    for (size_t i = 0; i < examples.size(); i++) std::cout << "[" << i << "]: " << examples[i].second << std::endl;
+    std::cout << "[Others]: finish." << std::endl;
 
-    cout << "[Others]: finish." << endl;
-
-    cout << "Choose number: ";
-    string in;
-    size_t idx = 0;
-    getline(cin, in);
+    std::cout << "Choose number: ";
+    std::string in;
+    size_t idx;
+    getline(std::cin, in);
     std::stringstream s(in);
     if (const auto empty = in == "\n"; !(s >> idx) || idx >= examples.size() || empty) break;
 
-    auto fn = examples[idx].first;
-    fn(autd);
+    examples[idx].first(autd);
 
-    cout << "press any key to finish..." << endl;
-    cin.ignore();
+    std::cout << "press any key to finish..." << std::endl;
+    std::cin.ignore();
 
-    cout << "finish." << endl;
+    std::cout << "finish." << std::endl;
     autd.Stop().unwrap();
   }
 
