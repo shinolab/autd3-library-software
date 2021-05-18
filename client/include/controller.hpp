@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 17/05/2021
+// Last Modified: 18/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -205,7 +205,7 @@ class Controller {
   };
 
  private:
-  [[nodiscard]] Error SendHeader(core::COMMAND cmd) const;
+  [[nodiscard]] Error SendHeader(core::COMMAND cmd, size_t max_trial = 50) const;
   [[nodiscard]] Error WaitMsgProcessed(uint8_t msg_id, size_t max_trial = 200) const;
 
   core::LinkPtr _link;
