@@ -9,6 +9,7 @@ set(INCLUDE_LIST
 add_library(autd3capi-twincat-link SHARED
   c_api.cpp
   twincat_link.h
+  ../base/header.h
   ../base/wrapper_link.hpp
 )
 
