@@ -37,7 +37,7 @@ file(GLOB_RECURSE SOEM_SRC_FILES ${SOEM_PATH}/soem/*.c ${SOEM_PATH}/osal/${OS}/*
 add_library(soem_link STATIC
   autdsoem.cpp
   autdsoem.hpp
-  soem.cpp
+  soem_link.cpp
   ${SOEM_SRC_FILES}
   ${PROJECT_SOURCE_DIR}/include/soem_link.hpp
 )

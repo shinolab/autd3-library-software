@@ -1,6 +1,6 @@
-﻿// File: autd3_c_api_twincat_link.h
-// Project: twincat_link
-// Created Date: 20/02/2021
+// File: header.h
+// Project: base
+// Created Date: 18/05/2021
 // Author: Shun Suzuki
 // -----
 // Last Modified: 18/05/2021
@@ -11,8 +11,8 @@
 
 #pragma once
 
-#include "../base/header.h"
-
-extern "C" {
-EXPORT_AUTD void AUTDTwinCATLink(void** out);
-}
+#if WIN32
+#define EXPORT_AUTD
+#else
+#define EXPORT_AUTD __attribute__((visibility("default")))
+#endif

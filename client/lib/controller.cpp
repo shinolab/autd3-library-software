@@ -89,14 +89,9 @@ Error Controller::WaitMsgProcessed(const uint8_t msg_id, const size_t max_trial)
   for (size_t i = 0; i < max_trial; i++) {
     if (auto res = this->_link->Read(&_rx_buf[0], buffer_len); res.is_err()) return res;
 
-    size_t processed = 0;
-    for (size_t dev = 0; dev < num_devices; dev++)
-      if (const uint8_t proc_id = _rx_buf[dev * 2 + 1]; proc_id == msg_id) processed++;
+    if (core::Logic::IsMsgProcessed(num_devices, msg_id, &_rx_buf[0])) return Ok();
 
-    if (processed == num_devices) return Ok();
-
-    auto wait = static_cast<size_t>(
-        std::ceil(static_cast<double>(core::EC_TRAFFIC_DELAY) * 1000 / core::EC_DEVICE_PER_FRAME * static_cast<double>(num_devices)));
+    auto wait = static_cast<size_t>(std::ceil(core::EC_TRAFFIC_DELAY * 1000.0 / core::EC_DEVICE_PER_FRAME * static_cast<double>(num_devices)));
     std::this_thread::sleep_for(std::chrono::milliseconds(wait));
   }
 
@@ -104,17 +99,11 @@ Error Controller::WaitMsgProcessed(const uint8_t msg_id, const size_t max_trial)
 }
 
 Error Controller::Close() {
-  Error res = Ok();
-  res = this->_stm->Finish();
-  if (res.is_err()) return res;
+  if (auto res = this->_stm->Finish(); res.is_err()) return res;
+  if (auto res = this->Stop(); res.is_err()) return res;
+  if (auto res = this->Clear(); res.is_err()) return res;
 
-  res = this->Stop();
-  if (res.is_err()) return res;
-
-  res = this->Clear();
-  if (res.is_err()) return res;
-
-  res = this->_link->Close();
+  auto res = this->_link->Close();
   this->_link = nullptr;
   this->_tx_buf = nullptr;
   this->_rx_buf = nullptr;
@@ -122,10 +111,7 @@ Error Controller::Close() {
   return res;
 }
 
-Error Controller::Stop() {
-  const auto null_gain = gain::NullGain::Create();
-  return this->Send(null_gain, nullptr, false);
-}
+Error Controller::Stop() { return this->Send(gain::NullGain::Create(), nullptr, false); }
 
 Error Controller::Send(const core::GainPtr& gain, const bool wait_for_sent) { return this->Send(gain, nullptr, wait_for_sent); }
 
@@ -134,19 +120,14 @@ Error Controller::Send(const core::ModulationPtr& mod) { return this->Send(nullp
 Error Controller::Send(const core::GainPtr& gain, const core::ModulationPtr& mod, const bool wait_for_sent) {
   if (!this->is_open()) return Err(std::string("Link is not opened."));
 
-  Error res = Ok();
+  if (auto res = this->_stm->Stop(); res.is_err()) return res;
 
-  res = this->_stm->Stop();
-  if (res.is_err()) return res;
+  if (mod != nullptr)
+    if (auto res = mod->Build(this->_config); res.is_err()) return res;
 
-  if (mod != nullptr) res = mod->Build(this->_config);
-  if (res.is_err()) return res;
-
-  if (gain != nullptr) {
-    this->_seq_mode = false;
-    res = gain->Build(this->_geometry);
-  }
-  if (res.is_err()) return res;
+  this->_seq_mode = gain != nullptr;
+  if (gain != nullptr)
+    if (auto res = gain->Build(this->_geometry); res.is_err()) return res;
 
   size_t size = 0;
   core::Logic::PackBody(gain, &this->_tx_buf[0], &size);
@@ -154,62 +135,49 @@ Error Controller::Send(const core::GainPtr& gain, const core::ModulationPtr& mod
   while (true) {
     uint8_t msg_id = 0;
     core::Logic::PackHeader(mod, this->_silent_mode, this->_seq_mode, this->_read_fpga_info, &this->_tx_buf[0], &msg_id);
-    res = this->_link->Send(size, &this->_tx_buf[0]);
-    if (res.is_err()) return res;
+    if (auto res = this->_link->Send(size, &this->_tx_buf[0]); res.is_err()) return res;
 
     const auto mod_finished = ModSentFinished(mod);
-    if (mod_finished & !wait_for_sent) return res;
+    if (mod_finished & !wait_for_sent) return Ok();
 
-    res = WaitMsgProcessed(msg_id);
-    if (res.is_err() || mod_finished) return res;
+    if (auto res = WaitMsgProcessed(msg_id); res.is_err() || mod_finished) return res;
   }
 }
 
 Error Controller::Send(const core::SequencePtr& seq) {
   if (!this->is_open()) return Err(std::string("Link is not opened."));
 
-  Error res = Ok();
-
-  res = this->_stm->Stop();
-  if (res.is_err()) return res;
+  if (auto res = this->_stm->Stop(); res.is_err()) return res;
 
   this->_seq_mode = true;
   while (true) {
-    uint8_t msg_id = 0;
+    uint8_t msg_id;
     core::Logic::PackHeader(core::COMMAND::SEQ_MODE, this->_silent_mode, this->_seq_mode, this->_read_fpga_info, &this->_tx_buf[0], &msg_id);
-    size_t size = 0;
+    size_t size;
     core::Logic::PackBody(seq, this->_geometry, &this->_tx_buf[0], &size);
 
-    res = this->_link->Send(size, &this->_tx_buf[0]);
-    if (res.is_err()) return res;
+    if (auto res = this->_link->Send(size, &this->_tx_buf[0]); res.is_err()) return res;
 
     if (SeqSentFinished(seq)) return WaitMsgProcessed(msg_id, 5000);
 
-    res = WaitMsgProcessed(msg_id);
-    if (res.is_err()) return res;
+    if (auto res = WaitMsgProcessed(msg_id); res.is_err()) return res;
   }
 }
 
 Result<std::vector<FirmwareInfo>, std::string> Controller::firmware_info_list() const {
   auto concat_byte = [](const uint8_t high, const uint16_t low) { return static_cast<uint16_t>(static_cast<uint16_t>(high) << 8 | low); };
 
-  Error res = Ok();
-
   const auto num_devices = this->_geometry->num_devices();
   std::vector<uint16_t> cpu_versions(num_devices);
-  res = SendHeader(core::COMMAND::READ_CPU_VER_LSB);
-  if (res.is_err()) return Err(res.unwrap_err());
+  if (auto res = SendHeader(core::COMMAND::READ_CPU_VER_LSB); res.is_err()) return Err(res.unwrap_err());
   for (size_t i = 0; i < num_devices; i++) cpu_versions[i] = _rx_buf[2 * i];
-  res = SendHeader(core::COMMAND::READ_CPU_VER_MSB);
-  if (res.is_err()) return Err(res.unwrap_err());
+  if (auto res = SendHeader(core::COMMAND::READ_CPU_VER_MSB); res.is_err()) return Err(res.unwrap_err());
   for (size_t i = 0; i < num_devices; i++) cpu_versions[i] = concat_byte(_rx_buf[2 * i], cpu_versions[i]);
 
   std::vector<uint16_t> fpga_versions(num_devices);
-  res = SendHeader(core::COMMAND::READ_FPGA_VER_LSB);
-  if (res.is_err()) return Err(res.unwrap_err());
+  if (auto res = SendHeader(core::COMMAND::READ_FPGA_VER_LSB); res.is_err()) return Err(res.unwrap_err());
   for (size_t i = 0; i < num_devices; i++) fpga_versions[i] = _rx_buf[2 * i];
-  res = SendHeader(core::COMMAND::READ_FPGA_VER_MSB);
-  if (res.is_err()) return Err(res.unwrap_err());
+  if (auto res = SendHeader(core::COMMAND::READ_FPGA_VER_MSB); res.is_err()) return Err(res.unwrap_err());
   for (size_t i = 0; i < num_devices; i++) fpga_versions[i] = concat_byte(_rx_buf[2 * i], fpga_versions[i]);
 
   std::vector<FirmwareInfo> infos;

@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 16/05/2021
+// Last Modified: 18/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -15,22 +15,18 @@
 #include "runner.hpp"
 #include "soem_link.hpp"
 
-using namespace std;
+std::string GetAdapterName() {
+  size_t i = 0;
+  const auto adapters = autd::link::SOEMLink::EnumerateAdapters();
+  for (auto&& [desc, name] : adapters) std::cout << "[" << i++ << "]: " << desc << ", " << name << std::endl;
 
-string GetAdapterName() {
-  size_t size;
-  auto adapters = autd::link::SOEMLink::EnumerateAdapters(&size);
-  for (size_t i = 0; i < size; i++) {
-    auto& [fst, snd] = adapters[i];
-    cout << "[" << i << "]: " << fst << ", " << snd << endl;
-  }
+  std::cout << "Choose number: ";
+  std::string in;
+  getline(std::cin, in);
+  std::stringstream s(in);
+  if (const auto empty = in == "\n"; !(s >> i) || i >= adapters.size() || empty) return "";
 
-  int index;
-  cout << "Choose number: ";
-  cin >> index;
-  cin.ignore();
-
-  return adapters[index].second;
+  return adapters[i].name;
 }
 
 int main() {
@@ -47,7 +43,7 @@ int main() {
       return ENXIO;
     }
     return Run(autd);
-  } catch (exception& e) {
+  } catch (std::exception& e) {
     std::cerr << e.what() << std::endl;
     return ENXIO;
   }

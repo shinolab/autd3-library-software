@@ -3,17 +3,11 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 17/05/2021
+// Last Modified: 18/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
 //
-
-#ifdef _WINDOWS
-#ifndef __STDC_LIMIT_MACROS
-#define __STDC_LIMIT_MACROS
-#endif
-#endif
 
 #include <atomic>
 #include <chrono>
@@ -45,34 +39,24 @@ bool SOEMController::is_open() const { return _is_open; }
 Error SOEMController::Send(size_t size, const uint8_t* buf) {
   if (buf == nullptr) return Err(std::string("data is null"));
   if (!_is_open) return Err(std::string("link is closed"));
-  {
-    auto buf_ = std::make_unique<uint8_t[]>(size);
-    std::memcpy(&buf_[0], &buf[0], size);
-    std::unique_lock lk(_send_mtx);
-    _send_q.push(std::pair(std::move(buf_), size));
-  }
+
+  auto buf_ = std::make_unique<uint8_t[]>(size);
+  std::memcpy(&buf_[0], &buf[0], size);
+  std::unique_lock lk(_send_mtx);
+  _send_q.push(std::pair(std::move(buf_), size));
+
   _send_cond.notify_all();
   return Ok();
 }
 
 Error SOEMController::Read(uint8_t* rx) const {
   if (!_is_open) return Err(std::string("link is closed"));
-
-  const auto input_frame_idx = this->_output_frame_size;
-  for (size_t i = 0; i < _dev_num; i++) {
-    rx[2 * i] = _io_map[input_frame_idx + 2 * i];
-    rx[2 * i + 1] = _io_map[input_frame_idx + 2 * i + 1];
-  }
+  std::memcpy(rx, &_io_map[this->_output_frame_size], this->_dev_num * this->_config.input_frame_size);
   return Ok();
 }
 
 void SOEMController::SetupSync0(const bool activate, const uint32_t cycle_time_ns) const {
-  using std::chrono::high_resolution_clock, std::chrono::duration_cast, std::chrono::nanoseconds;
-  const auto ref_time = high_resolution_clock::now();
-  for (size_t slave = 1; slave <= _dev_num; slave++) {
-    const auto elapsed = duration_cast<nanoseconds>(ref_time - high_resolution_clock::now()).count();
-    ec_dcsync0(static_cast<uint16_t>(slave), activate, cycle_time_ns, static_cast<int32>(elapsed / cycle_time_ns * cycle_time_ns));
-  }
+  for (size_t slave = 1; slave <= _dev_num; slave++) ec_dcsync0(static_cast<uint16_t>(slave), activate, cycle_time_ns, 0);
 }
 
 Error SOEMController::Open(const char* ifname, const size_t dev_num, const ECConfig config) {
@@ -147,6 +131,7 @@ Error SOEMController::Close() {
 
   _send_cond.notify_all();
   if (std::this_thread::get_id() != _send_thread.get_id() && this->_send_thread.joinable()) this->_send_thread.join();
+
   {
     std::unique_lock lk(_send_mtx);
     std::queue<std::pair<std::unique_ptr<uint8_t[]>, size_t>>().swap(_send_q);
@@ -160,9 +145,7 @@ Error SOEMController::Close() {
 
   ec_slave[0].state = EC_STATE_INIT;
   ec_writestate(0);
-
   ec_statecheck(0, EC_STATE_INIT, EC_TIMEOUTSTATE);
-
   ec_close();
 
   return Ok();
@@ -171,35 +154,26 @@ Error SOEMController::Close() {
 void SOEMController::CreateSendThread(size_t header_size, size_t body_size) {
   _send_thread = std::thread([this, header_size, body_size]() {
     while (_is_open) {
-      std::unique_ptr<uint8_t[]> buf = nullptr;
-      size_t size = 0;
       {
         std::unique_lock lk(_send_mtx);
         _send_cond.wait(lk, [&] { return !_send_q.empty() || !_is_open; });
-        if (!_send_q.empty()) {
-          auto [fst, snd] = move(_send_q.front());
-          buf = std::move(fst);
-          size = snd;
-        }
       }
 
-      if (buf != nullptr && _is_open) {
-        const auto includes_gain = (size - header_size) / body_size > 0;
-        const auto output_frame_size = header_size + body_size;
+      if (_send_q.empty() || !_is_open) continue;
+      auto [buf, size] = move(_send_q.front());
 
-        for (size_t i = 0; i < _dev_num; i++) {
-          if (includes_gain) std::memcpy(&_io_map[output_frame_size * i], &buf[header_size + body_size * i], body_size);
-          std::memcpy(&_io_map[output_frame_size * i + body_size], &buf[0], header_size);
-        }
-
-        {
-          autd3_lib_send_cond.store(false, std::memory_order_release);
-          while (!autd3_lib_send_cond.load(std::memory_order_acquire) && _is_open) {
-          }
-        }
-
-        _send_q.pop();
+      const auto includes_gain = (size - header_size) / body_size > 0;
+      const auto output_frame_size = header_size + body_size;
+      for (size_t i = 0; i < _dev_num; i++) {
+        if (includes_gain) std::memcpy(&_io_map[output_frame_size * i], &buf[header_size + body_size * i], body_size);
+        std::memcpy(&_io_map[output_frame_size * i + body_size], &buf[0], header_size);
       }
+
+      autd3_lib_send_cond.store(false, std::memory_order_release);
+      while (!autd3_lib_send_cond.load(std::memory_order_acquire) && _is_open) {
+      }
+
+      _send_q.pop();
     }
   });
 }
