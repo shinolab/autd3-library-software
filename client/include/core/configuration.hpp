@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include <algorithm>
+
 #include "hardware_defined.hpp"
 
 namespace autd::core {

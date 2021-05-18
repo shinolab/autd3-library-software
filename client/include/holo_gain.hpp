@@ -11,16 +11,12 @@
 
 #pragma once
 
-#include <cmath>
 #include <memory>
-#include <mutex>
-#include <random>
 #include <utility>
 #include <vector>
 
 #include "core/gain.hpp"
 #include "linalg_backend.hpp"
-#include "utils.hpp"
 
 namespace autd::gain::holo {
 
@@ -49,10 +45,9 @@ class HoloGain : public core::Gain {
   void MatrixMul(const Backend::MatrixXc& a, const Backend::MatrixXc& b, Backend::MatrixXc* c) const;
 
   void MatrixVecMul(const Backend::MatrixXc& a, const Backend::VectorXc& b, Backend::VectorXc* c) const;
-  static void SetFromComplexDrive(std::vector<core::AUTDDataArray>& data, const Backend::VectorXc& drive, const bool normalize,
-                                  const double max_coefficient);
+  static void SetFromComplexDrive(std::vector<core::AUTDDataArray>& data, const Backend::VectorXc& drive, bool normalize, double max_coefficient);
   static std::complex<double> Transfer(const core::Vector3& trans_pos, const core::Vector3& trans_norm, const core::Vector3& target_pos,
-                                       const double wave_number, const double attenuation = 0);
+                                       double wave_number, double attenuation = 0);
   static Backend::MatrixXc TransferMatrix(const std::vector<core::Vector3>& foci, const core::GeometryPtr& geometry);
 };
 
