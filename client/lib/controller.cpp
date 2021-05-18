@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 17/05/2021
+// Last Modified: 18/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -70,14 +70,14 @@ Error Controller::Synchronize(const core::Configuration config) {
 
 Error Controller::Clear() const { return SendHeader(core::COMMAND::CLEAR); }
 
-Error Controller::SendHeader(const core::COMMAND cmd) const {
+Error Controller::SendHeader(const core::COMMAND cmd, const size_t max_trial) const {
   if (!this->is_open()) return Err(std::string("Link is not opened."));
 
   const auto send_size = sizeof(core::RxGlobalHeader);
   uint8_t msg_id = 0;
   core::Logic::PackHeader(cmd, this->_silent_mode, this->_seq_mode, this->_read_fpga_info, &_tx_buf[0], &msg_id);
   if (auto res = _link->Send(send_size, &_tx_buf[0]); res.is_err()) return res;
-  return WaitMsgProcessed(msg_id, 50);
+  return WaitMsgProcessed(msg_id, max_trial);
 }
 
 Error Controller::WaitMsgProcessed(const uint8_t msg_id, const size_t max_trial) const {
