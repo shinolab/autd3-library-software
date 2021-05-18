@@ -10,8 +10,8 @@ set(INCLUDE_LIST
 add_library(autd3capi-holo-gain SHARED
   c_api.cpp
   holo_gain.h
-  wrapper_backend.hpp
-  ../base/wrapper_gain.hpp
+  ../base/header.h
+  ../base/wrapper.hpp
 )
 
 include_directories(${INCLUDE_LIST})

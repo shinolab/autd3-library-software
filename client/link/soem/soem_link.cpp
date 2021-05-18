@@ -1,30 +1,24 @@
-﻿// File: soem.cpp
+﻿// File: soem_link.cpp
 // Project: soem
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 17/05/2021
+// Last Modified: 18/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
+#include "soem_link.hpp"
+
 #include "autdsoem.hpp"
 #include "core/ec_config.hpp"
-#include "soem_link.hpp"
 
 namespace autd::link {
 
-EtherCATAdapters SOEMLink::EnumerateAdapters(size_t* const size) {
-  const auto adapters = autdsoem::EtherCATAdapterInfo::EnumerateAdapters();
-  *size = adapters.size();
-  EtherCATAdapters res;
-  for (const auto& adapter : autdsoem::EtherCATAdapterInfo::EnumerateAdapters()) {
-    EtherCATAdapter p;
-    p.first = adapter.desc;
-    p.second = adapter.name;
-    res.emplace_back(p);
-  }
+std::vector<EtherCATAdapter> SOEMLink::EnumerateAdapters() {
+  std::vector<EtherCATAdapter> res;
+  for (const auto& adapter : autdsoem::EtherCATAdapterInfo::EnumerateAdapters()) res.emplace_back(adapter.desc, adapter.name);
   return res;
 }
 
@@ -57,6 +51,8 @@ core::LinkPtr SOEMLink::Create(const std::string& ifname, const size_t device_nu
 }
 
 Error SOEMLinkImpl::Open() {
+  if (_ifname.empty()) return Err(std::string("Interface name is empty."));
+
   _config = autdsoem::ECConfig{};
   _config.ec_sm3_cycle_time_ns = core::EC_SM3_CYCLE_TIME_NANO_SEC;
   _config.ec_sync0_cycle_time_ns = core::EC_SYNC0_CYCLE_TIME_NANO_SEC;

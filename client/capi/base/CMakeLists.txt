@@ -14,10 +14,11 @@ file(GLOB include_files  ${PROJECT_SOURCE_DIR}/include/*.hpp *.hpp)
 
 add_library(autd3capi SHARED
   c_api.cpp
+  header.h
   autd3_c_api.h
   ${include_files}
 )
-
+ 
 include_directories(${INCLUDE_LIST})
 
 target_link_libraries(autd3capi ${CMAKE_THREAD_LIBS_INIT})

@@ -7,7 +7,7 @@ include_directories(
 )
 
 add_library(twincat_link STATIC
-  twincat.cpp
+  twincat_link.cpp
   ${PROJECT_SOURCE_DIR}/include/twincat_link.hpp
 )
 
