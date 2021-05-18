@@ -125,9 +125,10 @@ Error Controller::Send(const core::GainPtr& gain, const core::ModulationPtr& mod
   if (mod != nullptr)
     if (auto res = mod->Build(this->_config); res.is_err()) return res;
 
-  this->_seq_mode = gain != nullptr;
-  if (gain != nullptr)
+  if (gain != nullptr) {
+    this->_seq_mode = false;
     if (auto res = gain->Build(this->_geometry); res.is_err()) return res;
+  }
 
   size_t size = 0;
   core::Logic::PackBody(gain, &this->_tx_buf[0], &size);
