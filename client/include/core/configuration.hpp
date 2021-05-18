@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 17/05/2021
+// Last Modified: 18/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -20,7 +20,7 @@ namespace autd::core {
 class Configuration {
  public:
   Configuration(const uint16_t sampling_freq_div, const uint16_t buf_size) {
-    _mod_sampling_freq_div = sampling_freq_div;
+    _mod_sampling_freq_div = std::max(sampling_freq_div, uint16_t{1});
     _mod_buf_size = std::min(buf_size, MOD_BUF_SIZE_MAX);
   }
 
