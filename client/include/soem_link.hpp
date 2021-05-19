@@ -3,7 +3,7 @@
 // Created Date: 10/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 18/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -19,13 +19,6 @@
 namespace autd::link {
 
 struct EtherCATAdapter final {
-  EtherCATAdapter() = default;
-  ~EtherCATAdapter() = default;
-  EtherCATAdapter(EtherCATAdapter& obj) = default;
-  EtherCATAdapter& operator=(const EtherCATAdapter& obj) = delete;
-  EtherCATAdapter(EtherCATAdapter&& obj) = default;
-  EtherCATAdapter& operator=(EtherCATAdapter&& obj) = default;
-
   EtherCATAdapter(const std::string& desc, const std::string& name) {
     this->desc = desc;
     this->name = name;
