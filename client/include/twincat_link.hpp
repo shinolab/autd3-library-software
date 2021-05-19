@@ -3,7 +3,7 @@
 // Created Date: 10/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 17/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -39,7 +39,7 @@ class TwinCATLink final : public core::Link {
   /**
    * @brief Create TwinCATLink
    */
-  static core::LinkPtr Create();
+  static core::LinkPtr create();
 
   TwinCATLink() : _port(0) {}
   ~TwinCATLink() override = default;
@@ -48,10 +48,10 @@ class TwinCATLink final : public core::Link {
   TwinCATLink(TwinCATLink&& obj) = delete;
   TwinCATLink& operator=(TwinCATLink&& obj) = delete;
 
-  Error Open() override;
-  Error Close() override;
-  Error Send(size_t size, const uint8_t* buf) override;
-  Error Read(uint8_t* rx, size_t buffer_len) override;
+  Error open() override;
+  Error close() override;
+  Error send(size_t size, const uint8_t* buf) override;
+  Error read(uint8_t* rx, size_t buffer_len) override;
   bool is_open() override;
 
  private:

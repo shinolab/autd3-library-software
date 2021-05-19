@@ -3,7 +3,7 @@
 // Created Date: 14/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 18/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -41,19 +41,19 @@ class PointSequence {
   /**
    * @brief Generate empty PointSequence.
    */
-  static SequencePtr Create() noexcept { return std::make_shared<PointSequence>(); }
+  static SequencePtr create() noexcept { return std::make_shared<PointSequence>(); }
 
   /**
    * @brief Generate PointSequence with control points.
    */
-  static SequencePtr Create(const std::vector<Vector3>& control_points) noexcept { return std::make_shared<PointSequence>(control_points); }
+  static SequencePtr create(const std::vector<Vector3>& control_points) noexcept { return std::make_shared<PointSequence>(control_points); }
 
   /**
    * @brief Add control point
    * @param[in] point control point
    * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Error AddPoint(const Vector3& point) {
+  [[nodiscard]] Error add_point(const Vector3& point) {
     if (this->_control_points.size() + 1 > POINT_SEQ_BUFFER_SIZE_MAX)
       return Err(std::string("Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX)));
 
@@ -66,7 +66,7 @@ class PointSequence {
    * @param[in] points control point
    * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Error AddPoints(const std::vector<Vector3>& points) {
+  [[nodiscard]] Error add_points(const std::vector<Vector3>& points) {
     if (this->_control_points.size() + points.size() > POINT_SEQ_BUFFER_SIZE_MAX)
       return Err(std::string("Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX)));
 
@@ -89,7 +89,7 @@ class PointSequence {
    * 2. the sampling interval of Control Points is an integer multiple of 25us and less than 25us x 65536.
    * @return double Actual frequency of sequence
    */
-  double SetFrequency(const double freq) {
+  double set_frequency(const double freq) {
     const auto sample_freq = static_cast<double>(this->_control_points.size()) * freq;
     this->_sampling_freq_div = static_cast<uint16_t>(static_cast<double>(POINT_SEQ_BASE_FREQ) / sample_freq);
     return this->frequency();

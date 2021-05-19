@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 18/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -26,7 +26,7 @@ class Configuration {
     _mod_buf_size = std::min(buf_size, MOD_BUF_SIZE_MAX);
   }
 
-  static Configuration GetDefaultConfiguration() {
+  static Configuration get_default_configuration() {
     const Configuration config(10, 4000);
     return config;
   }

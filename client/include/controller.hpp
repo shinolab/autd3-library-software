@@ -1,4 +1,4 @@
-// File: controller.hpp
+﻿// File: controller.hpp
 // Project: include
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
@@ -41,7 +41,7 @@ class Controller {
         _silent_mode(true),
         _read_fpga_info(false),
         _seq_mode(false),
-        _config(core::Configuration::GetDefaultConfiguration()),
+        _config(core::Configuration::get_default_configuration()),
         _tx_buf(nullptr),
         _rx_buf(nullptr),
         _stm(nullptr) {}
@@ -79,6 +79,8 @@ class Controller {
   /**
    * @brief Update control flag
    */
+  Error update_ctrl_flag();
+
   [[nodiscard]] Error set_output_delay(const std::vector<core::DataArray>& delay) const;
 
   /**
@@ -86,7 +88,7 @@ class Controller {
    * @param[in] link Link
    * @return return Ok(whether succeeded to open), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Error OpenWith(const core::LinkPtr& link);
+  [[nodiscard]] Error open(const core::LinkPtr& link);
 
   /**
    * @brief Synchronize all devices
@@ -94,25 +96,25 @@ class Controller {
    * @param[in] config configuration
    * @return return Ok(whether succeeded to synchronize), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Error Synchronize(core::Configuration config = core::Configuration::GetDefaultConfiguration());
+  [[nodiscard]] Error synchronize(core::Configuration config = core::Configuration::get_default_configuration());
 
   /**
    * @brief Clear all data in hardware
    * @return return Ok(whether succeeded to clear), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Error Clear() const;
+  [[nodiscard]] Error clear() const;
 
   /**
    * @brief Close the controller
    * @return return Ok(whether succeeded to close), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Error Close();
+  [[nodiscard]] Error close();
 
   /**
    * @brief Stop outputting
    * @return return Ok(whether succeeded to stop), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Error Stop();
+  [[nodiscard]] Error stop();
 
   /**
    * @brief Send gain to the device
@@ -120,14 +122,14 @@ class Controller {
    * @param[in] wait_for_sent if true, this function will wait for the data is sent to the devices and processed.
    * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Error Send(const core::GainPtr& gain, bool wait_for_sent = false);
+  [[nodiscard]] Error send(const core::GainPtr& gain, bool wait_for_sent = false);
 
   /**
    * @brief Send modulation to the device
    * @param[in] mod Amplitude modulation to display
    * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Error Send(const core::ModulationPtr& mod);
+  [[nodiscard]] Error send(const core::ModulationPtr& mod);
 
   /**
    * @brief Send gain and modulation to the device
@@ -136,14 +138,14 @@ class Controller {
    * @param[in] wait_for_sent if true, this function will wait for the data is sent to the devices and processed.
    * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Error Send(const core::GainPtr& gain, const core::ModulationPtr& mod, bool wait_for_sent = false);
+  [[nodiscard]] Error send(const core::GainPtr& gain, const core::ModulationPtr& mod, bool wait_for_sent = false);
 
   /**
    * @brief Send sequence and modulation to the device
    * @param[in] seq Sequence to display
    * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
    */
-  [[nodiscard]] Error Send(const core::SequencePtr& seq);
+  [[nodiscard]] Error send(const core::SequencePtr& seq);
 
   /**
    * @brief Enumerate firmware information
@@ -161,12 +163,12 @@ class Controller {
     /**
      * @brief Add gain for STM
      */
-    void AddGain(const core::GainPtr& gain);
+    void add_gain(const core::GainPtr& gain);
 
     /**
      * @brief Add gains for STM
      */
-    void AddGains(const std::vector<core::GainPtr>& gains);
+    void add_gains(const std::vector<core::GainPtr>& gains);
 
     /**
      * @brief Start Spatio-Temporal Modulation
@@ -177,20 +179,20 @@ class Controller {
      * and so on.
      * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
      */
-    [[nodiscard]] Error Start(double freq);
+    [[nodiscard]] Error start(double freq);
 
     /**
      * @brief Suspend Spatio-Temporal Modulation
      * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
      */
-    [[nodiscard]] Error Stop();
+    [[nodiscard]] Error stop();
 
     /**
      * @brief Finish Spatio-Temporal Modulation
      * @details Appended gains will be removed.
      * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
      */
-    [[nodiscard]] Error Finish();
+    [[nodiscard]] Error finish();
 
    private:
     core::LinkPtr _link;
@@ -205,8 +207,8 @@ class Controller {
   };
 
  private:
-  [[nodiscard]] Error SendHeader(core::COMMAND cmd, size_t max_trial = 50) const;
-  [[nodiscard]] Error WaitMsgProcessed(uint8_t msg_id, size_t max_trial = 200) const;
+  [[nodiscard]] Error send_header(core::COMMAND cmd, size_t max_trial = 50) const;
+  [[nodiscard]] Error wait_msg_processed(uint8_t msg_id, size_t max_trial = 200) const;
 
   core::LinkPtr _link;
   core::GeometryPtr _geometry;

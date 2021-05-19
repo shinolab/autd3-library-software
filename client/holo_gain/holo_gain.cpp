@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 17/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -18,16 +18,16 @@
 
 namespace autd::gain::holo {
 
-void HoloGain::MatrixMul(const Backend::MatrixXc& a, const Backend::MatrixXc& b, Backend::MatrixXc* c) const {
+void HoloGain::matrix_mul(const Backend::MatrixXc& a, const Backend::MatrixXc& b, Backend::MatrixXc* c) const {
   this->_backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, std::complex<double>(1, 0), a, b, std::complex<double>(0, 0), c);
 }
 
-void HoloGain::MatrixVecMul(const Backend::MatrixXc& a, const Backend::VectorXc& b, Backend::VectorXc* c) const {
+void HoloGain::matrix_vec_mul(const Backend::MatrixXc& a, const Backend::VectorXc& b, Backend::VectorXc* c) const {
   this->_backend->matrix_vector_mul(TRANSPOSE::NO_TRANS, std::complex<double>(1, 0), a, b, std::complex<double>(0, 0), c);
 }
 
-void HoloGain::SetFromComplexDrive(std::vector<core::AUTDDataArray>& data, const Backend::VectorXc& drive, const bool normalize,
-                                   const double max_coefficient) {
+void HoloGain::set_from_complex_drive(std::vector<core::DataArray>& data, const Backend::VectorXc& drive, const bool normalize,
+                                      const double max_coefficient) {
   const size_t n = drive.size();
   size_t dev_idx = 0;
   size_t trans_idx = 0;
@@ -35,7 +35,7 @@ void HoloGain::SetFromComplexDrive(std::vector<core::AUTDDataArray>& data, const
     const auto f_amp = normalize ? 1.0 : std::abs(drive(j)) / max_coefficient;
     const auto f_phase = arg(drive(j)) / (2.0 * M_PI) + 0.5;
     const auto phase = static_cast<uint16_t>((1.0 - f_phase) * 255.0);
-    const uint16_t duty = static_cast<uint16_t>(core::ToDuty(f_amp)) << 8 & 0xFF00;
+    const uint16_t duty = static_cast<uint16_t>(to_duty(f_amp)) << 8 & 0xFF00;
     data[dev_idx][trans_idx++] = duty | phase;
     if (trans_idx == core::NUM_TRANS_IN_UNIT) {
       dev_idx++;
@@ -44,16 +44,16 @@ void HoloGain::SetFromComplexDrive(std::vector<core::AUTDDataArray>& data, const
   }
 }
 
-std::complex<double> HoloGain::Transfer(const core::Vector3& trans_pos, const core::Vector3& trans_norm, const core::Vector3& target_pos,
+std::complex<double> HoloGain::transfer(const core::Vector3& trans_pos, const core::Vector3& trans_norm, const core::Vector3& target_pos,
                                         const double wave_number, const double attenuation) {
   const auto diff = target_pos - trans_pos;
   const auto dist = diff.norm();
   const auto theta = std::atan2(diff.dot(trans_norm), dist * trans_norm.norm()) * 180.0 / M_PI;
-  const auto directivity = utils::DirectivityT4010A1(theta);
+  const auto directivity = utils::Directivity::t4010a1(theta);
   return directivity / dist * exp(std::complex<double>(-dist * attenuation, -wave_number * dist));
 }
 
-Backend::MatrixXc HoloGain::TransferMatrix(const std::vector<core::Vector3>& foci, const core::GeometryPtr& geometry) {
+Backend::MatrixXc HoloGain::transfer_matrix(const std::vector<core::Vector3>& foci, const core::GeometryPtr& geometry) {
   const auto m = foci.size();
   const auto n = geometry->num_transducers();
 
@@ -66,13 +66,13 @@ Backend::MatrixXc HoloGain::TransferMatrix(const std::vector<core::Vector3>& foc
     for (size_t j = 0; j < n; j++) {
       const auto pos = geometry->position(j);
       const auto dir = geometry->direction(j / core::NUM_TRANS_IN_UNIT);
-      g(i, j) = Transfer(pos, dir, tp, wave_number, attenuation);
+      g(i, j) = transfer(pos, dir, tp, wave_number, attenuation);
     }
   }
   return g;
 }
 
-Error HoloGainSDP::Calc(const core::GeometryPtr& geometry) {
+Error HoloGainSDP::calc(const core::GeometryPtr& geometry) {
   if (!this->_backend->supports_svd() || !this->_backend->supports_evd()) return Err(std::string("This backend does not support this method."));
 
   auto set_bcd_result = [](Backend::MatrixXc& mat, const Backend::VectorXc& vec, const size_t idx) {
@@ -89,15 +89,15 @@ Error HoloGainSDP::Calc(const core::GeometryPtr& geometry) {
   Backend::MatrixXc p = Backend::MatrixXc::Zero(m, m);
   for (size_t i = 0; i < m; i++) p(i, i) = std::complex<double>(this->_amps[i], 0);
 
-  auto b = TransferMatrix(this->_foci, geometry);
+  auto b = transfer_matrix(this->_foci, geometry);
   Backend::MatrixXc pseudo_inv_b(n, m);
   this->_backend->pseudo_inverse_svd(&b, _alpha, &pseudo_inv_b);
 
   Backend::MatrixXc mm = Backend::MatrixXc::Identity(m, m);
   this->_backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, std::complex<double>(1, 0), b, pseudo_inv_b, std::complex<double>(-1, 0), &mm);
   Backend::MatrixXc tmp = Backend::MatrixXc::Zero(m, m);
-  this->MatrixMul(p, mm, &tmp);
-  this->MatrixMul(tmp, p, &mm);
+  this->matrix_mul(p, mm, &tmp);
+  this->matrix_mul(tmp, p, &mm);
   Backend::MatrixXc x_mat = Backend::MatrixXc::Identity(m, m);
 
   std::random_device rnd;
@@ -111,7 +111,7 @@ Error HoloGainSDP::Calc(const core::GeometryPtr& geometry) {
     Backend::VectorXc mmc = mm.col(ii);
     mmc(ii) = 0;
 
-    this->MatrixVecMul(x_mat, mmc, &x);
+    this->matrix_vec_mul(x_mat, mmc, &x);
     if (std::complex<double> gamma = this->_backend->dot_c(x, mmc); gamma.real() > 0) {
       x = -x * sqrt(_lambda / gamma.real());
       set_bcd_result(x_mat, x, ii);
@@ -123,23 +123,23 @@ Error HoloGainSDP::Calc(const core::GeometryPtr& geometry) {
   const Backend::VectorXc u = this->_backend->max_eigen_vector(&x_mat);
 
   Backend::VectorXc ut = Backend::VectorXc::Zero(m);
-  this->MatrixVecMul(p, u, &ut);
+  this->matrix_vec_mul(p, u, &ut);
 
   Backend::VectorXc q = Backend::VectorXc::Zero(n);
-  this->MatrixVecMul(pseudo_inv_b, ut, &q);
+  this->matrix_vec_mul(pseudo_inv_b, ut, &q);
 
   const auto max_coefficient = this->_backend->max_coefficient_c(q);
-  SetFromComplexDrive(this->_data, q, _normalize, max_coefficient);
+  set_from_complex_drive(this->_data, q, _normalize, max_coefficient);
 
   this->_built = true;
   return Ok();
 }
 
-Error HoloGainEVD::Calc(const core::GeometryPtr& geometry) {
+Error HoloGainEVD::calc(const core::GeometryPtr& geometry) {
   const auto m = this->_foci.size();
   const auto n = geometry->num_transducers();
 
-  const auto g = TransferMatrix(this->_foci, geometry);
+  const auto g = transfer_matrix(this->_foci, geometry);
 
   Backend::VectorXc denominator(m);
   for (size_t i = 0; i < m; i++) {
@@ -154,7 +154,7 @@ Error HoloGainEVD::Calc(const core::GeometryPtr& geometry) {
     for (size_t j = 0; j < n; j++) x(j, i) = c * std::conj(g(i, j));
   }
   Backend::MatrixXc r = Backend::MatrixXc::Zero(m, m);
-  this->MatrixMul(g, x, &r);
+  this->matrix_mul(g, x, &r);
   Backend::VectorXc max_ev = this->_backend->max_eigen_vector(&r);
 
   Backend::MatrixXc sigma = Backend::MatrixXc::Zero(n, n);
@@ -178,34 +178,34 @@ Error HoloGainEVD::Calc(const core::GeometryPtr& geometry) {
   this->_backend->solve_ch(&gtg, &gtf);
 
   const auto max_coefficient = this->_backend->max_coefficient_c(gtf);
-  SetFromComplexDrive(this->_data, gtf, _normalize, max_coefficient);
+  set_from_complex_drive(this->_data, gtf, _normalize, max_coefficient);
 
   this->_built = true;
   return Ok();
 }
 
-Error HoloGainNaive::Calc(const core::GeometryPtr& geometry) {
+Error HoloGainNaive::calc(const core::GeometryPtr& geometry) {
   const auto m = this->_foci.size();
   const auto n = geometry->num_transducers();
 
-  const auto g = TransferMatrix(this->_foci, geometry);
+  const auto g = transfer_matrix(this->_foci, geometry);
   Backend::VectorXc p(m);
   for (size_t i = 0; i < m; i++) p(i) = std::complex<double>(this->_amps[i], 0);
 
   Backend::VectorXc q = Backend::VectorXc::Zero(n);
   this->_backend->matrix_vector_mul(TRANSPOSE::CONJ_TRANS, std::complex<double>(1, 0), g, p, std::complex<double>(0, 0), &q);
 
-  SetFromComplexDrive(this->_data, q, true, 1.0);
+  set_from_complex_drive(this->_data, q, true, 1.0);
 
   this->_built = true;
   return Ok();
 }
 
-Error HoloGainGS::Calc(const core::GeometryPtr& geometry) {
+Error HoloGainGS::calc(const core::GeometryPtr& geometry) {
   const auto m = this->_foci.size();
   const auto n = geometry->num_transducers();
 
-  const auto g = TransferMatrix(this->_foci, geometry);
+  const auto g = transfer_matrix(this->_foci, geometry);
 
   Backend::VectorXc q0 = Backend::VectorXc::Ones(n);
 
@@ -216,23 +216,23 @@ Error HoloGainGS::Calc(const core::GeometryPtr& geometry) {
   Backend::VectorXc p(m);
   Backend::VectorXc xi = Backend::VectorXc::Zero(n);
   for (size_t k = 0; k < _repeat; k++) {
-    this->MatrixVecMul(g, q, &gamma);
+    this->matrix_vec_mul(g, q, &gamma);
     for (size_t i = 0; i < m; i++) p(i) = gamma(i) / std::abs(gamma(i)) * this->_amps[i];
     this->_backend->matrix_vector_mul(TRANSPOSE::CONJ_TRANS, std::complex<double>(1, 0), g, p, std::complex<double>(0, 0), &xi);
     for (size_t j = 0; j < n; j++) q(j) = xi(j) / std::abs(xi(j)) * q0(j);
   }
 
-  SetFromComplexDrive(this->_data, q, true, 1.0);
+  set_from_complex_drive(this->_data, q, true, 1.0);
 
   this->_built = true;
   return Ok();
 }
 
-Error HoloGainGSPAT::Calc(const core::GeometryPtr& geometry) {
+Error HoloGainGSPAT::calc(const core::GeometryPtr& geometry) {
   const auto m = this->_foci.size();
   const auto n = geometry->num_transducers();
 
-  const auto g = TransferMatrix(this->_foci, geometry);
+  const auto g = transfer_matrix(this->_foci, geometry);
 
   Backend::VectorXc denominator(m);
   for (size_t i = 0; i < m; i++) {
@@ -250,30 +250,30 @@ Error HoloGainGSPAT::Calc(const core::GeometryPtr& geometry) {
   }
 
   Backend::MatrixXc r = Backend::MatrixXc::Zero(m, m);
-  this->MatrixMul(g, b, &r);
+  this->matrix_mul(g, b, &r);
 
   Backend::VectorXc p(m);
   for (size_t i = 0; i < m; i++) p(i) = std::complex<double>(this->_amps[i], 0);
 
   Backend::VectorXc gamma = Backend::VectorXc::Zero(m);
-  this->MatrixVecMul(r, p, &gamma);
+  this->matrix_vec_mul(r, p, &gamma);
   for (size_t k = 0; k < _repeat; k++) {
     for (size_t i = 0; i < m; i++) p(i) = gamma(i) / std::abs(gamma(i)) * this->_amps[i];
-    this->MatrixVecMul(r, p, &gamma);
+    this->matrix_vec_mul(r, p, &gamma);
   }
 
   for (size_t i = 0; i < m; i++) p(i) = gamma(i) / (std::abs(gamma(i)) * std::abs(gamma(i))) * this->_amps[i] * this->_amps[i];
 
   Backend::VectorXc q = Backend::VectorXc::Zero(n);
-  this->MatrixVecMul(b, p, &q);
+  this->matrix_vec_mul(b, p, &q);
 
-  SetFromComplexDrive(this->_data, q, true, 1.0);
+  set_from_complex_drive(this->_data, q, true, 1.0);
 
   this->_built = true;
   return Ok();
 }
 
-Error HoloGainLM::Calc(const core::GeometryPtr& geometry) {
+Error HoloGainLM::calc(const core::GeometryPtr& geometry) {
   if (!this->_backend->supports_solve()) return Err(std::string("This backend does not support this method."));
 
   auto make_bhb = [](const BackendPtr& backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps, const core::GeometryPtr& geo,
@@ -283,7 +283,7 @@ Error HoloGainLM::Calc(const core::GeometryPtr& geometry) {
     Backend::MatrixXc p = Backend::MatrixXc::Zero(m, m);
     for (size_t i = 0; i < m; i++) p(i, i) = -amps[i];
 
-    const auto g = TransferMatrix(foci, geo);
+    const auto g = transfer_matrix(foci, geo);
 
     const Backend::MatrixXc b = backend->concat_col(g, p);
     backend->matrix_mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, std::complex<double>(1, 0), b, b, std::complex<double>(0, 0), bhb);
@@ -333,7 +333,7 @@ Error HoloGainLM::Calc(const core::GeometryPtr& geometry) {
   for (size_t i = 0; i < n_param; i++) t(i) = std::exp(std::complex<double>(0, x(i)));
 
   Backend::VectorXc tmp_vec_c = Backend::VectorXc::Zero(n_param);
-  this->MatrixVecMul(bhb, t, &tmp_vec_c);
+  this->matrix_vec_mul(bhb, t, &tmp_vec_c);
   double fx = this->_backend->dot_c(t, tmp_vec_c).real();
 
   const Backend::MatrixX identity = Backend::MatrixX::Identity(n_param, n_param);
@@ -353,7 +353,7 @@ Error HoloGainLM::Calc(const core::GeometryPtr& geometry) {
     this->_backend->vector_add(double{-1.0}, h_lm, double{1.0}, &x_new);
     for (size_t i = 0; i < n_param; i++) t(i) = std::exp(std::complex<double>(0, x_new(i)));
 
-    this->MatrixVecMul(bhb, t, &tmp_vec_c);
+    this->matrix_vec_mul(bhb, t, &tmp_vec_c);
     const double fx_new = this->_backend->dot_c(t, tmp_vec_c).real();
 
     this->_backend->vec_cpy(g, &tmp_vec);

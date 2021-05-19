@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 16/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -13,6 +13,6 @@
 #include "twincat_link.hpp"
 
 void AUTDTwinCATLink(void** out) {
-  auto* link = LinkCreate(autd::link::TwinCATLink::Create());
+  auto* link = LinkCreate(autd::link::TwinCATLink::create());
   *out = link;
 }
