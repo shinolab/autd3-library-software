@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 18/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -147,7 +147,6 @@ Error Controller::Send(const core::GainPtr& gain, const core::ModulationPtr& mod
 
 Error Controller::Send(const core::SequencePtr& seq) {
   if (!this->is_open()) return Err(std::string("Link is not opened."));
-
   if (auto res = this->_stm->Stop(); res.is_err()) return res;
 
   this->_seq_mode = true;
@@ -163,6 +162,20 @@ Error Controller::Send(const core::SequencePtr& seq) {
 
     if (auto res = WaitMsgProcessed(msg_id); res.is_err()) return res;
   }
+}
+
+Error Controller::set_output_delay(
+    const std::vector<core::DataArray>& delay) const
+{
+  if (!this->is_open()) return Err(std::string("Link is not opened."));
+  if (delay.size() != this->_geometry->num_devices()) return Err(std::string("The number of devices is wrong."));
+
+  uint8_t msg_id;
+  core::Logic::PackHeader(core::COMMAND::SET_DELAY, false, false, false, &this->_tx_buf[0], &msg_id);
+  size_t size = 0;
+  core::Logic::PackDelayBody(delay, &this->_tx_buf[0], &size);
+  if (auto res = this->_link->Send(size, &this->_tx_buf[0]); res.is_err()) return res;
+  return WaitMsgProcessed(msg_id, 200);
 }
 
 Result<std::vector<FirmwareInfo>, std::string> Controller::firmware_info_list() const {

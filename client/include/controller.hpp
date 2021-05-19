@@ -1,9 +1,9 @@
-﻿// File: controller.hpp
+// File: controller.hpp
 // Project: include
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 18/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -79,7 +79,7 @@ class Controller {
   /**
    * @brief Update control flag
    */
-  Error update_ctrl_flag();
+  [[nodiscard]] Error set_output_delay(const std::vector<core::DataArray>& delay) const;
 
   /**
    * @brief Open device with a link.
