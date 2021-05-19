@@ -34,22 +34,22 @@ class Link {
 
   /**
    * @brief Open link
-   * @return return Ok(whether succeeded to open), or Err(error msg) if some unrecoverable error occurred
+   * @return ok if succeeded, or err with error message if error occurred
    */
   [[nodiscard]] virtual Error open() = 0;
   /**
    * @brief Close link
-   * @return return Ok(whether succeeded to close), or Err(error msg) if some unrecoverable error occurred
+   * @return ok if succeeded, or err with error message if error occurred
    */
   [[nodiscard]] virtual Error close() = 0;
   /**
    * @brief  Send data to devices
-   * @return return Ok(whether succeeded to send), or Err(error msg) if some unrecoverable error occurred
+   * @return ok if succeeded, or err with error message if error occurred
    */
   [[nodiscard]] virtual Error send(size_t size, const uint8_t* buf) = 0;
   /**
    * @brief  Read data from devices
-   * @return return Ok(whether succeeded to read), or Err(error msg) if some unrecoverable error occurred
+   * @return ok if succeeded, or err with error message if error occurred
    */
   [[nodiscard]] virtual Error read(uint8_t* rx, size_t buffer_len) = 0;
 

@@ -18,6 +18,9 @@
 
 namespace autd::link {
 
+/**
+ * \brief EtherCAT adapter information to SOEMLink
+ */
 struct EtherCATAdapter final {
   EtherCATAdapter(const std::string& desc, const std::string& name) {
     this->desc = desc;
@@ -37,7 +40,6 @@ class SOEMLink : virtual public core::Link {
    * @brief Create SOEM link.
    * @param[in] ifname Network interface name. (e.g. eth0)
    * @param[in] device_num The number of AUTD you connected.
-   *
    * @details Available Network interface names are obtained by EnumerateAdapters().
    *          The numbers of connected devices is obtained by Geometry::num_devices().
    */

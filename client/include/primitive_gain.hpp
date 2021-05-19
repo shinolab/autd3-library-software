@@ -154,23 +154,23 @@ class BesselBeam final : public Gain {
 };
 
 /**
- * @brief Gain that can set the phase and amplitude freely
+ * @brief Gain that can set the phase and duty ratio freely
  */
 class Custom final : public Gain {
  public:
   /**
    * @brief Generate function
-   * @param[in] data data of amplitude and phase of each transducer
-   * @details The data size should be the same as the number of devices you use. The data is 16 bit unsigned integer, where MSB represents
-   * amplitude and LSB represents phase
+   * @param[in] data data of duty ratio and phase of each transducer
+   * @details The data size should be the same as the number of devices you use. The data is 16 bit unsigned integer, where high 8bits represents duty
+   * ratio and low 8bits represents phase.
    */
   static GainPtr create(const std::vector<DataArray>& data);
   /**
    * @brief Generate function
-   * @param[in] data pointer to data of amplitude and phase of each transducer
+   * @param[in] data pointer to data of duty ratio and phase of each transducer
    * @param[in] data_length length of the data
-   * @details The data length should be the same as the number of transducers you use. The data is 16 bit unsigned integer, where MSB represents
-   * amplitude and LSB represents phase
+   * @details The data length should be the same as the number of transducers you use. The data is 16 bit unsigned integer, where high 8bits
+   * represents duty ratio and low 8bits represents phase
    */
   static GainPtr create(const uint16_t* data, size_t data_length);
   Error calc(const core::GeometryPtr& geometry) override;

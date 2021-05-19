@@ -44,6 +44,9 @@ using Vector4 = Eigen::Matrix<double, 4, 1>;
 using Matrix4X4 = Eigen::Matrix<double, 4, 4>;
 using Quaternion = Eigen::Quaternion<double>;
 
+/**
+ * \brief Device contains an AUTD device geometry.
+ */
 struct Device {
   static Device create(const Vector3& position, const Quaternion& quaternion) {
     const Eigen::Transform<double, 3, Eigen::Affine> transform_matrix = Eigen::Translation<double, 3>(position) * quaternion;
@@ -79,7 +82,7 @@ struct Device {
 };
 
 /**
- * @brief AUTD Geometry
+ * @brief Geometry of all devices
  */
 class Geometry {
  public:
@@ -92,11 +95,11 @@ class Geometry {
 
   /**
    * @brief  Add new device with position and rotation. Note that the transform is done with order: Translate -> Rotate
-   * @param position Position of transducer #0, which is the one at the lower right corner.
-   * (The corner with two lacks of the transducer is the lower left.)
-   * @param euler_angles ZYZ convention Euler angle of the device.
-   * @param group Grouping ID of the device used in gain::GroupedGain
-   * @return an id of added device, which is used to delete or do other device specific controls.
+   * @param position Position of transducer #0, which is the one at the lower-left corner.
+   * (The lower-left corner is the one with the two missing transducers.)
+   * @param euler_angles ZYZ convention euler angle of the device
+   * @param group Grouping ID of the device
+   * @return an id of added device
    */
   size_t add_device(const Vector3& position, const Vector3& euler_angles, const size_t group = 0) {
     const auto device_id = this->_devices.size();
@@ -106,12 +109,12 @@ class Geometry {
   }
 
   /**
-   * @brief  Add new device with position and rotation. Note that the transform is done with order: Translate -> Rotate
-   * @param position Position of transducer #0, which is the one at the lower right corner.
-   * (The corner with two lacks of the transducer is the lower left.)
+   * @brief Same as add_device(const Vector3& position, const Vector3& euler_angles, const size_t group = 0), but using quaternion rather than euler
+   * angle.
+   * @param position Position of transducer #0, which is the one at the lower-left corner.
    * @param quaternion rotation quaternion of the device.
-   * @param group Grouping ID of the device used in gain::GroupedGain
-   * @return an id of added device, which is used to delete or do other device specific controls.
+   * @param group Grouping ID
+   * @return an id of added device
    */
   size_t add_device(const Vector3& position, const Quaternion& quaternion, const size_t group = 0) {
     const auto device_id = this->_devices.size();
@@ -122,7 +125,7 @@ class Geometry {
 
   /**
    * @brief Delete device
-   * @param idx Index of the device to delete.
+   * @param idx Index of the device to delete
    * @return an index of deleted device
    */
   size_t del_device(const size_t idx) {
@@ -209,7 +212,7 @@ class Geometry {
   Vector3 z_direction(const size_t device_idx) { return this->_devices[device_idx].z_direction; }
 
   /**
-   * @brief Convert transducer index into device ID
+   * @brief Convert transducer index into device index
    */
   static size_t device_idx_for_trans_idx(const size_t transducer_idx) { return transducer_idx / NUM_TRANS_IN_UNIT; }
 

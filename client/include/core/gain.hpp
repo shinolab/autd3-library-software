@@ -24,7 +24,7 @@ class Gain;
 using GainPtr = std::shared_ptr<Gain>;
 
 /**
- * @brief Gain controls the amplitude and phase of each transducer in the AUTD
+ * @brief Gain controls the duty ratio and phase of each transducer in AUTD devices.
  */
 class Gain {
  public:
@@ -33,13 +33,20 @@ class Gain {
    */
   static GainPtr create() { return std::make_shared<Gain>(); }
 
+  /**
+   * \brief Convert ultrasound amplitude to duty ratio.
+   * \param amp ultrasound amplitude
+   * \return duty ratio
+   */
   static uint8_t to_duty(const double amp) noexcept {
     const auto d = std::asin(amp) / M_PI;  //  duty (0 ~ 0.5)
     return static_cast<uint8_t>(511 * d);
   }
 
   /**
-   * @brief Calculate amplitude and phase of each transducer
+   * \brief Calculate duty ratio and phase of each transducer
+   * \param geometry Geometry
+   * \return ok if succeeded, or err with error message if failed
    */
   [[nodiscard]] virtual Error calc(const GeometryPtr& geometry) {
     for (size_t i = 0; i < geometry->num_devices(); i++) this->_data[i].fill(0x0000);
@@ -47,7 +54,9 @@ class Gain {
   }
 
   /**
-   * @brief Initialize data and calculate amplitude and phase of each transducer
+   * \brief Initialize data and call calc().
+   * \param geometry Geometry
+   * \return ok if succeeded, or err with error message if failed
    */
   [[nodiscard]] Error build(const GeometryPtr& geometry) {
     if (this->_built) return Ok();
@@ -61,7 +70,9 @@ class Gain {
   }
 
   /**
-   * @brief Re-calculate amplitude and phase of each transducer
+   * \brief Re-calculate duty ratio and phase of each transducer
+   * \param geometry Geometry
+   * \return ok if succeeded, or err with error message if failed
    */
   [[nodiscard]] Error rebuild(const GeometryPtr& geometry) {
     this->_built = false;
@@ -69,8 +80,8 @@ class Gain {
   }
 
   /**
-   * @brief Getter function for the data of amplitude and phase of each transducers
-   * @details Each data is 16 bit unsigned integer, where MSB represents amplitude and LSB represents phase
+   * @brief Getter function for the data of duty ratio and phase of each transducers
+   * @details Each data is 16 bit unsigned integer, where high 8bits represents duty ratio and low 8bits represents phase
    */
   std::vector<DataArray>& data() { return _data; }
 
@@ -84,5 +95,5 @@ class Gain {
  protected:
   bool _built;
   std::vector<DataArray> _data;
-};  // namespace autd::gain
+};
 }  // namespace autd::core

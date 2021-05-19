@@ -63,6 +63,9 @@ enum class COMMAND : uint8_t {
   SET_DELAY = 0x0A
 };
 
+/**
+ * \brief Data header common to all devices
+ */
 struct RxGlobalHeader {
   uint8_t msg_id;
   uint8_t control_flags;
@@ -71,6 +74,9 @@ struct RxGlobalHeader {
   uint8_t mod[MOD_FRAME_SIZE];
 };
 
+/**
+ * \brief Focus struct used in sequence mode
+ */
 struct SeqFocus {
   uint8_t buf[10];
   void set(const int32_t offset, const int32_t v) {

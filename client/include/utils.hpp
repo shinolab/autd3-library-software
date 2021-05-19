@@ -22,8 +22,16 @@ constexpr double DIR_COEFFICIENT_C[] = {
 constexpr double DIR_COEFFICIENT_D[] = {
     0., 0., 1.60125528528e-05, 2.9747624976e-06, 2.31910931569e-05, -1.1901034125e-05, 6.77743734332e-06, -5.99548024824e-06, -4.79372835035e-06};
 
+/**
+ * \brief Utility class to calculate directivity of ultrasound transducer.
+ */
 class Directivity {
  public:
+  /**
+   * \brief Directivity of T4010A1
+   * \param theta_deg zenith angle in degree
+   * \return directivity
+   */
   static double t4010a1(double theta_deg) {
     theta_deg = std::abs(theta_deg);
     while (theta_deg > 90) theta_deg = std::abs(180 - theta_deg);

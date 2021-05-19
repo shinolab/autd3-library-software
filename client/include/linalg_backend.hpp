@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 17/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -37,6 +37,9 @@ using BackendPtr = std::shared_ptr<Backend>;
 
 enum class TRANSPOSE { NO_TRANS = 111, TRANS = 112, CONJ_TRANS = 113, CONJ_NO_TRANS = 114 };
 
+/**
+ * \brief Linear algebra calculation backend
+ */
 class Backend {
  public:
   using MatrixXc = Eigen::Matrix<std::complex<double>, -1, -1>;
