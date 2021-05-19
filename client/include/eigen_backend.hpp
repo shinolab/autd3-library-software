@@ -15,6 +15,9 @@
 
 namespace autd::gain::holo {
 
+/**
+ * \brief Linear algebra calculation backend using Eigen3.
+ */
 class Eigen3Backend final : public Backend {
  public:
   static BackendPtr create();

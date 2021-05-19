@@ -137,8 +137,8 @@ class HoloGainNaive final : public HoloGain {
 
 /**
  * @brief Gain to produce multiple focal points with GS method.
- * Refer to Asier Marzo and Bruce W Drinkwater. Holographic acoustic
- * tweezers.Proceedings of theNational Academy of Sciences, 116(1):84–89, 2019.
+ * Refer to Asier Marzo and Bruce W Drinkwater, "Holographic acoustic
+ * tweezers," Proceedings of theNational Academy of Sciences, 116(1):84–89, 2019.
  */
 class HoloGainGS final : public HoloGain {
  public:

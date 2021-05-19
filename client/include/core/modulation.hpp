@@ -39,16 +39,28 @@ class Modulation {
    */
   static ModulationPtr create(const uint8_t duty = 0xff) {
     auto mod = std::make_shared<Modulation>();
-    mod->_buffer.resize(1, duty);
+    mod->_buffer.resize(MOD_FRAME_SIZE, duty);
     return mod;
   }
 
+  /**
+   * \brief Build modulation data with Configuration
+   * \param config Configuration
+   * \return ok if succeeded, or err with error message if failed
+   */
   [[nodiscard]] virtual Error build(Configuration config) {
     (void)config;
     return Ok();
   }
 
+  /**
+   * \brief sent means data length already sent to devices.
+   */
   size_t& sent() { return _sent; }
+
+  /**
+   * \brief modulation data
+   */
   std::vector<uint8_t>& buffer() { return _buffer; }
 
  protected:
