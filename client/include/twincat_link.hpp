@@ -13,11 +13,6 @@
 
 #include <memory>
 
-#if _WINDOWS
-#define NOMINMAX
-#include <Windows.h>
-#endif
-
 #include "core/link.hpp"
 
 namespace autd::link {

@@ -11,6 +11,11 @@
 
 #include "twincat_link.hpp"
 
+#if _WINDOWS
+#define NOMINMAX
+#include <Windows.h>
+#endif
+
 #include <sstream>
 #include <string>
 
