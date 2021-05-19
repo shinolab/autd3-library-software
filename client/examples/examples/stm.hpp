@@ -17,7 +17,7 @@
 
 using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SPACING_MM;
 
-inline void STMTest(autd::Controller& autd) {
+inline void stm_test(autd::Controller& autd) {
   autd.silent_mode() = true;
 
   const auto m = autd::modulation::Static::create(255);

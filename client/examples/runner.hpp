@@ -27,14 +27,14 @@
 #include "examples/holo.hpp"
 #endif
 
-inline int Run(autd::Controller& autd) {
+inline int run(autd::Controller& autd) {
   using F = std::function<void(autd::Controller&)>;
   std::vector<std::pair<F, std::string>> examples = {
-      std::pair(F{SimpleTest}, "Single Focal Point Test"),      std::pair(F{BesselTest}, "BesselBeam Test"),
+      std::pair(F{simple_test}, "Single Focal Point Test"),      std::pair(F{bessel_test}, "BesselBeam Test"),
 #ifdef BUILD_HOLO_GAIN
-      std::pair(F{HoloTest}, "HoloGain (multiple foci) Test"),
+      std::pair(F{holo_test}, "HoloGain (multiple foci) Test"),
 #endif
-      std::pair(F{STMTest}, "Spatio-Temporal Modulation Test"), std::pair(F{SeqTest}, "Sequence (hardware STM) Test"),
+      std::pair(F{stm_test}, "Spatio-Temporal Modulation Test"), std::pair(F{seq_test}, "Sequence (hardware STM) Test"),
   };
 
   autd.geometry()->wavelength() = 8.5;  // mm

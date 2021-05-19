@@ -15,7 +15,7 @@
 #include "runner.hpp"
 #include "soem_link.hpp"
 
-std::string GetAdapterName() {
+std::string get_adapter_name() {
   size_t i = 0;
   const auto adapters = autd::link::SOEMLink::enumerate_adapters();
   for (auto&& [desc, name] : adapters) std::cout << "[" << i++ << "]: " << desc << ", " << name << std::endl;
@@ -33,16 +33,16 @@ int main() {
   try {
     autd::Controller autd;
     autd.geometry()->add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
-    // autd.geometry()->AddDevice(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+    // autd.geometry()->add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
 
     // If you have already recognized the EtherCAT adapter name, you can write it directly like below.
     // auto ifname = "\\Device\\NPF_{B5B631C6-ED16-4780-9C4C-3941AE8120A6}";
-    const auto ifname = GetAdapterName();
+    const auto ifname = get_adapter_name();
     if (auto res = autd.open(autd::link::SOEMLink::create(ifname, autd.geometry()->num_devices())); res.is_err()) {
       std::cerr << res.unwrap_err() << std::endl;
       return ENXIO;
     }
-    return Run(autd);
+    return run(autd);
   } catch (std::exception& e) {
     std::cerr << e.what() << std::endl;
     return ENXIO;

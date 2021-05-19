@@ -17,7 +17,7 @@
 
 using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SPACING_MM;
 
-inline void SeqTest(autd::Controller& autd) {
+inline void seq_test(autd::Controller& autd) {
   autd.silent_mode() = false;
 
   const auto m = autd::modulation::Static::create();
