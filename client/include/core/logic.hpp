@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 18/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -29,7 +29,7 @@ class Logic {
 
     id.fetch_add(0x01);
     uint8_t expected = 0xff;
-    id.compare_exchange_weak(expected, 0);
+    id.compare_exchange_weak(expected, 1);
 
     return id.load();
   }
