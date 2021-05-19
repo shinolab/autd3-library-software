@@ -24,7 +24,7 @@ int main() {
       std::cerr << res.unwrap_err() << std::endl;
       return ENXIO;
     }
-    return Run(autd);
+    return run(autd);
   } catch (exception& e) {
     std::cerr << e.what() << std::endl;
     return ENXIO;

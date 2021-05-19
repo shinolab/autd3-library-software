@@ -22,7 +22,7 @@
 using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SPACING_MM;
 using autd::gain::holo::Eigen3Backend;
 
-inline autd::GainPtr SelectOpt(std::vector<autd::Vector3>& foci, std::vector<double>& amps) {
+inline autd::GainPtr select_opt(std::vector<autd::Vector3>& foci, std::vector<double>& amps) {
   std::cout << "Select Optimization Method (default is SDP)" << std::endl;
   const std::vector<std::string> opts = {"SDP", "EVD", "GS", "GS-PAT", "NAIVE", "LM"};
   for (size_t i = 0; i < opts.size(); i++) std::cout << "[" << i << "]: " << opts[i] << std::endl;
@@ -52,7 +52,7 @@ inline autd::GainPtr SelectOpt(std::vector<autd::Vector3>& foci, std::vector<dou
   }
 }
 
-inline void HoloTest(autd::Controller& autd) {
+inline void holo_test(autd::Controller& autd) {
   autd.silent_mode() = true;
 
   const auto m = autd::modulation::Sine::create(150);  // 150Hz AM
@@ -61,6 +61,6 @@ inline void HoloTest(autd::Controller& autd) {
   std::vector<autd::Vector3> foci = {center - autd::Vector3::UnitX() * 30.0, center + autd::Vector3::UnitX() * 30.0};
   std::vector<double> amps = {1, 1};
 
-  const auto g = SelectOpt(foci, amps);
+  const auto g = select_opt(foci, amps);
   autd.send(g, m).unwrap();
 }
