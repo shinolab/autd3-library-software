@@ -109,7 +109,7 @@ class Geometry {
   }
 
   /**
-   * @brief Same as add_device(const Vector3& position, const Vector3& euler_angles, const size_t group = 0), but using quaternion rather than euler
+   * @brief Same as add_device(const Vector3&, const Vector3&, const size_t), but using quaternion rather than euler
    * angle.
    * @param position Position of transducer #0, which is the one at the lower-left corner.
    * @param quaternion rotation quaternion of the device.
