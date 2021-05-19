@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 18/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -16,17 +16,26 @@
 #include "hardware_defined.hpp"
 
 namespace autd::core {
+
 /**
- * @brief AUTD Configuration
+ * \brief Amplitude modulation configuration
  */
 class Configuration {
  public:
+  /**
+   * \brief Constructor
+   * \param sampling_freq_div means 40kHz/(modulation sampling frequency), i.e., the sampling frequency will be 40kHz/(sampling_freq_div).
+   * \param buf_size means buffer size of Modulation (MAX autd::core::MOD_BUF_SIZE_MAX).
+   */
   Configuration(const uint16_t sampling_freq_div, const uint16_t buf_size) {
     _mod_sampling_freq_div = std::max(sampling_freq_div, uint16_t{1});
     _mod_buf_size = std::min(buf_size, MOD_BUF_SIZE_MAX);
   }
 
-  static Configuration GetDefaultConfiguration() {
+  /**
+   * \brief Get default configuration. The sampling frequency is 4kHz, and buffer size is 4000.
+   */
+  static Configuration get_default_configuration() {
     const Configuration config(10, 4000);
     return config;
   }

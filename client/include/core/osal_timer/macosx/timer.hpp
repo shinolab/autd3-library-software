@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 17/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -24,20 +24,19 @@ namespace autd {
 class Timer {
  public:
   Timer() noexcept : _interval_us(1) {}
-  ~Timer() { (void)this->Stop(); }
+  ~Timer() { (void)this->stop(); }
   bool SetInterval(uint32_t &interval_us) {
     this->_interval_us = interval_us;
     return true;
   }
-  [[nodiscard]] Error Start(const std::function<void()> &callback) {
-    auto res = this->Stop();
-    if (res.is_err()) return res;
+  [[nodiscard]] Error start(const std::function<void()> &callback) {
+    if (auto res = this->stop(); res.is_err()) return res;
 
     this->_cb = callback;
     this->_loop = true;
-    return this->InitTimer();
+    return this->init_timer();
   }
-  [[nodiscard]] Error Stop() {
+  [[nodiscard]] Error stop() {
     if (!this->_loop) return Ok();
 
     dispatch_source_cancel(_timer);
@@ -60,14 +59,14 @@ class Timer {
 
   bool _loop;
 
-  void MainLoop(Timer *ptr) { ptr->_cb(); }
+  void main_loop(Timer *ptr) { ptr->_cb(); }
 
-  [[nodiscard]] Error InitTimer() {
+  [[nodiscard]] Error init_timer() {
     _queue = dispatch_queue_create("timerQueue", 0);
 
     _timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _queue);
     dispatch_source_set_event_handler(_timer, ^{
-      MainLoop(this);
+      main_loop(this);
     });
 
     dispatch_source_set_cancel_handler(_timer, ^{

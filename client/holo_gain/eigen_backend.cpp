@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 17/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -12,7 +12,7 @@
 #include "eigen_backend.hpp"
 
 namespace autd::gain::holo {
-BackendPtr Eigen3Backend::Create() { return std::make_shared<Eigen3Backend>(); }
+BackendPtr Eigen3Backend::create() { return std::make_shared<Eigen3Backend>(); }
 
 bool Eigen3Backend::supports_svd() { return true; }
 bool Eigen3Backend::supports_evd() { return true; }

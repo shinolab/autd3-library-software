@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 18/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,17 +11,51 @@
 
 #include "twincat_link.hpp"
 
+#if _WINDOWS
+#define NOMINMAX
+#include <Windows.h>
+#endif
+
 #include <sstream>
 #include <string>
 
 namespace autd::link {
 
-core::LinkPtr TwinCATLink::Create() {
-  core::LinkPtr link = std::make_shared<TwinCATLink>();
-  return link;
-}
+struct AmsNetId {
+  uint8_t b[6];
+};
 
-bool TwinCATLink::is_open() { return this->_port > 0; }
+struct AmsAddr {
+  AmsNetId net_id;
+  uint16_t port;
+};
+
+class TwinCATLinkImpl final : public TwinCATLink {
+ public:
+  TwinCATLinkImpl() : _port(0) {}
+  ~TwinCATLinkImpl() override = default;
+  TwinCATLinkImpl(const TwinCATLinkImpl& v) noexcept = delete;
+  TwinCATLinkImpl& operator=(const TwinCATLinkImpl& obj) = delete;
+  TwinCATLinkImpl(TwinCATLinkImpl&& obj) = delete;
+  TwinCATLinkImpl& operator=(TwinCATLinkImpl&& obj) = delete;
+
+  Error open() override;
+  Error close() override;
+  Error send(size_t size, const uint8_t* buf) override;
+  Error read(uint8_t* rx, size_t buffer_len) override;
+  bool is_open() override;
+
+ private:
+  long _port;  // NOLINT
+#ifdef _WIN32
+  AmsNetId _net_id{};
+  HMODULE _lib = nullptr;
+#endif
+};
+
+core::LinkPtr TwinCATLink::create() { return std::make_shared<TwinCATLinkImpl>(); }
+
+bool TwinCATLinkImpl::is_open() { return this->_port > 0; }
 
 #ifdef _WIN32
 
@@ -51,7 +85,7 @@ constexpr auto TCADS_ADS_PORT_CLOSE_EX = "AdsPortCloseEx";
 constexpr auto TCADS_ADS_SYNC_WRITE_REQ_EX = "AdsSyncWriteReqEx";
 constexpr auto TCADS_ADS_SYNC_READ_REQ_EX = "AdsSyncReadReqEx2";
 
-Error TwinCATLink::Open() {
+Error TwinCATLinkImpl::open() {
   this->_lib = LoadLibrary("TcAdsDll.dll");
   if (_lib == nullptr) return Err(std::string("couldn't find TcADS-DLL"));
 
@@ -70,7 +104,7 @@ Error TwinCATLink::Open() {
   this->_net_id = addr.net_id;
   return Ok();
 }
-Error TwinCATLink::Close() {
+Error TwinCATLinkImpl::close() {
   this->_port = 0;
   const auto port_close = reinterpret_cast<TcAdsPortCloseEx>(GetProcAddress(this->_lib, TCADS_ADS_PORT_CLOSE_EX));
   const auto res = (*port_close)(this->_port);
@@ -79,7 +113,7 @@ Error TwinCATLink::Close() {
   ss << "Error on closing (local): " << std::hex << res;
   return Err(ss.str());
 }
-Error TwinCATLink::Send(const size_t size, const uint8_t* buf) {
+Error TwinCATLinkImpl::send(const size_t size, const uint8_t* buf) {
   AmsAddr addr = {this->_net_id, PORT};
   const auto write = reinterpret_cast<TcAdsSyncWriteReqEx>(GetProcAddress(this->_lib, TCADS_ADS_SYNC_WRITE_REQ_EX));
   const auto ret = write(this->_port,  // NOLINT
@@ -95,7 +129,7 @@ Error TwinCATLink::Send(const size_t size, const uint8_t* buf) {
   return Err(ss.str());
 }
 
-Error TwinCATLink::Read(uint8_t* rx, const size_t buffer_len) {
+Error TwinCATLinkImpl::read(uint8_t* rx, const size_t buffer_len) {
   AmsAddr addr = {this->_net_id, PORT};
   const auto read = reinterpret_cast<TcAdsSyncReadReqEx>(GetProcAddress(this->_lib, TCADS_ADS_SYNC_READ_REQ_EX));
 
@@ -110,16 +144,16 @@ Error TwinCATLink::Read(uint8_t* rx, const size_t buffer_len) {
 }
 
 #else
-Error TwinCATLink::Open() {
+Error TwinCATLinkImpl::open() {
   return Err(std::string("Link to localhost has not been compiled. Rebuild this library on a Twincat3 host machine with TcADS-DLL."));
 }
-Error TwinCATLink::Close() { return Ok(); }
-Error TwinCATLink::Send(size_t size, const uint8_t* buf) {
+Error TwinCATLinkImpl::close() { return Ok(); }
+Error TwinCATLinkImpl::send(size_t size, const uint8_t* buf) {
   (void)size;
   (void)buf;
   return Ok();
 }
-Error TwinCATLink::Read(uint8_t* rx, size_t buffer_len) {
+Error TwinCATLinkImpl::read(uint8_t* rx, size_t buffer_len) {
   (void)rx;
   (void)buffer_len;
   return Ok();

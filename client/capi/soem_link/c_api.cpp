@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 18/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -23,7 +23,7 @@ inline EtherCATAdaptersWrapper* EtherCATAdaptersCreate(const std::vector<autd::l
 inline void EtherCATAdaptersDelete(EtherCATAdaptersWrapper* ptr) { delete ptr; }
 
 int32_t AUTDGetAdapterPointer(void** out) {
-  const auto adapters = autd::link::SOEMLink::EnumerateAdapters();
+  const auto adapters = autd::link::SOEMLink::enumerate_adapters();
   *out = EtherCATAdaptersCreate(adapters);
   return static_cast<int32_t>(adapters.size());
 }
@@ -40,6 +40,6 @@ void AUTDFreeAdapterPointer(void* p_adapter) {
 }
 
 void AUTDSOEMLink(void** out, const char* ifname, const int32_t device_num) {
-  auto* link = LinkCreate(autd::link::SOEMLink::Create(std::string(ifname), device_num));
+  auto* link = LinkCreate(autd::link::SOEMLink::create(std::string(ifname), device_num));
   *out = link;
 }

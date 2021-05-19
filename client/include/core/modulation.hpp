@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 17/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -37,18 +37,30 @@ class Modulation {
   /**
    * @brief Generate empty modulation, which produce static pressure
    */
-  static ModulationPtr Create(const uint8_t duty = 0xff) {
+  static ModulationPtr create(const uint8_t duty = 0xff) {
     auto mod = std::make_shared<Modulation>();
-    mod->_buffer.resize(1, duty);
+    mod->_buffer.resize(MOD_FRAME_SIZE, duty);
     return mod;
   }
 
-  [[nodiscard]] virtual Error Build(Configuration config) {
+  /**
+   * \brief Build modulation data with Configuration
+   * \param config Configuration
+   * \return ok if succeeded, or err with error message if failed
+   */
+  [[nodiscard]] virtual Error build(Configuration config) {
     (void)config;
     return Ok();
   }
 
+  /**
+   * \brief sent means data length already sent to devices.
+   */
   size_t& sent() { return _sent; }
+
+  /**
+   * \brief modulation data
+   */
   std::vector<uint8_t>& buffer() { return _buffer; }
 
  protected:

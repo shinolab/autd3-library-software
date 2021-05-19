@@ -3,7 +3,7 @@
 // Created Date: 10/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 18/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -18,14 +18,10 @@
 
 namespace autd::link {
 
+/**
+ * \brief EtherCAT adapter information to SOEMLink
+ */
 struct EtherCATAdapter final {
-  EtherCATAdapter() = default;
-  ~EtherCATAdapter() = default;
-  EtherCATAdapter(EtherCATAdapter& obj) = default;
-  EtherCATAdapter& operator=(const EtherCATAdapter& obj) = delete;
-  EtherCATAdapter(EtherCATAdapter&& obj) = default;
-  EtherCATAdapter& operator=(EtherCATAdapter&& obj) = default;
-
   EtherCATAdapter(const std::string& desc, const std::string& name) {
     this->desc = desc;
     this->name = name;
@@ -44,16 +40,15 @@ class SOEMLink : virtual public core::Link {
    * @brief Create SOEM link.
    * @param[in] ifname Network interface name. (e.g. eth0)
    * @param[in] device_num The number of AUTD you connected.
-   *
    * @details Available Network interface names are obtained by EnumerateAdapters().
    *          The numbers of connected devices is obtained by Geometry::num_devices().
    */
-  static core::LinkPtr Create(const std::string& ifname, size_t device_num);
+  static core::LinkPtr create(const std::string& ifname, size_t device_num);
 
   /**
    * @brief Enumerate Ethernet adapters of the computer.
    */
-  static std::vector<EtherCATAdapter> EnumerateAdapters();
+  static std::vector<EtherCATAdapter> enumerate_adapters();
   SOEMLink() = default;
   ~SOEMLink() override = default;
   SOEMLink(const SOEMLink& v) noexcept = delete;
@@ -61,10 +56,10 @@ class SOEMLink : virtual public core::Link {
   SOEMLink(SOEMLink&& obj) = delete;
   SOEMLink& operator=(SOEMLink&& obj) = delete;
 
-  Error Open() override = 0;
-  Error Close() override = 0;
-  Error Send(size_t size, const uint8_t* buf) override = 0;
-  Error Read(uint8_t* rx, size_t buffer_len) override = 0;
+  Error open() override = 0;
+  Error close() override = 0;
+  Error send(size_t size, const uint8_t* buf) override = 0;
+  Error read(uint8_t* rx, size_t buffer_len) override = 0;
   bool is_open() override = 0;
 };
 }  // namespace autd::link

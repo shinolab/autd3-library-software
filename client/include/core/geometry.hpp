@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 12/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -44,8 +44,11 @@ using Vector4 = Eigen::Matrix<double, 4, 1>;
 using Matrix4X4 = Eigen::Matrix<double, 4, 4>;
 using Quaternion = Eigen::Quaternion<double>;
 
+/**
+ * \brief Device contains an AUTD device geometry.
+ */
 struct Device {
-  static Device Create(const Vector3& position, const Quaternion& quaternion) {
+  static Device create(const Vector3& position, const Quaternion& quaternion) {
     const Eigen::Transform<double, 3, Eigen::Affine> transform_matrix = Eigen::Translation<double, 3>(position) * quaternion;
     const auto x_direction = quaternion * Vector3(1, 0, 0);
     const auto y_direction = quaternion * Vector3(0, 1, 0);
@@ -65,11 +68,11 @@ struct Device {
     return Device{x_direction, y_direction, z_direction, std::move(global_trans_positions)};
   }
 
-  static Device Create(const Vector3& position, const Vector3& euler_angles) {
+  static Device create(const Vector3& position, const Vector3& euler_angles) {
     const auto quaternion = Eigen::AngleAxis(euler_angles.x(), Vector3::UnitZ()) * Eigen::AngleAxis(euler_angles.y(), Vector3::UnitY()) *
                             Eigen::AngleAxis(euler_angles.z(), Vector3::UnitZ());
 
-    return Create(position, quaternion);
+    return create(position, quaternion);
   }
 
   Vector3 x_direction;
@@ -79,7 +82,7 @@ struct Device {
 };
 
 /**
- * @brief AUTD Geometry
+ * @brief Geometry of all devices
  */
 class Geometry {
  public:
@@ -92,40 +95,40 @@ class Geometry {
 
   /**
    * @brief  Add new device with position and rotation. Note that the transform is done with order: Translate -> Rotate
-   * @param position Position of transducer #0, which is the one at the lower right corner.
-   * (The corner with two lacks of the transducer is the lower left.)
-   * @param euler_angles ZYZ convention Euler angle of the device.
-   * @param group Grouping ID of the device used in gain::GroupedGain
-   * @return an id of added device, which is used to delete or do other device specific controls.
+   * @param position Position of transducer #0, which is the one at the lower-left corner.
+   * (The lower-left corner is the one with the two missing transducers.)
+   * @param euler_angles ZYZ convention euler angle of the device
+   * @param group Grouping ID of the device
+   * @return an id of added device
    */
-  size_t AddDevice(const Vector3& position, const Vector3& euler_angles, const size_t group = 0) {
+  size_t add_device(const Vector3& position, const Vector3& euler_angles, const size_t group = 0) {
     const auto device_id = this->_devices.size();
-    this->_devices.emplace_back(Device::Create(position, euler_angles));
+    this->_devices.emplace_back(Device::create(position, euler_angles));
     this->_group_map[device_id] = group;
     return device_id;
   }
 
   /**
-   * @brief  Add new device with position and rotation. Note that the transform is done with order: Translate -> Rotate
-   * @param position Position of transducer #0, which is the one at the lower right corner.
-   * (The corner with two lacks of the transducer is the lower left.)
+   * @brief Same as add_device(const Vector3&, const Vector3&, const size_t), but using quaternion rather than euler
+   * angle.
+   * @param position Position of transducer #0, which is the one at the lower-left corner.
    * @param quaternion rotation quaternion of the device.
-   * @param group Grouping ID of the device used in gain::GroupedGain
-   * @return an id of added device, which is used to delete or do other device specific controls.
+   * @param group Grouping ID
+   * @return an id of added device
    */
-  size_t AddDevice(const Vector3& position, const Quaternion& quaternion, const size_t group = 0) {
+  size_t add_device(const Vector3& position, const Quaternion& quaternion, const size_t group = 0) {
     const auto device_id = this->_devices.size();
-    this->_devices.emplace_back(Device::Create(position, quaternion));
+    this->_devices.emplace_back(Device::create(position, quaternion));
     this->_group_map[device_id] = group;
     return device_id;
   }
 
   /**
    * @brief Delete device
-   * @param idx Index of the device to delete.
+   * @param idx Index of the device to delete
    * @return an index of deleted device
    */
-  size_t DelDevice(const size_t idx) {
+  size_t del_device(const size_t idx) {
     this->_devices.erase(this->_devices.begin() + idx);
     return idx;
   }
@@ -133,7 +136,7 @@ class Geometry {
   /**
    * @brief Clear all devices
    */
-  void ClearDevices() { std::vector<Device>().swap(this->_devices); }
+  void clear_devices() { std::vector<Device>().swap(this->_devices); }
 
   /**
    * @brief ultrasound wavelength
@@ -209,7 +212,7 @@ class Geometry {
   Vector3 z_direction(const size_t device_idx) { return this->_devices[device_idx].z_direction; }
 
   /**
-   * @brief Convert transducer index into device ID
+   * @brief Convert transducer index into device index
    */
   static size_t device_idx_for_trans_idx(const size_t transducer_idx) { return transducer_idx / NUM_TRANS_IN_UNIT; }
 

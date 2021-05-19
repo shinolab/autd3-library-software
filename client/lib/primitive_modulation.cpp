@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 18/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -23,9 +23,9 @@ namespace autd::modulation {
 
 using core::Configuration;
 
-ModulationPtr Sine::Create(const int freq, const double amp, const double offset) { return std::make_shared<Sine>(freq, amp, offset); }
+ModulationPtr Sine::create(const int freq, const double amp, const double offset) { return std::make_shared<Sine>(freq, amp, offset); }
 
-Error Sine::Build(const Configuration config) {
+Error Sine::build(const Configuration config) {
   const auto sf = static_cast<int32_t>(config.mod_sampling_freq());
   const auto mod_buf_size = static_cast<int32_t>(config.mod_buf_size());
 
@@ -47,9 +47,9 @@ Error Sine::Build(const Configuration config) {
   return Ok();
 }
 
-ModulationPtr Square::Create(int freq, uint8_t low, uint8_t high) { return std::make_shared<Square>(freq, low, high); }
+ModulationPtr Square::create(int freq, uint8_t low, uint8_t high) { return std::make_shared<Square>(freq, low, high); }
 
-Error Square::Build(const Configuration config) {
+Error Square::build(const Configuration config) {
   const auto sf = static_cast<int32_t>(config.mod_sampling_freq());
   const auto mod_buf_size = static_cast<int32_t>(config.mod_buf_size());
 
@@ -64,16 +64,16 @@ Error Square::Build(const Configuration config) {
   return Ok();
 }
 
-ModulationPtr Custom::Create(const std::vector<uint8_t>& buffer) { return std::make_shared<Custom>(buffer); }
+ModulationPtr Custom::create(const std::vector<uint8_t>& buffer) { return std::make_shared<Custom>(buffer); }
 
-Error Custom::Build(const Configuration config) {
+Error Custom::build(const Configuration config) {
   (void)config;
   return Ok();
 }
 
-ModulationPtr Saw::Create(const int freq) { return std::make_shared<Saw>(freq); }
+ModulationPtr Saw::create(const int freq) { return std::make_shared<Saw>(freq); }
 
-Error Saw::Build(const Configuration config) {
+Error Saw::build(const Configuration config) {
   const auto sf = static_cast<int32_t>(config.mod_sampling_freq());
   const auto mod_buf_size = static_cast<int32_t>(config.mod_buf_size());
 

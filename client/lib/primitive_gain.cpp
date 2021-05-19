@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 18/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -16,34 +16,34 @@
 
 namespace autd::gain {
 
-using core::AUTDDataArray;
+using core::DataArray;
 using core::NUM_TRANS_IN_UNIT;
 using core::Vector3;
 
 inline double PosMod(const double a, const double b) { return a - floor(a / b) * b; }
 
-GainPtr Grouped::Create(const std::map<size_t, GainPtr>& gain_map) {
+GainPtr Grouped::create(const std::map<size_t, GainPtr>& gain_map) {
   GainPtr gain = std::make_shared<Grouped>(gain_map);
   return gain;
 }
 
-Error Grouped::Calc(const core::GeometryPtr& geometry) {
+Error Grouped::calc(const core::GeometryPtr& geometry) {
   for (const auto& [_, g] : this->_gain_map)
-    if (auto res = g->Build(geometry); res.is_err()) return res;
+    if (auto res = g->build(geometry); res.is_err()) return res;
 
   for (size_t i = 0; i < geometry->num_devices(); i++) {
     auto group_id = geometry->group_id_for_device_idx(i);
-    this->_data[i] = _gain_map.count(group_id) ? _gain_map[group_id]->data()[i] : AUTDDataArray{0x0000};
+    this->_data[i] = _gain_map.count(group_id) ? _gain_map[group_id]->data()[i] : DataArray{0x0000};
   }
   this->_built = true;
   return Ok();
 }
 
-GainPtr PlaneWave::Create(const Vector3& direction, const double amp) { return Create(direction, core::ToDuty(amp)); }
+GainPtr PlaneWave::create(const Vector3& direction, const double amp) { return create(direction, to_duty(amp)); }
 
-GainPtr PlaneWave::Create(const Vector3& direction, uint8_t duty) { return std::make_shared<PlaneWave>(direction, duty); }
+GainPtr PlaneWave::create(const Vector3& direction, uint8_t duty) { return std::make_shared<PlaneWave>(direction, duty); }
 
-Error PlaneWave::Calc(const core::GeometryPtr& geometry) {
+Error PlaneWave::calc(const core::GeometryPtr& geometry) {
   const auto dir = this->_direction.normalized();
 
   const auto ultrasound_wavelength = geometry->wavelength();
@@ -61,10 +61,10 @@ Error PlaneWave::Calc(const core::GeometryPtr& geometry) {
   return Ok();
 }
 
-GainPtr FocalPoint::Create(const Vector3& point, const double amp) { return Create(point, core::ToDuty(amp)); }
-GainPtr FocalPoint::Create(const Vector3& point, uint8_t duty) { return std::make_shared<FocalPoint>(point, duty); }
+GainPtr FocalPoint::create(const Vector3& point, const double amp) { return create(point, to_duty(amp)); }
+GainPtr FocalPoint::create(const Vector3& point, uint8_t duty) { return std::make_shared<FocalPoint>(point, duty); }
 
-Error FocalPoint::Calc(const core::GeometryPtr& geometry) {
+Error FocalPoint::calc(const core::GeometryPtr& geometry) {
   const auto ultrasound_wavelength = geometry->wavelength();
   const uint16_t duty = static_cast<uint16_t>(this->_duty) << 8 & 0xFF00;
   for (size_t dev = 0; dev < geometry->num_devices(); dev++)
@@ -80,15 +80,15 @@ Error FocalPoint::Calc(const core::GeometryPtr& geometry) {
   return Ok();
 }
 
-GainPtr BesselBeam::Create(const Vector3& point, const Vector3& vec_n, const double theta_z, const double amp) {
-  return Create(point, vec_n, theta_z, core::ToDuty(amp));
+GainPtr BesselBeam::create(const Vector3& point, const Vector3& vec_n, const double theta_z, const double amp) {
+  return create(point, vec_n, theta_z, to_duty(amp));
 }
 
-GainPtr BesselBeam::Create(const Vector3& point, const Vector3& vec_n, double theta_z, uint8_t duty) {
+GainPtr BesselBeam::create(const Vector3& point, const Vector3& vec_n, double theta_z, uint8_t duty) {
   return std::make_shared<BesselBeam>(point, vec_n, theta_z, duty);
 }
 
-Error BesselBeam::Calc(const core::GeometryPtr& geometry) {
+Error BesselBeam::calc(const core::GeometryPtr& geometry) {
   if (_vec_n.norm() > 0) _vec_n = _vec_n.normalized();
   const Vector3 v(_vec_n.y(), -_vec_n.x(), 0.);
 
@@ -112,10 +112,10 @@ Error BesselBeam::Calc(const core::GeometryPtr& geometry) {
   return Ok();
 }
 
-GainPtr Custom::Create(const uint16_t* data, const size_t data_length) {
+GainPtr Custom::create(const uint16_t* data, const size_t data_length) {
   const auto dev_num = data_length / NUM_TRANS_IN_UNIT;
 
-  std::vector<AUTDDataArray> raw_data(dev_num);
+  std::vector<DataArray> raw_data(dev_num);
   size_t dev_idx = 0;
   size_t tran_idx = 0;
   for (size_t i = 0; i < data_length; i++) {
@@ -128,18 +128,18 @@ GainPtr Custom::Create(const uint16_t* data, const size_t data_length) {
   return std::make_shared<Custom>(raw_data);
 }
 
-GainPtr Custom::Create(const std::vector<AUTDDataArray>& data) { return std::make_shared<Custom>(data); }
+GainPtr Custom::create(const std::vector<DataArray>& data) { return std::make_shared<Custom>(data); }
 
-Error Custom::Calc(const core::GeometryPtr& geometry) {
+Error Custom::calc(const core::GeometryPtr& geometry) {
   this->_built = true;
   return Ok();
 }
 
-GainPtr TransducerTest::Create(const size_t transducer_index, const uint8_t duty, const uint8_t phase) {
+GainPtr TransducerTest::create(const size_t transducer_index, const uint8_t duty, const uint8_t phase) {
   return std::make_shared<TransducerTest>(transducer_index, duty, phase);
 }
 
-Error TransducerTest::Calc(const core::GeometryPtr& geometry) {
+Error TransducerTest::calc(const core::GeometryPtr& geometry) {
   const uint16_t d = static_cast<uint16_t>(this->_duty) << 8 & 0xFF00;
   const uint16_t s = static_cast<uint16_t>(this->_phase) & 0x00FF;
   this->_data[geometry->device_idx_for_trans_idx(_transducer_idx)][_transducer_idx % NUM_TRANS_IN_UNIT] = d | s;

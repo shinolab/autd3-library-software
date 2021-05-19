@@ -3,7 +3,7 @@
 // Created Date: 03/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 18/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -19,6 +19,7 @@
 #include <vector>
 
 #include "autd3.hpp"
+#include "examples/advanced.hpp"
 #include "examples/bessel.hpp"
 #include "examples/seq.hpp"
 #include "examples/simple.hpp"
@@ -27,20 +28,23 @@
 #include "examples/holo.hpp"
 #endif
 
-inline int Run(autd::Controller& autd) {
+inline int run(autd::Controller& autd) {
   using F = std::function<void(autd::Controller&)>;
   std::vector<std::pair<F, std::string>> examples = {
-      std::pair(F{SimpleTest}, "Single Focal Point Test"),      std::pair(F{BesselTest}, "BesselBeam Test"),
+      std::pair(F{simple_test}, "Single Focal Point Test"),
+      std::pair(F{bessel_test}, "BesselBeam Test"),
 #ifdef BUILD_HOLO_GAIN
-      std::pair(F{HoloTest}, "HoloGain (multiple foci) Test"),
+      std::pair(F{holo_test}, "HoloGain (multiple foci) Test"),
 #endif
-      std::pair(F{STMTest}, "Spatio-Temporal Modulation Test"), std::pair(F{SeqTest}, "Sequence (hardware STM) Test"),
+      std::pair(F{stm_test}, "Spatio-Temporal Modulation Test"),
+      std::pair(F{seq_test}, "Sequence (hardware STM) Test"),
+      std::pair(F{advanced_test}, "Advanced Test (custom Gain, Modulation, and set output delay)"),
   };
 
   autd.geometry()->wavelength() = 8.5;  // mm
 
-  autd.Clear().unwrap();
-  autd.Synchronize().unwrap();
+  autd.clear().unwrap();
+  autd.synchronize().unwrap();
 
   auto firm_info_list = autd.firmware_info_list().unwrap();
   for (auto&& firm_info : firm_info_list) std::cout << firm_info << std::endl;
@@ -62,11 +66,11 @@ inline int Run(autd::Controller& autd) {
     std::cin.ignore();
 
     std::cout << "finish." << std::endl;
-    autd.Stop().unwrap();
+    autd.stop().unwrap();
   }
 
-  autd.Clear().unwrap();
-  autd.Close().unwrap();
+  autd.clear().unwrap();
+  autd.close().unwrap();
 
   return 0;
 }

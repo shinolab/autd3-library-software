@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 17/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -26,20 +26,19 @@ namespace autd {
 class Timer {
  public:
   Timer() noexcept : _interval_us(1) {}
-  ~Timer() { (void)this->Stop(); }
+  ~Timer() { (void)this->stop(); }
   bool SetInterval(uint32_t &interval_us) {
     this->_interval_us = interval_us;
     return true;
   }
-  [[nodiscard]] Error Start(const std::function<void()> &callback) {
-    auto res = this->Stop();
-    if (res.is_err()) return res;
+  [[nodiscard]] Error start(const std::function<void()> &callback) {
+    if (auto res = this->stop(); res.is_err()) return res;
 
     this->_cb = callback;
     this->_loop = true;
-    return this->InitTimer();
+    return this->init_timer();
   }
-  [[nodiscard]] Error Stop() {
+  [[nodiscard]] Error stop() {
     if (!this->_loop) return Ok();
 
     const auto r = timer_delete(_timer_id);
@@ -62,12 +61,12 @@ class Timer {
 
   bool _loop = false;
 
-  static void Notify(union sigval sv) {
+  static void notify(union sigval sv) {
     auto *timer = reinterpret_cast<Timer *>(sv.sival_ptr);
     timer->_cb();
   }
 
-  [[nodiscard]] Error InitTimer() {
+  [[nodiscard]] Error init_timer() {
     struct itimerspec itval;
     struct sigevent se;
 
@@ -79,7 +78,7 @@ class Timer {
     memset(&se, 0, sizeof(se));
     se.sigev_value.sival_ptr = this;
     se.sigev_notify = SIGEV_THREAD;
-    se.sigev_notify_function = Notify;
+    se.sigev_notify_function = notify;
     se.sigev_notify_attributes = NULL;
 
     if (timer_create(CLOCK_REALTIME, &se, &_timer_id) < 0) return Err(std::string("timer_create failed"));

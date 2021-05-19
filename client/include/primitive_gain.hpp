@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 17/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -26,7 +26,7 @@ using core::Gain;
 using core::GainPtr;
 using NullGain = Gain;
 
-using core::AUTDDataArray;
+using core::DataArray;
 using core::Vector3;
 
 /**
@@ -39,9 +39,9 @@ class Grouped final : public Gain {
    * @param[in] gain_map ｍap from group ID to gain
    * @details group ID must be specified in Geometry::AddDevice() in advance
    */
-  static GainPtr Create(const std::map<size_t, GainPtr>& gain_map);
+  static GainPtr create(const std::map<size_t, GainPtr>& gain_map);
 
-  Error Calc(const core::GeometryPtr& geometry) override;
+  Error calc(const core::GeometryPtr& geometry) override;
   explicit Grouped(std::map<size_t, GainPtr> gain_map) : Gain(), _gain_map(std::move(gain_map)) {}
   ~Grouped() override = default;
   Grouped(const Grouped& v) noexcept = default;
@@ -63,15 +63,15 @@ class PlaneWave final : public Gain {
    * @param[in] direction wave direction
    * @param[in] duty duty ratio of driving signal
    */
-  static GainPtr Create(const Vector3& direction, uint8_t duty = 0xff);
+  static GainPtr create(const Vector3& direction, uint8_t duty = 0xff);
   /**
    * @brief Generate function
    * @param[in] direction wave direction
    * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
    */
-  static GainPtr Create(const Vector3& direction, double amp);
+  static GainPtr create(const Vector3& direction, double amp);
 
-  Error Calc(const core::GeometryPtr& geometry) override;
+  Error calc(const core::GeometryPtr& geometry) override;
   explicit PlaneWave(Vector3 direction, const uint8_t duty) : Gain(), _direction(std::move(direction)), _duty(duty) {}
   ~PlaneWave() override = default;
   PlaneWave(const PlaneWave& v) noexcept = default;
@@ -94,15 +94,15 @@ class FocalPoint final : public Gain {
    * @param[in] point focal point
    * @param[in] duty duty ratio of driving signal
    */
-  static GainPtr Create(const Vector3& point, uint8_t duty = 0xff);
+  static GainPtr create(const Vector3& point, uint8_t duty = 0xff);
   /**
    * @brief Generate function
    * @param[in] point focal point
    * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
    */
-  static GainPtr Create(const Vector3& point, double amp);
+  static GainPtr create(const Vector3& point, double amp);
 
-  Error Calc(const core::GeometryPtr& geometry) override;
+  Error calc(const core::GeometryPtr& geometry) override;
   explicit FocalPoint(Vector3 point, const uint8_t duty) : Gain(), _point(std::move(point)), _duty(duty) {}
   ~FocalPoint() override = default;
   FocalPoint(const FocalPoint& v) noexcept = default;
@@ -127,7 +127,7 @@ class BesselBeam final : public Gain {
    * @param[in] theta_z angle between the conical wavefront of the beam and the direction
    * @param[in] duty duty ratio of driving signal
    */
-  static GainPtr Create(const Vector3& point, const Vector3& vec_n, double theta_z, uint8_t duty = 0xff);
+  static GainPtr create(const Vector3& point, const Vector3& vec_n, double theta_z, uint8_t duty = 0xff);
   /**
    * @brief Generate function
    * @param[in] point start point of the beam
@@ -135,9 +135,9 @@ class BesselBeam final : public Gain {
    * @param[in] theta_z angle between the conical wavefront of the beam and the direction
    * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
    */
-  static GainPtr Create(const Vector3& point, const Vector3& vec_n, double theta_z, double amp);
+  static GainPtr create(const Vector3& point, const Vector3& vec_n, double theta_z, double amp);
 
-  Error Calc(const core::GeometryPtr& geometry) override;
+  Error calc(const core::GeometryPtr& geometry) override;
   explicit BesselBeam(Vector3 point, Vector3 vec_n, const double theta_z, const uint8_t duty)
       : Gain(), _point(std::move(point)), _vec_n(std::move(vec_n)), _theta_z(theta_z), _duty(duty) {}
   ~BesselBeam() override = default;
@@ -154,27 +154,27 @@ class BesselBeam final : public Gain {
 };
 
 /**
- * @brief Gain that can set the phase and amplitude freely
+ * @brief Gain that can set the phase and duty ratio freely
  */
 class Custom final : public Gain {
  public:
   /**
    * @brief Generate function
-   * @param[in] data data of amplitude and phase of each transducer
-   * @details The data size should be the same as the number of devices you use. The data is 16 bit unsigned integer, where MSB represents
-   * amplitude and LSB represents phase
+   * @param[in] data data of duty ratio and phase of each transducer
+   * @details The data size should be the same as the number of devices you use. The data is 16 bit unsigned integer, where high 8bits represents duty
+   * ratio and low 8bits represents phase.
    */
-  static GainPtr Create(const std::vector<AUTDDataArray>& data);
+  static GainPtr create(const std::vector<DataArray>& data);
   /**
    * @brief Generate function
-   * @param[in] data pointer to data of amplitude and phase of each transducer
+   * @param[in] data pointer to data of duty ratio and phase of each transducer
    * @param[in] data_length length of the data
-   * @details The data length should be the same as the number of transducers you use. The data is 16 bit unsigned integer, where MSB represents
-   * amplitude and LSB represents phase
+   * @details The data length should be the same as the number of transducers you use. The data is 16 bit unsigned integer, where high 8bits
+   * represents duty ratio and low 8bits represents phase
    */
-  static GainPtr Create(const uint16_t* data, size_t data_length);
-  Error Calc(const core::GeometryPtr& geometry) override;
-  explicit Custom(std::vector<AUTDDataArray> data) : Gain() { this->_data = std::move(data); }
+  static GainPtr create(const uint16_t* data, size_t data_length);
+  Error calc(const core::GeometryPtr& geometry) override;
+  explicit Custom(std::vector<DataArray> data) : Gain() { this->_data = std::move(data); }
   ~Custom() override = default;
   Custom(const Custom& v) noexcept = default;
   Custom& operator=(const Custom& obj) = default;
@@ -193,8 +193,8 @@ class TransducerTest final : public Gain {
    * @param[in] duty duty ratio of driving signal
    * @param[in] phase phase of the phase
    */
-  static GainPtr Create(size_t transducer_index, uint8_t duty, uint8_t phase);
-  Error Calc(const core::GeometryPtr& geometry) override;
+  static GainPtr create(size_t transducer_index, uint8_t duty, uint8_t phase);
+  Error calc(const core::GeometryPtr& geometry) override;
   TransducerTest(const size_t transducer_index, const uint8_t duty, const uint8_t phase)
       : Gain(), _transducer_idx(transducer_index), _duty(duty), _phase(phase) {}
   ~TransducerTest() override = default;

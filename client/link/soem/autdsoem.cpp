@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 18/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -34,7 +34,7 @@ static std::atomic autd3_rt_lock(false);
 
 bool SOEMController::is_open() const { return _is_open; }
 
-Error SOEMController::Send(const size_t size, const uint8_t* buf) const {
+Error SOEMController::send(const size_t size, const uint8_t* buf) const {
   if (!_is_open) return Err(std::string("link is closed"));
 
   const auto header_size = this->_config.header_size;
@@ -46,17 +46,17 @@ Error SOEMController::Send(const size_t size, const uint8_t* buf) const {
   return Ok();
 }
 
-Error SOEMController::Read(uint8_t* rx) const {
+Error SOEMController::read(uint8_t* rx) const {
   if (!_is_open) return Err(std::string("link is closed"));
   std::memcpy(rx, &_io_map[this->_output_frame_size], this->_dev_num * this->_config.input_frame_size);
   return Ok();
 }
 
-void SOEMController::SetupSync0(const bool activate, const uint32_t cycle_time_ns) const {
+void SOEMController::setup_sync0(const bool activate, const uint32_t cycle_time_ns) const {
   for (size_t slave = 1; slave <= _dev_num; slave++) ec_dcsync0(static_cast<uint16_t>(slave), activate, cycle_time_ns, 0);
 }
 
-Error SOEMController::Open(const char* ifname, const size_t dev_num, const ECConfig config) {
+Error SOEMController::open(const char* ifname, const size_t dev_num, const ECConfig config) {
   _dev_num = dev_num;
   _config = config;
   _output_frame_size = (config.header_size + config.body_size) * _dev_num;
@@ -99,11 +99,11 @@ Error SOEMController::Open(const char* ifname, const size_t dev_num, const ECCon
 
   if (ec_slave[0].state != EC_STATE_OPERATIONAL) return Err(std::string("One ore more slaves are not responding"));
 
-  SetupSync0(true, _sync0_cyc_time);
+  setup_sync0(true, _sync0_cyc_time);
 
   auto interval_us = config.ec_sm3_cycle_time_ns / 1000;
   this->_timer.SetInterval(interval_us);
-  if (auto res = this->_timer.Start([]() {
+  if (auto res = this->_timer.start([]() {
         if (auto expected = false; autd3_rt_lock.compare_exchange_weak(expected, true)) {
           ec_send_processdata();
           autd3_rt_lock.store(false, std::memory_order_release);
@@ -118,7 +118,7 @@ Error SOEMController::Open(const char* ifname, const size_t dev_num, const ECCon
   return Ok();
 }
 
-Error SOEMController::Close() {
+Error SOEMController::close() {
   if (!_is_open) return Ok();
   _is_open = false;
 
@@ -132,9 +132,9 @@ Error SOEMController::Close() {
 
   std::memset(_io_map, 0x00, _output_frame_size);
 
-  if (auto res = this->_timer.Stop(); res.is_err()) return res;
+  if (auto res = this->_timer.stop(); res.is_err()) return res;
 
-  SetupSync0(false, _sync0_cyc_time);
+  setup_sync0(false, _sync0_cyc_time);
 
   ec_slave[0].state = EC_STATE_INIT;
   ec_writestate(0);
@@ -150,19 +150,17 @@ SOEMController::SOEMController() : _config() {
 }
 
 SOEMController::~SOEMController() {
-  (void)this->Close();
+  (void)this->close();
   delete[] _io_map;
   _io_map = nullptr;
 }
 
-std::vector<EtherCATAdapterInfo> EtherCATAdapterInfo::EnumerateAdapters() {
+std::vector<EtherCATAdapterInfo> EtherCATAdapterInfo::enumerate_adapters() {
   auto* adapter = ec_find_adapters();
   std::vector<EtherCATAdapterInfo> adapters;
   while (adapter != nullptr) {
-    auto* info = new EtherCATAdapterInfo;
-    info->desc = std::string(adapter->desc);
-    info->name = std::string(adapter->name);
-    adapters.emplace_back(*info);
+    EtherCATAdapterInfo info(std::string(adapter->desc), std::string(adapter->name));
+    adapters.emplace_back(info);
     adapter = adapter->next;
   }
   return adapters;

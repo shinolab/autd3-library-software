@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 17/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -42,13 +42,13 @@ class HoloGain : public core::Gain {
   std::vector<core::Vector3> _foci;
   std::vector<double> _amps;
 
-  void MatrixMul(const Backend::MatrixXc& a, const Backend::MatrixXc& b, Backend::MatrixXc* c) const;
+  void matrix_mul(const Backend::MatrixXc& a, const Backend::MatrixXc& b, Backend::MatrixXc* c) const;
 
-  void MatrixVecMul(const Backend::MatrixXc& a, const Backend::VectorXc& b, Backend::VectorXc* c) const;
-  static void SetFromComplexDrive(std::vector<core::AUTDDataArray>& data, const Backend::VectorXc& drive, bool normalize, double max_coefficient);
-  static std::complex<double> Transfer(const core::Vector3& trans_pos, const core::Vector3& trans_norm, const core::Vector3& target_pos,
+  void matrix_vec_mul(const Backend::MatrixXc& a, const Backend::VectorXc& b, Backend::VectorXc* c) const;
+  static void set_from_complex_drive(std::vector<core::DataArray>& data, const Backend::VectorXc& drive, bool normalize, double max_coefficient);
+  static std::complex<double> transfer(const core::Vector3& trans_pos, const core::Vector3& trans_norm, const core::Vector3& target_pos,
                                        double wave_number, double attenuation = 0);
-  static Backend::MatrixXc TransferMatrix(const std::vector<core::Vector3>& foci, const core::GeometryPtr& geometry);
+  static Backend::MatrixXc transfer_matrix(const std::vector<core::Vector3>& foci, const core::GeometryPtr& geometry);
 };
 
 /**
@@ -69,12 +69,12 @@ class HoloGainSDP final : public HoloGain {
    * @param[in] repeat parameter
    * @param[in] normalize parameter
    */
-  static std::shared_ptr<HoloGainSDP> Create(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps,
+  static std::shared_ptr<HoloGainSDP> create(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps,
                                              double alpha = 1e-3, double lambda = 0.9, size_t repeat = 100, bool normalize = true) {
     return std::make_shared<HoloGainSDP>(backend, foci, amps, alpha, lambda, repeat, normalize);
   }
 
-  Error Calc(const core::GeometryPtr& geometry) override;
+  Error calc(const core::GeometryPtr& geometry) override;
   HoloGainSDP(BackendPtr backend, std::vector<core::Vector3>& foci, std::vector<double>& amps, const double alpha, const double lambda,
               const size_t repeat, const bool normalize)
       : HoloGain(std::move(backend), foci, amps), _alpha(alpha), _lambda(lambda), _repeat(repeat), _normalize(normalize) {}
@@ -101,12 +101,12 @@ class HoloGainEVD final : public HoloGain {
    * @param[in] gamma parameter
    * @param[in] normalize parameter
    */
-  static std::shared_ptr<HoloGainEVD> Create(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps, double gamma = 1,
+  static std::shared_ptr<HoloGainEVD> create(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps, double gamma = 1,
                                              bool normalize = true) {
     return std::make_shared<HoloGainEVD>(backend, foci, amps, gamma, normalize);
   }
 
-  Error Calc(const core::GeometryPtr& geometry) override;
+  Error calc(const core::GeometryPtr& geometry) override;
   HoloGainEVD(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps, const double gamma, const bool normalize)
       : HoloGain(backend, foci, amps), _gamma(gamma), _normalize(normalize) {}
 
@@ -126,19 +126,19 @@ class HoloGainNaive final : public HoloGain {
    * @param[in] foci focal points
    * @param[in] amps amplitudes of the foci
    */
-  static std::shared_ptr<HoloGainNaive> Create(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps) {
+  static std::shared_ptr<HoloGainNaive> create(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps) {
     return std::make_shared<HoloGainNaive>(backend, foci, amps);
   }
 
-  Error Calc(const core::GeometryPtr& geometry) override;
+  Error calc(const core::GeometryPtr& geometry) override;
 
   HoloGainNaive(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps) : HoloGain(backend, foci, amps) {}
 };
 
 /**
  * @brief Gain to produce multiple focal points with GS method.
- * Refer to Asier Marzo and Bruce W Drinkwater. Holographic acoustic
- * tweezers.Proceedings of theNational Academy of Sciences, 116(1):84–89, 2019.
+ * Refer to Asier Marzo and Bruce W Drinkwater, "Holographic acoustic
+ * tweezers," Proceedings of theNational Academy of Sciences, 116(1):84–89, 2019.
  */
 class HoloGainGS final : public HoloGain {
  public:
@@ -149,12 +149,12 @@ class HoloGainGS final : public HoloGain {
    * @param[in] amps amplitudes of the foci
    * @param[in] repeat parameter
    */
-  static std::shared_ptr<HoloGainGS> Create(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps,
+  static std::shared_ptr<HoloGainGS> create(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps,
                                             size_t repeat = 100) {
     return std::make_shared<HoloGainGS>(backend, foci, amps, repeat);
   }
 
-  Error Calc(const core::GeometryPtr& geometry) override;
+  Error calc(const core::GeometryPtr& geometry) override;
 
   HoloGainGS(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps, const size_t repeat)
       : HoloGain(backend, foci, amps), _repeat(repeat) {}
@@ -178,11 +178,11 @@ class HoloGainGSPAT final : public HoloGain {
    * @param[in] amps amplitudes of the foci
    * @param[in] repeat parameter
    */
-  static std::shared_ptr<HoloGainGSPAT> Create(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps,
+  static std::shared_ptr<HoloGainGSPAT> create(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps,
                                                size_t repeat = 100) {
     return std::make_shared<HoloGainGSPAT>(backend, foci, amps, repeat);
   }
-  Error Calc(const core::GeometryPtr& geometry) override;
+  Error calc(const core::GeometryPtr& geometry) override;
 
   HoloGainGSPAT(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps, const size_t repeat)
       : HoloGain(backend, foci, amps), _repeat(repeat) {}
@@ -212,13 +212,13 @@ class HoloGainLM final : public HoloGain {
    * @param[in] k_max parameter
    * @param[in] initial initial phase of transducers
    */
-  static std::shared_ptr<HoloGainLM> Create(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps,
+  static std::shared_ptr<HoloGainLM> create(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps,
                                             double eps_1 = 1e-8, double eps_2 = 1e-8, double tau = 1e-3, size_t k_max = 5,
                                             const std::vector<double>& initial = {}) {
     return std::make_shared<HoloGainLM>(backend, foci, amps, eps_1, eps_2, tau, k_max, initial);
   }
 
-  Error Calc(const core::GeometryPtr& geometry) override;
+  Error calc(const core::GeometryPtr& geometry) override;
 
   HoloGainLM(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps, const double eps_1, const double eps_2,
              const double tau, const size_t k_max, std::vector<double> initial)
