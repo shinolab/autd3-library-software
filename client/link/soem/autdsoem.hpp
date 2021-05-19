@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 18/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -69,15 +69,9 @@ class SOEMController {
 };
 
 struct EtherCATAdapterInfo final {
-  EtherCATAdapterInfo() = default;
-  ~EtherCATAdapterInfo() = default;
-  EtherCATAdapterInfo& operator=(const EtherCATAdapterInfo& obj) = delete;
-  EtherCATAdapterInfo(EtherCATAdapterInfo&& obj) = default;
-  EtherCATAdapterInfo& operator=(EtherCATAdapterInfo&& obj) = default;
-
-  EtherCATAdapterInfo(const EtherCATAdapterInfo& info) {
-    desc = info.desc;
-    name = info.name;
+  EtherCATAdapterInfo(const std::string& desc, const std::string& name) {
+    this->desc = desc;
+    this->name = name;
   }
   static std::vector<EtherCATAdapterInfo> EnumerateAdapters();
 
