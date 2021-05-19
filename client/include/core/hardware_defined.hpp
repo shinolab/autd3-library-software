@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 17/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -38,7 +38,7 @@ constexpr size_t POINT_SEQ_BUFFER_SIZE_MAX = 40000;
 constexpr size_t POINT_SEQ_CLK_IDX_MAX = 40000;
 constexpr size_t POINT_SEQ_BASE_FREQ = 40000;
 
-using AUTDDataArray = std::array<uint16_t, NUM_TRANS_IN_UNIT>;
+using DataArray = std::array<uint16_t, NUM_TRANS_IN_UNIT>;
 
 enum RX_GLOBAL_CONTROL_FLAGS {
   MOD_BEGIN = 1 << 0,
@@ -60,8 +60,12 @@ enum class COMMAND : uint8_t {
   SEQ_MODE = 0x06,
   INIT_MOD_CLOCK = 0x07,
   CLEAR = 0x09,
+  SET_DELAY = 0x0A
 };
 
+/**
+ * \brief Data header common to all devices
+ */
 struct RxGlobalHeader {
   uint8_t msg_id;
   uint8_t control_flags;
@@ -70,7 +74,20 @@ struct RxGlobalHeader {
   uint8_t mod[MOD_FRAME_SIZE];
 };
 
+/**
+ * \brief Focus struct used in sequence mode
+ */
 struct SeqFocus {
+	SeqFocus() = default;
+
+  void set(const int32_t x, const int32_t y, const int32_t z, const uint8_t duty) {
+    set(0, x);
+    set(3, y);
+    set(6, z);
+    buf[9] = duty;
+  }
+
+ private:
   uint8_t buf[10];
   void set(const int32_t offset, const int32_t v) {
     uint8_t tmp = v & 0xFF;
@@ -80,12 +97,6 @@ struct SeqFocus {
     tmp = v >> 16 & 0x7F;
     tmp |= v >> 24 & 0x80;
     buf[offset + 2] = tmp;
-  }
-  void set(const int32_t x, const int32_t y, const int32_t z, const uint8_t duty) {
-    set(0, x);
-    set(3, y);
-    set(6, z);
-    buf[9] = duty;
   }
 };
 

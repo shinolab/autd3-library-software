@@ -3,7 +3,7 @@
 // Created Date: 01/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 17/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -24,7 +24,7 @@ namespace autd {
 class Timer {
  public:
   Timer() noexcept : _interval_us(1) {}
-  ~Timer() { (void)this->Stop(); }
+  ~Timer() { (void)this->stop(); }
   bool SetInterval(uint32_t &interval_us) {
     auto result = true;
     if (interval_us % 1000 != 0) {
@@ -34,8 +34,8 @@ class Timer {
     this->_interval_us = interval_us;
     return result;
   }
-  [[nodiscard]] Error Start(const std::function<void()> &callback) {
-    if (auto res = this->Stop(); res.is_err()) return res;
+  [[nodiscard]] Error start(const std::function<void()> &callback) {
+    if (auto res = this->stop(); res.is_err()) return res;
     this->_cb = callback;
     this->_loop = true;
 
@@ -45,7 +45,7 @@ class Timer {
     auto *const h_process = GetCurrentProcess();
     SetPriorityClass(h_process, REALTIME_PRIORITY_CLASS);
 
-    _timer_id = timeSetEvent(this->_interval_us / 1000, u_resolution, TimerThread, reinterpret_cast<DWORD_PTR>(this), TIME_PERIODIC);
+    _timer_id = timeSetEvent(this->_interval_us / 1000, u_resolution, timer_thread, reinterpret_cast<DWORD_PTR>(this), TIME_PERIODIC);
     if (_timer_id == 0) {
       this->_loop = false;
       return Err(std::string("timeSetEvent failed"));
@@ -54,7 +54,7 @@ class Timer {
     return Ok();
   }
 
-  [[nodiscard]] Error Stop() {
+  [[nodiscard]] Error stop() {
     if (!this->_loop) return Ok();
     this->_loop = false;
 
@@ -71,8 +71,8 @@ class Timer {
   Timer &operator=(Timer &&) = delete;
 
  private:
-  static void CALLBACK TimerThread([[maybe_unused]] UINT u_timer_id, [[maybe_unused]] UINT u_msg, DWORD_PTR dw_user, [[maybe_unused]] DWORD_PTR dw1,
-                                   [[maybe_unused]] DWORD_PTR dw2) {
+  static void CALLBACK timer_thread([[maybe_unused]] UINT u_timer_id, [[maybe_unused]] UINT u_msg, DWORD_PTR dw_user, [[maybe_unused]] DWORD_PTR dw1,
+                                    [[maybe_unused]] DWORD_PTR dw2) {
     auto *const timer = reinterpret_cast<Timer *>(dw_user);
     timer->_cb();
   }

@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 12/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -17,7 +17,7 @@
 namespace autd {
 
 /**
- * @brief Firmware information
+ * \brief Firmware information
  */
 class FirmwareInfo {
  public:
@@ -25,11 +25,11 @@ class FirmwareInfo {
       : _idx(idx), _cpu_version_number(cpu_ver), _fpga_version_number(fpga_ver) {}
 
   /**
-   * @brief Get cpu firmware version
+   * \brief Get cpu firmware version
    */
   [[nodiscard]] std::string cpu_version() const { return firmware_version_map(_cpu_version_number); }
   /**
-   * @brief Get fpga firmware version
+   * \brief Get fpga firmware version
    */
   [[nodiscard]] std::string fpga_version() const { return firmware_version_map(_fpga_version_number); }
 

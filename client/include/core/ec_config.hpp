@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -17,7 +17,7 @@ constexpr size_t EC_OUTPUT_FRAME_SIZE = 626;
 constexpr size_t EC_INPUT_FRAME_SIZE = 2;
 
 constexpr uint32_t EC_SM3_CYCLE_TIME_MICRO_SEC = 1000;
-constexpr uint32_t EC_SYNC0_CYCLE_TIME_MICRO_SEC = 1000;
+constexpr uint32_t EC_SYNC0_CYCLE_TIME_MICRO_SEC = 500;
 
 constexpr uint32_t EC_SM3_CYCLE_TIME_NANO_SEC = EC_SM3_CYCLE_TIME_MICRO_SEC * 1000;
 constexpr uint32_t EC_SYNC0_CYCLE_TIME_NANO_SEC = EC_SYNC0_CYCLE_TIME_MICRO_SEC * 1000;

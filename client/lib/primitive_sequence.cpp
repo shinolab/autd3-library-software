@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 18/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -15,15 +15,15 @@
 
 namespace autd::sequence {
 
-static core::Vector3 GetOrthogonal(const core::Vector3& v) {
-  const auto a = core::Vector3::UnitX();
-  if (std::acos(v.dot(a)) < M_PI / 2) return v.cross(core::Vector3::UnitY());
-  return v.cross(a);
-}
+SequencePtr Circumference::create(const core::Vector3& center, const core::Vector3& normal, const double radius, const size_t n) {
+  auto get_orthogonal = [](const core::Vector3& v) {
+    const auto a = core::Vector3::UnitX();
+    if (std::acos(v.dot(a)) < M_PI / 2) return v.cross(core::Vector3::UnitY());
+    return v.cross(a);
+  };
 
-SequencePtr CreateImpl(const core::Vector3& center, const core::Vector3& normal, const double radius, const size_t n) {
   const auto normal_ = normal.normalized();
-  const auto n1 = GetOrthogonal(normal_).normalized();
+  const auto n1 = get_orthogonal(normal_).normalized();
   const auto n2 = normal_.cross(n1).normalized();
 
   std::vector<core::Vector3> control_points;
@@ -33,10 +33,6 @@ SequencePtr CreateImpl(const core::Vector3& center, const core::Vector3& normal,
     auto y = n2 * radius * std::sin(theta);
     control_points.emplace_back(center + x + y);
   }
-  return core::PointSequence::Create(control_points);
-}
-
-SequencePtr Circumference::Create(const core::Vector3& center, const core::Vector3& normal, const double radius, const size_t n) {
-  return CreateImpl(center, normal, radius, n);
+  return PointSequence::create(control_points);
 }
 }  // namespace autd::sequence

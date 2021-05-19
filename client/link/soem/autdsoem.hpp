@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 18/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -41,16 +41,16 @@ class SOEMController {
   SOEMController(SOEMController&& obj) = delete;
   SOEMController& operator=(SOEMController&& obj) = delete;
 
-  [[nodiscard]] Error Open(const char* ifname, size_t dev_num, ECConfig config);
-  [[nodiscard]] Error Close();
+  [[nodiscard]] Error open(const char* ifname, size_t dev_num, ECConfig config);
+  [[nodiscard]] Error close();
 
   [[nodiscard]] bool is_open() const;
 
-  [[nodiscard]] Error Send(size_t size, const uint8_t* buf) const;
-  [[nodiscard]] Error Read(uint8_t* rx) const;
+  [[nodiscard]] Error send(size_t size, const uint8_t* buf) const;
+  [[nodiscard]] Error read(uint8_t* rx) const;
 
  private:
-  void SetupSync0(bool activate, uint32_t cycle_time_ns) const;
+  void setup_sync0(bool activate, uint32_t cycle_time_ns) const;
 
   uint8_t* _io_map;
   size_t _io_map_size = 0;
@@ -69,17 +69,11 @@ class SOEMController {
 };
 
 struct EtherCATAdapterInfo final {
-  EtherCATAdapterInfo() = default;
-  ~EtherCATAdapterInfo() = default;
-  EtherCATAdapterInfo& operator=(const EtherCATAdapterInfo& obj) = delete;
-  EtherCATAdapterInfo(EtherCATAdapterInfo&& obj) = default;
-  EtherCATAdapterInfo& operator=(EtherCATAdapterInfo&& obj) = default;
-
-  EtherCATAdapterInfo(const EtherCATAdapterInfo& info) {
-    desc = info.desc;
-    name = info.name;
+  EtherCATAdapterInfo(const std::string& desc, const std::string& name) {
+    this->desc = desc;
+    this->name = name;
   }
-  static std::vector<EtherCATAdapterInfo> EnumerateAdapters();
+  static std::vector<EtherCATAdapterInfo> enumerate_adapters();
 
   std::string desc;
   std::string name;

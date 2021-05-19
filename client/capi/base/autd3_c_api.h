@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 18/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -28,21 +28,27 @@ EXPORT_AUTD void AUTDFreeController(void* handle);
 EXPORT_AUTD bool AUTDIsOpen(void* handle);
 EXPORT_AUTD bool AUTDIsSilentMode(void* handle);
 EXPORT_AUTD void AUTDSetSilentMode(void* handle, bool mode);
+EXPORT_AUTD void AUTDSetReadFPGAInfo(void* handle, bool reads_fpga_info);
 EXPORT_AUTD double AUTDWavelength(void* handle);
 EXPORT_AUTD void AUTDSetWavelength(void* handle, double wavelength);
+EXPORT_AUTD bool AUTDReadFPGAInfo(void* handle, uint8_t* out);
+EXPORT_AUTD bool AUTDUpdateCtrlFlags(void* handle);
+EXPORT_AUTD bool AUTDSetOutputDelay(void* handle, uint16_t* delay);
+
+EXPORT_AUTD int32_t AUTDGetLastError(char* error);
 
 EXPORT_AUTD int32_t AUTDNumDevices(void* handle);
 EXPORT_AUTD int32_t AUTDNumTransducers(void* handle);
 EXPORT_AUTD int32_t AUTDDeviceIdxForTransIdx(void* handle, int32_t global_trans_idx);
 EXPORT_AUTD void AUTDTransPositionByGlobal(void* handle, int32_t global_trans_idx, double* x, double* y, double* z);
 EXPORT_AUTD void AUTDTransPositionByLocal(void* handle, int32_t device_idx, int32_t local_trans_idx, double* x, double* y, double* z);
-EXPORT_AUTD void AUTDDeviceDirection(void* handle, int32_t device_idx, double* x, double* y, double* z);
+EXPORT_AUTD void AUTDDeviceXDirection(void* handle, int32_t device_idx, double* x, double* y, double* z);
+EXPORT_AUTD void AUTDDeviceYDirection(void* handle, int32_t device_idx, double* x, double* y, double* z);
+EXPORT_AUTD void AUTDDeviceZDirection(void* handle, int32_t device_idx, double* x, double* y, double* z);
 
 EXPORT_AUTD int32_t AUTDGetFirmwareInfoListPointer(void* handle, void** out);
 EXPORT_AUTD void AUTDGetFirmwareInfo(void* p_firm_info_list, int32_t index, char* cpu_ver, char* fpga_ver);
 EXPORT_AUTD void AUTDFreeFirmwareInfoListPointer(void* p_firm_info_list);
-
-EXPORT_AUTD int32_t AUTDGetLastError(char* error);
 
 EXPORT_AUTD void AUTDNullGain(void** gain);
 EXPORT_AUTD void AUTDGroupedGain(void** gain, int32_t* group_ids, void** in_gains, int32_t size);
@@ -59,6 +65,18 @@ EXPORT_AUTD void AUTDSawModulation(void** mod, int32_t freq);
 EXPORT_AUTD void AUTDSineModulation(void** mod, int32_t freq, double amp, double offset);
 EXPORT_AUTD void AUTDSquareModulation(void** mod, int32_t freq, uint8_t low, uint8_t high);
 EXPORT_AUTD void AUTDDeleteModulation(void* mod);
+
+EXPORT_AUTD void AUTDSequence(void** out);
+EXPORT_AUTD bool AUTDSequenceAddPoint(void* seq, double x, double y, double z);
+EXPORT_AUTD bool AUTDSequenceAddPoints(void* seq, double* points, uint32_t size);
+EXPORT_AUTD double AUTDSequenceSetFreq(void* seq, double freq);
+EXPORT_AUTD double AUTDSequenceFreq(void* seq);
+EXPORT_AUTD uint32_t AUTDSequencePeriod(void* seq);
+EXPORT_AUTD uint32_t AUTDSequenceSamplingPeriod(void* seq);
+EXPORT_AUTD double AUTDSequenceSamplingFreq(void* seq);
+EXPORT_AUTD uint16_t AUTDSequenceSamplingFreqDiv(void* seq);
+EXPORT_AUTD void AUTDDeleteSequence(void* seq);
+EXPORT_AUTD void AUTDCircumSequence(void** out, double x, double y, double z, double nx, double ny, double nz, double radius, uint64_t n);
 
 EXPORT_AUTD bool AUTDStop(void* handle);
 EXPORT_AUTD bool AUTDSendGain(void* handle, void* gain);
