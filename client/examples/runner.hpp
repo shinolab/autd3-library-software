@@ -19,6 +19,7 @@
 #include <vector>
 
 #include "autd3.hpp"
+#include "examples/advanced.hpp"
 #include "examples/bessel.hpp"
 #include "examples/seq.hpp"
 #include "examples/simple.hpp"
@@ -30,11 +31,14 @@
 inline int run(autd::Controller& autd) {
   using F = std::function<void(autd::Controller&)>;
   std::vector<std::pair<F, std::string>> examples = {
-      std::pair(F{simple_test}, "Single Focal Point Test"),      std::pair(F{bessel_test}, "BesselBeam Test"),
+      std::pair(F{simple_test}, "Single Focal Point Test"),
+      std::pair(F{bessel_test}, "BesselBeam Test"),
 #ifdef BUILD_HOLO_GAIN
       std::pair(F{holo_test}, "HoloGain (multiple foci) Test"),
 #endif
-      std::pair(F{stm_test}, "Spatio-Temporal Modulation Test"), std::pair(F{seq_test}, "Sequence (hardware STM) Test"),
+      std::pair(F{stm_test}, "Spatio-Temporal Modulation Test"),
+      std::pair(F{seq_test}, "Sequence (hardware STM) Test"),
+      std::pair(F{advanced_test}, "Advanced Test (custom Gain, Modulation, and set output delay)"),
   };
 
   autd.geometry()->wavelength() = 8.5;  // mm
