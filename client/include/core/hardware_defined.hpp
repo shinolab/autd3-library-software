@@ -78,6 +78,14 @@ struct RxGlobalHeader {
  * \brief Focus struct used in sequence mode
  */
 struct SeqFocus {
+  void set(const int32_t x, const int32_t y, const int32_t z, const uint8_t duty) {
+    set(0, x);
+    set(3, y);
+    set(6, z);
+    buf[9] = duty;
+  }
+
+ private:
   uint8_t buf[10];
   void set(const int32_t offset, const int32_t v) {
     uint8_t tmp = v & 0xFF;
@@ -87,12 +95,6 @@ struct SeqFocus {
     tmp = v >> 16 & 0x7F;
     tmp |= v >> 24 & 0x80;
     buf[offset + 2] = tmp;
-  }
-  void set(const int32_t x, const int32_t y, const int32_t z, const uint8_t duty) {
-    set(0, x);
-    set(3, y);
-    set(6, z);
-    buf[9] = duty;
   }
 };
 

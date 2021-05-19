@@ -73,6 +73,8 @@ class Controller {
 
   /**
    * @brief FPGA info
+   *  \return ok with FPGA information if succeeded, or err with error message if failed
+   *  \details the first bit of FPGA info represents whether the fan is running.
    */
   Result<std::vector<uint8_t>, std::string> fpga_info();
 
@@ -81,38 +83,42 @@ class Controller {
    */
   Error update_ctrl_flag();
 
+  /**
+   * \brief Set output delay
+   * \param[in] delay delay for each transducer in units of ultrasound period (i.e. 25us). The maximum value of delay is 255.
+   * \return ok if succeeded, or err with error message if failed
+   */
   [[nodiscard]] Error set_output_delay(const std::vector<core::DataArray>& delay) const;
 
   /**
    * @brief Open device with a link.
    * @param[in] link Link
-   * @return return Ok(whether succeeded to open), or Err(error msg) if some unrecoverable error occurred
+   * \return ok if succeeded, or err with error message if failed
    */
   [[nodiscard]] Error open(const core::LinkPtr& link);
 
   /**
    * @brief Synchronize all devices
-   * @details Call this function only once after OpenWith(). It takes several seconds and blocks the thread in the meantime.
    * @param[in] config configuration
-   * @return return Ok(whether succeeded to synchronize), or Err(error msg) if some unrecoverable error occurred
+   * \return ok if succeeded, or err with error message if failed
    */
   [[nodiscard]] Error synchronize(core::Configuration config = core::Configuration::get_default_configuration());
 
   /**
    * @brief Clear all data in hardware
-   * @return return Ok(whether succeeded to clear), or Err(error msg) if some unrecoverable error occurred
+   * \return ok if succeeded, or err with error message if failed
    */
   [[nodiscard]] Error clear() const;
 
   /**
    * @brief Close the controller
-   * @return return Ok(whether succeeded to close), or Err(error msg) if some unrecoverable error occurred
+   * \return ok if succeeded, or err with error message if failed
    */
   [[nodiscard]] Error close();
 
   /**
    * @brief Stop outputting
-   * @return return Ok(whether succeeded to stop), or Err(error msg) if some unrecoverable error occurred
+   * \return ok if succeeded, or err with error message if failed
    */
   [[nodiscard]] Error stop();
 
@@ -120,14 +126,14 @@ class Controller {
    * @brief Send gain to the device
    * @param[in] gain Gain to display
    * @param[in] wait_for_sent if true, this function will wait for the data is sent to the devices and processed.
-   * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
+   * \return ok if succeeded, or err with error message if failed
    */
   [[nodiscard]] Error send(const core::GainPtr& gain, bool wait_for_sent = false);
 
   /**
    * @brief Send modulation to the device
    * @param[in] mod Amplitude modulation to display
-   * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
+   * \return ok if succeeded, or err with error message if failed
    */
   [[nodiscard]] Error send(const core::ModulationPtr& mod);
 
@@ -136,25 +142,31 @@ class Controller {
    * @param[in] gain Gain to display
    * @param[in] mod Amplitude modulation to display
    * @param[in] wait_for_sent if true, this function will wait for the data is sent to the devices and processed.
-   * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
+   * \return ok if succeeded, or err with error message if failed
    */
   [[nodiscard]] Error send(const core::GainPtr& gain, const core::ModulationPtr& mod, bool wait_for_sent = false);
 
   /**
    * @brief Send sequence and modulation to the device
    * @param[in] seq Sequence to display
-   * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
+   * \return ok if succeeded, or err with error message if failed
    */
   [[nodiscard]] Error send(const core::SequencePtr& seq);
 
   /**
    * @brief Enumerate firmware information
-   * @return return Ok(firmware_info_list), or Err(error msg) if some unrecoverable error occurred
+   * \return ok with firmware information list if succeeded, or err with error message if failed
    */
   [[nodiscard]] Result<std::vector<FirmwareInfo>, std::string> firmware_info_list() const;
 
+  /**
+   * \brief return pointer to software spatio-temporal modulation controller.
+   */
   [[nodiscard]] std::shared_ptr<STMController> stm() const;
 
+  /**
+   * \brief Software spatio-temporal modulation controller.
+   */
   class STMController {
    public:
     explicit STMController(core::LinkPtr link, core::GeometryPtr geometry, bool* silent_mode, bool* read_fpga_info)
@@ -174,23 +186,23 @@ class Controller {
      * @brief Start Spatio-Temporal Modulation
      * @param[in] freq Frequency of STM modulation
      * @details Generate STM modulation by switching gains appended by
-     * AddSTMGain() at the freq. The accuracy depends on the computer, for
+     * add_gain() or add_gains() at the freq. The accuracy depends on the computer, for
      * example, about 1ms on Windows. Note that it is affected by interruptions,
      * and so on.
-     * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
+     * \return ok if succeeded, or err with error message if failed
      */
     [[nodiscard]] Error start(double freq);
 
     /**
      * @brief Suspend Spatio-Temporal Modulation
-     * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
+     * \return ok if succeeded, or err with error message if failed
      */
     [[nodiscard]] Error stop();
 
     /**
      * @brief Finish Spatio-Temporal Modulation
-     * @details Appended gains will be removed.
-     * @return return Ok(whether succeeded), or Err(error msg) if some unrecoverable error occurred
+     * @details Added gains will be removed.
+     * \return ok if succeeded, or err with error message if failed
      */
     [[nodiscard]] Error finish();
 

@@ -38,7 +38,7 @@ class Logic {
 
  public:
   /**
-   * \brief check if the data with msg_id is processed in the devices.
+   * \brief check if the data which have msg_id have been processed in the devices.
    * \param num_devices number of devices
    * \param msg_id message id
    * \param rx pointer to received data
