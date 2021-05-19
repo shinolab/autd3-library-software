@@ -126,6 +126,15 @@ class Logic {
     }
   }
 
+  static void PackDelayBody(const std::vector<DataArray>& delay, uint8_t* data, size_t* const size) {
+    *size = sizeof(RxGlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * delay.size();
+    auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(RxGlobalHeader));
+    for (auto&& d : delay) {
+      std::memcpy(cursor, &d[0], NUM_TRANS_IN_UNIT);
+      cursor += NUM_TRANS_IN_UNIT;
+    }
+  }
+
  private:
   static uint16_t Log2U(const uint32_t x) {
 #ifdef _MSC_VER
