@@ -78,7 +78,7 @@ struct RxGlobalHeader {
  * \brief Focus struct used in sequence mode
  */
 struct SeqFocus {
-	SeqFocus() = default;
+  SeqFocus() = default;
 
   void set(const int32_t x, const int32_t y, const int32_t z, const uint8_t duty) {
     set(0, x);
