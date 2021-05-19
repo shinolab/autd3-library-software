@@ -3,7 +3,7 @@
 // Created Date: 01/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 17/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -27,8 +27,8 @@ class Result : public std::variant<T, E> {
   [[nodiscard]] bool is_ok() const { return std::holds_alternative<T>(*this); }
   [[nodiscard]] bool is_err() const { return std::holds_alternative<E>(*this); }
 
-  static Result Ok(T ok) { return Result(std::forward<T>(ok)); }
-  static Result Err(E err) { return Result(std::forward<E>(err)); }
+  static Result ok(T ok) { return Result(std::forward<T>(ok)); }
+  static Result err(E err) { return Result(std::forward<E>(err)); }
 
   T unwrap() {
     if (this->is_err()) {
@@ -58,7 +58,7 @@ struct OkType {
 
   template <typename E>
   operator Result<T, E>() {
-    return Result<T, E>::Ok(std::forward<T>(_t));
+    return Result<T, E>::ok(std::forward<T>(_t));
   }
 
  private:
@@ -71,7 +71,7 @@ struct ErrType {
 
   template <typename V>
   operator Result<V, T>() {
-    return Result<V, T>::Err(std::forward<T>(_t));
+    return Result<V, T>::err(std::forward<T>(_t));
   }
 
  private:

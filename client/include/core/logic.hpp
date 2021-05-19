@@ -34,15 +34,15 @@ class Logic {
     return id.load();
   }
 
-  static bool IsMsgProcessed(const size_t num_devices, const uint8_t msg_id, const uint8_t* const rx) {
+  static bool is_msg_processed(const size_t num_devices, const uint8_t msg_id, const uint8_t* const rx) {
     size_t processed = 0;
     for (size_t dev = 0; dev < num_devices; dev++)
       if (const uint8_t proc_id = rx[dev * 2 + 1]; proc_id == msg_id) processed++;
     return processed == num_devices;
   }
 
-  static void PackHeader(const COMMAND cmd, const bool silent_mode, const bool seq_mode, const bool read_fpga_info, uint8_t* data,
-                         uint8_t* const msg_id) {
+  static void pack_header(const COMMAND cmd, const bool silent_mode, const bool seq_mode, const bool read_fpga_info, uint8_t* data,
+                          uint8_t* const msg_id) {
     auto* header = reinterpret_cast<RxGlobalHeader*>(data);
     *msg_id = get_id();
     header->msg_id = *msg_id;
@@ -55,9 +55,9 @@ class Logic {
     if (read_fpga_info) header->control_flags |= READ_FPGA_INFO;
   }
 
-  static void PackHeader(const ModulationPtr& mod, const bool silent_mode, const bool seq_mode, const bool read_fpga_info, uint8_t* data,
-                         uint8_t* const msg_id) {
-    PackHeader(COMMAND::OP, silent_mode, seq_mode, read_fpga_info, data, msg_id);
+  static void pack_header(const ModulationPtr& mod, const bool silent_mode, const bool seq_mode, const bool read_fpga_info, uint8_t* data,
+                          uint8_t* const msg_id) {
+    pack_header(COMMAND::OP, silent_mode, seq_mode, read_fpga_info, data, msg_id);
     if (mod == nullptr) return;
     auto* header = reinterpret_cast<RxGlobalHeader*>(data);
     const auto mod_size = static_cast<uint8_t>(std::clamp(mod->buffer().size() - mod->sent(), size_t{0}, MOD_FRAME_SIZE));
@@ -69,7 +69,7 @@ class Logic {
     mod->sent() += mod_size;
   }
 
-  static void PackBody(const GainPtr& gain, uint8_t* data, size_t* size) {
+  static void pack_body(const GainPtr& gain, uint8_t* data, size_t* size) {
     const auto num_devices = gain != nullptr ? gain->data().size() : 0;
 
     *size = sizeof(RxGlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;
@@ -83,7 +83,7 @@ class Logic {
     }
   }
 
-  static void PackBody(const SequencePtr& seq, const GeometryPtr& geometry, uint8_t* data, size_t* const size) {
+  static void pack_body(const SequencePtr& seq, const GeometryPtr& geometry, uint8_t* data, size_t* const size) {
     const auto num_devices = seq != nullptr ? geometry->num_devices() : 0;
 
     *size = sizeof(RxGlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;
@@ -115,7 +115,7 @@ class Logic {
     seq->sent() += send_size;
   }
 
-  static void PackSyncBody(const Configuration config, const size_t num_devices, uint8_t* data, size_t* const size) {
+  static void pack_sync_body(const Configuration config, const size_t num_devices, uint8_t* data, size_t* const size) {
     *size = sizeof(RxGlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;
 
     auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(RxGlobalHeader));
@@ -126,25 +126,13 @@ class Logic {
     }
   }
 
-  static void PackDelayBody(const std::vector<DataArray>& delay, uint8_t* data, size_t* const size) {
+  static void pack_delay_body(const std::vector<DataArray>& delay, uint8_t* data, size_t* const size) {
     *size = sizeof(RxGlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * delay.size();
     auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(RxGlobalHeader));
     for (auto&& d : delay) {
       std::memcpy(cursor, &d[0], NUM_TRANS_IN_UNIT);
       cursor += NUM_TRANS_IN_UNIT;
     }
-  }
-
- private:
-  static uint16_t Log2U(const uint32_t x) {
-#ifdef _MSC_VER
-    unsigned long n;         // NOLINT
-    _BitScanReverse(&n, x);  // NOLINT
-#else
-    uint32_t n;
-    n = 31 - __builtin_clz(x);
-#endif
-    return static_cast<uint16_t>(n);
   }
 };
 }  // namespace autd::core

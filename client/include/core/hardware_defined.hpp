@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 17/05/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -38,7 +38,7 @@ constexpr size_t POINT_SEQ_BUFFER_SIZE_MAX = 40000;
 constexpr size_t POINT_SEQ_CLK_IDX_MAX = 40000;
 constexpr size_t POINT_SEQ_BASE_FREQ = 40000;
 
-using AUTDDataArray = std::array<uint16_t, NUM_TRANS_IN_UNIT>;
+using DataArray = std::array<uint16_t, NUM_TRANS_IN_UNIT>;
 
 enum RX_GLOBAL_CONTROL_FLAGS {
   MOD_BEGIN = 1 << 0,
@@ -60,6 +60,7 @@ enum class COMMAND : uint8_t {
   SEQ_MODE = 0x06,
   INIT_MOD_CLOCK = 0x07,
   CLEAR = 0x09,
+  SET_DELAY = 0x0A
 };
 
 struct RxGlobalHeader {

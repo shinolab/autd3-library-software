@@ -41,12 +41,12 @@ class SOEMLink : virtual public core::Link {
    * @details Available Network interface names are obtained by EnumerateAdapters().
    *          The numbers of connected devices is obtained by Geometry::num_devices().
    */
-  static core::LinkPtr Create(const std::string& ifname, size_t device_num);
+  static core::LinkPtr create(const std::string& ifname, size_t device_num);
 
   /**
    * @brief Enumerate Ethernet adapters of the computer.
    */
-  static std::vector<EtherCATAdapter> EnumerateAdapters();
+  static std::vector<EtherCATAdapter> enumerate_adapters();
   SOEMLink() = default;
   ~SOEMLink() override = default;
   SOEMLink(const SOEMLink& v) noexcept = delete;
@@ -54,10 +54,10 @@ class SOEMLink : virtual public core::Link {
   SOEMLink(SOEMLink&& obj) = delete;
   SOEMLink& operator=(SOEMLink&& obj) = delete;
 
-  Error Open() override = 0;
-  Error Close() override = 0;
-  Error Send(size_t size, const uint8_t* buf) override = 0;
-  Error Read(uint8_t* rx, size_t buffer_len) override = 0;
+  Error open() override = 0;
+  Error close() override = 0;
+  Error send(size_t size, const uint8_t* buf) override = 0;
+  Error read(uint8_t* rx, size_t buffer_len) override = 0;
   bool is_open() override = 0;
 };
 }  // namespace autd::link
