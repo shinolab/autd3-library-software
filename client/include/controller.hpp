@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 20/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -85,8 +85,9 @@ class Controller {
 
   /**
    * \brief Set output delay
-   * \param[in] delay delay for each transducer in units of ultrasound period (i.e. 25us). The maximum value of delay is 255.
+   * \param[in] delay delay for each transducer in units of ultrasound period (i.e. 25us).
    * \return ok if succeeded, or err with error message if failed
+   * \details The maximum value of delay is 128. If you set a value of more than 128, the lowest 7 bits will be used.
    */
   [[nodiscard]] Error set_output_delay(const std::vector<core::DataArray>& delay) const;
 
