@@ -48,18 +48,18 @@ class Timer {
     if (_timer_id == 0) return Err(std::string("timeSetEvent failed"));
 
     this->_loop = true;
-    return Ok();
+    return Ok(true);
   }
 
   [[nodiscard]] Error stop() {
-    if (!this->_loop) return Ok();
+    if (!this->_loop) return Ok(true);
     this->_loop = false;
 
     const uint32_t u_resolution = 1;
     timeEndPeriod(u_resolution);
     if (timeKillEvent(_timer_id) != TIMERR_NOERROR) return Err(std::string("timeKillEvent failed"));
 
-    return Ok();
+    return Ok(true);
   }
 
   Timer(const Timer &) = delete;

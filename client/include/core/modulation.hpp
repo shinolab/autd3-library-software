@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 20/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -46,11 +46,11 @@ class Modulation {
   /**
    * \brief Build modulation data with Configuration
    * \param config Configuration
-   * \return ok if succeeded, or err with error message if failed
+   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
   [[nodiscard]] virtual Error build(Configuration config) {
     (void)config;
-    return Ok();
+    return Ok(true);
   }
 
   /**

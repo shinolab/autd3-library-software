@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 20/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -34,22 +34,22 @@ class Link {
 
   /**
    * @brief Open link
-   * @return ok if succeeded, or err with error message if error occurred
+   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
   [[nodiscard]] virtual Error open() = 0;
   /**
    * @brief Close link
-   * @return ok if succeeded, or err with error message if error occurred
+   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
   [[nodiscard]] virtual Error close() = 0;
   /**
    * @brief  Send data to devices
-   * @return ok if succeeded, or err with error message if error occurred
+   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
   [[nodiscard]] virtual Error send(size_t size, const uint8_t* buf) = 0;
   /**
    * @brief  Read data from devices
-   * @return ok if succeeded, or err with error message if error occurred
+   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
   [[nodiscard]] virtual Error read(uint8_t* rx, size_t buffer_len) = 0;
 
