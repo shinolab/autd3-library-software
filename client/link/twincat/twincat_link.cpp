@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 20/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -102,13 +102,13 @@ Error TwinCATLinkImpl::open() {
   }
 
   this->_net_id = addr.net_id;
-  return Ok();
+  return Ok(true);
 }
 Error TwinCATLinkImpl::close() {
   this->_port = 0;
   const auto port_close = reinterpret_cast<TcAdsPortCloseEx>(GetProcAddress(this->_lib, TCADS_ADS_PORT_CLOSE_EX));
   const auto res = (*port_close)(this->_port);
-  if (res == 0) return Ok();
+  if (res == 0) return Ok(true);
   std::stringstream ss;
   ss << "Error on closing (local): " << std::hex << res;
   return Err(ss.str());
@@ -121,7 +121,7 @@ Error TwinCATLinkImpl::send(const size_t size, const uint8_t* buf) {
                          static_cast<unsigned long>(size),  // NOLINT
                          const_cast<void*>(static_cast<const void*>(buf)));
 
-  if (ret == 0) return Ok();
+  if (ret == 0) return Ok(true);
   // https://infosys.beckhoff.com/english.php?content=../content/1033/tcadscommon/html/tcadscommon_intro.htm&id=
   // 6 : target port not found
   std::stringstream ss;
@@ -136,7 +136,7 @@ Error TwinCATLinkImpl::read(uint8_t* rx, const size_t buffer_len) {
   unsigned long read_bytes;           // NOLINT
   const auto ret = read(this->_port,  // NOLINT
                         &addr, INDEX_GROUP, INDEX_OFFSET_BASE_READ, static_cast<uint32_t>(buffer_len), rx, &read_bytes);
-  if (ret == 0) return Ok();
+  if (ret == 0) return Ok(true);
 
   std::stringstream ss;
   ss << "Error on reading data: " << std::hex << ret;
@@ -147,16 +147,16 @@ Error TwinCATLinkImpl::read(uint8_t* rx, const size_t buffer_len) {
 Error TwinCATLinkImpl::open() {
   return Err(std::string("Link to localhost has not been compiled. Rebuild this library on a Twincat3 host machine with TcADS-DLL."));
 }
-Error TwinCATLinkImpl::close() { return Ok(); }
+Error TwinCATLinkImpl::close() { return Ok(true); }
 Error TwinCATLinkImpl::send(size_t size, const uint8_t* buf) {
   (void)size;
   (void)buf;
-  return Ok();
+  return Ok(true);
 }
 Error TwinCATLinkImpl::read(uint8_t* rx, size_t buffer_len) {
   (void)rx;
   (void)buffer_len;
-  return Ok();
+  return Ok(true);
 }
 #endif  // TC_ADS
 

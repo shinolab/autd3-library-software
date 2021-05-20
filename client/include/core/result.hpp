@@ -3,7 +3,7 @@
 // Created Date: 01/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 20/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -62,7 +62,7 @@ class Result : public std::variant<T, E> {
   }
 };
 
-using Error = Result<std::nullopt_t, std::string>;
+using Error = Result<bool, std::string>;
 
 /**
  * \brief Type just used for implicit conversion to Result.
@@ -100,7 +100,6 @@ template <typename T>
 OkType<T> Ok(T t) {
   return OkType<T>(std::forward<T>(t));
 }
-inline OkType<std::nullopt_t> Ok() { return OkType(std::nullopt); }
 template <typename T>
 ErrType<T> Err(T t) {
   return ErrType<T>(std::forward<T>(t));

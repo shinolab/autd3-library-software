@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 20/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -65,16 +65,9 @@ Error SOEMLinkImpl::open() {
 
 Error SOEMLinkImpl::close() { return _cnt.close(); }
 
-Error SOEMLinkImpl::send(const size_t size, const uint8_t* buf) {
-  if (!_cnt.is_open()) return Ok();
+Error SOEMLinkImpl::send(const size_t size, const uint8_t* buf) { return _cnt.send(size, buf); }
 
-  return _cnt.send(size, buf);
-}
-
-Error SOEMLinkImpl::read(uint8_t* rx, [[maybe_unused]] size_t buffer_len) {
-  if (!_cnt.is_open()) return Ok();
-  return _cnt.read(rx);
-}
+Error SOEMLinkImpl::read(uint8_t* rx, [[maybe_unused]] size_t buffer_len) { return _cnt.read(rx); }
 
 bool SOEMLinkImpl::is_open() { return _cnt.is_open(); }
 }  // namespace autd::link

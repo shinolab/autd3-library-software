@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 20/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -81,21 +81,19 @@ Error Controller::send_header(const core::COMMAND cmd, const size_t max_trial) c
 }
 
 Error Controller::wait_msg_processed(const uint8_t msg_id, const size_t max_trial) const {
-  if (_link == nullptr || !_link->is_open()) return Ok();
-
   const auto num_devices = this->_geometry->num_devices();
-
   const auto buffer_len = num_devices * core::EC_INPUT_FRAME_SIZE;
   for (size_t i = 0; i < max_trial; i++) {
-    if (auto res = this->_link->read(&_rx_buf[0], buffer_len); res.is_err()) return res;
-
-    if (core::Logic::is_msg_processed(num_devices, msg_id, &_rx_buf[0])) return Ok();
+    auto res = this->_link->read(&_rx_buf[0], buffer_len);
+    if (res.is_err()) return res;
+    if (!res.unwrap()) continue;
+    if (core::Logic::is_msg_processed(num_devices, msg_id, &_rx_buf[0])) return Ok(true);
 
     auto wait = static_cast<size_t>(std::ceil(core::EC_TRAFFIC_DELAY * 1000.0 / core::EC_DEVICE_PER_FRAME * static_cast<double>(num_devices)));
     std::this_thread::sleep_for(std::chrono::milliseconds(wait));
   }
 
-  return Ok();
+  return Ok(false);
 }
 
 Error Controller::close() {
@@ -139,8 +137,7 @@ Error Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod
     if (auto res = this->_link->send(size, &this->_tx_buf[0]); res.is_err()) return res;
 
     const auto mod_finished = ModSentFinished(mod);
-    if (mod_finished & !wait_for_sent) return Ok();
-
+    if (mod_finished && !wait_for_sent) return Ok(true);
     if (auto res = wait_msg_processed(msg_id); res.is_err() || mod_finished) return res;
   }
 }
@@ -155,11 +152,9 @@ Error Controller::send(const core::SequencePtr& seq) {
     core::Logic::pack_header(core::COMMAND::SEQ_MODE, this->_silent_mode, this->_seq_mode, this->_read_fpga_info, &this->_tx_buf[0], &msg_id);
     size_t size;
     core::Logic::pack_body(seq, this->_geometry, &this->_tx_buf[0], &size);
-
     if (auto res = this->_link->send(size, &this->_tx_buf[0]); res.is_err()) return res;
 
     if (SeqSentFinished(seq)) return wait_msg_processed(msg_id, 5000);
-
     if (auto res = wait_msg_processed(msg_id); res.is_err()) return res;
   }
 }
@@ -245,6 +240,6 @@ void Controller::STMController::add_gains(const std::vector<core::GainPtr>& gain
   std::vector<std::unique_ptr<uint8_t[]>>().swap(this->_bodies);
   std::vector<size_t>().swap(this->_sizes);
 
-  return Ok();
+  return Ok(true);
 }
 }  // namespace autd

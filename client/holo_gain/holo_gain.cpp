@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 20/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -132,7 +132,7 @@ Error HoloGainSDP::calc(const core::GeometryPtr& geometry) {
   set_from_complex_drive(this->_data, q, _normalize, max_coefficient);
 
   this->_built = true;
-  return Ok();
+  return Ok(true);
 }
 
 Error HoloGainEVD::calc(const core::GeometryPtr& geometry) {
@@ -181,7 +181,7 @@ Error HoloGainEVD::calc(const core::GeometryPtr& geometry) {
   set_from_complex_drive(this->_data, gtf, _normalize, max_coefficient);
 
   this->_built = true;
-  return Ok();
+  return Ok(true);
 }
 
 Error HoloGainNaive::calc(const core::GeometryPtr& geometry) {
@@ -198,7 +198,7 @@ Error HoloGainNaive::calc(const core::GeometryPtr& geometry) {
   set_from_complex_drive(this->_data, q, true, 1.0);
 
   this->_built = true;
-  return Ok();
+  return Ok(true);
 }
 
 Error HoloGainGS::calc(const core::GeometryPtr& geometry) {
@@ -225,7 +225,7 @@ Error HoloGainGS::calc(const core::GeometryPtr& geometry) {
   set_from_complex_drive(this->_data, q, true, 1.0);
 
   this->_built = true;
-  return Ok();
+  return Ok(true);
 }
 
 Error HoloGainGSPAT::calc(const core::GeometryPtr& geometry) {
@@ -270,7 +270,7 @@ Error HoloGainGSPAT::calc(const core::GeometryPtr& geometry) {
   set_from_complex_drive(this->_data, q, true, 1.0);
 
   this->_built = true;
-  return Ok();
+  return Ok(true);
 }
 
 Error HoloGainLM::calc(const core::GeometryPtr& geometry) {
@@ -394,7 +394,7 @@ Error HoloGainLM::calc(const core::GeometryPtr& geometry) {
   }
 
   this->_built = true;
-  return Ok();
+  return Ok(true);
 }
 
 }  // namespace autd::gain::holo

@@ -86,7 +86,7 @@ class Controller {
   /**
    * \brief Set output delay
    * \param[in] delay delay for each transducer in units of ultrasound period (i.e. 25us).
-   * \return ok if succeeded, or err with error message if failed
+   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    * \details The maximum value of delay is 128. If you set a value of more than 128, the lowest 7 bits will be used.
    */
   [[nodiscard]] Error set_output_delay(const std::vector<core::DataArray>& delay) const;
@@ -94,32 +94,32 @@ class Controller {
   /**
    * @brief Open device with a link.
    * @param[in] link Link
-   * \return ok if succeeded, or err with error message if failed
+   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
   [[nodiscard]] Error open(const core::LinkPtr& link);
 
   /**
    * @brief Synchronize all devices
    * @param[in] config configuration
-   * \return ok if succeeded, or err with error message if failed
+   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
   [[nodiscard]] Error synchronize(core::Configuration config = core::Configuration::get_default_configuration());
 
   /**
    * @brief Clear all data in hardware
-   * \return ok if succeeded, or err with error message if failed
+   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
   [[nodiscard]] Error clear() const;
 
   /**
    * @brief Close the controller
-   * \return ok if succeeded, or err with error message if failed
+   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
   [[nodiscard]] Error close();
 
   /**
    * @brief Stop outputting
-   * \return ok if succeeded, or err with error message if failed
+   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
   [[nodiscard]] Error stop();
 
@@ -127,14 +127,14 @@ class Controller {
    * @brief Send gain to the device
    * @param[in] gain Gain to display
    * @param[in] wait_for_sent if true, this function will wait for the data is sent to the devices and processed.
-   * \return ok if succeeded, or err with error message if failed
+   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
   [[nodiscard]] Error send(const core::GainPtr& gain, bool wait_for_sent = false);
 
   /**
    * @brief Send modulation to the device
    * @param[in] mod Amplitude modulation to display
-   * \return ok if succeeded, or err with error message if failed
+   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
   [[nodiscard]] Error send(const core::ModulationPtr& mod);
 
@@ -143,14 +143,14 @@ class Controller {
    * @param[in] gain Gain to display
    * @param[in] mod Amplitude modulation to display
    * @param[in] wait_for_sent if true, this function will wait for the data is sent to the devices and processed.
-   * \return ok if succeeded, or err with error message if failed
+   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
   [[nodiscard]] Error send(const core::GainPtr& gain, const core::ModulationPtr& mod, bool wait_for_sent = false);
 
   /**
    * @brief Send sequence and modulation to the device
    * @param[in] seq Sequence to display
-   * \return ok if succeeded, or err with error message if failed
+   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
   [[nodiscard]] Error send(const core::SequencePtr& seq);
 
@@ -190,20 +190,20 @@ class Controller {
      * add_gain() or add_gains() at the freq. The accuracy depends on the computer, for
      * example, about 1ms on Windows. Note that it is affected by interruptions,
      * and so on.
-     * \return ok if succeeded, or err with error message if failed
+     * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
      */
     [[nodiscard]] Error start(double freq);
 
     /**
      * @brief Suspend Spatio-Temporal Modulation
-     * \return ok if succeeded, or err with error message if failed
+     * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
      */
     [[nodiscard]] Error stop();
 
     /**
      * @brief Finish Spatio-Temporal Modulation
      * @details Added gains will be removed.
-     * \return ok if succeeded, or err with error message if failed
+     * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
      */
     [[nodiscard]] Error finish();
 

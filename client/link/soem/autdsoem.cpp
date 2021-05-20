@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 20/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -43,13 +43,13 @@ Error SOEMController::send(const size_t size, const uint8_t* buf) const {
   if (size > header_size)
     for (size_t i = 0; i < _dev_num; i++) std::memcpy(&_io_map[output_frame_size * i], &buf[header_size + body_size * i], body_size);
   for (size_t i = 0; i < _dev_num; i++) std::memcpy(&_io_map[output_frame_size * i + body_size], &buf[0], header_size);
-  return Ok();
+  return Ok(true);
 }
 
 Error SOEMController::read(uint8_t* rx) const {
   if (!_is_open) return Err(std::string("link is closed"));
   std::memcpy(rx, &_io_map[this->_output_frame_size], this->_dev_num * this->_config.input_frame_size);
-  return Ok();
+  return Ok(true);
 }
 
 void SOEMController::setup_sync0(const bool activate, const uint32_t cycle_time_ns) const {
@@ -115,11 +115,11 @@ Error SOEMController::open(const char* ifname, const size_t dev_num, const ECCon
 
   _is_open = true;
 
-  return Ok();
+  return Ok(true);
 }
 
 Error SOEMController::close() {
-  if (!_is_open) return Ok();
+  if (!_is_open) return Ok(true);
   _is_open = false;
 
   _send_cond.notify_all();
@@ -141,7 +141,7 @@ Error SOEMController::close() {
   ec_statecheck(0, EC_STATE_INIT, EC_TIMEOUTSTATE);
   ec_close();
 
-  return Ok();
+  return Ok(true);
 }
 
 SOEMController::SOEMController() : _config() {

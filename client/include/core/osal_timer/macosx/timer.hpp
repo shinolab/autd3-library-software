@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 20/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -37,12 +37,12 @@ class Timer {
     return this->init_timer();
   }
   [[nodiscard]] Error stop() {
-    if (!this->_loop) return Ok();
+    if (!this->_loop) return Ok(true);
 
     dispatch_source_cancel(_timer);
     this->_loop = false;
 
-    return Ok();
+    return Ok(true);
   }
 
   Timer(const Timer &) = delete;
@@ -78,7 +78,7 @@ class Timer {
     dispatch_source_set_timer(_timer, start, this->_interval_us * 1000L, 0);
     dispatch_resume(_timer);
 
-    return Ok();
+    return Ok(true);
   }
 };
 }  // namespace autd
