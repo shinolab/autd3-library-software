@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
 
-set (CMAKE_CXX_STANDARD 17)
 
 file(GLOB cpp_files *.cpp)
 file(GLOB hpp_files *.hpp)
