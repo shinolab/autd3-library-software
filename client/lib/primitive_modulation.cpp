@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 20/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -44,7 +44,7 @@ Error Sine::build(const Configuration config) {
     tamp = std::clamp(this->_offset + (tamp - double{0.5}) * this->_amp, double{0}, double{1});
     this->_buffer.at(i) = static_cast<uint8_t>(tamp * 255);
   }
-  return Ok();
+  return Ok(true);
 }
 
 ModulationPtr Square::create(int freq, uint8_t low, uint8_t high) { return std::make_shared<Square>(freq, low, high); }
@@ -61,14 +61,14 @@ Error Square::build(const Configuration config) {
 
   this->_buffer.resize(n, this->_high);
   std::memset(&this->_buffer[0], this->_low, n / 2);
-  return Ok();
+  return Ok(true);
 }
 
 ModulationPtr Custom::create(const std::vector<uint8_t>& buffer) { return std::make_shared<Custom>(buffer); }
 
 Error Custom::build(const Configuration config) {
   (void)config;
-  return Ok();
+  return Ok(true);
 }
 
 ModulationPtr Saw::create(const int freq) { return std::make_shared<Saw>(freq); }
@@ -90,6 +90,6 @@ Error Saw::build(const Configuration config) {
     const auto tamp = std::fmod(static_cast<double>(rep * i) / static_cast<double>(n), double{1});
     this->_buffer.at(i) = static_cast<uint8_t>(std::asin(tamp) / M_PI * double{510});
   }
-  return Ok();
+  return Ok(true);
 }
 }  // namespace autd::modulation

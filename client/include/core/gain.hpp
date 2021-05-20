@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 20/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -46,20 +46,21 @@ class Gain {
   /**
    * \brief Calculate duty ratio and phase of each transducer
    * \param geometry Geometry
-   * \return ok if succeeded, or err with error message if failed
+   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
   [[nodiscard]] virtual Error calc(const GeometryPtr& geometry) {
     for (size_t i = 0; i < geometry->num_devices(); i++) this->_data[i].fill(0x0000);
-    return Ok();
+    this->_built = true;
+    return Ok(true);
   }
 
   /**
    * \brief Initialize data and call calc().
    * \param geometry Geometry
-   * \return ok if succeeded, or err with error message if failed
+   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
   [[nodiscard]] Error build(const GeometryPtr& geometry) {
-    if (this->_built) return Ok();
+    if (this->_built) return Ok(true);
 
     const auto num_device = geometry->num_devices();
 
@@ -72,7 +73,7 @@ class Gain {
   /**
    * \brief Re-calculate duty ratio and phase of each transducer
    * \param geometry Geometry
-   * \return ok if succeeded, or err with error message if failed
+   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
   [[nodiscard]] Error rebuild(const GeometryPtr& geometry) {
     this->_built = false;
