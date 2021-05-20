@@ -1,9 +1,9 @@
-﻿// File: timer.hpp
+// File: timer.hpp
 // Project: win32
 // Created Date: 01/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 20/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -37,7 +37,6 @@ class Timer {
   [[nodiscard]] Error start(const std::function<void()> &callback) {
     if (auto res = this->stop(); res.is_err()) return res;
     this->_cb = callback;
-    this->_loop = true;
 
     const uint32_t u_resolution = 1;
     timeBeginPeriod(u_resolution);
@@ -46,23 +45,21 @@ class Timer {
     SetPriorityClass(h_process, REALTIME_PRIORITY_CLASS);
 
     _timer_id = timeSetEvent(this->_interval_us / 1000, u_resolution, timer_thread, reinterpret_cast<DWORD_PTR>(this), TIME_PERIODIC);
-    if (_timer_id == 0) {
-      this->_loop = false;
-      return Err(std::string("timeSetEvent failed"));
-    }
+    if (_timer_id == 0) return Err(std::string("timeSetEvent failed"));
 
-    return Ok();
+    this->_loop = true;
+    return Ok(true);
   }
 
   [[nodiscard]] Error stop() {
-    if (!this->_loop) return Ok();
+    if (!this->_loop) return Ok(true);
     this->_loop = false;
 
     const uint32_t u_resolution = 1;
     timeEndPeriod(u_resolution);
     if (timeKillEvent(_timer_id) != TIMERR_NOERROR) return Err(std::string("timeKillEvent failed"));
 
-    return Ok();
+    return Ok(true);
   }
 
   Timer(const Timer &) = delete;

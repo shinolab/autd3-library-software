@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 20/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -39,13 +39,13 @@ class Timer {
     return this->init_timer();
   }
   [[nodiscard]] Error stop() {
-    if (!this->_loop) return Ok();
+    if (!this->_loop) return Ok(true);
 
     const auto r = timer_delete(_timer_id);
     if (r < 0) return Err(std::string("timer_delete failed"));
 
     this->_loop = false;
-    return Ok();
+    return Ok(true);
   }
 
   Timer(const Timer &) = delete;
@@ -85,7 +85,7 @@ class Timer {
 
     if (timer_settime(_timer_id, 0, &itval, NULL) < 0) return Err(std::string("timer_settime failed"));
 
-    return Ok();
+    return Ok(true);
   }
 };
 }  // namespace autd
