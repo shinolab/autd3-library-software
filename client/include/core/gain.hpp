@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 20/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -50,6 +50,7 @@ class Gain {
    */
   [[nodiscard]] virtual Error calc(const GeometryPtr& geometry) {
     for (size_t i = 0; i < geometry->num_devices(); i++) this->_data[i].fill(0x0000);
+    this->_built = true;
     return Ok();
   }
 
