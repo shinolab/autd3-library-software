@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 21/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -241,19 +241,18 @@ void AUTDNullGain(void** gain) {
   auto* g = GainCreate(autd::gain::NullGain::create());
   *gain = g;
 }
-void AUTDGroupedGain(void** gain, int32_t* const group_ids, void** in_gains, const int32_t size) {
-  std::map<size_t, autd::GainPtr> gain_map;
-
-  for (auto i = 0; i < size; i++) {
-    const auto id = group_ids[i];
-    auto* const gain_id = in_gains[i];
-    auto* g = static_cast<GainWrapper*>(gain_id);
-    gain_map[id] = g->ptr;
-  }
-
-  auto* g_gain = GainCreate(autd::gain::Grouped::create(gain_map));
-  *gain = g_gain;
+void AUTDGroupedGain(void** gain) {
+  auto* g = GainCreate(autd::gain::Grouped::create());
+  *gain = g;
 }
+
+void AUTDGroupedGainAdd(void* grouped_gain, const int32_t id, void* gain) {
+  auto* gg = static_cast<GainWrapper*>(grouped_gain);
+  auto* ing = static_cast<GainWrapper*>(gain);
+  auto* pgg = dynamic_cast<autd::gain::Grouped*>(gg->ptr.get());
+  pgg->add(id, ing->ptr);
+}
+
 void AUTDFocalPointGain(void** gain, const double x, const double y, const double z, const uint8_t duty) {
   auto* g = GainCreate(autd::gain::FocalPoint::create(ToVec3(x, y, z), duty));
   *gain = g;

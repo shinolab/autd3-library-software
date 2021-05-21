@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 21/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -36,13 +36,19 @@ class Grouped final : public Gain {
  public:
   /**
    * @brief Generate function
-   * @param[in] gain_map ｍap from group ID to gain
-   * @details group ID must be specified in Geometry::AddDevice() in advance
    */
-  static GainPtr create(const std::map<size_t, GainPtr>& gain_map);
+  static GainPtr create();
+
+  /**
+   * \brief Decide which group outputs which Gain
+   * \param id group id
+   * \param gain gain
+   * \details group ID must be specified in Geometry::AddDevice() in advance
+   */
+  void add(size_t id, const GainPtr& gain);
 
   Error calc(const core::GeometryPtr& geometry) override;
-  explicit Grouped(std::map<size_t, GainPtr> gain_map) : Gain(), _gain_map(std::move(gain_map)) {}
+  Grouped() : Gain() {}
   ~Grouped() override = default;
   Grouped(const Grouped& v) noexcept = default;
   Grouped& operator=(const Grouped& obj) = default;
