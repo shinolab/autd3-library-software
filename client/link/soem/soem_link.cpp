@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/05/2021
+// Last Modified: 21/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -59,6 +59,7 @@ Error SOEMLinkImpl::open() {
   _config.header_size = core::HEADER_SIZE;
   _config.body_size = core::EC_OUTPUT_FRAME_SIZE - core::HEADER_SIZE;
   _config.input_frame_size = core::EC_INPUT_FRAME_SIZE;
+  _config.bucket_size = BUCKET_SIZE;
 
   return _cnt.open(_ifname.c_str(), _device_num, _config);
 }

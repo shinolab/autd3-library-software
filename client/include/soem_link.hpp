@@ -3,7 +3,7 @@
 // Created Date: 10/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 21/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -17,6 +17,8 @@
 #include "core/link.hpp"
 
 namespace autd::link {
+
+constexpr size_t BUCKET_SIZE = 32;
 
 /**
  * \brief EtherCAT adapter information to SOEMLink
