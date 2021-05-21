@@ -1,9 +1,9 @@
-﻿// File: autd3_c_api.h
+// File: autd3_c_api.h
 // Project: include
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 21/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -16,7 +16,7 @@
 extern "C" {
 
 EXPORT_AUTD void AUTDCreateController(void** out);
-EXPORT_AUTD bool AUTDOpenControllerWith(void* handle, void* p_link);
+EXPORT_AUTD bool AUTDOpenController(void* handle, void* p_link);
 EXPORT_AUTD int32_t AUTDAddDevice(void* handle, double x, double y, double z, double rz1, double ry, double rz2, int32_t gid);
 EXPORT_AUTD int32_t AUTDAddDeviceQuaternion(void* handle, double x, double y, double z, double qw, double qx, double qy, double qz, int32_t gid);
 EXPORT_AUTD int32_t AUTDDeleteDevice(void* handle, int32_t idx);
@@ -68,7 +68,7 @@ EXPORT_AUTD void AUTDDeleteModulation(void* mod);
 
 EXPORT_AUTD void AUTDSequence(void** out);
 EXPORT_AUTD bool AUTDSequenceAddPoint(void* seq, double x, double y, double z);
-EXPORT_AUTD bool AUTDSequenceAddPoints(void* seq, double* points, uint32_t size);
+EXPORT_AUTD bool AUTDSequenceAddPoints(void* seq, double* points, uint64_t size);
 EXPORT_AUTD double AUTDSequenceSetFreq(void* seq, double freq);
 EXPORT_AUTD double AUTDSequenceFreq(void* seq);
 EXPORT_AUTD uint32_t AUTDSequencePeriod(void* seq);
