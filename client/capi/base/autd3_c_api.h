@@ -83,6 +83,7 @@ EXPORT_AUTD bool AUTDStop(void* handle);
 EXPORT_AUTD bool AUTDSendGain(void* handle, void* gain);
 EXPORT_AUTD bool AUTDSendModulation(void* handle, void* mod);
 EXPORT_AUTD bool AUTDSendGainModulation(void* handle, void* gain, void* mod);
+EXPORT_AUTD bool AUTDSendSequence(void* handle, void* seq);
 EXPORT_AUTD void AUTDAddSTMGain(void* handle, void* gain);
 EXPORT_AUTD bool AUTDStartSTM(void* handle, double freq);
 EXPORT_AUTD bool AUTDStopSTM(void* handle);

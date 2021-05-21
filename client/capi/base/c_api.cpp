@@ -192,7 +192,7 @@ void AUTDDeviceXDirection(void* const handle, const int32_t device_idx, double* 
 }
 void AUTDDeviceYDirection(void* const handle, const int32_t device_idx, double* x, double* y, double* z) {
   auto* cnt = static_cast<autd::Controller*>(handle);
-  const auto dir = cnt->geometry()->z_direction(device_idx);
+  const auto dir = cnt->geometry()->y_direction(device_idx);
   *x = dir.x();
   *y = dir.y();
   *z = dir.z();
@@ -393,6 +393,15 @@ bool AUTDSendGainModulation(void* const handle, void* const gain, void* const mo
   const auto g = gain == nullptr ? nullptr : static_cast<GainWrapper*>(gain)->ptr;
   const auto m = mod == nullptr ? nullptr : static_cast<ModulationWrapper*>(mod)->ptr;
   if (auto res = cnt->send(g, m); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
+}
+bool AUTDSendSequence(void* const handle, void* const seq) {
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  const auto s = seq == nullptr ? nullptr : static_cast<SequenceWrapper*>(seq)->ptr;
+  if (auto res = cnt->send(s); res.is_err()) {
     LastError() = res.unwrap_err();
     return false;
   }
