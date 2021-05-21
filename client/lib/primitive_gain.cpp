@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/05/2021
+// Last Modified: 21/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -22,10 +22,12 @@ using core::Vector3;
 
 inline double PosMod(const double a, const double b) { return a - floor(a / b) * b; }
 
-GainPtr Grouped::create(const std::map<size_t, GainPtr>& gain_map) {
-  GainPtr gain = std::make_shared<Grouped>(gain_map);
+GainPtr Grouped::create() {
+  GainPtr gain = std::make_shared<Grouped>();
   return gain;
 }
+
+void Grouped::add(const size_t id, const GainPtr& gain) { this->_gain_map[id] = gain; }
 
 Error Grouped::calc(const core::GeometryPtr& geometry) {
   for (const auto& [_, g] : this->_gain_map)

@@ -1,4 +1,4 @@
-// File: autd3_c_api.h
+﻿// File: autd3_c_api.h
 // Project: include
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
@@ -51,7 +51,8 @@ EXPORT_AUTD void AUTDGetFirmwareInfo(void* p_firm_info_list, int32_t index, char
 EXPORT_AUTD void AUTDFreeFirmwareInfoListPointer(void* p_firm_info_list);
 
 EXPORT_AUTD void AUTDNullGain(void** gain);
-EXPORT_AUTD void AUTDGroupedGain(void** gain, int32_t* group_ids, void** in_gains, int32_t size);
+EXPORT_AUTD void AUTDGroupedGain(void** gain);
+EXPORT_AUTD void AUTDGroupedGainAdd(void* grouped_gain, int32_t id, void* gain);
 EXPORT_AUTD void AUTDFocalPointGain(void** gain, double x, double y, double z, uint8_t duty);
 EXPORT_AUTD void AUTDBesselBeamGain(void** gain, double x, double y, double z, double n_x, double n_y, double n_z, double theta_z, uint8_t duty);
 EXPORT_AUTD void AUTDPlaneWaveGain(void** gain, double n_x, double n_y, double n_z, uint8_t duty);
