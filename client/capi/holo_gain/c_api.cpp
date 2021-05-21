@@ -3,7 +3,7 @@
 // Created Date: 17/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 21/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -38,6 +38,11 @@ std::vector<double> PackAmps(const double* const amps, const int32_t size) {
 void AUTDEigen3Backend(void** out) {
   auto* b = BackendCreate(autd::gain::holo::Eigen3Backend::create());
   *out = b;
+}
+
+void AUTDDeleteBackend(void* backend) {
+  const auto b = static_cast<BackendWrapper*>(backend);
+  BackendDelete(b);
 }
 
 void AUTDHoloGainSDP(void** gain, void* backend, double* points, double* amps, const int32_t size, const double alpha, const double lambda,
