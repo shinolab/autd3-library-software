@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/05/2021
+// Last Modified: 21/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -31,18 +31,20 @@
 namespace autd::autdsoem {
 
 static std::atomic autd3_rt_lock(false);
+static std::atomic autd3_send_cond(false);
 
 bool SOEMController::is_open() const { return _is_open; }
 
-Error SOEMController::send(const size_t size, const uint8_t* buf) const {
+Error SOEMController::send(const size_t size, const uint8_t* buf) {
   if (!_is_open) return Err(std::string("link is closed"));
+  if (this->_send_bucket_size == _config.bucket_size) return Ok(false);
 
-  const auto header_size = this->_config.header_size;
-  const auto body_size = this->_config.body_size;
-  const auto output_frame_size = header_size + body_size;
-  if (size > header_size)
-    for (size_t i = 0; i < _dev_num; i++) std::memcpy(&_io_map[output_frame_size * i], &buf[header_size + body_size * i], body_size);
-  for (size_t i = 0; i < _dev_num; i++) std::memcpy(&_io_map[output_frame_size * i + body_size], &buf[0], header_size);
+  {
+    std::unique_lock lk(_send_mtx);
+    std::memcpy(this->_send_bucket[(this->_send_bucket_ptr + this->_send_bucket_size) % _config.bucket_size].first, buf, size);
+    this->_send_bucket_size++;
+  }
+  _send_cond.notify_all();
   return Ok(true);
 }
 
@@ -59,7 +61,10 @@ void SOEMController::setup_sync0(const bool activate, const uint32_t cycle_time_
 Error SOEMController::open(const char* ifname, const size_t dev_num, const ECConfig config) {
   _dev_num = dev_num;
   _config = config;
-  _output_frame_size = (config.header_size + config.body_size) * _dev_num;
+  const auto header_size = config.header_size;
+  const auto body_size = config.body_size;
+  const auto output_frame_size = (header_size + body_size) * _dev_num;
+  _output_frame_size = output_frame_size;
 
   if (const auto size = _output_frame_size + config.input_frame_size * _dev_num; size != _io_map_size) {
     _io_map_size = size;
@@ -67,6 +72,14 @@ Error SOEMController::open(const char* ifname, const size_t dev_num, const ECCon
     delete[] _io_map;
     _io_map = new uint8_t[size];
     std::memset(_io_map, 0x00, _io_map_size);
+
+    for (auto [send_buf, _] : this->_send_bucket) {
+      delete[] send_buf;
+      send_buf = nullptr;
+    }
+
+    this->_send_bucket.resize(config.bucket_size);
+    for (size_t i = 0; i < config.bucket_size; i++) this->_send_bucket[i].first = new uint8_t[_output_frame_size];
   }
 
   _sync0_cyc_time = config.ec_sync0_cycle_time_ns;
@@ -105,7 +118,9 @@ Error SOEMController::open(const char* ifname, const size_t dev_num, const ECCon
   this->_timer.SetInterval(interval_us);
   if (auto res = this->_timer.start([]() {
         if (auto expected = false; autd3_rt_lock.compare_exchange_weak(expected, true)) {
+          const auto pre = autd3_send_cond.load(std::memory_order_acquire);
           ec_send_processdata();
+          if (!pre) autd3_send_cond.store(true, std::memory_order_release);
           autd3_rt_lock.store(false, std::memory_order_release);
           ec_receive_processdata(EC_TIMEOUTRET);
         }
@@ -114,20 +129,46 @@ Error SOEMController::open(const char* ifname, const size_t dev_num, const ECCon
     return res;
 
   _is_open = true;
+  _send_thread = std::thread([this, header_size, body_size, output_frame_size]() {
+    while (this->is_open()) {
+      {
+        std::unique_lock lk(_send_mtx);
+        _send_cond.wait(lk, [&] { return this->_send_bucket_size != 0 || !this->is_open(); });
+
+        if (this->_send_bucket_size == 0 || !this->is_open()) continue;
+
+        auto [buf, size] = _send_bucket[this->_send_bucket_ptr];
+
+        if (size > header_size)
+          for (size_t i = 0; i < _dev_num; i++) std::memcpy(&_io_map[output_frame_size * i], &buf[header_size + body_size * i], body_size);
+        for (size_t i = 0; i < _dev_num; i++) std::memcpy(&_io_map[output_frame_size * i + body_size], &buf[0], header_size);
+
+        this->_send_bucket_size--;
+        this->_send_bucket_ptr = (this->_send_bucket_ptr + 1) % this->_config.bucket_size;
+      }
+
+      autd3_send_cond.store(false, std::memory_order_release);
+      while (!autd3_send_cond.load(std::memory_order_acquire) && _is_open) {
+      }
+    }
+  });
 
   return Ok(true);
 }
 
 Error SOEMController::close() {
-  if (!_is_open) return Ok(true);
-  _is_open = false;
+  if (!is_open()) return Ok(true);
 
   _send_cond.notify_all();
   if (std::this_thread::get_id() != _send_thread.get_id() && this->_send_thread.joinable()) this->_send_thread.join();
 
   {
     std::unique_lock lk(_send_mtx);
-    std::queue<std::pair<std::unique_ptr<uint8_t[]>, size_t>>().swap(_send_q);
+    for (auto [send_buf, _] : this->_send_bucket) {
+      delete[] send_buf;
+      send_buf = nullptr;
+    }
+    std::vector<std::pair<uint8_t*, size_t>>().swap(this->_send_bucket);
   }
 
   std::memset(_io_map, 0x00, _output_frame_size);
@@ -141,19 +182,25 @@ Error SOEMController::close() {
   ec_statecheck(0, EC_STATE_INIT, EC_TIMEOUTSTATE);
   ec_close();
 
+  delete[] _io_map;
+  _io_map = nullptr;
+  _io_map_size = 0;
+
   return Ok(true);
 }
 
-SOEMController::SOEMController() : _config() {
-  this->_is_open = false;
-  this->_io_map = nullptr;
-}
+SOEMController::SOEMController()
+    : _io_map(nullptr),
+      _io_map_size(0),
+      _output_frame_size(0),
+      _sync0_cyc_time(0),
+      _dev_num(0),
+      _config(),
+      _is_open(false),
+      _send_bucket_ptr(0),
+      _send_bucket_size(0) {}
 
-SOEMController::~SOEMController() {
-  (void)this->close();
-  delete[] _io_map;
-  _io_map = nullptr;
-}
+SOEMController::~SOEMController() { (void)this->close(); }
 
 std::vector<EtherCATAdapterInfo> EtherCATAdapterInfo::enumerate_adapters() {
   auto* adapter = ec_find_adapters();
