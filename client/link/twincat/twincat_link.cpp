@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/05/2021
+// Last Modified: 21/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -105,15 +105,21 @@ Error TwinCATLinkImpl::open() {
   return Ok(true);
 }
 Error TwinCATLinkImpl::close() {
-  this->_port = 0;
+  if (!this->is_open()) return Ok(true);
+
   const auto port_close = reinterpret_cast<TcAdsPortCloseEx>(GetProcAddress(this->_lib, TCADS_ADS_PORT_CLOSE_EX));
   const auto res = (*port_close)(this->_port);
-  if (res == 0) return Ok(true);
+  if (res == 0) {
+    this->_port = 0;
+    return Ok(true);
+  }
   std::stringstream ss;
   ss << "Error on closing (local): " << std::hex << res;
   return Err(ss.str());
 }
 Error TwinCATLinkImpl::send(const size_t size, const uint8_t* buf) {
+  if (!this->is_open()) return Err(std::string("Link is closed."));
+
   AmsAddr addr = {this->_net_id, PORT};
   const auto write = reinterpret_cast<TcAdsSyncWriteReqEx>(GetProcAddress(this->_lib, TCADS_ADS_SYNC_WRITE_REQ_EX));
   const auto ret = write(this->_port,  // NOLINT
@@ -130,6 +136,8 @@ Error TwinCATLinkImpl::send(const size_t size, const uint8_t* buf) {
 }
 
 Error TwinCATLinkImpl::read(uint8_t* rx, const size_t buffer_len) {
+  if (!this->is_open()) return Err(std::string("Link is closed."));
+
   AmsAddr addr = {this->_net_id, PORT};
   const auto read = reinterpret_cast<TcAdsSyncReadReqEx>(GetProcAddress(this->_lib, TCADS_ADS_SYNC_READ_REQ_EX));
 
