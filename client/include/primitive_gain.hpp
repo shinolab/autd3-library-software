@@ -180,12 +180,15 @@ class Custom final : public Gain {
    */
   static GainPtr create(const uint16_t* data, size_t data_length);
   Error calc(const core::GeometryPtr& geometry) override;
-  explicit Custom(std::vector<DataArray> data) : Gain() { this->_data = std::move(data); }
+  explicit Custom(const std::vector<DataArray>& data) : Gain() { this->_raw_data = data; }
   ~Custom() override = default;
   Custom(const Custom& v) noexcept = default;
   Custom& operator=(const Custom& obj) = default;
   Custom(Custom&& obj) = default;
   Custom& operator=(Custom&& obj) = default;
+
+ private:
+  std::vector<DataArray> _raw_data;
 };
 
 /**

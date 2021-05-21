@@ -127,12 +127,13 @@ GainPtr Custom::create(const uint16_t* data, const size_t data_length) {
       tran_idx = 0;
     }
   }
-  return std::make_shared<Custom>(raw_data);
+  return create(raw_data);
 }
 
 GainPtr Custom::create(const std::vector<DataArray>& data) { return std::make_shared<Custom>(data); }
 
 Error Custom::calc(const core::GeometryPtr& geometry) {
+  this->_data = std::move(this->_raw_data);
   this->_built = true;
   return Ok(true);
 }
