@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 22/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -84,19 +84,19 @@ struct SeqFocus {
     set(0, x);
     set(3, y);
     set(6, z);
-    buf[9] = duty;
+    _buf[9] = duty;
   }
 
  private:
-  uint8_t buf[10];
+  uint8_t _buf[10];
   void set(const int32_t offset, const int32_t v) {
     uint8_t tmp = v & 0xFF;
-    buf[offset] = tmp;
+    _buf[offset] = tmp;
     tmp = v >> 8 & 0xFF;
-    buf[offset + 1] = tmp;
+    _buf[offset + 1] = tmp;
     tmp = v >> 16 & 0x7F;
     tmp |= v >> 24 & 0x80;
-    buf[offset + 2] = tmp;
+    _buf[offset + 2] = tmp;
   }
 };
 
