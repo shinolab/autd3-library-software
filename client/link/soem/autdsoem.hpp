@@ -54,8 +54,7 @@ class SOEMController {
 
   std::unique_ptr<uint8_t[]> _io_map;
   size_t _io_map_size;
-  size_t _output_frame_size;
-  uint32_t _sync0_cyc_time;
+  size_t _output_size;
   size_t _dev_num;
   ECConfig _config;
   bool _is_open;

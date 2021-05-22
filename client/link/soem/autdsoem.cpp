@@ -51,7 +51,7 @@ Error SOEMController::send(const size_t size, const uint8_t* buf) {
 
 Error SOEMController::read(uint8_t* rx) const {
   if (!_is_open) return Err(std::string("link is closed"));
-  std::memcpy(rx, &_io_map[this->_output_frame_size], this->_dev_num * this->_config.input_frame_size);
+  std::memcpy(rx, &_io_map[this->_output_size], this->_dev_num * this->_config.input_frame_size);
   return Ok(true);
 }
 
@@ -64,10 +64,10 @@ Error SOEMController::open(const char* ifname, const size_t dev_num, const ECCon
   _config = config;
   const auto header_size = config.header_size;
   const auto body_size = config.body_size;
-  const auto output_frame_size = (header_size + body_size) * _dev_num;
-  _output_frame_size = output_frame_size;
+  const auto output_size = (header_size + body_size) * _dev_num;
+  _output_size = output_size;
 
-  if (const auto size = _output_frame_size + config.input_frame_size * _dev_num; size != _io_map_size) {
+  if (const auto size = _output_size + config.input_frame_size * _dev_num; size != _io_map_size) {
     _io_map_size = size;
 
     _io_map = std::make_unique<uint8_t[]>(size);
@@ -106,8 +106,7 @@ Error SOEMController::open(const char* ifname, const size_t dev_num, const ECCon
 
   if (ec_slave[0].state != EC_STATE_OPERATIONAL) return Err(std::string("One ore more slaves are not responding"));
 
-  _sync0_cyc_time = config.ec_sync0_cycle_time_ns;
-  setup_sync0(true, _sync0_cyc_time);
+  setup_sync0(true, config.ec_sync0_cycle_time_ns);
 
   auto interval_us = config.ec_sm3_cycle_time_ns / 1000;
   this->_timer.SetInterval(interval_us);
@@ -116,8 +115,8 @@ Error SOEMController::open(const char* ifname, const size_t dev_num, const ECCon
           const auto pre = autd3_send_cond.load(std::memory_order_acquire);
           ec_send_processdata();
           if (!pre) autd3_send_cond.store(true, std::memory_order_release);
-          autd3_rt_lock.store(false, std::memory_order_release);
           ec_receive_processdata(EC_TIMEOUTRET);
+          autd3_rt_lock.store(false, std::memory_order_release);
         }
       });
       res.is_err())
@@ -160,11 +159,11 @@ Error SOEMController::close() {
     std::vector<std::pair<std::unique_ptr<uint8_t[]>, size_t>>().swap(this->_send_bucket);
   }
 
-  std::memset(&_io_map[0], 0x00, _output_frame_size);
+  std::memset(&_io_map[0], 0x00, _output_size);
 
   if (auto res = this->_timer.stop(); res.is_err()) return res;
 
-  setup_sync0(false, _sync0_cyc_time);
+  setup_sync0(false, _config.ec_sync0_cycle_time_ns);
 
   ec_slave[0].state = EC_STATE_INIT;
   ec_writestate(0);
@@ -178,15 +177,7 @@ Error SOEMController::close() {
 }
 
 SOEMController::SOEMController()
-    : _io_map(nullptr),
-      _io_map_size(0),
-      _output_frame_size(0),
-      _sync0_cyc_time(0),
-      _dev_num(0),
-      _config(),
-      _is_open(false),
-      _send_bucket_ptr(0),
-      _send_bucket_size(0) {}
+    : _io_map(nullptr), _io_map_size(0), _output_size(0), _dev_num(0), _config(), _is_open(false), _send_bucket_ptr(0), _send_bucket_size(0) {}
 
 SOEMController::~SOEMController() { (void)this->close(); }
 
