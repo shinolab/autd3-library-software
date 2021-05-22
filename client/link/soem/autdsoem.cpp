@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/05/2021
+// Last Modified: 22/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -13,7 +13,6 @@
 #include <condition_variable>
 #include <cstdint>
 #include <cstring>
-#include <iostream>
 #include <memory>
 #include <mutex>
 #include <queue>
@@ -41,7 +40,9 @@ Error SOEMController::send(const size_t size, const uint8_t* buf) {
 
   {
     std::unique_lock lk(_send_mtx);
-    std::memcpy(this->_send_bucket[(this->_send_bucket_ptr + this->_send_bucket_size) % _config.bucket_size].first, buf, size);
+    auto& [buf_, size_] = this->_send_bucket[(this->_send_bucket_ptr + this->_send_bucket_size) % _config.bucket_size];
+    std::memcpy(&buf_[0], buf, size);
+    size_ = size;
     this->_send_bucket_size++;
   }
   _send_cond.notify_all();
@@ -69,24 +70,17 @@ Error SOEMController::open(const char* ifname, const size_t dev_num, const ECCon
   if (const auto size = _output_frame_size + config.input_frame_size * _dev_num; size != _io_map_size) {
     _io_map_size = size;
 
-    delete[] _io_map;
-    _io_map = new uint8_t[size];
-    std::memset(_io_map, 0x00, _io_map_size);
+    _io_map = std::make_unique<uint8_t[]>(size);
+    std::memset(&_io_map[0], 0x00, _io_map_size);
 
-    for (auto [send_buf, _] : this->_send_bucket) {
-      delete[] send_buf;
-      send_buf = nullptr;
-    }
-
+    std::vector<std::pair<std::unique_ptr<uint8_t[]>, size_t>>().swap(this->_send_bucket);
     this->_send_bucket.resize(config.bucket_size);
-    for (size_t i = 0; i < config.bucket_size; i++) this->_send_bucket[i].first = new uint8_t[_output_frame_size];
+    for (size_t i = 0; i < config.bucket_size; i++) this->_send_bucket[i].first = std::make_unique<uint8_t[]>(header_size + body_size * _dev_num);
   }
-
-  _sync0_cyc_time = config.ec_sync0_cycle_time_ns;
 
   if (ec_init(ifname) <= 0) return Err(std::string("No socket connection on ") + std::string(ifname));
 
-  const auto wc = ec_config(0, _io_map);
+  const auto wc = ec_config(0, &_io_map[0]);
   if (wc <= 0) return Err(std::string("No slaves found!"));
 
   if (static_cast<size_t>(wc) != dev_num) {
@@ -112,6 +106,7 @@ Error SOEMController::open(const char* ifname, const size_t dev_num, const ECCon
 
   if (ec_slave[0].state != EC_STATE_OPERATIONAL) return Err(std::string("One ore more slaves are not responding"));
 
+  _sync0_cyc_time = config.ec_sync0_cycle_time_ns;
   setup_sync0(true, _sync0_cyc_time);
 
   auto interval_us = config.ec_sm3_cycle_time_ns / 1000;
@@ -129,26 +124,23 @@ Error SOEMController::open(const char* ifname, const size_t dev_num, const ECCon
     return res;
 
   _is_open = true;
-  _send_thread = std::thread([this, header_size, body_size, output_frame_size]() {
+  _send_thread = std::thread([this, header_size, body_size]() {
     while (this->is_open()) {
       {
         std::unique_lock lk(_send_mtx);
         _send_cond.wait(lk, [&] { return this->_send_bucket_size != 0 || !this->is_open(); });
-
         if (this->_send_bucket_size == 0 || !this->is_open()) continue;
 
-        auto [buf, size] = _send_bucket[this->_send_bucket_ptr];
-
+        auto& [buf, size] = _send_bucket[this->_send_bucket_ptr];
         if (size > header_size)
-          for (size_t i = 0; i < _dev_num; i++) std::memcpy(&_io_map[output_frame_size * i], &buf[header_size + body_size * i], body_size);
-        for (size_t i = 0; i < _dev_num; i++) std::memcpy(&_io_map[output_frame_size * i + body_size], &buf[0], header_size);
-
+          for (size_t i = 0; i < _dev_num; i++) std::memcpy(&_io_map[(header_size + body_size) * i], &buf[header_size + body_size * i], body_size);
+        for (size_t i = 0; i < _dev_num; i++) std::memcpy(&_io_map[(header_size + body_size) * i + body_size], &buf[0], header_size);
         this->_send_bucket_size--;
         this->_send_bucket_ptr = (this->_send_bucket_ptr + 1) % this->_config.bucket_size;
       }
 
       autd3_send_cond.store(false, std::memory_order_release);
-      while (!autd3_send_cond.load(std::memory_order_acquire) && _is_open) {
+      while (!autd3_send_cond.load(std::memory_order_acquire) && this->is_open()) {
       }
     }
   });
@@ -158,20 +150,17 @@ Error SOEMController::open(const char* ifname, const size_t dev_num, const ECCon
 
 Error SOEMController::close() {
   if (!is_open()) return Ok(true);
+  this->_is_open = false;
 
   _send_cond.notify_all();
   if (std::this_thread::get_id() != _send_thread.get_id() && this->_send_thread.joinable()) this->_send_thread.join();
 
   {
     std::unique_lock lk(_send_mtx);
-    for (auto [send_buf, _] : this->_send_bucket) {
-      delete[] send_buf;
-      send_buf = nullptr;
-    }
-    std::vector<std::pair<uint8_t*, size_t>>().swap(this->_send_bucket);
+    std::vector<std::pair<std::unique_ptr<uint8_t[]>, size_t>>().swap(this->_send_bucket);
   }
 
-  std::memset(_io_map, 0x00, _output_frame_size);
+  std::memset(&_io_map[0], 0x00, _output_frame_size);
 
   if (auto res = this->_timer.stop(); res.is_err()) return res;
 
@@ -182,7 +171,6 @@ Error SOEMController::close() {
   ec_statecheck(0, EC_STATE_INIT, EC_TIMEOUTSTATE);
   ec_close();
 
-  delete[] _io_map;
   _io_map = nullptr;
   _io_map_size = 0;
 
