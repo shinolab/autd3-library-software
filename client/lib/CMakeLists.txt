@@ -1,12 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 
-set (CMAKE_CXX_STANDARD 17)
-
-find_package(Threads REQUIRED)
 
 file(GLOB cpp_files *.cpp)
 file(GLOB hpp_files *.hpp)
-file(GLOB include_files ${PROJECT_SOURCE_DIR}/include/*.hpp ${PROJECT_SOURCE_DIR}/include/linalg/*.hpp)
+file(GLOB include_files ${PROJECT_SOURCE_DIR}/include/*.hpp ${PROJECT_SOURCE_DIR}/include/core/*.hpp)
 
 set(SOURCE_LIST 
   ${cpp_files}
@@ -14,30 +11,29 @@ set(SOURCE_LIST
   ${include_files}
 )
 
-add_library(autd3 STATIC ${SOURCE_LIST})
-
-include_directories(${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/osal_timer)
-if(NOT DISABLE_EIGEN)
-  include_directories(${EIGEN_PATH})
+include_directories(${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
+if(WIN32)
+  include_directories(${PROJECT_SOURCE_DIR}/osal_timer/win32)
+elseif(APPLE)
+  include_directories(${PROJECT_SOURCE_DIR}/osal_timer/macosx)
+else()
+  include_directories(${PROJECT_SOURCE_DIR}/linux/win32)
 endif()
+
+add_library(autd3 STATIC ${SOURCE_LIST})
 
 if(WIN32)
   source_group("gain" FILES
-    gain.cpp
+    primitive_gain.cpp
     grouped_gain.cpp
-    ${PROJECT_SOURCE_DIR}/include/gain.hpp
+    ${PROJECT_SOURCE_DIR}/include/primitive_gain.hpp
   )
 
   source_group("modulation" FILES
-    modulation.cpp
-    ${PROJECT_SOURCE_DIR}/include/modulation.hpp
+    primitive_modulation.cpp
+    ${PROJECT_SOURCE_DIR}/include/primitive_modulation.hpp
   )
 
-  source_group("sequence" FILES
-    sequence.cpp
-    ${PROJECT_SOURCE_DIR}/include/sequence.hpp
-  )
- 
   source_group("controller" FILES
     controller.cpp
     autd_logic.cpp
@@ -50,20 +46,13 @@ if(WIN32)
     ${PROJECT_SOURCE_DIR}/include/geometry.hpp
   )
 
-  source_group("linalg" FILES
-    ${PROJECT_SOURCE_DIR}/include/linalg.hpp
-    ${PROJECT_SOURCE_DIR}/include/linalg/helper.hpp
-    ${PROJECT_SOURCE_DIR}/include/linalg/matrix.hpp
-    ${PROJECT_SOURCE_DIR}/include/linalg/quaternion.hpp
-    ${PROJECT_SOURCE_DIR}/include/linalg/vector.hpp
+  source_group("core" FILES
+    ${PROJECT_SOURCE_DIR}/include/core/*.hpp
   )
 endif()
 
-target_link_libraries(autd3 ${CMAKE_THREAD_LIBS_INIT})
-target_link_libraries(autd3 osal_timer)
-
 if (WIN32)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4068 /wd4819")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4068")
 else()
   set_target_properties(autd3 PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

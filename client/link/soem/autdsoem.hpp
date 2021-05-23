@@ -1,12 +1,12 @@
 // File: autdsoem.hpp
-// Project: include
-// Created Date: 24/08/2019
+// Project: soem
+// Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/04/2021
+// Last Modified: 22/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
-// Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
+// Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
 #pragma once
@@ -14,12 +14,12 @@
 #include <condition_variable>
 #include <memory>
 #include <mutex>
-#include <queue>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "timer.hpp"
+#include "core/osal_timer.hpp"
+#include "core/result.hpp"
 
 namespace autd::autdsoem {
 
@@ -29,6 +29,7 @@ struct ECConfig {
   size_t header_size;
   size_t body_size;
   size_t input_frame_size;
+  size_t bucket_size;
 };
 
 class SOEMController {
@@ -40,27 +41,26 @@ class SOEMController {
   SOEMController(SOEMController&& obj) = delete;
   SOEMController& operator=(SOEMController&& obj) = delete;
 
-  [[nodiscard]] Result<bool, std::string> Open(const char* ifname, size_t dev_num, ECConfig config);
-  [[nodiscard]] Result<bool, std::string> Close();
+  [[nodiscard]] Error open(const char* ifname, size_t dev_num, ECConfig config);
+  [[nodiscard]] Error close();
 
   [[nodiscard]] bool is_open() const;
 
-  [[nodiscard]] Result<bool, std::string> Send(size_t size, const uint8_t* buf);
-  [[nodiscard]] Result<bool, std::string> Read(uint8_t* rx) const;
+  [[nodiscard]] Error send(size_t size, const uint8_t* buf);
+  [[nodiscard]] Error read(uint8_t* rx) const;
 
  private:
-  void CreateSendThread(size_t header_size, size_t body_size);
-  void SetupSync0(bool activate, uint32_t cycle_time_ns) const;
+  void setup_sync0(bool activate, uint32_t cycle_time_ns) const;
 
-  uint8_t* _io_map;
-  size_t _io_map_size = 0;
-  size_t _output_frame_size = 0;
-  uint32_t _sync0_cyc_time = 0;
-  size_t _dev_num = 0;
+  std::unique_ptr<uint8_t[]> _io_map;
+  size_t _io_map_size;
+  size_t _output_size;
+  size_t _dev_num;
   ECConfig _config;
-  bool _is_open = false;
+  bool _is_open;
 
-  std::queue<std::pair<std::unique_ptr<uint8_t[]>, size_t>> _send_q;
+  std::vector<std::pair<std::unique_ptr<uint8_t[]>, size_t>> _send_bucket;
+  size_t _send_bucket_ptr, _send_bucket_size;
   std::thread _send_thread;
   std::condition_variable _send_cond;
   std::mutex _send_mtx;
@@ -69,17 +69,11 @@ class SOEMController {
 };
 
 struct EtherCATAdapterInfo final {
-  EtherCATAdapterInfo() = default;
-  ~EtherCATAdapterInfo() = default;
-  EtherCATAdapterInfo& operator=(const EtherCATAdapterInfo& obj) = delete;
-  EtherCATAdapterInfo(EtherCATAdapterInfo&& obj) = default;
-  EtherCATAdapterInfo& operator=(EtherCATAdapterInfo&& obj) = default;
-
-  EtherCATAdapterInfo(const EtherCATAdapterInfo& info) {
-    desc = info.desc;
-    name = info.name;
+  EtherCATAdapterInfo(const std::string& desc, const std::string& name) {
+    this->desc = desc;
+    this->name = name;
   }
-  static std::vector<EtherCATAdapterInfo> EnumerateAdapters();
+  static std::vector<EtherCATAdapterInfo> enumerate_adapters();
 
   std::string desc;
   std::string name;

@@ -1,18 +1,14 @@
 cmake_minimum_required(VERSION 3.1)
 
-set (CMAKE_CXX_STANDARD 17)
 
 include_directories(${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH} examples)
 
 file(GLOB hpp_files examples/*.hpp runner.hpp)
 
-if(BUILD_HOLO_GAIN AND (NOT DISABLE_EIGEN))
-  add_definitions(-DBUILD_HOLO_GAIN)
-endif()
-
 link_libraries(autd3)
 if(BUILD_HOLO_GAIN)
-  link_libraries(gain_holo)
+  link_libraries(holo_gain)
+  add_definitions(-DBUILD_HOLO_GAIN)
 endif()
 if(WIN32)
   link_libraries(ws2_32.lib)
@@ -25,21 +21,12 @@ endif()
   
 if(BUILD_SOEM_LINK)
   add_executable(example_soem soem.cpp ${hpp_files})
-  target_link_libraries(example_soem link_soem)
-endif()
-
-if(BUILD_DEBUG_LINK)
-  add_executable(example_debug debug.cpp ${hpp_files})
-  target_link_libraries(example_debug autd3 link_debug)
+  target_link_libraries(example_soem soem_link)
 endif()
 
 if(WIN32)
   if(BUILD_TWINCAT_LINK)
     add_executable(example_twincat twincat.cpp ${hpp_files})
-    target_link_libraries(example_twincat link_twincat)
+    target_link_libraries(example_twincat twincat_link)
   endif()  
-  if(BUILD_EMULATOR_LINK)
-    add_executable(example_emulator emulator.cpp ${hpp_files})
-    target_link_libraries(example_emulator autd3 link_emulator)
-  endif()
 endif()

@@ -1,118 +1,218 @@
 ﻿// File: c_api.cpp
-// Project: capi
-// Created Date: 02/07/2018
+// Project: base
+// Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 02/05/2021
+// Last Modified: 21/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
-// Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
+// Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
 #include <cstdint>
 #include <cstring>
-#include <utility>
 
 #include "./autd3_c_api.h"
 #include "autd3.hpp"
+#include "primitive_gain.hpp"
+#include "primitive_modulation.hpp"
+#include "primitive_sequence.hpp"
 #include "wrapper.hpp"
-#include "wrapper_gain.hpp"
 #include "wrapper_link.hpp"
-#include "wrapper_modulation.hpp"
-#include "wrapper_sequence.hpp"
 
 namespace {
 std::string& LastError() {
   static std::string msg("");
   return msg;
 }
+autd::Vector3 ToVec3(const double x, const double y, const double z) { return autd::Vector3(x, y, z); }
+autd::Quaternion ToQuaternion(const double w, const double x, const double y, const double z) { return autd::Quaternion(w, x, y, z); }
 }  // namespace
 
-#pragma region Controller
 void AUTDCreateController(void** out) {
-  auto ptr = autd::Controller::Create();
-  auto* cnt = ControllerCreate(std::move(ptr));
+  const auto ptr = new autd::Controller();
+  auto* cnt = ptr;
   *out = cnt;
 }
-bool AUTDOpenControllerWith(void* const handle, void* const p_link) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
+bool AUTDOpenController(void* const handle, void* const p_link) {
+  auto* cnt = static_cast<autd::Controller*>(handle);
   auto* link = static_cast<LinkWrapper*>(p_link);
-  auto res = cnt->ptr->OpenWith(move(link->ptr));
+  auto res = cnt->open(link->ptr);
   LinkDelete(link);
-  if (res.is_err()) LastError() = res.unwrap_err();
-  return res.unwrap_or(false);
+  if (res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
 }
-int32_t AUTDAddDevice(void* const handle, const float x, const float y, const float z, const float rz1, const float ry, const float rz2,
-                      const int32_t group_id) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  const auto res = cnt->ptr->geometry()->AddDevice(
-      autd::Vector3(static_cast<autd::Float>(x), static_cast<autd::Float>(y), static_cast<autd::Float>(z)),
-      autd::Vector3(static_cast<autd::Float>(rz1), static_cast<autd::Float>(ry), static_cast<autd::Float>(rz2)), group_id);
+int32_t AUTDAddDevice(void* const handle, const double x, const double y, const double z, const double rz1, const double ry, const double rz2,
+                      const int32_t gid) {
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  const auto res = cnt->geometry()->add_device(ToVec3(x, y, z), ToVec3(rz1, ry, rz2), gid);
   return static_cast<int32_t>(res);
 }
-int32_t AUTDAddDeviceQuaternion(void* const handle, const float x, const float y, const float z, const float qua_w, const float qua_x,
-                                const float qua_y, const float qua_z, const int32_t group_id) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  const auto res =
-      cnt->ptr->geometry()->AddDeviceQuaternion(autd::Vector3(static_cast<autd::Float>(x), static_cast<autd::Float>(y), static_cast<autd::Float>(z)),
-                                                autd::Quaternion(static_cast<autd::Float>(qua_w), static_cast<autd::Float>(qua_x),
-                                                                 static_cast<autd::Float>(qua_y), static_cast<autd::Float>(qua_z)),
-                                                group_id);
+int32_t AUTDAddDeviceQuaternion(void* const handle, const double x, const double y, const double z, const double qw, const double qx, const double qy,
+                                const double qz, const int32_t gid) {
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  const auto res = cnt->geometry()->add_device(ToVec3(x, y, z), ToQuaternion(qw, qx, qy, qz), gid);
   return static_cast<int32_t>(res);
 }
 int32_t AUTDDeleteDevice(void* const handle, const int32_t idx) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  const auto res = cnt->ptr->geometry()->DelDevice(static_cast<size_t>(idx));
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  const auto res = cnt->geometry()->del_device(static_cast<size_t>(idx));
   return static_cast<int32_t>(res);
 }
 void AUTDClearDevices(void* const handle) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  cnt->ptr->geometry()->ClearDevices();
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  cnt->geometry()->clear_devices();
 }
-bool AUTDSynchronize(void* const handle, int32_t smpl_freq, int32_t buf_size) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  auto config = autd::Configuration::GetDefaultConfiguration();
-  config.set_mod_sampling_freq(static_cast<autd::MOD_SAMPLING_FREQ>(smpl_freq));
-  config.set_mod_buf_size(static_cast<autd::MOD_BUF_SIZE>(buf_size));
-  auto res = cnt->ptr->Synchronize(config);
-  if (res.is_err()) LastError() = res.unwrap_err();
-  return res.unwrap_or(false);
+bool AUTDSynchronize(void* const handle, const uint16_t mod_smpl_freq_div, const uint16_t mod_buf_size) {
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  const autd::core::Configuration config(mod_smpl_freq_div, mod_buf_size);
+  if (auto res = cnt->synchronize(config); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
 }
 bool AUTDCloseController(void* const handle) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  auto res = cnt->ptr->Close();
-  if (res.is_err()) LastError() = res.unwrap_err();
-  return res.unwrap_or(false);
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  if (auto res = cnt->close(); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
 }
 bool AUTDClear(void* const handle) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  auto res = cnt->ptr->Clear();
-  if (res.is_err()) LastError() = res.unwrap_err();
-  return res.unwrap_or(false);
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  if (auto res = cnt->clear(); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
 }
 void AUTDFreeController(void* const handle) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  ControllerDelete(cnt);
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  delete cnt;
+}
+
+bool AUTDIsOpen(void* const handle) {
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  return cnt->is_open();
+}
+bool AUTDIsSilentMode(void* const handle) {
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  return cnt->silent_mode();
 }
 void AUTDSetSilentMode(void* const handle, const bool mode) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  cnt->ptr->SetSilentMode(mode);
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  cnt->silent_mode() = mode;
 }
-bool AUTDStop(void* const handle) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  auto res = cnt->ptr->Stop();
-  if (res.is_err()) LastError() = res.unwrap_err();
-  return res.unwrap_or(false);
+void AUTDSetReadFPGAInfo(void* const handle, const bool reads_fpga_info) {
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  cnt->reads_fpga_info() = reads_fpga_info;
 }
+double AUTDWavelength(void* const handle) {
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  return cnt->geometry()->wavelength();
+}
+void AUTDSetWavelength(void* const handle, const double wavelength) {
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  cnt->geometry()->wavelength() = wavelength;
+}
+bool AUTDReadFPGAInfo(void* handle, uint8_t* out) {
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  auto res = cnt->fpga_info();
+  if (res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  auto fpga_infos = res.unwrap();
+  std::memcpy(out, &fpga_infos[0], fpga_infos.size());
+  return true;
+}
+bool AUTDUpdateCtrlFlags(void* handle) {
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  if (auto res = cnt->update_ctrl_flag(); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
+}
+bool AUTDSetOutputDelay(void* handle, uint16_t* delay) {
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  const auto num_devices = cnt->geometry()->num_devices();
+  std::vector<autd::DataArray> delay_;
+  delay_.resize(num_devices);
+  for (size_t i = 0; i < num_devices; i++)
+    std::memcpy(&delay_[i][0], &delay[i * autd::core::NUM_TRANS_IN_UNIT], sizeof(uint16_t) * autd::core::NUM_TRANS_IN_UNIT);
+  if (auto res = cnt->set_output_delay(delay_); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
+}
+
+int32_t AUTDNumDevices(void* const handle) {
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  const auto res = cnt->geometry()->num_devices();
+  return static_cast<int32_t>(res);
+}
+int32_t AUTDNumTransducers(void* const handle) {
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  const auto res = cnt->geometry()->num_transducers();
+  return static_cast<int32_t>(res);
+}
+int32_t AUTDDeviceIdxForTransIdx(void* const handle, const int32_t global_trans_idx) {
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  const auto res = cnt->geometry()->device_idx_for_trans_idx(global_trans_idx);
+  return static_cast<int32_t>(res);
+}
+void AUTDTransPositionByGlobal(void* const handle, const int32_t global_trans_idx, double* x, double* y, double* z) {
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  const auto pos = cnt->geometry()->position(global_trans_idx);
+  *x = pos.x();
+  *y = pos.y();
+  *z = pos.z();
+}
+void AUTDTransPositionByLocal(void* const handle, const int32_t device_idx, const int32_t local_trans_idx, double* x, double* y, double* z) {
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  const auto pos = cnt->geometry()->position(device_idx, local_trans_idx);
+  *x = pos.x();
+  *y = pos.y();
+  *z = pos.z();
+}
+
+void AUTDDeviceXDirection(void* const handle, const int32_t device_idx, double* x, double* y, double* z) {
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  const auto dir = cnt->geometry()->x_direction(device_idx);
+  *x = dir.x();
+  *y = dir.y();
+  *z = dir.z();
+}
+void AUTDDeviceYDirection(void* const handle, const int32_t device_idx, double* x, double* y, double* z) {
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  const auto dir = cnt->geometry()->y_direction(device_idx);
+  *x = dir.x();
+  *y = dir.y();
+  *z = dir.z();
+}
+void AUTDDeviceZDirection(void* const handle, const int32_t device_idx, double* x, double* y, double* z) {
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  const auto dir = cnt->geometry()->z_direction(device_idx);
+  *x = dir.x();
+  *y = dir.y();
+  *z = dir.z();
+}
+
 int32_t AUTDGetFirmwareInfoListPointer(void* const handle, void** out) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  const auto size = static_cast<int32_t>(cnt->ptr->geometry()->num_devices());
-  auto res = cnt->ptr->firmware_info_list();
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  const auto size = static_cast<int32_t>(cnt->geometry()->num_devices());
+  auto res = cnt->firmware_info_list();
   if (res.is_err()) {
     LastError() = res.unwrap_err();
     return -1;
   }
-
   auto* list = FirmwareInfoListCreate(res.unwrap());
   *out = list;
   return size;
@@ -128,6 +228,7 @@ void AUTDFreeFirmwareInfoListPointer(void* const p_firm_info_list) {
   auto* wrapper = static_cast<FirmwareInfoListWrapper*>(p_firm_info_list);
   FirmwareInfoListDelete(wrapper);
 }
+
 int32_t AUTDGetLastError(char* error) {
   const auto& error_ = LastError();
   const auto size = static_cast<int32_t>(error_.size() + 1);
@@ -135,154 +236,117 @@ int32_t AUTDGetLastError(char* error) {
   std::char_traits<char>::copy(error, error_.c_str(), size);
   return size;
 }
-#pragma endregion
 
-#pragma region Property
-bool AUTDIsOpen(void* const handle) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  return cnt->ptr->is_open();
-}
-bool AUTDIsSilentMode(void* const handle) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  return cnt->ptr->silent_mode();
-}
-float AUTDWavelength(void* const handle) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  return static_cast<float>(cnt->ptr->geometry()->wavelength());
-}
-void AUTDSetWavelength(void* const handle, const float wavelength) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  cnt->ptr->geometry()->set_wavelength(static_cast<autd::Float>(wavelength));
-}
-int32_t AUTDNumDevices(void* const handle) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  const auto res = cnt->ptr->geometry()->num_devices();
-  return static_cast<int32_t>(res);
-}
-int32_t AUTDNumTransducers(void* const handle) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  const auto res = cnt->ptr->geometry()->num_transducers();
-  return static_cast<int32_t>(res);
-}
-uint64_t AUTDRemainingInBuffer(void* const handle) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  return cnt->ptr->remaining_in_buffer();
-}
-#pragma endregion
-
-#pragma region Gain
 void AUTDNullGain(void** gain) {
-  auto* g = GainCreate(autd::gain::NullGain::Create());
+  auto* g = GainCreate(autd::gain::NullGain::create());
   *gain = g;
 }
-void AUTDGroupedGain(void** gain, int32_t* const group_ids, void** in_gains, const int32_t size) {
-  std::map<size_t, autd::GainPtr> gain_map;
+void AUTDGroupedGain(void** gain) {
+  auto* g = GainCreate(autd::gain::Grouped::create());
+  *gain = g;
+}
 
-  for (auto i = 0; i < size; i++) {
-    const auto id = group_ids[i];
-    auto* const gain_id = in_gains[i];
-    auto* g = static_cast<GainWrapper*>(gain_id);
-    gain_map[id] = g->ptr;
-  }
+void AUTDGroupedGainAdd(void* grouped_gain, const int32_t id, void* gain) {
+  auto* gg = static_cast<GainWrapper*>(grouped_gain);
+  auto* ing = static_cast<GainWrapper*>(gain);
+  auto* pgg = dynamic_cast<autd::gain::Grouped*>(gg->ptr.get());
+  pgg->add(id, ing->ptr);
+}
 
-  auto* g_gain = GainCreate(autd::gain::GroupedGain::Create(gain_map));
-
-  *gain = g_gain;
+void AUTDFocalPointGain(void** gain, const double x, const double y, const double z, const uint8_t duty) {
+  auto* g = GainCreate(autd::gain::FocalPoint::create(ToVec3(x, y, z), duty));
+  *gain = g;
+}
+void AUTDBesselBeamGain(void** gain, const double x, const double y, const double z, const double n_x, const double n_y, const double n_z,
+                        const double theta_z, const uint8_t duty) {
+  auto* g = GainCreate(autd::gain::BesselBeam::create(ToVec3(x, y, z), ToVec3(n_x, n_y, n_z), theta_z, duty));
+  *gain = g;
+}
+void AUTDPlaneWaveGain(void** gain, const double n_x, const double n_y, const double n_z, const uint8_t duty) {
+  auto* g = GainCreate(autd::gain::PlaneWave::create(ToVec3(n_x, n_y, n_z), duty));
+  *gain = g;
+}
+void AUTDCustomGain(void** gain, uint16_t* data, const int32_t data_length) {
+  auto* g = GainCreate(autd::gain::Custom::create(data, data_length));
+  *gain = g;
+}
+void AUTDTransducerTestGain(void** gain, const int32_t idx, const uint8_t duty, const uint8_t phase) {
+  auto* g = GainCreate(autd::gain::TransducerTest::create(idx, duty, phase));
+  *gain = g;
 }
 void AUTDDeleteGain(void* const gain) {
   auto* g = static_cast<GainWrapper*>(gain);
   GainDelete(g);
 }
-void AUTDFocalPointGain(void** gain, const float x, const float y, const float z, const uint8_t duty) {
-  auto* g = GainCreate(
-      autd::gain::FocalPointGain::Create(autd::Vector3(static_cast<autd::Float>(x), static_cast<autd::Float>(y), static_cast<autd::Float>(z)), duty));
-  *gain = g;
-}
-void AUTDBesselBeamGain(void** gain, const float x, const float y, const float z, const float n_x, const float n_y, const float n_z,
-                        const float theta_z, const uint8_t duty) {
-  auto* g = GainCreate(
-      autd::gain::BesselBeamGain::Create(autd::Vector3(static_cast<autd::Float>(x), static_cast<autd::Float>(y), static_cast<autd::Float>(z)),
-                                         autd::Vector3(static_cast<autd::Float>(n_x), static_cast<autd::Float>(n_y), static_cast<autd::Float>(n_z)),
-                                         static_cast<autd::Float>(theta_z), duty));
-  *gain = g;
-}
-void AUTDPlaneWaveGain(void** gain, const float n_x, const float n_y, const float n_z, const uint8_t duty) {
-  auto* g = GainCreate(autd::gain::PlaneWaveGain::Create(
-      autd::Vector3(static_cast<autd::Float>(n_x), static_cast<autd::Float>(n_y), static_cast<autd::Float>(n_z)), duty));
-  *gain = g;
-}
-void AUTDCustomGain(void** gain, uint16_t* data, const int32_t data_length) {
-  auto* g = GainCreate(autd::gain::CustomGain::Create(data, data_length));
-  *gain = g;
-}
 
-void AUTDTransducerTestGain(void** gain, const int32_t idx, const uint8_t duty, const uint8_t phase) {
-  auto* g = GainCreate(autd::gain::TransducerTestGain::Create(idx, duty, phase));
-  *gain = g;
+void AUTDStaticModulation(void** mod, const uint8_t amp) {
+  auto* m = ModulationCreate(autd::modulation::Modulation::create(amp));
+  *mod = m;
 }
-#pragma endregion
-
-#pragma region Modulation
-void AUTDModulation(void** mod, const uint8_t amp) {
-  auto* m = ModulationCreate(autd::modulation::Modulation::Create(amp));
+void AUTDCustomModulation(void** mod, uint8_t* buf, const uint32_t size) {
+  auto* m = ModulationCreate(autd::modulation::Modulation::create(0));
+  m->ptr->buffer().resize(size, 0);
+  std::memcpy(&m->ptr->buffer()[0], buf, size);
+  *mod = m;
+}
+void AUTDSquareModulation(void** mod, const int32_t freq, const uint8_t low, const uint8_t high) {
+  auto* m = ModulationCreate(autd::modulation::Square::create(freq, low, high));
+  *mod = m;
+}
+void AUTDSawModulation(void** mod, const int32_t freq) {
+  auto* m = ModulationCreate(autd::modulation::Saw::create(freq));
+  *mod = m;
+}
+void AUTDSineModulation(void** mod, const int32_t freq, const double amp, const double offset) {
+  auto* m = ModulationCreate(autd::modulation::Sine::create(freq, amp, offset));
   *mod = m;
 }
 void AUTDDeleteModulation(void* const mod) {
   auto* m = static_cast<ModulationWrapper*>(mod);
   ModulationDelete(m);
 }
-void AUTDCustomModulation(void** mod, uint8_t* buf, const uint32_t size) {
-  auto* m = ModulationCreate(autd::modulation::Modulation::Create(0));
-  m->ptr->buffer.resize(size, 0);
-  std::memcpy(&m->ptr->buffer[0], buf, size);
-  *mod = m;
-}
-void AUTDSquareModulation(void** mod, const int32_t freq, const uint8_t low, const uint8_t high) {
-  auto* m = ModulationCreate(autd::modulation::SquareModulation::Create(freq, low, high));
-  *mod = m;
-}
-void AUTDSawModulation(void** mod, const int32_t freq) {
-  auto* m = ModulationCreate(autd::modulation::SawModulation::Create(freq));
-  *mod = m;
-}
-void AUTDSineModulation(void** mod, const int32_t freq, const float amp, const float offset) {
-  auto* m = ModulationCreate(autd::modulation::SineModulation::Create(freq, static_cast<autd::Float>(amp), static_cast<autd::Float>(offset)));
-  *mod = m;
-}
-#pragma endregion
 
-#pragma region Sequence
 void AUTDSequence(void** out) {
-  auto* s = SequencePtrCreate(autd::sequence::PointSequence::Create());
+  auto* s = SequenceCreate(autd::sequence::PointSequence::create());
   *out = s;
 }
-bool AUTDSequenceAddPoint(void* const seq, const float x, const float y, const float z) {
+bool AUTDSequenceAddPoint(void* const seq, const double x, const double y, const double z) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
-  auto res = seq_w->ptr->AddPoint(autd::Vector3(static_cast<autd::Float>(x), static_cast<autd::Float>(y), static_cast<autd::Float>(z)));
-  if (res.is_err()) LastError() = res.unwrap_err();
-  return res.unwrap_or(false);
+  if (auto res = seq_w->ptr->add_point(ToVec3(x, y, z)); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
 }
-bool AUTDSequenceAddPoints(void* const seq, float* points, const uint64_t size) {
+bool AUTDSequenceAddPoints(void* const seq, double* points, const uint64_t size) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
   std::vector<autd::Vector3> p;
-  for (size_t i = 0; i < size; i++)
-    p.emplace_back(autd::Vector3(static_cast<autd::Float>(points[3 * i]), static_cast<autd::Float>(points[3 * i + 1]),
-                                 static_cast<autd::Float>(points[3 * i + 2])));
-  auto res = seq_w->ptr->AddPoints(p);
-  if (res.is_err()) LastError() = res.unwrap_err();
-  return res.unwrap_or(false);
+  for (size_t i = 0; i < size; i++) p.emplace_back(ToVec3(points[3 * i], points[3 * i + 1], points[3 * i + 2]));
+  if (auto res = seq_w->ptr->add_points(p); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
 }
-float AUTDSequenceSetFreq(void* const seq, const float freq) {
+double AUTDSequenceSetFreq(void* const seq, const double freq) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
-  return static_cast<float>(seq_w->ptr->SetFrequency(static_cast<autd::Float>(freq)));
+  return seq_w->ptr->set_frequency(freq);
 }
-float AUTDSequenceFreq(void* const seq) {
+double AUTDSequenceFreq(void* const seq) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
-  return static_cast<float>(seq_w->ptr->frequency());
+  return seq_w->ptr->frequency();
 }
-float AUTDSequenceSamplingFreq(void* const seq) {
+uint32_t AUTDSequencePeriod(void* seq) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
-  return static_cast<float>(seq_w->ptr->sampling_frequency());
+  return static_cast<uint32_t>(seq_w->ptr->period_us());
+}
+uint32_t AUTDSequenceSamplingPeriod(void* seq) {
+  auto* seq_w = static_cast<SequenceWrapper*>(seq);
+  return static_cast<uint32_t>(seq_w->ptr->sampling_period_us());
+}
+double AUTDSequenceSamplingFreq(void* const seq) {
+  auto* seq_w = static_cast<SequenceWrapper*>(seq);
+  return seq_w->ptr->sampling_frequency();
 }
 uint16_t AUTDSequenceSamplingFreqDiv(void* const seq) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
@@ -292,103 +356,83 @@ void AUTDDeleteSequence(void* const seq) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
   SequenceDelete(seq_w);
 }
-void AUTDCircumSequence(void** out, const float x, const float y, const float z, const float nx, const float ny, const float nz, const float radius,
-                        const uint64_t n) {
-  auto* s = SequencePtrCreate(autd::sequence::CircumSeq::Create(
-      autd::Vector3(static_cast<autd::Float>(x), static_cast<autd::Float>(y), static_cast<autd::Float>(z)),
-      autd::Vector3(static_cast<autd::Float>(nx), static_cast<autd::Float>(ny), static_cast<autd::Float>(nz)), static_cast<autd::Float>(radius), n));
+void AUTDCircumSequence(void** out, const double x, const double y, const double z, const double nx, const double ny, const double nz,
+                        const double radius, const uint64_t n) {
+  auto* s = SequenceCreate(autd::sequence::Circumference::create(ToVec3(x, y, z), ToVec3(nx, ny, nz), radius, n));
   *out = s;
 }
-#pragma endredion
 
-#pragma region LowLevelInterface
-bool AUTDAppendGain(void* const handle, void* const gain) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  auto* g = static_cast<GainWrapper*>(gain);
-  auto res = cnt->ptr->AppendGain(g->ptr);
-  if (res.is_err()) LastError() = res.unwrap_err();
-  return res.unwrap_or(false);
+bool AUTDStop(void* const handle) {
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  if (auto res = cnt->stop(); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
 }
-
-bool AUTDAppendGainSync(void* const handle, void* const gain, const bool wait_for_send) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  auto* g = static_cast<GainWrapper*>(gain);
-  auto res = cnt->ptr->AppendGainSync(g->ptr, wait_for_send);
-  if (res.is_err()) LastError() = res.unwrap_err();
-  return res.unwrap_or(false);
+bool AUTDSendGain(void* const handle, void* const gain) {
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  const auto g = gain == nullptr ? nullptr : static_cast<GainWrapper*>(gain)->ptr;
+  if (auto res = cnt->send(g); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
 }
-bool AUTDAppendModulation(void* const handle, void* const mod) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  auto* m = static_cast<ModulationWrapper*>(mod);
-  auto res = cnt->ptr->AppendModulation(m->ptr);
-  if (res.is_err()) LastError() = res.unwrap_err();
-  return res.unwrap_or(false);
+bool AUTDSendModulation(void* const handle, void* const mod) {
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  const auto m = mod == nullptr ? nullptr : static_cast<ModulationWrapper*>(mod)->ptr;
+  if (auto res = cnt->send(m); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
 }
-bool AUTDAppendModulationSync(void* const handle, void* const mod) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  auto* m = static_cast<ModulationWrapper*>(mod);
-  auto res = cnt->ptr->AppendModulationSync(m->ptr);
-  if (res.is_err()) LastError() = res.unwrap_err();
-  return res.unwrap_or(false);
+bool AUTDSendGainModulation(void* const handle, void* const gain, void* const mod) {
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  const auto g = gain == nullptr ? nullptr : static_cast<GainWrapper*>(gain)->ptr;
+  const auto m = mod == nullptr ? nullptr : static_cast<ModulationWrapper*>(mod)->ptr;
+  if (auto res = cnt->send(g, m); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
+}
+bool AUTDSendSequence(void* const handle, void* const seq) {
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  const auto s = seq == nullptr ? nullptr : static_cast<SequenceWrapper*>(seq)->ptr;
+  if (auto res = cnt->send(s); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
 }
 void AUTDAddSTMGain(void* const handle, void* const gain) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
+  auto* cnt = static_cast<autd::Controller*>(handle);
   auto* g = static_cast<GainWrapper*>(gain);
-  cnt->ptr->AddSTMGain(g->ptr);
+  cnt->stm()->add_gain(g->ptr);
 }
-bool AUTDStartSTModulation(void* const handle, const float freq) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  auto res = cnt->ptr->StartSTModulation(static_cast<autd::Float>(freq));
-  if (res.is_err()) LastError() = res.unwrap_err();
-  return res.unwrap_or(false);
+bool AUTDStartSTM(void* const handle, const double freq) {
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  if (auto res = cnt->stm()->start(freq); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
 }
-bool AUTDStopSTModulation(void* const handle) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  auto res = cnt->ptr->StopSTModulation();
-  if (res.is_err()) LastError() = res.unwrap_err();
-  return res.unwrap_or(false);
+bool AUTDStopSTM(void* const handle) {
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  if (auto res = cnt->stm()->stop(); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
 }
-bool AUTDFinishSTModulation(void* const handle) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  auto res = cnt->ptr->FinishSTModulation();
-  if (res.is_err()) LastError() = res.unwrap_err();
-  return res.unwrap_or(false);
+bool AUTDFinishSTM(void* const handle) {
+  auto* cnt = static_cast<autd::Controller*>(handle);
+  if (auto res = cnt->stm()->finish(); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
 }
-bool AUTDAppendSequence(void* const handle, void* const seq) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  auto* s = static_cast<SequenceWrapper*>(seq);
-  auto res = cnt->ptr->AppendSequence(s->ptr);
-  if (res.is_err()) LastError() = res.unwrap_err();
-  return res.unwrap_or(false);
-}
-void AUTDFlush(void* const handle) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  cnt->ptr->Flush();
-}
-int32_t AUTDDeviceIdxForTransIdx(void* const handle, const int32_t global_trans_idx) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  const auto res = cnt->ptr->geometry()->device_idx_for_trans_idx(global_trans_idx);
-  return static_cast<int32_t>(res);
-}
-void AUTDTransPositionByGlobal(void* const handle, const int32_t global_trans_idx, float* x, float* y, float* z) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  const auto pos = cnt->ptr->geometry()->position(global_trans_idx);
-  *x = static_cast<float>(pos.x());
-  *y = static_cast<float>(pos.y());
-  *z = static_cast<float>(pos.z());
-}
-void AUTDTransPositionByLocal(void* const handle, const int32_t device_idx, const int32_t local_trans_idx, float* x, float* y, float* z) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  const auto pos = cnt->ptr->geometry()->position(device_idx, local_trans_idx);
-  *x = static_cast<float>(pos.x());
-  *y = static_cast<float>(pos.y());
-  *z = static_cast<float>(pos.z());
-}
-void AUTDDeviceDirection(void* const handle, const int32_t device_idx, float* x, float* y, float* z) {
-  auto* cnt = static_cast<ControllerWrapper*>(handle);
-  const auto dir = cnt->ptr->geometry()->direction(device_idx);
-  *x = static_cast<float>(dir.x());
-  *y = static_cast<float>(dir.y());
-  *z = static_cast<float>(dir.z());
-}
-#pragma endregion
