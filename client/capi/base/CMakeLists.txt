@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
 
-set (CMAKE_CXX_STANDARD 17)
 
 find_package(Threads REQUIRED)
 
@@ -14,10 +13,11 @@ file(GLOB include_files  ${PROJECT_SOURCE_DIR}/include/*.hpp *.hpp)
 
 add_library(autd3capi SHARED
   c_api.cpp
+  header.h
   autd3_c_api.h
   ${include_files}
 )
-
+ 
 include_directories(${INCLUDE_LIST})
 
 target_link_libraries(autd3capi ${CMAKE_THREAD_LIBS_INIT})
@@ -41,7 +41,7 @@ set_target_properties(autd3capi
 )
 
 if (WIN32)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4068 /wd4819")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4068")
 endif()
 
 if(NOT WIN32)

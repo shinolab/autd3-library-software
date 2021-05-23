@@ -1,7 +1,9 @@
 # AUTD3 API Documents
 
-Before use this library, please read [Readme](https://github.com/shinolab/autd3-library-software)
+Before use this library, please read [README](https://github.com/shinolab/autd3-library-software).
+
+For more information and tutorials, please refer to [Wiki](https://github.com/shinolab/autd3-library-software/wiki).
 
 # Author
 
-Shun Suzuki, 2020
+Shun Suzuki, 2021

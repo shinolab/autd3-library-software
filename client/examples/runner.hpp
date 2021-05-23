@@ -1,12 +1,12 @@
 // File: runner.hpp
 // Project: examples
-// Created Date: 19/05/2020
+// Created Date: 03/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/04/2021
+// Last Modified: 23/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
-// Copyright (c) 2020 Hapis Lab. All rights reserved.
+// Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
 #pragma once
@@ -19,66 +19,63 @@
 #include <vector>
 
 #include "autd3.hpp"
+#include "examples/advanced.hpp"
 #include "examples/bessel.hpp"
-#ifdef BUILD_HOLO_GAIN
-#include "examples/holo.hpp"
-#endif
+#include "examples/group.hpp"
 #include "examples/seq.hpp"
 #include "examples/simple.hpp"
 #include "examples/stm.hpp"
-
-using std::cin;
-using std::cout;
-using std::endl;
-using std::function;
-using std::pair;
-using std::string;
-using std::vector;
-
-constexpr auto ULTRASOUND_WAVELENGTH = 8.5;
-
-inline int Run(autd::ControllerPtr& autd) {
-  using F = function<void(autd::ControllerPtr&)>;
-  vector<pair<F, string>> examples = {pair(F{SimpleTest}, "Single Focal Point Test"), pair(F{BesselTest}, "BesselBeam Test"),
-                                      pair(F{STMTest}, "Spatio-Temporal Modulation Test"),
 #ifdef BUILD_HOLO_GAIN
-                                      pair(F{HoloTest}, "Multiple Focal Points Test"),
+#include "examples/holo.hpp"
 #endif
-                                      pair(F{SeqTest}, "Point Sequence Test (Hardware STM)")};
 
-  autd->geometry()->set_wavelength(ULTRASOUND_WAVELENGTH);
+inline int run(autd::Controller& autd) {
+  using F = std::function<void(autd::Controller&)>;
+  std::vector<std::pair<F, std::string>> examples = {
+      std::pair(F{simple_test}, "Single Focal Point Test"),
+      std::pair(F{bessel_test}, "BesselBeam Test"),
+#ifdef BUILD_HOLO_GAIN
+      std::pair(F{holo_test}, "HoloGain (multiple foci) Test"),
+#endif
+      std::pair(F{stm_test}, "Spatio-Temporal Modulation Test"),
+      std::pair(F{seq_test}, "Sequence (hardware STM) Test"),
+      std::pair(F{advanced_test}, "Advanced Test (custom Gain, Modulation, and set output delay)"),
+  };
+  if (autd.geometry()->num_devices() == 2) {
+    examples.emplace_back(std::pair(F{group_test}, "Group gain Test"));
+  }
 
-  autd->Clear().unwrap();
-  autd->Synchronize().unwrap();
+  autd.geometry()->wavelength() = 8.5;  // mm
 
-  auto firm_info_list = autd->firmware_info_list().unwrap();
-  for (auto&& firm_info : firm_info_list) cout << firm_info << endl;
+  autd.clear().unwrap();
+  autd.synchronize().unwrap();
+
+  auto firm_info_list = autd.firmware_info_list().unwrap();
+  for (auto&& firm_info : firm_info_list) std::cout << firm_info << std::endl;
 
   while (true) {
-    for (size_t i = 0; i < examples.size(); i++) cout << "[" << i << "]: " << examples[i].second << endl;
+    for (size_t i = 0; i < examples.size(); i++) std::cout << "[" << i << "]: " << examples[i].second << std::endl;
+    std::cout << "[Others]: finish." << std::endl;
 
-    cout << "[Others]: finish." << endl;
-
-    cout << "Choose number: ";
-    string in;
-    size_t idx = 0;
-    getline(cin, in);
+    std::cout << "Choose number: ";
+    std::string in;
+    size_t idx;
+    getline(std::cin, in);
     std::stringstream s(in);
     if (const auto empty = in == "\n"; !(s >> idx) || idx >= examples.size() || empty) break;
 
-    auto fn = examples[idx].first;
-    fn(autd);
+    examples[idx].first(autd);
 
-    cout << "press any key to finish..." << endl;
-    cin.ignore();
+    std::cout << "press any key to finish..." << std::endl;
+    std::cin.ignore();
 
-    cout << "finish." << endl;
-    autd->FinishSTModulation().unwrap();
-    autd->Stop().unwrap();
+    std::cout << "finish." << std::endl;
+    autd.stop().unwrap();
+    autd.stm()->finish().unwrap();
+    autd.clear().unwrap();
   }
 
-  autd->Clear().unwrap();
-  autd->Close().unwrap();
+  autd.close().unwrap();
 
   return 0;
 }

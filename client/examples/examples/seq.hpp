@@ -1,36 +1,40 @@
 // File: seq.hpp
 // Project: examples
-// Created Date: 01/07/2020
+// Created Date: 14/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/04/2021
+// Last Modified: 19/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
-// Copyright (c) 2020 Hapis Lab. All rights reserved.
+// Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
 #pragma once
 
-#include <iostream>
-
 #include "autd3.hpp"
+#include "primitive_modulation.hpp"
+#include "primitive_sequence.hpp"
 
-inline void SeqTest(const autd::ControllerPtr& autd) {
-  autd->SetSilentMode(false);
+using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SPACING_MM;
 
-  const auto m = autd::modulation::Modulation::Create(255);
-  autd->AppendModulationSync(m).unwrap();
+inline void seq_test(autd::Controller& autd) {
+  autd.silent_mode() = false;
 
-  const auto center = autd::Vector3(autd::AUTD_WIDTH / 2, autd::AUTD_HEIGHT / 2, 150);
-  const auto radius = 30.0;
+  const auto m = autd::modulation::Static::create();
+  autd.send(m).unwrap();
+
+  auto seq = autd::sequence::PointSequence::create();
+
+  const autd::Vector3 center(TRANS_SPACING_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SPACING_MM * ((NUM_TRANS_Y - 1) / 2.0), 150.0);
   const auto point_num = 200;
+  for (auto i = 0; i < point_num; i++) {
+    const auto radius = 30.0;
+    const auto theta = 2.0 * M_PI * static_cast<double>(i) / static_cast<double>(point_num);
+    const autd::Vector3 p(radius * std::cos(theta), radius * std::sin(theta), 0);
+    seq->add_point(center + p).unwrap();
+  }
 
-  auto circum = autd::sequence::CircumSeq::Create(center, autd::Vector3::UnitZ(), radius, point_num);
-  const auto freq = 200.0;
-  // For some reasons, the frequency may differ from the specified frequency.
-  // See the documentation for details.
-  const auto actual_freq = circum->SetFrequency(freq);
-  std::cout << "Actual frequency is " << actual_freq << "." << std::endl;
-
-  autd->AppendSequence(circum).unwrap();
+  const auto actual_freq = seq->set_frequency(1);
+  std::cout << "Actual frequency is " << actual_freq << " Hz\n";
+  autd.send(seq).unwrap();
 }
