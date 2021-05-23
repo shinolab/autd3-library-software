@@ -3,7 +3,7 @@
 // Created Date: 03/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/05/2021
+// Last Modified: 23/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -21,6 +21,7 @@
 #include "autd3.hpp"
 #include "examples/advanced.hpp"
 #include "examples/bessel.hpp"
+#include "examples/group.hpp"
 #include "examples/seq.hpp"
 #include "examples/simple.hpp"
 #include "examples/stm.hpp"
@@ -40,6 +41,9 @@ inline int run(autd::Controller& autd) {
       std::pair(F{seq_test}, "Sequence (hardware STM) Test"),
       std::pair(F{advanced_test}, "Advanced Test (custom Gain, Modulation, and set output delay)"),
   };
+  if (autd.geometry()->num_devices() == 2) {
+    examples.emplace_back(std::pair(F{group_test}, "Group gain Test"));
+  }
 
   autd.geometry()->wavelength() = 8.5;  // mm
 
