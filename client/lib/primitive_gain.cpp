@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/05/2021
+// Last Modified: 23/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -22,10 +22,7 @@ using core::Vector3;
 
 inline double PosMod(const double a, const double b) { return a - floor(a / b) * b; }
 
-GainPtr Grouped::create() {
-  GainPtr gain = std::make_shared<Grouped>();
-  return gain;
-}
+std::shared_ptr<Grouped> Grouped::create() { return std::make_shared<Grouped>(); }
 
 void Grouped::add(const size_t id, const GainPtr& gain) { this->_gain_map[id] = gain; }
 
