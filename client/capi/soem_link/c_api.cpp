@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 27/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -39,7 +39,8 @@ void AUTDFreeAdapterPointer(void* p_adapter) {
   EtherCATAdaptersDelete(wrapper);
 }
 
-void AUTDSOEMLink(void** out, const char* ifname, const int32_t device_num) {
-  auto* link = LinkCreate(autd::link::SOEMLink::create(std::string(ifname), device_num));
+void AUTDSOEMLink(void** out, const char* ifname, const int32_t device_num, const uint32_t cycle_ticks, const uint32_t bucket_size) {
+  auto* link =
+      LinkCreate(autd::link::SOEMLink::create(std::string(ifname), static_cast<size_t>(device_num), cycle_ticks, static_cast<size_t>(bucket_size)));
   *out = link;
 }
