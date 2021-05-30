@@ -243,10 +243,8 @@ Error HoloGainGSPAT::calc(const core::GeometryPtr& geometry) {
 
   Backend::MatrixXc b(n, m);
   for (size_t i = 0; i < m; i++) {
-    auto d = denominator(i) * denominator(i);
-    for (size_t j = 0; j < n; j++) {
-      b(j, i) = std::conj(g(i, j)) / d;
-    }
+    auto d = std::norm(denominator(i));
+    for (size_t j = 0; j < n; j++) b(j, i) = std::conj(g(i, j)) / d;
   }
 
   Backend::MatrixXc r = Backend::MatrixXc::Zero(m, m);
