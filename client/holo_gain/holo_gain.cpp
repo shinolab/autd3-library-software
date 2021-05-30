@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/05/2021
+// Last Modified: 30/05/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -343,12 +343,12 @@ Error HoloGainLM::calc(const core::GeometryPtr& geometry) {
     if (this->_backend->max_coefficient(g) <= _eps_1) break;
 
     this->_backend->mat_cpy(a, &tmp_mat);
-    this->_backend->matrix_add(mu, identity, double{1.0}, &tmp_mat);
+    this->_backend->matrix_add(mu, identity, 1.0, &tmp_mat);
     this->_backend->solve_g(&tmp_mat, &g, &h_lm);
     if (h_lm.norm() <= _eps_2 * (x.norm() + _eps_2)) break;
 
     this->_backend->vec_cpy(x, &x_new);
-    this->_backend->vector_add(double{-1.0}, h_lm, double{1.0}, &x_new);
+    this->_backend->vector_add(-1.0, h_lm, 1.0, &x_new);
     for (size_t i = 0; i < n_param; i++) t(i) = std::exp(std::complex<double>(0, x_new(i)));
 
     this->matrix_vec_mul(bhb, t, &tmp_vec_c);
