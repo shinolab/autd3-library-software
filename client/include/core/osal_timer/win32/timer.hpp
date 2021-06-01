@@ -13,9 +13,10 @@
 
 #include <Windows.h>
 
-#include <functional>
+#include <memory>
 #include <string>
 #include <thread>
+#include <utility>
 
 #include "../osal_callback.hpp"
 #include "core/result.hpp"

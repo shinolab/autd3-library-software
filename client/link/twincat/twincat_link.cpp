@@ -156,7 +156,7 @@ Error TwinCATLinkImpl::open() {
   return Err(std::string("Link to localhost has not been compiled. Rebuild this library on a Twincat3 host machine with TcADS-DLL."));
 }
 Error TwinCATLinkImpl::close() { return Ok(true); }
-Error TwinCATLinkImpl::send(size_t size, const uint8_t* buf) {
+Error TwinCATLinkImpl::send(const uint8_t* buf, size_t size) {
   (void)size;
   (void)buf;
   return Ok(true);
