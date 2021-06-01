@@ -24,7 +24,7 @@ std::vector<EtherCATAdapter> SOEMLink::enumerate_adapters() {
 
 class SOEMLinkImpl final : public SOEMLink {
  public:
-  SOEMLinkImpl(std::string ifname, const size_t device_num, uint32_t cycle_ticks, size_t bucket_size)
+  SOEMLinkImpl(std::string ifname, const size_t device_num, const uint32_t cycle_ticks, const size_t bucket_size)
       : SOEMLink(), _device_num(device_num), _bucket_size(bucket_size), _cycle_ticks(cycle_ticks), _ifname(std::move(ifname)), _config() {}
   ~SOEMLinkImpl() override = default;
   SOEMLinkImpl(const SOEMLinkImpl& v) noexcept = delete;
