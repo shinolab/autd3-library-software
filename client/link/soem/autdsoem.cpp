@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/05/2021
+// Last Modified: 01/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -34,7 +34,7 @@ static std::atomic autd3_send_cond(false);
 
 bool SOEMController::is_open() const { return _is_open; }
 
-Error SOEMController::send(const size_t size, const uint8_t* buf) {
+Error SOEMController::send(const uint8_t* buf, const size_t size) {
   if (!_is_open) return Err(std::string("link is closed"));
   if (this->_send_bucket_size == _config.bucket_size) return Ok(false);
 

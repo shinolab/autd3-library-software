@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/05/2021
+// Last Modified: 01/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -37,7 +37,7 @@ void AUTDCreateController(void** out) {
 bool AUTDOpenController(void* const handle, void* const p_link) {
   auto* cnt = static_cast<autd::Controller*>(handle);
   auto* link = static_cast<LinkWrapper*>(p_link);
-  auto res = cnt->open(link->ptr);
+  auto res = cnt->open(std::move(link->ptr));
   LinkDelete(link);
   if (res.is_err()) {
     LastError() = res.unwrap_err();

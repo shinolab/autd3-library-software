@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/05/2021
+// Last Modified: 01/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -42,15 +42,15 @@ Result<std::vector<uint8_t>, std::string> Controller::fpga_info() {
 
 Error Controller::update_ctrl_flag() { return this->send(nullptr, nullptr, true); }
 
-Error Controller::open(const core::LinkPtr& link) {
+Error Controller::open(core::LinkPtr link) {
   if (is_open())
     if (auto close_res = this->close(); close_res.is_err()) return close_res;
 
   this->_tx_buf = std::make_unique<uint8_t[]>(this->_geometry->num_devices() * core::EC_OUTPUT_FRAME_SIZE);
   this->_rx_buf = std::make_unique<uint8_t[]>(this->_geometry->num_devices() * core::EC_INPUT_FRAME_SIZE);
 
-  this->_link = link;
-  this->_stm = std::make_shared<STMController>(this->_link, this->_geometry, &this->_silent_mode, &this->_read_fpga_info);
+  this->_link = std::move(link);
+  // this->_stm = std::make_shared<STMController>(this->_link, this->_geometry, &this->_silent_mode, &this->_read_fpga_info);
   return this->_link->open();
 }
 
@@ -64,7 +64,7 @@ Error Controller::synchronize(const core::Configuration config) {
   const auto num_devices = this->_geometry->num_devices();
   core::Logic::pack_sync_body(config, num_devices, &_tx_buf[0], &size);
 
-  if (auto res = this->_link->send(size, &_tx_buf[0]); res.is_err()) return res;
+  if (auto res = this->_link->send(&_tx_buf[0], size); res.is_err()) return res;
   return wait_msg_processed(msg_id, 5000);
 }
 
@@ -76,7 +76,7 @@ Error Controller::send_header(const core::COMMAND cmd, const size_t max_trial) c
   const auto send_size = sizeof(core::RxGlobalHeader);
   uint8_t msg_id = 0;
   core::Logic::pack_header(cmd, this->_silent_mode, this->_seq_mode, this->_read_fpga_info, &_tx_buf[0], &msg_id);
-  if (auto res = _link->send(send_size, &_tx_buf[0]); res.is_err()) return res;
+  if (auto res = _link->send(&_tx_buf[0], send_size); res.is_err()) return res;
   return wait_msg_processed(msg_id, max_trial);
 }
 
@@ -134,7 +134,7 @@ Error Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod
   while (true) {
     uint8_t msg_id = 0;
     core::Logic::pack_header(mod, this->_silent_mode, this->_seq_mode, this->_read_fpga_info, &this->_tx_buf[0], &msg_id);
-    if (auto res = this->_link->send(size, &this->_tx_buf[0]); res.is_err()) return res;
+    if (auto res = this->_link->send(&this->_tx_buf[0], size); res.is_err()) return res;
 
     const auto mod_finished = ModSentFinished(mod);
     if (mod_finished && !wait_for_sent) return Ok(true);
@@ -152,7 +152,7 @@ Error Controller::send(const core::SequencePtr& seq) {
     core::Logic::pack_header(core::COMMAND::SEQ_MODE, this->_silent_mode, this->_seq_mode, this->_read_fpga_info, &this->_tx_buf[0], &msg_id);
     size_t size;
     core::Logic::pack_body(seq, this->_geometry, &this->_tx_buf[0], &size);
-    if (auto res = this->_link->send(size, &this->_tx_buf[0]); res.is_err()) return res;
+    if (auto res = this->_link->send(&this->_tx_buf[0], size); res.is_err()) return res;
 
     if (SeqSentFinished(seq)) return wait_msg_processed(msg_id, 5000);
     if (auto res = wait_msg_processed(msg_id); res.is_err()) return res;
@@ -167,7 +167,7 @@ Error Controller::set_output_delay(const std::vector<core::DataArray>& delay) co
   core::Logic::pack_header(core::COMMAND::SET_DELAY, false, false, false, &this->_tx_buf[0], &msg_id);
   size_t size = 0;
   core::Logic::pack_delay_body(delay, &this->_tx_buf[0], &size);
-  if (auto res = this->_link->send(size, &this->_tx_buf[0]); res.is_err()) return res;
+  if (auto res = this->_link->send(&this->_tx_buf[0], size); res.is_err()) return res;
   return wait_msg_processed(msg_id, 200);
 }
 
@@ -224,7 +224,7 @@ void Controller::STMController::add_gains(const std::vector<core::GainPtr>& gain
   return this->_timer.start([this, idx, len]() mutable {
     if (auto expected = false; this->_lock.compare_exchange_weak(expected, true)) {
       const auto body_size = this->_sizes[idx];
-      if (const auto res = this->_link->send(body_size, &this->_bodies[idx][0]); res.is_err()) return;
+      if (const auto res = this->_link->send(&this->_bodies[idx][0], body_size); res.is_err()) return;
       idx = (idx + 1) % len;
       this->_lock.store(false, std::memory_order_release);
     }

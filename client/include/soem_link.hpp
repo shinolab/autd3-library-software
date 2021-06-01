@@ -3,7 +3,7 @@
 // Created Date: 10/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/05/2021
+// Last Modified: 01/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -60,7 +60,7 @@ class SOEMLink : virtual public core::Link {
 
   Error open() override = 0;
   Error close() override = 0;
-  Error send(size_t size, const uint8_t* buf) override = 0;
+  Error send(const uint8_t* buf, size_t size) override = 0;
   Error read(uint8_t* rx, size_t buffer_len) override = 0;
   bool is_open() override = 0;
 };

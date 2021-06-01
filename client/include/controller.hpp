@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/05/2021
+// Last Modified: 01/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -96,7 +96,7 @@ class Controller {
    * @param[in] link Link
    * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
-  [[nodiscard]] Error open(const core::LinkPtr& link);
+  [[nodiscard]] Error open(core::LinkPtr link);
 
   /**
    * @brief Synchronize all devices

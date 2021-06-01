@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/05/2021
+// Last Modified: 01/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -35,7 +35,7 @@ class SOEMLinkImpl final : public SOEMLink {
  protected:
   Error open() override;
   Error close() override;
-  Error send(size_t size, const uint8_t* buf) override;
+  Error send(const uint8_t* buf, size_t size) override;
   Error read(uint8_t* rx, size_t buffer_len) override;
   bool is_open() override;
 
@@ -49,7 +49,7 @@ class SOEMLinkImpl final : public SOEMLink {
 };
 
 core::LinkPtr SOEMLink::create(const std::string& ifname, const size_t device_num, uint32_t cycle_ticks, size_t bucket_size) {
-  core::LinkPtr link = std::make_shared<SOEMLinkImpl>(ifname, device_num, cycle_ticks, bucket_size);
+  core::LinkPtr link = std::make_unique<SOEMLinkImpl>(ifname, device_num, cycle_ticks, bucket_size);
   return link;
 }
 
@@ -69,7 +69,7 @@ Error SOEMLinkImpl::open() {
 
 Error SOEMLinkImpl::close() { return _cnt.close(); }
 
-Error SOEMLinkImpl::send(const size_t size, const uint8_t* buf) { return _cnt.send(size, buf); }
+Error SOEMLinkImpl::send(const uint8_t* buf, const size_t size) { return _cnt.send(buf, size); }
 
 Error SOEMLinkImpl::read(uint8_t* rx, [[maybe_unused]] size_t buffer_len) { return _cnt.read(rx); }
 
