@@ -15,10 +15,12 @@
 #include <time.h>
 
 #include <cstring>
-#include <functional>
+#include <memory>
 #include <string>
 #include <thread>
+#include <utility>
 
+#include "../osal_callback.hpp"
 #include "core/result.hpp"
 
 namespace autd::core {
@@ -47,7 +49,7 @@ class Timer {
     if (timer_create(CLOCK_REALTIME, &se, &timer_id) < 0) return Err(std::string("timer_create failed"));
     if (timer_settime(timer_id, 0, &itval, NULL) < 0) return Err(std::string("timer_settime failed"));
 
-    return std::make_unique<Timer>(std::move(handler), timer_id);
+    return Ok(std::make_unique<Timer>(std::move(handler), timer_id));
   }
   [[nodiscard]] Result<std::unique_ptr<T>, std::string> stop() {
     if (timer_delete(_timer_id) < 0) return Err(std::string("timer_delete failed"));

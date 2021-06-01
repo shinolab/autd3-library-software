@@ -13,10 +13,12 @@
 
 #include <dispatch/dispatch.h>
 
-#include <functional>
+#include <memory>
 #include <string>
 #include <thread>
+#include <utility>
 
+#include "../osal_callback.hpp"
 #include "core/result.hpp"
 
 namespace autd::core {
@@ -24,14 +26,15 @@ namespace autd::core {
 template <typename T>
 class Timer {
  public:
-  Timer(std::unique_ptr<T> handler, dispatch_queue_t queue, dispatch_source_t timer) _handler(std::move(handler)), _queue(queue), _timer(timer) {}
+  Timer(std::unique_ptr<T> handler, dispatch_queue_t queue, dispatch_source_t timer) : _handler(std::move(handler)), _queue(queue), _timer(timer) {}
   ~Timer() { (void)this->stop(); }
   [[nodiscard]] static Result<std::unique_ptr<Timer>, std::string> start(std::unique_ptr<T> handler, const uint32_t interval_us) {
     auto queue = dispatch_queue_create("timerQueue", 0);
 
+    auto *ptr = handler.get();
     auto timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
     dispatch_source_set_event_handler(timer, ^{
-      main_loop(handler.get());
+      main_loop(ptr);
     });
 
     dispatch_source_set_cancel_handler(timer, ^{
@@ -43,7 +46,7 @@ class Timer {
     dispatch_source_set_timer(timer, start, interval_us * 1000L, 0);
     dispatch_resume(timer);
 
-    return std::make_unique<Timer>(std::move(handler), queue, timer);
+    return Ok(std::make_unique<Timer>(std::move(handler), queue, timer));
   }
 
   [[nodiscard]] Result<std::unique_ptr<T>, std::string> stop() {
