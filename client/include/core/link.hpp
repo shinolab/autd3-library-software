@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/05/2021
+// Last Modified: 01/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -18,7 +18,7 @@
 namespace autd::core {
 
 class Link;
-using LinkPtr = std::shared_ptr<Link>;
+using LinkPtr = std::unique_ptr<Link>;
 
 /**
  * @brief Link is the interface to the AUTD device
@@ -29,8 +29,8 @@ class Link {
   virtual ~Link() = default;
   Link(const Link& v) = delete;
   Link& operator=(const Link& obj) = delete;
-  Link(Link&& obj) = delete;
-  Link& operator=(Link&& obj) = delete;
+  Link(Link&& obj) = default;
+  Link& operator=(Link&& obj) = default;
 
   /**
    * @brief Open link
@@ -46,7 +46,7 @@ class Link {
    * @brief  Send data to devices
    * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
-  [[nodiscard]] virtual Error send(size_t size, const uint8_t* buf) = 0;
+  [[nodiscard]] virtual Error send(const uint8_t* buf, size_t size) = 0;
   /**
    * @brief  Read data from devices
    * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred

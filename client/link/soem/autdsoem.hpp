@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/05/2021
+// Last Modified: 01/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -46,7 +46,7 @@ class SOEMController {
 
   [[nodiscard]] bool is_open() const;
 
-  [[nodiscard]] Error send(size_t size, const uint8_t* buf);
+  [[nodiscard]] Error send(const uint8_t* buf, size_t size);
   [[nodiscard]] Error read(uint8_t* rx) const;
 
  private:
