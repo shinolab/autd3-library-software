@@ -3,7 +3,7 @@
 // Created Date: 19/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/05/2021
+// Last Modified: 01/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -34,17 +34,19 @@ class UniformGain final : public autd::core::Gain {
   }
 };
 
-inline void advanced_test(autd::Controller& autd) {
-  autd.silent_mode() = false;
+inline std::unique_ptr<autd::Controller> advanced_test(std::unique_ptr<autd::Controller> autd) {
+  autd->silent_mode() = false;
 
   std::vector<autd::DataArray> delays;
   autd::DataArray delay{};
   delay.fill(0);
   delay[0] = 4;  // 4 cycle = 100 us delay in 0-th transducer
   delays.emplace_back(delay);
-  autd.set_output_delay(delays).unwrap();
+  autd->set_output_delay(delays).unwrap();
 
   const auto g = UniformGain::create();
   const auto m = BurstModulation::create();
-  autd.send(g, m).unwrap();
+  autd->send(g, m).unwrap();
+
+  return autd;
 }

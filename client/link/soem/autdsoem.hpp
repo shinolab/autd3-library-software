@@ -11,17 +11,29 @@
 
 #pragma once
 
-#include <condition_variable>
 #include <memory>
-#include <mutex>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "core/osal_timer.hpp"
 #include "core/result.hpp"
 
 namespace autd::autdsoem {
+
+struct SOEMCallback final : core::CallbackHandler {
+  virtual ~SOEMCallback() = default;
+  SOEMCallback(const SOEMCallback& v) noexcept = delete;
+  SOEMCallback& operator=(const SOEMCallback& obj) = delete;
+  SOEMCallback(SOEMCallback&& obj) = delete;
+  SOEMCallback& operator=(SOEMCallback&& obj) = delete;
+
+  SOEMCallback() : _autd3_rt_lock(false) {}
+
+  void callback() override;
+
+ private:
+  std::atomic<bool> _autd3_rt_lock;
+};
 
 struct ECConfig {
   uint32_t ec_sm3_cycle_time_ns;
@@ -46,7 +58,7 @@ class SOEMController {
 
   [[nodiscard]] bool is_open() const;
 
-  [[nodiscard]] Error send(const uint8_t* buf, size_t size);
+  [[nodiscard]] Error send(const uint8_t* buf, size_t size) const;
   [[nodiscard]] Error read(uint8_t* rx) const;
 
  private:
@@ -59,13 +71,7 @@ class SOEMController {
   ECConfig _config;
   bool _is_open;
 
-  std::vector<std::pair<std::unique_ptr<uint8_t[]>, size_t>> _send_bucket;
-  size_t _send_bucket_ptr, _send_bucket_size;
-  std::thread _send_thread;
-  std::condition_variable _send_cond;
-  std::mutex _send_mtx;
-
-  Timer _timer;
+  std::unique_ptr<core::Timer<SOEMCallback>> _timer;
 };
 
 struct EtherCATAdapterInfo final {

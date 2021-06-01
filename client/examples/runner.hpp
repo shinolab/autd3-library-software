@@ -3,7 +3,7 @@
 // Created Date: 03/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 23/05/2021
+// Last Modified: 01/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -29,8 +29,8 @@
 #include "examples/holo.hpp"
 #endif
 
-inline int run(autd::Controller& autd) {
-  using F = std::function<void(autd::Controller&)>;
+inline int run(std::unique_ptr<autd::Controller> autd) {
+  using F = std::function<std::unique_ptr<autd::Controller>(std::unique_ptr<autd::Controller>)>;
   std::vector<std::pair<F, std::string>> examples = {
       std::pair(F{simple_test}, "Single Focal Point Test"),
       std::pair(F{bessel_test}, "BesselBeam Test"),
@@ -41,16 +41,16 @@ inline int run(autd::Controller& autd) {
       std::pair(F{seq_test}, "Sequence (hardware STM) Test"),
       std::pair(F{advanced_test}, "Advanced Test (custom Gain, Modulation, and set output delay)"),
   };
-  if (autd.geometry()->num_devices() == 2) {
+  if (autd->geometry()->num_devices() == 2) {
     examples.emplace_back(std::pair(F{group_test}, "Group gain Test"));
   }
 
-  autd.geometry()->wavelength() = 8.5;  // mm
+  autd->geometry()->wavelength() = 8.5;  // mm
 
-  autd.clear().unwrap();
-  autd.synchronize().unwrap();
+  autd->clear().unwrap();
+  autd->synchronize().unwrap();
 
-  auto firm_info_list = autd.firmware_info_list().unwrap();
+  auto firm_info_list = autd->firmware_info_list().unwrap();
   for (auto&& firm_info : firm_info_list) std::cout << firm_info << std::endl;
 
   while (true) {
@@ -64,18 +64,17 @@ inline int run(autd::Controller& autd) {
     std::stringstream s(in);
     if (const auto empty = in == "\n"; !(s >> idx) || idx >= examples.size() || empty) break;
 
-    examples[idx].first(autd);
+    autd = examples[idx].first(std::move(autd));
 
     std::cout << "press any key to finish..." << std::endl;
     std::cin.ignore();
 
     std::cout << "finish." << std::endl;
-    autd.stop().unwrap();
-    autd.stm()->finish().unwrap();
-    autd.clear().unwrap();
+    autd->stop().unwrap();
+    autd->clear().unwrap();
   }
 
-  autd.close().unwrap();
+  autd->close().unwrap();
 
   return 0;
 }

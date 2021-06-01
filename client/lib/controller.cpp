@@ -25,6 +25,13 @@ bool ModSentFinished(const core::ModulationPtr& mod) { return mod == nullptr || 
 bool SeqSentFinished(const core::SequencePtr& seq) { return seq == nullptr || seq->sent() == seq->control_points().size(); }
 }  // namespace
 
+std::unique_ptr<Controller> Controller::create() {
+  struct impl : Controller {
+    impl() : Controller() {}
+  };
+  return std::make_unique<impl>();
+}
+
 bool Controller::is_open() const { return this->_link != nullptr && this->_link->is_open(); }
 
 core::GeometryPtr Controller::geometry() const noexcept { return this->_geometry; }
@@ -50,7 +57,6 @@ Error Controller::open(core::LinkPtr link) {
   this->_rx_buf = std::make_unique<uint8_t[]>(this->_geometry->num_devices() * core::EC_INPUT_FRAME_SIZE);
 
   this->_link = std::move(link);
-  // this->_stm = std::make_shared<STMController>(this->_link, this->_geometry, &this->_silent_mode, &this->_read_fpga_info);
   return this->_link->open();
 }
 
@@ -97,7 +103,6 @@ Error Controller::wait_msg_processed(const uint8_t msg_id, const size_t max_tria
 }
 
 Error Controller::close() {
-  if (auto res = this->_stm->finish(); res.is_err()) return res;
   if (auto res = this->stop(); res.is_err()) return res;
   if (auto res = this->clear(); res.is_err()) return res;
 
@@ -117,8 +122,6 @@ Error Controller::send(const core::ModulationPtr& mod) { return this->send(nullp
 
 Error Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod, const bool wait_for_sent) {
   if (!this->is_open()) return Err(std::string("Link is not opened."));
-
-  if (auto res = this->_stm->stop(); res.is_err()) return res;
 
   if (mod != nullptr)
     if (auto res = mod->build(this->_config); res.is_err()) return res;
@@ -144,7 +147,6 @@ Error Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod
 
 Error Controller::send(const core::SequencePtr& seq) {
   if (!this->is_open()) return Err(std::string("Link is not opened."));
-  if (auto res = this->_stm->stop(); res.is_err()) return res;
 
   this->_seq_mode = true;
   while (true) {
@@ -192,54 +194,58 @@ Result<std::vector<FirmwareInfo>, std::string> Controller::firmware_info_list() 
   return Ok(std::move(infos));
 }
 
-std::shared_ptr<Controller::STMController> Controller::stm() const { return this->_stm; }
-
-void Controller::STMController::add_gain(const core::GainPtr& gain) { _gains.emplace_back(gain); }
-void Controller::STMController::add_gains(const std::vector<core::GainPtr>& gains) {
-  for (const auto& g : gains) this->add_gain(g);
+std::unique_ptr<Controller::STMController> Controller::stm() {
+  ControllerProps props(this->_config, this->_geometry, this->_silent_mode, this->_read_fpga_info, this->_seq_mode, std::move(this->_tx_buf),
+                        std::move(this->_rx_buf));
+  struct impl : STMController {
+    impl(std::unique_ptr<STMTimerCallback> callback, ControllerProps props) : STMController(std::move(callback), std::move(props)) {}
+  };
+  return std::make_unique<impl>(std::make_unique<STMTimerCallback>(std::move(this->_link)), std::move(props));
 }
 
-[[nodiscard]] Error Controller::STMController::start(const double freq) {
-  auto len = this->_gains.size();
-  auto interval_us = static_cast<uint32_t>(1000000. / static_cast<double>(freq) / static_cast<double>(len));
-  this->_timer.SetInterval(interval_us);
-
-  const auto current_size = this->_bodies.size();
-  this->_bodies.resize(len);
-  this->_sizes.resize(len);
-
-  for (auto i = current_size; i < len; i++) {
-    auto& g = this->_gains[i];
-    if (auto res = g->build(this->_geometry); res.is_err()) return res;
-
-    uint8_t msg_id = 0;
-    this->_bodies[i] = std::make_unique<uint8_t[]>(this->_geometry->num_devices() * core::EC_OUTPUT_FRAME_SIZE);
-    core::Logic::pack_header(nullptr, *this->_silent_mode, false, *this->_read_fpga_info, &this->_bodies[i][0], &msg_id);
-    size_t size = 0;
-    core::Logic::pack_body(g, &this->_bodies[i][0], &size);
-    this->_sizes[i] = size;
-  }
-
-  size_t idx = 0;
-  return this->_timer.start([this, idx, len]() mutable {
-    if (auto expected = false; this->_lock.compare_exchange_weak(expected, true)) {
-      const auto body_size = this->_sizes[idx];
-      if (const auto res = this->_link->send(&this->_bodies[idx][0], body_size); res.is_err()) return;
-      idx = (idx + 1) % len;
-      this->_lock.store(false, std::memory_order_release);
-    }
-  });
+std::unique_ptr<Controller> Controller::STMController::controller() {
+  struct impl : Controller {
+    impl(core::LinkPtr link, ControllerProps props) : Controller(std::move(link), std::move(props)) {}
+  };
+  return std::make_unique<impl>(std::move(this->_handler->_link), std::move(this->_props));
 }
 
-[[nodiscard]] Error Controller::STMController::stop() { return this->_timer.stop(); }
+Error Controller::STMController::add_gain(const core::GainPtr& gain) const {
+  if (auto res = gain->build(this->_props._geometry); res.is_err()) return res;
 
-[[nodiscard]] Error Controller::STMController::finish() {
-  if (auto res = this->stop(); res.is_err()) return res;
+  uint8_t msg_id = 0;
+  auto build_buf = std::make_unique<uint8_t[]>(this->_props._geometry->num_devices() * core::EC_OUTPUT_FRAME_SIZE);
+  core::Logic::pack_header(nullptr, this->_props._silent_mode, false, this->_props._reads_fpga_info, &build_buf[0], &msg_id);
+  size_t size = 0;
+  core::Logic::pack_body(gain, &build_buf[0], &size);
 
-  std::vector<core::GainPtr>().swap(this->_gains);
-  std::vector<std::unique_ptr<uint8_t[]>>().swap(this->_bodies);
-  std::vector<size_t>().swap(this->_sizes);
-
+  this->_handler->add(std::move(build_buf), size);
   return Ok(true);
 }
+
+Result<std::unique_ptr<Controller::STMTimer>, std::string> Controller::STMController::start(const double freq) {
+  const auto len = this->_handler->_bodies.size();
+  const auto interval_us = static_cast<uint32_t>(1000000. / static_cast<double>(freq) / static_cast<double>(len));
+  auto res = core::Timer<STMTimerCallback>::start(std::move(this->_handler), interval_us);
+  if (res.is_err()) return Err(res.unwrap_err());
+
+  struct impl : STMTimer {
+    impl(std::unique_ptr<core::Timer<STMTimerCallback>> timer, ControllerProps props) : STMTimer(std::move(timer), std::move(props)) {}
+  };
+  std::unique_ptr<STMTimer> cnt = std::make_unique<impl>(res.unwrap(), std::move(this->_props));
+  return Ok(std::move(cnt));
+}
+
+void Controller::STMController::finish() const { this->_handler->clear(); }
+
+Result<std::unique_ptr<Controller::STMController>, std::string> Controller::STMTimer::stop() {
+  auto res = this->_timer->stop();
+  if (res.is_err()) return Err(res.unwrap_err());
+  struct impl : STMController {
+    impl(std::unique_ptr<STMTimerCallback> handler, ControllerProps props) : STMController(std::move(handler), std::move(props)) {}
+  };
+  std::unique_ptr<STMController> cnt = std::make_unique<impl>(res.unwrap(), std::move(this->_props));
+  return Ok(std::move(cnt));
+}
+
 }  // namespace autd
