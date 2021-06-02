@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/06/2021
+// Last Modified: 02/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -26,10 +26,10 @@ bool SeqSentFinished(const core::SequencePtr& seq) { return seq == nullptr || se
 }  // namespace
 
 std::unique_ptr<Controller> Controller::create() {
-  struct impl : Controller {
-    impl() : Controller() {}
+  struct Impl : Controller {
+    Impl() : Controller() {}
   };
-  return std::make_unique<impl>();
+  return std::make_unique<Impl>();
 }
 
 bool Controller::is_open() const { return this->_link != nullptr && this->_link->is_open(); }
@@ -47,7 +47,7 @@ Result<std::vector<uint8_t>, std::string> Controller::fpga_info() {
   return Ok(_fpga_infos);
 }
 
-Error Controller::update_ctrl_flag() { return this->send(nullptr, nullptr, true); }
+Error Controller::update_ctrl_flag() { return this->send(nullptr, nullptr); }
 
 Error Controller::open(core::LinkPtr link) {
   if (is_open())
@@ -114,13 +114,13 @@ Error Controller::close() {
   return res;
 }
 
-Error Controller::stop() { return this->send(gain::NullGain::create(), nullptr, false); }
+Error Controller::stop() { return this->send(gain::NullGain::create(), nullptr); }
 
-Error Controller::send(const core::GainPtr& gain, const bool wait_for_sent) { return this->send(gain, nullptr, wait_for_sent); }
+Error Controller::send(const core::GainPtr& gain) { return this->send(gain, nullptr); }
 
-Error Controller::send(const core::ModulationPtr& mod) { return this->send(nullptr, mod, true); }
+Error Controller::send(const core::ModulationPtr& mod) { return this->send(nullptr, mod); }
 
-Error Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod, const bool wait_for_sent) {
+Error Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod) {
   if (!this->is_open()) return Err(std::string("Link is not opened."));
 
   if (mod != nullptr)
@@ -138,10 +138,7 @@ Error Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod
     uint8_t msg_id = 0;
     core::Logic::pack_header(mod, this->_silent_mode, this->_seq_mode, this->_read_fpga_info, &this->_tx_buf[0], &msg_id);
     if (auto res = this->_link->send(&this->_tx_buf[0], size); res.is_err()) return res;
-
-    const auto mod_finished = ModSentFinished(mod);
-    if (mod_finished && !wait_for_sent) return Ok(true);
-    if (auto res = wait_msg_processed(msg_id); res.is_err() || mod_finished) return res;
+    if (auto res = wait_msg_processed(msg_id); res.is_err() || ModSentFinished(mod)) return res;
   }
 }
 
@@ -197,17 +194,17 @@ Result<std::vector<FirmwareInfo>, std::string> Controller::firmware_info_list() 
 std::unique_ptr<Controller::STMController> Controller::stm() {
   ControllerProps props(this->_config, this->_geometry, this->_silent_mode, this->_read_fpga_info, this->_seq_mode, std::move(this->_tx_buf),
                         std::move(this->_rx_buf));
-  struct impl : STMController {
-    impl(std::unique_ptr<STMTimerCallback> callback, ControllerProps props) : STMController(std::move(callback), std::move(props)) {}
+  struct Impl : STMController {
+    Impl(std::unique_ptr<STMTimerCallback> callback, ControllerProps props) : STMController(std::move(callback), std::move(props)) {}
   };
-  return std::make_unique<impl>(std::make_unique<STMTimerCallback>(std::move(this->_link)), std::move(props));
+  return std::make_unique<Impl>(std::make_unique<STMTimerCallback>(std::move(this->_link)), std::move(props));
 }
 
 std::unique_ptr<Controller> Controller::STMController::controller() {
-  struct impl : Controller {
-    impl(core::LinkPtr link, ControllerProps props) : Controller(std::move(link), std::move(props)) {}
+  struct Impl : Controller {
+    Impl(core::LinkPtr link, ControllerProps props) : Controller(std::move(link), std::move(props)) {}
   };
-  return std::make_unique<impl>(std::move(this->_handler->_link), std::move(this->_props));
+  return std::make_unique<Impl>(std::move(this->_handler->_link), std::move(this->_props));
 }
 
 Error Controller::STMController::add_gain(const core::GainPtr& gain) const {
@@ -229,10 +226,10 @@ Result<std::unique_ptr<Controller::STMTimer>, std::string> Controller::STMContro
   auto res = core::Timer<STMTimerCallback>::start(std::move(this->_handler), interval_us);
   if (res.is_err()) return Err(res.unwrap_err());
 
-  struct impl : STMTimer {
-    impl(std::unique_ptr<core::Timer<STMTimerCallback>> timer, ControllerProps props) : STMTimer(std::move(timer), std::move(props)) {}
+  struct Impl : STMTimer {
+    Impl(std::unique_ptr<core::Timer<STMTimerCallback>> timer, ControllerProps props) : STMTimer(std::move(timer), std::move(props)) {}
   };
-  std::unique_ptr<STMTimer> cnt = std::make_unique<impl>(res.unwrap(), std::move(this->_props));
+  std::unique_ptr<STMTimer> cnt = std::make_unique<Impl>(res.unwrap(), std::move(this->_props));
   return Ok(std::move(cnt));
 }
 
@@ -241,10 +238,10 @@ void Controller::STMController::finish() const { this->_handler->clear(); }
 Result<std::unique_ptr<Controller::STMController>, std::string> Controller::STMTimer::stop() {
   auto res = this->_timer->stop();
   if (res.is_err()) return Err(res.unwrap_err());
-  struct impl : STMController {
-    impl(std::unique_ptr<STMTimerCallback> handler, ControllerProps props) : STMController(std::move(handler), std::move(props)) {}
+  struct Impl : STMController {
+    Impl(std::unique_ptr<STMTimerCallback> handler, ControllerProps props) : STMController(std::move(handler), std::move(props)) {}
   };
-  std::unique_ptr<STMController> cnt = std::make_unique<impl>(res.unwrap(), std::move(this->_props));
+  std::unique_ptr<STMController> cnt = std::make_unique<Impl>(res.unwrap(), std::move(this->_props));
   return Ok(std::move(cnt));
 }
 

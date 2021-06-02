@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/06/2021
+// Last Modified: 02/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -35,14 +35,7 @@ class Controller {
   class STMTimerCallback;
 
   struct ControllerProps {
-    core::Configuration _config;
-    core::GeometryPtr _geometry;
-    bool _silent_mode;
-    bool _reads_fpga_info;
-    bool _seq_mode;
-    std::unique_ptr<uint8_t[]> _tx_buf;
-    std::unique_ptr<uint8_t[]> _rx_buf;
-
+    friend class Controller;
     ControllerProps(const core::Configuration config, core::GeometryPtr geometry, const bool silent_mode, const bool reads_fpga_info,
                     const bool seq_mode, std::unique_ptr<uint8_t[]> tx_buf, std::unique_ptr<uint8_t[]> rx_buf)
         : _config(config),
@@ -57,6 +50,15 @@ class Controller {
     ControllerProps& operator=(const ControllerProps& obj) = delete;
     ControllerProps(ControllerProps&& obj) = default;
     ControllerProps& operator=(ControllerProps&& obj) = default;
+
+   private:
+    core::Configuration _config;
+    core::GeometryPtr _geometry;
+    bool _silent_mode;
+    bool _reads_fpga_info;
+    bool _seq_mode;
+    std::unique_ptr<uint8_t[]> _tx_buf;
+    std::unique_ptr<uint8_t[]> _rx_buf;
   };
 
  public:
@@ -140,10 +142,9 @@ class Controller {
   /**
    * @brief Send gain to the device
    * @param[in] gain Gain to display
-   * @param[in] wait_for_sent if true, this function will wait for the data is sent to the devices and processed.
    * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
-  [[nodiscard]] Error send(const core::GainPtr& gain, bool wait_for_sent = false);
+  [[nodiscard]] Error send(const core::GainPtr& gain);
 
   /**
    * @brief Send modulation to the device
@@ -156,10 +157,9 @@ class Controller {
    * @brief Send gain and modulation to the device
    * @param[in] gain Gain to display
    * @param[in] mod Amplitude modulation to display
-   * @param[in] wait_for_sent if true, this function will wait for the data is sent to the devices and processed.
    * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
-  [[nodiscard]] Error send(const core::GainPtr& gain, const core::ModulationPtr& mod, bool wait_for_sent = false);
+  [[nodiscard]] Error send(const core::GainPtr& gain, const core::ModulationPtr& mod);
 
   /**
    * @brief Send sequence and modulation to the device
@@ -203,7 +203,7 @@ class Controller {
      * add_gain() at the freq. The accuracy depends on the computer, for
      * example, about 1ms on Windows. Note that it is affected by interruptions,
      * and so on.
-     * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
+     * \return ok with STMTimer, or err(error message) if unrecoverable error is occurred
      */
     [[nodiscard]] Result<std::unique_ptr<STMTimer>, std::string> start(double freq);
 
@@ -221,13 +221,16 @@ class Controller {
     std::unique_ptr<STMTimerCallback> _handler;
   };
 
+  /**
+   * \brief Software spatio-temporal modulation timer.
+   */
   class STMTimer {
    public:
     friend class STMController;
 
     /**
      * @brief Suspend Spatio-Temporal Modulation
-     * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
+     * \return ok with STMController, or err(error message) if unrecoverable error is occurred
      */
     [[nodiscard]] Result<std::unique_ptr<STMController>, std::string> stop();
 
@@ -262,6 +265,8 @@ class Controller {
 
   class STMTimerCallback final : core::CallbackHandler {
    public:
+    friend class STMController;
+
     virtual ~STMTimerCallback() = default;
     STMTimerCallback(const STMTimerCallback& v) noexcept = delete;
     STMTimerCallback& operator=(const STMTimerCallback& obj) = delete;
@@ -288,6 +293,7 @@ class Controller {
       }
     }
 
+   private:
     core::LinkPtr _link;
     std::vector<std::unique_ptr<uint8_t[]>> _bodies;
     std::vector<size_t> _sizes;
