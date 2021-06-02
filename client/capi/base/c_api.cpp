@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/06/2021
+// Last Modified: 02/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -100,9 +100,17 @@ bool AUTDIsSilentMode(void* const handle) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
   return wrapper->ptr->silent_mode();
 }
+bool AUTDIsForceFan(void* const handle) {
+  auto* wrapper = static_cast<ControllerWrapper*>(handle);
+  return wrapper->ptr->force_fan();
+}
 void AUTDSetSilentMode(void* const handle, const bool mode) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
   wrapper->ptr->silent_mode() = mode;
+}
+void AUTDSetForceFan(void* const handle, const bool force) {
+  auto* wrapper = static_cast<ControllerWrapper*>(handle);
+  wrapper->ptr->force_fan() = force;
 }
 void AUTDSetReadFPGAInfo(void* const handle, const bool reads_fpga_info) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
