@@ -20,6 +20,15 @@
 
 namespace autd {
 
+uint8_t Controller::ControllerProps::ctrl_flag() const {
+  uint8_t flag = 0;
+  if (this->_silent_mode) flag |= core::SILENT;
+  if (this->_seq_mode) flag |= core::SEQ_MODE;
+  if (this->_reads_fpga_info) flag |= core::READ_FPGA_INFO;
+  if (this->_force_fan) flag |= core::FORCE_FAN;
+  return flag;
+}
+
 std::unique_ptr<Controller> Controller::create() {
   struct Impl : Controller {
     Impl() : Controller() {}
@@ -29,16 +38,17 @@ std::unique_ptr<Controller> Controller::create() {
 
 bool Controller::is_open() const { return this->_link != nullptr && this->_link->is_open(); }
 
-core::GeometryPtr Controller::geometry() const noexcept { return this->_geometry; }
+core::GeometryPtr Controller::geometry() const noexcept { return this->_props._geometry; }
 
-bool& Controller::silent_mode() noexcept { return this->_silent_mode; }
-bool& Controller::reads_fpga_info() noexcept { return this->_read_fpga_info; }
+bool& Controller::silent_mode() noexcept { return this->_props._silent_mode; }
+bool& Controller::reads_fpga_info() noexcept { return this->_props._reads_fpga_info; }
+bool& Controller::force_fan() noexcept { return this->_props._force_fan; }
 
 Result<std::vector<uint8_t>, std::string> Controller::fpga_info() {
-  const auto num_devices = this->_geometry->num_devices();
+  const auto num_devices = this->_props._geometry->num_devices();
   this->_fpga_infos.resize(num_devices);
-  if (auto res = this->_link->read(&_rx_buf[0], num_devices * core::EC_INPUT_FRAME_SIZE); res.is_err()) return Err(res.unwrap_err());
-  for (size_t i = 0; i < num_devices; i++) this->_fpga_infos[i] = _rx_buf[2 * i];
+  if (auto res = this->_link->read(&_props._rx_buf[0], num_devices * core::EC_INPUT_FRAME_SIZE); res.is_err()) return Err(res.unwrap_err());
+  for (size_t i = 0; i < num_devices; i++) this->_fpga_infos[i] = _props._rx_buf[2 * i];
   return Ok(_fpga_infos);
 }
 
@@ -48,8 +58,8 @@ Error Controller::open(core::LinkPtr link) {
   if (is_open())
     if (auto close_res = this->close(); close_res.is_err()) return close_res;
 
-  this->_tx_buf = std::make_unique<uint8_t[]>(this->_geometry->num_devices() * core::EC_OUTPUT_FRAME_SIZE);
-  this->_rx_buf = std::make_unique<uint8_t[]>(this->_geometry->num_devices() * core::EC_INPUT_FRAME_SIZE);
+  this->_props._tx_buf = std::make_unique<uint8_t[]>(this->_props._geometry->num_devices() * core::EC_OUTPUT_FRAME_SIZE);
+  this->_props._rx_buf = std::make_unique<uint8_t[]>(this->_props._geometry->num_devices() * core::EC_INPUT_FRAME_SIZE);
 
   this->_link = std::move(link);
   return this->_link->open();
@@ -58,14 +68,14 @@ Error Controller::open(core::LinkPtr link) {
 Error Controller::synchronize(const core::Configuration config) {
   if (!this->is_open()) return Err(std::string("Link is not opened."));
 
-  this->_config = config;
+  this->_props._config = config;
   uint8_t msg_id = 0;
-  core::Logic::pack_header(core::COMMAND::INIT_MOD_CLOCK, this->_silent_mode, this->_seq_mode, this->_read_fpga_info, &_tx_buf[0], &msg_id);
+  core::Logic::pack_header(core::COMMAND::INIT_MOD_CLOCK, _props.ctrl_flag(), &_props._tx_buf[0], &msg_id);
   size_t size = 0;
-  const auto num_devices = this->_geometry->num_devices();
-  core::Logic::pack_sync_body(config, num_devices, &_tx_buf[0], &size);
+  const auto num_devices = this->_props._geometry->num_devices();
+  core::Logic::pack_sync_body(config, num_devices, &_props._tx_buf[0], &size);
 
-  if (auto res = this->_link->send(&_tx_buf[0], size); res.is_err()) return res;
+  if (auto res = this->_link->send(&_props._tx_buf[0], size); res.is_err()) return res;
   return wait_msg_processed(msg_id, 5000);
 }
 
@@ -76,19 +86,19 @@ Error Controller::send_header(const core::COMMAND cmd) const {
 
   const auto send_size = sizeof(core::RxGlobalHeader);
   uint8_t msg_id = 0;
-  core::Logic::pack_header(cmd, this->_silent_mode, this->_seq_mode, this->_read_fpga_info, &_tx_buf[0], &msg_id);
-  if (auto res = _link->send(&_tx_buf[0], send_size); res.is_err()) return res;
+  core::Logic::pack_header(cmd, _props.ctrl_flag(), &_props._tx_buf[0], &msg_id);
+  if (auto res = _link->send(&_props._tx_buf[0], send_size); res.is_err()) return res;
   return wait_msg_processed(msg_id);
 }
 
 Error Controller::wait_msg_processed(const uint8_t msg_id, const size_t max_trial) const {
-  const auto num_devices = this->_geometry->num_devices();
+  const auto num_devices = this->_props._geometry->num_devices();
   const auto buffer_len = num_devices * core::EC_INPUT_FRAME_SIZE;
   for (size_t i = 0; i < max_trial; i++) {
-    auto res = this->_link->read(&_rx_buf[0], buffer_len);
+    auto res = this->_link->read(&_props._rx_buf[0], buffer_len);
     if (res.is_err()) return res;
     if (!res.unwrap()) continue;
-    if (core::Logic::is_msg_processed(num_devices, msg_id, &_rx_buf[0])) return Ok(true);
+    if (core::Logic::is_msg_processed(num_devices, msg_id, &_props._rx_buf[0])) return Ok(true);
 
     auto wait = static_cast<size_t>(std::ceil(core::EC_TRAFFIC_DELAY * 1000.0 / core::EC_DEVICE_PER_FRAME * static_cast<double>(num_devices)));
     std::this_thread::sleep_for(std::chrono::milliseconds(wait));
@@ -103,8 +113,8 @@ Error Controller::close() {
 
   auto res = this->_link->close();
   this->_link = nullptr;
-  this->_tx_buf = nullptr;
-  this->_rx_buf = nullptr;
+  this->_props._tx_buf = nullptr;
+  this->_props._rx_buf = nullptr;
 
   return res;
 }
@@ -119,21 +129,21 @@ Error Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod
   if (!this->is_open()) return Err(std::string("Link is not opened."));
 
   if (mod != nullptr)
-    if (auto res = mod->build(this->_config); res.is_err()) return res;
+    if (auto res = mod->build(this->_props._config); res.is_err()) return res;
 
   if (gain != nullptr) {
-    this->_seq_mode = false;
-    if (auto res = gain->build(this->_geometry); res.is_err()) return res;
+    this->_props._seq_mode = false;
+    if (auto res = gain->build(this->_props._geometry); res.is_err()) return res;
   }
 
   size_t size = 0;
-  core::Logic::pack_body(gain, &this->_tx_buf[0], &size);
+  core::Logic::pack_body(gain, &this->_props._tx_buf[0], &size);
 
   auto mod_finished = [](const core::ModulationPtr& mod) { return mod == nullptr || mod->sent() == mod->buffer().size(); };
   while (true) {
     uint8_t msg_id = 0;
-    core::Logic::pack_header(mod, this->_silent_mode, this->_seq_mode, this->_read_fpga_info, &this->_tx_buf[0], &msg_id);
-    if (auto res = this->_link->send(&this->_tx_buf[0], size); res.is_err()) return res;
+    core::Logic::pack_header(mod, _props.ctrl_flag(), &this->_props._tx_buf[0], &msg_id);
+    if (auto res = this->_link->send(&this->_props._tx_buf[0], size); res.is_err()) return res;
     if (auto res = wait_msg_processed(msg_id); res.is_err() || mod_finished(mod)) return res;
   }
 }
@@ -143,44 +153,44 @@ Error Controller::send(const core::SequencePtr& seq) {
 
   auto seq_finished = [](const core::SequencePtr& seq) { return seq == nullptr || seq->sent() == seq->control_points().size(); };
 
-  this->_seq_mode = true;
+  this->_props._seq_mode = true;
   while (true) {
     uint8_t msg_id;
-    core::Logic::pack_header(core::COMMAND::SEQ_MODE, this->_silent_mode, this->_seq_mode, this->_read_fpga_info, &this->_tx_buf[0], &msg_id);
+    core::Logic::pack_header(core::COMMAND::SEQ_MODE, _props.ctrl_flag(), &this->_props._tx_buf[0], &msg_id);
     size_t size;
-    core::Logic::pack_body(seq, this->_geometry, &this->_tx_buf[0], &size);
-    if (auto res = this->_link->send(&this->_tx_buf[0], size); res.is_err()) return res;
+    core::Logic::pack_body(seq, this->_props._geometry, &this->_props._tx_buf[0], &size);
+    if (auto res = this->_link->send(&this->_props._tx_buf[0], size); res.is_err()) return res;
     if (auto res = wait_msg_processed(msg_id); res.is_err() || seq_finished(seq)) return res;
   }
 }
 
 Error Controller::set_output_delay(const std::vector<core::DataArray>& delay) const {
   if (!this->is_open()) return Err(std::string("Link is not opened."));
-  if (delay.size() != this->_geometry->num_devices()) return Err(std::string("The number of devices is wrong."));
+  if (delay.size() != this->_props._geometry->num_devices()) return Err(std::string("The number of devices is wrong."));
 
   uint8_t msg_id;
-  core::Logic::pack_header(core::COMMAND::SET_DELAY, false, false, false, &this->_tx_buf[0], &msg_id);
+  core::Logic::pack_header(core::COMMAND::SET_DELAY, _props.ctrl_flag(), &this->_props._tx_buf[0], &msg_id);
   size_t size = 0;
-  core::Logic::pack_delay_body(delay, &this->_tx_buf[0], &size);
-  if (auto res = this->_link->send(&this->_tx_buf[0], size); res.is_err()) return res;
+  core::Logic::pack_delay_body(delay, &this->_props._tx_buf[0], &size);
+  if (auto res = this->_link->send(&this->_props._tx_buf[0], size); res.is_err()) return res;
   return wait_msg_processed(msg_id);
 }
 
 Result<std::vector<FirmwareInfo>, std::string> Controller::firmware_info_list() const {
   auto concat_byte = [](const uint8_t high, const uint16_t low) { return static_cast<uint16_t>(static_cast<uint16_t>(high) << 8 | low); };
 
-  const auto num_devices = this->_geometry->num_devices();
+  const auto num_devices = this->_props._geometry->num_devices();
   std::vector<uint16_t> cpu_versions(num_devices);
   if (auto res = send_header(core::COMMAND::READ_CPU_VER_LSB); res.is_err()) return Err(res.unwrap_err());
-  for (size_t i = 0; i < num_devices; i++) cpu_versions[i] = _rx_buf[2 * i];
+  for (size_t i = 0; i < num_devices; i++) cpu_versions[i] = this->_props._rx_buf[2 * i];
   if (auto res = send_header(core::COMMAND::READ_CPU_VER_MSB); res.is_err()) return Err(res.unwrap_err());
-  for (size_t i = 0; i < num_devices; i++) cpu_versions[i] = concat_byte(_rx_buf[2 * i], cpu_versions[i]);
+  for (size_t i = 0; i < num_devices; i++) cpu_versions[i] = concat_byte(this->_props._rx_buf[2 * i], cpu_versions[i]);
 
   std::vector<uint16_t> fpga_versions(num_devices);
   if (auto res = send_header(core::COMMAND::READ_FPGA_VER_LSB); res.is_err()) return Err(res.unwrap_err());
-  for (size_t i = 0; i < num_devices; i++) fpga_versions[i] = _rx_buf[2 * i];
+  for (size_t i = 0; i < num_devices; i++) fpga_versions[i] = this->_props._rx_buf[2 * i];
   if (auto res = send_header(core::COMMAND::READ_FPGA_VER_MSB); res.is_err()) return Err(res.unwrap_err());
-  for (size_t i = 0; i < num_devices; i++) fpga_versions[i] = concat_byte(_rx_buf[2 * i], fpga_versions[i]);
+  for (size_t i = 0; i < num_devices; i++) fpga_versions[i] = concat_byte(this->_props._rx_buf[2 * i], fpga_versions[i]);
 
   std::vector<FirmwareInfo> infos;
   for (size_t i = 0; i < num_devices; i++) infos.emplace_back(FirmwareInfo(static_cast<uint16_t>(i), cpu_versions[i], fpga_versions[i]));
@@ -188,12 +198,10 @@ Result<std::vector<FirmwareInfo>, std::string> Controller::firmware_info_list() 
 }
 
 std::unique_ptr<Controller::STMController> Controller::stm() {
-  ControllerProps props(this->_config, this->_geometry, this->_silent_mode, this->_read_fpga_info, this->_seq_mode, std::move(this->_tx_buf),
-                        std::move(this->_rx_buf));
   struct Impl : STMController {
     Impl(std::unique_ptr<STMTimerCallback> callback, ControllerProps props) : STMController(std::move(callback), std::move(props)) {}
   };
-  return std::make_unique<Impl>(std::make_unique<STMTimerCallback>(std::move(this->_link)), std::move(props));
+  return std::make_unique<Impl>(std::make_unique<STMTimerCallback>(std::move(this->_link)), std::move(this->_props));
 }
 
 std::unique_ptr<Controller> Controller::STMController::controller() {
@@ -208,7 +216,7 @@ Error Controller::STMController::add_gain(const core::GainPtr& gain) const {
 
   uint8_t msg_id = 0;
   auto build_buf = std::make_unique<uint8_t[]>(this->_props._geometry->num_devices() * core::EC_OUTPUT_FRAME_SIZE);
-  core::Logic::pack_header(nullptr, this->_props._silent_mode, false, this->_props._reads_fpga_info, &build_buf[0], &msg_id);
+  core::Logic::pack_header(nullptr, this->_props.ctrl_flag(), &build_buf[0], &msg_id);
   size_t size = 0;
   core::Logic::pack_body(gain, &build_buf[0], &size);
 

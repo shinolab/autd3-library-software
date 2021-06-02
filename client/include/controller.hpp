@@ -36,13 +36,15 @@ class Controller {
 
   struct ControllerProps {
     friend class Controller;
+    friend class STMController;
     ControllerProps(const core::Configuration config, core::GeometryPtr geometry, const bool silent_mode, const bool reads_fpga_info,
-                    const bool seq_mode, std::unique_ptr<uint8_t[]> tx_buf, std::unique_ptr<uint8_t[]> rx_buf)
+                    const bool seq_mode, const bool force_fan, std::unique_ptr<uint8_t[]> tx_buf, std::unique_ptr<uint8_t[]> rx_buf)
         : _config(config),
           _geometry(std::move(geometry)),
           _silent_mode(silent_mode),
           _reads_fpga_info(reads_fpga_info),
           _seq_mode(seq_mode),
+          _force_fan(force_fan),
           _tx_buf(std::move(tx_buf)),
           _rx_buf(std::move(rx_buf)) {}
     ~ControllerProps() = default;
@@ -52,11 +54,14 @@ class Controller {
     ControllerProps& operator=(ControllerProps&& obj) = default;
 
    private:
+    [[nodiscard]] uint8_t ctrl_flag() const;
+
     core::Configuration _config;
     core::GeometryPtr _geometry;
     bool _silent_mode;
     bool _reads_fpga_info;
     bool _seq_mode;
+    bool _force_fan;
     std::unique_ptr<uint8_t[]> _tx_buf;
     std::unique_ptr<uint8_t[]> _rx_buf;
   };
@@ -86,6 +91,11 @@ class Controller {
    * @brief If true, the devices return FPGA info in all frames. The FPGA info can be read by fpga_info().
    */
   bool& reads_fpga_info() noexcept;
+
+  /**
+   * @brief If true, the fan will be forced to start.
+   */
+  bool& force_fan() noexcept;
 
   /**
    * @brief FPGA info
@@ -245,23 +255,10 @@ class Controller {
  private:
   Controller() noexcept
       : _link(nullptr),
-        _geometry(std::make_shared<core::Geometry>()),
-        _silent_mode(true),
-        _read_fpga_info(false),
-        _seq_mode(false),
-        _config(core::Configuration::get_default_configuration()),
-        _tx_buf(nullptr),
-        _rx_buf(nullptr) {}
+        _props(ControllerProps(core::Configuration::get_default_configuration(), std::make_shared<core::Geometry>(), true, false, false, false,
+                               nullptr, nullptr)) {}
 
-  explicit Controller(core::LinkPtr link, ControllerProps props) noexcept
-      : _link(std::move(link)),
-        _geometry(props._geometry),
-        _silent_mode(props._silent_mode),
-        _read_fpga_info(props._reads_fpga_info),
-        _seq_mode(props._seq_mode),
-        _config(props._config),
-        _tx_buf(std::move(props._tx_buf)),
-        _rx_buf(std::move(props._rx_buf)) {}
+  explicit Controller(core::LinkPtr link, ControllerProps props) noexcept : _link(std::move(link)), _props(std::move(props)) {}
 
   class STMTimerCallback final : core::CallbackHandler {
    public:
@@ -305,14 +302,8 @@ class Controller {
   [[nodiscard]] Error wait_msg_processed(uint8_t msg_id, size_t max_trial = 50) const;
 
   core::LinkPtr _link;
-  core::GeometryPtr _geometry;
-  bool _silent_mode;
-  bool _read_fpga_info;
-  bool _seq_mode;
-  core::Configuration _config;
+  ControllerProps _props;
 
-  std::unique_ptr<uint8_t[]> _tx_buf;
-  std::unique_ptr<uint8_t[]> _rx_buf;
   std::vector<uint8_t> _fpga_infos;
 };
 }  // namespace autd
