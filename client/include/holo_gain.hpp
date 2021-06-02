@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 02/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -230,6 +230,34 @@ class HoloGainLM final : public HoloGain {
   double _tau;
   size_t _k_max;
   std::vector<double> _initial;
+};
+
+/**
+ * @brief Gain to produce multiple focal points with Greedy algorithm.
+ * Refer to Shun suzuki, et al. “Radiation Pressure Field Reconstruction for Ultrasound Midair Haptics by Greedy Algorithm with Brute-Force Search,”
+ * in IEEE Transactions on Haptics, doi: 10.1109/TOH.2021.3076489
+ */
+class HoloGainGreedy final : public HoloGain {
+ public:
+  /**
+   * @brief Generate function
+   * @param[in] foci focal points
+   * @param[in] amps amplitudes of the foci
+   * @param[in] phase_div resolution of the phase to be searched
+   */
+  static std::shared_ptr<HoloGainGreedy> create(std::vector<core::Vector3>& foci, std::vector<double>& amps, const size_t phase_div = 16) {
+    return std::make_shared<HoloGainGreedy>(foci, amps, phase_div);
+  }
+
+  Error calc(const core::GeometryPtr& geometry) override;
+  HoloGainGreedy(std::vector<core::Vector3>& foci, std::vector<double>& amps, const size_t phase_div) : HoloGain(nullptr, foci, amps) {
+    this->_phases.reserve(phase_div);
+    for (size_t i = 0; i < phase_div; i++)
+      this->_phases.emplace_back(std::exp(std::complex<double>(0., 2.0 * M_PI * static_cast<double>(i) / static_cast<double>(phase_div))));
+  }
+
+ private:
+  std::vector<std::complex<double>> _phases;
 };
 
 }  // namespace autd::gain::holo
