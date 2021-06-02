@@ -301,8 +301,8 @@ class Controller {
     std::atomic<bool> _lock;
   };
 
-  [[nodiscard]] Error send_header(core::COMMAND cmd, size_t max_trial = 50) const;
-  [[nodiscard]] Error wait_msg_processed(uint8_t msg_id, size_t max_trial = 200) const;
+  [[nodiscard]] Error send_header(core::COMMAND cmd) const;
+  [[nodiscard]] Error wait_msg_processed(uint8_t msg_id, size_t max_trial = 50) const;
 
   core::LinkPtr _link;
   core::GeometryPtr _geometry;

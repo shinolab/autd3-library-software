@@ -20,11 +20,6 @@
 
 namespace autd {
 
-namespace {
-bool ModSentFinished(const core::ModulationPtr& mod) { return mod == nullptr || mod->sent() == mod->buffer().size(); }
-bool SeqSentFinished(const core::SequencePtr& seq) { return seq == nullptr || seq->sent() == seq->control_points().size(); }
-}  // namespace
-
 std::unique_ptr<Controller> Controller::create() {
   struct Impl : Controller {
     Impl() : Controller() {}
@@ -76,14 +71,14 @@ Error Controller::synchronize(const core::Configuration config) {
 
 Error Controller::clear() const { return send_header(core::COMMAND::CLEAR); }
 
-Error Controller::send_header(const core::COMMAND cmd, const size_t max_trial) const {
+Error Controller::send_header(const core::COMMAND cmd) const {
   if (!this->is_open()) return Err(std::string("Link is not opened."));
 
   const auto send_size = sizeof(core::RxGlobalHeader);
   uint8_t msg_id = 0;
   core::Logic::pack_header(cmd, this->_silent_mode, this->_seq_mode, this->_read_fpga_info, &_tx_buf[0], &msg_id);
   if (auto res = _link->send(&_tx_buf[0], send_size); res.is_err()) return res;
-  return wait_msg_processed(msg_id, max_trial);
+  return wait_msg_processed(msg_id);
 }
 
 Error Controller::wait_msg_processed(const uint8_t msg_id, const size_t max_trial) const {
@@ -134,16 +129,19 @@ Error Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod
   size_t size = 0;
   core::Logic::pack_body(gain, &this->_tx_buf[0], &size);
 
+  auto mod_finished = [](const core::ModulationPtr& mod) { return mod == nullptr || mod->sent() == mod->buffer().size(); };
   while (true) {
     uint8_t msg_id = 0;
     core::Logic::pack_header(mod, this->_silent_mode, this->_seq_mode, this->_read_fpga_info, &this->_tx_buf[0], &msg_id);
     if (auto res = this->_link->send(&this->_tx_buf[0], size); res.is_err()) return res;
-    if (auto res = wait_msg_processed(msg_id); res.is_err() || ModSentFinished(mod)) return res;
+    if (auto res = wait_msg_processed(msg_id); res.is_err() || mod_finished(mod)) return res;
   }
 }
 
 Error Controller::send(const core::SequencePtr& seq) {
   if (!this->is_open()) return Err(std::string("Link is not opened."));
+
+  auto seq_finished = [](const core::SequencePtr& seq) { return seq == nullptr || seq->sent() == seq->control_points().size(); };
 
   this->_seq_mode = true;
   while (true) {
@@ -152,9 +150,7 @@ Error Controller::send(const core::SequencePtr& seq) {
     size_t size;
     core::Logic::pack_body(seq, this->_geometry, &this->_tx_buf[0], &size);
     if (auto res = this->_link->send(&this->_tx_buf[0], size); res.is_err()) return res;
-
-    if (SeqSentFinished(seq)) return wait_msg_processed(msg_id, 5000);
-    if (auto res = wait_msg_processed(msg_id); res.is_err()) return res;
+    if (auto res = wait_msg_processed(msg_id); res.is_err() || seq_finished(seq)) return res;
   }
 }
 
@@ -167,7 +163,7 @@ Error Controller::set_output_delay(const std::vector<core::DataArray>& delay) co
   size_t size = 0;
   core::Logic::pack_delay_body(delay, &this->_tx_buf[0], &size);
   if (auto res = this->_link->send(&this->_tx_buf[0], size); res.is_err()) return res;
-  return wait_msg_processed(msg_id, 200);
+  return wait_msg_processed(msg_id);
 }
 
 Result<std::vector<FirmwareInfo>, std::string> Controller::firmware_info_list() const {
