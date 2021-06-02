@@ -80,7 +80,7 @@ class Controller {
   /**
    * @brief Geometry of the devices
    */
-  [[nodiscard]] core::GeometryPtr geometry() const noexcept;
+  [[nodiscard]] core::GeometryPtr& geometry() noexcept;
 
   /**
    * @brief Silent mode
@@ -255,7 +255,7 @@ class Controller {
  private:
   Controller() noexcept
       : _link(nullptr),
-        _props(ControllerProps(core::Configuration::get_default_configuration(), std::make_shared<core::Geometry>(), true, false, false, false,
+        _props(ControllerProps(core::Configuration::get_default_configuration(), std::make_unique<core::Geometry>(), true, false, false, false,
                                nullptr, nullptr)) {}
 
   explicit Controller(core::LinkPtr link, ControllerProps props) noexcept : _link(std::move(link)), _props(std::move(props)) {}

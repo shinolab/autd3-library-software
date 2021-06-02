@@ -38,7 +38,7 @@ std::unique_ptr<Controller> Controller::create() {
 
 bool Controller::is_open() const { return this->_link != nullptr && this->_link->is_open(); }
 
-core::GeometryPtr Controller::geometry() const noexcept { return this->_props._geometry; }
+core::GeometryPtr& Controller::geometry() noexcept { return this->_props._geometry; }
 
 bool& Controller::silent_mode() noexcept { return this->_props._silent_mode; }
 bool& Controller::reads_fpga_info() noexcept { return this->_props._reads_fpga_info; }
