@@ -139,7 +139,7 @@ Error Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod
   size_t size = 0;
   core::Logic::pack_body(gain, &this->_props._tx_buf[0], &size);
 
-  auto mod_finished = [](const core::ModulationPtr& mod) { return mod == nullptr || mod->sent() == mod->buffer().size(); };
+  auto mod_finished = [](const core::ModulationPtr& m) { return m == nullptr || m->sent() == m->buffer().size(); };
   while (true) {
     uint8_t msg_id = 0;
     core::Logic::pack_header(mod, _props.ctrl_flag(), &this->_props._tx_buf[0], &msg_id);
@@ -151,7 +151,7 @@ Error Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod
 Error Controller::send(const core::SequencePtr& seq) {
   if (!this->is_open()) return Err(std::string("Link is not opened."));
 
-  auto seq_finished = [](const core::SequencePtr& seq) { return seq == nullptr || seq->sent() == seq->control_points().size(); };
+  auto seq_finished = [](const core::SequencePtr& s) { return s == nullptr || s->sent() == s->control_points().size(); };
 
   this->_props._seq_mode = true;
   while (true) {
