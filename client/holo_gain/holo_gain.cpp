@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/05/2021
+// Last Modified: 02/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,6 +11,7 @@
 
 #include "holo_gain.hpp"
 
+#include <limits>
 #include <random>
 
 #include "linalg_backend.hpp"
@@ -388,6 +389,50 @@ Error HoloGainLM::calc(const core::GeometryPtr& geometry) {
     if (trans_idx == core::NUM_TRANS_IN_UNIT) {
       dev_idx++;
       trans_idx = 0;
+    }
+  }
+
+  this->_built = true;
+  return Ok(true);
+}
+
+Error HoloGainGreedy::calc(const core::GeometryPtr& geometry) {
+  const auto m = this->_foci.size();
+
+  const auto wave_num = 2.0 * M_PI / geometry->wavelength();
+  const auto attenuation = geometry->attenuation_coefficient();
+
+  const auto tmp = std::make_unique<std::complex<double>[]>(m);
+  const auto cache = std::make_unique<std::complex<double>[]>(m);
+  const auto good_field = std::make_unique<std::complex<double>[]>(m);
+
+  auto transfer_foci = [wave_num, attenuation](const core::Vector3& trans_pos, const core::Vector3& trans_dir, const std::complex<double> phase,
+                                               const std::vector<core::Vector3>& foci, std::complex<double>* res) {
+    for (size_t i = 0; i < foci.size(); i++) res[i] = transfer(trans_pos, trans_dir, foci[i], wave_num, attenuation) * phase;
+  };
+
+  for (size_t dev = 0; dev < geometry->num_devices(); dev++) {
+    for (size_t i = 0; i < core::NUM_TRANS_IN_UNIT; i++) {
+      auto trans_pos = geometry->position(dev, i);
+      auto trans_dir = geometry->direction(dev);
+      auto min_phase = std::complex<double>(0., 0.);
+      auto min_v = std::numeric_limits<double>::infinity();
+      for (const auto phase : this->_phases) {
+        transfer_foci(trans_pos, trans_dir, phase, this->_foci, &tmp[0]);
+        auto v = 0.0;
+        for (size_t j = 0; j < m; j++) v += std::abs(this->_amps[j] - std::abs(tmp[j] + cache[j]));
+
+        if (v < min_v) {
+          min_v = v;
+          min_phase = phase;
+          std::memcpy(&good_field[0], &tmp[0], m * sizeof(std::complex<double>));
+        }
+      }
+      for (size_t j = 0; j < m; j++) cache[j] += good_field[j];
+
+      const uint16_t duty = 0xFF00;
+      const auto phase = static_cast<uint16_t>((1.0 - (std::arg(min_phase) + M_PI) / (2 * M_PI)) * 255.0);
+      this->_data[dev][i] = duty | phase;
     }
   }
 

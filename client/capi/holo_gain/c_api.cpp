@@ -3,7 +3,7 @@
 // Created Date: 17/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/05/2021
+// Last Modified: 02/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -97,5 +97,13 @@ void AUTDHoloGainLM(void** gain, void* backend, double* points, double* amps, co
 
   const auto b = static_cast<BackendWrapper*>(backend);
   auto* g = GainCreate(autd::gain::holo::HoloGainLM::create(b->ptr, holo, amps_, eps_1, eps_2, tau, k_max, initial_));
+  *gain = g;
+}
+
+void AUTDHoloGainGreedy(void** gain, double* points, double* amps, const int32_t size, const int32_t phase_div) {
+  auto holo = PackFoci(points, size);
+  auto amps_ = PackAmps(amps, size);
+
+  auto* g = GainCreate(autd::gain::holo::HoloGainGreedy::create(holo, amps_, static_cast<size_t>(phase_div)));
   *gain = g;
 }
