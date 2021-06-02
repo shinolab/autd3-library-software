@@ -3,7 +3,7 @@
 
 # [AUTD3](https://hapislab.org/airborne-ultrasound-tactile-display?lang=en)
 
-Version: 1.0.0
+Version: 1.1.0
 
 ## :blue_book: **[Wiki for beginners](https://github.com/shinolab/autd3-library-software/wiki)**
 
