@@ -3,7 +3,7 @@
 // Created Date: 01/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/06/2021
+// Last Modified: 02/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -26,7 +26,7 @@ namespace autd::core {
 template <typename T>
 class Timer {
  public:
-  Timer(std::unique_ptr<T> handler, const uint32_t timer_id) : _handler(std::move(handler)), _timer_id(timer_id) {}
+  Timer(std::unique_ptr<T> handler, const uint32_t timer_id) : _handler(std::move(handler)), _timer_id(timer_id), _is_closed(false) {}
   ~Timer() { (void)this->stop(); }
 
   [[nodiscard]] static Result<std::unique_ptr<Timer>, std::string> start(std::unique_ptr<T> handler, uint32_t interval_us) {
@@ -45,9 +45,11 @@ class Timer {
   }
 
   [[nodiscard]] Result<std::unique_ptr<T>, std::string> stop() {
+    if (_is_closed) return Ok(std::unique_ptr<T>(nullptr));
     const uint32_t u_resolution = 1;
     timeEndPeriod(u_resolution);
     if (timeKillEvent(_timer_id) != TIMERR_NOERROR) return Err(std::string("timeKillEvent failed"));
+    _is_closed = true;
     return Ok(std::move(this->_handler));
   }
 
@@ -64,6 +66,7 @@ class Timer {
   }
 
   std::unique_ptr<T> _handler;
-  uint32_t _timer_id = 0;
+  uint32_t _timer_id;
+  bool _is_closed;
 };
 }  // namespace autd::core

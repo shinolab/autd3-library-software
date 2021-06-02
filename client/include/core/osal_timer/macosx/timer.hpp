@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/06/2021
+// Last Modified: 02/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -26,7 +26,8 @@ namespace autd::core {
 template <typename T>
 class Timer {
  public:
-  Timer(std::unique_ptr<T> handler, dispatch_queue_t queue, dispatch_source_t timer) : _handler(std::move(handler)), _queue(queue), _timer(timer) {}
+  Timer(std::unique_ptr<T> handler, dispatch_queue_t queue, dispatch_source_t timer)
+      : _handler(std::move(handler)), _queue(queue), _timer(timer), _is_closed(false) {}
   ~Timer() { (void)this->stop(); }
   [[nodiscard]] static Result<std::unique_ptr<Timer>, std::string> start(std::unique_ptr<T> handler, const uint32_t interval_us) {
     auto queue = dispatch_queue_create("timerQueue", 0);
@@ -50,7 +51,9 @@ class Timer {
   }
 
   [[nodiscard]] Result<std::unique_ptr<T>, std::string> stop() {
+    if (_is_closed) return Ok(std::unique_ptr<T>(nullptr));
     dispatch_source_cancel(_timer);
+    _is_closed = true;
     return Ok(std::move(this->_handler));
   }
 
@@ -64,6 +67,8 @@ class Timer {
 
   dispatch_queue_t _queue;
   dispatch_source_t _timer;
+
+  bool _is_closed;
 
   static void main_loop(T *ptr) { ptr->callback(); }
 };
