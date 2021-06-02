@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/06/2021
+// Last Modified: 02/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -42,7 +42,6 @@ struct ECConfig {
   size_t header_size;
   size_t body_size;
   size_t input_frame_size;
-  size_t bucket_size;
 };
 
 class SOEMController {

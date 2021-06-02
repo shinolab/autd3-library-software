@@ -3,7 +3,7 @@
 // Created Date: 10/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/06/2021
+// Last Modified: 02/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -41,11 +41,10 @@ class SOEMLink : virtual public core::Link {
    * @param ifname Network interface name. (e.g. eth0)
    * @param device_num The number of AUTD you connected.
    * @param cycle_ticks cycle time in ticks
-   * @param bucket_size output buffer bucket size
    * @details Available Network interface names are obtained by EnumerateAdapters().
    *          The numbers of connected devices is obtained by Geometry::num_devices().
    */
-  static core::LinkPtr create(const std::string& ifname, size_t device_num, uint32_t cycle_ticks = 1, size_t bucket_size = 32);
+  static core::LinkPtr create(const std::string& ifname, size_t device_num, uint32_t cycle_ticks = 1);
 
   /**
    * @brief Enumerate Ethernet adapters of the computer.
