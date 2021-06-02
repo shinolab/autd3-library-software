@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 02/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -54,38 +54,28 @@ class Logic {
   /**
    * \brief Pack header with COMMAND
    * \param cmd command
-   * \param silent_mode flag to silent mode
-   * \param seq_mode flag to sequence mode
-   * \param read_fpga_info flag whether read FPGA info
+   * \param ctrl_flag control flag
    * \param[out] data pointer to transmission data
    * \param[out] msg_id message id
    */
-  static void pack_header(const COMMAND cmd, const bool silent_mode, const bool seq_mode, const bool read_fpga_info, uint8_t* data,
-                          uint8_t* const msg_id) {
+  static void pack_header(const COMMAND cmd, const uint8_t ctrl_flag, uint8_t* data, uint8_t* const msg_id) {
     auto* header = reinterpret_cast<RxGlobalHeader*>(data);
     *msg_id = get_id();
     header->msg_id = *msg_id;
-    header->control_flags = 0;
+    header->control_flags = ctrl_flag;
     header->mod_size = 0;
     header->command = cmd;
-
-    if (seq_mode) header->control_flags |= SEQ_MODE;
-    if (silent_mode) header->control_flags |= SILENT;
-    if (read_fpga_info) header->control_flags |= READ_FPGA_INFO;
   }
 
   /**
    * \brief Pack header with modulation data
    * \param mod Modulation
-   * \param silent_mode flag to silent mode
-   * \param seq_mode flag to sequence mode
-   * \param read_fpga_info flag whether read FPGA info
+   * \param ctrl_flag control flag
    * \param[out] data pointer to transmission data
    * \param[out] msg_id message id
    */
-  static void pack_header(const ModulationPtr& mod, const bool silent_mode, const bool seq_mode, const bool read_fpga_info, uint8_t* data,
-                          uint8_t* const msg_id) {
-    pack_header(COMMAND::OP, silent_mode, seq_mode, read_fpga_info, data, msg_id);
+  static void pack_header(const ModulationPtr& mod, const uint8_t ctrl_flag, uint8_t* data, uint8_t* const msg_id) {
+    pack_header(COMMAND::OP, ctrl_flag, data, msg_id);
     if (mod == nullptr) return;
     auto* header = reinterpret_cast<RxGlobalHeader*>(data);
     const auto mod_size = static_cast<uint8_t>(std::clamp(mod->buffer().size() - mod->sent(), size_t{0}, MOD_FRAME_SIZE));
