@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/05/2021
+// Last Modified: 02/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -13,36 +13,48 @@
 
 #include <dispatch/dispatch.h>
 
-#include <functional>
+#include <memory>
 #include <string>
 #include <thread>
+#include <utility>
 
+#include "../osal_callback.hpp"
 #include "core/result.hpp"
 
-namespace autd {
+namespace autd::core {
 
+template <typename T>
 class Timer {
  public:
-  Timer() noexcept : _interval_us(1) {}
+  Timer(std::unique_ptr<T> handler, dispatch_queue_t queue, dispatch_source_t timer)
+      : _handler(std::move(handler)), _queue(queue), _timer(timer), _is_closed(false) {}
   ~Timer() { (void)this->stop(); }
-  bool SetInterval(uint32_t &interval_us) {
-    this->_interval_us = interval_us;
-    return true;
-  }
-  [[nodiscard]] Error start(const std::function<void()> &callback) {
-    if (auto res = this->stop(); res.is_err()) return res;
+  [[nodiscard]] static Result<std::unique_ptr<Timer>, std::string> start(std::unique_ptr<T> handler, const uint32_t interval_us) {
+    auto queue = dispatch_queue_create("timerQueue", 0);
 
-    this->_cb = callback;
-    this->_loop = true;
-    return this->init_timer();
-  }
-  [[nodiscard]] Error stop() {
-    if (!this->_loop) return Ok(true);
+    auto *ptr = handler.get();
+    auto timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
+    dispatch_source_set_event_handler(timer, ^{
+      main_loop(ptr);
+    });
 
+    dispatch_source_set_cancel_handler(timer, ^{
+      dispatch_release(timer);
+      dispatch_release(queue);
+    });
+
+    dispatch_time_t start = dispatch_time(DISPATCH_TIME_NOW, 0);
+    dispatch_source_set_timer(timer, start, interval_us * 1000L, 0);
+    dispatch_resume(timer);
+
+    return Ok(std::make_unique<Timer>(std::move(handler), queue, timer));
+  }
+
+  [[nodiscard]] Result<std::unique_ptr<T>, std::string> stop() {
+    if (_is_closed) return Ok(std::unique_ptr<T>(nullptr));
     dispatch_source_cancel(_timer);
-    this->_loop = false;
-
-    return Ok(true);
+    _is_closed = true;
+    return Ok(std::move(this->_handler));
   }
 
   Timer(const Timer &) = delete;
@@ -51,34 +63,13 @@ class Timer {
   Timer &operator=(Timer &&) = delete;
 
  private:
-  uint32_t _interval_us;
-  std::function<void()> _cb;
+  std::unique_ptr<T> _handler;
 
   dispatch_queue_t _queue;
   dispatch_source_t _timer;
 
-  bool _loop;
+  bool _is_closed;
 
-  void main_loop(Timer *ptr) { ptr->_cb(); }
-
-  [[nodiscard]] Error init_timer() {
-    _queue = dispatch_queue_create("timerQueue", 0);
-
-    _timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _queue);
-    dispatch_source_set_event_handler(_timer, ^{
-      main_loop(this);
-    });
-
-    dispatch_source_set_cancel_handler(_timer, ^{
-      dispatch_release(_timer);
-      dispatch_release(_queue);
-    });
-
-    dispatch_time_t start = dispatch_time(DISPATCH_TIME_NOW, 0);
-    dispatch_source_set_timer(_timer, start, this->_interval_us * 1000L, 0);
-    dispatch_resume(_timer);
-
-    return Ok(true);
-  }
+  static void main_loop(T *ptr) { ptr->callback(); }
 };
-}  // namespace autd
+}  // namespace autd::core

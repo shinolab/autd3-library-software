@@ -3,7 +3,7 @@
 // Created Date: 23/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 23/05/2021
+// Last Modified: 03/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -19,8 +19,8 @@
 
 using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SPACING_MM;
 
-inline void group_test(autd::Controller& autd) {
-  autd.silent_mode() = true;
+inline void group_test(autd::ControllerPtr& autd) {
+  autd->silent_mode() = true;
 
   const auto m = autd::modulation::Sine::create(150);  // 150Hz AM
 
@@ -36,5 +36,5 @@ inline void group_test(autd::Controller& autd) {
   g->add(0, g1);
   g->add(1, g2);
 
-  autd.send(g, m).unwrap();
+  autd->send(g, m).unwrap();
 }

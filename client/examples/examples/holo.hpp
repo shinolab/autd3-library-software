@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 03/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -24,7 +24,7 @@ using autd::gain::holo::Eigen3Backend;
 
 inline autd::GainPtr select_opt(std::vector<autd::Vector3>& foci, std::vector<double>& amps) {
   std::cout << "Select Optimization Method (default is SDP)" << std::endl;
-  const std::vector<std::string> opts = {"SDP", "EVD", "GS", "GS-PAT", "NAIVE", "LM"};
+  const std::vector<std::string> opts = {"SDP", "EVD", "GS", "GS-PAT", "NAIVE", "LM", "Greedy"};
   for (size_t i = 0; i < opts.size(); i++) std::cout << "[" << i << "]: " << opts[i] << std::endl;
 
   std::string in;
@@ -47,13 +47,15 @@ inline autd::GainPtr select_opt(std::vector<autd::Vector3>& foci, std::vector<do
       return autd::gain::holo::HoloGainNaive::create(backend, foci, amps);
     case 5:
       return autd::gain::holo::HoloGainLM::create(backend, foci, amps);
+    case 6:
+      return autd::gain::holo::HoloGainGreedy::create(foci, amps);
     default:
       return autd::gain::holo::HoloGainSDP::create(backend, foci, amps);
   }
 }
 
-inline void holo_test(autd::Controller& autd) {
-  autd.silent_mode() = true;
+inline void holo_test(autd::ControllerPtr& autd) {
+  autd->silent_mode() = true;
 
   const auto m = autd::modulation::Sine::create(150);  // 150Hz AM
 
@@ -62,5 +64,5 @@ inline void holo_test(autd::Controller& autd) {
   std::vector<double> amps = {1, 1};
 
   const auto g = select_opt(foci, amps);
-  autd.send(g, m).unwrap();
+  autd->send(g, m).unwrap();
 }

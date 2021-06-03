@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 02/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -37,7 +37,7 @@
 namespace autd::core {
 
 class Geometry;
-using GeometryPtr = std::shared_ptr<Geometry>;
+using GeometryPtr = std::unique_ptr<Geometry>;
 
 using Vector3 = Eigen::Matrix<double, 3, 1>;
 using Vector4 = Eigen::Matrix<double, 4, 1>;
