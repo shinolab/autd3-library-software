@@ -3,7 +3,7 @@
 // Created Date: 17/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 02/06/2021
+// Last Modified: 03/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -26,5 +26,5 @@ EXPORT_AUTD void AUTDHoloGainGS(void** gain, void* backend, double* points, doub
 EXPORT_AUTD void AUTDHoloGainGSPAT(void** gain, void* backend, double* points, double* amps, int32_t size, uint64_t repeat);
 EXPORT_AUTD void AUTDHoloGainLM(void** gain, void* backend, double* points, double* amps, int32_t size, double eps_1, double eps_2, double tau,
                                 uint64_t k_max, double* initial, int32_t initial_size);
-EXPORT_AUTD void AUTDHoloGainGreedy(void** gain, double* points, double* amps, int32_t phase_div);
+EXPORT_AUTD void AUTDHoloGainGreedy(void** gain, double* points, double* amps, int32_t size, int32_t phase_div);
 }
