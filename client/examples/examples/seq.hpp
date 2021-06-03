@@ -3,7 +3,7 @@
 // Created Date: 14/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/06/2021
+// Last Modified: 03/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -17,7 +17,7 @@
 
 using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SPACING_MM;
 
-inline std::unique_ptr<autd::Controller> seq_test(std::unique_ptr<autd::Controller> autd) {
+inline void seq_test(autd::ControllerPtr& autd) {
   autd->silent_mode() = false;
 
   const auto m = autd::modulation::Static::create();
@@ -37,6 +37,4 @@ inline std::unique_ptr<autd::Controller> seq_test(std::unique_ptr<autd::Controll
   const auto actual_freq = seq->set_frequency(1);
   std::cout << "Actual frequency is " << actual_freq << " Hz\n";
   autd->send(seq).unwrap();
-
-  return autd;
 }

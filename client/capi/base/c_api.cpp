@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 02/06/2021
+// Last Modified: 03/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -416,10 +416,6 @@ void AUTDSTMController(void** out, void* handle) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
   *out = STMControllerCreate(wrapper->ptr->stm());
 }
-void AUTDSTMControllerToController(void** out, void* handle) {
-  auto* wrapper = static_cast<STMControllerWrapper*>(handle);
-  *out = ControllerCreate(wrapper->ptr->controller());
-}
 
 bool AUTDAddSTMGain(void* const handle, void* const gain) {
   auto* wrapper = static_cast<STMControllerWrapper*>(handle);
@@ -431,27 +427,27 @@ bool AUTDAddSTMGain(void* const handle, void* const gain) {
   return true;
 }
 
-void AUTDStartSTM(void** out, void* const handle, const double freq) {
+bool AUTDStartSTM(void* const handle, const double freq) {
   auto* wrapper = static_cast<STMControllerWrapper*>(handle);
-  auto res = wrapper->ptr->start(freq);
-  if (res.is_err()) {
+  if (auto res = wrapper->ptr->start(freq); res.is_err()) {
     LastError() = res.unwrap_err();
-    *out = nullptr;
-    return;
+    return false;
   }
-  *out = STMTimerCreate(res.unwrap());
+  return true;
 }
-void AUTDStopSTM(void** out, void* const handle) {
-  auto* wrapper = static_cast<STMTimerWrapper*>(handle);
-  auto res = wrapper->ptr->stop();
-  if (res.is_err()) {
-    LastError() = res.unwrap_err();
-    *out = nullptr;
-    return;
-  }
-  *out = STMControllerCreate(res.unwrap());
-}
-void AUTDFinishSTM(void* const handle) {
+bool AUTDStopSTM(void* const handle) {
   auto* wrapper = static_cast<STMControllerWrapper*>(handle);
-  wrapper->ptr->finish();
+  if (auto res = wrapper->ptr->stop(); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
+}
+bool AUTDFinishSTM(void* const handle) {
+  auto* wrapper = static_cast<STMControllerWrapper*>(handle);
+  if (auto res = wrapper->ptr->finish(); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
 }
