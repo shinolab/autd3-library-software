@@ -215,7 +215,7 @@ class Controller {
      * @details Added gains will be removed. Never use this STMController after calling this function.
      * \return ok, or err(error message) if unrecoverable error is occurred
      */
-    [[nodiscard]] Error finish() const;
+    [[nodiscard]] Error finish();
 
    private:
     explicit STMController(Controller* p_cnt, std::unique_ptr<STMTimerCallback> handler)

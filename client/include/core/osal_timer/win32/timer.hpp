@@ -3,7 +3,7 @@
 // Created Date: 01/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 02/06/2021
+// Last Modified: 03/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -38,7 +38,8 @@ class Timer {
     auto *const h_process = GetCurrentProcess();
     SetPriorityClass(h_process, REALTIME_PRIORITY_CLASS);
 
-    const auto timer_id = timeSetEvent(interval_us / 1000, u_resolution, timer_thread, reinterpret_cast<DWORD_PTR>(handler.get()), TIME_PERIODIC);
+    const auto timer_id = timeSetEvent(interval_us / 1000, u_resolution, timer_thread, reinterpret_cast<DWORD_PTR>(handler.get()),
+                                       TIME_PERIODIC | TIME_CALLBACK_FUNCTION | TIME_KILL_SYNCHRONOUS);
     if (timer_id == 0) return Err(std::string("timeSetEvent failed"));
 
     return Ok(std::make_unique<Timer>(std::move(handler), timer_id));
