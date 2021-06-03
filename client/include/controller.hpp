@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 02/06/2021
+// Last Modified: 03/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -28,6 +28,9 @@
 
 namespace autd {
 
+class Controller;
+using ControllerPtr = std::unique_ptr<Controller>;
+
 /**
  * @brief AUTD Controller
  */
@@ -37,16 +40,8 @@ class Controller {
   struct ControllerProps {
     friend class Controller;
     friend class STMController;
-    ControllerProps(const core::Configuration config, core::GeometryPtr geometry, const bool silent_mode, const bool reads_fpga_info,
-                    const bool seq_mode, const bool force_fan, std::unique_ptr<uint8_t[]> tx_buf, std::unique_ptr<uint8_t[]> rx_buf)
-        : _config(config),
-          _geometry(std::move(geometry)),
-          _silent_mode(silent_mode),
-          _reads_fpga_info(reads_fpga_info),
-          _seq_mode(seq_mode),
-          _force_fan(force_fan),
-          _tx_buf(std::move(tx_buf)),
-          _rx_buf(std::move(rx_buf)) {}
+    ControllerProps(const bool silent_mode, const bool reads_fpga_info, const bool seq_mode, const bool force_fan)
+        : _silent_mode(silent_mode), _reads_fpga_info(reads_fpga_info), _seq_mode(seq_mode), _force_fan(force_fan) {}
     ~ControllerProps() = default;
     ControllerProps(const ControllerProps& v) noexcept = delete;
     ControllerProps& operator=(const ControllerProps& obj) = delete;
@@ -56,21 +51,17 @@ class Controller {
    private:
     [[nodiscard]] uint8_t ctrl_flag() const;
 
-    core::Configuration _config;
-    core::GeometryPtr _geometry;
     bool _silent_mode;
     bool _reads_fpga_info;
     bool _seq_mode;
     bool _force_fan;
-    std::unique_ptr<uint8_t[]> _tx_buf;
-    std::unique_ptr<uint8_t[]> _rx_buf;
   };
 
  public:
   class STMController;
   class STMTimer;
 
-  static std::unique_ptr<Controller> create();
+  static ControllerPtr create();
 
   /**
    * @brief Verify the device is properly connected
@@ -186,6 +177,7 @@ class Controller {
 
   /**
    * \brief return pointer to software spatio-temporal modulation controller.
+   * \details Never use Controller before calling STMController::finish
    */
   [[nodiscard]] std::unique_ptr<STMController> stm();
 
@@ -195,11 +187,6 @@ class Controller {
   class STMController {
    public:
     friend class Controller;
-
-    /**
-     * @brief Return controller
-     */
-    [[nodiscard]] std::unique_ptr<Controller> controller();
 
     /**
      * @brief Add gain for STM
@@ -213,52 +200,40 @@ class Controller {
      * add_gain() at the freq. The accuracy depends on the computer, for
      * example, about 1ms on Windows. Note that it is affected by interruptions,
      * and so on.
-     * \return ok with STMTimer, or err(error message) if unrecoverable error is occurred
+     * \return ok, or err(error message) if unrecoverable error is occurred
      */
-    [[nodiscard]] Result<std::unique_ptr<STMTimer>, std::string> start(double freq);
+    [[nodiscard]] Error start(double freq);
+
+    /**
+     * \brief Suspend Spatio-Temporal Modulation
+     * \return ok, or err(error message) if unrecoverable error is occurred
+     */
+    [[nodiscard]] Error stop();
 
     /**
      * @brief Finish Spatio-Temporal Modulation
-     * @details Added gains will be removed.
+     * @details Added gains will be removed. Never use this STMController after calling this function.
+     * \return ok, or err(error message) if unrecoverable error is occurred
      */
-    void finish() const;
+    [[nodiscard]] Error finish() const;
 
    private:
-    explicit STMController(std::unique_ptr<STMTimerCallback> handler, ControllerProps props)
-        : _props(std::move(props)), _handler(std::move(handler)) {}
+    explicit STMController(Controller* p_cnt, std::unique_ptr<STMTimerCallback> handler)
+        : _p_cnt(p_cnt), _handler(std::move(handler)), _timer(nullptr) {}
 
-    ControllerProps _props;
+    Controller* _p_cnt;
     std::unique_ptr<STMTimerCallback> _handler;
-  };
-
-  /**
-   * \brief Software spatio-temporal modulation timer.
-   */
-  class STMTimer {
-   public:
-    friend class STMController;
-
-    /**
-     * @brief Suspend Spatio-Temporal Modulation
-     * \return ok with STMController, or err(error message) if unrecoverable error is occurred
-     */
-    [[nodiscard]] Result<std::unique_ptr<STMController>, std::string> stop();
-
-   private:
-    explicit STMTimer(std::unique_ptr<core::Timer<STMTimerCallback>> timer, ControllerProps props)
-        : _timer(std::move(timer)), _props(std::move(props)) {}
-
     std::unique_ptr<core::Timer<STMTimerCallback>> _timer;
-    ControllerProps _props;
   };
 
  private:
   Controller() noexcept
       : _link(nullptr),
-        _props(ControllerProps(core::Configuration::get_default_configuration(), std::make_unique<core::Geometry>(), true, false, false, false,
-                               nullptr, nullptr)) {}
-
-  explicit Controller(core::LinkPtr link, ControllerProps props) noexcept : _link(std::move(link)), _props(std::move(props)) {}
+        _config(core::Configuration::get_default_configuration()),
+        _geometry(std::make_unique<core::Geometry>()),
+        _props(ControllerProps(true, false, false, false)),
+        _tx_buf(nullptr),
+        _rx_buf(nullptr) {}
 
   class STMTimerCallback final : core::CallbackHandler {
    public:
@@ -302,7 +277,11 @@ class Controller {
   [[nodiscard]] Error wait_msg_processed(uint8_t msg_id, size_t max_trial = 50) const;
 
   core::LinkPtr _link;
+  core::Configuration _config;
+  core::GeometryPtr _geometry;
   ControllerProps _props;
+  std::unique_ptr<uint8_t[]> _tx_buf;
+  std::unique_ptr<uint8_t[]> _rx_buf;
 
   std::vector<uint8_t> _fpga_infos;
 };

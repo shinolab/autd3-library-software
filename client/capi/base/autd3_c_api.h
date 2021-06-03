@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 02/06/2021
+// Last Modified: 03/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -88,9 +88,8 @@ EXPORT_AUTD bool AUTDSendGainModulation(void* handle, void* gain, void* mod);
 EXPORT_AUTD bool AUTDSendSequence(void* handle, void* seq);
 
 EXPORT_AUTD void AUTDSTMController(void** out, void* handle);
-EXPORT_AUTD void AUTDSTMControllerToController(void** out, void* handle);
 EXPORT_AUTD bool AUTDAddSTMGain(void* handle, void* gain);
-EXPORT_AUTD void AUTDStartSTM(void** out, void* handle, double freq);
-EXPORT_AUTD void AUTDStopSTM(void** out, void* handle);
-EXPORT_AUTD void AUTDFinishSTM(void* handle);
+EXPORT_AUTD bool AUTDStartSTM(void* handle, double freq);
+EXPORT_AUTD bool AUTDStopSTM(void* handle);
+EXPORT_AUTD bool AUTDFinishSTM(void* handle);
 }

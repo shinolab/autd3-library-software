@@ -3,7 +3,7 @@
 // Created Date: 19/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/06/2021
+// Last Modified: 03/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -34,7 +34,7 @@ class UniformGain final : public autd::core::Gain {
   }
 };
 
-inline std::unique_ptr<autd::Controller> advanced_test(std::unique_ptr<autd::Controller> autd) {
+inline void advanced_test(autd::ControllerPtr& autd) {
   autd->silent_mode() = false;
 
   std::vector<autd::DataArray> delays;
@@ -47,6 +47,4 @@ inline std::unique_ptr<autd::Controller> advanced_test(std::unique_ptr<autd::Con
   const auto g = UniformGain::create();
   const auto m = BurstModulation::create();
   autd->send(g, m).unwrap();
-
-  return autd;
 }

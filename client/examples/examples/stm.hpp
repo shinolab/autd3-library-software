@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/06/2021
+// Last Modified: 03/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -17,7 +17,7 @@
 
 using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SPACING_MM;
 
-inline std::unique_ptr<autd::Controller> stm_test(std::unique_ptr<autd::Controller> autd) {
+inline void stm_test(autd::ControllerPtr& autd) {
   autd->silent_mode() = true;
 
   const auto m = autd::modulation::Static::create(255);
@@ -35,12 +35,11 @@ inline std::unique_ptr<autd::Controller> stm_test(std::unique_ptr<autd::Controll
     stm->add_gain(g).unwrap();
   }
 
-  auto timer = stm->start(0.5).unwrap();  // 0.5 Hz
+  stm->start(0.5).unwrap();  // 0.5 Hz
 
   std::cout << "press any key to stop..." << std::endl;
   std::cin.ignore();
 
-  stm = timer->stop().unwrap();
-
-  return stm->controller();
+  stm->stop().unwrap();
+  stm->finish().unwrap();
 }

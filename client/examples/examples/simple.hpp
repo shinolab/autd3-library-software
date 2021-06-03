@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/06/2021
+// Last Modified: 03/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -17,7 +17,7 @@
 
 using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SPACING_MM;
 
-inline std::unique_ptr<autd::Controller> simple_test(std::unique_ptr<autd::Controller> autd) {
+inline void simple_test(autd::ControllerPtr& autd) {
   autd->silent_mode() = true;
 
   const auto m = autd::modulation::Sine::create(150);  // 150Hz AM
@@ -26,5 +26,4 @@ inline std::unique_ptr<autd::Controller> simple_test(std::unique_ptr<autd::Contr
   const auto g = autd::gain::FocalPoint::create(center);
 
   autd->send(g, m).unwrap();
-  return autd;
 }

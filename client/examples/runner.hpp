@@ -3,7 +3,7 @@
 // Created Date: 03/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/06/2021
+// Last Modified: 03/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -29,8 +29,8 @@
 #include "examples/holo.hpp"
 #endif
 
-inline int run(std::unique_ptr<autd::Controller> autd) {
-  using F = std::function<std::unique_ptr<autd::Controller>(std::unique_ptr<autd::Controller>)>;
+inline int run(autd::ControllerPtr autd) {
+  using F = std::function<void(autd::ControllerPtr&)>;
   std::vector<std::pair<F, std::string>> examples = {
       std::pair(F{simple_test}, "Single Focal Point Test"),
       std::pair(F{bessel_test}, "BesselBeam Test"),
@@ -64,7 +64,7 @@ inline int run(std::unique_ptr<autd::Controller> autd) {
     std::stringstream s(in);
     if (const auto empty = in == "\n"; !(s >> idx) || idx >= examples.size() || empty) break;
 
-    autd = examples[idx].first(std::move(autd));
+    examples[idx].first(autd);
 
     std::cout << "press any key to finish..." << std::endl;
     std::cin.ignore();
