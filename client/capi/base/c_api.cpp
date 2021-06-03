@@ -449,5 +449,6 @@ bool AUTDFinishSTM(void* const handle) {
     LastError() = res.unwrap_err();
     return false;
   }
+  STMControllerDelete(wrapper);
   return true;
 }
