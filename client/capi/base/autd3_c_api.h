@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/05/2021
+// Last Modified: 03/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -27,8 +27,10 @@ EXPORT_AUTD bool AUTDClear(void* handle);
 EXPORT_AUTD void AUTDFreeController(void* handle);
 EXPORT_AUTD bool AUTDIsOpen(void* handle);
 EXPORT_AUTD bool AUTDIsSilentMode(void* handle);
+EXPORT_AUTD bool AUTDIsForceFan(void* handle);
 EXPORT_AUTD void AUTDSetSilentMode(void* handle, bool mode);
 EXPORT_AUTD void AUTDSetReadFPGAInfo(void* handle, bool reads_fpga_info);
+EXPORT_AUTD void AUTDSetForceFan(void* handle, bool force);
 EXPORT_AUTD double AUTDWavelength(void* handle);
 EXPORT_AUTD void AUTDSetWavelength(void* handle, double wavelength);
 EXPORT_AUTD bool AUTDReadFPGAInfo(void* handle, uint8_t* out);
@@ -84,7 +86,9 @@ EXPORT_AUTD bool AUTDSendGain(void* handle, void* gain);
 EXPORT_AUTD bool AUTDSendModulation(void* handle, void* mod);
 EXPORT_AUTD bool AUTDSendGainModulation(void* handle, void* gain, void* mod);
 EXPORT_AUTD bool AUTDSendSequence(void* handle, void* seq);
-EXPORT_AUTD void AUTDAddSTMGain(void* handle, void* gain);
+
+EXPORT_AUTD void AUTDSTMController(void** out, void* handle);
+EXPORT_AUTD bool AUTDAddSTMGain(void* handle, void* gain);
 EXPORT_AUTD bool AUTDStartSTM(void* handle, double freq);
 EXPORT_AUTD bool AUTDStopSTM(void* handle);
 EXPORT_AUTD bool AUTDFinishSTM(void* handle);

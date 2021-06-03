@@ -1,3 +1,10 @@
+# 1.1.0
+* Make LinkPtr unique
+    * With this change, implementation of timers and the APIs around STM were changed.
+* Make GeometryPtr unique
+* Add force fan flag
+* Add HoloGainGreedy
+
 # 1.0.0
 * Major revisions have been performed, APIs have also been changed massively.
 

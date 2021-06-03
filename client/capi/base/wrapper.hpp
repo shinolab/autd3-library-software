@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 03/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,13 +11,32 @@
 
 #pragma once
 
+#include <memory>
+#include <utility>
 #include <vector>
 
+#include "controller.hpp"
 #include "core/firmware_version.hpp"
 #include "core/gain.hpp"
 #include "core/modulation.hpp"
 #include "core/sequence.hpp"
 #include "linalg_backend.hpp"
+
+typedef struct {
+  autd::ControllerPtr ptr;
+} ControllerWrapper;
+
+inline ControllerWrapper* ControllerCreate(autd::ControllerPtr ptr) { return new ControllerWrapper{std::move(ptr)}; }
+inline void ControllerDelete(ControllerWrapper* ptr) { delete ptr; }
+
+typedef struct {
+  std::unique_ptr<autd::Controller::STMController> ptr;
+} STMControllerWrapper;
+
+inline STMControllerWrapper* STMControllerCreate(std::unique_ptr<autd::Controller::STMController> ptr) {
+  return new STMControllerWrapper{std::move(ptr)};
+}
+inline void STMControllerDelete(STMControllerWrapper* ptr) { delete ptr; }
 
 typedef struct {
   autd::core::GainPtr ptr;

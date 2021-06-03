@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/05/2021
+// Last Modified: 02/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,11 +11,9 @@
 
 #pragma once
 
-#include <condition_variable>
+#include <atomic>
 #include <memory>
-#include <mutex>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "core/osal_timer.hpp"
@@ -23,13 +21,27 @@
 
 namespace autd::autdsoem {
 
+struct SOEMCallback final : core::CallbackHandler {
+  virtual ~SOEMCallback() = default;
+  SOEMCallback(const SOEMCallback& v) noexcept = delete;
+  SOEMCallback& operator=(const SOEMCallback& obj) = delete;
+  SOEMCallback(SOEMCallback&& obj) = delete;
+  SOEMCallback& operator=(SOEMCallback&& obj) = delete;
+
+  SOEMCallback() : _autd3_rt_lock(false) {}
+
+  void callback() override;
+
+ private:
+  std::atomic<bool> _autd3_rt_lock;
+};
+
 struct ECConfig {
   uint32_t ec_sm3_cycle_time_ns;
   uint32_t ec_sync0_cycle_time_ns;
   size_t header_size;
   size_t body_size;
   size_t input_frame_size;
-  size_t bucket_size;
 };
 
 class SOEMController {
@@ -46,7 +58,7 @@ class SOEMController {
 
   [[nodiscard]] bool is_open() const;
 
-  [[nodiscard]] Error send(size_t size, const uint8_t* buf);
+  [[nodiscard]] Error send(const uint8_t* buf, size_t size) const;
   [[nodiscard]] Error read(uint8_t* rx) const;
 
  private:
@@ -59,13 +71,7 @@ class SOEMController {
   ECConfig _config;
   bool _is_open;
 
-  std::vector<std::pair<std::unique_ptr<uint8_t[]>, size_t>> _send_bucket;
-  size_t _send_bucket_ptr, _send_bucket_size;
-  std::thread _send_thread;
-  std::condition_variable _send_cond;
-  std::mutex _send_mtx;
-
-  Timer _timer;
+  std::unique_ptr<core::Timer<SOEMCallback>> _timer;
 };
 
 struct EtherCATAdapterInfo final {

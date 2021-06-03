@@ -39,9 +39,9 @@ Error Sine::build(const Configuration config) {
   this->_buffer.resize(n, 0);
 
   for (size_t i = 0; i < n; i++) {
-    auto tamp = std::fmod(static_cast<double>(2 * rep * i) / static_cast<double>(n), double{2});
+    auto tamp = std::fmod(static_cast<double>(2 * rep * i) / static_cast<double>(n), 2.0);
     tamp = tamp > 1 ? 2 - tamp : tamp;
-    tamp = std::clamp(this->_offset + (tamp - double{0.5}) * this->_amp, double{0}, double{1});
+    tamp = std::clamp(this->_offset + (tamp - 0.5) * this->_amp, 0.0, 1.0);
     this->_buffer.at(i) = static_cast<uint8_t>(tamp * 255);
   }
   return Ok(true);
@@ -87,8 +87,8 @@ Error Saw::build(const Configuration config) {
   this->_buffer.resize(n, 0);
 
   for (size_t i = 0; i < n; i++) {
-    const auto tamp = std::fmod(static_cast<double>(rep * i) / static_cast<double>(n), double{1});
-    this->_buffer.at(i) = static_cast<uint8_t>(std::asin(tamp) / M_PI * double{510});
+    const auto tamp = std::fmod(static_cast<double>(rep * i) / static_cast<double>(n), 1.0);
+    this->_buffer.at(i) = static_cast<uint8_t>(std::asin(tamp) / M_PI * 510.0);
   }
   return Ok(true);
 }

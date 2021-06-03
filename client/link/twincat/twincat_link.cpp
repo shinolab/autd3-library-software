@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/05/2021
+// Last Modified: 01/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -41,7 +41,7 @@ class TwinCATLinkImpl final : public TwinCATLink {
 
   Error open() override;
   Error close() override;
-  Error send(size_t size, const uint8_t* buf) override;
+  Error send(const uint8_t* buf, size_t size) override;
   Error read(uint8_t* rx, size_t buffer_len) override;
   bool is_open() override;
 
@@ -53,7 +53,7 @@ class TwinCATLinkImpl final : public TwinCATLink {
 #endif
 };
 
-core::LinkPtr TwinCATLink::create() { return std::make_shared<TwinCATLinkImpl>(); }
+core::LinkPtr TwinCATLink::create() { return std::make_unique<TwinCATLinkImpl>(); }
 
 bool TwinCATLinkImpl::is_open() { return this->_port > 0; }
 
@@ -117,7 +117,7 @@ Error TwinCATLinkImpl::close() {
   ss << "Error on closing (local): " << std::hex << res;
   return Err(ss.str());
 }
-Error TwinCATLinkImpl::send(const size_t size, const uint8_t* buf) {
+Error TwinCATLinkImpl::send(const uint8_t* buf, const size_t size) {
   if (!this->is_open()) return Err(std::string("Link is closed."));
 
   AmsAddr addr = {this->_net_id, PORT};
@@ -156,7 +156,7 @@ Error TwinCATLinkImpl::open() {
   return Err(std::string("Link to localhost has not been compiled. Rebuild this library on a Twincat3 host machine with TcADS-DLL."));
 }
 Error TwinCATLinkImpl::close() { return Ok(true); }
-Error TwinCATLinkImpl::send(size_t size, const uint8_t* buf) {
+Error TwinCATLinkImpl::send(const uint8_t* buf, size_t size) {
   (void)size;
   (void)buf;
   return Ok(true);
