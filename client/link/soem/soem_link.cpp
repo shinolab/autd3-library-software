@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 02/06/2021
+// Last Modified: 04/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -16,21 +16,21 @@
 
 namespace autd::link {
 
-std::vector<EtherCATAdapter> SOEMLink::enumerate_adapters() {
+std::vector<EtherCATAdapter> SOEM::enumerate_adapters() {
   std::vector<EtherCATAdapter> res;
   for (const auto& adapter : autdsoem::EtherCATAdapterInfo::enumerate_adapters()) res.emplace_back(adapter.desc, adapter.name);
   return res;
 }
 
-class SOEMLinkImpl final : public SOEMLink {
+class SOEMImpl final : public SOEM {
  public:
-  SOEMLinkImpl(std::string ifname, const size_t device_num, const uint32_t cycle_ticks)
-      : SOEMLink(), _device_num(device_num), _cycle_ticks(cycle_ticks), _ifname(std::move(ifname)), _config() {}
-  ~SOEMLinkImpl() override = default;
-  SOEMLinkImpl(const SOEMLinkImpl& v) noexcept = delete;
-  SOEMLinkImpl& operator=(const SOEMLinkImpl& obj) = delete;
-  SOEMLinkImpl(SOEMLinkImpl&& obj) = delete;
-  SOEMLinkImpl& operator=(SOEMLinkImpl&& obj) = delete;
+  SOEMImpl(std::string ifname, const size_t device_num, const uint32_t cycle_ticks)
+      : SOEM(), _device_num(device_num), _cycle_ticks(cycle_ticks), _ifname(std::move(ifname)), _config() {}
+  ~SOEMImpl() override = default;
+  SOEMImpl(const SOEMImpl& v) noexcept = delete;
+  SOEMImpl& operator=(const SOEMImpl& obj) = delete;
+  SOEMImpl(SOEMImpl&& obj) = delete;
+  SOEMImpl& operator=(SOEMImpl&& obj) = delete;
 
  protected:
   Error open() override;
@@ -47,12 +47,12 @@ class SOEMLinkImpl final : public SOEMLink {
   autdsoem::ECConfig _config;
 };
 
-core::LinkPtr SOEMLink::create(const std::string& ifname, const size_t device_num, uint32_t cycle_ticks) {
-  core::LinkPtr link = std::make_unique<SOEMLinkImpl>(ifname, device_num, cycle_ticks);
+core::LinkPtr SOEM::create(const std::string& ifname, const size_t device_num, uint32_t cycle_ticks) {
+  core::LinkPtr link = std::make_unique<SOEMImpl>(ifname, device_num, cycle_ticks);
   return link;
 }
 
-Error SOEMLinkImpl::open() {
+Error SOEMImpl::open() {
   if (_ifname.empty()) return Err(std::string("Interface name is empty."));
 
   _config = autdsoem::ECConfig{};
@@ -65,11 +65,11 @@ Error SOEMLinkImpl::open() {
   return _cnt.open(_ifname.c_str(), _device_num, _config);
 }
 
-Error SOEMLinkImpl::close() { return _cnt.close(); }
+Error SOEMImpl::close() { return _cnt.close(); }
 
-Error SOEMLinkImpl::send(const uint8_t* buf, const size_t size) { return _cnt.send(buf, size); }
+Error SOEMImpl::send(const uint8_t* buf, const size_t size) { return _cnt.send(buf, size); }
 
-Error SOEMLinkImpl::read(uint8_t* rx, [[maybe_unused]] size_t buffer_len) { return _cnt.read(rx); }
+Error SOEMImpl::read(uint8_t* rx, [[maybe_unused]] size_t buffer_len) { return _cnt.read(rx); }
 
-bool SOEMLinkImpl::is_open() { return _cnt.is_open(); }
+bool SOEMImpl::is_open() { return _cnt.is_open(); }
 }  // namespace autd::link
