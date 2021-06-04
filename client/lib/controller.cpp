@@ -12,7 +12,6 @@
 #include "controller.hpp"
 
 #include <condition_variable>
-#include <iostream>
 #include <vector>
 
 #include "core/ec_config.hpp"
