@@ -54,7 +54,7 @@ If you are using Linux/macOS, you may need to run as root.
 
 ## :heavy_plus_sign: Additional plugins
 
-* [BLAS backend for HoloGain](https://github.com/shinolab/autd3-BLAS-backend)
+* [BLAS backend for Holo gain](https://github.com/shinolab/autd3-BLAS-backend)
 * [RawPCM and Wave file modulation](https://github.com/shinolab/autd3-mod-from-file)
 
 ## :link: For other programming languages

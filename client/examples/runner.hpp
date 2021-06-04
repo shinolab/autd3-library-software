@@ -3,7 +3,7 @@
 // Created Date: 03/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/06/2021
+// Last Modified: 04/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -35,7 +35,7 @@ inline int run(autd::ControllerPtr autd) {
       std::pair(F{simple_test}, "Single Focal Point Test"),
       std::pair(F{bessel_test}, "BesselBeam Test"),
 #ifdef BUILD_HOLO_GAIN
-      std::pair(F{holo_test}, "HoloGain (multiple foci) Test"),
+      std::pair(F{holo_test}, "Holo (multiple foci) Test"),
 #endif
       std::pair(F{stm_test}, "Spatio-Temporal Modulation Test"),
       std::pair(F{seq_test}, "Sequence (hardware STM) Test"),

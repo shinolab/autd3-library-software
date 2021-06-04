@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/06/2021
+// Last Modified: 04/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -19,16 +19,16 @@
 
 namespace autd::gain::holo {
 
-void HoloGain::matrix_mul(const Backend::MatrixXc& a, const Backend::MatrixXc& b, Backend::MatrixXc* c) const {
+void Holo::matrix_mul(const Backend::MatrixXc& a, const Backend::MatrixXc& b, Backend::MatrixXc* c) const {
   this->_backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, std::complex<double>(1, 0), a, b, std::complex<double>(0, 0), c);
 }
 
-void HoloGain::matrix_vec_mul(const Backend::MatrixXc& a, const Backend::VectorXc& b, Backend::VectorXc* c) const {
+void Holo::matrix_vec_mul(const Backend::MatrixXc& a, const Backend::VectorXc& b, Backend::VectorXc* c) const {
   this->_backend->matrix_vector_mul(TRANSPOSE::NO_TRANS, std::complex<double>(1, 0), a, b, std::complex<double>(0, 0), c);
 }
 
-void HoloGain::set_from_complex_drive(std::vector<core::DataArray>& data, const Backend::VectorXc& drive, const bool normalize,
-                                      const double max_coefficient) {
+void Holo::set_from_complex_drive(std::vector<core::DataArray>& data, const Backend::VectorXc& drive, const bool normalize,
+                                  const double max_coefficient) {
   const size_t n = drive.size();
   size_t dev_idx = 0;
   size_t trans_idx = 0;
@@ -45,8 +45,8 @@ void HoloGain::set_from_complex_drive(std::vector<core::DataArray>& data, const 
   }
 }
 
-std::complex<double> HoloGain::transfer(const core::Vector3& trans_pos, const core::Vector3& trans_norm, const core::Vector3& target_pos,
-                                        const double wave_number, const double attenuation) {
+std::complex<double> Holo::transfer(const core::Vector3& trans_pos, const core::Vector3& trans_norm, const core::Vector3& target_pos,
+                                    const double wave_number, const double attenuation) {
   const auto diff = target_pos - trans_pos;
   const auto dist = diff.norm();
   const auto theta = std::atan2(diff.dot(trans_norm), dist * trans_norm.norm()) * 180.0 / M_PI;
@@ -54,7 +54,7 @@ std::complex<double> HoloGain::transfer(const core::Vector3& trans_pos, const co
   return directivity / dist * exp(std::complex<double>(-dist * attenuation, -wave_number * dist));
 }
 
-Backend::MatrixXc HoloGain::transfer_matrix(const std::vector<core::Vector3>& foci, const core::GeometryPtr& geometry) {
+Backend::MatrixXc Holo::transfer_matrix(const std::vector<core::Vector3>& foci, const core::GeometryPtr& geometry) {
   const auto m = foci.size();
   const auto n = geometry->num_transducers();
 
@@ -73,7 +73,7 @@ Backend::MatrixXc HoloGain::transfer_matrix(const std::vector<core::Vector3>& fo
   return g;
 }
 
-Error HoloGainSDP::calc(const core::GeometryPtr& geometry) {
+Error HoloSDP::calc(const core::GeometryPtr& geometry) {
   if (!this->_backend->supports_svd() || !this->_backend->supports_evd()) return Err(std::string("This backend does not support this method."));
 
   auto set_bcd_result = [](Backend::MatrixXc& mat, const Backend::VectorXc& vec, const size_t idx) {
@@ -136,7 +136,7 @@ Error HoloGainSDP::calc(const core::GeometryPtr& geometry) {
   return Ok(true);
 }
 
-Error HoloGainEVD::calc(const core::GeometryPtr& geometry) {
+Error HoloEVD::calc(const core::GeometryPtr& geometry) {
   const auto m = this->_foci.size();
   const auto n = geometry->num_transducers();
 
@@ -185,7 +185,7 @@ Error HoloGainEVD::calc(const core::GeometryPtr& geometry) {
   return Ok(true);
 }
 
-Error HoloGainNaive::calc(const core::GeometryPtr& geometry) {
+Error HoloNaive::calc(const core::GeometryPtr& geometry) {
   const auto m = this->_foci.size();
   const auto n = geometry->num_transducers();
 
@@ -202,7 +202,7 @@ Error HoloGainNaive::calc(const core::GeometryPtr& geometry) {
   return Ok(true);
 }
 
-Error HoloGainGS::calc(const core::GeometryPtr& geometry) {
+Error HoloGS::calc(const core::GeometryPtr& geometry) {
   const auto m = this->_foci.size();
   const auto n = geometry->num_transducers();
 
@@ -229,7 +229,7 @@ Error HoloGainGS::calc(const core::GeometryPtr& geometry) {
   return Ok(true);
 }
 
-Error HoloGainGSPAT::calc(const core::GeometryPtr& geometry) {
+Error HoloGSPAT::calc(const core::GeometryPtr& geometry) {
   const auto m = this->_foci.size();
   const auto n = geometry->num_transducers();
 
@@ -272,7 +272,7 @@ Error HoloGainGSPAT::calc(const core::GeometryPtr& geometry) {
   return Ok(true);
 }
 
-Error HoloGainLM::calc(const core::GeometryPtr& geometry) {
+Error HoloLM::calc(const core::GeometryPtr& geometry) {
   if (!this->_backend->supports_solve()) return Err(std::string("This backend does not support this method."));
 
   auto make_bhb = [](const BackendPtr& backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps, const core::GeometryPtr& geo,
@@ -396,7 +396,7 @@ Error HoloGainLM::calc(const core::GeometryPtr& geometry) {
   return Ok(true);
 }
 
-Error HoloGainGreedy::calc(const core::GeometryPtr& geometry) {
+Error HoloGreedy::calc(const core::GeometryPtr& geometry) {
   const auto m = this->_foci.size();
 
   const auto wave_num = 2.0 * M_PI / geometry->wavelength();
