@@ -309,12 +309,12 @@ void AUTDModulationSquare(void** mod, const int32_t freq, const uint8_t low, con
   auto* m = ModulationCreate(autd::modulation::Square::create(freq, low, high));
   *mod = m;
 }
-void AUTDModulationSaw(void** mod, const int32_t freq) {
-  auto* m = ModulationCreate(autd::modulation::Saw::create(freq));
-  *mod = m;
-}
 void AUTDModulationSine(void** mod, const int32_t freq, const double amp, const double offset) {
   auto* m = ModulationCreate(autd::modulation::Sine::create(freq, amp, offset));
+  *mod = m;
+}
+void AUTDModulationSinePressure(void** mod, const int32_t freq, const double amp, const double offset) {
+  auto* m = ModulationCreate(autd::modulation::SinePressure::create(freq, amp, offset));
   *mod = m;
 }
 void AUTDDeleteModulation(void* const mod) {

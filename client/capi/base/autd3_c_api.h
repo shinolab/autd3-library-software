@@ -67,8 +67,8 @@ EXPORT_AUTD void AUTDDeleteGain(void* gain);
 
 EXPORT_AUTD void AUTDModulationStatic(void** mod, uint8_t amp);
 EXPORT_AUTD void AUTDModulationCustom(void** mod, uint8_t* buf, uint32_t size);
-EXPORT_AUTD void AUTDModulationSaw(void** mod, int32_t freq);
 EXPORT_AUTD void AUTDModulationSine(void** mod, int32_t freq, double amp, double offset);
+EXPORT_AUTD void AUTDModulationSinePressure(void** mod, int32_t freq, double amp, double offset);
 EXPORT_AUTD void AUTDModulationSquare(void** mod, int32_t freq, uint8_t low, uint8_t high);
 EXPORT_AUTD void AUTDDeleteModulation(void* mod);
 

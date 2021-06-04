@@ -1,3 +1,11 @@
+# 1.2.0
+* Fix #3
+* Improve HoloGreedy performance
+* Fix modulation::Sine  
+* Add modulation::SinePressure
+* Delete modulation::Saw
+* Add attenuation setting in capi 
+
 # 1.1.0
 * Make LinkPtr unique
     * With this change, implementation of timers and the APIs around STM were changed.
