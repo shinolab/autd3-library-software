@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/06/2021
+// Last Modified: 04/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -18,7 +18,7 @@ int main() {
     auto autd = autd::Controller::create();
     autd->geometry()->add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
 
-    if (auto res = autd->open(autd::link::TwinCATLink::create()); res.is_err()) {
+    if (auto res = autd->open(autd::link::TwinCAT::create()); res.is_err()) {
       std::cerr << res.unwrap_err() << std::endl;
       return ENXIO;
     }

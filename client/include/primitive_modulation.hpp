@@ -27,20 +27,44 @@ using core::ModulationPtr;
 using Static = Modulation;
 
 /**
- * @brief Sine wave modulation
+ * @brief Sine wave modulation in ultrasound amplitude
  */
 class Sine final : public Modulation {
  public:
   /**
    * @brief Generate function
    * @param[in] freq Frequency of the sine wave
-   * @param[in] amp peek to peek amplitude of the wave (Maximum value is 1.0)
-   * @param[in] offset offset of the wave
-   * @details The sine wave oscillate from offset-amp/2 to offset+amp/2
+   * @param[in] amp peek to peek ultrasound amplitude (Maximum value is 1.0)
+   * @param[in] offset offset of ultrasound amplitude
+   * @details Ultrasound amplitude oscillate from offset-amp/2 to offset+amp/2.
+   * If the value exceeds the range of [0, 1], the value will be clamped in the [0, 1].
    */
   static ModulationPtr create(int freq, double amp = 1.0, double offset = 0.5);
   Error build(Configuration config) override;
   Sine(const int freq, const double amp, const double offset) : Modulation(), _freq(freq), _amp(amp), _offset(offset) {}
+
+ private:
+  int _freq = 0;
+  double _amp = 1.0;
+  double _offset = 0.5;
+};
+
+/**
+ * @brief Sine wave modulation in radiation pressure
+ */
+class SinePressure final : public Modulation {
+ public:
+  /**
+   * @brief Generate function
+   * @param[in] freq Frequency of the sine wave
+   * @param[in] amp peek to peek amplitude of radiation pressure (Maximum value is 1.0)
+   * @param[in] offset offset of radiation pressure
+   * @details Radiation pressure oscillate from offset-amp/2 to offset+amp/2
+   * If the value exceeds the range of [0, 1], the value will be clamped in the [0, 1].
+   */
+  static ModulationPtr create(int freq, double amp = 1.0, double offset = 0.5);
+  Error build(Configuration config) override;
+  SinePressure(const int freq, const double amp, const double offset) : Modulation(), _freq(freq), _amp(amp), _offset(offset) {}
 
  private:
   int _freq = 0;
@@ -81,26 +105,5 @@ class Square final : public Modulation {
   int _freq = 0;
   uint8_t _low = 0x00;
   uint8_t _high = 0xFF;
-};
-
-/**
- * @brief Sawtooth wave modulation
- */
-class Saw final : public Modulation {
- public:
-  /**
-   * @brief Generate function
-   * @param[in] freq Frequency of the sawtooth wave
-   */
-  static ModulationPtr create(int freq);
-  /**
-   * @brief Build Modulation
-   * @return return Ok(whether succeeded to build), or Err(error msg) if some unrecoverable error occurred
-   */
-  Error build(Configuration config) override;
-  explicit Saw(const int freq) : Modulation(), _freq(freq) {}
-
- private:
-  int _freq = 0;
 };
 }  // namespace autd::modulation

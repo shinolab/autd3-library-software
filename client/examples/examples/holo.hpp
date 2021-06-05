@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/06/2021
+// Last Modified: 04/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -36,21 +36,21 @@ inline autd::GainPtr select_opt(std::vector<autd::Vector3>& foci, std::vector<do
   const auto backend = Eigen3Backend::create();
   switch (idx) {
     case 0:
-      return autd::gain::holo::HoloGainSDP::create(backend, foci, amps);
+      return autd::gain::holo::HoloSDP::create(backend, foci, amps);
     case 1:
-      return autd::gain::holo::HoloGainEVD::create(backend, foci, amps);
+      return autd::gain::holo::HoloEVD::create(backend, foci, amps);
     case 2:
-      return autd::gain::holo::HoloGainGS::create(backend, foci, amps);
+      return autd::gain::holo::HoloGS::create(backend, foci, amps);
     case 3:
-      return autd::gain::holo::HoloGainGSPAT::create(backend, foci, amps);
+      return autd::gain::holo::HoloGSPAT::create(backend, foci, amps);
     case 4:
-      return autd::gain::holo::HoloGainNaive::create(backend, foci, amps);
+      return autd::gain::holo::HoloNaive::create(backend, foci, amps);
     case 5:
-      return autd::gain::holo::HoloGainLM::create(backend, foci, amps);
+      return autd::gain::holo::HoloLM::create(backend, foci, amps);
     case 6:
-      return autd::gain::holo::HoloGainGreedy::create(foci, amps);
+      return autd::gain::holo::HoloGreedy::create(foci, amps);
     default:
-      return autd::gain::holo::HoloGainSDP::create(backend, foci, amps);
+      return autd::gain::holo::HoloSDP::create(backend, foci, amps);
   }
 }
 
