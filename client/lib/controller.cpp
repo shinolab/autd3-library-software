@@ -229,8 +229,8 @@ Error Controller::STMController::start(const double freq) {
   return Ok(true);
 }
 
-Error Controller::STMController::finish() const {
-  if (auto res = this->_timer->stop(); res.is_err()) return Err(res.unwrap_err());
+Error Controller::STMController::finish() {
+  if (auto res = this->stop(); res.is_err()) return Err(res.unwrap_err());
   this->_handler->clear();
   this->_p_cnt->_link = std::move(this->_handler->_link);
   return Ok(true);
@@ -238,7 +238,6 @@ Error Controller::STMController::finish() const {
 
 Error Controller::STMController::stop() {
   if (this->_handler != nullptr) return Ok(true);
-
   auto res = this->_timer->stop();
   if (res.is_err()) return Err(res.unwrap_err());
   this->_handler = res.unwrap();

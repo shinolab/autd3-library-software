@@ -104,6 +104,10 @@ bool AUTDIsForceFan(void* const handle) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
   return wrapper->ptr->force_fan();
 }
+bool AUTDIsReadsFPGAInfo(void* const handle) {
+  auto* wrapper = static_cast<ControllerWrapper*>(handle);
+  return wrapper->ptr->reads_fpga_info();
+}
 void AUTDSetSilentMode(void* const handle, const bool mode) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
   wrapper->ptr->silent_mode() = mode;
@@ -112,19 +116,27 @@ void AUTDSetForceFan(void* const handle, const bool force) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
   wrapper->ptr->force_fan() = force;
 }
-void AUTDSetReadFPGAInfo(void* const handle, const bool reads_fpga_info) {
+void AUTDSetReadsFPGAInfo(void* const handle, const bool reads_fpga_info) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
   wrapper->ptr->reads_fpga_info() = reads_fpga_info;
 }
-double AUTDWavelength(void* const handle) {
+double AUTDGetWavelength(void* const handle) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
   return wrapper->ptr->geometry()->wavelength();
+}
+double AUTDGetAttenuation(void* const handle) {
+  auto* wrapper = static_cast<ControllerWrapper*>(handle);
+  return wrapper->ptr->geometry()->attenuation_coefficient();
 }
 void AUTDSetWavelength(void* const handle, const double wavelength) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
   wrapper->ptr->geometry()->wavelength() = wavelength;
 }
-bool AUTDReadFPGAInfo(void* handle, uint8_t* out) {
+void AUTDSetAttenuation(void* const handle, const double attenuation) {
+  auto* wrapper = static_cast<ControllerWrapper*>(handle);
+  wrapper->ptr->geometry()->attenuation_coefficient() = attenuation;
+}
+bool AUTDGetFPGAInfo(void* handle, uint8_t* out) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
   auto res = wrapper->ptr->fpga_info();
   if (res.is_err()) {
@@ -241,40 +253,40 @@ int32_t AUTDGetLastError(char* error) {
   return size;
 }
 
-void AUTDNullGain(void** gain) {
+void AUTDGainNull(void** gain) {
   auto* g = GainCreate(autd::gain::NullGain::create());
   *gain = g;
 }
-void AUTDGroupedGain(void** gain) {
+void AUTDGainGrouped(void** gain) {
   auto* g = GainCreate(autd::gain::Grouped::create());
   *gain = g;
 }
 
-void AUTDGroupedGainAdd(void* grouped_gain, const int32_t id, void* gain) {
+void AUTDGainGroupedAdd(void* grouped_gain, const int32_t id, void* gain) {
   auto* gg = static_cast<GainWrapper*>(grouped_gain);
   auto* ing = static_cast<GainWrapper*>(gain);
   auto* pgg = dynamic_cast<autd::gain::Grouped*>(gg->ptr.get());
   pgg->add(id, ing->ptr);
 }
 
-void AUTDFocalPointGain(void** gain, const double x, const double y, const double z, const uint8_t duty) {
+void AUTDGainFocalPoint(void** gain, const double x, const double y, const double z, const uint8_t duty) {
   auto* g = GainCreate(autd::gain::FocalPoint::create(ToVec3(x, y, z), duty));
   *gain = g;
 }
-void AUTDBesselBeamGain(void** gain, const double x, const double y, const double z, const double n_x, const double n_y, const double n_z,
+void AUTDGainBesselBeam(void** gain, const double x, const double y, const double z, const double n_x, const double n_y, const double n_z,
                         const double theta_z, const uint8_t duty) {
   auto* g = GainCreate(autd::gain::BesselBeam::create(ToVec3(x, y, z), ToVec3(n_x, n_y, n_z), theta_z, duty));
   *gain = g;
 }
-void AUTDPlaneWaveGain(void** gain, const double n_x, const double n_y, const double n_z, const uint8_t duty) {
+void AUTDGainPlaneWave(void** gain, const double n_x, const double n_y, const double n_z, const uint8_t duty) {
   auto* g = GainCreate(autd::gain::PlaneWave::create(ToVec3(n_x, n_y, n_z), duty));
   *gain = g;
 }
-void AUTDCustomGain(void** gain, uint16_t* data, const int32_t data_length) {
+void AUTDGainCustom(void** gain, uint16_t* data, const int32_t data_length) {
   auto* g = GainCreate(autd::gain::Custom::create(data, data_length));
   *gain = g;
 }
-void AUTDTransducerTestGain(void** gain, const int32_t idx, const uint8_t duty, const uint8_t phase) {
+void AUTDGainTransducerTest(void** gain, const int32_t idx, const uint8_t duty, const uint8_t phase) {
   auto* g = GainCreate(autd::gain::TransducerTest::create(idx, duty, phase));
   *gain = g;
 }
@@ -283,26 +295,26 @@ void AUTDDeleteGain(void* const gain) {
   GainDelete(g);
 }
 
-void AUTDStaticModulation(void** mod, const uint8_t amp) {
+void AUTDModulationStatic(void** mod, const uint8_t amp) {
   auto* m = ModulationCreate(autd::modulation::Modulation::create(amp));
   *mod = m;
 }
-void AUTDCustomModulation(void** mod, uint8_t* buf, const uint32_t size) {
+void AUTDModulationCustom(void** mod, uint8_t* buf, const uint32_t size) {
   auto* m = ModulationCreate(autd::modulation::Modulation::create(0));
   m->ptr->buffer().resize(size, 0);
   std::memcpy(&m->ptr->buffer()[0], buf, size);
   *mod = m;
 }
-void AUTDSquareModulation(void** mod, const int32_t freq, const uint8_t low, const uint8_t high) {
+void AUTDModulationSquare(void** mod, const int32_t freq, const uint8_t low, const uint8_t high) {
   auto* m = ModulationCreate(autd::modulation::Square::create(freq, low, high));
   *mod = m;
 }
-void AUTDSawModulation(void** mod, const int32_t freq) {
-  auto* m = ModulationCreate(autd::modulation::Saw::create(freq));
+void AUTDModulationSine(void** mod, const int32_t freq, const double amp, const double offset) {
+  auto* m = ModulationCreate(autd::modulation::Sine::create(freq, amp, offset));
   *mod = m;
 }
-void AUTDSineModulation(void** mod, const int32_t freq, const double amp, const double offset) {
-  auto* m = ModulationCreate(autd::modulation::Sine::create(freq, amp, offset));
+void AUTDModulationSinePressure(void** mod, const int32_t freq, const double amp, const double offset) {
+  auto* m = ModulationCreate(autd::modulation::SinePressure::create(freq, amp, offset));
   *mod = m;
 }
 void AUTDDeleteModulation(void* const mod) {

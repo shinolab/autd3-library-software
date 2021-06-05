@@ -3,7 +3,7 @@
 // Created Date: 10/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 02/06/2021
+// Last Modified: 04/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -19,7 +19,7 @@
 namespace autd::link {
 
 /**
- * \brief EtherCAT adapter information to SOEMLink
+ * \brief EtherCAT adapter information to SOEM
  */
 struct EtherCATAdapter final {
   EtherCATAdapter(const std::string& desc, const std::string& name) {
@@ -34,7 +34,7 @@ struct EtherCATAdapter final {
 /**
  * @brief Link using [SOEM](https://github.com/OpenEtherCATsociety/SOEM)
  */
-class SOEMLink : virtual public core::Link {
+class SOEM : virtual public core::Link {
  public:
   /**
    * @brief Create SOEM link.
@@ -50,12 +50,12 @@ class SOEMLink : virtual public core::Link {
    * @brief Enumerate Ethernet adapters of the computer.
    */
   static std::vector<EtherCATAdapter> enumerate_adapters();
-  SOEMLink() = default;
-  ~SOEMLink() override = default;
-  SOEMLink(const SOEMLink& v) noexcept = delete;
-  SOEMLink& operator=(const SOEMLink& obj) = delete;
-  SOEMLink(SOEMLink&& obj) = delete;
-  SOEMLink& operator=(SOEMLink&& obj) = delete;
+  SOEM() = default;
+  ~SOEM() override = default;
+  SOEM(const SOEM& v) noexcept = delete;
+  SOEM& operator=(const SOEM& obj) = delete;
+  SOEM(SOEM&& obj) = delete;
+  SOEM& operator=(SOEM&& obj) = delete;
 
   Error open() override = 0;
   Error close() override = 0;

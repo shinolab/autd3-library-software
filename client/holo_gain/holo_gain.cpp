@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 02/06/2021
+// Last Modified: 04/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -19,16 +19,16 @@
 
 namespace autd::gain::holo {
 
-void HoloGain::matrix_mul(const Backend::MatrixXc& a, const Backend::MatrixXc& b, Backend::MatrixXc* c) const {
+void Holo::matrix_mul(const Backend::MatrixXc& a, const Backend::MatrixXc& b, Backend::MatrixXc* c) const {
   this->_backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, std::complex<double>(1, 0), a, b, std::complex<double>(0, 0), c);
 }
 
-void HoloGain::matrix_vec_mul(const Backend::MatrixXc& a, const Backend::VectorXc& b, Backend::VectorXc* c) const {
+void Holo::matrix_vec_mul(const Backend::MatrixXc& a, const Backend::VectorXc& b, Backend::VectorXc* c) const {
   this->_backend->matrix_vector_mul(TRANSPOSE::NO_TRANS, std::complex<double>(1, 0), a, b, std::complex<double>(0, 0), c);
 }
 
-void HoloGain::set_from_complex_drive(std::vector<core::DataArray>& data, const Backend::VectorXc& drive, const bool normalize,
-                                      const double max_coefficient) {
+void Holo::set_from_complex_drive(std::vector<core::DataArray>& data, const Backend::VectorXc& drive, const bool normalize,
+                                  const double max_coefficient) {
   const size_t n = drive.size();
   size_t dev_idx = 0;
   size_t trans_idx = 0;
@@ -45,8 +45,8 @@ void HoloGain::set_from_complex_drive(std::vector<core::DataArray>& data, const 
   }
 }
 
-std::complex<double> HoloGain::transfer(const core::Vector3& trans_pos, const core::Vector3& trans_norm, const core::Vector3& target_pos,
-                                        const double wave_number, const double attenuation) {
+std::complex<double> Holo::transfer(const core::Vector3& trans_pos, const core::Vector3& trans_norm, const core::Vector3& target_pos,
+                                    const double wave_number, const double attenuation) {
   const auto diff = target_pos - trans_pos;
   const auto dist = diff.norm();
   const auto theta = std::atan2(diff.dot(trans_norm), dist * trans_norm.norm()) * 180.0 / M_PI;
@@ -54,7 +54,7 @@ std::complex<double> HoloGain::transfer(const core::Vector3& trans_pos, const co
   return directivity / dist * exp(std::complex<double>(-dist * attenuation, -wave_number * dist));
 }
 
-Backend::MatrixXc HoloGain::transfer_matrix(const std::vector<core::Vector3>& foci, const core::GeometryPtr& geometry) {
+Backend::MatrixXc Holo::transfer_matrix(const std::vector<core::Vector3>& foci, const core::GeometryPtr& geometry) {
   const auto m = foci.size();
   const auto n = geometry->num_transducers();
 
@@ -73,7 +73,7 @@ Backend::MatrixXc HoloGain::transfer_matrix(const std::vector<core::Vector3>& fo
   return g;
 }
 
-Error HoloGainSDP::calc(const core::GeometryPtr& geometry) {
+Error HoloSDP::calc(const core::GeometryPtr& geometry) {
   if (!this->_backend->supports_svd() || !this->_backend->supports_evd()) return Err(std::string("This backend does not support this method."));
 
   auto set_bcd_result = [](Backend::MatrixXc& mat, const Backend::VectorXc& vec, const size_t idx) {
@@ -136,7 +136,7 @@ Error HoloGainSDP::calc(const core::GeometryPtr& geometry) {
   return Ok(true);
 }
 
-Error HoloGainEVD::calc(const core::GeometryPtr& geometry) {
+Error HoloEVD::calc(const core::GeometryPtr& geometry) {
   const auto m = this->_foci.size();
   const auto n = geometry->num_transducers();
 
@@ -185,7 +185,7 @@ Error HoloGainEVD::calc(const core::GeometryPtr& geometry) {
   return Ok(true);
 }
 
-Error HoloGainNaive::calc(const core::GeometryPtr& geometry) {
+Error HoloNaive::calc(const core::GeometryPtr& geometry) {
   const auto m = this->_foci.size();
   const auto n = geometry->num_transducers();
 
@@ -202,7 +202,7 @@ Error HoloGainNaive::calc(const core::GeometryPtr& geometry) {
   return Ok(true);
 }
 
-Error HoloGainGS::calc(const core::GeometryPtr& geometry) {
+Error HoloGS::calc(const core::GeometryPtr& geometry) {
   const auto m = this->_foci.size();
   const auto n = geometry->num_transducers();
 
@@ -229,7 +229,7 @@ Error HoloGainGS::calc(const core::GeometryPtr& geometry) {
   return Ok(true);
 }
 
-Error HoloGainGSPAT::calc(const core::GeometryPtr& geometry) {
+Error HoloGSPAT::calc(const core::GeometryPtr& geometry) {
   const auto m = this->_foci.size();
   const auto n = geometry->num_transducers();
 
@@ -272,7 +272,7 @@ Error HoloGainGSPAT::calc(const core::GeometryPtr& geometry) {
   return Ok(true);
 }
 
-Error HoloGainLM::calc(const core::GeometryPtr& geometry) {
+Error HoloLM::calc(const core::GeometryPtr& geometry) {
   if (!this->_backend->supports_solve()) return Err(std::string("This backend does not support this method."));
 
   auto make_bhb = [](const BackendPtr& backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps, const core::GeometryPtr& geo,
@@ -396,15 +396,17 @@ Error HoloGainLM::calc(const core::GeometryPtr& geometry) {
   return Ok(true);
 }
 
-Error HoloGainGreedy::calc(const core::GeometryPtr& geometry) {
+Error HoloGreedy::calc(const core::GeometryPtr& geometry) {
   const auto m = this->_foci.size();
 
   const auto wave_num = 2.0 * M_PI / geometry->wavelength();
   const auto attenuation = geometry->attenuation_coefficient();
 
-  const auto tmp = std::make_unique<std::complex<double>[]>(m);
+  std::vector<std::unique_ptr<std::complex<double>[]>> tmp;
+  tmp.reserve(this->_phases.size());
+  for (size_t i = 0; i < this->_phases.size(); i++) tmp.emplace_back(std::make_unique<std::complex<double>[]>(m));
+
   const auto cache = std::make_unique<std::complex<double>[]>(m);
-  const auto good_field = std::make_unique<std::complex<double>[]>(m);
 
   auto transfer_foci = [wave_num, attenuation](const core::Vector3& trans_pos, const core::Vector3& trans_dir, const std::complex<double> phase,
                                                const std::vector<core::Vector3>& foci, std::complex<double>* res) {
@@ -415,23 +417,21 @@ Error HoloGainGreedy::calc(const core::GeometryPtr& geometry) {
     for (size_t i = 0; i < core::NUM_TRANS_IN_UNIT; i++) {
       auto trans_pos = geometry->position(dev, i);
       auto trans_dir = geometry->direction(dev);
-      auto min_phase = std::complex<double>(0., 0.);
+      size_t min_idx = 0;
       auto min_v = std::numeric_limits<double>::infinity();
-      for (const auto phase : this->_phases) {
-        transfer_foci(trans_pos, trans_dir, phase, this->_foci, &tmp[0]);
+      for (size_t p = 0; p < this->_phases.size(); p++) {
+        transfer_foci(trans_pos, trans_dir, this->_phases[p], this->_foci, &tmp[p][0]);
         auto v = 0.0;
-        for (size_t j = 0; j < m; j++) v += std::abs(this->_amps[j] - std::abs(tmp[j] + cache[j]));
-
+        for (size_t j = 0; j < m; j++) v += std::abs(this->_amps[j] - std::abs(tmp[p][j] + cache[j]));
         if (v < min_v) {
           min_v = v;
-          min_phase = phase;
-          std::memcpy(&good_field[0], &tmp[0], m * sizeof(std::complex<double>));
+          min_idx = p;
         }
       }
-      for (size_t j = 0; j < m; j++) cache[j] += good_field[j];
+      for (size_t j = 0; j < m; j++) cache[j] += tmp[min_idx][j];
 
       const uint16_t duty = 0xFF00;
-      const auto phase = static_cast<uint16_t>((1.0 - (std::arg(min_phase) + M_PI) / (2 * M_PI)) * 255.0);
+      const auto phase = static_cast<uint16_t>((1.0 - (std::arg(this->_phases[min_idx]) + M_PI) / (2 * M_PI)) * 255.0);
       this->_data[dev][i] = duty | phase;
     }
   }
