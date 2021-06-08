@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include <cmath>
+
 namespace autd::core {
 
 class Utilities {
@@ -22,7 +24,7 @@ class Utilities {
    */
   static uint8_t to_duty(const double amp) noexcept {
     const auto d = std::asin(std::clamp(amp, 0.0, 1.0)) / M_PI;  //  duty (0 ~ 0.5)
-    return static_cast<uint8_t>(511.0 * d);
+    return static_cast<uint8_t>(510.0 * d);
   }
 };
 
