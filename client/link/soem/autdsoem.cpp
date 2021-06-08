@@ -3,14 +3,13 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/06/2021
+// Last Modified: 08/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
 //
 
 #include <atomic>
-#include <condition_variable>
 #include <cstdint>
 #include <cstring>
 #include <memory>
