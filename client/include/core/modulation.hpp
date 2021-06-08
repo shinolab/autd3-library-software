@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/05/2021
+// Last Modified: 08/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -16,6 +16,7 @@
 
 #include "configuration.hpp"
 #include "result.hpp"
+#include "utils.hpp"
 
 namespace autd::core {
 
@@ -35,13 +36,27 @@ class Modulation {
   Modulation& operator=(Modulation&& obj) = default;
 
   /**
-   * @brief Generate empty modulation, which produce static pressure
+   * \brief Convert ultrasound amplitude to duty ratio.
+   * \param amp ultrasound amplitude
+   * \return duty ratio
    */
-  static ModulationPtr create(const uint8_t duty = 0xff) {
+  static uint8_t to_duty(const double amp) noexcept { return Utilities::to_duty(amp); }
+
+  /**
+   * @brief Generate empty modulation, which produce static pressure
+   * \param duty duty ratio
+   */
+  static ModulationPtr create(const uint8_t duty = 0xFF) {
     auto mod = std::make_shared<Modulation>();
     mod->_buffer.resize(MOD_FRAME_SIZE, duty);
     return mod;
   }
+
+  /**
+   * @brief Generate empty modulation, which produce static pressure
+   * \param amp relative amplitude (0 to 1)
+   */
+  static ModulationPtr create(const double amp) { return create(to_duty(amp)); }
 
   /**
    * \brief Build modulation data with Configuration

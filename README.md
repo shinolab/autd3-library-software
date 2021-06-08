@@ -3,7 +3,7 @@
 
 # [AUTD3](https://hapislab.org/airborne-ultrasound-tactile-display?lang=en)
 
-Software version: 1.2.0
+Software version: 1.3.0
 
 * Firmware version: 1.0
 

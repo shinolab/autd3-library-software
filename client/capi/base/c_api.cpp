@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/06/2021
+// Last Modified: 08/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -300,9 +300,9 @@ void AUTDModulationStatic(void** mod, const uint8_t amp) {
   *mod = m;
 }
 void AUTDModulationCustom(void** mod, uint8_t* buf, const uint32_t size) {
-  auto* m = ModulationCreate(autd::modulation::Modulation::create(0));
-  m->ptr->buffer().resize(size, 0);
-  std::memcpy(&m->ptr->buffer()[0], buf, size);
+  std::vector<uint8_t> buffer;
+  for (uint32_t i = 0; i < size; i++) buffer.emplace_back(buf[i]);
+  auto* m = ModulationCreate(autd::modulation::Custom::create(buffer));
   *mod = m;
 }
 void AUTDModulationSquare(void** mod, const int32_t freq, const uint8_t low, const uint8_t high) {

@@ -1,3 +1,6 @@
+# 1.3.0
+* Add functions to specify (relative) amplitude in Modulations
+
 # 1.2.0
 * Fix #3
 * Improve HoloGreedy performance
