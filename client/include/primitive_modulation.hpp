@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 08/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -44,9 +44,9 @@ class Sine final : public Modulation {
   Sine(const int freq, const double amp, const double offset) : Modulation(), _freq(freq), _amp(amp), _offset(offset) {}
 
  private:
-  int _freq = 0;
-  double _amp = 1.0;
-  double _offset = 0.5;
+  int _freq;
+  double _amp;
+  double _offset;
 };
 
 /**
@@ -67,9 +67,9 @@ class SinePressure final : public Modulation {
   SinePressure(const int freq, const double amp, const double offset) : Modulation(), _freq(freq), _amp(amp), _offset(offset) {}
 
  private:
-  int _freq = 0;
-  double _amp = 1.0;
-  double _offset = 0.5;
+  int _freq;
+  double _amp;
+  double _offset;
 };
 
 /**
@@ -94,16 +94,25 @@ class Square final : public Modulation {
   /**
    * @brief Generate function
    * @param[in] freq Frequency of the square wave
-   * @param[in] low low level
-   * @param[in] high high level
+   * @param[in] low low level in duty
+   * @param[in] high high level in duty
    */
   static ModulationPtr create(int freq, uint8_t low = 0, uint8_t high = 0xff);
+
+  /**
+   * @brief Generate function
+   * @param[in] freq Frequency of the square wave
+   * @param[in] low low level in relative amplitude (0 to 1)
+   * @param[in] high high level in relative amplitude (0 to 1)
+   */
+  static ModulationPtr create(int freq, double low = 0.0, double high = 1.0);
+
   Error build(Configuration config) override;
   Square(const int freq, const uint8_t low, const uint8_t high) : Modulation(), _freq(freq), _low(low), _high(high) {}
 
  private:
-  int _freq = 0;
-  uint8_t _low = 0x00;
-  uint8_t _high = 0xFF;
+  int _freq;
+  uint8_t _low;
+  uint8_t _high;
 };
 }  // namespace autd::modulation

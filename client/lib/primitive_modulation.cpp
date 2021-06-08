@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/05/2021
+// Last Modified: 08/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -71,7 +71,8 @@ Error SinePressure::build(const Configuration config) {
   return Ok(true);
 }
 
-ModulationPtr Square::create(int freq, uint8_t low, uint8_t high) { return std::make_shared<Square>(freq, low, high); }
+ModulationPtr Square::create(const int freq, const uint8_t low, const uint8_t high) { return std::make_shared<Square>(freq, low, high); }
+ModulationPtr Square::create(const int freq, const double low, const double high) { return create(freq, to_duty(low), to_duty(high)); }
 
 Error Square::build(const Configuration config) {
   const auto sf = static_cast<int32_t>(config.mod_sampling_freq());
