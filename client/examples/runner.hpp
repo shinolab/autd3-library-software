@@ -3,7 +3,7 @@
 // Created Date: 03/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/06/2021
+// Last Modified: 16/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -48,7 +48,6 @@ inline int run(autd::ControllerPtr autd) {
   autd->geometry()->wavelength() = 8.5;  // mm
 
   autd->clear().unwrap();
-  autd->synchronize().unwrap();
 
   auto firm_info_list = autd->firmware_info_list().unwrap();
   for (auto&& firm_info : firm_info_list) std::cout << firm_info << std::endl;

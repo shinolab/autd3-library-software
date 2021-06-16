@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/06/2021
+// Last Modified: 16/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -21,7 +21,6 @@ EXPORT_AUTD int32_t AUTDAddDevice(void* handle, double x, double y, double z, do
 EXPORT_AUTD int32_t AUTDAddDeviceQuaternion(void* handle, double x, double y, double z, double qw, double qx, double qy, double qz, int32_t gid);
 EXPORT_AUTD int32_t AUTDDeleteDevice(void* handle, int32_t idx);
 EXPORT_AUTD void AUTDClearDevices(void* handle);
-EXPORT_AUTD bool AUTDSynchronize(void* handle, uint16_t mod_smpl_freq_div, uint16_t mod_buf_size);
 EXPORT_AUTD bool AUTDCloseController(void* handle);
 EXPORT_AUTD bool AUTDClear(void* handle);
 EXPORT_AUTD void AUTDFreeController(void* handle);
@@ -38,7 +37,7 @@ EXPORT_AUTD void AUTDSetWavelength(void* handle, double wavelength);
 EXPORT_AUTD void AUTDSetAttenuation(void* handle, double attenuation);
 EXPORT_AUTD bool AUTDGetFPGAInfo(void* handle, uint8_t* out);
 EXPORT_AUTD bool AUTDUpdateCtrlFlags(void* handle);
-EXPORT_AUTD bool AUTDSetOutputDelay(void* handle, uint16_t* delay);
+EXPORT_AUTD bool AUTDSetOutputDelay(void* handle, uint8_t* delay);
 
 EXPORT_AUTD int32_t AUTDGetLastError(char* error);
 

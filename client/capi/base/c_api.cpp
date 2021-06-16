@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/06/2021
+// Last Modified: 16/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -61,15 +61,6 @@ int32_t AUTDDeleteDevice(void* const handle, const int32_t idx) {
 void AUTDClearDevices(void* const handle) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
   wrapper->ptr->geometry()->clear_devices();
-}
-bool AUTDSynchronize(void* const handle, const uint16_t mod_smpl_freq_div, const uint16_t mod_buf_size) {
-  auto* wrapper = static_cast<ControllerWrapper*>(handle);
-  const autd::core::Configuration config(mod_smpl_freq_div, mod_buf_size);
-  if (auto res = wrapper->ptr->synchronize(config); res.is_err()) {
-    LastError() = res.unwrap_err();
-    return false;
-  }
-  return true;
 }
 bool AUTDCloseController(void* const handle) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
@@ -155,13 +146,12 @@ bool AUTDUpdateCtrlFlags(void* handle) {
   }
   return true;
 }
-bool AUTDSetOutputDelay(void* handle, uint16_t* delay) {
+bool AUTDSetOutputDelay(void* handle, uint8_t* delay) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
   const auto num_devices = wrapper->ptr->geometry()->num_devices();
-  std::vector<autd::DataArray> delay_;
+  std::vector<std::array<uint8_t, autd::core::NUM_TRANS_IN_UNIT>> delay_;
   delay_.resize(num_devices);
-  for (size_t i = 0; i < num_devices; i++)
-    std::memcpy(&delay_[i][0], &delay[i * autd::core::NUM_TRANS_IN_UNIT], sizeof(uint16_t) * autd::core::NUM_TRANS_IN_UNIT);
+  for (size_t i = 0; i < num_devices; i++) std::memcpy(&delay_[i][0], &delay[i * autd::core::NUM_TRANS_IN_UNIT], autd::core::NUM_TRANS_IN_UNIT);
   if (auto res = wrapper->ptr->set_output_delay(delay_); res.is_err()) {
     LastError() = res.unwrap_err();
     return false;
