@@ -3,7 +3,7 @@
 // Created Date: 08/06/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/06/2021
+// Last Modified: 16/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <cmath>
 
 namespace autd::core {
@@ -27,5 +28,4 @@ class Utilities {
     return static_cast<uint8_t>(510.0 * d);
   }
 };
-
 }  // namespace autd::core

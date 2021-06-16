@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 16/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -26,7 +26,6 @@ using GeometryPtr = core::GeometryPtr;
 using ModulationPtr = core::ModulationPtr;
 using GainPtr = core::GainPtr;
 using SequencePtr = core::SequencePtr;
-using Configuration = core::Configuration;
 using DataArray = core::DataArray;
 
 constexpr auto NUM_TRANS_IN_UNIT = core::NUM_TRANS_IN_UNIT;

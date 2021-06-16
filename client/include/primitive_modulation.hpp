@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/06/2021
+// Last Modified: 16/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -14,13 +14,11 @@
 #include <memory>
 #include <vector>
 
-#include "core/configuration.hpp"
 #include "core/modulation.hpp"
 #include "core/result.hpp"
 
 namespace autd::modulation {
 
-using core::Configuration;
 using core::Modulation;
 using core::ModulationPtr;
 
@@ -40,7 +38,7 @@ class Sine final : public Modulation {
    * If the value exceeds the range of [0, 1], the value will be clamped in the [0, 1].
    */
   static ModulationPtr create(int freq, double amp = 1.0, double offset = 0.5);
-  Error build(Configuration config) override;
+  Error calc() override;
   Sine(const int freq, const double amp, const double offset) : Modulation(), _freq(freq), _amp(amp), _offset(offset) {}
 
  private:
@@ -63,7 +61,7 @@ class SinePressure final : public Modulation {
    * If the value exceeds the range of [0, 1], the value will be clamped in the [0, 1].
    */
   static ModulationPtr create(int freq, double amp = 1.0, double offset = 0.5);
-  Error build(Configuration config) override;
+  Error calc() override;
   SinePressure(const int freq, const double amp, const double offset) : Modulation(), _freq(freq), _amp(amp), _offset(offset) {}
 
  private:
@@ -82,7 +80,7 @@ class Custom final : public Modulation {
    * @param[in] buffer data of modulation
    */
   static ModulationPtr create(const std::vector<uint8_t>& buffer);
-  Error build(Configuration config) override;
+  Error calc() override;
   explicit Custom(const std::vector<uint8_t>& buffer) { this->_buffer = buffer; }
 };
 
@@ -107,7 +105,7 @@ class Square final : public Modulation {
    */
   static ModulationPtr create(int freq, double low = 0.0, double high = 1.0);
 
-  Error build(Configuration config) override;
+  Error calc() override;
   Square(const int freq, const uint8_t low, const uint8_t high) : Modulation(), _freq(freq), _low(low), _high(high) {}
 
  private:

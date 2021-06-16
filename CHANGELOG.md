@@ -1,5 +1,11 @@
 # 1.3.0
 * Add functions to specify (relative) amplitude in Modulations
+* Update firmware version to 1.1
+    * Maximum modulation buffer size is now 65536
+    * Maximum sequence point size is now 65536
+    * Maximum delay is now 255
+* Remove Controller::synchronize()
+    * This function is no more required
 
 # 1.2.0
 * Fix #3
