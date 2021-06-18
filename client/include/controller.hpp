@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/06/2021
+// Last Modified: 16/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -16,7 +16,6 @@
 #include <utility>
 #include <vector>
 
-#include "core/configuration.hpp"
 #include "core/firmware_version.hpp"
 #include "core/gain.hpp"
 #include "core/geometry.hpp"
@@ -104,9 +103,8 @@ class Controller {
    * \brief Set output delay
    * \param[in] delay delay for each transducer in units of ultrasound period (i.e. 25us).
    * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
-   * \details The maximum value of delay is 128. If you set a value of more than 128, the lowest 7 bits will be used.
    */
-  [[nodiscard]] Error set_output_delay(const std::vector<core::DataArray>& delay) const;
+  [[nodiscard]] Error set_output_delay(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& delay) const;
 
   /**
    * @brief Open device with a link.
@@ -114,13 +112,6 @@ class Controller {
    * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
   [[nodiscard]] Error open(core::LinkPtr link);
-
-  /**
-   * @brief Synchronize all devices
-   * @param[in] config configuration
-   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
-   */
-  [[nodiscard]] Error synchronize(core::Configuration config = core::Configuration::get_default_configuration());
 
   /**
    * @brief Clear all data in hardware
@@ -229,7 +220,6 @@ class Controller {
  private:
   Controller() noexcept
       : _link(nullptr),
-        _config(core::Configuration::get_default_configuration()),
         _geometry(std::make_unique<core::Geometry>()),
         _props(ControllerProps(true, false, false, false)),
         _tx_buf(nullptr),
@@ -277,7 +267,6 @@ class Controller {
   [[nodiscard]] Error wait_msg_processed(uint8_t msg_id, size_t max_trial = 50) const;
 
   core::LinkPtr _link;
-  core::Configuration _config;
   core::GeometryPtr _geometry;
   ControllerProps _props;
   std::unique_ptr<uint8_t[]> _tx_buf;

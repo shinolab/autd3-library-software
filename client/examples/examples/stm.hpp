@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/06/2021
+// Last Modified: 08/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -20,7 +20,7 @@ using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SPACING_MM;
 inline void stm_test(autd::ControllerPtr& autd) {
   autd->silent_mode() = true;
 
-  const auto m = autd::modulation::Static::create(255);
+  const auto m = autd::modulation::Static::create();
   autd->send(nullptr, m).unwrap();
 
   auto stm = autd->stm();

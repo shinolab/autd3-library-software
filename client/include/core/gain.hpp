@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/05/2021
+// Last Modified: 08/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -17,6 +17,7 @@
 #include "geometry.hpp"
 #include "hardware_defined.hpp"
 #include "result.hpp"
+#include "utils.hpp"
 
 namespace autd::core {
 
@@ -38,10 +39,7 @@ class Gain {
    * \param amp ultrasound amplitude
    * \return duty ratio
    */
-  static uint8_t to_duty(const double amp) noexcept {
-    const auto d = std::asin(amp) / M_PI;  //  duty (0 ~ 0.5)
-    return static_cast<uint8_t>(511 * d);
-  }
+  static uint8_t to_duty(const double amp) noexcept { return Utilities::to_duty(amp); }
 
   /**
    * \brief Calculate duty ratio and phase of each transducer

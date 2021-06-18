@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/06/2021
+// Last Modified: 16/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -65,20 +65,6 @@ Error Controller::open(core::LinkPtr link) {
   return this->_link->open();
 }
 
-Error Controller::synchronize(const core::Configuration config) {
-  if (!this->is_open()) return Err(std::string("Link is not opened."));
-
-  this->_config = config;
-  uint8_t msg_id = 0;
-  core::Logic::pack_header(core::COMMAND::INIT_MOD_CLOCK, _props.ctrl_flag(), &_tx_buf[0], &msg_id);
-  size_t size = 0;
-  const auto num_devices = this->_geometry->num_devices();
-  core::Logic::pack_sync_body(config, num_devices, &_tx_buf[0], &size);
-
-  if (auto res = this->_link->send(&_tx_buf[0], size); res.is_err()) return res;
-  return wait_msg_processed(msg_id, 5000);
-}
-
 Error Controller::clear() const { return send_header(core::COMMAND::CLEAR); }
 
 Error Controller::send_header(const core::COMMAND cmd) const {
@@ -129,7 +115,7 @@ Error Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod
   if (!this->is_open()) return Err(std::string("Link is not opened."));
 
   if (mod != nullptr)
-    if (auto res = mod->build(this->_config); res.is_err()) return res;
+    if (auto res = mod->build(); res.is_err()) return res;
 
   if (gain != nullptr) {
     this->_props._seq_mode = false;
@@ -164,7 +150,7 @@ Error Controller::send(const core::SequencePtr& seq) {
   }
 }
 
-Error Controller::set_output_delay(const std::vector<core::DataArray>& delay) const {
+Error Controller::set_output_delay(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& delay) const {
   if (!this->is_open()) return Err(std::string("Link is not opened."));
   if (delay.size() != this->_geometry->num_devices()) return Err(std::string("The number of devices is wrong."));
 

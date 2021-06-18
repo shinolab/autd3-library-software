@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/05/2021
+// Last Modified: 16/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -49,8 +49,10 @@ class FirmwareInfo {
       ss << "v0." << version_number + 3;
       return ss.str();
     }
-    if (version_number == 0x000A) {
-      return "v1.0";
+    if (version_number >= 0x000A) {
+      std::stringstream ss;
+      ss << "v1." << version_number - 0x000A;
+      return ss.str();
     }
     if ((version_number & 0xF000) == 0x1000) {
       std::stringstream ss;
