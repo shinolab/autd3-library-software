@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 16/06/2021
+// Last Modified: 19/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -153,6 +153,31 @@ bool AUTDSetOutputDelay(void* handle, uint8_t* delay) {
   delay_.resize(num_devices);
   for (size_t i = 0; i < num_devices; i++) std::memcpy(&delay_[i][0], &delay[i * autd::core::NUM_TRANS_IN_UNIT], autd::core::NUM_TRANS_IN_UNIT);
   if (auto res = wrapper->ptr->set_output_delay(delay_); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
+}
+bool AUTDSetEnable(void* handle, uint8_t* enable) {
+  auto* wrapper = static_cast<ControllerWrapper*>(handle);
+  const auto num_devices = wrapper->ptr->geometry()->num_devices();
+  std::vector<std::array<uint8_t, autd::core::NUM_TRANS_IN_UNIT>> enable_;
+  enable_.resize(num_devices);
+  for (size_t i = 0; i < num_devices; i++) std::memcpy(&enable_[i][0], &enable[i * autd::core::NUM_TRANS_IN_UNIT], autd::core::NUM_TRANS_IN_UNIT);
+  if (auto res = wrapper->ptr->set_enable(enable_); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
+}
+bool AUTDSetDelayEnable(void* handle, uint16_t* delay_enable) {
+  auto* wrapper = static_cast<ControllerWrapper*>(handle);
+  const auto num_devices = wrapper->ptr->geometry()->num_devices();
+  std::vector<std::array<uint16_t, autd::core::NUM_TRANS_IN_UNIT>> delay_enable_;
+  delay_enable_.resize(num_devices);
+  for (size_t i = 0; i < num_devices; i++)
+    std::memcpy(&delay_enable_[i][0], &delay_enable[i * autd::core::NUM_TRANS_IN_UNIT], sizeof(uint16_t) * autd::core::NUM_TRANS_IN_UNIT);
+  if (auto res = wrapper->ptr->set_delay_enable(delay_enable_); res.is_err()) {
     LastError() = res.unwrap_err();
     return false;
   }
@@ -371,6 +396,22 @@ void AUTDCircumSequence(void** out, const double x, const double y, const double
 bool AUTDStop(void* const handle) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
   if (auto res = wrapper->ptr->stop(); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
+}
+bool AUTDPause(void* const handle) {
+  auto* wrapper = static_cast<ControllerWrapper*>(handle);
+  if (auto res = wrapper->ptr->pause(); res.is_err()) {
+    LastError() = res.unwrap_err();
+    return false;
+  }
+  return true;
+}
+bool AUTDResume(void* const handle) {
+  auto* wrapper = static_cast<ControllerWrapper*>(handle);
+  if (auto res = wrapper->ptr->resume(); res.is_err()) {
     LastError() = res.unwrap_err();
     return false;
   }
