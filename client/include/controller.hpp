@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 16/06/2021
+// Last Modified: 19/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -104,7 +104,14 @@ class Controller {
    * \param[in] delay delay for each transducer in units of ultrasound period (i.e. 25us).
    * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
-  [[nodiscard]] Error set_output_delay(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& delay) const;
+  [[nodiscard]] Error set_output_delay(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& delay);
+
+  /**
+   * \brief Set enable
+   * \param[in] enable enable flag for each transducers
+   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
+   */
+  [[nodiscard]] Error set_enable(const std::vector<std::array<bool, core::NUM_TRANS_IN_UNIT>>& enable);
 
   /**
    * @brief Open device with a link.
@@ -117,7 +124,7 @@ class Controller {
    * @brief Clear all data in hardware
    * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
-  [[nodiscard]] Error clear() const;
+  [[nodiscard]] Error clear();
 
   /**
    * @brief Close the controller
@@ -129,7 +136,19 @@ class Controller {
    * @brief Stop outputting
    * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
-  [[nodiscard]] Error stop();
+  [[nodiscard]] Error stop() const;
+
+  /**
+   * @brief Pause outputting
+   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
+   */
+  [[nodiscard]] Error pause() const;
+
+  /**
+   * @brief Resume outputting
+   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
+   */
+  [[nodiscard]] Error resume() const;
 
   /**
    * @brief Send gain to the device
@@ -264,6 +283,8 @@ class Controller {
   };
 
   [[nodiscard]] Error send_header(core::COMMAND cmd) const;
+  void init_delay_en();
+  [[nodiscard]] Error send_delay_en() const;
   [[nodiscard]] Error wait_msg_processed(uint8_t msg_id, size_t max_trial = 50) const;
 
   core::LinkPtr _link;
@@ -273,5 +294,6 @@ class Controller {
   std::unique_ptr<uint8_t[]> _rx_buf;
 
   std::vector<uint8_t> _fpga_infos;
+  std::vector<std::array<uint16_t, core::NUM_TRANS_IN_UNIT>> _delay_en;
 };
 }  // namespace autd

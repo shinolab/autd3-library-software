@@ -3,7 +3,7 @@
 // Created Date: 19/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 16/06/2021
+// Last Modified: 19/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -45,11 +45,15 @@ inline void advanced_test(autd::ControllerPtr& autd) {
   autd->silent_mode() = false;
 
   std::vector<std::array<uint8_t, autd::NUM_TRANS_IN_UNIT>> delays;
-  std::array<uint8_t, autd::NUM_TRANS_IN_UNIT> delay{};
-  delay.fill(0);
-  delay[0] = 4;  // 4 cycle = 100 us delay in 0-th transducer
-  delays.emplace_back(delay);
+  delays.resize(autd->geometry()->num_devices());
+  delays[0][0] = 4;  // 4 cycle = 100 us delay in 0-th transducer
   autd->set_output_delay(delays).unwrap();
+
+  std::vector<std::array<bool, autd::NUM_TRANS_IN_UNIT>> enable;
+  enable.resize(autd->geometry()->num_devices());
+  for (size_t i = 0; i < autd->geometry()->num_devices(); i++) enable[i].fill(true);
+  enable[0][17] = false;  // disable 17-th transducer
+  autd->set_enable(enable).unwrap();
 
   const auto g = UniformGain::create();
   const auto m = BurstModulation::create();
