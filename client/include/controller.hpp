@@ -114,6 +114,20 @@ class Controller {
   [[nodiscard]] Error set_enable(const std::vector<std::array<bool, core::NUM_TRANS_IN_UNIT>>& enable);
 
   /**
+   * \brief Set enable
+   * \param[in] enable enable flag (the first bit is used) for each transducers
+   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
+   */
+  [[nodiscard]] Error set_enable(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& enable);
+
+  /**
+   * \brief Set delay and enable
+   * \param[in] delay_enable lower 8bits is delay and 8-th bit is enable
+   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
+   */
+  [[nodiscard]] Error set_delay_enable(const std::vector<std::array<uint16_t, core::NUM_TRANS_IN_UNIT>>& delay_enable);
+
+  /**
    * @brief Open device with a link.
    * @param[in] link Link
    * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred

@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 16/06/2021
+// Last Modified: 19/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -38,6 +38,8 @@ EXPORT_AUTD void AUTDSetAttenuation(void* handle, double attenuation);
 EXPORT_AUTD bool AUTDGetFPGAInfo(void* handle, uint8_t* out);
 EXPORT_AUTD bool AUTDUpdateCtrlFlags(void* handle);
 EXPORT_AUTD bool AUTDSetOutputDelay(void* handle, uint8_t* delay);
+EXPORT_AUTD bool AUTDSetEnable(void* handle, uint8_t* enable);
+EXPORT_AUTD bool AUTDSetDelayEnable(void* handle, uint16_t* delay_enable);
 
 EXPORT_AUTD int32_t AUTDGetLastError(char* error);
 
@@ -84,6 +86,8 @@ EXPORT_AUTD void AUTDDeleteSequence(void* seq);
 EXPORT_AUTD void AUTDCircumSequence(void** out, double x, double y, double z, double nx, double ny, double nz, double radius, uint64_t n);
 
 EXPORT_AUTD bool AUTDStop(void* handle);
+EXPORT_AUTD bool AUTDPause(void* handle);
+EXPORT_AUTD bool AUTDResume(void* handle);
 EXPORT_AUTD bool AUTDSendGain(void* handle, void* gain);
 EXPORT_AUTD bool AUTDSendModulation(void* handle, void* mod);
 EXPORT_AUTD bool AUTDSendGainModulation(void* handle, void* gain, void* mod);

@@ -193,6 +193,24 @@ Error Controller::set_enable(const std::vector<std::array<bool, core::NUM_TRANS_
   return this->send_delay_en();
 }
 
+Error Controller::set_enable(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& enable) {
+  if (enable.size() != this->_geometry->num_devices()) return Err(std::string("The number of devices is wrong."));
+
+  for (size_t dev = 0; dev < this->_geometry->num_devices(); dev++)
+    for (size_t i = 0; i < core::NUM_TRANS_IN_UNIT; i++) this->_delay_en[dev][i] = (this->_delay_en[dev][i] & 0x00FF) | enable[dev][i];
+
+  return this->send_delay_en();
+}
+
+Error Controller::set_delay_enable(const std::vector<std::array<uint16_t, core::NUM_TRANS_IN_UNIT>>& delay_enable) {
+  if (delay_enable.size() != this->_geometry->num_devices()) return Err(std::string("The number of devices is wrong."));
+
+  for (size_t dev = 0; dev < this->_geometry->num_devices(); dev++)
+    std::memcpy(&this->_delay_en[dev][0], &delay_enable[dev][0], sizeof(uint16_t) * core::NUM_TRANS_IN_UNIT);
+
+  return this->send_delay_en();
+}
+
 Result<std::vector<FirmwareInfo>, std::string> Controller::firmware_info_list() const {
   auto concat_byte = [](const uint8_t high, const uint16_t low) { return static_cast<uint16_t>(static_cast<uint16_t>(high) << 8 | low); };
 
