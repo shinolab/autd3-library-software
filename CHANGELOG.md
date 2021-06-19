@@ -1,3 +1,11 @@
+# 1.4.0
+* Update firmware version to 1.2
+    * Change the meaning of duty ratio and phase
+        * Duty ratio is now calculated by (`duty`+1)/512 %
+        * Phase is now calculated by `phase`/256 rad
+* Add Controller::puase() and Controller::resume()
+* Add Controller::set_enable()
+
 # 1.3.0
 * Add functions to specify (relative) amplitude in Modulations
 * Update firmware version to 1.1

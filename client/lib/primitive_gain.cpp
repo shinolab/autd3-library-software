@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 23/05/2021
+// Last Modified: 19/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -71,7 +71,7 @@ Error FocalPoint::calc(const core::GeometryPtr& geometry) {
       const auto trp = geometry->position(dev, i);
       const auto dist = (trp - this->_point).norm();
       const auto f_phase = fmod(dist, ultrasound_wavelength) / ultrasound_wavelength;
-      const auto phase = static_cast<uint16_t>(std::round(255.0 * (1.0 - f_phase)));
+      const auto phase = static_cast<uint16_t>(std::round(256.0 * (1.0 - f_phase))) & 0x00FF;
       this->_data[dev][i] = duty | phase;
     }
 
@@ -104,7 +104,7 @@ Error BesselBeam::calc(const core::GeometryPtr& geometry) {
       const auto f_phase =
           std::fmod(std::sin(_theta_z) * std::sqrt(rr.x() * rr.x() + rr.y() * rr.y()) - std::cos(_theta_z) * rr.z(), ultrasound_wavelength) /
           ultrasound_wavelength;
-      const auto phase = static_cast<uint16_t>(std::round(255.0 * (1.0 - f_phase)));
+      const auto phase = static_cast<uint16_t>(std::round(256.0 * (1.0 - f_phase))) & 0x00FF;
       this->_data[dev][i] = duty | phase;
     }
   this->_built = true;
