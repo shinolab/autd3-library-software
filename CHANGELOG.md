@@ -1,3 +1,6 @@
+# 1.4.1
+* Fix #4
+
 # 1.4.0
 * Update firmware version to 1.2
     * Change the meaning of duty ratio and phase
