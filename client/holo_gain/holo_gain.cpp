@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/06/2021
+// Last Modified: 19/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -35,7 +35,7 @@ void Holo::set_from_complex_drive(std::vector<core::DataArray>& data, const Back
   for (size_t j = 0; j < n; j++) {
     const auto f_amp = normalize ? 1.0 : std::abs(drive(j)) / max_coefficient;
     const auto f_phase = arg(drive(j)) / (2.0 * M_PI) + 0.5;
-    const auto phase = static_cast<uint16_t>((1.0 - f_phase) * 255.0);
+    const auto phase = static_cast<uint16_t>((1.0 - f_phase) * 256.0) & 0x00FF;
     const uint16_t duty = static_cast<uint16_t>(to_duty(f_amp)) << 8 & 0xFF00;
     data[dev_idx][trans_idx++] = duty | phase;
     if (trans_idx == core::NUM_TRANS_IN_UNIT) {
@@ -384,7 +384,7 @@ Error HoloLM::calc(const core::GeometryPtr& geometry) {
   for (size_t j = 0; j < n; j++) {
     const uint16_t duty = 0xFF00;
     const auto f_phase = std::fmod(x(j), 2 * M_PI) / (2 * M_PI);
-    const auto phase = static_cast<uint16_t>((1 - f_phase) * 255.);
+    const auto phase = static_cast<uint16_t>((1 - f_phase) * 256.) & 0x00FF;
     this->_data[dev_idx][trans_idx++] = duty | phase;
     if (trans_idx == core::NUM_TRANS_IN_UNIT) {
       dev_idx++;
@@ -431,7 +431,7 @@ Error HoloGreedy::calc(const core::GeometryPtr& geometry) {
       for (size_t j = 0; j < m; j++) cache[j] += tmp[min_idx][j];
 
       const uint16_t duty = 0xFF00;
-      const auto phase = static_cast<uint16_t>((1.0 - (std::arg(this->_phases[min_idx]) + M_PI) / (2 * M_PI)) * 255.0);
+      const auto phase = static_cast<uint16_t>((1.0 - (std::arg(this->_phases[min_idx]) + M_PI) / (2 * M_PI)) * 256.0) & 0x00FF;
       this->_data[dev][i] = duty | phase;
     }
   }

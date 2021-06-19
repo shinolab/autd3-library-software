@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 16/06/2021
+// Last Modified: 19/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -158,16 +158,16 @@ class Logic {
     seq->sent() += send_size;
   }
   /**
-   * \brief Pack data body to set output delay
-   * \param delay delay data of each transducer
+   * \brief Pack data body to set output delay and enable
+   * \param delay_en delay and enable data of each transducer
    * \param[out] data pointer to transmission data
    * \param[out] size size to send
    */
-  static void pack_delay_body(const std::vector<std::array<uint8_t, NUM_TRANS_IN_UNIT>>& delay, uint8_t* data, size_t* const size) {
-    *size = sizeof(RxGlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * delay.size();
+  static void pack_delay_en_body(const std::vector<std::array<uint16_t, NUM_TRANS_IN_UNIT>>& delay_en, uint8_t* data, size_t* const size) {
+    *size = sizeof(RxGlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * delay_en.size();
     auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(RxGlobalHeader));
-    for (auto&& d : delay) {
-      for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) cursor[i] = d[i];
+    for (auto&& d : delay_en) {
+      std::memcpy(cursor, &d[0], sizeof(uint16_t) * NUM_TRANS_IN_UNIT);
       cursor += NUM_TRANS_IN_UNIT;
     }
   }
