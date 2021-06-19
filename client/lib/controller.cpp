@@ -197,7 +197,8 @@ Error Controller::set_enable(const std::vector<std::array<uint8_t, core::NUM_TRA
   if (enable.size() != this->_geometry->num_devices()) return Err(std::string("The number of devices is wrong."));
 
   for (size_t dev = 0; dev < this->_geometry->num_devices(); dev++)
-    for (size_t i = 0; i < core::NUM_TRANS_IN_UNIT; i++) this->_delay_en[dev][i] = (this->_delay_en[dev][i] & 0x00FF) | enable[dev][i];
+    for (size_t i = 0; i < core::NUM_TRANS_IN_UNIT; i++)
+      this->_delay_en[dev][i] = (this->_delay_en[dev][i] & 0x00FF) | (static_cast<uint16_t>(enable[dev][i]) << 8 & 0xFF00);
 
   return this->send_delay_en();
 }
