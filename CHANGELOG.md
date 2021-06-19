@@ -2,7 +2,7 @@
 * Update firmware version to 1.2
     * Change the meaning of duty ratio and phase
         * Duty ratio is now calculated by (`duty`+1)/512 %
-        * Phase is now calculated by `phase`/256 rad
+        * Phase is now calculated by 2π*`phase`/256 rad
 * Add Controller::puase() and Controller::resume()
 * Add Controller::set_enable()
 
