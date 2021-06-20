@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/06/2021
+// Last Modified: 20/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -51,8 +51,7 @@ Error PlaneWave::calc(const core::GeometryPtr& geometry) {
     for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
       const auto trp = geometry->position(dev, i);
       const auto dist = trp.dot(dir);
-      const auto f_phase = PosMod(dist, ultrasound_wavelength) / ultrasound_wavelength;
-      const auto phase = static_cast<uint16_t>(std::round(255.0 * (1.0 - f_phase)));
+      const auto phase = static_cast<uint16_t>(0x00FF - (static_cast<int>(std::round(dist / ultrasound_wavelength * 256.0)) & 0x00FF));
       this->_data[dev][i] = duty | phase;
     }
 
@@ -70,8 +69,7 @@ Error FocalPoint::calc(const core::GeometryPtr& geometry) {
     for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
       const auto trp = geometry->position(dev, i);
       const auto dist = (trp - this->_point).norm();
-      const auto f_phase = fmod(dist, ultrasound_wavelength) / ultrasound_wavelength;
-      const auto phase = static_cast<uint16_t>(static_cast<int>((1.0 - f_phase) * 256.0) & 0x00FF);
+      const auto phase = static_cast<uint16_t>(0x00FF - (static_cast<int>(std::round(dist / ultrasound_wavelength * 256.0)) & 0x00FF));
       this->_data[dev][i] = duty | phase;
     }
 
@@ -101,10 +99,8 @@ Error BesselBeam::calc(const core::GeometryPtr& geometry) {
       const auto r = trp - this->_point;
       const auto v_x_r = r.cross(v);
       const auto rr = std::cos(theta_w) * r + sin(theta_w) * v_x_r + v.dot(r) * (1.0 - std::cos(theta_w)) * v;
-      const auto f_phase =
-          std::fmod(std::sin(_theta_z) * std::sqrt(rr.x() * rr.x() + rr.y() * rr.y()) - std::cos(_theta_z) * rr.z(), ultrasound_wavelength) /
-          ultrasound_wavelength;
-      const auto phase = static_cast<uint16_t>(static_cast<int>((1.0 - f_phase) * 256.0) & 0x00FF);
+      const auto d = std::sin(_theta_z) * std::sqrt(rr.x() * rr.x() + rr.y() * rr.y()) - std::cos(_theta_z) * rr.z();
+      const auto phase = static_cast<uint16_t>(0x00FF - (static_cast<int>(std::round(d / ultrasound_wavelength * 256.0)) & 0x00FF));
       this->_data[dev][i] = duty | phase;
     }
   this->_built = true;
