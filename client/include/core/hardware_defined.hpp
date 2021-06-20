@@ -1,4 +1,4 @@
-﻿// File: hardware_defined.hpp
+// File: hardware_defined.hpp
 // Project: core
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
@@ -27,7 +27,7 @@ constexpr auto IsMissingTransducer(T x, T y) {
   return y == 1 && (x == 1 || x == 2 || x == 16);
 }
 
-constexpr size_t FPGA_CLOCK = 20400000;
+constexpr size_t FPGA_CLOCK = 20480000;
 constexpr size_t ULTRASOUND_FREQUENCY = 40000;
 
 constexpr size_t MOD_BUF_SIZE_MAX = 65536;
