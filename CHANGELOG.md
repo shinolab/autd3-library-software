@@ -1,3 +1,6 @@
+# 1.4.2
+* Improve gain calc performance
+
 # 1.4.1
 * Fix #4
 
