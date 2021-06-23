@@ -3,7 +3,7 @@
 // Created Date: 14/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/05/2021
+// Last Modified: 23/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -90,7 +90,7 @@ class PointSequence {
    * @return double Actual frequency of sequence
    */
   double set_frequency(const double freq) {
-    const auto sample_freq = static_cast<double>(this->_control_points.size()) * freq;
+    const auto sample_freq = std::clamp(static_cast<double>(this->_control_points.size()) * freq, 0.0, static_cast<double>(POINT_SEQ_BASE_FREQ));
     this->_sampling_freq_div = static_cast<uint16_t>(static_cast<double>(POINT_SEQ_BASE_FREQ) / sample_freq);
     return this->frequency();
   }
