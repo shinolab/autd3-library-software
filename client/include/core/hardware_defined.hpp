@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/06/2021
+// Last Modified: 20/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -27,7 +27,7 @@ constexpr auto IsMissingTransducer(T x, T y) {
   return y == 1 && (x == 1 || x == 2 || x == 16);
 }
 
-constexpr size_t FPGA_CLOCK = 20400000;
+constexpr size_t FPGA_CLOCK = 20480000;
 constexpr size_t ULTRASOUND_FREQUENCY = 40000;
 
 constexpr size_t MOD_BUF_SIZE_MAX = 65536;
@@ -81,10 +81,19 @@ struct SeqFocus {
   SeqFocus() = default;
 
   void set(const int32_t x, const int32_t y, const int32_t z, const uint8_t duty) {
-    _buf[0] = x & 0xFFFF;
-    _buf[1] = ((y << 2) & 0xFFFC) | ((x >> 30) & 0x0002) | ((x >> 16) & 0x0001);
-    _buf[2] = ((z << 4) & 0xFFF0) | ((y >> 28) & 0x0008) | ((y >> 14) & 0x0007);
-    _buf[3] = ((duty << 6) & 0x3FC0) | ((z >> 26) & 0x0020) | ((z >> 12) & 0x001F);
+    _buf[0] = x & 0xFFFF;             // x 0-15 bit
+    uint16_t tmp = x >> 16 & 0x0001;  // x 16th bit
+    tmp |= x >> 30 & 0x0002;          // x sign bit
+    tmp |= y << 2 & 0xFFFC;           // y 0-13 bit
+    _buf[1] = tmp;
+    tmp = y >> 14 & 0x0007;   // y 14-16 bit
+    tmp |= y >> 28 & 0x0008;  // y sign bit
+    tmp |= z << 4 & 0xFFF0;   // z 0-11 bit
+    _buf[2] = tmp;
+    tmp = z >> 12 & 0x001F;     // z 12-16 bit
+    tmp |= z >> 26 & 0x0020;    // z sign bit
+    tmp |= duty << 6 & 0x3FC0;  // duty
+    _buf[3] = tmp;
   }
 
  private:
