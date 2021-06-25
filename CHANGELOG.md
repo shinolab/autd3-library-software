@@ -1,3 +1,7 @@
+# 1.4.3
+* Fix #5
+* Fix #6
+
 # 1.4.2
 * Improve gain calc performance
 * Update cpu firmware to 1.2.1
