@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/06/2021
+// Last Modified: 25/06/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -150,7 +150,7 @@ class Controller {
    * @brief Stop outputting
    * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
-  [[nodiscard]] Error stop() const;
+  [[nodiscard]] Error stop();
 
   /**
    * @brief Pause outputting
