@@ -102,28 +102,28 @@ class Controller {
   /**
    * \brief Set output delay
    * \param[in] delay delay for each transducer in units of ultrasound period (i.e. 25us).
-   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
+   * \return if true, data has been processed in devices is guaranteed
    */
   bool set_output_delay(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& delay);
 
   /**
    * \brief Set enable
    * \param[in] enable enable flag for each transducers
-   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
+   * \return if true, data has been processed in devices is guaranteed
    */
   bool set_enable(const std::vector<std::array<bool, core::NUM_TRANS_IN_UNIT>>& enable);
 
   /**
    * \brief Set enable
    * \param[in] enable enable flag (the first bit is used) for each transducers
-   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
+   * \return if true, data has been processed in devices is guaranteed
    */
   bool set_enable(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& enable);
 
   /**
    * \brief Set delay and enable
    * \param[in] delay_enable lower 8bits is delay and 8-th bit is enable
-   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
+   * \return if true, data has been processed in devices is guaranteed
    */
   bool set_delay_enable(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& delay,
                         const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& enable);
@@ -131,51 +131,50 @@ class Controller {
   /**
    * @brief Open device with a link.
    * @param[in] link Link
-   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
   void open(core::LinkPtr link);
 
   /**
    * @brief Clear all data in hardware
-   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
+   * \return if true, data has been processed in devices is guaranteed
    */
   bool clear();
 
   /**
    * @brief Close the controller
-   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
+   * \return if true, data has been processed in devices is guaranteed
    */
   bool close();
 
   /**
    * @brief Stop outputting
-   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
+   * \return if true, data has been processed in devices is guaranteed
    */
   bool stop();
 
   /**
    * @brief Pause outputting
-   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
+   * \return if true, data has been processed in devices is guaranteed
    */
   bool pause() const;
 
   /**
    * @brief Resume outputting
-   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
+   * \return if true, data has been processed in devices is guaranteed
    */
   bool resume() const;
 
   /**
    * @brief Send gain to the device
    * @param[in] gain Gain to display
-   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
+   * \return if true, data has been processed in devices is guaranteed
    */
   bool send(const core::GainPtr& gain);
 
   /**
    * @brief Send modulation to the device
    * @param[in] mod Amplitude modulation to display
-   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
+   * \return if true, data has been processed in devices is guaranteed
    */
   bool send(const core::ModulationPtr& mod);
 
@@ -183,20 +182,20 @@ class Controller {
    * @brief Send gain and modulation to the device
    * @param[in] gain Gain to display
    * @param[in] mod Amplitude modulation to display
-   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
+   * \return if true, data has been processed in devices is guaranteed
    */
   bool send(const core::GainPtr& gain, const core::ModulationPtr& mod);
 
   /**
    * @brief Send sequence and modulation to the device
    * @param[in] seq Sequence to display
-   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
+   * \return if true, data has been processed in devices is guaranteed
    */
   bool send(const core::SequencePtr& seq);
 
   /**
    * @brief Enumerate firmware information
-   * \return ok with firmware information list if succeeded, or err with error message if failed
+   * \return firmware information list. If failed, the vector is empty.
    */
   [[nodiscard]] std::vector<FirmwareInfo> firmware_info_list() const;
 
@@ -225,20 +224,17 @@ class Controller {
      * add_gain() at the freq. The accuracy depends on the computer, for
      * example, about 1ms on Windows. Note that it is affected by interruptions,
      * and so on.
-     * \return ok, or err(error message) if unrecoverable error is occurred
      */
     void start(double freq);
 
     /**
      * \brief Suspend Spatio-Temporal Modulation
-     * \return ok, or err(error message) if unrecoverable error is occurred
      */
     void stop();
 
     /**
      * @brief Finish Spatio-Temporal Modulation
      * @details Added gains will be removed. Never use this STMController after calling this function.
-     * \return ok, or err(error message) if unrecoverable error is occurred
      */
     void finish();
 

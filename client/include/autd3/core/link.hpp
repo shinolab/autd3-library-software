@@ -32,22 +32,18 @@ class Link {
 
   /**
    * @brief Open link
-   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
   virtual void open() = 0;
   /**
    * @brief Close link
-   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
   virtual void close() = 0;
   /**
    * @brief  Send data to devices
-   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
   virtual void send(const uint8_t* buf, size_t size) = 0;
   /**
    * @brief  Read data from devices
-   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
   virtual void read(uint8_t* rx, size_t buffer_len) = 0;
 
