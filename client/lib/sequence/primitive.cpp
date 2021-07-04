@@ -1,5 +1,5 @@
-// File: primitive_sequence.cpp
-// Project: lib
+// File: primitive.cpp
+// Project: sequence
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
@@ -9,8 +9,9 @@
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
-#include "autd3/core/sequence.hpp"
 #include "autd3/sequence/primitive.hpp"
+
+#include "autd3/core/sequence.hpp"
 
 namespace autd::sequence {
 

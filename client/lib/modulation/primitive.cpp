@@ -1,5 +1,5 @@
-﻿// File: primitive_modulation.cpp
-// Project: lib
+﻿// File: primitive.cpp
+// Project: modulation
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
@@ -9,12 +9,12 @@
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
+#include "autd3/modulation/primitive.hpp"
+
 #include <algorithm>
 #include <cmath>
 #include <cstring>
 #include <numeric>
-
-#include "autd3/modulation/primitive.hpp"
 
 namespace autd::modulation {
 

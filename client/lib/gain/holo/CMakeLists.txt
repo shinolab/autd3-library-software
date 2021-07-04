@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.10)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 add_library(holo_gain STATIC
-    holo_gain.cpp
+    holo.cpp
     eigen_backend.cpp
     ${PROJECT_SOURCE_DIR}/include/autd3/gain/linalg_backend.hpp
     ${PROJECT_SOURCE_DIR}/include/autd3/gain/eigen_backend.hpp

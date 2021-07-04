@@ -98,19 +98,19 @@ set(EIGEN_PATH ${PROJECT_SOURCE_DIR}/deps/Eigen3)
 
 # Gain
 if(BUILD_HOLO_GAIN)
-  add_subdirectory(holo_gain)
+  add_subdirectory(lib/gain/holo)
 endif()
 
 # Link
 if(BUILD_TWINCAT_LINK)
-  add_subdirectory(link/twincat)
+  add_subdirectory(lib/link/twincat)
 endif()
 if(BUILD_SOEM_LINK)
   if(Git_FOUND)
-    execute_process(COMMAND git -C ${PROJECT_SOURCE_DIR} submodule update --init --recursive -- ${PROJECT_SOURCE_DIR}/deps/SOEM/SOEM)
+    execute_process(COMMAND git -C ${PROJECT_SOURCE_DIR} submodule update --init --recursive -- ${PROJECT_SOURCE_DIR}/deps/SOEM)
   endif()
-  set(SOEM_PATH ${PROJECT_SOURCE_DIR}/deps/SOEM/SOEM)
-  add_subdirectory(link/soem)
+  set(SOEM_PATH ${PROJECT_SOURCE_DIR}/deps/SOEM)
+  add_subdirectory(lib/link/soem)
 endif()
 
 add_subdirectory(lib)
