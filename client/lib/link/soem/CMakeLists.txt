@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
 
-
 find_package(Threads REQUIRED)
 
 include_directories(
@@ -36,7 +35,7 @@ file(GLOB_RECURSE SOEM_SRC_FILES ${SOEM_PATH}/soem/*.c ${SOEM_PATH}/osal/${OS}/*
 add_library(soem_link STATIC
   autdsoem.cpp
   autdsoem.hpp
-  soem_link.cpp
+  soem.cpp
   ${SOEM_SRC_FILES}
   ${PROJECT_SOURCE_DIR}/include/autd3/link/soem.hpp
 )
@@ -45,14 +44,14 @@ if(WIN32)
   if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     add_custom_command(TARGET soem_link
 	  POST_BUILD
-	  COMMAND lib /OUT:$(OUTDIR)temp.lib $(TARGETPATH) ${PROJECT_SOURCE_DIR}\\deps\\SOEM\\SOEM\\oshw\\win32\\wpcap\\Lib\\*.lib /ignore:4006
+	  COMMAND lib /OUT:$(OUTDIR)temp.lib $(TARGETPATH) ${PROJECT_SOURCE_DIR}\\deps\\SOEM\\oshw\\win32\\wpcap\\Lib\\*.lib /ignore:4006
 	  COMMAND del $(TARGETPATH)
 	  COMMAND rename $(OUTDIR)temp.lib $(TargetFileName)
 	)
   else()
 	add_custom_command(TARGET soem_link
 	  POST_BUILD
-	  COMMAND lib /OUT:$(OUTDIR)temp.lib $(TARGETPATH) ${PROJECT_SOURCE_DIR}\\deps\\SOEM\\SOEM\\oshw\\win32\\wpcap\\Lib\\x64\\*.lib /ignore:4006
+	  COMMAND lib /OUT:$(OUTDIR)temp.lib $(TARGETPATH) ${PROJECT_SOURCE_DIR}\\deps\\SOEM\\oshw\\win32\\wpcap\\Lib\\x64\\*.lib /ignore:4006
 	  COMMAND del $(TARGETPATH)
 	  COMMAND rename $(OUTDIR)temp.lib $(TargetFileName)
 	)

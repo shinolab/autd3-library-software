@@ -1,5 +1,5 @@
-﻿// File: primitive_gain.cpp
-// Project: lib
+﻿// File: primitive.cpp
+// Project: gain
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
@@ -9,10 +9,10 @@
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
+#include "autd3/gain/primitive.hpp"
+
 #include <memory>
 #include <vector>
-
-#include "autd3/gain/primitive.hpp"
 
 namespace autd::gain {
 
