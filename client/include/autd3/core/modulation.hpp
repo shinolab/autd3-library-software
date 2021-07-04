@@ -62,13 +62,11 @@ class Modulation {
 
   /**
    * \brief Calculate modulation data
-   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
   virtual void calc() { return; }
 
   /**
    * \brief Build modulation data
-   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
   void build() {
     this->calc();

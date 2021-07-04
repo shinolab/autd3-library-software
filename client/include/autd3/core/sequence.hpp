@@ -51,7 +51,6 @@ class PointSequence {
   /**
    * @brief Add control point
    * @param[in] point control point
-   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
   void add_point(const Vector3& point) {
     if (this->_control_points.size() + 1 > POINT_SEQ_BUFFER_SIZE_MAX)
@@ -64,7 +63,6 @@ class PointSequence {
   /**
    * @brief Add control points
    * @param[in] points control point
-   * \return ok(whether succeeded), or err(error message) if unrecoverable error is occurred
    */
   void add_points(const std::vector<Vector3>& points) {
     if (this->_control_points.size() + points.size() > POINT_SEQ_BUFFER_SIZE_MAX)
