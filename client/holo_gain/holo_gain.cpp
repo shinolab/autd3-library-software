@@ -3,19 +3,22 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/06/2021
+// Last Modified: 04/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
-#include "holo_gain.hpp"
-
 #include <limits>
 #include <random>
 
-#include "linalg_backend.hpp"
-#include "utils.hpp"
+#include "autd3/core/exception.hpp"
+#include "autd3/core/geometry.hpp"
+#include "autd3/core/hardware_defined.hpp"
+#include "autd3/core/utils.hpp"
+#include "autd3/gain/holo.hpp"
+#include "autd3/gain/linalg_backend.hpp"
+#include "autd3/utils.hpp"
 
 namespace autd::gain::holo {
 
@@ -35,9 +38,9 @@ void Holo::set_from_complex_drive(std::vector<core::DataArray>& data, const Back
   for (size_t j = 0; j < n; j++) {
     const auto f_amp = normalize ? 1.0 : std::abs(drive(j)) / max_coefficient;
     const auto f_phase = std::arg(drive(j)) / (2.0 * M_PI);
-    const auto phase = static_cast<uint16_t>(0x00FF - (static_cast<int>(std::round(f_phase * 256.0)) & 0x00FF));
-    const uint16_t duty = static_cast<uint16_t>(to_duty(f_amp)) << 8 & 0xFF00;
-    data[dev_idx][trans_idx++] = duty | phase;
+    const auto phase = core::Utilities::to_phase(f_phase);
+    const auto duty = core::Utilities::to_duty(f_amp);
+    data[dev_idx][trans_idx++] = core::Utilities::pack_to_u16(duty, phase);
     if (trans_idx == core::NUM_TRANS_IN_UNIT) {
       dev_idx++;
       trans_idx = 0;
@@ -73,8 +76,8 @@ Backend::MatrixXc Holo::transfer_matrix(const std::vector<core::Vector3>& foci, 
   return g;
 }
 
-Error HoloSDP::calc(const core::GeometryPtr& geometry) {
-  if (!this->_backend->supports_svd() || !this->_backend->supports_evd()) return Err(std::string("This backend does not support this method."));
+void HoloSDP::calc(const core::GeometryPtr& geometry) {
+  if (!this->_backend->supports_svd() || !this->_backend->supports_evd()) throw core::GainBuildError("This backend does not support this method.");
 
   auto set_bcd_result = [](Backend::MatrixXc& mat, const Backend::VectorXc& vec, const size_t idx) {
     const size_t m = vec.size();
@@ -133,10 +136,9 @@ Error HoloSDP::calc(const core::GeometryPtr& geometry) {
   set_from_complex_drive(this->_data, q, _normalize, max_coefficient);
 
   this->_built = true;
-  return Ok(true);
 }
 
-Error HoloEVD::calc(const core::GeometryPtr& geometry) {
+void HoloEVD::calc(const core::GeometryPtr& geometry) {
   const auto m = this->_foci.size();
   const auto n = geometry->num_transducers();
 
@@ -182,10 +184,9 @@ Error HoloEVD::calc(const core::GeometryPtr& geometry) {
   set_from_complex_drive(this->_data, gtf, _normalize, max_coefficient);
 
   this->_built = true;
-  return Ok(true);
 }
 
-Error HoloNaive::calc(const core::GeometryPtr& geometry) {
+void HoloNaive::calc(const core::GeometryPtr& geometry) {
   const auto m = this->_foci.size();
   const auto n = geometry->num_transducers();
 
@@ -199,10 +200,9 @@ Error HoloNaive::calc(const core::GeometryPtr& geometry) {
   set_from_complex_drive(this->_data, q, true, 1.0);
 
   this->_built = true;
-  return Ok(true);
 }
 
-Error HoloGS::calc(const core::GeometryPtr& geometry) {
+void HoloGS::calc(const core::GeometryPtr& geometry) {
   const auto m = this->_foci.size();
   const auto n = geometry->num_transducers();
 
@@ -226,10 +226,9 @@ Error HoloGS::calc(const core::GeometryPtr& geometry) {
   set_from_complex_drive(this->_data, q, true, 1.0);
 
   this->_built = true;
-  return Ok(true);
 }
 
-Error HoloGSPAT::calc(const core::GeometryPtr& geometry) {
+void HoloGSPAT::calc(const core::GeometryPtr& geometry) {
   const auto m = this->_foci.size();
   const auto n = geometry->num_transducers();
 
@@ -269,11 +268,10 @@ Error HoloGSPAT::calc(const core::GeometryPtr& geometry) {
   set_from_complex_drive(this->_data, q, true, 1.0);
 
   this->_built = true;
-  return Ok(true);
 }
 
-Error HoloLM::calc(const core::GeometryPtr& geometry) {
-  if (!this->_backend->supports_solve()) return Err(std::string("This backend does not support this method."));
+void HoloLM::calc(const core::GeometryPtr& geometry) {
+  if (!this->_backend->supports_solve()) throw core::GainBuildError("This backend does not support this method.");
 
   auto make_bhb = [](const BackendPtr& backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps, const core::GeometryPtr& geo,
                      Backend::MatrixXc* bhb) {
@@ -382,10 +380,10 @@ Error HoloLM::calc(const core::GeometryPtr& geometry) {
   size_t dev_idx = 0;
   size_t trans_idx = 0;
   for (size_t j = 0; j < n; j++) {
-    const uint16_t duty = 0xFF00;
+    const uint8_t duty = 0xFF;
     const auto f_phase = x(j) / (2 * M_PI);
-    const auto phase = static_cast<uint16_t>(0x00FF - (static_cast<int>(std::round(f_phase * 256.0)) & 0x00FF));
-    this->_data[dev_idx][trans_idx++] = duty | phase;
+    const auto phase = core::Utilities::to_phase(f_phase);
+    this->_data[dev_idx][trans_idx++] = core::Utilities::pack_to_u16(duty, phase);
     if (trans_idx == core::NUM_TRANS_IN_UNIT) {
       dev_idx++;
       trans_idx = 0;
@@ -393,10 +391,9 @@ Error HoloLM::calc(const core::GeometryPtr& geometry) {
   }
 
   this->_built = true;
-  return Ok(true);
 }
 
-Error HoloGreedy::calc(const core::GeometryPtr& geometry) {
+void HoloGreedy::calc(const core::GeometryPtr& geometry) {
   const auto m = this->_foci.size();
 
   const auto wave_num = 2.0 * M_PI / geometry->wavelength();
@@ -430,15 +427,14 @@ Error HoloGreedy::calc(const core::GeometryPtr& geometry) {
       }
       for (size_t j = 0; j < m; j++) cache[j] += tmp[min_idx][j];
 
-      const uint16_t duty = 0xFF00;
+      const uint8_t duty = 0xFF;
       const auto f_phase = std::arg(this->_phases[min_idx]) / (2 * M_PI);
-      const auto phase = static_cast<uint16_t>(0x00FF - (static_cast<int>(std::round(f_phase * 256.0)) & 0x00FF));
-      this->_data[dev][i] = duty | phase;
+      const auto phase = core::Utilities::to_phase(f_phase);
+      this->_data[dev][i] = core::Utilities::pack_to_u16(duty, phase);
     }
   }
 
   this->_built = true;
-  return Ok(true);
 }
 
 }  // namespace autd::gain::holo

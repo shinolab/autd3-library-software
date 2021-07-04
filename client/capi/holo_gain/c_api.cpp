@@ -3,7 +3,7 @@
 // Created Date: 17/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/06/2021
+// Last Modified: 04/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,8 +11,8 @@
 
 #include "../base/wrapper.hpp"
 #include "./holo_gain.h"
-#include "eigen_backend.hpp"
-#include "holo_gain.hpp"
+#include "autd3/gain/eigen_backend.hpp"
+#include "autd3/gain/holo.hpp"
 
 namespace {
 std::vector<autd::core::Vector3> PackFoci(const double* const points, const int32_t size) {

@@ -3,16 +3,16 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/06/2021
+// Last Modified: 04/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
-#include "soem_link.hpp"
-
+#include "autd3/core/ec_config.hpp"
+#include "autd3/core/exception.hpp"
+#include "autd3/link/soem.hpp"
 #include "autdsoem.hpp"
-#include "core/ec_config.hpp"
 
 namespace autd::link {
 
@@ -33,10 +33,10 @@ class SOEMImpl final : public SOEM {
   SOEMImpl& operator=(SOEMImpl&& obj) = delete;
 
  protected:
-  Error open() override;
-  Error close() override;
-  Error send(const uint8_t* buf, size_t size) override;
-  Error read(uint8_t* rx, size_t buffer_len) override;
+  void open() override;
+  void close() override;
+  void send(const uint8_t* buf, size_t size) override;
+  void read(uint8_t* rx, size_t buffer_len) override;
   bool is_open() override;
 
  private:
@@ -52,8 +52,8 @@ core::LinkPtr SOEM::create(const std::string& ifname, const size_t device_num, u
   return link;
 }
 
-Error SOEMImpl::open() {
-  if (_ifname.empty()) return Err(std::string("Interface name is empty."));
+void SOEMImpl::open() {
+  if (_ifname.empty()) throw core::LinkError("Interface name is empty");
 
   _config = autdsoem::ECConfig{};
   _config.ec_sm3_cycle_time_ns = core::EC_SM3_CYCLE_TIME_NANO_SEC * _cycle_ticks;
@@ -65,11 +65,11 @@ Error SOEMImpl::open() {
   return _cnt.open(_ifname.c_str(), _device_num, _config);
 }
 
-Error SOEMImpl::close() { return _cnt.close(); }
+void SOEMImpl::close() { return _cnt.close(); }
 
-Error SOEMImpl::send(const uint8_t* buf, const size_t size) { return _cnt.send(buf, size); }
+void SOEMImpl::send(const uint8_t* buf, const size_t size) { return _cnt.send(buf, size); }
 
-Error SOEMImpl::read(uint8_t* rx, [[maybe_unused]] size_t buffer_len) { return _cnt.read(rx); }
+void SOEMImpl::read(uint8_t* rx, [[maybe_unused]] size_t buffer_len) { return _cnt.read(rx); }
 
 bool SOEMImpl::is_open() { return _cnt.is_open(); }
 }  // namespace autd::link

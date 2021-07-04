@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 02/06/2021
+// Last Modified: 04/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -16,8 +16,7 @@
 #include <string>
 #include <vector>
 
-#include "core/osal_timer.hpp"
-#include "core/result.hpp"
+#include "autd3/core/osal_timer.hpp"
 
 namespace autd::autdsoem {
 
@@ -53,13 +52,13 @@ class SOEMController {
   SOEMController(SOEMController&& obj) = delete;
   SOEMController& operator=(SOEMController&& obj) = delete;
 
-  [[nodiscard]] Error open(const char* ifname, size_t dev_num, ECConfig config);
-  [[nodiscard]] Error close();
+  void open(const char* ifname, size_t dev_num, ECConfig config);
+  void close();
 
   [[nodiscard]] bool is_open() const;
 
-  [[nodiscard]] Error send(const uint8_t* buf, size_t size) const;
-  [[nodiscard]] Error read(uint8_t* rx) const;
+  void send(const uint8_t* buf, size_t size) const;
+  void read(uint8_t* rx) const;
 
  private:
   void setup_sync0(bool activate, uint32_t cycle_time_ns) const;

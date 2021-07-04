@@ -1,3 +1,7 @@
+# 1.5.0
+* Remove `Result<T, E>` type
+    * Now, if an error occurs, an exception will be thrown
+
 # 1.4.3
 * Fix #5
 * Fix #6
