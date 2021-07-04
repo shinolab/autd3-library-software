@@ -156,7 +156,7 @@ void TwinCATImpl::read(uint8_t* rx, const size_t buffer_len) {
 
 #else
 void TwinCATImpl::open() {
-  return Err(std::string("Link to localhost has not been compiled. Rebuild this library on a Twincat3 host machine with TcADS-DLL."));
+  throw core::LinkError("Link to localhost has not been compiled. Rebuild this library on a Twincat3 host machine with TcADS-DLL.");
 }
 void TwinCATImpl::close() { return; }
 void TwinCATImpl::send(const uint8_t* buf, size_t size) {
