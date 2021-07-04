@@ -38,7 +38,7 @@ add_library(soem_link STATIC
   autdsoem.hpp
   soem_link.cpp
   ${SOEM_SRC_FILES}
-  ${PROJECT_SOURCE_DIR}/include/soem_link.hpp
+  ${PROJECT_SOURCE_DIR}/include/autd3/link/soem.hpp
 )
 
 if(WIN32)

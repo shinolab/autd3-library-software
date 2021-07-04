@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 16/06/2021
+// Last Modified: 04/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,11 +11,14 @@
 
 #pragma once
 
-#include "controller.hpp"
-#include "core/gain.hpp"
-#include "core/hardware_defined.hpp"
-#include "core/modulation.hpp"
-#include "core/sequence.hpp"
+#include "autd3/controller.hpp"
+#include "autd3/core/gain.hpp"
+#include "autd3/core/hardware_defined.hpp"
+#include "autd3/core/modulation.hpp"
+#include "autd3/core/sequence.hpp"
+#include "autd3/gain/primitive.hpp"
+#include "autd3/modulation/primitive.hpp"
+#include "autd3/sequence/primitive.hpp"
 
 namespace autd {
 using Matrix4X4 = core::Matrix4X4;

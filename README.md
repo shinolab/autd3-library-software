@@ -3,9 +3,9 @@
 
 # [AUTD3](https://hapislab.org/airborne-ultrasound-tactile-display?lang=en)
 
-Software version: 1.4.3
+Software version: 1.5.0
 
-* Firmware version: 1.2
+* Firmware version: 1.3
 
 ## :blue_book: **[Wiki for beginners](https://github.com/shinolab/autd3-library-software/wiki)**
 
