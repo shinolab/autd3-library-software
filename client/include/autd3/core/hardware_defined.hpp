@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 05/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -58,7 +58,7 @@ enum class COMMAND : uint8_t {
   READ_FPGA_VER_MSB = 0x05,
   SEQ_MODE = 0x06,
   CLEAR = 0x09,
-  SET_DELAY_EN = 0x0A,
+  SET_DELAY_OFFSET = 0x0A,
   PAUSE = 0x0B,
   RESUME = 0x0C
 };
