@@ -60,7 +60,8 @@ enum class COMMAND : uint8_t {
   CLEAR = 0x09,
   SET_DELAY_OFFSET = 0x0A,
   PAUSE = 0x0B,
-  RESUME = 0x0C
+  RESUME = 0x0C,
+  EMULATOR_SET_GEOMETRY = 0xFF
 };
 
 /**

@@ -54,6 +54,9 @@ class FirmwareInfo {
       ss << "v1." << version_number - 0x000A;
       return ss.str();
     }
+    if (version_number == 0xFFFF) {
+      return "emulator";
+    }
     if ((version_number & 0xF000) == 0x1000) {
       std::stringstream ss;
       ss << "v" << version_number - 0x1000 + 1 << "-lite";
