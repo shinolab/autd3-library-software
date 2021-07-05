@@ -90,7 +90,7 @@ bool Controller::send_header(const core::COMMAND cmd) const {
 
 bool Controller::send_delay_offset() const {
   uint8_t msg_id;
-  core::Logic::pack_header(core::COMMAND::SET_DELAY_EN, _props.ctrl_flag(), &this->_tx_buf[0], &msg_id);
+  core::Logic::pack_header(core::COMMAND::SET_DELAY_OFFSET, _props.ctrl_flag(), &this->_tx_buf[0], &msg_id);
   size_t size = 0;
   core::Logic::pack_delay_offset_body(this->_delay, this->_offset, &this->_tx_buf[0], &size);
   this->_link->send(&this->_tx_buf[0], size);

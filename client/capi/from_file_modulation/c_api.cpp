@@ -13,12 +13,12 @@
 #include "./from_file_modulation.h"
 #include "autd3/modulation/from_file.hpp"
 
-void AUTDModulationRawPCM(void** mod, const char* filename, double sampling_freq, uint16_t mod_sampling_freq_div) {
+void AUTDModulationRawPCM(void** mod, const char* filename, const double sampling_freq, const uint16_t mod_sampling_freq_div) {
   const auto filename_ = std::string(filename);
   auto* m = ModulationCreate(autd::modulation::RawPCM::create(filename_, sampling_freq, mod_sampling_freq_div));
   *mod = m;
 }
-void AUTDModulationWav(void** mod, const char* filename, uint16_t mod_sampling_freq_div) {
+void AUTDModulationWav(void** mod, const char* filename, const uint16_t mod_sampling_freq_div) {
   const auto filename_ = std::string(filename);
   auto* m = ModulationCreate(autd::modulation::Wav::create(filename_, mod_sampling_freq_div));
   *mod = m;

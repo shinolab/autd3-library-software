@@ -12,7 +12,6 @@
 #pragma once
 
 #include <memory>
-#include <string>
 #include <utility>
 #include <vector>
 
@@ -287,9 +286,9 @@ class Controller {
     std::atomic<bool> _lock;
   };
 
-  bool send_header(core::COMMAND cmd) const;
+  [[nodiscard]] bool send_header(core::COMMAND cmd) const;
   void init_delay_offset();
-  bool send_delay_offset() const;
+  [[nodiscard]] bool send_delay_offset() const;
   [[nodiscard]] bool wait_msg_processed(uint8_t msg_id, size_t max_trial = 50) const;
 
   core::LinkPtr _link;

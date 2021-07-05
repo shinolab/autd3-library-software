@@ -26,9 +26,9 @@ using Quaternion = core::Quaternion;
 using Vector3 = core::Vector3;
 using LinkPtr = core::LinkPtr;
 using GeometryPtr = core::GeometryPtr;
-using ModulationPtr = core::ModulationPtr;
-using GainPtr = core::GainPtr;
-using SequencePtr = core::SequencePtr;
+using ModulationPtr = modulation::ModulationPtr;
+using GainPtr = gain::GainPtr;
+using SequencePtr = sequence::SequencePtr;
 using DataArray = core::DataArray;
 
 constexpr auto NUM_TRANS_IN_UNIT = core::NUM_TRANS_IN_UNIT;
