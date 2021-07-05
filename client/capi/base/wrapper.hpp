@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 05/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -18,7 +18,6 @@
 #include "autd3/controller.hpp"
 #include "autd3/core/firmware_version.hpp"
 #include "autd3/core/gain.hpp"
-#include "autd3/core/modulation.hpp"
 #include "autd3/core/sequence.hpp"
 #include "autd3/gain/linalg_backend.hpp"
 
@@ -44,13 +43,6 @@ typedef struct {
 
 inline GainWrapper* GainCreate(const autd::core::GainPtr& ptr) { return new GainWrapper{ptr}; }
 inline void GainDelete(GainWrapper* ptr) { delete ptr; }
-
-typedef struct {
-  autd::core::ModulationPtr ptr;
-} ModulationWrapper;
-
-inline ModulationWrapper* ModulationCreate(const autd::core::ModulationPtr& ptr) { return new ModulationWrapper{ptr}; }
-inline void ModulationDelete(ModulationWrapper* ptr) { delete ptr; }
 
 typedef struct {
   autd::core::SequencePtr ptr;
