@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 05/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -161,16 +161,16 @@ class Logic {
   /**
    * \brief Pack data body to set output delay and enable
    * \param delay delay data of each transducer
-   * \param enable enable data of each transducer
+   * \param offset duty offset data of each transducer
    * \param[out] data pointer to transmission data
    * \param[out] size size to send
    */
-  static void pack_delay_en_body(const std::vector<std::array<uint8_t, NUM_TRANS_IN_UNIT>>& delay,
-                                 const std::vector<std::array<uint8_t, NUM_TRANS_IN_UNIT>>& enable, uint8_t* data, size_t* const size) {
+  static void pack_delay_offset_body(const std::vector<std::array<uint8_t, NUM_TRANS_IN_UNIT>>& delay,
+                                     const std::vector<std::array<uint8_t, NUM_TRANS_IN_UNIT>>& offset, uint8_t* data, size_t* const size) {
     *size = sizeof(RxGlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * delay.size();
     auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(RxGlobalHeader));
     for (size_t dev = 0; dev < delay.size(); dev++)
-      for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) *cursor++ = Utilities::pack_to_u16(enable[dev][i], delay[dev][i]);
+      for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) *cursor++ = Utilities::pack_to_u16(offset[dev][i], delay[dev][i]);
   }
 };
 }  // namespace autd::core

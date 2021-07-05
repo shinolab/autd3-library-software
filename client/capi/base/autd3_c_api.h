@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/06/2021
+// Last Modified: 05/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -38,8 +38,8 @@ EXPORT_AUTD void AUTDSetAttenuation(void* handle, double attenuation);
 EXPORT_AUTD bool AUTDGetFPGAInfo(void* handle, uint8_t* out);
 EXPORT_AUTD bool AUTDUpdateCtrlFlags(void* handle);
 EXPORT_AUTD bool AUTDSetOutputDelay(void* handle, uint8_t* delay);
-EXPORT_AUTD bool AUTDSetEnable(void* handle, uint8_t* enable);
-EXPORT_AUTD bool AUTDSetDelayEnable(void* handle, uint16_t* delay_enable);
+EXPORT_AUTD bool AUTDSetDutyOffset(void* handle, uint8_t* offset);
+EXPORT_AUTD bool AUTDSetDelayOffset(void* handle, uint8_t* delay, uint8_t* offset);
 
 EXPORT_AUTD int32_t AUTDGetLastError(char* error);
 

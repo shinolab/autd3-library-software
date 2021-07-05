@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 05/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -61,22 +61,22 @@ void Controller::open(core::LinkPtr link) {
 
   this->_fpga_infos.resize(this->_geometry->num_devices());
   this->_delay.resize(this->_geometry->num_devices());
-  this->_en.resize(this->_geometry->num_devices());
-  init_delay_en();
+  this->_offset.resize(this->_geometry->num_devices());
+  init_delay_offset();
 
   this->_link = std::move(link);
   return this->_link->open();
 }
 
-void Controller::init_delay_en() {
+void Controller::init_delay_offset() {
   for (size_t dev = 0; dev < this->_geometry->num_devices(); dev++) {
     std::memset(&this->_delay[dev][0], 0x00, core::NUM_TRANS_IN_UNIT);
-    std::memset(&this->_en[dev][0], 0xFF, core::NUM_TRANS_IN_UNIT);
+    std::memset(&this->_offset[dev][0], 0xFF, core::NUM_TRANS_IN_UNIT);
   }
 }
 
 bool Controller::clear() {
-  this->init_delay_en();
+  this->init_delay_offset();
   return send_header(core::COMMAND::CLEAR);
 }
 
@@ -88,11 +88,11 @@ bool Controller::send_header(const core::COMMAND cmd) const {
   return wait_msg_processed(msg_id);
 }
 
-bool Controller::send_delay_en() const {
+bool Controller::send_delay_offset() const {
   uint8_t msg_id;
   core::Logic::pack_header(core::COMMAND::SET_DELAY_EN, _props.ctrl_flag(), &this->_tx_buf[0], &msg_id);
   size_t size = 0;
-  core::Logic::pack_delay_en_body(this->_delay, this->_en, &this->_tx_buf[0], &size);
+  core::Logic::pack_delay_offset_body(this->_delay, this->_offset, &this->_tx_buf[0], &size);
   this->_link->send(&this->_tx_buf[0], size);
   return wait_msg_processed(msg_id);
 }
@@ -172,37 +172,28 @@ bool Controller::set_output_delay(const std::vector<std::array<uint8_t, core::NU
 
   for (size_t dev = 0; dev < this->_geometry->num_devices(); dev++) std::memcpy(&this->_delay[dev][0], &delay[dev][0], core::NUM_TRANS_IN_UNIT);
 
-  return this->send_delay_en();
+  return this->send_delay_offset();
 }
 
-bool Controller::set_enable(const std::vector<std::array<bool, core::NUM_TRANS_IN_UNIT>>& enable) {
-  if (enable.size() != this->_geometry->num_devices()) throw core::SetOutputConfigError("The number of devices is wrong");
+bool Controller::set_duty_offset(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& offset) {
+  if (offset.size() != this->_geometry->num_devices()) throw core::SetOutputConfigError("The number of devices is wrong");
 
-  for (size_t dev = 0; dev < this->_geometry->num_devices(); dev++)
-    for (size_t i = 0; i < core::NUM_TRANS_IN_UNIT; i++) this->_en[dev][i] = enable[dev][i] ? 0xFF : 0x00;
+  for (size_t dev = 0; dev < this->_geometry->num_devices(); dev++) std::memcpy(&this->_offset[dev][0], &offset[dev][0], core::NUM_TRANS_IN_UNIT);
 
-  return this->send_delay_en();
+  return this->send_delay_offset();
 }
 
-bool Controller::set_enable(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& enable) {
-  if (enable.size() != this->_geometry->num_devices()) throw core::SetOutputConfigError("The number of devices is wrong");
-
-  for (size_t dev = 0; dev < this->_geometry->num_devices(); dev++) std::memcpy(&this->_en[dev][0], &enable[dev][0], core::NUM_TRANS_IN_UNIT);
-
-  return this->send_delay_en();
-}
-
-bool Controller::set_delay_enable(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& delay,
-                                  const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& enable) {
-  if (delay.size() != this->_geometry->num_devices() || enable.size() != this->_geometry->num_devices())
+bool Controller::set_delay_offset(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& delay,
+                                  const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& offset) {
+  if (delay.size() != this->_geometry->num_devices() || offset.size() != this->_geometry->num_devices())
     throw core::SetOutputConfigError("The number of devices is wrong");
 
   for (size_t dev = 0; dev < this->_geometry->num_devices(); dev++) {
     std::memcpy(&this->_delay[dev][0], &delay[dev][0], core::NUM_TRANS_IN_UNIT);
-    std::memcpy(&this->_en[dev][0], &enable[dev][0], core::NUM_TRANS_IN_UNIT);
+    std::memcpy(&this->_offset[dev][0], &offset[dev][0], core::NUM_TRANS_IN_UNIT);
   }
 
-  return this->send_delay_en();
+  return this->send_delay_offset();
 }
 
 std::vector<FirmwareInfo> Controller::firmware_info_list() const {

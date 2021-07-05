@@ -3,7 +3,7 @@
 // Created Date: 19/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 05/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -46,12 +46,6 @@ inline void advanced_test(autd::ControllerPtr& autd) {
   delays.resize(autd->geometry()->num_devices());
   delays[0][0] = 4;  // 4 cycle = 100 us delay in 0-th transducer
   autd->set_output_delay(delays);
-
-  std::vector<std::array<bool, autd::NUM_TRANS_IN_UNIT>> enable;
-  enable.resize(autd->geometry()->num_devices());
-  for (size_t i = 0; i < autd->geometry()->num_devices(); i++) enable[i].fill(true);
-  enable[0][17] = false;  // disable 17-th transducer
-  autd->set_enable(enable);
 
   const auto g = UniformGain::create();
   const auto m = BurstModulation::create();

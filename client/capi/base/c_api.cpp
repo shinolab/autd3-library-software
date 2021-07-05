@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 05/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -155,26 +155,26 @@ bool AUTDSetOutputDelay(void* handle, uint8_t* delay) {
   for (size_t i = 0; i < num_devices; i++) std::memcpy(&delay_[i][0], &delay[i * autd::core::NUM_TRANS_IN_UNIT], autd::core::NUM_TRANS_IN_UNIT);
   AUTD3_CAPI_TRY(wrapper->ptr->set_output_delay(delay_))
 }
-bool AUTDSetEnable(void* handle, uint8_t* enable) {
+bool AUTDSetDutyOffset(void* handle, uint8_t* offset) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
   const auto num_devices = wrapper->ptr->geometry()->num_devices();
-  std::vector<std::array<uint8_t, autd::core::NUM_TRANS_IN_UNIT>> enable_;
-  enable_.resize(num_devices);
-  for (size_t i = 0; i < num_devices; i++) std::memcpy(&enable_[i][0], &enable[i * autd::core::NUM_TRANS_IN_UNIT], autd::core::NUM_TRANS_IN_UNIT);
-  AUTD3_CAPI_TRY(wrapper->ptr->set_enable(enable_))
+  std::vector<std::array<uint8_t, autd::core::NUM_TRANS_IN_UNIT>> offset_;
+  offset_.resize(num_devices);
+  for (size_t i = 0; i < num_devices; i++) std::memcpy(&offset_[i][0], &offset[i * autd::core::NUM_TRANS_IN_UNIT], autd::core::NUM_TRANS_IN_UNIT);
+  AUTD3_CAPI_TRY(wrapper->ptr->set_duty_offset(offset_))
 }
-bool AUTDSetDelayEnable(void* handle, uint8_t* delay, uint8_t* enable) {
+bool AUTDSetDelayOffset(void* handle, uint8_t* delay, uint8_t* offset) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
   const auto num_devices = wrapper->ptr->geometry()->num_devices();
   std::vector<std::array<uint8_t, autd::core::NUM_TRANS_IN_UNIT>> delay_;
-  std::vector<std::array<uint8_t, autd::core::NUM_TRANS_IN_UNIT>> enable_;
+  std::vector<std::array<uint8_t, autd::core::NUM_TRANS_IN_UNIT>> offset_;
   delay_.resize(num_devices);
-  enable_.resize(num_devices);
+  offset_.resize(num_devices);
   for (size_t i = 0; i < num_devices; i++) {
     std::memcpy(&delay_[i][0], &delay[i * autd::core::NUM_TRANS_IN_UNIT], autd::core::NUM_TRANS_IN_UNIT);
-    std::memcpy(&enable_[i][0], &enable[i * autd::core::NUM_TRANS_IN_UNIT], autd::core::NUM_TRANS_IN_UNIT);
+    std::memcpy(&offset_[i][0], &offset[i * autd::core::NUM_TRANS_IN_UNIT], autd::core::NUM_TRANS_IN_UNIT);
   }
-  AUTD3_CAPI_TRY(wrapper->ptr->set_delay_enable(delay_, enable_))
+  AUTD3_CAPI_TRY(wrapper->ptr->set_delay_offset(delay_, offset_))
 }
 
 int32_t AUTDNumDevices(void* const handle) {
