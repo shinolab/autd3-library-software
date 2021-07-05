@@ -3,6 +3,7 @@
     * Now, if an error occurs, an exception will be thrown
 * Remove `output_enable` options, add `duty_offset` option instead
     * Duty ratio is now calculated by (`duty`+`duty_offset`)/512 %
+* Merge mod-from-file
 * Update firmware version to 1.3
 
 # 1.4.3
