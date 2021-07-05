@@ -3,15 +3,15 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 05/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
+#include <autd3.hpp>
 #include <autd3/link/twincat.hpp>
 
-#include "autd3.hpp"
 #include "runner.hpp"
 
 int main() {
