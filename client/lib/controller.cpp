@@ -123,8 +123,13 @@ bool Controller::close() {
 }
 
 bool Controller::stop() {
-  if (!this->send(gain::NullGain::create())) return false;
-  return this->pause();
+  // To suppress shutdown noise
+  const auto silent = this->silent_mode();
+  this->silent_mode() = true;
+  const auto res = this->send(gain::NullGain::create());
+  this->silent_mode() = silent;
+
+  return this->pause() && res;
 }
 
 bool Controller::pause() const { return this->send_header(core::COMMAND::PAUSE); }
