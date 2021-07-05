@@ -12,6 +12,7 @@ option(BUILD_ALL "BUILD_ALL" OFF)
 option(BUILD_DOC "BUILD_DOC" OFF)
 
 option(BUILD_HOLO_GAIN "BUILD_HOLO_GAIN" ON)
+option(BUILD_HOLO_GAIN "BUILD_FROM_FILE_MODULATION" OFF)
 
 option(BUILD_SOEM_LINK "BUILD_SOEM_LINK" ON)
 option(BUILD_TWINCAT_LINK "BUILD_TWINCAT_LINK" OFF)
@@ -22,6 +23,7 @@ option(ENABLE_LINT "ENABLE_LINT" OFF)
 
 if(BUILD_ALL)
   set(BUILD_HOLO_GAIN ON)
+  set(BUILD_FROM_FILE_MODULATION ON)
   set(BUILD_SOEM_LINK ON)
   set(BUILD_TWINCAT_LINK ON)
   set(BUILD_CAPI ON)
@@ -101,6 +103,11 @@ if(BUILD_HOLO_GAIN)
   add_subdirectory(lib/gain/holo)
 endif()
 
+# Modulation
+if(BUILD_FROM_FILE_MODULATION)
+  add_subdirectory(lib/modulation/from_file)
+endif()
+
 # Link
 if(BUILD_TWINCAT_LINK)
   add_subdirectory(lib/link/twincat)
@@ -125,6 +132,9 @@ if(BUILD_CAPI)
   endif()
   if(BUILD_HOLO_GAIN)
     add_subdirectory(capi/holo_gain)
+  endif()
+  if(BUILD_FROM_FILE_MODULATION)
+    add_subdirectory(capi/from_file_modulation)
   endif()
 endif()
 

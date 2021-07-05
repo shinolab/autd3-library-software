@@ -19,6 +19,7 @@
 #include "autd3/sequence/primitive.hpp"
 #include "wrapper.hpp"
 #include "wrapper_link.hpp"
+#include "wrapper_modulation.hpp"
 
 #define AUTD3_CAPI_TRY_VOID_WITH_AFTER(action, after) \
   try {                                               \
