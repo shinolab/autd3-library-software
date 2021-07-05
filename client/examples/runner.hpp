@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include <autd3.hpp>
 #include <functional>
 #include <iostream>
 #include <sstream>
@@ -18,7 +19,6 @@
 #include <utility>
 #include <vector>
 
-#include "autd3.hpp"
 #include "examples/advanced.hpp"
 #include "examples/bessel.hpp"
 #include "examples/group.hpp"

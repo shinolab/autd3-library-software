@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 05/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,12 +11,11 @@
 
 #pragma once
 
+#include <autd3.hpp>
+#include <autd3/gain/eigen_backend.hpp>
+#include <autd3/gain/holo.hpp>
 #include <iostream>
 #include <string>
-
-#include "autd3.hpp"
-#include "autd3/gain/eigen_backend.hpp"
-#include "autd3/gain/holo.hpp"
 
 using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SPACING_MM;
 using autd::gain::holo::Eigen3Backend;

@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include "autd3.hpp"
+#include <autd3.hpp>
 
 class BurstModulation final : public autd::core::Modulation {
  public:
