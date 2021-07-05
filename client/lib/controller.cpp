@@ -252,6 +252,8 @@ void Controller::STMController::finish() {
   this->_p_cnt->_link = std::move(this->_handler->_link);
 }
 
-void Controller::STMController::stop() { this->_handler = this->_timer->stop(); }
+void Controller::STMController::stop() {
+  if (this->_handler == nullptr) this->_handler = this->_timer->stop();
+}
 
 }  // namespace autd
