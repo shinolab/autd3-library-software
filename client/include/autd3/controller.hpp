@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 05/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -102,31 +102,25 @@ class Controller {
   /**
    * \brief Set output delay
    * \param[in] delay delay for each transducer in units of ultrasound period (i.e. 25us).
-   * \return if true, data has been processed in devices is guaranteed
+   * \return if true, It guarantees that the devices have processed the data
    */
   bool set_output_delay(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& delay);
 
   /**
-   * \brief Set enable
-   * \param[in] enable enable flag for each transducers
-   * \return if true, data has been processed in devices is guaranteed
+   * \brief Set duty offset
+   * \param[in] offset duty offset for each transducers (only the lowest 1 bit will be used)
+   * \return if true, It guarantees that the devices have processed the data
    */
-  bool set_enable(const std::vector<std::array<bool, core::NUM_TRANS_IN_UNIT>>& enable);
+  bool set_duty_offset(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& offset);
 
   /**
-   * \brief Set enable
-   * \param[in] enable enable flag (the first bit is used) for each transducers
-   * \return if true, data has been processed in devices is guaranteed
+   * \brief Set delay and duty offset
+   * \param[in] delay delay
+   * \param[in] offset duty offset
+   * \return if true, It guarantees that the devices have processed the data
    */
-  bool set_enable(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& enable);
-
-  /**
-   * \brief Set delay and enable
-   * \param[in] delay_enable lower 8bits is delay and 8-th bit is enable
-   * \return if true, data has been processed in devices is guaranteed
-   */
-  bool set_delay_enable(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& delay,
-                        const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& enable);
+  bool set_delay_offset(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& delay,
+                        const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& offset);
 
   /**
    * @brief Open device with a link.
@@ -136,45 +130,45 @@ class Controller {
 
   /**
    * @brief Clear all data in hardware
-   * \return if true, data has been processed in devices is guaranteed
+   * \return if true, It guarantees that the devices have processed the data
    */
   bool clear();
 
   /**
    * @brief Close the controller
-   * \return if true, data has been processed in devices is guaranteed
+   * \return if true, It guarantees that the devices have processed the data
    */
   bool close();
 
   /**
    * @brief Stop outputting
-   * \return if true, data has been processed in devices is guaranteed
+   * \return if true, It guarantees that the devices have processed the data
    */
   bool stop();
 
   /**
    * @brief Pause outputting
-   * \return if true, data has been processed in devices is guaranteed
+   * \return if true, It guarantees that the devices have processed the data
    */
   bool pause() const;
 
   /**
    * @brief Resume outputting
-   * \return if true, data has been processed in devices is guaranteed
+   * \return if true, It guarantees that the devices have processed the data
    */
   bool resume() const;
 
   /**
    * @brief Send gain to the device
    * @param[in] gain Gain to display
-   * \return if true, data has been processed in devices is guaranteed
+   * \return if true, It guarantees that the devices have processed the data
    */
   bool send(const core::GainPtr& gain);
 
   /**
    * @brief Send modulation to the device
    * @param[in] mod Amplitude modulation to display
-   * \return if true, data has been processed in devices is guaranteed
+   * \return if true, It guarantees that the devices have processed the data
    */
   bool send(const core::ModulationPtr& mod);
 
@@ -182,14 +176,14 @@ class Controller {
    * @brief Send gain and modulation to the device
    * @param[in] gain Gain to display
    * @param[in] mod Amplitude modulation to display
-   * \return if true, data has been processed in devices is guaranteed
+   * \return if true, It guarantees that the devices have processed the data
    */
   bool send(const core::GainPtr& gain, const core::ModulationPtr& mod);
 
   /**
    * @brief Send sequence and modulation to the device
    * @param[in] seq Sequence to display
-   * \return if true, data has been processed in devices is guaranteed
+   * \return if true, It guarantees that the devices have processed the data
    */
   bool send(const core::SequencePtr& seq);
 
@@ -294,8 +288,8 @@ class Controller {
   };
 
   bool send_header(core::COMMAND cmd) const;
-  void init_delay_en();
-  bool send_delay_en() const;
+  void init_delay_offset();
+  bool send_delay_offset() const;
   [[nodiscard]] bool wait_msg_processed(uint8_t msg_id, size_t max_trial = 50) const;
 
   core::LinkPtr _link;
@@ -306,6 +300,6 @@ class Controller {
 
   std::vector<uint8_t> _fpga_infos;
   std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>> _delay;
-  std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>> _en;
+  std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>> _offset;
 };
 }  // namespace autd
