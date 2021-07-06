@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/06/2021
+// Last Modified: 05/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -14,11 +14,31 @@
 
 #include "./autd3_c_api.h"
 #include "autd3.hpp"
-#include "primitive_gain.hpp"
-#include "primitive_modulation.hpp"
-#include "primitive_sequence.hpp"
+#include "autd3/gain/primitive.hpp"
+#include "autd3/modulation/primitive.hpp"
+#include "autd3/sequence/primitive.hpp"
 #include "wrapper.hpp"
 #include "wrapper_link.hpp"
+#include "wrapper_modulation.hpp"
+
+#define AUTD3_CAPI_TRY_VOID_WITH_AFTER(action, after) \
+  try {                                               \
+    action;                                           \
+    after                                             \
+  } catch (std::exception & ex) {                     \
+    LastError() = ex.what();                          \
+    return false;                                     \
+  }
+#define AUTD3_CAPI_TRY_WITH_AFTER(action, after) \
+  try {                                          \
+    auto res = action;                           \
+    after                                        \
+  } catch (std::exception & ex) {                \
+    LastError() = ex.what();                     \
+    return false;                                \
+  }
+#define AUTD3_CAPI_TRY_VOID(action) AUTD3_CAPI_TRY_VOID_WITH_AFTER(action, return true;)
+#define AUTD3_CAPI_TRY(action) AUTD3_CAPI_TRY_WITH_AFTER(action, return res;)
 
 namespace {
 std::string& LastError() {
@@ -33,14 +53,11 @@ void AUTDCreateController(void** out) { *out = ControllerCreate(autd::Controller
 bool AUTDOpenController(void* const handle, void* const p_link) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
   auto* link = static_cast<LinkWrapper*>(p_link);
-  auto res = wrapper->ptr->open(std::move(link->ptr));
+  auto link_ = std::move(link->ptr);
   LinkDelete(link);
-  if (res.is_err()) {
-    LastError() = res.unwrap_err();
-    return false;
-  }
-  return true;
+  AUTD3_CAPI_TRY_VOID(wrapper->ptr->open(std::move(link_)))
 }
+
 int32_t AUTDAddDevice(void* const handle, const double x, const double y, const double z, const double rz1, const double ry, const double rz2,
                       const int32_t gid) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
@@ -64,19 +81,11 @@ void AUTDClearDevices(void* const handle) {
 }
 bool AUTDCloseController(void* const handle) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
-  if (auto res = wrapper->ptr->close(); res.is_err()) {
-    LastError() = res.unwrap_err();
-    return false;
-  }
-  return true;
+  AUTD3_CAPI_TRY(wrapper->ptr->close())
 }
 bool AUTDClear(void* const handle) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
-  if (auto res = wrapper->ptr->clear(); res.is_err()) {
-    LastError() = res.unwrap_err();
-    return false;
-  }
-  return true;
+  AUTD3_CAPI_TRY(wrapper->ptr->clear())
 }
 void AUTDFreeController(void* const handle) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
@@ -129,59 +138,44 @@ void AUTDSetAttenuation(void* const handle, const double attenuation) {
 }
 bool AUTDGetFPGAInfo(void* handle, uint8_t* out) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
-  auto res = wrapper->ptr->fpga_info();
-  if (res.is_err()) {
-    LastError() = res.unwrap_err();
-    return false;
-  }
-  auto fpga_infos = res.unwrap();
-  std::memcpy(out, &fpga_infos[0], fpga_infos.size());
-  return true;
+  AUTD3_CAPI_TRY_WITH_AFTER(wrapper->ptr->fpga_info(), {
+    std::memcpy(out, &res[0], res.size());
+    return true;
+  })
 }
 bool AUTDUpdateCtrlFlags(void* handle) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
-  if (auto res = wrapper->ptr->update_ctrl_flag(); res.is_err()) {
-    LastError() = res.unwrap_err();
-    return false;
-  }
-  return true;
+  AUTD3_CAPI_TRY(wrapper->ptr->update_ctrl_flag())
 }
+
 bool AUTDSetOutputDelay(void* handle, uint8_t* delay) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
   const auto num_devices = wrapper->ptr->geometry()->num_devices();
   std::vector<std::array<uint8_t, autd::core::NUM_TRANS_IN_UNIT>> delay_;
   delay_.resize(num_devices);
   for (size_t i = 0; i < num_devices; i++) std::memcpy(&delay_[i][0], &delay[i * autd::core::NUM_TRANS_IN_UNIT], autd::core::NUM_TRANS_IN_UNIT);
-  if (auto res = wrapper->ptr->set_output_delay(delay_); res.is_err()) {
-    LastError() = res.unwrap_err();
-    return false;
-  }
-  return true;
+  AUTD3_CAPI_TRY(wrapper->ptr->set_output_delay(delay_))
 }
-bool AUTDSetEnable(void* handle, uint8_t* enable) {
+bool AUTDSetDutyOffset(void* handle, uint8_t* offset) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
   const auto num_devices = wrapper->ptr->geometry()->num_devices();
-  std::vector<std::array<uint8_t, autd::core::NUM_TRANS_IN_UNIT>> enable_;
-  enable_.resize(num_devices);
-  for (size_t i = 0; i < num_devices; i++) std::memcpy(&enable_[i][0], &enable[i * autd::core::NUM_TRANS_IN_UNIT], autd::core::NUM_TRANS_IN_UNIT);
-  if (auto res = wrapper->ptr->set_enable(enable_); res.is_err()) {
-    LastError() = res.unwrap_err();
-    return false;
-  }
-  return true;
+  std::vector<std::array<uint8_t, autd::core::NUM_TRANS_IN_UNIT>> offset_;
+  offset_.resize(num_devices);
+  for (size_t i = 0; i < num_devices; i++) std::memcpy(&offset_[i][0], &offset[i * autd::core::NUM_TRANS_IN_UNIT], autd::core::NUM_TRANS_IN_UNIT);
+  AUTD3_CAPI_TRY(wrapper->ptr->set_duty_offset(offset_))
 }
-bool AUTDSetDelayEnable(void* handle, uint16_t* delay_enable) {
+bool AUTDSetDelayOffset(void* handle, uint8_t* delay, uint8_t* offset) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
   const auto num_devices = wrapper->ptr->geometry()->num_devices();
-  std::vector<std::array<uint16_t, autd::core::NUM_TRANS_IN_UNIT>> delay_enable_;
-  delay_enable_.resize(num_devices);
-  for (size_t i = 0; i < num_devices; i++)
-    std::memcpy(&delay_enable_[i][0], &delay_enable[i * autd::core::NUM_TRANS_IN_UNIT], sizeof(uint16_t) * autd::core::NUM_TRANS_IN_UNIT);
-  if (auto res = wrapper->ptr->set_delay_enable(delay_enable_); res.is_err()) {
-    LastError() = res.unwrap_err();
-    return false;
+  std::vector<std::array<uint8_t, autd::core::NUM_TRANS_IN_UNIT>> delay_;
+  std::vector<std::array<uint8_t, autd::core::NUM_TRANS_IN_UNIT>> offset_;
+  delay_.resize(num_devices);
+  offset_.resize(num_devices);
+  for (size_t i = 0; i < num_devices; i++) {
+    std::memcpy(&delay_[i][0], &delay[i * autd::core::NUM_TRANS_IN_UNIT], autd::core::NUM_TRANS_IN_UNIT);
+    std::memcpy(&offset_[i][0], &offset[i * autd::core::NUM_TRANS_IN_UNIT], autd::core::NUM_TRANS_IN_UNIT);
   }
-  return true;
+  AUTD3_CAPI_TRY(wrapper->ptr->set_delay_offset(delay_, offset_))
 }
 
 int32_t AUTDNumDevices(void* const handle) {
@@ -239,14 +233,15 @@ void AUTDDeviceZDirection(void* const handle, const int32_t device_idx, double* 
 int32_t AUTDGetFirmwareInfoListPointer(void* const handle, void** out) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
   const auto size = static_cast<int32_t>(wrapper->ptr->geometry()->num_devices());
-  auto res = wrapper->ptr->firmware_info_list();
-  if (res.is_err()) {
-    LastError() = res.unwrap_err();
-    return -1;
-  }
-  auto* list = FirmwareInfoListCreate(res.unwrap());
-  *out = list;
-  return size;
+  AUTD3_CAPI_TRY_WITH_AFTER(wrapper->ptr->firmware_info_list(), {
+    if (res.empty()) {
+      LastError() = "filed to get some infos";
+      return -1;
+    }
+    auto* list = FirmwareInfoListCreate(res);
+    *out = list;
+    return size;
+  })
 }
 void AUTDGetFirmwareInfo(void* const p_firm_info_list, const int32_t index, char* cpu_ver, char* fpga_ver) {
   auto* wrapper = static_cast<FirmwareInfoListWrapper*>(p_firm_info_list);
@@ -343,21 +338,13 @@ void AUTDSequence(void** out) {
 }
 bool AUTDSequenceAddPoint(void* const seq, const double x, const double y, const double z) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
-  if (auto res = seq_w->ptr->add_point(ToVec3(x, y, z)); res.is_err()) {
-    LastError() = res.unwrap_err();
-    return false;
-  }
-  return true;
+  AUTD3_CAPI_TRY_VOID(seq_w->ptr->add_point(ToVec3(x, y, z)))
 }
 bool AUTDSequenceAddPoints(void* const seq, double* points, const uint64_t size) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
   std::vector<autd::Vector3> p;
   for (size_t i = 0; i < size; i++) p.emplace_back(ToVec3(points[3 * i], points[3 * i + 1], points[3 * i + 2]));
-  if (auto res = seq_w->ptr->add_points(p); res.is_err()) {
-    LastError() = res.unwrap_err();
-    return false;
-  }
-  return true;
+  AUTD3_CAPI_TRY_VOID(seq_w->ptr->add_points(p))
 }
 double AUTDSequenceSetFreq(void* const seq, const double freq) {
   auto* seq_w = static_cast<SequenceWrapper*>(seq);
@@ -395,64 +382,36 @@ void AUTDCircumSequence(void** out, const double x, const double y, const double
 
 bool AUTDStop(void* const handle) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
-  if (auto res = wrapper->ptr->stop(); res.is_err()) {
-    LastError() = res.unwrap_err();
-    return false;
-  }
-  return true;
+  AUTD3_CAPI_TRY(wrapper->ptr->stop())
 }
 bool AUTDPause(void* const handle) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
-  if (auto res = wrapper->ptr->pause(); res.is_err()) {
-    LastError() = res.unwrap_err();
-    return false;
-  }
-  return true;
+  AUTD3_CAPI_TRY(wrapper->ptr->pause())
 }
 bool AUTDResume(void* const handle) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
-  if (auto res = wrapper->ptr->resume(); res.is_err()) {
-    LastError() = res.unwrap_err();
-    return false;
-  }
-  return true;
+  AUTD3_CAPI_TRY(wrapper->ptr->resume())
 }
 bool AUTDSendGain(void* const handle, void* const gain) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
   const auto g = gain == nullptr ? nullptr : static_cast<GainWrapper*>(gain)->ptr;
-  if (auto res = wrapper->ptr->send(g); res.is_err()) {
-    LastError() = res.unwrap_err();
-    return false;
-  }
-  return true;
+  AUTD3_CAPI_TRY(wrapper->ptr->send(g))
 }
 bool AUTDSendModulation(void* const handle, void* const mod) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
   const auto m = mod == nullptr ? nullptr : static_cast<ModulationWrapper*>(mod)->ptr;
-  if (auto res = wrapper->ptr->send(m); res.is_err()) {
-    LastError() = res.unwrap_err();
-    return false;
-  }
-  return true;
+  AUTD3_CAPI_TRY(wrapper->ptr->send(m))
 }
 bool AUTDSendGainModulation(void* const handle, void* const gain, void* const mod) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
   const auto g = gain == nullptr ? nullptr : static_cast<GainWrapper*>(gain)->ptr;
   const auto m = mod == nullptr ? nullptr : static_cast<ModulationWrapper*>(mod)->ptr;
-  if (auto res = wrapper->ptr->send(g, m); res.is_err()) {
-    LastError() = res.unwrap_err();
-    return false;
-  }
-  return true;
+  AUTD3_CAPI_TRY(wrapper->ptr->send(g, m))
 }
 bool AUTDSendSequence(void* const handle, void* const seq) {
   auto* wrapper = static_cast<ControllerWrapper*>(handle);
   const auto s = seq == nullptr ? nullptr : static_cast<SequenceWrapper*>(seq)->ptr;
-  if (auto res = wrapper->ptr->send(s); res.is_err()) {
-    LastError() = res.unwrap_err();
-    return false;
-  }
-  return true;
+  AUTD3_CAPI_TRY(wrapper->ptr->send(s))
 }
 
 void AUTDSTMController(void** out, void* handle) {
@@ -463,35 +422,21 @@ void AUTDSTMController(void** out, void* handle) {
 bool AUTDAddSTMGain(void* const handle, void* const gain) {
   auto* wrapper = static_cast<STMControllerWrapper*>(handle);
   auto* g = static_cast<GainWrapper*>(gain);
-  if (auto res = wrapper->ptr->add_gain(g->ptr); res.is_err()) {
-    LastError() = res.unwrap_err();
-    return false;
-  }
-  return true;
+  AUTD3_CAPI_TRY_VOID(wrapper->ptr->add_gain(g->ptr))
 }
 
 bool AUTDStartSTM(void* const handle, const double freq) {
   auto* wrapper = static_cast<STMControllerWrapper*>(handle);
-  if (auto res = wrapper->ptr->start(freq); res.is_err()) {
-    LastError() = res.unwrap_err();
-    return false;
-  }
-  return true;
+  AUTD3_CAPI_TRY_VOID(wrapper->ptr->start(freq))
 }
 bool AUTDStopSTM(void* const handle) {
   auto* wrapper = static_cast<STMControllerWrapper*>(handle);
-  if (auto res = wrapper->ptr->stop(); res.is_err()) {
-    LastError() = res.unwrap_err();
-    return false;
-  }
-  return true;
+  AUTD3_CAPI_TRY_VOID(wrapper->ptr->stop())
 }
 bool AUTDFinishSTM(void* const handle) {
   auto* wrapper = static_cast<STMControllerWrapper*>(handle);
-  if (auto res = wrapper->ptr->finish(); res.is_err()) {
-    LastError() = res.unwrap_err();
-    return false;
-  }
-  STMControllerDelete(wrapper);
-  return true;
+  AUTD3_CAPI_TRY_VOID_WITH_AFTER(wrapper->ptr->finish(), {
+    STMControllerDelete(wrapper);
+    return true;
+  })
 }

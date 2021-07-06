@@ -3,17 +3,17 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/06/2021
+// Last Modified: 05/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
+#include <autd3.hpp>
+#include <autd3/link/soem.hpp>
 #include <iostream>
 
-#include "autd3.hpp"
 #include "runner.hpp"
-#include "soem_link.hpp"
 
 std::string get_adapter_name() {
   size_t i = 0;
@@ -40,13 +40,10 @@ int main() {
     // auto ifname = "\\Device\\NPF_{B5B631C6-ED16-4780-9C4C-3941AE8120A6}";
     const auto ifname = get_adapter_name();
     auto link = autd::link::SOEM::create(ifname, autd->geometry()->num_devices());
-    if (auto res = autd->open(std::move(link)); res.is_err()) {
-      std::cerr << res.unwrap_err() << std::endl;
-      return ENXIO;
-    }
+    autd->open(std::move(link));
     return run(std::move(autd));
   } catch (std::exception& e) {
     std::cerr << e.what() << std::endl;
-    return ENXIO;
+    return -1;
   }
 }

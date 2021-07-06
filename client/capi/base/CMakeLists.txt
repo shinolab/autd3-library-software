@@ -6,7 +6,6 @@ find_package(Threads REQUIRED)
 set(INCLUDE_LIST
   ${PROJECT_SOURCE_DIR}/include
   ${EIGEN_PATH}
-  ${Ads_INCLUDE_DIR}
 )
 
 file(GLOB include_files  ${PROJECT_SOURCE_DIR}/include/*.hpp *.hpp)
