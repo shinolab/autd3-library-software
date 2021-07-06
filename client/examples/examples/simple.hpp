@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/06/2021
+// Last Modified: 05/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,9 +11,7 @@
 
 #pragma once
 
-#include "autd3.hpp"
-#include "primitive_gain.hpp"
-#include "primitive_modulation.hpp"
+#include <autd3.hpp>
 
 using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SPACING_MM;
 
@@ -25,5 +23,5 @@ inline void simple_test(autd::ControllerPtr& autd) {
   const autd::Vector3 center(TRANS_SPACING_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SPACING_MM * ((NUM_TRANS_Y - 1) / 2.0), 150.0);
   const auto g = autd::gain::FocalPoint::create(center);
 
-  autd->send(g, m).unwrap();
+  autd->send(g, m);
 }

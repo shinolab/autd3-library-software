@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 
 project(autd3)
 set(VERSION_MAJOR   1   CACHE STRING "Project major version number.")
-set(VERSION_MINOR   4   CACHE STRING "Project minor version number.")
-set(VERSION_PATCH   3   CACHE STRING "Project patch version number.")
+set(VERSION_MINOR   5   CACHE STRING "Project minor version number.")
+set(VERSION_PATCH   0   CACHE STRING "Project patch version number.")
 mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
 
 set (CMAKE_CXX_STANDARD 17)
@@ -12,9 +12,11 @@ option(BUILD_ALL "BUILD_ALL" OFF)
 option(BUILD_DOC "BUILD_DOC" OFF)
 
 option(BUILD_HOLO_GAIN "BUILD_HOLO_GAIN" ON)
+option(BUILD_HOLO_GAIN "BUILD_FROM_FILE_MODULATION" OFF)
 
 option(BUILD_SOEM_LINK "BUILD_SOEM_LINK" ON)
 option(BUILD_TWINCAT_LINK "BUILD_TWINCAT_LINK" OFF)
+option(BUILD_EMULATOR_LINK "BUILD_EMULATOR_LINK" OFF)
 
 option(IGNORE_EXAMPLE "IGNORE_EXAMPLE" OFF)
 option(BUILD_CAPI "BUILD_CAPI" OFF)
@@ -22,8 +24,10 @@ option(ENABLE_LINT "ENABLE_LINT" OFF)
 
 if(BUILD_ALL)
   set(BUILD_HOLO_GAIN ON)
+  set(BUILD_FROM_FILE_MODULATION ON)
   set(BUILD_SOEM_LINK ON)
   set(BUILD_TWINCAT_LINK ON)
+  set(BUILD_EMULATOR_LINK ON)
   set(BUILD_CAPI ON)
 endif()
 
@@ -98,19 +102,27 @@ set(EIGEN_PATH ${PROJECT_SOURCE_DIR}/deps/Eigen3)
 
 # Gain
 if(BUILD_HOLO_GAIN)
-  add_subdirectory(holo_gain)
+  add_subdirectory(lib/gain/holo)
+endif()
+
+# Modulation
+if(BUILD_FROM_FILE_MODULATION)
+  add_subdirectory(lib/modulation/from_file)
 endif()
 
 # Link
 if(BUILD_TWINCAT_LINK)
-  add_subdirectory(link/twincat)
+  add_subdirectory(lib/link/twincat)
 endif()
 if(BUILD_SOEM_LINK)
   if(Git_FOUND)
-    execute_process(COMMAND git -C ${PROJECT_SOURCE_DIR} submodule update --init --recursive -- ${PROJECT_SOURCE_DIR}/deps/SOEM/SOEM)
+    execute_process(COMMAND git -C ${PROJECT_SOURCE_DIR} submodule update --init --recursive -- ${PROJECT_SOURCE_DIR}/deps/SOEM)
   endif()
-  set(SOEM_PATH ${PROJECT_SOURCE_DIR}/deps/SOEM/SOEM)
-  add_subdirectory(link/soem)
+  set(SOEM_PATH ${PROJECT_SOURCE_DIR}/deps/SOEM)
+  add_subdirectory(lib/link/soem)
+endif()
+if(BUILD_EMULATOR_LINK)
+  add_subdirectory(lib/link/emulator)
 endif()
 
 add_subdirectory(lib)
@@ -125,6 +137,9 @@ if(BUILD_CAPI)
   endif()
   if(BUILD_HOLO_GAIN)
     add_subdirectory(capi/holo_gain)
+  endif()
+  if(BUILD_FROM_FILE_MODULATION)
+    add_subdirectory(capi/from_file_modulation)
   endif()
 endif()
 

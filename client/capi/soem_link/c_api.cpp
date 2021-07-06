@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/06/2021
+// Last Modified: 04/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,7 +11,7 @@
 
 #include "../base/wrapper_link.hpp"
 #include "./soem_link.h"
-#include "soem_link.hpp"
+#include "autd3/link/soem.hpp"
 
 typedef struct {
   std::vector<autd::link::EtherCATAdapter> adapters;

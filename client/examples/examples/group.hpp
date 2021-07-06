@@ -3,7 +3,7 @@
 // Created Date: 23/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/06/2021
+// Last Modified: 05/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,11 +11,9 @@
 
 #pragma once
 
-#include "autd3.hpp"
-#include "eigen_backend.hpp"
-#include "holo_gain.hpp"
-#include "primitive_gain.hpp"
-#include "primitive_modulation.hpp"
+#include <autd3.hpp>
+#include <autd3/gain/eigen_backend.hpp>
+#include <autd3/gain/holo.hpp>
 
 using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SPACING_MM;
 
@@ -36,5 +34,5 @@ inline void group_test(autd::ControllerPtr& autd) {
   g->add(0, g1);
   g->add(1, g2);
 
-  autd->send(g, m).unwrap();
+  autd->send(g, m);
 }
