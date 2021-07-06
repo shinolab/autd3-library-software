@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/07/2021
+// Last Modified: 06/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -15,10 +15,6 @@
 #include <WS2tcpip.h>
 #endif
 
-#include <sstream>
-#include <string>
-
-#include "autd3/core/exception.hpp"
 #include "autd3/core/geometry.hpp"
 #include "autd3/core/link.hpp"
 
@@ -137,27 +133,16 @@ void EmulatorImpl::read(uint8_t* rx, size_t buffer_len) {
     case core::COMMAND::OP:
       break;
     case core::COMMAND::READ_CPU_VER_LSB:
-      set(0xFF);
-      break;
     case core::COMMAND::READ_CPU_VER_MSB:
-      set(0xFF);
-      break;
     case core::COMMAND::READ_FPGA_VER_LSB:
-      set(0xFF);
-      break;
     case core::COMMAND::READ_FPGA_VER_MSB:
       set(0xFF);
       break;
     case core::COMMAND::SEQ_MODE:
-      break;
     case core::COMMAND::CLEAR:
-      break;
     case core::COMMAND::SET_DELAY_OFFSET:
-      break;
     case core::COMMAND::PAUSE:
-      break;
     case core::COMMAND::RESUME:
-      break;
     case core::COMMAND::EMULATOR_SET_GEOMETRY:
       break;
   }
