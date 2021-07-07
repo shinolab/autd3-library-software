@@ -3,7 +3,7 @@
 # Created Date: 14/02/2020
 # Author: Shun Suzuki
 # -----
-# Last Modified: 04/03/2021
+# Last Modified: 07/07/2021
 # Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 # -----
 # Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -19,7 +19,7 @@ function ColorEcho($color, $PREFIX, $message) {
 }
 
 function FindVivado() {
-    $xilinx_reg = Get-ChildItem HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall | ForEach-Object { Get-ItemProperty $_.PsPath } | Where-Object DisplayName -match ^Xilinx.* | Select-Object -first 1
+    $xilinx_reg = Get-ChildItem HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall | ForEach-Object { Get-ItemProperty $_.PsPath } | Where-Object DisplayName -match Vivado | Select-Object -first 1
     if ($xilinx_reg) {
         return $xilinx_reg.InstallLocation
     }
@@ -73,7 +73,7 @@ function UpdateCPU([string]$cpuFirmwareFile) {
 
 function UpdateFPGA([string]$fpgaFirmwareFile, [string]$vivado_dir) {
     if (-not (Get-Command vivado -ea SilentlyContinue)) {
-        if ($vivado_dir -eq "NULL"){
+        if ($vivado_dir -eq "NULL") {
             ColorEcho "Green" "INFO" "Vivado is not found in PATH. Looking for Vivado..."
             $xilinx_path = FindVivado
             if (($xilinx_path -eq "NULL")) {
