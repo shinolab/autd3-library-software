@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/07/2021
+// Last Modified: 11/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -13,8 +13,15 @@
 
 #if _WINDOWS
 #include <WS2tcpip.h>
+#else
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
 #endif
 
+#include "autd3/core/exception.hpp"
 #include "autd3/core/geometry.hpp"
 #include "autd3/core/link.hpp"
 
@@ -39,8 +46,11 @@ class EmulatorImpl final : public Emulator {
   uint16_t _port;
 #if _WINDOWS
   SOCKET _socket = {};
-  sockaddr_in _addr = {};
+#else
+  int _socket = 0;
 #endif
+  sockaddr_in _addr = {};
+
   core::COMMAND _last_command = core::COMMAND::OP;
   uint8_t _last_msg_id = 0;
   std::vector<uint8_t> _geometry_buf;
@@ -87,12 +97,7 @@ void EmulatorImpl::send(const uint8_t* buf, const size_t size) {
   const auto* header = reinterpret_cast<const core::RxGlobalHeader*>(buf);
   _last_msg_id = header->msg_id;
   _last_command = header->command;
-#if _WINDOWS
   sendto(_socket, reinterpret_cast<const char*>(buf), static_cast<int>(size), 0, reinterpret_cast<sockaddr*>(&_addr), sizeof _addr);
-#else
-  (void)size;
-  (void)_port;
-#endif
 }
 
 void EmulatorImpl::open() {
@@ -102,11 +107,23 @@ void EmulatorImpl::open() {
   WSAData wsa_data{};
   WSAStartup(MAKEWORD(2, 0), &wsa_data);
 #pragma warning(pop)
+#endif
+
   _socket = socket(AF_INET, SOCK_DGRAM, 0);
+#if _WINDOWS
+  if (_socket == INVALID_SOCKET)
+#else
+  if (_socket < 0)
+#endif
+    throw autd::core::LinkError("cannot connect to emulator");
+
   _addr.sin_family = AF_INET;
   _addr.sin_port = htons(this->_port);
+#if _WINDOWS
   const auto ip_addr("127.0.0.1");
   inet_pton(AF_INET, ip_addr, &_addr.sin_addr.S_un.S_addr);
+#else
+  _addr.sin_addr.s_addr = inet_addr("127.0.0.1");
 #endif
 
   this->send(&this->_geometry_buf[0], this->_geometry_buf.size());
@@ -117,6 +134,8 @@ void EmulatorImpl::close() {
 #if _WINDOWS
     closesocket(_socket);
     WSACleanup();
+#else
+    ::close(_socket);
 #endif
     _port = 0;
   }
