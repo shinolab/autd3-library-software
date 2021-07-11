@@ -1,3 +1,7 @@
+# 1.5.2
+* Fix #7
+* Support Emulator link in mac
+
 # 1.5.1
 * Add emulator link in capi
 
