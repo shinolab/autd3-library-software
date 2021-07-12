@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/07/2021
+// Last Modified: 12/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -43,6 +43,7 @@ class EmulatorImpl final : public Emulator {
   bool is_open() override;
 
  private:
+  bool _is_open;
   uint16_t _port;
 #if _WINDOWS
   SOCKET _socket = {};
@@ -54,6 +55,38 @@ class EmulatorImpl final : public Emulator {
   core::COMMAND _last_command = core::COMMAND::OP;
   uint8_t _last_msg_id = 0;
   std::vector<uint8_t> _geometry_buf;
+
+  static std::vector<uint8_t> init_geometry_buf(const core::GeometryPtr& geometry) {
+    const auto vec_size = 9 * sizeof(float);
+    const auto size = sizeof(core::RxGlobalHeader) + geometry->num_devices() * vec_size;
+    std::vector<uint8_t> buf;
+    buf.resize(size);
+
+    auto* const uh = reinterpret_cast<core::RxGlobalHeader*>(&buf[0]);
+    uh->msg_id = 0x00;
+    uh->control_flags = 0x00;
+    uh->command = core::COMMAND::EMULATOR_SET_GEOMETRY;
+    uh->mod_size = 0x00;
+
+    auto* const cursor = reinterpret_cast<float*>(&buf[sizeof(core::RxGlobalHeader)]);
+    for (size_t i = 0; i < geometry->num_devices(); i++) {
+      const auto trans_id = i * core::NUM_TRANS_IN_UNIT;
+      auto origin = geometry->position(trans_id);
+      auto right = geometry->x_direction(i);
+      auto up = geometry->y_direction(i);
+      cursor[9 * i] = static_cast<float>(origin.x());
+      cursor[9 * i + 1] = static_cast<float>(origin.y());
+      cursor[9 * i + 2] = static_cast<float>(origin.z());
+      cursor[9 * i + 3] = static_cast<float>(right.x());
+      cursor[9 * i + 4] = static_cast<float>(right.y());
+      cursor[9 * i + 5] = static_cast<float>(right.z());
+      cursor[9 * i + 6] = static_cast<float>(up.x());
+      cursor[9 * i + 7] = static_cast<float>(up.y());
+      cursor[9 * i + 8] = static_cast<float>(up.z());
+    }
+
+    return buf;
+  }
 };
 
 core::LinkPtr Emulator::create(const uint16_t port, const core::GeometryPtr& geometry) {
@@ -61,46 +94,20 @@ core::LinkPtr Emulator::create(const uint16_t port, const core::GeometryPtr& geo
   return link;
 }
 
-EmulatorImpl::EmulatorImpl(const uint16_t port, const core::GeometryPtr& geometry) : _port(port) {
-  const auto vec_size = 9 * sizeof(float);
-  const auto size = sizeof(core::RxGlobalHeader) + geometry->num_devices() * vec_size;
-  std::vector<uint8_t> buf;
-  buf.resize(size);
-
-  auto* const uh = reinterpret_cast<core::RxGlobalHeader*>(&buf[0]);
-  uh->msg_id = 0x00;
-  uh->control_flags = 0x00;
-  uh->command = core::COMMAND::EMULATOR_SET_GEOMETRY;
-  uh->mod_size = 0x00;
-
-  auto* const cursor = reinterpret_cast<float*>(&buf[sizeof(core::RxGlobalHeader)]);
-  for (size_t i = 0; i < geometry->num_devices(); i++) {
-    const auto trans_id = i * core::NUM_TRANS_IN_UNIT;
-    auto origin = geometry->position(trans_id);
-    auto right = geometry->x_direction(i);
-    auto up = geometry->y_direction(i);
-    cursor[9 * i] = static_cast<float>(origin.x());
-    cursor[9 * i + 1] = static_cast<float>(origin.y());
-    cursor[9 * i + 2] = static_cast<float>(origin.z());
-    cursor[9 * i + 3] = static_cast<float>(right.x());
-    cursor[9 * i + 4] = static_cast<float>(right.y());
-    cursor[9 * i + 5] = static_cast<float>(right.z());
-    cursor[9 * i + 6] = static_cast<float>(up.x());
-    cursor[9 * i + 7] = static_cast<float>(up.y());
-    cursor[9 * i + 8] = static_cast<float>(up.z());
-  }
-
-  _geometry_buf = std::move(buf);
-}
+EmulatorImpl::EmulatorImpl(const uint16_t port, const core::GeometryPtr& geometry)
+    : _is_open(false), _port(port), _geometry_buf(init_geometry_buf(geometry)) {}
 
 void EmulatorImpl::send(const uint8_t* buf, const size_t size) {
   const auto* header = reinterpret_cast<const core::RxGlobalHeader*>(buf);
   _last_msg_id = header->msg_id;
   _last_command = header->command;
-  sendto(_socket, reinterpret_cast<const char*>(buf), static_cast<int>(size), 0, reinterpret_cast<sockaddr*>(&_addr), sizeof _addr);
+  if (sendto(_socket, reinterpret_cast<const char*>(buf), static_cast<int>(size), 0, reinterpret_cast<sockaddr*>(&_addr), sizeof _addr) == -1)
+    throw autd::core::LinkError("failed to send data");
 }
 
 void EmulatorImpl::open() {
+  if (this->is_open()) return;
+
 #if _WINDOWS
 #pragma warning(push)
 #pragma warning(disable : 6031)
@@ -126,19 +133,19 @@ void EmulatorImpl::open() {
   _addr.sin_addr.s_addr = inet_addr("127.0.0.1");
 #endif
 
+  _is_open = true;
   this->send(&this->_geometry_buf[0], this->_geometry_buf.size());
 }
 
 void EmulatorImpl::close() {
-  if (this->is_open()) {
+  if (!this->is_open()) return;
 #if _WINDOWS
-    closesocket(_socket);
-    WSACleanup();
+  closesocket(_socket);
+  WSACleanup();
 #else
-    ::close(_socket);
+  ::close(_socket);
 #endif
-    _port = 0;
-  }
+  _is_open = false;
 }
 
 void EmulatorImpl::read(uint8_t* rx, size_t buffer_len) {
@@ -167,6 +174,6 @@ void EmulatorImpl::read(uint8_t* rx, size_t buffer_len) {
   }
 }
 
-bool EmulatorImpl::is_open() { return this->_port != 0; }
+bool EmulatorImpl::is_open() { return _is_open; }
 
 }  // namespace autd::link
