@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-add_library(holo_gain STATIC
+add_library(gain_holo STATIC
     holo.cpp
     eigen_backend.cpp
     ${PROJECT_SOURCE_DIR}/include/autd3/gain/linalg_backend.hpp
@@ -13,7 +13,7 @@ add_library(holo_gain STATIC
 
 include_directories(${EIGEN_PATH})
 
-set_target_properties(holo_gain
+set_target_properties(gain_holo
     PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
@@ -23,5 +23,5 @@ set_target_properties(holo_gain
 if(WIN32)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4190")
 else()
-    set_target_properties(holo_gain PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    set_target_properties(gain_holo PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
