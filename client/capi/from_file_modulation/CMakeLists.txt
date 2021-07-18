@@ -13,7 +13,7 @@ add_library(autd3capi-from-file-modulation SHARED
 
 include_directories(${INCLUDE_LIST})
 
-target_link_libraries(autd3capi-from-file-modulation from_file_modulation)
+target_link_libraries(autd3capi-from-file-modulation modulation_from_file)
 if(WIN32)
 elseif(APPLE)
 else()
