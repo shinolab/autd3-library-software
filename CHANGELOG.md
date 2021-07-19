@@ -1,7 +1,8 @@
-# 1.5.2
+# 1.6
 * Fix #7
 * Support Emulator link in mac/linux
 * Add `link::SOEM::set_lost_handler`
+* Update firmware version to 1.4
 
 # 1.5.1
 * Add emulator link in capi
