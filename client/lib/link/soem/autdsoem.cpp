@@ -22,8 +22,6 @@
 #include "./ethercat.h"
 
 // "ethercat.h" must be included before followings
-#include <iostream>
-
 #include "autd3/core/exception.hpp"
 #include "autdsoem.hpp"
 
@@ -149,11 +147,11 @@ bool SOEMController::error_handle() {
     if (ec_slave[slave].state != EC_STATE_OPERATIONAL) {
       ec_group[0].docheckstate = 1;
       if (ec_slave[slave].state == EC_STATE_SAFE_OP + EC_STATE_ERROR) {
-        ss << "ERROR : slave " << slave << " is in SAFE_OP + ERROR, attempting ack.\n";
+        ss << "ERROR : slave " << slave << " is in SAFE_OP + ERROR, attempting ack\n";
         ec_slave[slave].state = EC_STATE_SAFE_OP + EC_STATE_ACK;
         ec_writestate(slave);
       } else if (ec_slave[slave].state == EC_STATE_SAFE_OP) {
-        ss << "WARNING : slave " << slave << " is in SAFE_OP, change to OPERATIONAL.\n";
+        ss << "WARNING : slave " << slave << " is in SAFE_OP, change to OPERATIONAL\n";
         ec_slave[slave].state = EC_STATE_OPERATIONAL;
         ec_writestate(slave);
       } else if (ec_slave[slave].state > EC_STATE_NONE) {
