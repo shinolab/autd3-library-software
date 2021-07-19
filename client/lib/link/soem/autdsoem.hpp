@@ -70,7 +70,7 @@ class SOEMController {
   void setup_sync0(bool activate, uint32_t cycle_time_ns) const;
 
   bool error_handle();
-  std::function<void(std::string)> _link_lost_handle;
+  std::function<void(std::string)> _link_lost_handle = nullptr;
 
   std::unique_ptr<uint8_t[]> _io_map;
   size_t _io_map_size;
