@@ -182,7 +182,7 @@ bool SOEMController::error_handle() {
   if (!ec_group[0].docheckstate) return true;
 
   this->_is_open = false;
-  _link_lost_handle(ss.str());
+  if (_link_lost_handle != nullptr) _link_lost_handle(ss.str());
   return false;
 }
 
