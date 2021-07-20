@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/07/2021
+// Last Modified: 21/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -12,7 +12,6 @@
 #pragma once
 
 #include <atomic>
-#include <iostream>
 #include <memory>
 #include <thread>
 #include <vector>
@@ -186,7 +185,7 @@ class Logic {
     auto* cursor = data + sizeof(RxGlobalHeader);
     const auto byte_size = NUM_TRANS_IN_UNIT * sizeof(uint16_t);
     for (size_t device = 0; device < num_devices; device++) {
-      std::memcpy(cursor, &seq->gains()[seq->sent()]->data()[device].at(0), byte_size);
+      std::memcpy(cursor, &seq->gains()[seq->sent() - 1]->data()[device].at(0), byte_size);
       cursor += byte_size;
     }
     seq->sent()++;
