@@ -37,7 +37,7 @@ inline void seq_gain_test(autd::ControllerPtr& autd) {
     const autd::Vector3 p(radius * std::cos(theta), radius * std::sin(theta), 0);
     std::vector<autd::Vector3> foci = {center + p, center - p};
     std::vector<double> amps = {1, 1};
-    const auto g = autd::gain::holo::HoloSDP::create(backend, foci, amps);
+    const auto g = autd::gain::holo::SDP::create(backend, foci, amps);
     // const auto g = autd::gain::FocalPoint::create(center + p);
     seq->add_gain(g);
   }
