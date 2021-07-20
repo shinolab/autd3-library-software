@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 20/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "autd3/core/exception.hpp"
 #include "autd3/core/gain.hpp"
 #include "linalg_backend.hpp"
 
@@ -26,7 +27,9 @@ namespace autd::gain::holo {
 class Holo : public core::Gain {
  public:
   Holo(BackendPtr backend, std::vector<core::Vector3>& foci, std::vector<double>& amps)
-      : _backend(std::move(backend)), _foci(std::move(foci)), _amps(std::move(amps)) {}
+      : _backend(std::move(backend)), _foci(std::move(foci)), _amps(std::move(amps)) {
+    if (_foci.size() != _amps.size()) throw core::GainBuildError("The size of foci and amps are not the same");
+  }
   ~Holo() override = default;
   Holo(const Holo& v) noexcept = default;
   Holo& operator=(const Holo& obj) = default;

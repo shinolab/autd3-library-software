@@ -3,7 +3,7 @@
 // Created Date: 14/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 20/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -18,18 +18,21 @@
 #include <vector>
 
 #include "exception.hpp"
+#include "gain.hpp"
 #include "geometry.hpp"
 
 namespace autd::core {
 class PointSequence;
-using SequencePtr = std::shared_ptr<PointSequence>;
+class GainSequence;
+using PointSequencePtr = std::shared_ptr<PointSequence>;
+using GainSequencePtr = std::shared_ptr<GainSequence>;
 
 /**
  * @brief PointSequence provides a function to display the focus sequentially and periodically.
  * @details PointSequence uses a timer on the FPGA to ensure that the focus is precisely timed.
  * PointSequence currently has the following three limitations.
- * 1. The maximum number of control points is 40000.
- * 2. The sampling interval of Control Points is an integer multiple of 25us.
+ * 1. The maximum number of control points is 65536.
+ * 2. The sampling interval of control points is an integer multiple of 25us and less than 25us x 65536.
  * 3. Only a single focus can be displayed at a certain moment.
  */
 class PointSequence {
@@ -41,12 +44,12 @@ class PointSequence {
   /**
    * @brief Generate empty PointSequence.
    */
-  static SequencePtr create() noexcept { return std::make_shared<PointSequence>(); }
+  static PointSequencePtr create() noexcept { return std::make_shared<PointSequence>(); }
 
   /**
    * @brief Generate PointSequence with control points.
    */
-  static SequencePtr create(const std::vector<Vector3>& control_points) noexcept { return std::make_shared<PointSequence>(control_points); }
+  static PointSequencePtr create(const std::vector<Vector3>& control_points) noexcept { return std::make_shared<PointSequence>(control_points); }
 
   /**
    * @brief Add control point
@@ -82,13 +85,13 @@ class PointSequence {
    * @brief Set frequency of the sequence
    * @param[in] freq Frequency of the sequence
    * @details The Point Sequence Mode has two constraints, which determine the actual frequency of the sequence.
-   * 1. The maximum number of control points is 40000.
+   * 1. The maximum number of control points is 65536.
    * 2. The sampling interval of control points is an integer multiple of 25us and less than 25us x 65536.
    * @return double Actual frequency of sequence
    */
   double set_frequency(const double freq) {
-    const auto sample_freq = std::clamp(static_cast<double>(this->_control_points.size()) * freq, 0.0, static_cast<double>(POINT_SEQ_BASE_FREQ));
-    this->_sampling_freq_div = static_cast<uint16_t>(static_cast<double>(POINT_SEQ_BASE_FREQ) / sample_freq);
+    const auto sample_freq = std::clamp(static_cast<double>(this->_control_points.size()) * freq, 0.0, static_cast<double>(SEQ_BASE_FREQ));
+    this->_sampling_freq_div = static_cast<uint16_t>(static_cast<double>(SEQ_BASE_FREQ) / sample_freq);
     return this->frequency();
   }
 
@@ -106,12 +109,12 @@ class PointSequence {
    * The sampling period is limited to an integer multiple of 25us. Therefore, the sampling frequency must be 40kHz/N.
    * @return double Sampling frequency of sequence
    */
-  [[nodiscard]] double sampling_frequency() const { return static_cast<double>(POINT_SEQ_BASE_FREQ) / static_cast<double>(this->_sampling_freq_div); }
+  [[nodiscard]] double sampling_frequency() const { return static_cast<double>(SEQ_BASE_FREQ) / static_cast<double>(this->_sampling_freq_div); }
 
   /**
    * @return sampling period of sequence in micro seconds
    */
-  [[nodiscard]] size_t sampling_period_us() const { return static_cast<size_t>(this->_sampling_freq_div) * 1000000 / POINT_SEQ_BASE_FREQ; }
+  [[nodiscard]] size_t sampling_period_us() const { return static_cast<size_t>(this->_sampling_freq_div) * 1000000 / SEQ_BASE_FREQ; }
 
   /**
    * The sampling frequency division means the (sampling period)/25us.
@@ -127,6 +130,111 @@ class PointSequence {
  private:
   GeometryPtr _geometry;
   std::vector<Vector3> _control_points;
+  uint16_t _sampling_freq_div;
+  size_t _sent;
+};
+
+/**
+ * @brief GainSequence provides a function to display Gain sequentially and periodically.
+ * @details GainSequence uses a timer on the FPGA to ensure that Gain is precisely timed.
+ * GainSequence currently has the following three limitations.
+ * 1. The maximum number of gains is 1024.
+ * 2. The sampling interval of gains is an integer multiple of 25us and less than 25us x 65536.
+ */
+class GainSequence {
+ public:
+  GainSequence() noexcept : _sampling_freq_div(1), _sent(0) {}
+  explicit GainSequence(std::vector<GainPtr> gains) noexcept : _gains(std::move(gains)), _sampling_freq_div(1), _sent(0) {}
+
+  /**
+   * @brief Generate empty GainSequence
+   */
+  static GainSequencePtr create() noexcept { return std::make_shared<GainSequence>(); }
+
+  /**
+   * @brief Generate PointSequence with control points.
+   */
+  static GainSequencePtr create(const std::vector<GainPtr>& gains) noexcept { return std::make_shared<GainSequence>(gains); }
+
+  /**
+   * @brief Add gain
+   * @param[in] gain gain
+   */
+  void add_gain(const GainPtr& gain) {
+    if (this->_gains.size() + 1 > GAIN_SEQ_BUFFER_SIZE_MAX)
+      throw core::SequenceBuildError(
+          std::string("Gain sequence buffer overflow. Maximum available buffer size is " + std::to_string(GAIN_SEQ_BUFFER_SIZE_MAX)));
+
+    this->_gains.emplace_back(gain);
+  }
+
+  /**
+   * @brief Add gains
+   * @param[in] gains vector of gain
+   */
+  void add_points(const std::vector<GainPtr>& gains) {
+    if (this->_gains.size() + gains.size() > GAIN_SEQ_BUFFER_SIZE_MAX)
+      throw core::SequenceBuildError(
+          std::string("Gain sequence buffer overflow. Maximum available buffer size is " + std::to_string(GAIN_SEQ_BUFFER_SIZE_MAX)));
+
+    this->_gains.reserve(this->_gains.size() + gains.size());
+    for (const auto& p : gains) this->_gains.emplace_back(p);
+  }
+
+  /**
+   * @return std::vector<GainPtr> Gain list of the sequence
+   */
+  [[nodiscard]] std::vector<GainPtr>& gains() { return this->_gains; }
+
+  /**
+   * @brief Set frequency of the sequence
+   * @param[in] freq Frequency of the sequence
+   * @details The Gain Sequence Mode has two constraints, which determine the actual frequency of the sequence.
+   * 1. The maximum number of control points is 1024.
+   * 2. The sampling interval of control points is an integer multiple of 25us and less than 25us x 65536.
+   * @return double Actual frequency of sequence
+   */
+  double set_frequency(const double freq) {
+    const auto sample_freq = std::clamp(static_cast<double>(this->_gains.size()) * freq, 0.0, static_cast<double>(SEQ_BASE_FREQ));
+    this->_sampling_freq_div = static_cast<uint16_t>(static_cast<double>(SEQ_BASE_FREQ) / sample_freq);
+    return this->frequency();
+  }
+
+  /**
+   * @return frequency of sequence
+   */
+  [[nodiscard]] double frequency() const { return this->sampling_frequency() / static_cast<double>(this->_gains.size()); }
+
+  /**
+   * @return period of sequence
+   */
+  [[nodiscard]] size_t period_us() const { return this->sampling_period_us() * this->_gains.size(); }
+
+  /**
+   * The sampling period is limited to an integer multiple of 25us. i.e., the sampling frequency must be 40kHz/N.
+   * @return double Sampling frequency of sequence
+   */
+  [[nodiscard]] double sampling_frequency() const { return static_cast<double>(SEQ_BASE_FREQ) / static_cast<double>(this->_sampling_freq_div); }
+
+  /**
+   * @return sampling period of sequence in micro seconds
+   */
+  [[nodiscard]] size_t sampling_period_us() const { return static_cast<size_t>(this->_sampling_freq_div) * 1000000 / SEQ_BASE_FREQ; }
+
+  /**
+   * The sampling frequency division means the (sampling period)/25us.
+   * @return double Sampling frequency division
+   */
+  [[nodiscard]] uint16_t sampling_frequency_division() const { return this->_sampling_freq_div; }
+
+  /**
+   * \brief sent means data length already sent to devices.
+   */
+  size_t& sent() { return _sent; }
+
+ private:
+  GeometryPtr _geometry;
+  std::vector<GainPtr> _gains;
   uint16_t _sampling_freq_div;
   size_t _sent;
 };
