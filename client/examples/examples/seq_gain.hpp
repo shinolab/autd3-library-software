@@ -15,7 +15,6 @@
 #include <autd3/gain/eigen_backend.hpp>
 #include <autd3/gain/holo.hpp>
 #include <iostream>
-#include <string>
 
 using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SPACING_MM;
 using autd::gain::holo::Eigen3Backend;
