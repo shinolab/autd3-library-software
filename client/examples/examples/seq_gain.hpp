@@ -3,7 +3,7 @@
 // Created Date: 20/07/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/07/2021
+// Last Modified: 21/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -30,20 +30,19 @@ inline void seq_gain_test(autd::ControllerPtr& autd) {
   const auto backend = Eigen3Backend::create();
 
   const autd::Vector3 center(TRANS_SPACING_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SPACING_MM * ((NUM_TRANS_Y - 1) / 2.0), 150.0);
-
-  std::vector<autd::Vector3> foci1 = {center - autd::Vector3::UnitX() * 30.0, center + autd::Vector3::UnitX() * 30.0};
-  std::vector<double> amps1 = {1, 1};
-  auto g1 = autd::gain::holo::HoloSDP::create(backend, foci1, amps1);
-
-  std::vector<autd::Vector3> foci2 = {center - autd::Vector3::UnitY() * 30.0, center + autd::Vector3::UnitY() * 30.0};
-  std::vector<double> amps2 = {1, 1};
-  auto g2 = autd::gain::holo::HoloSDP::create(backend, foci2, amps2);
-
-  seq->add_gain(g1);
-  // seq->add_gain(g2);
+  const auto point_num = 200;
+  for (auto i = 0; i < point_num; i++) {
+    const auto radius = 30.0;
+    const auto theta = 2.0 * M_PI * static_cast<double>(i) / static_cast<double>(point_num);
+    const autd::Vector3 p(radius * std::cos(theta), radius * std::sin(theta), 0);
+    std::vector<autd::Vector3> foci = {center + p, center - p};
+    std::vector<double> amps = {1, 1};
+    const auto g = autd::gain::holo::HoloSDP::create(backend, foci, amps);
+    // const auto g = autd::gain::FocalPoint::create(center + p);
+    seq->add_gain(g);
+  }
 
   const auto actual_freq = seq->set_frequency(1);
   std::cout << "Actual frequency is " << actual_freq << " Hz\n";
-  std::cout << "Actual frequency is " << seq->sampling_frequency_division() << " \n";
   autd->send(seq);
 }

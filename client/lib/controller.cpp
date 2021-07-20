@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/07/2021
+// Last Modified: 21/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -175,7 +175,7 @@ bool Controller::send(const core::PointSequencePtr& seq) {
 }
 
 bool Controller::send(const core::GainSequencePtr& seq) {
-  auto seq_finished = [](const core::GainSequencePtr& s) { return s == nullptr || s->sent() == s->gains().size(); };
+  auto seq_finished = [](const core::GainSequencePtr& s) { return s == nullptr || s->sent() == s->gains().size() + 1; };
 
   for (auto&& g : seq->gains()) g->build(this->_geometry);
 
