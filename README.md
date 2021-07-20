@@ -5,8 +5,6 @@
 
 Software version: 1.6.0
 
-* Firmware version: 1.4
-
 ## :blue_book: **[Wiki for beginners](https://github.com/shinolab/autd3-library-software/wiki)**
 
 ## :books: [API document](https://shinolab.github.io/autd3-library-software/index.html)

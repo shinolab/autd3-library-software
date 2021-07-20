@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/07/2021
+// Last Modified: 20/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -35,7 +35,10 @@ constexpr size_t MOD_SAMPLING_FREQ_BASE = 40000;
 constexpr size_t MOD_FRAME_SIZE = 124;
 
 constexpr size_t POINT_SEQ_BUFFER_SIZE_MAX = 65536;
-constexpr size_t POINT_SEQ_BASE_FREQ = 40000;
+constexpr size_t GAIN_SEQ_BUFFER_SIZE_MAX = 1024;
+constexpr size_t SEQ_BASE_FREQ = 40000;
+
+constexpr bool PHASE_INVERTED = true;
 
 using DataArray = std::array<uint16_t, NUM_TRANS_IN_UNIT>;
 
@@ -56,11 +59,12 @@ enum class COMMAND : uint8_t {
   READ_CPU_VER_MSB = 0x03,
   READ_FPGA_VER_LSB = 0x04,
   READ_FPGA_VER_MSB = 0x05,
-  SEQ_MODE = 0x06,
+  SEQ_FOCI_MODE = 0x06,
   CLEAR = 0x09,
   SET_DELAY_OFFSET = 0x0A,
   PAUSE = 0x0B,
   RESUME = 0x0C,
+  SEQ_GAIN_MODE = 0x0D,
   EMULATOR_SET_GEOMETRY = 0xFF
 };
 
