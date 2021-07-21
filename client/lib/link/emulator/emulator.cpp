@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/07/2021
+// Last Modified: 20/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -164,11 +164,12 @@ void EmulatorImpl::read(uint8_t* rx, size_t buffer_len) {
     case core::COMMAND::READ_FPGA_VER_MSB:
       set(0xFF);
       break;
-    case core::COMMAND::SEQ_MODE:
+    case core::COMMAND::SEQ_FOCI_MODE:
     case core::COMMAND::CLEAR:
     case core::COMMAND::SET_DELAY_OFFSET:
     case core::COMMAND::PAUSE:
     case core::COMMAND::RESUME:
+    case core::COMMAND::SEQ_GAIN_MODE:
     case core::COMMAND::EMULATOR_SET_GEOMETRY:
       break;
   }

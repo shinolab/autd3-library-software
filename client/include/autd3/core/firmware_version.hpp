@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/07/2021
+// Last Modified: 20/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -41,16 +41,15 @@ class FirmwareInfo {
   uint16_t _fpga_version_number;
 
   static std::string firmware_version_map(const uint16_t version_number) {
+    std::stringstream ss;
     if (version_number == 0) {
       return "older than v0.4";
     }
     if (version_number <= 6) {
-      std::stringstream ss;
       ss << "v0." << version_number + 3;
       return ss.str();
     }
-    if (0x000A <= version_number && version_number <= 0x000D) {
-      std::stringstream ss;
+    if (0x000A <= version_number && version_number <= 0x0010) {
       ss << "v1." << version_number - 0x000A;
       return ss.str();
     }
@@ -58,17 +57,16 @@ class FirmwareInfo {
       return "emulator";
     }
     if ((version_number & 0xF000) == 0x1000) {
-      std::stringstream ss;
       ss << "v" << version_number - 0x1000 + 1 << "-lite";
       return ss.str();
     }
     if ((version_number & 0xF000) == 0xF000) {
-      std::stringstream ss;
       ss << "v0." << version_number - 0xF000 + 1 << "-freq-shift";
       return ss.str();
     }
 
-    return "unknown: " + std::to_string(version_number);
+    ss << "unknown: " << version_number;
+    return ss.str();
   }
 };
 

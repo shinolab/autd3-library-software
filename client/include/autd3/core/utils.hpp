@@ -3,7 +3,7 @@
 // Created Date: 08/06/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 20/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -34,8 +34,8 @@ class Utilities {
    * \return descrete phase
    */
   inline static uint8_t to_phase(const double phase) noexcept {
-    const int d_phase = static_cast<int>(std::round(phase * 256.0)) & 0xFF;
-    return static_cast<uint8_t>(0xFF - d_phase);
+    const uint8_t d_phase = static_cast<uint8_t>(static_cast<int>(std::round(phase * 256.0)) & 0xFF);
+    return core::PHASE_INVERTED ? d_phase : 0xFF - d_phase;
   }
 
   /**

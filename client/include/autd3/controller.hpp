@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/07/2021
+// Last Modified: 20/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -180,11 +180,18 @@ class Controller {
   bool send(const core::GainPtr& gain, const core::ModulationPtr& mod);
 
   /**
-   * @brief Send sequence and modulation to the device
+   * @brief Send sequence to the device
    * @param[in] seq Sequence to display
    * \return if true, It guarantees that the devices have processed the data
    */
-  bool send(const core::SequencePtr& seq);
+  bool send(const core::PointSequencePtr& seq);
+
+  /**
+   * @brief Send sequence to the device
+   * @param[in] seq Sequence to display
+   * \return if true, It guarantees that the devices have processed the data
+   */
+  bool send(const core::GainSequencePtr& seq);
 
   /**
    * @brief Enumerate firmware information
