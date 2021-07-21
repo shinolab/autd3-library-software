@@ -3,7 +3,7 @@
 // Created Date: 23/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/07/2021
+// Last Modified: 21/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -28,7 +28,7 @@ inline void group_test(autd::ControllerPtr& autd) {
   std::vector<autd::Vector3> foci = {center - autd::Vector3::UnitX() * 30.0, center + autd::Vector3::UnitX() * 30.0};
   std::vector<double> amps = {1, 1};
   const auto backend = autd::gain::holo::Eigen3Backend::create();
-  const auto g2 = autd::gain::holo::HoloSDP::create(backend, foci, amps);
+  const auto g2 = autd::gain::holo::SDP::create(backend, foci, amps);
 
   const auto g = autd::gain::Grouped::create();
   g->add(0, g1);

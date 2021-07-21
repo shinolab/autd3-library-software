@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/07/2021
+// Last Modified: 20/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -45,10 +45,10 @@ inline GainWrapper* GainCreate(const autd::core::GainPtr& ptr) { return new Gain
 inline void GainDelete(GainWrapper* ptr) { delete ptr; }
 
 typedef struct {
-  autd::core::SequencePtr ptr;
+  autd::core::PointSequencePtr ptr;
 } SequenceWrapper;
 
-inline SequenceWrapper* SequenceCreate(const autd::core::SequencePtr& ptr) { return new SequenceWrapper{ptr}; }
+inline SequenceWrapper* SequenceCreate(const autd::core::PointSequencePtr& ptr) { return new SequenceWrapper{ptr}; }
 inline void SequenceDelete(SequenceWrapper* ptr) { delete ptr; }
 
 typedef struct {
