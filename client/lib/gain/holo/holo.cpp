@@ -3,11 +3,13 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 21/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
+
+#include "autd3/gain/holo.hpp"
 
 #include <limits>
 #include <random>
@@ -16,7 +18,6 @@
 #include "autd3/core/geometry.hpp"
 #include "autd3/core/hardware_defined.hpp"
 #include "autd3/core/utils.hpp"
-#include "autd3/gain/holo.hpp"
 #include "autd3/gain/linalg_backend.hpp"
 #include "autd3/utils.hpp"
 
@@ -76,7 +77,7 @@ Backend::MatrixXc Holo::transfer_matrix(const std::vector<core::Vector3>& foci, 
   return g;
 }
 
-void HoloSDP::calc(const core::GeometryPtr& geometry) {
+void SDP::calc(const core::GeometryPtr& geometry) {
   if (!this->_backend->supports_svd() || !this->_backend->supports_evd()) throw core::GainBuildError("This backend does not support this method.");
 
   auto set_bcd_result = [](Backend::MatrixXc& mat, const Backend::VectorXc& vec, const size_t idx) {
@@ -138,7 +139,7 @@ void HoloSDP::calc(const core::GeometryPtr& geometry) {
   this->_built = true;
 }
 
-void HoloEVD::calc(const core::GeometryPtr& geometry) {
+void EVD::calc(const core::GeometryPtr& geometry) {
   const auto m = this->_foci.size();
   const auto n = geometry->num_transducers();
 
@@ -186,7 +187,7 @@ void HoloEVD::calc(const core::GeometryPtr& geometry) {
   this->_built = true;
 }
 
-void HoloNaive::calc(const core::GeometryPtr& geometry) {
+void Naive::calc(const core::GeometryPtr& geometry) {
   const auto m = this->_foci.size();
   const auto n = geometry->num_transducers();
 
@@ -202,7 +203,7 @@ void HoloNaive::calc(const core::GeometryPtr& geometry) {
   this->_built = true;
 }
 
-void HoloGS::calc(const core::GeometryPtr& geometry) {
+void GS::calc(const core::GeometryPtr& geometry) {
   const auto m = this->_foci.size();
   const auto n = geometry->num_transducers();
 
@@ -228,7 +229,7 @@ void HoloGS::calc(const core::GeometryPtr& geometry) {
   this->_built = true;
 }
 
-void HoloGSPAT::calc(const core::GeometryPtr& geometry) {
+void GSPAT::calc(const core::GeometryPtr& geometry) {
   const auto m = this->_foci.size();
   const auto n = geometry->num_transducers();
 
@@ -270,7 +271,7 @@ void HoloGSPAT::calc(const core::GeometryPtr& geometry) {
   this->_built = true;
 }
 
-void HoloLM::calc(const core::GeometryPtr& geometry) {
+void LM::calc(const core::GeometryPtr& geometry) {
   if (!this->_backend->supports_solve()) throw core::GainBuildError("This backend does not support this method.");
 
   auto make_bhb = [](const BackendPtr& backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps, const core::GeometryPtr& geo,
@@ -393,7 +394,7 @@ void HoloLM::calc(const core::GeometryPtr& geometry) {
   this->_built = true;
 }
 
-void HoloGreedy::calc(const core::GeometryPtr& geometry) {
+void Greedy::calc(const core::GeometryPtr& geometry) {
   const auto m = this->_foci.size();
 
   const auto wave_num = 2.0 * M_PI / geometry->wavelength();

@@ -3,7 +3,7 @@
 // Created Date: 10/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 19/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include <functional>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -44,7 +46,7 @@ class SOEM : virtual public core::Link {
    * @details Available Network interface names are obtained by EnumerateAdapters().
    *          The numbers of connected devices is obtained by Geometry::num_devices().
    */
-  static core::LinkPtr create(const std::string& ifname, size_t device_num, uint32_t cycle_ticks = 1);
+  static std::unique_ptr<SOEM> create(const std::string& ifname, size_t device_num, uint32_t cycle_ticks = 1);
 
   /**
    * @brief Enumerate Ethernet adapters of the computer.
@@ -61,6 +63,7 @@ class SOEM : virtual public core::Link {
   void close() override = 0;
   void send(const uint8_t* buf, size_t size) override = 0;
   void read(uint8_t* rx, size_t buffer_len) override = 0;
+  virtual void set_lost_handler(std::function<void(std::string)> handler) = 0;
   bool is_open() override = 0;
 };
 }  // namespace autd::link

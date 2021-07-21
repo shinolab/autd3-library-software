@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 19/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -16,6 +16,7 @@
 #include <queue>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "./ethercat.h"
@@ -29,7 +30,8 @@ namespace autd::autdsoem {
 void SOEMCallback::callback() {
   if (auto expected = false; _autd3_rt_lock.compare_exchange_weak(expected, true)) {
     ec_send_processdata();
-    ec_receive_processdata(EC_TIMEOUTRET);
+    if (const auto wkc = ec_receive_processdata(EC_TIMEOUTRET); wkc != _expected_wkc)
+      if (!this->_error_handler()) return;
     _autd3_rt_lock.store(false, std::memory_order_release);
   }
 }
@@ -59,6 +61,7 @@ void SOEMController::setup_sync0(const bool activate, const uint32_t cycle_time_
 void SOEMController::open(const char* ifname, const size_t dev_num, const ECConfig config) {
   _dev_num = dev_num;
   _config = config;
+
   const auto header_size = config.header_size;
   const auto body_size = config.body_size;
   const auto output_size = (header_size + body_size) * _dev_num;
@@ -77,7 +80,7 @@ void SOEMController::open(const char* ifname, const size_t dev_num, const ECConf
     throw core::LinkError(ss.str());
   }
 
-  const auto wc = ec_config(0, &_io_map[0]);
+  const auto wc = ec_config_init(0);
   if (wc <= 0) throw core::LinkError("No slaves found!");
 
   if (static_cast<size_t>(wc) != dev_num) {
@@ -85,6 +88,8 @@ void SOEMController::open(const char* ifname, const size_t dev_num, const ECConf
     ss << "The number of slaves you added: " << dev_num << ", but found: " << wc;
     throw core::LinkError(ss.str());
   }
+
+  ec_config_map(&_io_map[0]);
 
   ec_configdc();
 
@@ -105,11 +110,15 @@ void SOEMController::open(const char* ifname, const size_t dev_num, const ECConf
 
   setup_sync0(true, config.ec_sync0_cycle_time_ns);
 
+  const auto expected_wkc = ec_group[0].outputsWKC * 2 + ec_group[0].inputsWKC;
   const auto interval_us = config.ec_sm3_cycle_time_ns / 1000;
-  this->_timer = core::Timer<SOEMCallback>::start(std::make_unique<SOEMCallback>(), interval_us);
+  this->_timer =
+      core::Timer<SOEMCallback>::start(std::make_unique<SOEMCallback>(expected_wkc, [this]() { return this->error_handle(); }), interval_us);
 
   _is_open = true;
 }
+
+void SOEMController::set_lost_handler(std::function<void(std::string)> handler) { _link_lost_handle = std::move(handler); }
 
 void SOEMController::close() {
   if (!is_open()) return;
@@ -128,6 +137,53 @@ void SOEMController::close() {
 
   _io_map = nullptr;
   _io_map_size = 0;
+}
+
+bool SOEMController::error_handle() {
+  ec_group[0].docheckstate = 0;
+  ec_readstate();
+  std::stringstream ss;
+  for (uint16_t slave = 1; slave <= static_cast<uint16_t>(ec_slavecount); slave++) {
+    if (ec_slave[slave].state != EC_STATE_OPERATIONAL) {
+      ec_group[0].docheckstate = 1;
+      if (ec_slave[slave].state == EC_STATE_SAFE_OP + EC_STATE_ERROR) {
+        ss << "ERROR : slave " << slave << " is in SAFE_OP + ERROR, attempting ack\n";
+        ec_slave[slave].state = EC_STATE_SAFE_OP + EC_STATE_ACK;
+        ec_writestate(slave);
+      } else if (ec_slave[slave].state == EC_STATE_SAFE_OP) {
+        ss << "WARNING : slave " << slave << " is in SAFE_OP, change to OPERATIONAL\n";
+        ec_slave[slave].state = EC_STATE_OPERATIONAL;
+        ec_writestate(slave);
+      } else if (ec_slave[slave].state > EC_STATE_NONE) {
+        if (ec_reconfig_slave(slave, 500)) {
+          ec_slave[slave].islost = 0;
+          ss << "MESSAGE : slave " << slave << " reconfigured\n";
+        }
+      } else if (!ec_slave[slave].islost) {
+        ec_statecheck(slave, EC_STATE_OPERATIONAL, EC_TIMEOUTRET);
+        if (ec_slave[slave].state == EC_STATE_NONE) {
+          ec_slave[slave].islost = 1;
+          ss << "ERROR : slave " << slave << " lost\n";
+        }
+      }
+    }
+    if (ec_slave[slave].islost) {
+      if (ec_slave[slave].state == EC_STATE_NONE) {
+        if (ec_recover_slave(slave, 500)) {
+          ec_slave[slave].islost = 0;
+          ss << "MESSAGE : slave " << slave << " recovered\n";
+        }
+      } else {
+        ec_slave[slave].islost = 0;
+        ss << "MESSAGE : slave " << slave << " found\n";
+      }
+    }
+  }
+  if (!ec_group[0].docheckstate) return true;
+
+  this->_is_open = false;
+  if (_link_lost_handle != nullptr) _link_lost_handle(ss.str());
+  return false;
 }
 
 SOEMController::SOEMController() : _io_map(nullptr), _io_map_size(0), _output_size(0), _dev_num(0), _config(), _is_open(false) {}

@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 11/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -118,6 +118,7 @@ GainPtr Custom::create(const uint16_t* data, const size_t data_length) {
 GainPtr Custom::create(const std::vector<DataArray>& data) { return std::make_shared<Custom>(data); }
 
 void Custom::calc(const core::GeometryPtr& geometry) {
+  (void)geometry;
   this->_data = std::move(this->_raw_data);
   this->_built = true;
 }

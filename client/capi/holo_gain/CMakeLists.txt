@@ -15,7 +15,7 @@ add_library(autd3capi-holo-gain SHARED
 
 include_directories(${INCLUDE_LIST})
 
-target_link_libraries(autd3capi-holo-gain holo_gain)
+target_link_libraries(autd3capi-holo-gain gain_holo)
 if(WIN32)
 elseif(APPLE)
 else()
