@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 19/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -12,8 +12,10 @@
 #pragma once
 
 #include <atomic>
+#include <functional>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "autd3/core/osal_timer.hpp"
@@ -27,12 +29,15 @@ struct SOEMCallback final : core::CallbackHandler {
   SOEMCallback(SOEMCallback&& obj) = delete;
   SOEMCallback& operator=(SOEMCallback&& obj) = delete;
 
-  SOEMCallback() : _autd3_rt_lock(false) {}
+  explicit SOEMCallback(const int expected_wkc, std::function<bool()> error_handler)
+      : _autd3_rt_lock(false), _expected_wkc(expected_wkc), _error_handler(std::move(error_handler)) {}
 
   void callback() override;
 
  private:
   std::atomic<bool> _autd3_rt_lock;
+  int _expected_wkc;
+  std::function<bool()> _error_handler;
 };
 
 struct ECConfig {
@@ -53,6 +58,7 @@ class SOEMController {
   SOEMController& operator=(SOEMController&& obj) = delete;
 
   void open(const char* ifname, size_t dev_num, ECConfig config);
+  void set_lost_handler(std::function<void(std::string)> handler);
   void close();
 
   [[nodiscard]] bool is_open() const;
@@ -62,6 +68,9 @@ class SOEMController {
 
  private:
   void setup_sync0(bool activate, uint32_t cycle_time_ns) const;
+
+  bool error_handle();
+  std::function<void(std::string)> _link_lost_handle = nullptr;
 
   std::unique_ptr<uint8_t[]> _io_map;
   size_t _io_map_size;

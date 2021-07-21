@@ -14,7 +14,7 @@ add_library(autd3capi-emulator-link SHARED
 
 include_directories(${INCLUDE_LIST})
 
-target_link_libraries(autd3capi-emulator-link emulator_link autd3)
+target_link_libraries(autd3capi-emulator-link link_emulator autd3)
 if(WIN32)
   target_link_libraries(autd3capi-emulator-link ws2_32.lib winmm.lib)
 elseif(APPLE)

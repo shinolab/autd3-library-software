@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/07/2021
+// Last Modified: 21/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -74,8 +74,10 @@ EXPORT_AUTD void AUTDModulationSquare(void** mod, int32_t freq, uint8_t low, uin
 EXPORT_AUTD void AUTDDeleteModulation(void* mod);
 
 EXPORT_AUTD void AUTDSequence(void** out);
+EXPORT_AUTD void AUTDGainSequence(void** out);
 EXPORT_AUTD bool AUTDSequenceAddPoint(void* seq, double x, double y, double z);
 EXPORT_AUTD bool AUTDSequenceAddPoints(void* seq, double* points, uint64_t size);
+EXPORT_AUTD bool AUTDSequenceAddGain(void* seq, void* gain);
 EXPORT_AUTD double AUTDSequenceSetFreq(void* seq, double freq);
 EXPORT_AUTD double AUTDSequenceFreq(void* seq);
 EXPORT_AUTD uint32_t AUTDSequencePeriod(void* seq);
@@ -92,6 +94,7 @@ EXPORT_AUTD bool AUTDSendGain(void* handle, void* gain);
 EXPORT_AUTD bool AUTDSendModulation(void* handle, void* mod);
 EXPORT_AUTD bool AUTDSendGainModulation(void* handle, void* gain, void* mod);
 EXPORT_AUTD bool AUTDSendSequence(void* handle, void* seq);
+EXPORT_AUTD bool AUTDSendGainSequence(void* handle, void* seq);
 
 EXPORT_AUTD void AUTDSTMController(void** out, void* handle);
 EXPORT_AUTD bool AUTDAddSTMGain(void* handle, void* gain);

@@ -3,15 +3,16 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 19/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
+#include "autd3/link/soem.hpp"
+
 #include "autd3/core/ec_config.hpp"
 #include "autd3/core/exception.hpp"
-#include "autd3/link/soem.hpp"
 #include "autdsoem.hpp"
 
 namespace autd::link {
@@ -37,6 +38,7 @@ class SOEMImpl final : public SOEM {
   void close() override;
   void send(const uint8_t* buf, size_t size) override;
   void read(uint8_t* rx, size_t buffer_len) override;
+  void set_lost_handler(std::function<void(std::string)> handler) override;
   bool is_open() override;
 
  private:
@@ -47,9 +49,8 @@ class SOEMImpl final : public SOEM {
   autdsoem::ECConfig _config;
 };
 
-core::LinkPtr SOEM::create(const std::string& ifname, const size_t device_num, uint32_t cycle_ticks) {
-  core::LinkPtr link = std::make_unique<SOEMImpl>(ifname, device_num, cycle_ticks);
-  return link;
+std::unique_ptr<SOEM> SOEM::create(const std::string& ifname, const size_t device_num, uint32_t cycle_ticks) {
+  return std::make_unique<SOEMImpl>(ifname, device_num, cycle_ticks);
 }
 
 void SOEMImpl::open() {
@@ -62,7 +63,7 @@ void SOEMImpl::open() {
   _config.body_size = core::EC_OUTPUT_FRAME_SIZE - core::HEADER_SIZE;
   _config.input_frame_size = core::EC_INPUT_FRAME_SIZE;
 
-  return _cnt.open(_ifname.c_str(), _device_num, _config);
+  _cnt.open(_ifname.c_str(), _device_num, _config);
 }
 
 void SOEMImpl::close() { return _cnt.close(); }
@@ -72,4 +73,6 @@ void SOEMImpl::send(const uint8_t* buf, const size_t size) { return _cnt.send(bu
 void SOEMImpl::read(uint8_t* rx, [[maybe_unused]] size_t buffer_len) { return _cnt.read(rx); }
 
 bool SOEMImpl::is_open() { return _cnt.is_open(); }
+
+void SOEMImpl::set_lost_handler(std::function<void(std::string)> handler) { _cnt.set_lost_handler(std::move(handler)); }
 }  // namespace autd::link

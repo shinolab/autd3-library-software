@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 20/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -15,7 +15,7 @@
 
 namespace autd::sequence {
 
-SequencePtr Circumference::create(const core::Vector3& center, const core::Vector3& normal, const double radius, const size_t n) {
+PointSequencePtr Circumference::create(const core::Vector3& center, const core::Vector3& normal, const double radius, const size_t n) {
   auto get_orthogonal = [](const core::Vector3& v) {
     const auto a = core::Vector3::UnitX();
     if (std::acos(v.dot(a)) < M_PI / 2) return v.cross(core::Vector3::UnitY());

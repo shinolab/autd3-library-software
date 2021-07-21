@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/07/2021
+// Last Modified: 21/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -112,8 +112,10 @@ bool Controller::wait_msg_processed(const uint8_t msg_id, const size_t max_trial
 }
 
 bool Controller::close() {
+  if (this->_link == nullptr) return true;
   if (!this->stop()) return false;
   if (!this->clear()) return false;
+
   this->_link->close();
   this->_link = nullptr;
   this->_tx_buf = nullptr;
@@ -158,13 +160,29 @@ bool Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod)
   }
 }
 
-bool Controller::send(const core::SequencePtr& seq) {
-  auto seq_finished = [](const core::SequencePtr& s) { return s == nullptr || s->sent() == s->control_points().size(); };
+bool Controller::send(const core::PointSequencePtr& seq) {
+  auto seq_finished = [](const core::PointSequencePtr& s) { return s == nullptr || s->sent() == s->control_points().size(); };
 
   this->_props._seq_mode = true;
   while (true) {
     uint8_t msg_id;
-    core::Logic::pack_header(core::COMMAND::SEQ_MODE, _props.ctrl_flag(), &this->_tx_buf[0], &msg_id);
+    core::Logic::pack_header(core::COMMAND::SEQ_FOCI_MODE, _props.ctrl_flag(), &this->_tx_buf[0], &msg_id);
+    size_t size;
+    core::Logic::pack_body(seq, this->_geometry, &this->_tx_buf[0], &size);
+    this->_link->send(&this->_tx_buf[0], size);
+    if (const auto res = wait_msg_processed(msg_id); !res || seq_finished(seq)) return res;
+  }
+}
+
+bool Controller::send(const core::GainSequencePtr& seq) {
+  auto seq_finished = [](const core::GainSequencePtr& s) { return s == nullptr || s->sent() == s->gains().size() + 1; };
+
+  for (auto&& g : seq->gains()) g->build(this->_geometry);
+
+  this->_props._seq_mode = true;
+  while (true) {
+    uint8_t msg_id;
+    core::Logic::pack_header(core::COMMAND::SEQ_GAIN_MODE, _props.ctrl_flag(), &this->_tx_buf[0], &msg_id);
     size_t size;
     core::Logic::pack_body(seq, this->_geometry, &this->_tx_buf[0], &size);
     this->_link->send(&this->_tx_buf[0], size);
