@@ -1,9 +1,9 @@
 # 1.6
-* Fix #7
-* Support Emulator link in mac/linux
-* Add `link::SOEM::set_lost_handler`
 * Add `GainSequence`
+* Add `link::SOEM::set_lost_handler`
+* Support Emulator link in mac/linux
 * Rename holo::Holo* to holo::*
+* Fix #7
 * Update firmware version to 1.6
 
 # 1.5.1
