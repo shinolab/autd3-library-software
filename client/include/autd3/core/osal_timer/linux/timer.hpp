@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 23/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -28,7 +28,7 @@ template <typename T>
 class Timer {
  public:
   Timer(std::unique_ptr<T> handler, const timer_t timer_id) : _handler(std::move(handler)), _timer_id(timer_id), _is_closed(false) {}
-  ~Timer() { (void)this->stop(); }
+  ~Timer() { const auto _ = this->stop(); }
   [[nodiscard]] static std::unique_ptr<Timer> start(std::unique_ptr<T> handler, const uint32_t interval_us) {
     struct itimerspec itval;
     struct sigevent se;
