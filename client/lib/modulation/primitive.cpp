@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 23/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -63,7 +63,9 @@ void SinePressure::calc() {
 }
 
 ModulationPtr Square::create(const int freq, const uint8_t low, const uint8_t high) { return std::make_shared<Square>(freq, low, high); }
-ModulationPtr Square::create(const int freq, const double low, const double high) { return create(freq, to_duty(low), to_duty(high)); }
+ModulationPtr Square::create(const int freq, const double low, const double high) {
+  return create(freq, core::Utilities::to_duty(low), core::Utilities::to_duty(high));
+}
 
 void Square::calc() {
   const auto sf = static_cast<int32_t>(sampling_freq());

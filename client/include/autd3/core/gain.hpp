@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 23/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -32,13 +32,6 @@ class Gain {
    * @brief Generate empty gain
    */
   static GainPtr create() { return std::make_shared<Gain>(); }
-
-  /**
-   * \brief Convert ultrasound amplitude to duty ratio.
-   * \param amp ultrasound amplitude
-   * \return duty ratio
-   */
-  static uint8_t to_duty(const double amp) noexcept { return Utilities::to_duty(amp); }
 
   /**
    * \brief Calculate duty ratio and phase of each transducer

@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/07/2021
+// Last Modified: 23/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -13,6 +13,8 @@
 
 #include <memory>
 #include <vector>
+
+#include "autd3/core/utils.hpp"
 
 namespace autd::gain {
 
@@ -36,7 +38,7 @@ void Grouped::calc(const core::GeometryPtr& geometry) {
   this->_built = true;
 }
 
-GainPtr PlaneWave::create(const Vector3& direction, const double amp) { return create(direction, to_duty(amp)); }
+GainPtr PlaneWave::create(const Vector3& direction, const double amp) { return create(direction, core::Utilities::to_duty(amp)); }
 
 GainPtr PlaneWave::create(const Vector3& direction, uint8_t duty) { return std::make_shared<PlaneWave>(direction, duty); }
 
@@ -55,7 +57,7 @@ void PlaneWave::calc(const core::GeometryPtr& geometry) {
   this->_built = true;
 }
 
-GainPtr FocalPoint::create(const Vector3& point, const double amp) { return create(point, to_duty(amp)); }
+GainPtr FocalPoint::create(const Vector3& point, const double amp) { return create(point, core::Utilities::to_duty(amp)); }
 GainPtr FocalPoint::create(const Vector3& point, uint8_t duty) { return std::make_shared<FocalPoint>(point, duty); }
 
 void FocalPoint::calc(const core::GeometryPtr& geometry) {
@@ -72,7 +74,7 @@ void FocalPoint::calc(const core::GeometryPtr& geometry) {
 }
 
 GainPtr BesselBeam::create(const Vector3& point, const Vector3& vec_n, const double theta_z, const double amp) {
-  return create(point, vec_n, theta_z, to_duty(amp));
+  return create(point, vec_n, theta_z, core::Utilities::to_duty(amp));
 }
 
 GainPtr BesselBeam::create(const Vector3& point, const Vector3& vec_n, double theta_z, uint8_t duty) {
@@ -117,8 +119,7 @@ GainPtr Custom::create(const uint16_t* data, const size_t data_length) {
 
 GainPtr Custom::create(const std::vector<DataArray>& data) { return std::make_shared<Custom>(data); }
 
-void Custom::calc(const core::GeometryPtr& geometry) {
-  (void)geometry;
+void Custom::calc(const core::GeometryPtr&) {
   this->_data = std::move(this->_raw_data);
   this->_built = true;
 }

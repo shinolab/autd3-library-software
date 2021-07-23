@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 23/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -159,16 +159,8 @@ void TwinCATImpl::open() {
   throw core::LinkError("Link to localhost has not been compiled. Rebuild this library on a Twincat3 host machine with TcADS-DLL.");
 }
 void TwinCATImpl::close() { return; }
-void TwinCATImpl::send(const uint8_t* buf, size_t size) {
-  (void)size;
-  (void)buf;
-  return;
-}
-void TwinCATImpl::read(uint8_t* rx, size_t buffer_len) {
-  (void)rx;
-  (void)buffer_len;
-  return;
-}
+void TwinCATImpl::send(const uint8_t*, size_t) { return; }
+void TwinCATImpl::read(uint8_t*, size_t) { return; }
 #endif  // TC_ADS
 
 }  // namespace autd::link
