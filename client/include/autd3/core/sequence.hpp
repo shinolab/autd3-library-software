@@ -3,7 +3,7 @@
 // Created Date: 14/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/07/2021
+// Last Modified: 23/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -30,6 +30,7 @@ using GainSequencePtr = std::shared_ptr<GainSequence>;
 class Sequence {
  public:
   Sequence() : _sampling_freq_div(1), _sent(0) {}
+  virtual ~Sequence() = default;
 
   virtual size_t size() const = 0;
 
