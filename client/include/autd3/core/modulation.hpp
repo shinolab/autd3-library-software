@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 23/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -38,13 +38,6 @@ class Modulation {
   Modulation& operator=(Modulation&& obj) = default;
 
   /**
-   * \brief Convert ultrasound amplitude to duty ratio.
-   * \param amp ultrasound amplitude
-   * \return duty ratio
-   */
-  static uint8_t to_duty(const double amp) noexcept { return Utilities::to_duty(amp); }
-
-  /**
    * @brief Generate empty modulation, which produce static pressure
    * \param duty duty ratio
    */
@@ -58,7 +51,7 @@ class Modulation {
    * @brief Generate empty modulation, which produce static pressure
    * \param amp relative amplitude (0 to 1)
    */
-  static ModulationPtr create(const double amp) { return create(to_duty(amp)); }
+  static ModulationPtr create(const double amp) { return create(Utilities::to_duty(amp)); }
 
   /**
    * \brief Calculate modulation data
