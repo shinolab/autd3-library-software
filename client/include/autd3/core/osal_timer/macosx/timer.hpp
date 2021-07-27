@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 23/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -27,7 +27,7 @@ class Timer {
  public:
   Timer(std::unique_ptr<T> handler, dispatch_queue_t queue, dispatch_source_t timer)
       : _handler(std::move(handler)), _queue(queue), _timer(timer), _is_closed(false) {}
-  ~Timer() { (void)this->stop(); }
+  ~Timer() { const auto _ = this->stop(); }
   [[nodiscard]] static std::unique_ptr<Timer> start(std::unique_ptr<T> handler, const uint32_t interval_us) {
     auto queue = dispatch_queue_create("timerQueue", 0);
 

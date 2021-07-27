@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/07/2021
+// Last Modified: 28/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -321,6 +321,11 @@ void AUTDModulationSinePressure(void** mod, const int32_t freq, const double amp
   auto* m = ModulationCreate(autd::modulation::SinePressure::create(freq, amp, offset));
   *mod = m;
 }
+void AUTDModulationSineLegacy(void** mod, const double freq, const double amp, const double offset) {
+  auto* m = ModulationCreate(autd::modulation::SineLegacy::create(freq, amp, offset));
+  *mod = m;
+}
+
 void AUTDDeleteModulation(void* const mod) {
   auto* m = static_cast<ModulationWrapper*>(mod);
   ModulationDelete(m);
@@ -330,8 +335,8 @@ void AUTDSequence(void** out) {
   auto* s = SequenceCreate(autd::sequence::PointSequence::create());
   *out = s;
 }
-void AUTDGainSequence(void** out) {
-  auto* s = SequenceCreate(autd::sequence::GainSequence::create());
+void AUTDGainSequence(void** out, const uint16_t gain_mode) {
+  auto* s = SequenceCreate(autd::sequence::GainSequence::create(static_cast<autd::GAIN_MODE>(gain_mode)));
   *out = s;
 }
 bool AUTDSequenceAddPoint(void* const seq, const double x, const double y, const double z) {

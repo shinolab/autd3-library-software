@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/07/2021
+// Last Modified: 28/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -172,23 +172,52 @@ class Logic {
     if (seq == nullptr) return;
 
     auto* header = reinterpret_cast<RxGlobalHeader*>(data);
+    const auto seq_sent = static_cast<size_t>(seq->gain_mode());
     if (seq->sent() == 0) {
       header->control_flags |= SEQ_BEGIN;
       auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(RxGlobalHeader));
-      for (size_t device = 0; device < num_devices; device++) cursor[device * NUM_TRANS_IN_UNIT + 1] = seq->sampling_frequency_division();
+      for (size_t device = 0; device < num_devices; device++) {
+        cursor[device * NUM_TRANS_IN_UNIT] = static_cast<uint16_t>(seq_sent);
+        cursor[device * NUM_TRANS_IN_UNIT + 1] = seq->sampling_frequency_division();
+        cursor[device * NUM_TRANS_IN_UNIT + 2] = static_cast<uint16_t>(seq->size());
+      }
       seq->sent()++;
       return;
     }
 
-    if (seq->sent() >= seq->gains().size()) header->control_flags |= SEQ_END;
+    if (seq->sent() + seq_sent > seq->gains().size()) header->control_flags |= SEQ_END;
 
     auto* cursor = data + sizeof(RxGlobalHeader);
     const auto byte_size = NUM_TRANS_IN_UNIT * sizeof(uint16_t);
+    const auto gain_idx = seq->sent() - 1;
     for (size_t device = 0; device < num_devices; device++) {
-      std::memcpy(cursor, &seq->gains()[seq->sent() - 1]->data()[device].at(0), byte_size);
+      switch (seq->gain_mode()) {
+        case GAIN_MODE::DUTY_PHASE_FULL:
+          std::memcpy(cursor, &seq->gains()[gain_idx]->data()[device].at(0), byte_size);
+          break;
+        case GAIN_MODE::PHASE_FULL:
+          for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
+            cursor[2 * i] = static_cast<uint8_t>(seq->gains()[gain_idx]->data()[device].at(i) & 0xFF);
+            cursor[2 * i + 1] = static_cast<uint8_t>(gain_idx + 1 >= seq->size() ? 0x00 : seq->gains()[gain_idx + 1]->data()[device].at(i) & 0xFF);
+          }
+          break;
+        case GAIN_MODE::PHASE_HALF:
+          for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
+            const auto phase1 = static_cast<uint8_t>((seq->gains()[gain_idx]->data()[device].at(i) >> 4) & 0xF);
+            const auto phase2 =
+                static_cast<uint8_t>(gain_idx + 1 >= seq->size() ? 0x00 : (seq->gains()[gain_idx + 1]->data()[device].at(i) >> 4) & 0xF);
+            const auto phase3 =
+                static_cast<uint8_t>(gain_idx + 2 >= seq->size() ? 0x00 : (seq->gains()[gain_idx + 2]->data()[device].at(i) >> 4) & 0xF);
+            const auto phase4 =
+                static_cast<uint8_t>(gain_idx + 3 >= seq->size() ? 0x00 : (seq->gains()[gain_idx + 3]->data()[device].at(i) >> 4) & 0xF);
+            cursor[2 * i] = (phase2 << 4) | phase1;
+            cursor[2 * i + 1] = (phase4 << 4) | phase3;
+          }
+          break;
+      }
       cursor += byte_size;
     }
-    seq->sent()++;
+    seq->sent() += seq_sent;
   }
 
   /**

@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/07/2021
+// Last Modified: 23/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -126,7 +126,7 @@ void SOEMController::close() {
 
   std::memset(&_io_map[0], 0x00, _output_size);
 
-  (void)this->_timer->stop();
+  const auto _ = this->_timer->stop();
 
   setup_sync0(false, _config.ec_sync0_cycle_time_ns);
 

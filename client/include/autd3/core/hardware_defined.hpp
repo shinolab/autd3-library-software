@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/07/2021
+// Last Modified: 28/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -30,12 +30,13 @@ constexpr auto IsMissingTransducer(T x, T y) {
 constexpr size_t FPGA_CLOCK = 20480000;
 constexpr size_t ULTRASOUND_FREQUENCY = 40000;
 
-constexpr size_t MOD_BUF_SIZE_MAX = 65536;
+constexpr size_t MOD_BUF_SIZE_MAX = 65535;
 constexpr size_t MOD_SAMPLING_FREQ_BASE = 40000;
+constexpr size_t MOD_SAMPLING_FREQ_DIV_MAX = 65535;
 constexpr size_t MOD_FRAME_SIZE = 124;
 
-constexpr size_t POINT_SEQ_BUFFER_SIZE_MAX = 65536;
-constexpr size_t GAIN_SEQ_BUFFER_SIZE_MAX = 1024;
+constexpr size_t POINT_SEQ_BUFFER_SIZE_MAX = 65535;
+constexpr size_t GAIN_SEQ_BUFFER_SIZE_MAX = 2048;
 constexpr size_t SEQ_BASE_FREQ = 40000;
 
 constexpr bool PHASE_INVERTED = true;
@@ -103,6 +104,12 @@ struct SeqFocus {
 
  private:
   uint16_t _buf[4];
+};
+
+enum class GAIN_MODE : uint16_t {
+  DUTY_PHASE_FULL = 0x0001,
+  PHASE_FULL = 0x0002,
+  PHASE_HALF = 0x0004,
 };
 
 }  // namespace autd::core

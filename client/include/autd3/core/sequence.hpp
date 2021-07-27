@@ -3,7 +3,7 @@
 // Created Date: 14/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/07/2021
+// Last Modified: 27/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -30,6 +30,7 @@ using GainSequencePtr = std::shared_ptr<GainSequence>;
 class Sequence {
  public:
   Sequence() : _sampling_freq_div(1), _sent(0) {}
+  virtual ~Sequence() = default;
 
   virtual size_t size() const = 0;
 
@@ -152,20 +153,23 @@ class PointSequence : virtual public Sequence {
  */
 class GainSequence : virtual public Sequence {
  public:
-  GainSequence() noexcept : Sequence() {}
-  explicit GainSequence(std::vector<GainPtr> gains) noexcept : Sequence(), _gains(std::move(gains)) {}
+  GainSequence() noexcept : Sequence(), _gain_mode(GAIN_MODE::DUTY_PHASE_FULL) {}
+  explicit GainSequence(GAIN_MODE gain_mode) noexcept : Sequence(), _gain_mode(gain_mode) {}
+  explicit GainSequence(std::vector<GainPtr> gains, GAIN_MODE gain_mode) noexcept : Sequence(), _gains(std::move(gains)), _gain_mode(gain_mode) {}
 
   size_t size() const override { return this->_gains.size(); }
 
   /**
    * @brief Generate empty GainSequence
    */
-  static GainSequencePtr create() noexcept { return std::make_shared<GainSequence>(); }
+  static GainSequencePtr create(GAIN_MODE gain_mode = GAIN_MODE::DUTY_PHASE_FULL) noexcept { return std::make_shared<GainSequence>(gain_mode); }
 
   /**
    * @brief Generate PointSequence with control points.
    */
-  static GainSequencePtr create(const std::vector<GainPtr>& gains) noexcept { return std::make_shared<GainSequence>(gains); }
+  static GainSequencePtr create(const std::vector<GainPtr>& gains, GAIN_MODE gain_mode = GAIN_MODE::DUTY_PHASE_FULL) noexcept {
+    return std::make_shared<GainSequence>(gains, gain_mode);
+  }
 
   /**
    * @brief Add gain
@@ -197,7 +201,13 @@ class GainSequence : virtual public Sequence {
    */
   [[nodiscard]] std::vector<GainPtr>& gains() { return this->_gains; }
 
+  /**
+   * @return GAIN_MODE
+   */
+  GAIN_MODE& gain_mode() { return this->_gain_mode; }
+
  private:
   std::vector<GainPtr> _gains;
+  GAIN_MODE _gain_mode;
 };
 }  // namespace autd::core
