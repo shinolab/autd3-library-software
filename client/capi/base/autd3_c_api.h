@@ -75,7 +75,7 @@ EXPORT_AUTD void AUTDModulationSquare(void** mod, int32_t freq, uint8_t low, uin
 EXPORT_AUTD void AUTDDeleteModulation(void* mod);
 
 EXPORT_AUTD void AUTDSequence(void** out);
-EXPORT_AUTD void AUTDGainSequence(void** out);
+EXPORT_AUTD void AUTDGainSequence(void** out, uint16_t gain_mode);
 EXPORT_AUTD bool AUTDSequenceAddPoint(void* seq, double x, double y, double z);
 EXPORT_AUTD bool AUTDSequenceAddPoints(void* seq, double* points, uint64_t size);
 EXPORT_AUTD bool AUTDSequenceAddGain(void* seq, void* gain);

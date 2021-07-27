@@ -335,8 +335,8 @@ void AUTDSequence(void** out) {
   auto* s = SequenceCreate(autd::sequence::PointSequence::create());
   *out = s;
 }
-void AUTDGainSequence(void** out) {
-  auto* s = SequenceCreate(autd::sequence::GainSequence::create());
+void AUTDGainSequence(void** out, const uint16_t gain_mode) {
+  auto* s = SequenceCreate(autd::sequence::GainSequence::create(static_cast<autd::GAIN_MODE>(gain_mode)));
   *out = s;
 }
 bool AUTDSequenceAddPoint(void* const seq, const double x, const double y, const double z) {
