@@ -3,7 +3,7 @@
 // Created Date: 14/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/07/2021
+// Last Modified: 28/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -19,6 +19,7 @@ using core::PointSequencePtr;
 using PointSequence = core::PointSequence;
 using core::GainSequencePtr;
 using GainSequence = core::GainSequence;
+using GAIN_MODE = core::GAIN_MODE;
 
 /**
  * @brief Utility to generate PointSequence on a circumference.
