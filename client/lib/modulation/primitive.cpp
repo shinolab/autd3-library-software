@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 23/07/2021
+// Last Modified: 28/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -59,6 +59,21 @@ void SinePressure::calc() {
     amp = std::clamp(std::sqrt(amp), 0.0, 1.0);
     const auto duty = std::asin(amp) * 2.0 / M_PI * 255.0;
     this->_buffer[i] = static_cast<uint8_t>(duty);
+  }
+}
+
+ModulationPtr SineLegacy::create(const double freq, const double amp, const double offset) { return std::make_shared<SineLegacy>(freq, amp, offset); }
+
+void SineLegacy::calc() {
+  const auto sf = sampling_freq();
+  const auto freq =
+      std::clamp(this->_freq, static_cast<double>(core::MOD_SAMPLING_FREQ_BASE) / static_cast<double>(core::MOD_SAMPLING_FREQ_DIV_MAX), sf / 2.0);
+
+  const auto T = static_cast<size_t>(std::round(1.0 / freq * sf));
+  this->_buffer.resize(T, 0);
+  for (size_t i = 0; i < T; i++) {
+    double tamp = 255.0 * _offset + 127.5f * _amp * std::cos(2.0 * M_PI * static_cast<double>(i) / static_cast<double>(T));
+    this->_buffer[i] = static_cast<uint8_t>(std::clamp(tamp, 0.0, 255.0));
   }
 }
 

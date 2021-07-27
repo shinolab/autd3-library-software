@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 28/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -65,6 +65,29 @@ class SinePressure final : public Modulation {
 
  private:
   int _freq;
+  double _amp;
+  double _offset;
+};
+
+/**
+ * @brief Sine wave modulation in ultrasound amplitude (Legacy)
+ */
+class SineLegacy final : public Modulation {
+ public:
+  /**
+   * @brief Generate function
+   * @param[in] freq Frequency of the sine wave
+   * @param[in] amp peek to peek ultrasound amplitude (Maximum value is 1.0)
+   * @param[in] offset offset of ultrasound amplitude
+   * @details Ultrasound amplitude oscillate from offset-amp/2 to offset+amp/2.
+   * If the value exceeds the range of [0, 1], the value will be clamped in the [0, 1].
+   */
+  static ModulationPtr create(double freq, double amp = 1.0, double offset = 0.5);
+  void calc() override;
+  SineLegacy(const double freq, const double amp, const double offset) : Modulation(), _freq(freq), _amp(amp), _offset(offset) {}
+
+ private:
+  double _freq;
   double _amp;
   double _offset;
 };
