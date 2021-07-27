@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/07/2021
+// Last Modified: 28/07/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -70,6 +70,7 @@ EXPORT_AUTD void AUTDModulationStatic(void** mod, uint8_t amp);
 EXPORT_AUTD void AUTDModulationCustom(void** mod, uint8_t* buf, uint32_t size);
 EXPORT_AUTD void AUTDModulationSine(void** mod, int32_t freq, double amp, double offset);
 EXPORT_AUTD void AUTDModulationSinePressure(void** mod, int32_t freq, double amp, double offset);
+EXPORT_AUTD void AUTDModulationSineLegacy(void** mod, double freq, double amp, double offset);
 EXPORT_AUTD void AUTDModulationSquare(void** mod, int32_t freq, uint8_t low, uint8_t high);
 EXPORT_AUTD void AUTDDeleteModulation(void* mod);
 
