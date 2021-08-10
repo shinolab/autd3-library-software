@@ -3,7 +3,7 @@
 // Created Date: 17/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/07/2021
+// Last Modified: 10/08/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -45,8 +45,8 @@ void AUTDDeleteBackend(void* backend) {
   BackendDelete(b);
 }
 
-void AUTDGainHoloSDP(void** gain, void* backend, double* points, double* amps, const int32_t size, const double alpha, const double lambda,
-                     const uint64_t repeat, const bool normalize) {
+void AUTDGainHoloSDP(void** gain, void* backend, const double* points, const double* amps, const int32_t size, const double alpha,
+                     const double lambda, const uint64_t repeat, const bool normalize) {
   auto holo = PackFoci(points, size);
   auto amps_ = PackAmps(amps, size);
   const auto b = static_cast<BackendWrapper*>(backend);
@@ -54,7 +54,8 @@ void AUTDGainHoloSDP(void** gain, void* backend, double* points, double* amps, c
   *gain = g;
 }
 
-void AUTDGainHoloEVD(void** gain, void* backend, double* points, double* amps, const int32_t size, const double gamma, const bool normalize) {
+void AUTDGainHoloEVD(void** gain, void* backend, const double* points, const double* amps, const int32_t size, const double gamma,
+                     const bool normalize) {
   auto holo = PackFoci(points, size);
   auto amps_ = PackAmps(amps, size);
   const auto b = static_cast<BackendWrapper*>(backend);
@@ -62,7 +63,7 @@ void AUTDGainHoloEVD(void** gain, void* backend, double* points, double* amps, c
   *gain = g;
 }
 
-void AUTDGainHoloNaive(void** gain, void* backend, double* points, double* amps, const int32_t size) {
+void AUTDGainHoloNaive(void** gain, void* backend, const double* points, const double* amps, const int32_t size) {
   auto holo = PackFoci(points, size);
   auto amps_ = PackAmps(amps, size);
   const auto b = static_cast<BackendWrapper*>(backend);
@@ -70,7 +71,7 @@ void AUTDGainHoloNaive(void** gain, void* backend, double* points, double* amps,
   *gain = g;
 }
 
-void AUTDGainHoloGS(void** gain, void* backend, double* points, double* amps, const int32_t size, const uint64_t repeat) {
+void AUTDGainHoloGS(void** gain, void* backend, const double* points, const double* amps, const int32_t size, const uint64_t repeat) {
   auto holo = PackFoci(points, size);
   auto amps_ = PackAmps(amps, size);
   const auto b = static_cast<BackendWrapper*>(backend);
@@ -78,7 +79,7 @@ void AUTDGainHoloGS(void** gain, void* backend, double* points, double* amps, co
   *gain = g;
 }
 
-void AUTDGainHoloGSPAT(void** gain, void* backend, double* points, double* amps, const int32_t size, const uint64_t repeat) {
+void AUTDGainHoloGSPAT(void** gain, void* backend, const double* points, const double* amps, const int32_t size, const uint64_t repeat) {
   auto holo = PackFoci(points, size);
   auto amps_ = PackAmps(amps, size);
   const auto b = static_cast<BackendWrapper*>(backend);
@@ -86,7 +87,7 @@ void AUTDGainHoloGSPAT(void** gain, void* backend, double* points, double* amps,
   *gain = g;
 }
 
-void AUTDGainHoloLM(void** gain, void* backend, double* points, double* amps, const int32_t size, const double eps_1, const double eps_2,
+void AUTDGainHoloLM(void** gain, void* backend, double* points, const double* amps, const int32_t size, const double eps_1, const double eps_2,
                     const double tau, const uint64_t k_max, double* initial, const int32_t initial_size) {
   auto holo = PackFoci(points, size);
   auto amps_ = PackAmps(amps, size);
@@ -100,7 +101,7 @@ void AUTDGainHoloLM(void** gain, void* backend, double* points, double* amps, co
   *gain = g;
 }
 
-void AUTDGainHoloGreedy(void** gain, double* points, double* amps, const int32_t size, const int32_t phase_div) {
+void AUTDGainHoloGreedy(void** gain, const double* points, const double* amps, const int32_t size, const int32_t phase_div) {
   auto holo = PackFoci(points, size);
   auto amps_ = PackAmps(amps, size);
 
