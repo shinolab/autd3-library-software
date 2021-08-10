@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/07/2021
+// Last Modified: 10/08/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -57,7 +57,7 @@ class EmulatorImpl final : public Emulator {
   std::vector<uint8_t> _geometry_buf;
 
   static std::vector<uint8_t> init_geometry_buf(const core::GeometryPtr& geometry) {
-    const auto vec_size = 9 * sizeof(float);
+    constexpr auto vec_size = 9 * sizeof(float);
     const auto size = sizeof(core::RxGlobalHeader) + geometry->num_devices() * vec_size;
     std::vector<uint8_t> buf;
     buf.resize(size);

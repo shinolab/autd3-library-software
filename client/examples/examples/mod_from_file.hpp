@@ -3,7 +3,7 @@
 // Created Date: 05/07/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/07/2021
+// Last Modified: 10/08/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -18,7 +18,7 @@
 namespace fs = std::filesystem;
 using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SPACING_MM;
 
-inline void mod_from_file_test(autd::ControllerPtr& autd) {
+inline void mod_from_file_test(const autd::ControllerPtr& autd) {
   autd->silent_mode() = true;
 
   const fs::path path = fs::path(AUTD3_RESOURCE_PATH) / "sin150.wav";

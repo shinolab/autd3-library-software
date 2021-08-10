@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/07/2021
+// Last Modified: 10/08/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -33,10 +33,10 @@ void Holo::matrix_vec_mul(const Backend::MatrixXc& a, const Backend::VectorXc& b
 
 void Holo::set_from_complex_drive(std::vector<core::DataArray>& data, const Backend::VectorXc& drive, const bool normalize,
                                   const double max_coefficient) {
-  const size_t n = drive.size();
+  const Eigen::Index n = drive.size();
   size_t dev_idx = 0;
   size_t trans_idx = 0;
-  for (size_t j = 0; j < n; j++) {
+  for (Eigen::Index j = 0; j < n; j++) {
     const auto f_amp = normalize ? 1.0 : std::abs(drive(j)) / max_coefficient;
     const auto f_phase = std::arg(drive(j)) / (2.0 * M_PI);
     const auto phase = core::Utilities::to_phase(f_phase);
@@ -59,16 +59,16 @@ std::complex<double> Holo::transfer(const core::Vector3& trans_pos, const core::
 }
 
 Backend::MatrixXc Holo::transfer_matrix(const std::vector<core::Vector3>& foci, const core::GeometryPtr& geometry) {
-  const auto m = foci.size();
-  const auto n = geometry->num_transducers();
+  const auto m = static_cast<Eigen::Index>(foci.size());
+  const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
 
   Backend::MatrixXc g(m, n);
 
   const auto wave_number = 2.0 * M_PI / geometry->wavelength();
   const auto attenuation = geometry->attenuation_coefficient();
-  for (size_t i = 0; i < m; i++) {
+  for (Eigen::Index i = 0; i < m; i++) {
     const auto& tp = foci[i];
-    for (size_t j = 0; j < n; j++) {
+    for (Eigen::Index j = 0; j < n; j++) {
       const auto pos = geometry->position(j);
       const auto dir = geometry->direction(j / core::NUM_TRANS_IN_UNIT);
       g(i, j) = transfer(pos, dir, tp, wave_number, attenuation);
@@ -80,19 +80,19 @@ Backend::MatrixXc Holo::transfer_matrix(const std::vector<core::Vector3>& foci, 
 void SDP::calc(const core::GeometryPtr& geometry) {
   if (!this->_backend->supports_svd() || !this->_backend->supports_evd()) throw core::GainBuildError("This backend does not support this method.");
 
-  auto set_bcd_result = [](Backend::MatrixXc& mat, const Backend::VectorXc& vec, const size_t idx) {
-    const size_t m = vec.size();
-    for (size_t i = 0; i < idx; i++) mat(idx, i) = std::conj(vec(i));
-    for (auto i = idx + 1; i < m; i++) mat(idx, i) = std::conj(vec(i));
-    for (size_t i = 0; i < idx; i++) mat(i, idx) = vec(i);
-    for (auto i = idx + 1; i < m; i++) mat(i, idx) = vec(i);
+  auto set_bcd_result = [](Backend::MatrixXc& mat, const Backend::VectorXc& vec, const Eigen::Index idx) {
+    const Eigen::Index m = vec.size();
+    for (Eigen::Index i = 0; i < idx; i++) mat(idx, i) = std::conj(vec(i));
+    for (Eigen::Index i = idx + 1; i < m; i++) mat(idx, i) = std::conj(vec(i));
+    for (Eigen::Index i = 0; i < idx; i++) mat(i, idx) = vec(i);
+    for (Eigen::Index i = idx + 1; i < m; i++) mat(i, idx) = vec(i);
   };
 
-  const auto m = this->_foci.size();
-  const auto n = geometry->num_transducers();
+  const auto m = static_cast<Eigen::Index>(this->_foci.size());
+  const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
 
   Backend::MatrixXc p = Backend::MatrixXc::Zero(m, m);
-  for (size_t i = 0; i < m; i++) p(i, i) = std::complex<double>(this->_amps[i], 0);
+  for (Eigen::Index i = 0; i < m; i++) p(i, i) = std::complex<double>(this->_amps[i], 0);
 
   auto b = transfer_matrix(this->_foci, geometry);
   Backend::MatrixXc pseudo_inv_b(n, m);
@@ -111,7 +111,7 @@ void SDP::calc(const core::GeometryPtr& geometry) {
   const Backend::VectorXc zero = Backend::VectorXc::Zero(m);
   Backend::VectorXc x = Backend::VectorXc::Zero(m);
   for (size_t i = 0; i < _repeat; i++) {
-    const auto ii = static_cast<size_t>(static_cast<double>(m) * range(mt));
+    const auto ii = static_cast<Eigen::Index>(static_cast<double>(m) * range(mt));
 
     Backend::VectorXc mmc = mm.col(ii);
     mmc(ii) = 0;
@@ -140,38 +140,38 @@ void SDP::calc(const core::GeometryPtr& geometry) {
 }
 
 void EVD::calc(const core::GeometryPtr& geometry) {
-  const auto m = this->_foci.size();
-  const auto n = geometry->num_transducers();
+  const auto m = static_cast<Eigen::Index>(this->_foci.size());
+  const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
 
   const auto g = transfer_matrix(this->_foci, geometry);
 
   Backend::VectorXc denominator(m);
-  for (size_t i = 0; i < m; i++) {
+  for (Eigen::Index i = 0; i < m; i++) {
     auto tmp = std::complex<double>(0, 0);
-    for (size_t j = 0; j < n; j++) tmp += g(i, j);
+    for (Eigen::Index j = 0; j < n; j++) tmp += g(i, j);
     denominator(i) = tmp;
   }
 
   Backend::MatrixXc x(n, m);
-  for (size_t i = 0; i < m; i++) {
+  for (Eigen::Index i = 0; i < m; i++) {
     auto c = std::complex<double>(this->_amps[i], 0) / denominator(i);
-    for (size_t j = 0; j < n; j++) x(j, i) = c * std::conj(g(i, j));
+    for (Eigen::Index j = 0; j < n; j++) x(j, i) = c * std::conj(g(i, j));
   }
   Backend::MatrixXc r = Backend::MatrixXc::Zero(m, m);
   this->matrix_mul(g, x, &r);
   Backend::VectorXc max_ev = this->_backend->max_eigen_vector(&r);
 
   Backend::MatrixXc sigma = Backend::MatrixXc::Zero(n, n);
-  for (size_t j = 0; j < n; j++) {
+  for (Eigen::Index j = 0; j < n; j++) {
     double tmp = 0;
-    for (size_t i = 0; i < m; i++) tmp += std::abs(g(i, j)) * this->_amps[i];
+    for (Eigen::Index i = 0; i < m; i++) tmp += std::abs(g(i, j)) * this->_amps[i];
     sigma(j, j) = std::complex<double>(std::pow(std::sqrt(tmp / static_cast<double>(m)), _gamma), 0.0);
   }
 
   const Backend::MatrixXc gr = this->_backend->concat_row(g, sigma);
 
   Backend::VectorXc f = Backend::VectorXc::Zero(m + n);
-  for (size_t i = 0; i < m; i++) f(i) = this->_amps[i] * max_ev(i) / std::abs(max_ev(i));
+  for (Eigen::Index i = 0; i < m; i++) f(i) = this->_amps[i] * max_ev(i) / std::abs(max_ev(i));
 
   Backend::MatrixXc gtg = Backend::MatrixXc::Zero(n, n);
   this->_backend->matrix_mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, std::complex<double>(1, 0), gr, gr, std::complex<double>(0, 0), &gtg);
@@ -188,12 +188,12 @@ void EVD::calc(const core::GeometryPtr& geometry) {
 }
 
 void Naive::calc(const core::GeometryPtr& geometry) {
-  const auto m = this->_foci.size();
-  const auto n = geometry->num_transducers();
+  const auto m = static_cast<Eigen::Index>(this->_foci.size());
+  const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
 
   const auto g = transfer_matrix(this->_foci, geometry);
   Backend::VectorXc p(m);
-  for (size_t i = 0; i < m; i++) p(i) = std::complex<double>(this->_amps[i], 0);
+  for (Eigen::Index i = 0; i < m; i++) p(i) = std::complex<double>(this->_amps[i], 0);
 
   Backend::VectorXc q = Backend::VectorXc::Zero(n);
   this->_backend->matrix_vector_mul(TRANSPOSE::CONJ_TRANS, std::complex<double>(1, 0), g, p, std::complex<double>(0, 0), &q);
@@ -204,8 +204,8 @@ void Naive::calc(const core::GeometryPtr& geometry) {
 }
 
 void GS::calc(const core::GeometryPtr& geometry) {
-  const auto m = this->_foci.size();
-  const auto n = geometry->num_transducers();
+  const auto m = static_cast<Eigen::Index>(this->_foci.size());
+  const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
 
   const auto g = transfer_matrix(this->_foci, geometry);
 
@@ -219,9 +219,9 @@ void GS::calc(const core::GeometryPtr& geometry) {
   Backend::VectorXc xi = Backend::VectorXc::Zero(n);
   for (size_t k = 0; k < _repeat; k++) {
     this->matrix_vec_mul(g, q, &gamma);
-    for (size_t i = 0; i < m; i++) p(i) = gamma(i) / std::abs(gamma(i)) * this->_amps[i];
+    for (Eigen::Index i = 0; i < m; i++) p(i) = gamma(i) / std::abs(gamma(i)) * this->_amps[i];
     this->_backend->matrix_vector_mul(TRANSPOSE::CONJ_TRANS, std::complex<double>(1, 0), g, p, std::complex<double>(0, 0), &xi);
-    for (size_t j = 0; j < n; j++) q(j) = xi(j) / std::abs(xi(j)) * q0(j);
+    for (Eigen::Index j = 0; j < n; j++) q(j) = xi(j) / std::abs(xi(j)) * q0(j);
   }
 
   set_from_complex_drive(this->_data, q, true, 1.0);
@@ -230,38 +230,38 @@ void GS::calc(const core::GeometryPtr& geometry) {
 }
 
 void GSPAT::calc(const core::GeometryPtr& geometry) {
-  const auto m = this->_foci.size();
-  const auto n = geometry->num_transducers();
+  const auto m = static_cast<Eigen::Index>(this->_foci.size());
+  const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
 
   const auto g = transfer_matrix(this->_foci, geometry);
 
   Backend::VectorXc denominator(m);
-  for (size_t i = 0; i < m; i++) {
+  for (Eigen::Index i = 0; i < m; i++) {
     auto tmp = std::complex<double>(0, 0);
-    for (size_t j = 0; j < n; j++) tmp += std::abs(g(i, j));
+    for (Eigen::Index j = 0; j < n; j++) tmp += std::abs(g(i, j));
     denominator(i) = tmp;
   }
 
   Backend::MatrixXc b(n, m);
-  for (size_t i = 0; i < m; i++) {
+  for (Eigen::Index i = 0; i < m; i++) {
     auto d = std::norm(denominator(i));
-    for (size_t j = 0; j < n; j++) b(j, i) = std::conj(g(i, j)) / d;
+    for (Eigen::Index j = 0; j < n; j++) b(j, i) = std::conj(g(i, j)) / d;
   }
 
   Backend::MatrixXc r = Backend::MatrixXc::Zero(m, m);
   this->matrix_mul(g, b, &r);
 
   Backend::VectorXc p(m);
-  for (size_t i = 0; i < m; i++) p(i) = std::complex<double>(this->_amps[i], 0);
+  for (Eigen::Index i = 0; i < m; i++) p(i) = std::complex<double>(this->_amps[i], 0);
 
   Backend::VectorXc gamma = Backend::VectorXc::Zero(m);
   this->matrix_vec_mul(r, p, &gamma);
   for (size_t k = 0; k < _repeat; k++) {
-    for (size_t i = 0; i < m; i++) p(i) = gamma(i) / std::abs(gamma(i)) * this->_amps[i];
+    for (Eigen::Index i = 0; i < m; i++) p(i) = gamma(i) / std::abs(gamma(i)) * this->_amps[i];
     this->matrix_vec_mul(r, p, &gamma);
   }
 
-  for (size_t i = 0; i < m; i++) p(i) = gamma(i) / (std::abs(gamma(i)) * std::abs(gamma(i))) * this->_amps[i] * this->_amps[i];
+  for (Eigen::Index i = 0; i < m; i++) p(i) = gamma(i) / (std::abs(gamma(i)) * std::abs(gamma(i))) * this->_amps[i] * this->_amps[i];
 
   Backend::VectorXc q = Backend::VectorXc::Zero(n);
   this->matrix_vec_mul(b, p, &q);
@@ -276,10 +276,10 @@ void LM::calc(const core::GeometryPtr& geometry) {
 
   auto make_bhb = [](const BackendPtr& backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps, const core::GeometryPtr& geo,
                      Backend::MatrixXc* bhb) {
-    const auto m = foci.size();
+    const auto m = static_cast<Eigen::Index>(foci.size());
 
     Backend::MatrixXc p = Backend::MatrixXc::Zero(m, m);
-    for (size_t i = 0; i < m; i++) p(i, i) = -amps[i];
+    for (Eigen::Index i = 0; i < m; i++) p(i, i) = -amps[i];
 
     const auto g = transfer_matrix(foci, geo);
 
@@ -288,21 +288,21 @@ void LM::calc(const core::GeometryPtr& geometry) {
   };
 
   auto calc_t_th = [](const BackendPtr& backend, const Backend::VectorX& x, Backend::MatrixXc* tth) {
-    const size_t len = x.size();
+    const auto len = x.size();
     Backend::MatrixXc t(len, 1);
-    for (size_t i = 0; i < len; i++) t(i, 0) = std::exp(std::complex<double>(0, -x(i)));
+    for (Eigen::Index i = 0; i < len; i++) t(i, 0) = std::exp(std::complex<double>(0, -x(i)));
     backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::CONJ_TRANS, std::complex<double>(1, 0), t, t, std::complex<double>(0, 0), tth);
   };
 
-  const auto m = this->_foci.size();
-  const auto n = geometry->num_transducers();
-  const auto n_param = n + m;
+  const auto m = static_cast<Eigen::Index>(this->_foci.size());
+  const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
+  const Eigen::Index n_param = n + m;
 
   Backend::MatrixXc bhb = Backend::MatrixXc::Zero(n_param, n_param);
   make_bhb(this->_backend, this->_foci, this->_amps, geometry, &bhb);
 
   Backend::VectorX x = Backend::VectorX::Zero(n_param);
-  for (size_t i = 0; i < _initial.size(); i++) x[i] = _initial[i];
+  std::memcpy(x.data(), &_initial[0], _initial.size() * sizeof(double));
 
   auto nu = 2.0;
 
@@ -316,19 +316,19 @@ void LM::calc(const core::GeometryPtr& geometry) {
   this->_backend->real(bhb_tth, &a);
 
   Backend::VectorX g(n_param);
-  for (size_t i = 0; i < n_param; i++) {
+  for (Eigen::Index i = 0; i < n_param; i++) {
     double tmp = 0;
-    for (size_t k = 0; k < n_param; k++) tmp += bhb_tth(i, k).imag();
+    for (Eigen::Index k = 0; k < n_param; k++) tmp += bhb_tth(i, k).imag();
     g(i) = tmp;
   }
 
   double a_max = 0;
-  for (size_t i = 0; i < n_param; i++) a_max = std::max(a_max, a(i, i));
+  for (Eigen::Index i = 0; i < n_param; i++) a_max = std::max(a_max, a(i, i));
 
   auto mu = _tau * a_max;
 
   Backend::VectorXc t(n_param);
-  for (size_t i = 0; i < n_param; i++) t(i) = std::exp(std::complex<double>(0, x(i)));
+  for (Eigen::Index i = 0; i < n_param; i++) t(i) = std::exp(std::complex<double>(0, x(i)));
 
   Backend::VectorXc tmp_vec_c = Backend::VectorXc::Zero(n_param);
   this->matrix_vec_mul(bhb, t, &tmp_vec_c);
@@ -349,7 +349,7 @@ void LM::calc(const core::GeometryPtr& geometry) {
 
     this->_backend->vec_cpy(x, &x_new);
     this->_backend->vector_add(-1.0, h_lm, 1.0, &x_new);
-    for (size_t i = 0; i < n_param; i++) t(i) = std::exp(std::complex<double>(0, x_new(i)));
+    for (Eigen::Index i = 0; i < n_param; i++) t(i) = std::exp(std::complex<double>(0, x_new(i)));
 
     this->matrix_vec_mul(bhb, t, &tmp_vec_c);
     const double fx_new = this->_backend->dot_c(t, tmp_vec_c).real();
@@ -365,9 +365,9 @@ void LM::calc(const core::GeometryPtr& geometry) {
       calc_t_th(this->_backend, x, &tth);
       this->_backend->hadamard_product(bhb, tth, &bhb_tth);
       this->_backend->real(bhb_tth, &a);
-      for (size_t i = 0; i < n_param; i++) {
+      for (Eigen::Index i = 0; i < n_param; i++) {
         double tmp = 0;
-        for (size_t j = 0; j < n_param; j++) tmp += bhb_tth(i, j).imag();
+        for (Eigen::Index j = 0; j < n_param; j++) tmp += bhb_tth(i, j).imag();
         g(i) = tmp;
       }
       mu *= std::max(1. / 3., std::pow(1 - (2 * rho - 1), 3.0));
@@ -380,8 +380,8 @@ void LM::calc(const core::GeometryPtr& geometry) {
 
   size_t dev_idx = 0;
   size_t trans_idx = 0;
-  for (size_t j = 0; j < n; j++) {
-    const uint8_t duty = 0xFF;
+  for (Eigen::Index j = 0; j < n; j++) {
+    constexpr uint8_t duty = 0xFF;
     const auto f_phase = x(j) / (2 * M_PI);
     const auto phase = core::Utilities::to_phase(f_phase);
     this->_data[dev_idx][trans_idx++] = core::Utilities::pack_to_u16(duty, phase);
@@ -428,7 +428,7 @@ void Greedy::calc(const core::GeometryPtr& geometry) {
       }
       for (size_t j = 0; j < m; j++) cache[j] += tmp[min_idx][j];
 
-      const uint8_t duty = 0xFF;
+      constexpr uint8_t duty = 0xFF;
       const auto f_phase = std::arg(this->_phases[min_idx]) / (2 * M_PI);
       const auto phase = core::Utilities::to_phase(f_phase);
       this->_data[dev][i] = core::Utilities::pack_to_u16(duty, phase);

@@ -176,7 +176,7 @@ class Controller {
    * @brief Send gain and modulation to the device
    * @param[in] gain Gain to display
    * @param[in] mod Amplitude modulation to display
-   * @param[in] wait_for_msg_processed
+   * @param[in] wait_for_msg_processed see details
    * @details if wait_for_msg_processed is true OR mod is not nullptr, this function waits until the data is processed in the devices
    * \return if true, It guarantees that the devices have processed the data
    */

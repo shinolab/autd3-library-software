@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 10/08/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -23,8 +23,8 @@ void Eigen3Backend::real(const MatrixXc& a, MatrixX* b) { (*b).noalias() = a.rea
 void Eigen3Backend::pseudo_inverse_svd(MatrixXc* matrix, const double alpha, MatrixXc* result) {
   const Eigen::BDCSVD svd(*matrix, Eigen::ComputeThinU | Eigen::ComputeThinV);
   auto singular_values_inv = svd.singularValues();
-  const auto size = static_cast<size_t>(singular_values_inv.size());
-  for (size_t i = 0; i < size; i++) singular_values_inv(i) = singular_values_inv(i) / (singular_values_inv(i) * singular_values_inv(i) + alpha);
+  const auto size = singular_values_inv.size();
+  for (Eigen::Index i = 0; i < size; i++) singular_values_inv(i) = singular_values_inv(i) / (singular_values_inv(i) * singular_values_inv(i) + alpha);
   (*result).noalias() = svd.matrixV() * singular_values_inv.asDiagonal() * svd.matrixU().adjoint();
 }
 Eigen3Backend::VectorXc Eigen3Backend::max_eigen_vector(MatrixXc* matrix) {

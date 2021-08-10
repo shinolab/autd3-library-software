@@ -3,7 +3,7 @@
 // Created Date: 17/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/07/2021
+// Last Modified: 10/08/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -58,7 +58,7 @@ void RawPCM::calc() {
   }
 
   // LPF
-  const auto num_tap = 31;
+  constexpr auto num_tap = 31;
   const auto cutoff = _sampling_freq / 2 / static_cast<double>(mod_sf);
   std::vector<double> lpf(num_tap);
   for (auto i = 0; i < num_tap; i++) {

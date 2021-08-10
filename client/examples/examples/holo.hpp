@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/07/2021
+// Last Modified: 10/08/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -52,7 +52,7 @@ inline autd::GainPtr select_opt(std::vector<autd::Vector3>& foci, std::vector<do
   }
 }
 
-inline void holo_test(autd::ControllerPtr& autd) {
+inline void holo_test(const autd::ControllerPtr& autd) {
   autd->silent_mode() = true;
 
   const auto m = autd::modulation::Sine::create(150);  // 150Hz AM

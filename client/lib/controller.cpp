@@ -81,7 +81,7 @@ bool Controller::clear() {
 }
 
 bool Controller::send_header(const core::COMMAND cmd) const {
-  const auto send_size = sizeof(core::RxGlobalHeader);
+  constexpr auto send_size = sizeof(core::RxGlobalHeader);
   uint8_t msg_id = 0;
   core::Logic::pack_header(cmd, _props.ctrl_flag(), &_tx_buf[0], &msg_id);
   _link->send(&_tx_buf[0], send_size);
