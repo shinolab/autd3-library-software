@@ -1,3 +1,6 @@
+# 1.7.1
+* Add `wait_for_msg_processed` option to `Controller::send()`
+
 # 1.7
 * Extend `GAIN_SEQ_BUFFER_SIZE_MAX` from 1024 to 2048
 * Add Gain mode option to `GainSequence`

@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 27/07/2021
+// Last Modified: 10/08/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -137,12 +137,15 @@ bool Controller::stop() {
 bool Controller::pause() const { return this->send_header(core::COMMAND::PAUSE); }
 bool Controller::resume() const { return this->send_header(core::COMMAND::RESUME); }
 
-bool Controller::send(const core::GainPtr& gain) { return this->send(gain, nullptr); }
+bool Controller::send(const core::GainPtr& gain, const bool wait_for_msg_processed) { return this->send(gain, nullptr, wait_for_msg_processed); }
 
-bool Controller::send(const core::ModulationPtr& mod) { return this->send(nullptr, mod); }
+bool Controller::send(const core::ModulationPtr& mod) { return this->send(nullptr, mod, true); }
 
-bool Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod) {
-  if (mod != nullptr) mod->build();
+bool Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod, bool wait_for_msg_processed) {
+  if (mod != nullptr) {
+    mod->build();
+    wait_for_msg_processed = true;
+  }
   if (gain != nullptr) {
     this->_props._seq_mode = false;
     gain->build(this->_geometry);
@@ -156,6 +159,7 @@ bool Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod)
     uint8_t msg_id = 0;
     core::Logic::pack_header(mod, _props.ctrl_flag(), &this->_tx_buf[0], &msg_id);
     this->_link->send(&this->_tx_buf[0], size);
+    if (!wait_for_msg_processed && mod_finished(mod)) return false;
     if (const auto res = wait_msg_processed(msg_id); !res || mod_finished(mod)) return res;
   }
 }
