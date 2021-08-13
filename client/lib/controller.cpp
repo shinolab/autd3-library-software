@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/08/2021
+// Last Modified: 13/08/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -51,7 +51,7 @@ std::vector<uint8_t> Controller::fpga_info() {
   return _fpga_infos;
 }
 
-bool Controller::update_ctrl_flag() { return this->send(nullptr, nullptr); }
+bool Controller::update_ctrl_flag() { return this->send(nullptr, nullptr, true); }
 
 void Controller::open(core::LinkPtr link) {
   if (is_open()) this->close();

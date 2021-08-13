@@ -3,7 +3,7 @@
 // Created Date: 19/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/08/2021
+// Last Modified: 13/08/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,7 +11,10 @@
 
 #pragma once
 
-#include <autd3.hpp>
+#include <memory>
+#include <vector>
+
+#include "autd3.hpp"
 
 class BurstModulation final : public autd::core::Modulation {
  public:
