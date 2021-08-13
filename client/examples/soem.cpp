@@ -9,10 +9,12 @@
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
-#include <autd3.hpp>
-#include <autd3/link/soem.hpp>
+#include "autd3/link/soem.hpp"
+
+#include <cstdlib>
 #include <iostream>
 
+#include "autd3.hpp"
 #include "runner.hpp"
 
 std::string get_adapter_name() {
@@ -32,7 +34,12 @@ std::string get_adapter_name() {
 [[noreturn]] static void error_handler(const std::string& msg) {
   std::cerr << "Link is lost\n";
   std::cerr << msg;
-  quick_exit(-1);
+#if __APPLE__
+  // mac does not have quick_exit??
+  exit(-1);
+#else
+  std::quick_exit(-1);
+#endif
 }
 
 int main() try {
