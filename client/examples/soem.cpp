@@ -35,8 +35,6 @@ std::string get_adapter_name() {
   quick_exit(-1);
 }
 
-#include "autd3/gain/eigen_backend.hpp"
-
 int main() try {
   auto autd = autd::Controller::create();
 
