@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/08/2021
+// Last Modified: 13/08/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -18,14 +18,14 @@ bool Eigen3Backend::supports_svd() { return true; }
 bool Eigen3Backend::supports_evd() { return true; }
 bool Eigen3Backend::supports_solve() { return true; }
 
-void Eigen3Backend::hadamard_product(const MatrixXc& a, const MatrixXc& b, MatrixXc* c) { (*c).noalias() = a.cwiseProduct(b); }
-void Eigen3Backend::real(const MatrixXc& a, MatrixX* b) { (*b).noalias() = a.real(); }
+void Eigen3Backend::hadamard_product(const MatrixXc& a, const MatrixXc& b, MatrixXc* c) { c->noalias() = a.cwiseProduct(b); }
+void Eigen3Backend::real(const MatrixXc& a, MatrixX* b) { b->noalias() = a.real(); }
 void Eigen3Backend::pseudo_inverse_svd(MatrixXc* matrix, const double alpha, MatrixXc* result) {
-  const Eigen::BDCSVD svd(*matrix, Eigen::ComputeThinU | Eigen::ComputeThinV);
+  const Eigen::BDCSVD svd(*matrix, Eigen::ComputeFullU | Eigen::ComputeFullV);
   auto singular_values_inv = svd.singularValues();
   const auto size = singular_values_inv.size();
   for (Eigen::Index i = 0; i < size; i++) singular_values_inv(i) = singular_values_inv(i) / (singular_values_inv(i) * singular_values_inv(i) + alpha);
-  (*result).noalias() = svd.matrixV() * singular_values_inv.asDiagonal() * svd.matrixU().adjoint();
+  result->noalias() = svd.matrixV() * singular_values_inv.asDiagonal() * svd.matrixU().adjoint();
 }
 Eigen3Backend::VectorXc Eigen3Backend::max_eigen_vector(MatrixXc* matrix) {
   const Eigen::ComplexEigenSolver<MatrixXc> ces(*matrix);
