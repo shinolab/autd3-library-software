@@ -1,6 +1,6 @@
 enable_testing()
 
-include_directories(${PROJECT_SOURCE_DIR}/include)
+include_directories(. ${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
 add_executable(test_autd3)
 target_link_libraries(test_autd3 PRIVATE autd3 gtest_main)
 
