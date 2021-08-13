@@ -31,3 +31,5 @@ TEST(HoloGainEigenBackend, hadamard_product) {
   ASSERT_NEAR_COMPLEX(c(1, 0), std::complex(-17, 112), 1e-6);
   ASSERT_NEAR_COMPLEX(c(1, 1), std::complex(-21, 188), 1e-6);
 }
+
+TEST(HoloGainEigenBackend, fail_test) { FAIL(); }
