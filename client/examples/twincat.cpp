@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/07/2021
+// Last Modified: 13/08/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -14,15 +14,13 @@
 
 #include "runner.hpp"
 
-int main() {
-  try {
-    auto autd = autd::Controller::create();
-    autd->geometry()->add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+int main() try {
+  auto autd = autd::Controller::create();
+  autd->geometry()->add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
 
-    autd->open(autd::link::TwinCAT::create());
-    return run(std::move(autd));
-  } catch (std::exception& e) {
-    std::cerr << e.what() << std::endl;
-    return -1;
-  }
+  autd->open(autd::link::TwinCAT::create());
+  return run(std::move(autd));
+} catch (std::exception& e) {
+  std::cerr << e.what() << std::endl;
+  return -1;
 }
