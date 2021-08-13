@@ -11,6 +11,8 @@
 
 #pragma once
 
-#define ASSERT_NEAR_COMPLEX(a, b, eps)  \
-  ASSERT_NEAR(a.real(), b.real(), eps); \
-  ASSERT_NEAR(a.imag(), b.imag(), eps)
+#define ASSERT_NEAR_COMPLEX(a, b, eps)    \
+  do {                                    \
+    ASSERT_NEAR(a.real(), b.real(), eps); \
+    ASSERT_NEAR(a.imag(), b.imag(), eps); \
+  } while (0)
