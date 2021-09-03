@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 23/07/2021
+// Last Modified: 03/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,6 +11,7 @@
 
 #include "autd3/gain/primitive.hpp"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -21,8 +22,6 @@ namespace autd::gain {
 using core::DataArray;
 using core::NUM_TRANS_IN_UNIT;
 using core::Vector3;
-
-inline double PosMod(const double a, const double b) { return a - floor(a / b) * b; }
 
 std::shared_ptr<Grouped> Grouped::create() { return std::make_shared<Grouped>(); }
 
@@ -48,8 +47,7 @@ void PlaneWave::calc(const core::GeometryPtr& geometry) {
   const auto ultrasound_wavelength = geometry->wavelength();
   for (size_t dev = 0; dev < geometry->num_devices(); dev++)
     for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
-      const auto trp = geometry->position(dev, i);
-      const auto dist = trp.dot(dir);
+      const auto dist = geometry->position(dev, i).dot(dir);
       const auto phase = core::Utilities::to_phase(dist / ultrasound_wavelength);
       this->_data[dev][i] = core::Utilities::pack_to_u16(this->_duty, phase);
     }
@@ -64,8 +62,7 @@ void FocalPoint::calc(const core::GeometryPtr& geometry) {
   const auto ultrasound_wavelength = geometry->wavelength();
   for (size_t dev = 0; dev < geometry->num_devices(); dev++)
     for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
-      const auto trp = geometry->position(dev, i);
-      const auto dist = (trp - this->_point).norm();
+      const auto dist = (geometry->position(dev, i) - this->_point).norm();
       const auto phase = core::Utilities::to_phase(dist / ultrasound_wavelength);
       this->_data[dev][i] = core::Utilities::pack_to_u16(this->_duty, phase);
     }
@@ -90,10 +87,9 @@ void BesselBeam::calc(const core::GeometryPtr& geometry) {
   const auto ultrasound_wavelength = geometry->wavelength();
   for (size_t dev = 0; dev < geometry->num_devices(); dev++)
     for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
-      const auto trp = geometry->position(dev, i);
-      const auto r = trp - this->_point;
+      const auto r = geometry->position(dev, i) - this->_point;
       const auto v_x_r = r.cross(v);
-      const auto rr = std::cos(theta_w) * r + sin(theta_w) * v_x_r + v.dot(r) * (1.0 - std::cos(theta_w)) * v;
+      const auto rr = std::cos(theta_w) * r + std::sin(theta_w) * v_x_r + v.dot(r) * (1.0 - std::cos(theta_w)) * v;
       const auto d = std::sin(_theta_z) * std::sqrt(rr.x() * rr.x() + rr.y() * rr.y()) - std::cos(_theta_z) * rr.z();
       const auto phase = core::Utilities::to_phase(d / ultrasound_wavelength);
       this->_data[dev][i] = core::Utilities::pack_to_u16(this->_duty, phase);
@@ -102,17 +98,11 @@ void BesselBeam::calc(const core::GeometryPtr& geometry) {
 }
 
 GainPtr Custom::create(const uint16_t* data, const size_t data_length) {
-  const auto dev_num = data_length / NUM_TRANS_IN_UNIT;
-
+  const auto dev_num = (data_length + NUM_TRANS_IN_UNIT - 1) / NUM_TRANS_IN_UNIT;
   std::vector<DataArray> raw_data(dev_num);
-  size_t dev_idx = 0;
-  size_t tran_idx = 0;
-  for (size_t i = 0; i < data_length; i++) {
-    raw_data[dev_idx][tran_idx++] = data[i];
-    if (tran_idx == NUM_TRANS_IN_UNIT) {
-      dev_idx++;
-      tran_idx = 0;
-    }
+  for (size_t i = 0; i < dev_num; i++) {
+    const auto rem = std::clamp(data_length - i * NUM_TRANS_IN_UNIT, size_t{0}, NUM_TRANS_IN_UNIT);
+    std::memcpy(&raw_data[i][0], data + i * NUM_TRANS_IN_UNIT, rem);
   }
   return create(raw_data);
 }

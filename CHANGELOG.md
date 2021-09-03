@@ -1,5 +1,6 @@
 # 1.7.1
 * Add `wait_for_msg_processed` option to `Controller::send()`
+* Support duty ratio in `PointSequence`
 * Delete `IGNORE_EXAMPLE` CMake option, add `BUILD_EXAMPLES` instead
 
 # 1.7

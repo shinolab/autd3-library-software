@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 28/07/2021
+// Last Modified: 03/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -107,10 +107,7 @@ class Logic {
 
     auto* cursor = data + sizeof(RxGlobalHeader);
     const auto byte_size = NUM_TRANS_IN_UNIT * sizeof(uint16_t);
-    for (size_t i = 0; i < num_devices; i++) {
-      std::memcpy(cursor, &gain->data()[i].at(0), byte_size);
-      cursor += byte_size;
-    }
+    for (size_t i = 0; i < num_devices; i++, cursor += byte_size) std::memcpy(cursor, &gain->data()[i].at(0), byte_size);
   }
 
   /**
@@ -142,18 +139,13 @@ class Logic {
     if (seq->sent() + send_size >= seq->control_points().size()) header->control_flags |= SEQ_END;
 
     const auto fixed_num_unit = 256.0 / geometry->wavelength();
-    for (size_t device = 0; device < num_devices; device++) {
+    for (size_t device = 0; device < num_devices; device++, cursor += NUM_TRANS_IN_UNIT) {
       cursor[0] = send_size;
       auto* focus_cursor = reinterpret_cast<SeqFocus*>(&cursor[offset]);
-      for (size_t i = 0; i < send_size; i++) {
-        auto v64 = geometry->local_position(device, seq->control_points()[seq->sent() + i]);
-        const auto x = static_cast<int32_t>(v64.x() * fixed_num_unit);
-        const auto y = static_cast<int32_t>(v64.y() * fixed_num_unit);
-        const auto z = static_cast<int32_t>(v64.z() * fixed_num_unit);
-        focus_cursor->set(x, y, z, 0xFF);
-        focus_cursor++;
+      for (size_t i = seq->sent(); i < seq->sent() + send_size; i++, focus_cursor++) {
+        const auto v = (geometry->to_local_position(device, seq->control_point(i)) * fixed_num_unit).cast<int32_t>();
+        focus_cursor->set(v.x(), v.y(), v.z(), seq->duty(i));
       }
-      cursor += NUM_TRANS_IN_UNIT;
     }
     seq->sent() += send_size;
   }
@@ -190,7 +182,7 @@ class Logic {
     auto* cursor = data + sizeof(RxGlobalHeader);
     const auto byte_size = NUM_TRANS_IN_UNIT * sizeof(uint16_t);
     const auto gain_idx = seq->sent() - 1;
-    for (size_t device = 0; device < num_devices; device++) {
+    for (size_t device = 0; device < num_devices; device++, cursor += byte_size) {
       switch (seq->gain_mode()) {
         case GAIN_MODE::DUTY_PHASE_FULL:
           std::memcpy(cursor, &seq->gains()[gain_idx]->data()[device].at(0), byte_size);
@@ -215,7 +207,6 @@ class Logic {
           }
           break;
       }
-      cursor += byte_size;
     }
     seq->sent() += seq_sent;
   }

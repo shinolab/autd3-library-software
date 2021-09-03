@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 03/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -14,9 +14,6 @@
 #include <memory>
 
 namespace autd::core {
-
-class Link;
-using LinkPtr = std::unique_ptr<Link>;
 
 /**
  * @brief Link is the interface to the AUTD device
@@ -49,4 +46,7 @@ class Link {
 
   [[nodiscard]] virtual bool is_open() = 0;
 };
+
+using LinkPtr = std::unique_ptr<Link>;
+
 }  // namespace autd::core

@@ -3,7 +3,7 @@
 // Created Date: 05/07/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/07/2021
+// Last Modified: 03/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -19,7 +19,7 @@
 namespace autd::link {
 
 /**
- * \brief Emulator link for [AUTD-emulator](https://github.com/shinolab/autd-emulator) (Experimental)
+ * \brief Emulator link for [AUTD-emulator](https://github.com/shinolab/autd-emulator)
  */
 class Emulator : virtual public core::Link {
  public:
