@@ -16,8 +16,10 @@ Version: 1.7.1
 ## :ballot_box_with_check: Requirements
 
 * If you use `link::SOEM` on Windows, install [Npcap](https://nmap.org/npcap/) with WinPcap API-compatible mode (recommended) or [WinPcap](https://www.winpcap.org/).
+    * This works on Windows 11
 
 * If you use `link::TwinCAT`, please see [how to install AUTDServer](https://github.com/shinolab/autd3-library-software/wiki/How-to-install-AUTDServer).
+    * Windows 11 might not be supported by TwinCAT
 
 ## :hammer_and_wrench: Build
 
