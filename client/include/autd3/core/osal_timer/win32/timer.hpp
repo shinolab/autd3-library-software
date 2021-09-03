@@ -3,7 +3,7 @@
 // Created Date: 01/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 23/07/2021
+// Last Modified: 03/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -59,8 +59,7 @@ class Timer {
   Timer &operator=(Timer &&) = delete;
 
  private:
-  static void CALLBACK timer_thread([[maybe_unused]] UINT u_timer_id, [[maybe_unused]] UINT u_msg, DWORD_PTR dw_user, [[maybe_unused]] DWORD_PTR dw1,
-                                    [[maybe_unused]] DWORD_PTR dw2) {
+  static void CALLBACK timer_thread(UINT, UINT, DWORD_PTR dw_user, DWORD_PTR, DWORD_PTR) {
     auto *const handler = reinterpret_cast<T *>(dw_user);
     handler->callback();
   }

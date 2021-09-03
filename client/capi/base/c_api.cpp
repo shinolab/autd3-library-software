@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/08/2021
+// Last Modified: 03/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -339,19 +339,22 @@ void AUTDGainSequence(void** out, const uint16_t gain_mode) {
   auto* s = SequenceCreate(autd::sequence::GainSequence::create(static_cast<autd::GAIN_MODE>(gain_mode)));
   *out = s;
 }
-bool AUTDSequenceAddPoint(void* const seq, const double x, const double y, const double z) {
+bool AUTDSequenceAddPoint(void* const seq, const double x, const double y, const double z, const uint8_t duty) {
   const auto* seq_w = static_cast<SequenceWrapper*>(seq);
   AUTD3_CAPI_TRY({
-    std::dynamic_pointer_cast<autd::core::PointSequence>(seq_w->ptr)->add_point(ToVec3(x, y, z));
+    std::dynamic_pointer_cast<autd::core::PointSequence>(seq_w->ptr)->add_point(ToVec3(x, y, z), duty);
     return true;
   })
 }
-bool AUTDSequenceAddPoints(void* const seq, const double* points, const uint64_t size) {
+bool AUTDSequenceAddPoints(void* const seq, const double* points, const uint64_t points_size, const uint8_t* duties, const uint64_t duties_size) {
   const auto* seq_w = static_cast<SequenceWrapper*>(seq);
   std::vector<autd::Vector3> p;
-  for (size_t i = 0; i < size; i++) p.emplace_back(ToVec3(points[3 * i], points[3 * i + 1], points[3 * i + 2]));
+  for (size_t i = 0; i < points_size; i++) p.emplace_back(ToVec3(points[3 * i], points[3 * i + 1], points[3 * i + 2]));
+
+  std::vector<uint8_t> d;
+  for (size_t i = 0; i < duties_size; i++) d.emplace_back(duties[i]);
   AUTD3_CAPI_TRY({
-    std::dynamic_pointer_cast<autd::core::PointSequence>(seq_w->ptr)->add_points(p);
+    std::dynamic_pointer_cast<autd::core::PointSequence>(seq_w->ptr)->add_points(p, d);
     return true;
   })
 }

@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/07/2021
+// Last Modified: 03/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -70,7 +70,7 @@ void SOEMImpl::close() { return _cnt.close(); }
 
 void SOEMImpl::send(const uint8_t* buf, const size_t size) { return _cnt.send(buf, size); }
 
-void SOEMImpl::read(uint8_t* rx, [[maybe_unused]] size_t buffer_len) { return _cnt.read(rx); }
+void SOEMImpl::read(uint8_t* rx, size_t) { return _cnt.read(rx); }
 
 bool SOEMImpl::is_open() { return _cnt.is_open(); }
 

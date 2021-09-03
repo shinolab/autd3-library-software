@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 28/07/2021
+// Last Modified: 03/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -23,7 +23,7 @@ constexpr double AUTD_WIDTH = 192.0;
 constexpr double AUTD_HEIGHT = 151.4;
 
 template <typename T>
-constexpr auto IsMissingTransducer(T x, T y) {
+constexpr auto is_missing_transducer(T x, T y) {
   return y == 1 && (x == 1 || x == 2 || x == 16);
 }
 
