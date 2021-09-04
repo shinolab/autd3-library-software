@@ -7,7 +7,7 @@ add_library(autd3capi-holo-gain SHARED
   ../base/wrapper.hpp
 )
 
-target_link_libraries(autd3capi-holo-gain gain_holo)
+target_link_libraries(autd3capi-holo-gain holo_gain)
 if(WIN32)
 elseif(APPLE)
 else()

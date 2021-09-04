@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.20)
 
-add_library(modulation_from_file
+add_library(from_file_modulation
   from_file.cpp
   ${PROJECT_SOURCE_DIR}/include/autd3/modulation/from_file.hpp
 )
 
-target_include_directories(modulation_from_file PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(from_file_modulation PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
-set_target_properties(modulation_from_file
+set_target_properties(from_file_modulation
   PROPERTIES
   ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
@@ -15,7 +15,7 @@ set_target_properties(modulation_from_file
 )
 
 if(WIN32)
-  set_target_properties(modulation_from_file PROPERTIES FOLDER "gain")
+  set_target_properties(from_file_modulation PROPERTIES FOLDER "gain")
 else()
-  set_target_properties(modulation_from_file PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  set_target_properties(from_file_modulation PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

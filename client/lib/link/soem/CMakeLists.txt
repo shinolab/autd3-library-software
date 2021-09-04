@@ -4,16 +4,16 @@ find_package(Threads REQUIRED)
 
 file(GLOB_RECURSE SOEM_SRC_FILES ${SOEM_PATH}/soem/*.c ${SOEM_PATH}/osal/${OS}/*.c ${SOEM_PATH}/oshw/${OS}/*.c)
 
-add_library(link_soem
+add_library(soem_link
   autdsoem.cpp
   autdsoem.hpp
   soem.cpp
   ${SOEM_SRC_FILES}
   ${PROJECT_SOURCE_DIR}/include/autd3/link/soem.hpp
 )
-target_include_directories(link_soem PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(soem_link PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
-target_include_directories(link_soem PRIVATE
+target_include_directories(soem_link PRIVATE
   ${PROJECT_SOURCE_DIR}/include
   ${SOEM_PATH}/soem
   ${SOEM_PATH}/osal
@@ -21,28 +21,28 @@ target_include_directories(link_soem PRIVATE
   ${SOEM_PATH}/oshw/${OS}
 )
 if(WIN32)
-  target_include_directories(link_soem PRIVATE
+  target_include_directories(soem_link PRIVATE
     ${SOEM_PATH}/oshw/${OS}/wpcap/Include
     ${SOEM_PATH}/oshw/${OS}/wpcap/Include/pcap
   )
-  target_compile_options(link_soem PRIVATE /D_CRT_SECURE_NO_WARNINGS /wd4996)
+  target_compile_options(soem_link PRIVATE /D_CRT_SECURE_NO_WARNINGS /wd4996)
 endif()
 
-target_link_libraries(link_soem INTERFACE ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(soem_link INTERFACE ${CMAKE_THREAD_LIBS_INIT})
 if(WIN32)
   if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    target_link_directories(link_soem INTERFACE ${PROJECT_SOURCE_DIR}/lib/link/soem/Lib)
+    target_link_directories(soem_link INTERFACE ${PROJECT_SOURCE_DIR}/lib/link/soem/Lib)
   else()
-    target_link_directories(link_soem INTERFACE ${PROJECT_SOURCE_DIR}/lib/link/soem/Lib/x64)
+    target_link_directories(soem_link INTERFACE ${PROJECT_SOURCE_DIR}/lib/link/soem/Lib/x64)
   endif()
-  target_link_libraries(link_soem INTERFACE ws2_32.lib winmm.lib Packet.lib wpcap.lib)
+  target_link_libraries(soem_link INTERFACE ws2_32.lib winmm.lib Packet.lib wpcap.lib)
 elseif(APPLE)
-  target_link_libraries(link_soem INTERFACE pcap)
+  target_link_libraries(soem_link INTERFACE pcap)
 else()
-  target_link_libraries(link_soem INTERFACE rt -static-libgcc -static-libstdc++)
+  target_link_libraries(soem_link INTERFACE rt -static-libgcc -static-libstdc++)
 endif()
 
-set_target_properties(link_soem
+set_target_properties(soem_link
   PROPERTIES
   ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
@@ -50,7 +50,7 @@ set_target_properties(link_soem
 )
 
 if(WIN32)
-  set_target_properties(link_soem PROPERTIES FOLDER "link")
+  set_target_properties(soem_link PROPERTIES FOLDER "link")
 else()
-  set_target_properties(link_soem PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  set_target_properties(soem_link PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

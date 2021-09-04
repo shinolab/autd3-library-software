@@ -5,7 +5,7 @@ target_link_libraries(test_autd3 PRIVATE autd3 gtest_main)
 
 if(BUILD_HOLO_GAIN)
   add_subdirectory(${PROJECT_SOURCE_DIR}/tests/gain/holo)
-  target_link_libraries(test_autd3 PRIVATE gain_holo)
+  target_link_libraries(test_autd3 PRIVATE holo_gain)
   if(BUILD_BLAS_BACKEND)
     target_compile_definitions(test_autd3 PRIVATE TEST_BLAS_BACKEND)
   endif()
