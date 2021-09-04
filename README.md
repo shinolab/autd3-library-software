@@ -52,10 +52,6 @@ See `client/examples`
 
 If you are using Linux/macOS, you may need to run as root.
 
-## :heavy_plus_sign: Additional plugins
-
-* [BLAS backend for Holo gain](https://github.com/shinolab/autd3-BLAS-backend)
-
 ## :link: For other programming languages
 
 * [Rust](https://github.com/shinolab/rust-autd)

@@ -30,7 +30,9 @@
 #pragma GCC diagnostic pop
 #endif
 
-namespace autd::gain::holo {
+namespace autd {
+namespace gain {
+namespace holo {
 
 class Backend;
 using BackendPtr = std::shared_ptr<Backend>;
@@ -42,10 +44,10 @@ enum class TRANSPOSE { NO_TRANS = 111, TRANS = 112, CONJ_TRANS = 113, CONJ_NO_TR
  */
 class Backend {
  public:
-  using MatrixXc = Eigen::Matrix<std::complex<double>, -1, -1>;
-  using VectorXc = Eigen::Matrix<std::complex<double>, -1, 1>;
-  using MatrixX = Eigen::Matrix<double, -1, -1>;
-  using VectorX = Eigen::Matrix<double, -1, 1>;
+  using MatrixXc = Eigen::Matrix<std::complex<double>, -1, -1, Eigen::ColMajor>;
+  using VectorXc = Eigen::Matrix<std::complex<double>, -1, 1, Eigen::ColMajor>;
+  using MatrixX = Eigen::Matrix<double, -1, -1, Eigen::ColMajor>;
+  using VectorX = Eigen::Matrix<double, -1, 1, Eigen::ColMajor>;
 
   virtual bool supports_svd() = 0;
   virtual bool supports_evd() = 0;
@@ -79,4 +81,6 @@ class Backend {
   Backend(const Backend&& v) = delete;
   Backend& operator=(Backend&& obj) = delete;
 };
-}  // namespace autd::gain::holo
+}  // namespace holo
+}  // namespace gain
+}  // namespace autd
