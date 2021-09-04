@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/08/2021
+// Last Modified: 04/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -20,11 +20,12 @@ bool Eigen3Backend::supports_solve() { return true; }
 
 void Eigen3Backend::hadamard_product(const MatrixXc& a, const MatrixXc& b, MatrixXc* c) { c->noalias() = a.cwiseProduct(b); }
 void Eigen3Backend::real(const MatrixXc& a, MatrixX* b) { b->noalias() = a.real(); }
-void Eigen3Backend::pseudo_inverse_svd(MatrixXc* matrix, const double alpha, MatrixXc* result) {
-  const Eigen::BDCSVD svd(*matrix, Eigen::ComputeFullU | Eigen::ComputeFullV);
+void Eigen3Backend::pseudo_inverse_svd(const MatrixXc& matrix, const double alpha, MatrixXc* result) {
+  const Eigen::BDCSVD svd(matrix, Eigen::ComputeFullU | Eigen::ComputeFullV);
   auto singular_values_inv = svd.singularValues();
   const auto size = singular_values_inv.size();
   for (Eigen::Index i = 0; i < size; i++) singular_values_inv(i) = singular_values_inv(i) / (singular_values_inv(i) * singular_values_inv(i) + alpha);
+
   result->noalias() = svd.matrixV() * singular_values_inv.asDiagonal() * svd.matrixU().adjoint();
 }
 Eigen3Backend::VectorXc Eigen3Backend::max_eigen_vector(MatrixXc* matrix) {
@@ -33,10 +34,7 @@ Eigen3Backend::VectorXc Eigen3Backend::max_eigen_vector(MatrixXc* matrix) {
   ces.eigenvalues().cwiseAbs2().maxCoeff(&idx);
   return ces.eigenvectors().col(idx);
 }
-void Eigen3Backend::matrix_add(const double alpha, const MatrixX& a, const double beta, MatrixX* b) {
-  *b *= beta;
-  (*b).noalias() += alpha * a;
-}
+void Eigen3Backend::matrix_add(const double alpha, const MatrixX& a, MatrixX* b) { (*b).noalias() += alpha * a; }
 void Eigen3Backend::matrix_mul(const TRANSPOSE trans_a, const TRANSPOSE trans_b, const std::complex<double> alpha, const MatrixXc& a,
                                const MatrixXc& b, const std::complex<double> beta, MatrixXc* c) {
   *c *= beta;
@@ -125,10 +123,7 @@ void Eigen3Backend::matrix_vector_mul(const TRANSPOSE trans_a, const std::comple
       break;
   }
 }
-void Eigen3Backend::vector_add(const double alpha, const VectorX& a, const double beta, VectorX* b) {
-  *b *= beta;
-  (*b).noalias() += alpha * a;
-}
+void Eigen3Backend::vector_add(const double alpha, const VectorX& a, VectorX* b) { (*b).noalias() += alpha * a; }
 void Eigen3Backend::solve_g(MatrixX* a, VectorX* b, VectorX* c) {
   const Eigen::HouseholderQR<MatrixX> qr(*a);
   (*c).noalias() = qr.solve(*b);

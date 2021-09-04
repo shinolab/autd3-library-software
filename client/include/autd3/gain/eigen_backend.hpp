@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 04/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -27,14 +27,14 @@ class Eigen3Backend final : public Backend {
   bool supports_solve() override;
   void hadamard_product(const MatrixXc& a, const MatrixXc& b, MatrixXc* c) override;
   void real(const MatrixXc& a, MatrixX* b) override;
-  void pseudo_inverse_svd(MatrixXc* matrix, double alpha, MatrixXc* result) override;
+  void pseudo_inverse_svd(const MatrixXc& matrix, double alpha, MatrixXc* result) override;
   VectorXc max_eigen_vector(MatrixXc* matrix) override;
-  void matrix_add(double alpha, const MatrixX& a, double beta, MatrixX* b) override;
+  void matrix_add(double alpha, const MatrixX& a, MatrixX* b) override;
   void matrix_mul(TRANSPOSE trans_a, TRANSPOSE trans_b, std::complex<double> alpha, const MatrixXc& a, const MatrixXc& b, std::complex<double> beta,
                   MatrixXc* c) override;
   void matrix_vector_mul(TRANSPOSE trans_a, std::complex<double> alpha, const MatrixXc& a, const VectorXc& b, std::complex<double> beta,
                          VectorXc* c) override;
-  void vector_add(double alpha, const VectorX& a, double beta, VectorX* b) override;
+  void vector_add(double alpha, const VectorX& a, VectorX* b) override;
   void solve_ch(MatrixXc* a, VectorXc* b) override;
   void solve_g(MatrixX* a, VectorX* b, VectorX* c) override;
   double dot(const VectorX& a, const VectorX& b) override;

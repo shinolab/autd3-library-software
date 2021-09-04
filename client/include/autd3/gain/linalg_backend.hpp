@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 04/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -52,14 +52,14 @@ class Backend {
   virtual bool supports_solve() = 0;
   virtual void hadamard_product(const MatrixXc& a, const MatrixXc& b, MatrixXc* c) = 0;
   virtual void real(const MatrixXc& a, MatrixX* b) = 0;
-  virtual void pseudo_inverse_svd(MatrixXc* matrix, double alpha, MatrixXc* result) = 0;
+  virtual void pseudo_inverse_svd(const MatrixXc& matrix, double alpha, MatrixXc* result) = 0;
   virtual VectorXc max_eigen_vector(MatrixXc* matrix) = 0;
-  virtual void matrix_add(double alpha, const MatrixX& a, double beta, MatrixX* b) = 0;
+  virtual void matrix_add(double alpha, const MatrixX& a, MatrixX* b) = 0;
   virtual void matrix_mul(TRANSPOSE trans_a, TRANSPOSE trans_b, std::complex<double> alpha, const MatrixXc& a, const MatrixXc& b,
                           std::complex<double> beta, MatrixXc* c) = 0;
   virtual void matrix_vector_mul(TRANSPOSE trans_a, std::complex<double> alpha, const MatrixXc& a, const VectorXc& b, std::complex<double> beta,
                                  VectorXc* c) = 0;
-  virtual void vector_add(double alpha, const VectorX& a, double beta, VectorX* b) = 0;
+  virtual void vector_add(double alpha, const VectorX& a, VectorX* b) = 0;
   virtual void solve_ch(MatrixXc* a, VectorXc* b) = 0;
   virtual void solve_g(MatrixX* a, VectorX* b, VectorX* c) = 0;
   virtual double dot(const VectorX& a, const VectorX& b) = 0;
