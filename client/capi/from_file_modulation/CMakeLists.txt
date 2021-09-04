@@ -7,7 +7,7 @@ add_library(autd3capi-from-file-modulation SHARED
   ../base/wrapper_modulation.hpp
 )
 
-target_link_libraries(autd3capi-from-file-modulation modulation_from_file)
+target_link_libraries(autd3capi-from-file-modulation from_file_modulation)
 if(WIN32)
 elseif(APPLE)
 else()

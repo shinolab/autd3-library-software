@@ -7,7 +7,7 @@ add_library(autd3capi-soem-link SHARED
   ../base/wrapper_link.hpp
 )
 
-target_link_libraries(autd3capi-soem-link link_soem)
+target_link_libraries(autd3capi-soem-link soem_link)
 if(WIN32)
   target_link_libraries(autd3capi-soem-link ws2_32.lib)
   target_link_libraries(autd3capi-soem-link winmm.lib)
