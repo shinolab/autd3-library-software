@@ -1,14 +1,10 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.20)
 
-include_directories(
-  ${PROJECT_SOURCE_DIR}/include
-  ${EIGEN_PATH}
-)
-
-add_library(link_emulator STATIC
+add_library(link_emulator
   emulator.cpp
   ${PROJECT_SOURCE_DIR}/include/autd3/link/emulator.hpp
 )
+target_include_directories(link_emulator PUBLIC ${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
 
 set_target_properties(link_emulator
   PROPERTIES
@@ -18,7 +14,8 @@ set_target_properties(link_emulator
 )
 
 if(WIN32)
-  add_compile_definitions(WIN32_LEAN_AND_MEAN)
+  set_target_properties(link_emulator PROPERTIES FOLDER "link")
+  target_compile_definitions(link_emulator PRIVATE WIN32_LEAN_AND_MEAN)
 else()
   set_target_properties(link_emulator PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

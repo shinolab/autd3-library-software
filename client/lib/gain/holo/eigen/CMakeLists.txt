@@ -1,14 +1,11 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.20)
 
-include_directories(${PROJECT_SOURCE_DIR}/include)
-
-add_library(backend_eigen STATIC
+add_library(backend_eigen
     eigen_backend.cpp
     ${PROJECT_SOURCE_DIR}/include/autd3/gain/linalg_backend.hpp
     ${PROJECT_SOURCE_DIR}/include/autd3/gain/eigen_backend.hpp
 )
-
-include_directories(${EIGEN_PATH})
+target_include_directories(backend_eigen PUBLIC ${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
 
 set_target_properties(backend_eigen
     PROPERTIES
@@ -18,7 +15,7 @@ set_target_properties(backend_eigen
 )
 
 if(WIN32)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4190")
+  set_target_properties(backend_eigen PROPERTIES FOLDER "gain/backend")
 else()
-    set_target_properties(backend_eigen PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  set_target_properties(backend_eigen PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

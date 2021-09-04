@@ -1,12 +1,11 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.20)
 
-include_directories(${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
-
-add_library(gain_holo STATIC
+add_library(gain_holo
     holo.cpp
     ${PROJECT_SOURCE_DIR}/include/autd3/gain/linalg_backend.hpp
     ${PROJECT_SOURCE_DIR}/include/autd3/gain/holo.hpp
 )
+target_include_directories(gain_holo PUBLIC ${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
 
 add_subdirectory(eigen)
 target_link_libraries(gain_holo INTERFACE backend_eigen)
@@ -16,9 +15,6 @@ if(BUILD_BLAS_BACKEND)
   set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${BLAS_LIB_DIR}")
   set(BLA_STATIC ON)
   find_package(BLAS REQUIRED)
-  if(USE_MKL)
-    add_definitions(-DUSE_BLAS_MKL)
-  endif()
   add_subdirectory(blas)
   target_link_libraries(gain_holo INTERFACE backend_blas)
 endif()
@@ -43,7 +39,7 @@ set_target_properties(gain_holo
 )
 
 if(WIN32)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4190")
+  set_target_properties(gain_holo PROPERTIES FOLDER "gain")
 else()
-    set_target_properties(gain_holo PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  set_target_properties(gain_holo PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
