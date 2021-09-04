@@ -1,6 +1,6 @@
-// File: eigen_backend.hpp
-// Project: holo_gain
-// Created Date: 16/05/2021
+// File: blas_backend.hpp
+// Project: include
+// Created Date: 17/05/2021
 // Author: Shun Suzuki
 // -----
 // Last Modified: 04/09/2021
@@ -15,10 +15,7 @@
 
 namespace autd::gain::holo {
 
-/**
- * \brief Linear algebra calculation backend using Eigen3.
- */
-class Eigen3Backend final : public Backend {
+class BLASBackend final : public Backend {
  public:
   static BackendPtr create();
 
