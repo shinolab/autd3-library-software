@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/09/2021
+// Last Modified: 04/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -270,7 +270,7 @@ class Controller {
 
     explicit STMTimerCallback(core::LinkPtr link) : _link(std::move(link)), _idx(0), _lock(false) {}
 
-    void add(std::unique_ptr<uint8_t[]> data, const size_t size);
+    void add(std::unique_ptr<uint8_t[]> data, size_t size);
     void clear();
     void callback() override;
 
