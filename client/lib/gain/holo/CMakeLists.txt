@@ -1,6 +1,15 @@
 cmake_minimum_required(VERSION 3.10)
 
+include_directories(${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
+
+add_library(gain_holo STATIC
+    holo.cpp
+    ${PROJECT_SOURCE_DIR}/include/autd3/gain/linalg_backend.hpp
+    ${PROJECT_SOURCE_DIR}/include/autd3/gain/holo.hpp
+)
+
 add_subdirectory(eigen)
+target_link_libraries(gain_holo INTERFACE backend_eigen)
 
 # BLAS backend
 if(BUILD_BLAS_BACKEND)
@@ -11,19 +20,20 @@ if(BUILD_BLAS_BACKEND)
     add_definitions(-DUSE_BLAS_MKL)
   endif()
   add_subdirectory(blas)
+  target_link_libraries(gain_holo INTERFACE backend_blas)
 endif()
 
-include_directories(${PROJECT_SOURCE_DIR}/include)
-
-add_library(gain_holo STATIC
-    holo.cpp
-    ${PROJECT_SOURCE_DIR}/include/autd3/gain/linalg_backend.hpp
-    ${PROJECT_SOURCE_DIR}/include/autd3/gain/holo.hpp
-)
-
-include_directories(${EIGEN_PATH})
-
-target_link_libraries(gain_holo INTERFACE backend_eigen)
+# CUDA backend
+if(BUILD_CUDA_BACKEND)
+  find_package(CUDA REQUIRED)
+  find_package(CUDAToolkit REQUIRED)
+  if(CUDA_FOUND AND CUDAToolkit_FOUND)
+    message("CUDA version: " ${CUDA_VERSION})
+    message("CUDA toolkit version: " ${CUDAToolkit_VERSION})
+    add_subdirectory(cuda)
+    target_link_libraries(gain_holo INTERFACE backend_cuda)
+  endif()
+endif()
 
 set_target_properties(gain_holo
     PROPERTIES

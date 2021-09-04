@@ -31,11 +31,22 @@ class BackendTest : public testing::Test {
 
 using testing::Types;
 
+// FIXME: make more elegant
 #ifdef TEST_BLAS_BACKEND
 #include "autd3/gain/blas_backend.hpp"
+#ifdef TEST_CUDA_BACKEND
+#include "autd3/gain/cuda_backend.hpp"
+typedef Types<autd::gain::holo::Eigen3Backend, autd::gain::holo::BLASBackend, autd::gain::holo::CUDABackend> Implementations;
+#else
 typedef Types<autd::gain::holo::Eigen3Backend, autd::gain::holo::BLASBackend> Implementations;
+#endif
+#else
+#ifdef TEST_CUDA_BACKEND
+#include "autd3/gain/cuda_backend.hpp"
+typedef Types<autd::gain::holo::Eigen3Backend, autd::gain::holo::CUDABackend> Implementations;
 #else
 typedef Types<autd::gain::holo::Eigen3Backend> Implementations;
+#endif
 #endif
 
 TYPED_TEST_SUITE(BackendTest, Implementations);
@@ -145,7 +156,7 @@ TYPED_TEST(BackendTest, max_eigen_vector) {
   auto gen_unitary = [](const Eigen::Index size) {
     const Backend::MatrixXc tmp = random_square_matrix_complex(size);
     const Backend::MatrixXc hermite = tmp.adjoint() * tmp;
-  	Backend::MatrixXc u = (complex(0.0, 1.0) * hermite).exp();
+    Backend::MatrixXc u = (complex(0.0, 1.0) * hermite).exp();
     return u;
   };
 
