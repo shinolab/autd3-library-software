@@ -1,6 +1,5 @@
 enable_testing()
 
-include_directories(. ${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
 add_executable(test_autd3)
 target_link_libraries(test_autd3 PRIVATE autd3 gtest_main)
 
@@ -8,10 +7,10 @@ if(BUILD_HOLO_GAIN)
   add_subdirectory(${PROJECT_SOURCE_DIR}/tests/gain/holo)
   target_link_libraries(test_autd3 PRIVATE gain_holo)
   if(BUILD_BLAS_BACKEND)
-    add_compile_definitions(TEST_BLAS_BACKEND)
+    target_compile_definitions(test_autd3 PRIVATE TEST_BLAS_BACKEND)
   endif()
   if(BUILD_CUDA_BACKEND)
-    add_compile_definitions(TEST_CUDA_BACKEND)
+    target_compile_definitions(test_autd3 PRIVATE TEST_CUDA_BACKEND)
   endif()
 endif()
 
@@ -20,3 +19,9 @@ add_test(NAME test_autd3 COMMAND test_autd3)
 
 include(GoogleTest)
 gtest_discover_tests(test_autd3)
+
+if(WIN32)
+  set_target_properties(test_autd3 PROPERTIES FOLDER "test")
+  set_target_properties(gtest PROPERTIES FOLDER "test")
+  set_target_properties(gtest_main PROPERTIES FOLDER "test")
+endif()

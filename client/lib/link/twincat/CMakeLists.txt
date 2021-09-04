@@ -1,14 +1,10 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.20)
 
-
-include_directories(
-  ${PROJECT_SOURCE_DIR}/include
-)
-
-add_library(link_twincat STATIC
+add_library(link_twincat
   twincat.cpp
   ${PROJECT_SOURCE_DIR}/include/autd3/link/twincat.hpp
 )
+target_include_directories(link_twincat PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
 set_target_properties(link_twincat
   PROPERTIES
@@ -17,6 +13,8 @@ set_target_properties(link_twincat
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
 )
 
-if(NOT WIN32)
+if(WIN32)
+  set_target_properties(link_twincat PROPERTIES FOLDER "link")
+else()
   set_target_properties(link_twincat PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

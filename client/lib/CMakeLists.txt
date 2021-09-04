@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.20)
 
 file(GLOB include_files ${PROJECT_SOURCE_DIR}/include/*.hpp ${PROJECT_SOURCE_DIR}/include/**/*.hpp)
 
@@ -10,38 +10,28 @@ set(SOURCE_LIST
   ${include_files}
 )
 
-include_directories(${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
-
-add_library(autd3 STATIC ${SOURCE_LIST})
+add_library(autd3 ${SOURCE_LIST})
+target_include_directories(autd3 PUBLIC ${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
 
 if(WIN32)
   source_group("gain" FILES
     gain/primitive.cpp
     ${PROJECT_SOURCE_DIR}/include/autd3/gain/primitive.hpp
   )
-
   source_group("modulation" FILES
     modulation/primitive.cpp
     ${PROJECT_SOURCE_DIR}/include/autd3/modulation/primitive.hpp
   )
-
   source_group("sequence" FILES
     sequence/primitive.cpp
     ${PROJECT_SOURCE_DIR}/include/autd3/sequence/primitive.hpp
   )
-
   source_group("controller" FILES
     controller.cpp
     ${PROJECT_SOURCE_DIR}/include/autd3/controller.hpp
   )
-
-  source_group("core" FILES
-    ${PROJECT_SOURCE_DIR}/include/autd3/core/*.hpp
-  )
 endif()
 
-if (WIN32)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4068")
-else()
+if (NOT WIN32)
   set_target_properties(autd3 PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.20)
 
 project(autd3)
 set(VERSION_MAJOR   1   CACHE STRING "Project major version number.")
@@ -105,22 +105,27 @@ endif()
 if(Git_FOUND)
   execute_process(COMMAND git -C ${PROJECT_SOURCE_DIR} submodule update --init --recursive -- ${PROJECT_SOURCE_DIR}/deps/Eigen3)
 endif()
-add_definitions(-DEIGEN_MPL2_ONLY)
+add_compile_definitions(-DEIGEN_MPL2_ONLY)
 set(EIGEN_PATH ${PROJECT_SOURCE_DIR}/deps/Eigen3)
+
+add_subdirectory(lib)
 
 # Gain
 if(BUILD_HOLO_GAIN)
   add_subdirectory(lib/gain/holo)
+  target_link_libraries(autd3 INTERFACE gain_holo)
 endif()
 
 # Modulation
 if(BUILD_FROM_FILE_MODULATION)
   add_subdirectory(lib/modulation/from_file)
+  target_link_libraries(autd3 INTERFACE modulation_from_file)
 endif()
 
 # Link
 if(BUILD_TWINCAT_LINK)
   add_subdirectory(lib/link/twincat)
+  target_link_libraries(autd3 INTERFACE link_twincat)
 endif()
 if(BUILD_SOEM_LINK)
   if(Git_FOUND)
@@ -128,12 +133,12 @@ if(BUILD_SOEM_LINK)
   endif()
   set(SOEM_PATH ${PROJECT_SOURCE_DIR}/deps/SOEM)
   add_subdirectory(lib/link/soem)
+  target_link_libraries(autd3 INTERFACE link_soem)
 endif()
 if(BUILD_EMULATOR_LINK)
   add_subdirectory(lib/link/emulator)
+  target_link_libraries(autd3 INTERFACE link_emulator)
 endif()
-
-add_subdirectory(lib)
 
 if(BUILD_CAPI)
   add_subdirectory(capi/base)

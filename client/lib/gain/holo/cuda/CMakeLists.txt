@@ -1,8 +1,6 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.20)
 
-include_directories(${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
-
-cuda_add_library(backend_cuda STATIC
+cuda_add_library(backend_cuda
     cuda_backend.cu
     ${PROJECT_SOURCE_DIR}/include/autd3/gain/linalg_backend.hpp
     ${PROJECT_SOURCE_DIR}/include/autd3/gain/cuda_backend.hpp
@@ -18,7 +16,7 @@ set_target_properties(backend_cuda
 )
 
 if(WIN32)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4190")
+  set_target_properties(backend_cuda PROPERTIES FOLDER "gain/backend")
 else()
-    set_target_properties(backend_cuda PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  set_target_properties(backend_cuda PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

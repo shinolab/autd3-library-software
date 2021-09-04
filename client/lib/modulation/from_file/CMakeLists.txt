@@ -1,11 +1,11 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.20)
 
-include_directories(${PROJECT_SOURCE_DIR}/include)
-
-add_library(modulation_from_file STATIC
+add_library(modulation_from_file
   from_file.cpp
   ${PROJECT_SOURCE_DIR}/include/autd3/modulation/from_file.hpp
 )
+
+target_include_directories(modulation_from_file PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
 set_target_properties(modulation_from_file
   PROPERTIES
@@ -14,6 +14,8 @@ set_target_properties(modulation_from_file
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
 )
 
-if(NOT WIN32)
+if(WIN32)
+  set_target_properties(modulation_from_file PROPERTIES FOLDER "gain")
+else()
   set_target_properties(modulation_from_file PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
