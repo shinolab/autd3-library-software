@@ -11,16 +11,14 @@
 
 #include "autd3/gain/blas_backend.hpp"
 
-#include <iostream>
-
 #define lapack_complex_float std::complex<float>
 #define lapack_complex_double std::complex<double>
 #ifdef USE_BLAS_MKL
-#include "mkl_cblas.h"
-#include "mkl_lapacke.h"
+#include "./mkl_cblas.h"
+#include "./mkl_lapacke.h"
 #else
-#include "cblas.h"
-#include "lapacke.h"
+#include "./cblas.h"
+#include "./lapacke.h"
 #endif
 
 namespace autd::gain::holo {
