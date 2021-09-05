@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/09/2021
+// Last Modified: 06/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -243,8 +243,8 @@ std::shared_ptr<MatrixXc> Eigen3Backend::transfer_matrix(const std::vector<core:
   for (Eigen::Index i = 0; i < m; i++) {
     const auto& tp = foci[i];
     for (Eigen::Index j = 0; j < n; j++) {
-      const auto pos = geometry->position(j);
-      const auto dir = geometry->direction(j / core::NUM_TRANS_IN_UNIT);
+      const auto& pos = geometry->position(j);
+      const auto& dir = geometry->direction(j / core::NUM_TRANS_IN_UNIT);
       g->data(i, j) = utils::transfer(pos, dir, tp, wave_number, attenuation);
     }
   }
@@ -283,6 +283,7 @@ std::shared_ptr<MatrixXc> Eigen3Backend::sigma_regularization(std::shared_ptr<Ma
   const auto n = transfer->data.cols();
 
   auto sigma = allocate_matrix_c("sigma", n, n);
+  sigma->fill(Zero);
   for (Eigen::Index j = 0; j < n; j++) {
     double tmp = 0;
     for (Eigen::Index i = 0; i < m; i++) tmp += std::abs(transfer->data(i, j) * amps[i]);
