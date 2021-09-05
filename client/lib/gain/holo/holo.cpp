@@ -294,7 +294,7 @@ void LM::calc(const core::GeometryPtr& geometry) {
     _backend->mat_cpy(a, tmp_mat);
     _backend->matrix_add(mu, identity, tmp_mat);
     _backend->solve_g(tmp_mat, g, h_lm);
-    if (_backend->dot(h_lm, h_lm) <= _eps_2 * (_backend->dot(x, x) + _eps_2)) break;
+    if (std::sqrt(_backend->dot(h_lm, h_lm)) <= _eps_2 * (std::sqrt(_backend->dot(x, x)) + _eps_2)) break;
 
     _backend->vec_cpy(x, x_new);
     _backend->vector_add(-1.0, h_lm, x_new);
