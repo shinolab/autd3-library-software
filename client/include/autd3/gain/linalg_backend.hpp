@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/09/2021
+// Last Modified: 06/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -81,8 +81,7 @@ struct Matrix {
   virtual std::vector<T> get_diagonal() {
     auto n = (std::min)(data.rows(), data.cols());
     std::vector<T> v;
-    v.resize(n, 0.0);
-    std::memcpy(v.data(), data.diagonal().data(), sizeof(T) * n);
+    for (Eigen::Index i = 0; i < n; i++) v.emplace_back(data(i, i));
     return v;
   }
   virtual void set_diagonal(std::shared_ptr<Vector<T>> v) { data.diagonal() = v->data; }
