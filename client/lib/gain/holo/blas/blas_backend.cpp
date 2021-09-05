@@ -3,7 +3,7 @@
 // Created Date: 17/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/09/2021
+// Last Modified: 05/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -18,7 +18,14 @@
 #include "./mkl_lapacke.h"
 #else
 #include "./cblas.h"
+#if _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4190)
+#endif
 #include "./lapacke.h"
+#if _MSC_VER
+#pragma warning(pop)
+#endif
 #endif
 
 namespace autd::gain::holo {
@@ -26,10 +33,13 @@ namespace autd::gain::holo {
 constexpr auto AUTD_GESVD = LAPACKE_zgesdd;
 constexpr auto AUTD_HEEV = LAPACKE_zheev;
 constexpr auto AUTD_AXPY = cblas_daxpy;
-constexpr auto AUTD_GEMM = cblas_zgemm;
-constexpr auto AUTD_GEMV = cblas_zgemv;
+constexpr auto AUTD_DGEMM = cblas_dgemm;
+constexpr auto AUTD_ZGEMM = cblas_zgemm;
+constexpr auto AUTD_DGEMV = cblas_dgemv;
+constexpr auto AUTD_ZGEMV = cblas_zgemv;
 constexpr auto AUTD_DOTC = cblas_zdotu_sub;
 constexpr auto AUTD_DOT = cblas_ddot;
+constexpr auto AUTD_IMAX = cblas_idamax;
 constexpr auto AUTD_IMAXC = cblas_izamax;
 constexpr auto AUTD_SYSV = LAPACKE_dsysv;
 constexpr auto AUTD_POSVC = LAPACKE_zposv;
@@ -38,15 +48,9 @@ constexpr auto AUTD_CPYC = LAPACKE_zlacpy;
 
 BackendPtr BLASBackend::create() { return std::make_shared<BLASBackend>(); }
 
-bool BLASBackend::supports_svd() { return true; }
-bool BLASBackend::supports_evd() { return true; }
-bool BLASBackend::supports_solve() { return true; }
-
-void BLASBackend::hadamard_product(const MatrixXc& a, const MatrixXc& b, MatrixXc* c) { (*c).noalias() = a.cwiseProduct(b); }
-void BLASBackend::real(const MatrixXc& a, MatrixX* b) { (*b).noalias() = a.real(); }
-void BLASBackend::pseudo_inverse_svd(const MatrixXc& matrix, const double alpha, MatrixXc* result) {
-  const auto nc = matrix.cols();
-  const auto nr = matrix.rows();
+void BLASBackend::pseudo_inverse_svd(const std::shared_ptr<MatrixXc> matrix, const double alpha, std::shared_ptr<MatrixXc> result) {
+  const auto nc = matrix->data.cols();
+  const auto nr = matrix->data.rows();
 
   const auto lda = static_cast<int>(nr);
   const auto ldu = static_cast<int>(nr);
@@ -54,97 +58,120 @@ void BLASBackend::pseudo_inverse_svd(const MatrixXc& matrix, const double alpha,
 
   const auto s_size = std::min(nr, nc);
   const auto s = std::make_unique<double[]>(s_size);
-  auto u = MatrixXc(nr, nr);
-  auto vt = MatrixXc(nc, nc);
+  auto u = this->allocate_matrix_c("_pis_u", nr, nr);
+  auto vt = this->allocate_matrix_c("_pis_vt", nc, nc);
 
-  MatrixXc m = matrix;
-  auto r = AUTD_GESVD(LAPACK_COL_MAJOR, 'A', static_cast<int>(nr), static_cast<int>(nc), m.data(), lda, s.get(), u.data(), ldu, vt.data(), ldvt);
-  MatrixXc singular_inv = MatrixXc::Zero(nc, nr);
+  Eigen::Matrix<complex, -1, -1, Eigen::ColMajor> m = matrix->data;
+  auto r = AUTD_GESVD(LAPACK_COL_MAJOR, 'A', static_cast<int>(nr), static_cast<int>(nc), m.data(), lda, s.get(), u->data.data(), ldu, vt->data.data(),
+                      ldvt);
+  Eigen::Matrix<complex, -1, -1, Eigen::ColMajor> singular_inv = Eigen::Matrix<complex, -1, -1, Eigen::ColMajor>::Zero(nc, nr);
   for (int i = 0; i < s_size; i++) singular_inv(i, i) = s[i] / (s[i] * s[i] + alpha);
 
-  auto tmp = MatrixXc(nc, nr);
-  BLASBackend::matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::CONJ_TRANS, std::complex<double>(1, 0), singular_inv, u, std::complex<double>(0, 0), &tmp);
-  BLASBackend::matrix_mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, std::complex<double>(1, 0), vt, tmp, std::complex<double>(0, 0), result);
+  auto si = std::make_shared<MatrixXc>(singular_inv);
+  auto tmp = this->allocate_matrix_c("_pis_tmp", nc, nr);
+  BLASBackend::matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::CONJ_TRANS, One, si, u, Zero, tmp);
+  BLASBackend::matrix_mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, One, vt, tmp, Zero, result);
 }
 
-BLASBackend::VectorXc BLASBackend::max_eigen_vector(MatrixXc* matrix) {
-  const auto size = matrix->cols();
+std::shared_ptr<VectorXc> BLASBackend::max_eigen_vector(std::shared_ptr<MatrixXc> matrix) {
+  const auto size = matrix->data.cols();
   const auto eigenvalues = std::make_unique<double[]>(size);
-  AUTD_HEEV(CblasColMajor, 'V', 'U', static_cast<int>(size), matrix->data(), static_cast<int>(size), eigenvalues.get());
-  return matrix->col(size - 1);
+  AUTD_HEEV(CblasColMajor, 'V', 'U', static_cast<int>(size), matrix->data.data(), static_cast<int>(size), eigenvalues.get());
+  return std::make_shared<VectorXc>(matrix->data.col(size - 1));
 }
 
-void BLASBackend::matrix_add(const double alpha, const MatrixX& a, MatrixX* b) {
-  AUTD_AXPY(static_cast<int>(a.size()), alpha, a.data(), 1, b->data(), 1);
+void BLASBackend::matrix_add(const double alpha, const std::shared_ptr<MatrixX> a, std::shared_ptr<MatrixX> b) {
+  AUTD_AXPY(static_cast<int>(a->data.size()), alpha, a->data.data(), 1, b->data.data(), 1);
 }
 
-void BLASBackend::matrix_mul(const TRANSPOSE trans_a, const TRANSPOSE trans_b, const std::complex<double> alpha, const MatrixXc& a, const MatrixXc& b,
-                             const std::complex<double> beta, MatrixXc* c) {
-  const auto lda = static_cast<int>(a.rows());
-  const auto ldb = static_cast<int>(b.rows());
-  const auto ldc = trans_a == TRANSPOSE::NO_TRANS || trans_a == TRANSPOSE::CONJ_NO_TRANS ? static_cast<int>(a.rows()) : static_cast<int>(a.cols());
-  const auto n = trans_b == TRANSPOSE::NO_TRANS || trans_b == TRANSPOSE::CONJ_NO_TRANS ? static_cast<int>(b.cols()) : static_cast<int>(b.rows());
-  const auto k = trans_a == TRANSPOSE::NO_TRANS || trans_a == TRANSPOSE::CONJ_NO_TRANS ? static_cast<int>(a.cols()) : static_cast<int>(a.rows());
-  AUTD_GEMM(CblasColMajor, static_cast<CBLAS_TRANSPOSE>(trans_a), static_cast<CBLAS_TRANSPOSE>(trans_b), ldc, n, k, &alpha, a.data(), lda, b.data(),
-            ldb, &beta, c->data(), ldc);
+void BLASBackend::matrix_mul(const TRANSPOSE trans_a, const TRANSPOSE trans_b, const complex alpha, const std::shared_ptr<MatrixXc> a,
+                             const std::shared_ptr<MatrixXc> b, const complex beta, std::shared_ptr<MatrixXc> c) {
+  const auto lda = static_cast<int>(a->data.rows());
+  const auto ldb = static_cast<int>(b->data.rows());
+  const auto ldc =
+      trans_a == TRANSPOSE::NO_TRANS || trans_a == TRANSPOSE::CONJ_NO_TRANS ? static_cast<int>(a->data.rows()) : static_cast<int>(a->data.cols());
+  const auto n =
+      trans_b == TRANSPOSE::NO_TRANS || trans_b == TRANSPOSE::CONJ_NO_TRANS ? static_cast<int>(b->data.cols()) : static_cast<int>(b->data.rows());
+  const auto k =
+      trans_a == TRANSPOSE::NO_TRANS || trans_a == TRANSPOSE::CONJ_NO_TRANS ? static_cast<int>(a->data.cols()) : static_cast<int>(a->data.rows());
+  AUTD_ZGEMM(CblasColMajor, static_cast<CBLAS_TRANSPOSE>(trans_a), static_cast<CBLAS_TRANSPOSE>(trans_b), ldc, n, k, &alpha, a->data.data(), lda,
+             b->data.data(), ldb, &beta, c->data.data(), ldc);
 }
 
-void BLASBackend::matrix_vector_mul(const TRANSPOSE trans_a, const std::complex<double> alpha, const MatrixXc& a, const VectorXc& b,
-                                    const std::complex<double> beta, VectorXc* c) {
-  const auto lda = static_cast<int>(a.rows());
-  const auto m = static_cast<int>(a.rows());
-  const auto n = static_cast<int>(a.cols());
-  AUTD_GEMV(CblasColMajor, static_cast<CBLAS_TRANSPOSE>(trans_a), m, n, &alpha, a.data(), lda, b.data(), 1, &beta, c->data(), 1);
+void BLASBackend::matrix_mul(const TRANSPOSE trans_a, const TRANSPOSE trans_b, const double alpha, const std::shared_ptr<MatrixX> a,
+                             const std::shared_ptr<MatrixX> b, const double beta, std::shared_ptr<MatrixX> c) {
+  const auto lda = static_cast<int>(a->data.rows());
+  const auto ldb = static_cast<int>(b->data.rows());
+  const auto ldc =
+      trans_a == TRANSPOSE::NO_TRANS || trans_a == TRANSPOSE::CONJ_NO_TRANS ? static_cast<int>(a->data.rows()) : static_cast<int>(a->data.cols());
+  const auto n =
+      trans_b == TRANSPOSE::NO_TRANS || trans_b == TRANSPOSE::CONJ_NO_TRANS ? static_cast<int>(b->data.cols()) : static_cast<int>(b->data.rows());
+  const auto k =
+      trans_a == TRANSPOSE::NO_TRANS || trans_a == TRANSPOSE::CONJ_NO_TRANS ? static_cast<int>(a->data.cols()) : static_cast<int>(a->data.rows());
+  AUTD_DGEMM(CblasColMajor, static_cast<CBLAS_TRANSPOSE>(trans_a), static_cast<CBLAS_TRANSPOSE>(trans_b), ldc, n, k, alpha, a->data.data(), lda,
+             b->data.data(), ldb, beta, c->data.data(), ldc);
 }
 
-void BLASBackend::vector_add(const double alpha, const VectorX& a, VectorX* b) {
-  AUTD_AXPY(static_cast<int>(a.size()), alpha, a.data(), 1, b->data(), 1);
+void BLASBackend::matrix_vector_mul(const TRANSPOSE trans_a, const complex alpha, const std::shared_ptr<MatrixXc> a,
+                                    const std::shared_ptr<VectorXc> b, const complex beta, std::shared_ptr<VectorXc> c) {
+  const auto lda = static_cast<int>(a->data.rows());
+  const auto m = static_cast<int>(a->data.rows());
+  const auto n = static_cast<int>(a->data.cols());
+  AUTD_ZGEMV(CblasColMajor, static_cast<CBLAS_TRANSPOSE>(trans_a), m, n, &alpha, a->data.data(), lda, b->data.data(), 1, &beta, c->data.data(), 1);
 }
 
-void BLASBackend::solve_g(MatrixX* a, VectorX* b, VectorX* c) {
-  const auto n = static_cast<int>(a->cols());
-  const auto lda = static_cast<int>(a->rows());
-  const auto ldb = static_cast<int>(b->size());
-  std::memcpy(c->data(), b->data(), ldb * sizeof(double));
+void BLASBackend::matrix_vector_mul(const TRANSPOSE trans_a, const double alpha, const std::shared_ptr<MatrixX> a, const std::shared_ptr<VectorX> b,
+                                    const double beta, std::shared_ptr<VectorX> c) {
+  const auto lda = static_cast<int>(a->data.rows());
+  const auto m = static_cast<int>(a->data.rows());
+  const auto n = static_cast<int>(a->data.cols());
+  AUTD_DGEMV(CblasColMajor, static_cast<CBLAS_TRANSPOSE>(trans_a), m, n, alpha, a->data.data(), lda, b->data.data(), 1, beta, c->data.data(), 1);
+}
+
+void BLASBackend::vector_add(const double alpha, const std::shared_ptr<VectorX> a, std::shared_ptr<VectorX> b) {
+  AUTD_AXPY(static_cast<int>(a->data.size()), alpha, a->data.data(), 1, b->data.data(), 1);
+}
+
+void BLASBackend::solve_g(std::shared_ptr<MatrixX> a, std::shared_ptr<VectorX> b, std::shared_ptr<VectorX> c) {
+  const auto n = static_cast<int>(a->data.cols());
+  const auto lda = static_cast<int>(a->data.rows());
+  const auto ldb = static_cast<int>(b->data.size());
+  std::memcpy(c->data.data(), b->data.data(), ldb * sizeof(double));
   const auto ipiv = std::make_unique<int[]>(n);
-  AUTD_SYSV(CblasColMajor, 'U', n, 1, a->data(), lda, ipiv.get(), c->data(), ldb);
+  AUTD_SYSV(CblasColMajor, 'U', n, 1, a->data.data(), lda, ipiv.get(), c->data.data(), ldb);
 }
-void BLASBackend::solve_ch(MatrixXc* a, VectorXc* b) {
-  const auto n = static_cast<int>(a->cols());
-  const auto lda = static_cast<int>(a->rows());
-  const auto ldb = static_cast<int>(b->size());
+void BLASBackend::solve_ch(std::shared_ptr<MatrixXc> a, std::shared_ptr<VectorXc> b) {
+  const auto n = static_cast<int>(a->data.cols());
+  const auto lda = static_cast<int>(a->data.rows());
+  const auto ldb = static_cast<int>(b->data.size());
   auto ipiv = std::make_unique<int[]>(n);
-  AUTD_POSVC(CblasColMajor, 'U', n, 1, a->data(), lda, b->data(), ldb);
+  AUTD_POSVC(CblasColMajor, 'U', n, 1, a->data.data(), lda, b->data.data(), ldb);
 }
-double BLASBackend::dot(const VectorX& a, const VectorX& b) { return AUTD_DOT(static_cast<int>(a.size()), a.data(), 1, b.data(), 1); }
-std::complex<double> BLASBackend::dot_c(const VectorXc& a, const VectorXc& b) {
-  std::complex<double> d;
-  AUTD_DOTC(static_cast<int>(a.size()), a.data(), 1, b.data(), 1, &d);
+double BLASBackend::dot(const std::shared_ptr<VectorX> a, const std::shared_ptr<VectorX> b) {
+  return AUTD_DOT(static_cast<int>(a->data.size()), a->data.data(), 1, b->data.data(), 1);
+}
+complex BLASBackend::dot(const std::shared_ptr<VectorXc> a, const std::shared_ptr<VectorXc> b) {
+  complex d;
+  AUTD_DOTC(static_cast<int>(a->data.size()), a->data.data(), 1, b->data.data(), 1, &d);
   return d;
 }
-double BLASBackend::max_coefficient_c(const VectorXc& v) {
-  const auto idx = AUTD_IMAXC(static_cast<int>(v.size()), v.data(), 1);
-  return abs(v(idx));
+double BLASBackend::max_coefficient(const std::shared_ptr<VectorXc> v) {
+  const auto idx = AUTD_IMAXC(static_cast<int>(v->data.size()), v->data.data(), 1);
+  return abs(v->data(idx));
 }
-double BLASBackend::max_coefficient(const VectorX& v) { return v.maxCoeff(); }
-BLASBackend::MatrixXc BLASBackend::concat_row(const MatrixXc& a, const MatrixXc& b) {
-  MatrixXc c(a.rows() + b.rows(), b.cols());
-  c << a, b;
-  return c;
+double BLASBackend::max_coefficient(const std::shared_ptr<VectorX> v) {
+  const auto idx = AUTD_IMAX(static_cast<int>(v->data.size()), v->data.data(), 1);
+  return v->data(idx);
 }
-BLASBackend::MatrixXc BLASBackend::concat_col(const MatrixXc& a, const MatrixXc& b) {
-  MatrixXc c(a.rows(), a.cols() + b.cols());
-  c << a, b;
-  return c;
+
+void BLASBackend::mat_cpy(const std::shared_ptr<MatrixX> a, std::shared_ptr<MatrixX> b) {
+  AUTD_CPY(LAPACK_COL_MAJOR, 'A', static_cast<int>(a->data.rows()), static_cast<int>(a->data.cols()), a->data.data(),
+           static_cast<int>(a->data.rows()), b->data.data(), static_cast<int>(b->data.rows()));
 }
-void BLASBackend::mat_cpy(const MatrixX& a, MatrixX* b) {
-  AUTD_CPY(LAPACK_COL_MAJOR, 'A', static_cast<int>(a.rows()), static_cast<int>(a.cols()), a.data(), static_cast<int>(a.rows()), b->data(),
-           static_cast<int>(b->rows()));
+void BLASBackend::vec_cpy(const std::shared_ptr<VectorX> a, std::shared_ptr<VectorX> b) {
+  AUTD_CPY(LAPACK_COL_MAJOR, 'A', static_cast<int>(a->data.size()), 1, a->data.data(), static_cast<int>(a->data.size()), b->data.data(), 1);
 }
-void BLASBackend::vec_cpy(const VectorX& a, VectorX* b) {
-  AUTD_CPY(LAPACK_COL_MAJOR, 'A', static_cast<int>(a.size()), 1, a.data(), static_cast<int>(a.size()), b->data(), 1);
-}
-void BLASBackend::vec_cpy_c(const VectorXc& a, VectorXc* b) {
-  AUTD_CPYC(LAPACK_COL_MAJOR, 'A', static_cast<int>(a.size()), 1, a.data(), static_cast<int>(a.size()), b->data(), 1);
+void BLASBackend::vec_cpy(const std::shared_ptr<VectorXc> a, std::shared_ptr<VectorXc> b) {
+  AUTD_CPYC(LAPACK_COL_MAJOR, 'A', static_cast<int>(a->data.size()), 1, a->data.data(), static_cast<int>(a->data.size()), b->data.data(), 1);
 }
 }  // namespace autd::gain::holo

@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/07/2021
+// Last Modified: 05/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -26,9 +26,10 @@ namespace autd::gain::holo {
  */
 class Holo : public core::Gain {
  public:
-  Holo(BackendPtr backend, std::vector<core::Vector3>& foci, std::vector<double>& amps)
-      : _backend(std::move(backend)), _foci(std::move(foci)), _amps(std::move(amps)) {
+  Holo(BackendPtr backend, std::vector<core::Vector3> foci, const std::vector<double>& amps) : _backend(std::move(backend)), _foci(std::move(foci)) {
     if (_foci.size() != _amps.size()) throw core::GainBuildError("The size of foci and amps are not the same");
+    _amps.reserve(amps.size());
+    for (const auto amp : amps) _amps.emplace_back(complex(amp, 0.0));
   }
   ~Holo() override = default;
   Holo(const Holo& v) noexcept = default;
@@ -38,20 +39,12 @@ class Holo : public core::Gain {
 
   BackendPtr& backend() { return this->_backend; }
   std::vector<core::Vector3>& foci() { return this->_foci; }
-  std::vector<double>& amplitudes() { return this->_amps; }
+  std::vector<complex>& amplitudes() { return this->_amps; }
 
  protected:
   BackendPtr _backend;
   std::vector<core::Vector3> _foci;
-  std::vector<double> _amps;
-
-  void matrix_mul(const Backend::MatrixXc& a, const Backend::MatrixXc& b, Backend::MatrixXc* c) const;
-
-  void matrix_vec_mul(const Backend::MatrixXc& a, const Backend::VectorXc& b, Backend::VectorXc* c) const;
-  static void set_from_complex_drive(std::vector<core::DataArray>& data, const Backend::VectorXc& drive, bool normalize, double max_coefficient);
-  static std::complex<double> transfer(const core::Vector3& trans_pos, const core::Vector3& trans_norm, const core::Vector3& target_pos,
-                                       double wave_number, double attenuation = 0);
-  static Backend::MatrixXc transfer_matrix(const std::vector<core::Vector3>& foci, const core::GeometryPtr& geometry);
+  std::vector<complex> _amps;
 };
 
 /**
@@ -253,11 +246,11 @@ class Greedy final : public Holo {
   Greedy(std::vector<core::Vector3>& foci, std::vector<double>& amps, const size_t phase_div) : Holo(nullptr, foci, amps) {
     this->_phases.reserve(phase_div);
     for (size_t i = 0; i < phase_div; i++)
-      this->_phases.emplace_back(std::exp(std::complex<double>(0., 2.0 * M_PI * static_cast<double>(i) / static_cast<double>(phase_div))));
+      this->_phases.emplace_back(std::exp(complex(0., 2.0 * M_PI * static_cast<double>(i) / static_cast<double>(phase_div))));
   }
 
  private:
-  std::vector<std::complex<double>> _phases;
+  std::vector<complex> _phases;
 };
 
 }  // namespace autd::gain::holo

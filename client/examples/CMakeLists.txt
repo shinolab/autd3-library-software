@@ -3,10 +3,10 @@ cmake_minimum_required(VERSION 3.20)
 file(GLOB hpp_files examples/*.hpp runner.hpp)
 
 if(BUILD_HOLO_GAIN)
-  add_compile_definitions(-DBUILD_HOLO_GAIN)
+  add_compile_definitions(BUILD_HOLO_GAIN)
 endif()
 if(BUILD_FROM_FILE_MODULATION)
-  add_compile_definitions(-DBUILD_FROM_FILE_MOD)
+  add_compile_definitions(BUILD_FROM_FILE_MOD)
   add_compile_definitions(AUTD3_RESOURCE_PATH="${PROJECT_SOURCE_DIR}/examples/resources")
 endif()
 
