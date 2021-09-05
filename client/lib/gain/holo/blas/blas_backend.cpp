@@ -32,6 +32,7 @@ namespace autd::gain::holo {
 
 constexpr auto AUTD_GESVD = LAPACKE_zgesdd;
 constexpr auto AUTD_HEEV = LAPACKE_zheev;
+constexpr auto AUTD_ZSCAL = cblas_zscal;
 constexpr auto AUTD_AXPY = cblas_daxpy;
 constexpr auto AUTD_DGEMM = cblas_dgemm;
 constexpr auto AUTD_ZGEMM = cblas_zgemm;
@@ -47,6 +48,8 @@ constexpr auto AUTD_CPY = LAPACKE_dlacpy;
 constexpr auto AUTD_CPYC = LAPACKE_zlacpy;
 
 BackendPtr BLASBackend::create() { return std::make_shared<BLASBackend>(); }
+
+void BLASBackend::scale(const std::shared_ptr<VectorXc> a, const complex s) { AUTD_ZSCAL(static_cast<int>(a->data.size()), &s, a->data.data(), 1); }
 
 void BLASBackend::pseudo_inverse_svd(const std::shared_ptr<MatrixXc> matrix, const double alpha, std::shared_ptr<MatrixXc> result) {
   const auto nc = matrix->data.cols();

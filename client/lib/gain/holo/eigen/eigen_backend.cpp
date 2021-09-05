@@ -17,6 +17,12 @@
 namespace autd::gain::holo {
 BackendPtr Eigen3Backend::create() { return std::make_shared<Eigen3Backend>(); }
 
+void Eigen3Backend::make_complex(std::shared_ptr<VectorX> r, std::shared_ptr<VectorX> i, std::shared_ptr<VectorXc> c) {
+  const auto n = std::min(std::min(r->data.size(), i->data.size()), c->data.size());
+  for (Eigen::Index k = 0; k < n; k++) c->data(k) = complex(r->data(k), i->data(k));
+}
+void Eigen3Backend::exp(std::shared_ptr<VectorXc> a) { a->data = a->data.array().exp(); }
+void Eigen3Backend::scale(std::shared_ptr<VectorXc> a, complex s) { a->data *= s; }
 void Eigen3Backend::hadamard_product(const std::shared_ptr<MatrixXc> a, const std::shared_ptr<MatrixXc> b, std::shared_ptr<MatrixXc> c) {
   c->data.noalias() = a->data.cwiseProduct(b->data);
 }
@@ -226,15 +232,6 @@ void Eigen3Backend::set_from_complex_drive(std::vector<core::DataArray>& data, c
   }
 }
 
-complex transfer(const core::Vector3& trans_pos, const core::Vector3& trans_norm, const core::Vector3& target_pos, const double wave_number,
-                 const double attenuation) {
-  const auto diff = target_pos - trans_pos;
-  const auto dist = diff.norm();
-  const auto theta = std::atan2(diff.dot(trans_norm), dist * trans_norm.norm()) * 180.0 / M_PI;
-  const auto directivity = utils::Directivity::t4010a1(theta);
-  return directivity / dist * exp(complex(-dist * attenuation, -wave_number * dist));
-}
-
 std::shared_ptr<MatrixXc> Eigen3Backend::transfer_matrix(const std::vector<core::Vector3>& foci, const core::GeometryPtr& geometry) {
   const auto m = static_cast<Eigen::Index>(foci.size());
   const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
@@ -248,10 +245,58 @@ std::shared_ptr<MatrixXc> Eigen3Backend::transfer_matrix(const std::vector<core:
     for (Eigen::Index j = 0; j < n; j++) {
       const auto pos = geometry->position(j);
       const auto dir = geometry->direction(j / core::NUM_TRANS_IN_UNIT);
-      g->data(i, j) = transfer(pos, dir, tp, wave_number, attenuation);
+      g->data(i, j) = utils::transfer(pos, dir, tp, wave_number, attenuation);
     }
   }
   return g;
 }
 
+void Eigen3Backend::set_bcd_result(std::shared_ptr<MatrixXc> mat, std::shared_ptr<VectorXc> vec, const Eigen::Index idx) {
+  const Eigen::Index m = vec->data.size();
+  for (Eigen::Index i = 0; i < idx; i++) mat->data(idx, i) = std::conj(vec->data(i));
+  for (Eigen::Index i = idx + 1; i < m; i++) mat->data(idx, i) = std::conj(vec->data(i));
+  for (Eigen::Index i = 0; i < idx; i++) mat->data(i, idx) = vec->data(i);
+  for (Eigen::Index i = idx + 1; i < m; i++) mat->data(i, idx) = vec->data(i);
+}
+
+std::shared_ptr<MatrixXc> Eigen3Backend::back_prop(std::shared_ptr<MatrixXc> transfer, const std::vector<complex>& amps) {
+  const auto m = transfer->data.rows();
+  const auto n = transfer->data.cols();
+
+  Eigen::Matrix<double, -1, 1, Eigen::ColMajor> denominator(m);
+  for (Eigen::Index i = 0; i < m; i++) {
+    auto tmp = 0.0;
+    for (Eigen::Index j = 0; j < n; j++) tmp += std::abs(transfer->data(i, j));
+    denominator(i) = tmp;
+  }
+
+  auto b = allocate_matrix_c("b", n, m);
+  for (Eigen::Index i = 0; i < m; i++) {
+    auto c = amps[i] / denominator(i);
+    for (Eigen::Index j = 0; j < n; j++) b->data(j, i) = c * std::conj(transfer->data(i, j));
+  }
+  return b;
+}
+
+std::shared_ptr<MatrixXc> Eigen3Backend::sigma_regularization(std::shared_ptr<MatrixXc> transfer, const std::vector<complex>& amps, double gamma) {
+  const auto m = transfer->data.rows();
+  const auto n = transfer->data.cols();
+
+  auto sigma = allocate_matrix_c("sigma", n, n);
+  for (Eigen::Index j = 0; j < n; j++) {
+    double tmp = 0;
+    for (Eigen::Index i = 0; i < m; i++) tmp += std::abs(transfer->data(i, j) * amps[i]);
+    sigma->data(j, j) = complex(std::pow(std::sqrt(tmp / static_cast<double>(m)), gamma), 0.0);
+  }
+  return sigma;
+}
+
+void Eigen3Backend::col_sum_imag(std::shared_ptr<MatrixXc> mat, std::shared_ptr<VectorX> dst) {
+  const auto n = dst->data.size();
+  for (Eigen::Index i = 0; i < n; i++) {
+    double tmp = 0;
+    for (Eigen::Index k = 0; k < n; k++) tmp += mat->data(i, k).imag();
+    dst->data(i) = tmp;
+  }
+}
 }  // namespace autd::gain::holo

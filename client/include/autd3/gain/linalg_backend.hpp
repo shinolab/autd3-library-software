@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <complex>
 #include <memory>
 
@@ -19,7 +20,7 @@
 
 #if _MSC_VER
 #pragma warning(push)
-#pragma warning(disable : 26450 26451 26454 26495 26812)
+#pragma warning(disable : 6031 26450 26451 26454 26495 26812)
 #endif
 #if defined(__GNUC__) && !defined(__llvm__)
 #pragma GCC diagnostic push
@@ -46,15 +47,16 @@ template <typename T>
 struct Vector {
   explicit Vector(const Eigen::Index n) : data(n) {}
   explicit Vector(Eigen::Matrix<T, -1, 1, Eigen::ColMajor> vec) : data(std::move(vec)) {}
+  virtual ~Vector() = default;
   Vector(const Vector& obj) = delete;
   Vector& operator=(const Vector& obj) = delete;
   Vector(const Vector&& v) = delete;
   Vector& operator=(Vector&& obj) = delete;
 
-  virtual ~Vector() = default;
-
+  virtual const T* ptr() const { return data.data(); }
+  virtual void set(const Eigen::Index i, T v) { data(i) = v; }
   virtual void fill(T v) { data.fill(v); }
-  virtual void copy_from(const std::vector<T>& v) { std::memcpy(data.data(), v.data(), sizeof(T) * data.size()); }
+  virtual void copy_from(const std::vector<T>& v) { std::memcpy(data.data(), v.data(), sizeof(T) * v.size()); }
   virtual void copy_from(const T* v) { std::memcpy(data.data(), v, sizeof(T) * data.size()); }
   virtual void copy_to_host() {}
 
@@ -71,8 +73,24 @@ struct Matrix {
   Matrix(const Matrix&& v) = delete;
   Matrix& operator=(Matrix&& obj) = delete;
 
+  virtual void get_col(const Eigen::Index i, std::shared_ptr<Vector<T>> dst) {
+    const auto& col = data.col(i);
+    std::memcpy(dst->data.data(), col.data(), sizeof(T) * col.size());
+  }
   virtual void fill(T v) { data.fill(v); }
-  virtual void copy_from(const std::vector<T>& v) { std::memcpy(data.data(), v.data(), sizeof(T) * data.size()); }
+  virtual std::vector<T> get_diagonal() {
+    auto n = (std::min)(data.rows(), data.cols());
+    std::vector<T> v;
+    v.resize(n, 0.0);
+    std::memcpy(v.data(), data.diagonal().data(), sizeof(T) * n);
+    return v;
+  }
+  virtual void set_diagonal(std::shared_ptr<Vector<T>> v) { data.diagonal() = v->data; }
+  virtual void set_diagonal(const T v) {
+    auto n = (std::min)(data.rows(), data.cols());
+    data.diagonal() = Eigen::Matrix<T, -1, 1, Eigen::ColMajor>::Constant(n, 1, v);
+  }
+  virtual void copy_from(const std::vector<T>& v) { std::memcpy(data.data(), v.data(), sizeof(T) * v.size()); }
   virtual void copy_from(const T* v) { std::memcpy(data.data(), v, sizeof(T) * data.size()); }
   virtual void copy_to_host() {}
 
@@ -122,6 +140,13 @@ class Backend {
   }
 
  public:
+  Backend() = default;
+  virtual ~Backend() = default;
+  Backend(const Backend& obj) = delete;
+  Backend& operator=(const Backend& obj) = delete;
+  Backend(const Backend&& v) = delete;
+  Backend& operator=(Backend&& obj) = delete;
+
   virtual std::shared_ptr<VectorX> allocate_vector(const std::string& name, const Eigen::Index n) {
     return allocate_vector_impl(name, n, _cache_vec);
   }
@@ -138,6 +163,9 @@ class Backend {
     return allocate_matrix_impl(name, row, col, _cache_mat_c);
   }
 
+  virtual void make_complex(std::shared_ptr<VectorX> r, std::shared_ptr<VectorX> i, std::shared_ptr<VectorXc> c) = 0;
+  virtual void exp(std::shared_ptr<VectorXc> a) = 0;
+  virtual void scale(std::shared_ptr<VectorXc> a, complex s) = 0;
   virtual void hadamard_product(std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> b, std::shared_ptr<MatrixXc> c) = 0;
   virtual void hadamard_product(std::shared_ptr<VectorXc> a, std::shared_ptr<VectorXc> b, std::shared_ptr<VectorXc> c) = 0;
   virtual void real(std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixX> b) = 0;
@@ -170,12 +198,11 @@ class Backend {
                                       double max_coefficient) = 0;
   virtual std::shared_ptr<MatrixXc> transfer_matrix(const std::vector<core::Vector3>& foci, const core::GeometryPtr& geometry) = 0;
 
-  Backend() = default;
-  virtual ~Backend() = default;
-  Backend(const Backend& obj) = delete;
-  Backend& operator=(const Backend& obj) = delete;
-  Backend(const Backend&& v) = delete;
-  Backend& operator=(Backend&& obj) = delete;
+  // TODO: following functions are too specialized
+  virtual void set_bcd_result(std::shared_ptr<MatrixXc> mat, std::shared_ptr<VectorXc> vec, Eigen::Index idx) = 0;
+  virtual std::shared_ptr<MatrixXc> back_prop(std::shared_ptr<MatrixXc> transfer, const std::vector<complex>& amps) = 0;
+  virtual std::shared_ptr<MatrixXc> sigma_regularization(std::shared_ptr<MatrixXc> transfer, const std::vector<complex>& amps, double gamma) = 0;
+  virtual void col_sum_imag(std::shared_ptr<MatrixXc> mat, std::shared_ptr<VectorX> dst) = 0;
 };
 }  // namespace holo
 }  // namespace gain

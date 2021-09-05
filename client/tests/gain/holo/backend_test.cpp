@@ -9,10 +9,25 @@
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
-#include <gtest/gtest.h>
-
 #include <random>
+
+#if _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 26439 26495 26812)
+#endif
+#include <gtest/gtest.h>
+#if _MSC_VER
+#pragma warning(pop)
+#endif
+
+#if _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 6031 6294 6255 26451 26495 26812)
+#endif
 #include <unsupported/Eigen/MatrixFunctions>
+#if _MSC_VER
+#pragma warning(pop)
+#endif
 
 #include "autd3/gain/eigen_backend.hpp"
 #include "test_utils.hpp"
@@ -74,6 +89,19 @@ std::vector<complex> random_vector_complex(T n, const double minimum = -1.0, con
   return v;
 }
 
+TYPED_TEST(BackendTest, scale) {
+  auto a = this->backend->allocate_vector_c("a", 4);
+  a->copy_from({complex(0, 1), complex(2, 3), complex(4, 5), complex(6, 7)});
+
+  this->backend->scale(a, complex(1, 1));
+
+  a->copy_to_host();
+  ASSERT_NEAR_COMPLEX(a->data(0), std::complex(-1, 1), 1e-6);
+  ASSERT_NEAR_COMPLEX(a->data(1), std::complex(-1, 5), 1e-6);
+  ASSERT_NEAR_COMPLEX(a->data(2), std::complex(-1, 9), 1e-6);
+  ASSERT_NEAR_COMPLEX(a->data(3), std::complex(-1, 13), 1e-6);
+}
+
 TYPED_TEST(BackendTest, hadamard_product) {
   auto a = this->backend->allocate_matrix_c("a", 2, 2);
   auto b = this->backend->allocate_matrix_c("b", 2, 2);
@@ -88,6 +116,22 @@ TYPED_TEST(BackendTest, hadamard_product) {
   ASSERT_NEAR_COMPLEX(c->data(1, 0), std::complex(-13, 52), 1e-6);
   ASSERT_NEAR_COMPLEX(c->data(0, 1), std::complex(-17, 112), 1e-6);
   ASSERT_NEAR_COMPLEX(c->data(1, 1), std::complex(-21, 188), 1e-6);
+}
+
+TYPED_TEST(BackendTest, hadamard_product_v) {
+  auto a = this->backend->allocate_vector_c("a", 4);
+  auto b = this->backend->allocate_vector_c("b", 4);
+  a->copy_from({complex(0, 1), complex(2, 3), complex(4, 5), complex(6, 7)});
+  b->copy_from({complex(8, 9), complex(10, 11), complex(12, 13), complex(14, 15)});
+
+  auto c = this->backend->allocate_vector_c("c", 4);
+  this->backend->hadamard_product(a, b, c);
+
+  c->copy_to_host();
+  ASSERT_NEAR_COMPLEX(c->data(0), std::complex(-9, 8), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(1), std::complex(-13, 52), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(2), std::complex(-17, 112), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(3), std::complex(-21, 188), 1e-6);
 }
 
 TYPED_TEST(BackendTest, real) {
