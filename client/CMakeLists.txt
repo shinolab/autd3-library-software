@@ -105,7 +105,7 @@ endif()
 if(Git_FOUND)
   execute_process(COMMAND git -C ${PROJECT_SOURCE_DIR} submodule update --init --recursive -- ${PROJECT_SOURCE_DIR}/deps/Eigen3)
 endif()
-add_compile_definitions(-DEIGEN_MPL2_ONLY)
+add_compile_definitions(EIGEN_MPL2_ONLY)
 set(EIGEN_PATH ${PROJECT_SOURCE_DIR}/deps/Eigen3)
 
 add_subdirectory(lib)

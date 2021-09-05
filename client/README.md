@@ -75,6 +75,8 @@ cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_BLAS_BACKEND=ON -DBLAS_LIB_DIR=<your BLAS 
     cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_BLAS_BACKEND=ON -DBUILD_BLAS_BACKEND=ON -DBLAS_LIB_DIR=D:/lib/openblas -DBLAS_INCLUDE_DIR=D:/lib/openblas/include/openblas -DBLA_VENDOR=OpenBLAS
     ```
 
+    * If you get `flangxxx.lib` link error, add `-DBLAS_DEPEND_LIB_DIR=<your conda path>\Library\lib` option
+
 # Author
 
 Shun Suzuki, 2019-2021

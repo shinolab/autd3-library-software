@@ -6,14 +6,14 @@ add_library(blas_backend
     ${PROJECT_SOURCE_DIR}/include/autd3/gain/blas_backend.hpp
 )
 
-target_include_directories(blas_backend PRIVATE ${BLAS_INCLUDE_DIR})
+target_include_directories(blas_backend PRIVATE ${BLAS_INCLUDE_DIR} ${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
 target_link_directories(blas_backend INTERFACE ${BLAS_DEPEND_LIB_DIR})
 target_link_libraries(blas_backend ${BLAS_LIBRARIES})
 if(NOT WIN32)
   target_link_libraries(blas_backend gfortran)
 endif()
 if(USE_MKL)
-  target_compile_definitions(blas_backend PRIVATE -DUSE_BLAS_MKL)
+  target_compile_definitions(blas_backend PRIVATE USE_BLAS_MKL)
 endif()
 
 set_target_properties(blas_backend

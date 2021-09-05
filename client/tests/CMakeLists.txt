@@ -1,6 +1,7 @@
 enable_testing()
 
 add_executable(test_autd3)
+target_include_directories(test_autd3 PRIVATE .)
 target_link_libraries(test_autd3 PRIVATE autd3 gtest_main)
 
 if(BUILD_HOLO_GAIN)
