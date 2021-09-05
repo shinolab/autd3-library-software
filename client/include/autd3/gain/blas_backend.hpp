@@ -19,6 +19,7 @@ class BLASBackend final : public Eigen3Backend {
  public:
   static BackendPtr create();
 
+  void scale(std::shared_ptr<VectorXc> a, complex s) override;
   void pseudo_inverse_svd(std::shared_ptr<MatrixXc> matrix, double alpha, std::shared_ptr<MatrixXc> result) override;
   std::shared_ptr<VectorXc> max_eigen_vector(std::shared_ptr<MatrixXc> matrix) override;
   void matrix_add(double alpha, std::shared_ptr<MatrixX> a, std::shared_ptr<MatrixX> b) override;

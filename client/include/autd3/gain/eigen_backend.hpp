@@ -22,6 +22,9 @@ class Eigen3Backend : public Backend {
  public:
   static BackendPtr create();
 
+  void make_complex(std::shared_ptr<VectorX> r, std::shared_ptr<VectorX> i, std::shared_ptr<VectorXc> c) override;
+  void exp(std::shared_ptr<VectorXc> a) override;
+  void scale(std::shared_ptr<VectorXc> a, complex s) override;
   void hadamard_product(std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> b, std::shared_ptr<MatrixXc> c) override;
   void hadamard_product(std::shared_ptr<VectorXc> a, std::shared_ptr<VectorXc> b, std::shared_ptr<VectorXc> c) override;
   void real(std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixX> b) override;
@@ -52,5 +55,10 @@ class Eigen3Backend : public Backend {
 
   void set_from_complex_drive(std::vector<core::DataArray>& data, std::shared_ptr<VectorXc> drive, bool normalize, double max_coefficient) override;
   std::shared_ptr<MatrixXc> transfer_matrix(const std::vector<core::Vector3>& foci, const core::GeometryPtr& geometry) override;
+
+  void set_bcd_result(std::shared_ptr<MatrixXc> mat, std::shared_ptr<VectorXc> vec, Eigen::Index idx) override;
+  std::shared_ptr<MatrixXc> back_prop(std::shared_ptr<MatrixXc> transfer, const std::vector<complex>& amps) override;
+  std::shared_ptr<MatrixXc> sigma_regularization(std::shared_ptr<MatrixXc> transfer, const std::vector<complex>& amps, double gamma) override;
+  void col_sum_imag(std::shared_ptr<MatrixXc> mat, std::shared_ptr<VectorX> dst) override;
 };
 }  // namespace autd::gain::holo

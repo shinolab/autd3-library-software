@@ -27,7 +27,7 @@ namespace autd::gain::holo {
 class Holo : public core::Gain {
  public:
   Holo(BackendPtr backend, std::vector<core::Vector3> foci, const std::vector<double>& amps) : _backend(std::move(backend)), _foci(std::move(foci)) {
-    if (_foci.size() != _amps.size()) throw core::GainBuildError("The size of foci and amps are not the same");
+    if (_foci.size() != amps.size()) throw core::GainBuildError("The size of foci and amps are not the same");
     _amps.reserve(amps.size());
     for (const auto amp : amps) _amps.emplace_back(complex(amp, 0.0));
   }
@@ -229,6 +229,7 @@ class LM final : public Holo {
  * @brief Gain to produce multiple focal points with Greedy algorithm.
  * Refer to Shun suzuki, et al. “Radiation Pressure Field Reconstruction for Ultrasound Midair Haptics by Greedy Algorithm with Brute-Force Search,”
  * in IEEE Transactions on Haptics, doi: 10.1109/TOH.2021.3076489
+ * @details This method is computed on the CPU regardless of the Backend.
  */
 class Greedy final : public Holo {
  public:
