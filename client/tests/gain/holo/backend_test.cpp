@@ -3,7 +3,7 @@
 // Created Date: 13/08/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/09/2021
+// Last Modified: 06/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -427,8 +427,8 @@ TYPED_TEST(BackendTest, dot_c) {
 }
 
 TYPED_TEST(BackendTest, max_coefficient) {
-  constexpr Eigen::Index n = 10;
-  auto vals = random_vector(n, 1.0, 10.0);
+  constexpr Eigen::Index n = 100;
+  auto vals = random_vector(n, -20.0, 2.0);
   std::sort(vals.begin(), vals.end());
   auto v = this->backend->allocate_vector("v", n);
   v->copy_from(vals);
@@ -437,8 +437,8 @@ TYPED_TEST(BackendTest, max_coefficient) {
 }
 
 TYPED_TEST(BackendTest, max_coefficient_c) {
-  constexpr Eigen::Index n = 10;
-  auto vals = random_vector(n, 1.0, 10.0);
+  constexpr Eigen::Index n = 100;
+  auto vals = random_vector(n, 0.0, 10.0);
   std::sort(vals.begin(), vals.end());
   std::vector<complex> vals_c;
   for (const auto v : vals) vals_c.emplace_back(complex(v, 0.0));

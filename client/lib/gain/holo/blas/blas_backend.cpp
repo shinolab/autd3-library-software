@@ -3,7 +3,7 @@
 // Created Date: 17/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/09/2021
+// Last Modified: 06/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -160,11 +160,13 @@ complex BLASBackend::dot(const std::shared_ptr<VectorXc> a, const std::shared_pt
 }
 double BLASBackend::max_coefficient(const std::shared_ptr<VectorXc> v) {
   const auto idx = AUTD_IMAXC(static_cast<int>(v->data.size()), v->data.data(), 1);
-  return abs(v->data(idx));
+  return std::abs(v->data(idx));
 }
 double BLASBackend::max_coefficient(const std::shared_ptr<VectorX> v) {
-  const auto idx = AUTD_IMAX(static_cast<int>(v->data.size()), v->data.data(), 1);
-  return v->data(idx);
+  return Eigen3Backend::max_coefficient(v);
+  // idamax return the first occurrence of the the maximum 'absolute' value
+  // const auto idx = AUTD_IMAX(static_cast<int>(v->data.size()), v->data.data(), 1);
+  // return v->data(idx);
 }
 
 void BLASBackend::mat_cpy(const std::shared_ptr<MatrixX> a, std::shared_ptr<MatrixX> b) {

@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/09/2021
+// Last Modified: 06/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -14,7 +14,6 @@
 #include <limits>
 #include <random>
 
-#include "autd3/core/exception.hpp"
 #include "autd3/core/geometry.hpp"
 #include "autd3/core/hardware_defined.hpp"
 #include "autd3/core/utils.hpp"
@@ -53,7 +52,6 @@ void SDP::calc(const core::GeometryPtr& geometry) {
   auto zero = _backend->allocate_vector_c("zero", m);
   zero->fill(Zero);
   auto x = _backend->allocate_vector_c("x", m);
-  x->fill(Zero);
   auto mmc = _backend->allocate_vector_c("mmc", m);
   for (size_t i = 0; i < _repeat; i++) {
     const auto ii = static_cast<Eigen::Index>(static_cast<double>(m) * range(mt));
