@@ -40,7 +40,7 @@ std::shared_ptr<MatrixXc> Eigen3Backend::max_eigen_vector(const std::shared_ptr<
   const Eigen::ComplexEigenSolver<Eigen::Matrix<complex, -1, -1, Eigen::ColMajor>> ces(matrix->data);
   auto idx = 0;
   ces.eigenvalues().cwiseAbs2().maxCoeff(&idx);
-  return std::make_shared<MatrixXc>(ces.eigenvectors().col(idx));
+  return std::make_shared<EigenMatrix<complex>>(ces.eigenvectors().col(idx));
 }
 
 void Eigen3Backend::matrix_add(const double alpha, const std::shared_ptr<MatrixX> a, const std::shared_ptr<MatrixX> b) {
@@ -58,9 +58,6 @@ void Eigen3Backend::matrix_mul(const TRANSPOSE trans_a, const TRANSPOSE trans_b,
         case TRANSPOSE::TRANS:
           c->data.noalias() += alpha * (a->data.adjoint() * b->data.transpose());
           break;
-        case TRANSPOSE::CONJ_NO_TRANS:
-          c->data.noalias() += alpha * (a->data.adjoint() * b->data.conjugate());
-          break;
         case TRANSPOSE::NO_TRANS:
           c->data.noalias() += alpha * (a->data.adjoint() * b->data);
           break;
@@ -74,27 +71,8 @@ void Eigen3Backend::matrix_mul(const TRANSPOSE trans_a, const TRANSPOSE trans_b,
         case TRANSPOSE::TRANS:
           c->data.noalias() += alpha * (a->data.transpose() * b->data.transpose());
           break;
-        case TRANSPOSE::CONJ_NO_TRANS:
-          c->data.noalias() += alpha * (a->data.transpose() * b->data.conjugate());
-          break;
         case TRANSPOSE::NO_TRANS:
           c->data.noalias() += alpha * (a->data.transpose() * b->data);
-          break;
-      }
-      break;
-    case TRANSPOSE::CONJ_NO_TRANS:
-      switch (trans_b) {
-        case TRANSPOSE::CONJ_TRANS:
-          c->data.noalias() += alpha * (a->data.conjugate() * b->data.adjoint());
-          break;
-        case TRANSPOSE::TRANS:
-          c->data.noalias() += alpha * (a->data.conjugate() * b->data.transpose());
-          break;
-        case TRANSPOSE::CONJ_NO_TRANS:
-          c->data.noalias() += alpha * (a->data.conjugate() * b->data.conjugate());
-          break;
-        case TRANSPOSE::NO_TRANS:
-          c->data.noalias() += alpha * (a->data.conjugate() * b->data);
           break;
       }
       break;
@@ -105,9 +83,6 @@ void Eigen3Backend::matrix_mul(const TRANSPOSE trans_a, const TRANSPOSE trans_b,
           break;
         case TRANSPOSE::TRANS:
           c->data.noalias() += alpha * (a->data * b->data.transpose());
-          break;
-        case TRANSPOSE::CONJ_NO_TRANS:
-          c->data.noalias() += alpha * (a->data * b->data.conjugate());
           break;
         case TRANSPOSE::NO_TRANS:
           c->data.noalias() += alpha * (a->data * b->data);
@@ -129,7 +104,6 @@ void Eigen3Backend::matrix_mul(const TRANSPOSE trans_a, const TRANSPOSE trans_b,
           c->data.noalias() += alpha * (a->data.transpose() * b->data);
           break;
         case TRANSPOSE::CONJ_TRANS:
-        case TRANSPOSE::CONJ_NO_TRANS:
           throw std::runtime_error("invalid operation");
       }
       break;
@@ -142,12 +116,10 @@ void Eigen3Backend::matrix_mul(const TRANSPOSE trans_a, const TRANSPOSE trans_b,
           c->data.noalias() += alpha * (a->data * b->data);
           break;
         case TRANSPOSE::CONJ_TRANS:
-        case TRANSPOSE::CONJ_NO_TRANS:
           throw std::runtime_error("invalid operation");
       }
       break;
     case TRANSPOSE::CONJ_TRANS:
-    case TRANSPOSE::CONJ_NO_TRANS:
       throw std::runtime_error("invalid operation");
   }
 }
@@ -167,12 +139,12 @@ double Eigen3Backend::max_coefficient(const std::shared_ptr<MatrixX> v) { return
 std::shared_ptr<MatrixXc> Eigen3Backend::concat_row(const std::shared_ptr<MatrixXc> a, const std::shared_ptr<MatrixXc> b) {
   Eigen::Matrix<complex, -1, -1, Eigen::ColMajor> c(a->data.rows() + b->data.rows(), b->data.cols());
   c << a->data, b->data;
-  return std::make_shared<MatrixXc>(c);
+  return std::make_shared<EigenMatrix<complex>>(c);
 }
 std::shared_ptr<MatrixXc> Eigen3Backend::concat_col(const std::shared_ptr<MatrixXc> a, const std::shared_ptr<MatrixXc> b) {
   Eigen::Matrix<complex, -1, -1, Eigen::ColMajor> c(a->data.rows(), a->data.cols() + b->data.cols());
   c << a->data, b->data;
-  return std::make_shared<MatrixXc>(c);
+  return std::make_shared<EigenMatrix<complex>>(c);
 }
 void Eigen3Backend::mat_cpy(const std::shared_ptr<MatrixX> a, const std::shared_ptr<MatrixX> b) { b->data = a->data; }
 void Eigen3Backend::mat_cpy(const std::shared_ptr<MatrixXc> a, const std::shared_ptr<MatrixXc> b) { b->data = a->data; }
@@ -195,27 +167,33 @@ void Eigen3Backend::set_from_complex_drive(std::vector<core::DataArray>& data, c
   }
 }
 
-std::shared_ptr<MatrixXc> Eigen3Backend::transfer_matrix(const std::vector<core::Vector3>& foci, const core::GeometryPtr& geometry) {
-  const auto m = static_cast<Eigen::Index>(foci.size());
-  const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
+std::shared_ptr<MatrixXc> Eigen3Backend::transfer_matrix(const double* foci, const size_t foci_num, const std::vector<const double*>& positions,
+                                                         const std::vector<const double*>& directions, const double wavelength,
+                                                         const double attenuation) {
+  const auto m = static_cast<Eigen::Index>(foci_num);
+  const auto n = static_cast<Eigen::Index>(positions.size() * core::NUM_TRANS_IN_UNIT);
 
   auto g = allocate_matrix_c("g", m, n);
 
-  const auto wave_number = 2.0 * M_PI / geometry->wavelength();
-  const auto attenuation = geometry->attenuation_coefficient();
+  const auto wave_number = 2.0 * M_PI / wavelength;
   for (Eigen::Index i = 0; i < m; i++) {
-    const auto& tp = foci[i];
-    for (Eigen::Index j = 0; j < n; j++) {
-      const auto& pos = geometry->position(j);
-      const auto& dir = geometry->direction(j / core::NUM_TRANS_IN_UNIT);
-      g->data(i, j) = utils::transfer(pos, dir, tp, wave_number, attenuation);
+    const auto tp = core::Vector3(foci[3 * i], foci[3 * i + 1], foci[3 * i + 2]);
+    Eigen::Index k = 0;
+    for (size_t dev = 0; dev < positions.size(); dev++) {
+      const double* p = positions[dev];
+      const auto dir = core::Vector3(directions[dev][0], directions[dev][1], directions[dev][2]);
+      for (Eigen::Index j = 0; j < core::NUM_TRANS_IN_UNIT; j++, k++) {
+        const auto pos = core::Vector3(p[3 * j], p[3 * j + 1], p[3 * j + 2]);
+        g->data(i, j) = utils::transfer(pos, dir, tp, wave_number, attenuation);
+      }
     }
   }
   return g;
 }
 
-void Eigen3Backend::set_bcd_result(const std::shared_ptr<MatrixXc> mat, const std::shared_ptr<MatrixXc> vec, const Eigen::Index idx) {
+void Eigen3Backend::set_bcd_result(const std::shared_ptr<MatrixXc> mat, const std::shared_ptr<MatrixXc> vec, const size_t index) {
   const Eigen::Index m = vec->data.size();
+  const Eigen::Index idx = static_cast<Eigen::Index>(index);
   for (Eigen::Index i = 0; i < idx; i++) mat->data(idx, i) = std::conj(vec->data(i, 0));
   for (Eigen::Index i = idx + 1; i < m; i++) mat->data(idx, i) = std::conj(vec->data(i, 0));
   for (Eigen::Index i = 0; i < idx; i++) mat->data(i, idx) = vec->data(i, 0);
