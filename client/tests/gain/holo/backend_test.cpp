@@ -3,7 +3,7 @@
 // Created Date: 13/08/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/09/2021
+// Last Modified: 07/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -218,7 +218,8 @@ TYPED_TEST(BackendTest, max_eigen_vector) {
 
   auto a = this->_backend->allocate_matrix_c("a", n, n);
   a->copy_from(a_vals.data());
-  const auto b = this->_backend->max_eigen_vector(a);
+  const auto b = this->_backend->allocate_matrix_c("b", n, 1);
+  this->_backend->max_eigen_vector(a, b);
 
   b->copy_to_host();
   const auto k = b->data(0) / u.col(n - 1)(0);
@@ -270,20 +271,6 @@ TYPED_TEST(BackendTest, matrix_mul_c) {
   ASSERT_NEAR_COMPLEX(c->data(0, 1), complex(-28, 82), 1e-6);
   ASSERT_NEAR_COMPLEX(c->data(1, 0), complex(-32, 238), 1e-6);
   ASSERT_NEAR_COMPLEX(c->data(1, 1), complex(-36, 282), 1e-6);
-
-  this->_backend->matrix_mul(TRANSPOSE::TRANS, TRANSPOSE::CONJ_NO_TRANS, ONE, a, b, ZERO, c);
-  c->copy_to_host();
-  ASSERT_NEAR_COMPLEX(c->data(0, 0), complex(122, 16), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(0, 1), complex(142, 20), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(1, 0), complex(206, 12), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(1, 1), complex(242, 16), 1e-6);
-
-  this->_backend->matrix_mul(TRANSPOSE::CONJ_NO_TRANS, TRANSPOSE::CONJ_TRANS, ONE, a, b, ONE, c);
-  c->copy_to_host();
-  ASSERT_NEAR_COMPLEX(c->data(0, 0), complex(100, -44), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(0, 1), complex(112, -64), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(1, 0), complex(176, -200), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(1, 1), complex(204, -284), 1e-6);
 }
 
 TYPED_TEST(BackendTest, matrix_mul) {
@@ -406,7 +393,7 @@ TYPED_TEST(BackendTest, max_coefficient_c) {
   auto v = this->_backend->allocate_matrix_c("v", n, 1);
   v->copy_from(vals_c);
 
-  ASSERT_EQ(this->_backend->max_coefficient(v), complex(vals[n - 1], 0));
+  ASSERT_NEAR(this->_backend->max_coefficient(v), vals[n - 1], 1e-6);
 }
 
 TYPED_TEST(BackendTest, concat_row) {

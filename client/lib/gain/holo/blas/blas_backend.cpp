@@ -66,17 +66,17 @@ void BLASBackend::pseudo_inverse_svd(const std::shared_ptr<MatrixXc> matrix, con
   Eigen::Matrix<complex, -1, -1, Eigen::ColMajor> singular_inv = Eigen::Matrix<complex, -1, -1, Eigen::ColMajor>::Zero(nc, nr);
   for (int i = 0; i < s_size; i++) singular_inv(i, i) = s[i] / (s[i] * s[i] + alpha);
 
-  const auto si = std::make_shared<MatrixXc>(singular_inv);
+  const auto si = std::make_shared<EigenMatrix<complex>>(singular_inv);
   const auto tmp = this->allocate_matrix_c("_pis_tmp", nc, nr);
   BLASBackend::matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::CONJ_TRANS, ONE, si, u, ZERO, tmp);
   BLASBackend::matrix_mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, ONE, vt, tmp, ZERO, result);
 }
 
-std::shared_ptr<MatrixXc> BLASBackend::max_eigen_vector(const std::shared_ptr<MatrixXc> matrix) {
+void BLASBackend::max_eigen_vector(const std::shared_ptr<MatrixXc> matrix, const std::shared_ptr<MatrixXc> ev) {
   const auto size = matrix->data.cols();
   const auto eigenvalues = std::make_unique<double[]>(size);
   AUTD_HEEV(CblasColMajor, 'V', 'U', static_cast<int>(size), matrix->data.data(), static_cast<int>(size), eigenvalues.get());
-  return std::make_shared<MatrixXc>(matrix->data.col(size - 1));
+  std::memcpy(ev->data.data(), matrix->data.data() + size * (size - 1), size * sizeof(complex));
 }
 
 void BLASBackend::matrix_add(const double alpha, const std::shared_ptr<MatrixX> a, const std::shared_ptr<MatrixX> b) {
@@ -87,12 +87,9 @@ void BLASBackend::matrix_mul(const TRANSPOSE trans_a, const TRANSPOSE trans_b, c
                              const std::shared_ptr<MatrixXc> b, const complex beta, const std::shared_ptr<MatrixXc> c) {
   const auto lda = static_cast<int>(a->data.rows());
   const auto ldb = static_cast<int>(b->data.rows());
-  const auto ldc =
-      trans_a == TRANSPOSE::NO_TRANS || trans_a == TRANSPOSE::CONJ_NO_TRANS ? static_cast<int>(a->data.rows()) : static_cast<int>(a->data.cols());
-  const auto n =
-      trans_b == TRANSPOSE::NO_TRANS || trans_b == TRANSPOSE::CONJ_NO_TRANS ? static_cast<int>(b->data.cols()) : static_cast<int>(b->data.rows());
-  const auto k =
-      trans_a == TRANSPOSE::NO_TRANS || trans_a == TRANSPOSE::CONJ_NO_TRANS ? static_cast<int>(a->data.cols()) : static_cast<int>(a->data.rows());
+  const auto ldc = trans_a == TRANSPOSE::NO_TRANS ? static_cast<int>(a->data.rows()) : static_cast<int>(a->data.cols());
+  const auto n = trans_b == TRANSPOSE::NO_TRANS ? static_cast<int>(b->data.cols()) : static_cast<int>(b->data.rows());
+  const auto k = trans_a == TRANSPOSE::NO_TRANS ? static_cast<int>(a->data.cols()) : static_cast<int>(a->data.rows());
   AUTD_ZGEMM(CblasColMajor, static_cast<CBLAS_TRANSPOSE>(trans_a), static_cast<CBLAS_TRANSPOSE>(trans_b), ldc, n, k, &alpha, a->data.data(), lda,
              b->data.data(), ldb, &beta, c->data.data(), ldc);
 }
@@ -101,12 +98,9 @@ void BLASBackend::matrix_mul(const TRANSPOSE trans_a, const TRANSPOSE trans_b, c
                              const std::shared_ptr<MatrixX> b, const double beta, const std::shared_ptr<MatrixX> c) {
   const auto lda = static_cast<int>(a->data.rows());
   const auto ldb = static_cast<int>(b->data.rows());
-  const auto ldc =
-      trans_a == TRANSPOSE::NO_TRANS || trans_a == TRANSPOSE::CONJ_NO_TRANS ? static_cast<int>(a->data.rows()) : static_cast<int>(a->data.cols());
-  const auto n =
-      trans_b == TRANSPOSE::NO_TRANS || trans_b == TRANSPOSE::CONJ_NO_TRANS ? static_cast<int>(b->data.cols()) : static_cast<int>(b->data.rows());
-  const auto k =
-      trans_a == TRANSPOSE::NO_TRANS || trans_a == TRANSPOSE::CONJ_NO_TRANS ? static_cast<int>(a->data.cols()) : static_cast<int>(a->data.rows());
+  const auto ldc = trans_a == TRANSPOSE::NO_TRANS ? static_cast<int>(a->data.rows()) : static_cast<int>(a->data.cols());
+  const auto n = trans_b == TRANSPOSE::NO_TRANS ? static_cast<int>(b->data.cols()) : static_cast<int>(b->data.rows());
+  const auto k = trans_a == TRANSPOSE::NO_TRANS ? static_cast<int>(a->data.cols()) : static_cast<int>(a->data.rows());
   AUTD_DGEMM(CblasColMajor, static_cast<CBLAS_TRANSPOSE>(trans_a), static_cast<CBLAS_TRANSPOSE>(trans_b), ldc, n, k, alpha, a->data.data(), lda,
              b->data.data(), ldb, beta, c->data.data(), ldc);
 }
@@ -144,7 +138,6 @@ double BLASBackend::max_coefficient(const std::shared_ptr<MatrixX> v) {
   // const auto idx = AUTD_IMAX(static_cast<int>(v->data.size()), v->data.data(), 1);
   // return v->data(idx);
 }
-
 void BLASBackend::mat_cpy(const std::shared_ptr<MatrixX> a, const std::shared_ptr<MatrixX> b) {
   AUTD_CPY(LAPACK_COL_MAJOR, 'A', static_cast<int>(a->data.rows()), static_cast<int>(a->data.cols()), a->data.data(),
            static_cast<int>(a->data.rows()), b->data.data(), static_cast<int>(b->data.rows()));
