@@ -23,7 +23,7 @@
 namespace autd::gain::holo {
 
 void SDP::calc(const core::GeometryPtr& geometry) {
-  const auto m = static_cast<Eigen::Index>(this->_foci.size());
+  const auto m = static_cast<Eigen::Index>(_foci.size());
   const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
 
   const auto amps = _backend->allocate_matrix_c("amps", m, 1);
@@ -32,7 +32,7 @@ void SDP::calc(const core::GeometryPtr& geometry) {
   p->fill(0.0);
   p->set_diagonal(amps);
 
-  const auto b = _backend->transfer_matrix(this->_foci, geometry);
+  const auto b = _backend->transfer_matrix(_foci, geometry);
   const auto pseudo_inv_b = _backend->allocate_matrix_c("pinvb", n, m);
   _backend->pseudo_inverse_svd(b, _alpha, pseudo_inv_b);
 
@@ -60,7 +60,7 @@ void SDP::calc(const core::GeometryPtr& geometry) {
     mmc->set(ii, 0, ZERO);
 
     _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, x_mat, mmc, ZERO, x);
-    if (complex gamma = this->_backend->dot(x, mmc); gamma.real() > 0) {
+    if (complex gamma = _backend->dot(x, mmc); gamma.real() > 0) {
       _backend->scale(x, complex(-std::sqrt(_lambda / gamma.real()), 0.0));
       _backend->set_bcd_result(x_mat, x, ii);
     } else {
@@ -77,28 +77,28 @@ void SDP::calc(const core::GeometryPtr& geometry) {
   _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, pseudo_inv_b, ut, ZERO, q);
 
   const auto max_coefficient = _backend->max_coefficient(q);
-  _backend->set_from_complex_drive(this->_data, q, _normalize, max_coefficient);
+  _backend->set_from_complex_drive(_data, q, _normalize, max_coefficient);
 
-  this->_built = true;
+  _built = true;
 }
 
 void EVD::calc(const core::GeometryPtr& geometry) {
-  const auto m = static_cast<Eigen::Index>(this->_foci.size());
+  const auto m = static_cast<Eigen::Index>(_foci.size());
   const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
 
-  const auto g = _backend->transfer_matrix(this->_foci, geometry);
+  const auto g = _backend->transfer_matrix(_foci, geometry);
   const auto amps = _backend->allocate_matrix_c("amps", m, 1);
   amps->copy_from(_amps);
 
-  const auto x = _backend->back_prop(g, this->_amps);
+  const auto x = _backend->back_prop(g, _amps);
 
   const auto r = _backend->allocate_matrix_c("r", m, m);
   _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, g, x, ZERO, r);
-  const auto max_ev = this->_backend->max_eigen_vector(r);
+  const auto max_ev = _backend->max_eigen_vector(r);
 
-  const auto sigma = _backend->sigma_regularization(g, this->_amps, _gamma);
+  const auto sigma = _backend->sigma_regularization(g, _amps, _gamma);
 
-  const auto gr = this->_backend->concat_row(g, sigma);
+  const auto gr = _backend->concat_row(g, sigma);
 
   const auto fm = _backend->allocate_matrix_c("fm", m, 1);
   _backend->arg(max_ev, fm);
@@ -108,24 +108,24 @@ void EVD::calc(const core::GeometryPtr& geometry) {
   const auto f = _backend->concat_row(fm, fn);
 
   const auto gtg = _backend->allocate_matrix_c("gtg", n, n);
-  this->_backend->matrix_mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, ONE, gr, gr, ZERO, gtg);
+  _backend->matrix_mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, ONE, gr, gr, ZERO, gtg);
 
   const auto gtf = _backend->allocate_matrix_c("gtf", n, 1);
-  this->_backend->matrix_mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, ONE, gr, f, ZERO, gtf);
+  _backend->matrix_mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, ONE, gr, f, ZERO, gtf);
 
-  this->_backend->solve_ch(gtg, gtf);
+  _backend->solve_ch(gtg, gtf);
 
-  const auto max_coefficient = this->_backend->max_coefficient(gtf);
-  _backend->set_from_complex_drive(this->_data, gtf, _normalize, max_coefficient);
+  const auto max_coefficient = _backend->max_coefficient(gtf);
+  _backend->set_from_complex_drive(_data, gtf, _normalize, max_coefficient);
 
-  this->_built = true;
+  _built = true;
 }
 
 void Naive::calc(const core::GeometryPtr& geometry) {
-  const auto m = static_cast<Eigen::Index>(this->_foci.size());
+  const auto m = static_cast<Eigen::Index>(_foci.size());
   const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
 
-  const auto g = _backend->transfer_matrix(this->_foci, geometry);
+  const auto g = _backend->transfer_matrix(_foci, geometry);
   const auto p = _backend->allocate_matrix_c("amps", m, 1);
   p->copy_from(_amps);
 
@@ -133,16 +133,16 @@ void Naive::calc(const core::GeometryPtr& geometry) {
 
   _backend->matrix_mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, ONE, g, p, ZERO, q);
 
-  _backend->set_from_complex_drive(this->_data, q, true, 1.0);
+  _backend->set_from_complex_drive(_data, q, true, 1.0);
 
-  this->_built = true;
+  _built = true;
 }
 
 void GS::calc(const core::GeometryPtr& geometry) {
-  const auto m = static_cast<Eigen::Index>(this->_foci.size());
+  const auto m = static_cast<Eigen::Index>(_foci.size());
   const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
 
-  const auto g = _backend->transfer_matrix(this->_foci, geometry);
+  const auto g = _backend->transfer_matrix(_foci, geometry);
   const auto amps = _backend->allocate_matrix_c("amps", m, 1);
   amps->copy_from(_amps);
 
@@ -150,7 +150,7 @@ void GS::calc(const core::GeometryPtr& geometry) {
   q0->fill(ONE);
 
   const auto q = _backend->allocate_matrix_c("q", n, 1);
-  this->_backend->mat_cpy(q0, q);
+  _backend->mat_cpy(q0, q);
 
   const auto gamma = _backend->allocate_matrix_c("gamma", m, 1);
   const auto p = _backend->allocate_matrix_c("p", m, 1);
@@ -159,23 +159,23 @@ void GS::calc(const core::GeometryPtr& geometry) {
     _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, g, q, ZERO, gamma);
     _backend->arg(gamma, gamma);
     _backend->hadamard_product(gamma, amps, p);
-    this->_backend->matrix_mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, ONE, g, p, ZERO, xi);
+    _backend->matrix_mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, ONE, g, p, ZERO, xi);
     _backend->arg(xi, xi);
     _backend->hadamard_product(xi, q0, q);
   }
 
-  _backend->set_from_complex_drive(this->_data, q, true, 1.0);
+  _backend->set_from_complex_drive(_data, q, true, 1.0);
 
-  this->_built = true;
+  _built = true;
 }
 
 void GSPAT::calc(const core::GeometryPtr& geometry) {
-  const auto m = static_cast<Eigen::Index>(this->_foci.size());
+  const auto m = static_cast<Eigen::Index>(_foci.size());
   const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
 
-  const auto g = _backend->transfer_matrix(this->_foci, geometry);
+  const auto g = _backend->transfer_matrix(_foci, geometry);
 
-  const auto b = _backend->back_prop(g, this->_amps);
+  const auto b = _backend->back_prop(g, _amps);
 
   const auto r = _backend->allocate_matrix_c("r", m, m);
   _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, g, b, ZERO, r);
@@ -196,15 +196,14 @@ void GSPAT::calc(const core::GeometryPtr& geometry) {
 
   gamma->copy_to_host();
   for (Eigen::Index i = 0; i < m; i++)
-    p->data(i, 0) =
-        gamma->data(i, 0) / (std::abs(gamma->data(i, 0)) * std::abs(gamma->data(i, 0))) * std::abs(this->_amps[i]) * std::abs(this->_amps[i]);
+    p->data(i, 0) = gamma->data(i, 0) / (std::abs(gamma->data(i, 0)) * std::abs(gamma->data(i, 0))) * std::abs(_amps[i]) * std::abs(_amps[i]);
 
   const auto q = _backend->allocate_matrix_c("q", n, 1);
   _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, b, p, ZERO, q);
 
-  _backend->set_from_complex_drive(this->_data, q, true, 1.0);
+  _backend->set_from_complex_drive(_data, q, true, 1.0);
 
-  this->_built = true;
+  _built = true;
 }
 
 void LM::calc(const core::GeometryPtr& geometry) {
@@ -240,14 +239,14 @@ void LM::calc(const core::GeometryPtr& geometry) {
     backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::CONJ_TRANS, ONE, t, t, ZERO, tth);
   };
 
-  const auto m = static_cast<Eigen::Index>(this->_foci.size());
+  const auto m = static_cast<Eigen::Index>(_foci.size());
   const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
   const Eigen::Index n_param = n + m;
 
   const auto amps = _backend->allocate_matrix_c("amps", m, 1);
   amps->copy_from(_amps);
 
-  const auto bhb = make_bhb(this->_backend, this->_foci, amps, geometry);
+  const auto bhb = make_bhb(_backend, _foci, amps, geometry);
 
   const auto x = _backend->allocate_matrix("x", n_param, 1);
   x->fill(0.0);
@@ -258,13 +257,13 @@ void LM::calc(const core::GeometryPtr& geometry) {
   const auto tth = _backend->allocate_matrix_c("tth", n_param, n_param);
   const auto zero = _backend->allocate_matrix("zero", n_param, 1);
   zero->fill(0.0);
-  calc_t_th(this->_backend, zero, x, tth);
+  calc_t_th(_backend, zero, x, tth);
 
   const auto bhb_tth = _backend->allocate_matrix_c("bhb_tth", n_param, n_param);
-  this->_backend->hadamard_product(bhb, tth, bhb_tth);
+  _backend->hadamard_product(bhb, tth, bhb_tth);
 
   const auto a = _backend->allocate_matrix("a", n_param, n_param);
-  this->_backend->real(bhb_tth, a);
+  _backend->real(bhb_tth, a);
 
   const auto g = _backend->allocate_matrix("g", n_param, 1);
   _backend->col_sum_imag(bhb_tth, g);
@@ -314,7 +313,7 @@ void LM::calc(const core::GeometryPtr& geometry) {
     fx = fx_new;
     if (rho > 0) {
       _backend->mat_cpy(x_new, x);
-      calc_t_th(this->_backend, zero, x, tth);
+      calc_t_th(_backend, zero, x, tth);
       _backend->hadamard_product(bhb, tth, bhb_tth);
       _backend->real(bhb_tth, a);
       _backend->col_sum_imag(bhb_tth, g);
@@ -333,25 +332,25 @@ void LM::calc(const core::GeometryPtr& geometry) {
     constexpr uint8_t duty = 0xFF;
     const auto f_phase = x->data(j, 0) / (2 * M_PI);
     const auto phase = core::Utilities::to_phase(f_phase);
-    this->_data[dev_idx][trans_idx++] = core::Utilities::pack_to_u16(duty, phase);
+    _data[dev_idx][trans_idx++] = core::Utilities::pack_to_u16(duty, phase);
     if (trans_idx == core::NUM_TRANS_IN_UNIT) {
       dev_idx++;
       trans_idx = 0;
     }
   }
 
-  this->_built = true;
+  _built = true;
 }
 
 void Greedy::calc(const core::GeometryPtr& geometry) {
-  const auto m = this->_foci.size();
+  const auto m = _foci.size();
 
   const auto wave_num = 2.0 * M_PI / geometry->wavelength();
   const auto attenuation = geometry->attenuation_coefficient();
 
   std::vector<std::unique_ptr<complex[]>> tmp;
-  tmp.reserve(this->_phases.size());
-  for (size_t i = 0; i < this->_phases.size(); i++) tmp.emplace_back(std::make_unique<complex[]>(m));
+  tmp.reserve(_phases.size());
+  for (size_t i = 0; i < _phases.size(); i++) tmp.emplace_back(std::make_unique<complex[]>(m));
 
   const auto cache = std::make_unique<complex[]>(m);
 
@@ -366,10 +365,10 @@ void Greedy::calc(const core::GeometryPtr& geometry) {
       const auto& trans_dir = geometry->direction(dev);
       size_t min_idx = 0;
       auto min_v = std::numeric_limits<double>::infinity();
-      for (size_t p = 0; p < this->_phases.size(); p++) {
-        transfer_foci(trans_pos, trans_dir, this->_phases[p], this->_foci, &tmp[p][0]);
+      for (size_t p = 0; p < _phases.size(); p++) {
+        transfer_foci(trans_pos, trans_dir, _phases[p], _foci, &tmp[p][0]);
         auto v = 0.0;
-        for (size_t j = 0; j < m; j++) v += std::abs(this->_amps[j] - std::abs(tmp[p][j] + cache[j]));
+        for (size_t j = 0; j < m; j++) v += std::abs(_amps[j] - std::abs(tmp[p][j] + cache[j]));
         if (v < min_v) {
           min_v = v;
           min_idx = p;
@@ -378,13 +377,13 @@ void Greedy::calc(const core::GeometryPtr& geometry) {
       for (size_t j = 0; j < m; j++) cache[j] += tmp[min_idx][j];
 
       constexpr uint8_t duty = 0xFF;
-      const auto f_phase = std::arg(this->_phases[min_idx]) / (2 * M_PI);
+      const auto f_phase = std::arg(_phases[min_idx]) / (2 * M_PI);
       const auto phase = core::Utilities::to_phase(f_phase);
-      this->_data[dev][i] = core::Utilities::pack_to_u16(duty, phase);
+      _data[dev][i] = core::Utilities::pack_to_u16(duty, phase);
     }
   }
 
-  this->_built = true;
+  _built = true;
 }
 
 }  // namespace autd::gain::holo
