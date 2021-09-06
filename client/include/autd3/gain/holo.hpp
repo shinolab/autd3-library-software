@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/09/2021
+// Last Modified: 06/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -65,14 +65,14 @@ class SDP final : public Holo {
    * @param[in] repeat parameter
    * @param[in] normalize parameter
    */
-  static std::shared_ptr<SDP> create(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps, double alpha = 1e-3,
-                                     double lambda = 0.9, size_t repeat = 100, bool normalize = true) {
+  static std::shared_ptr<SDP> create(const BackendPtr& backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps,
+                                     double alpha = 1e-3, double lambda = 0.9, size_t repeat = 100, bool normalize = true) {
     return std::make_shared<SDP>(backend, foci, amps, alpha, lambda, repeat, normalize);
   }
 
   void calc(const core::GeometryPtr& geometry) override;
-  SDP(BackendPtr backend, std::vector<core::Vector3>& foci, std::vector<double>& amps, const double alpha, const double lambda, const size_t repeat,
-      const bool normalize)
+  SDP(BackendPtr backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps, const double alpha, const double lambda,
+      const size_t repeat, const bool normalize)
       : Holo(std::move(backend), foci, amps), _alpha(alpha), _lambda(lambda), _repeat(repeat), _normalize(normalize) {}
 
  private:
@@ -97,13 +97,13 @@ class EVD final : public Holo {
    * @param[in] gamma parameter
    * @param[in] normalize parameter
    */
-  static std::shared_ptr<EVD> create(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps, double gamma = 1,
-                                     bool normalize = true) {
+  static std::shared_ptr<EVD> create(const BackendPtr& backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps,
+                                     double gamma = 1, bool normalize = true) {
     return std::make_shared<EVD>(backend, foci, amps, gamma, normalize);
   }
 
   void calc(const core::GeometryPtr& geometry) override;
-  EVD(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps, const double gamma, const bool normalize)
+  EVD(const BackendPtr& backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps, const double gamma, const bool normalize)
       : Holo(backend, foci, amps), _gamma(gamma), _normalize(normalize) {}
 
  private:
@@ -122,13 +122,13 @@ class Naive final : public Holo {
    * @param[in] foci focal points
    * @param[in] amps amplitudes of the foci
    */
-  static std::shared_ptr<Naive> create(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps) {
+  static std::shared_ptr<Naive> create(const BackendPtr& backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps) {
     return std::make_shared<Naive>(backend, foci, amps);
   }
 
   void calc(const core::GeometryPtr& geometry) override;
 
-  Naive(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps) : Holo(backend, foci, amps) {}
+  Naive(const BackendPtr& backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps) : Holo(backend, foci, amps) {}
 };
 
 /**
@@ -145,13 +145,14 @@ class GS final : public Holo {
    * @param[in] amps amplitudes of the foci
    * @param[in] repeat parameter
    */
-  static std::shared_ptr<GS> create(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps, size_t repeat = 100) {
+  static std::shared_ptr<GS> create(const BackendPtr& backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps,
+                                    const size_t repeat = 100) {
     return std::make_shared<GS>(backend, foci, amps, repeat);
   }
 
   void calc(const core::GeometryPtr& geometry) override;
 
-  GS(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps, const size_t repeat)
+  GS(const BackendPtr& backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps, const size_t repeat)
       : Holo(backend, foci, amps), _repeat(repeat) {}
 
  private:
@@ -173,12 +174,13 @@ class GSPAT final : public Holo {
    * @param[in] amps amplitudes of the foci
    * @param[in] repeat parameter
    */
-  static std::shared_ptr<GSPAT> create(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps, size_t repeat = 100) {
+  static std::shared_ptr<GSPAT> create(const BackendPtr& backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps,
+                                       const size_t repeat = 100) {
     return std::make_shared<GSPAT>(backend, foci, amps, repeat);
   }
   void calc(const core::GeometryPtr& geometry) override;
 
-  GSPAT(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps, const size_t repeat)
+  GSPAT(const BackendPtr& backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps, const size_t repeat)
       : Holo(backend, foci, amps), _repeat(repeat) {}
 
  private:
@@ -206,15 +208,16 @@ class LM final : public Holo {
    * @param[in] k_max parameter
    * @param[in] initial initial phase of transducers
    */
-  static std::shared_ptr<LM> create(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps, double eps_1 = 1e-8,
-                                    double eps_2 = 1e-8, double tau = 1e-3, size_t k_max = 5, const std::vector<double>& initial = {}) {
+  static std::shared_ptr<LM> create(const BackendPtr& backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps,
+                                    const double eps_1 = 1e-8, const double eps_2 = 1e-8, const double tau = 1e-3, const size_t k_max = 5,
+                                    const std::vector<double>& initial = {}) {
     return std::make_shared<LM>(backend, foci, amps, eps_1, eps_2, tau, k_max, initial);
   }
 
   void calc(const core::GeometryPtr& geometry) override;
 
-  LM(const BackendPtr& backend, std::vector<core::Vector3>& foci, std::vector<double>& amps, const double eps_1, const double eps_2, const double tau,
-     const size_t k_max, std::vector<double> initial)
+  LM(const BackendPtr& backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps, const double eps_1, const double eps_2,
+     const double tau, const size_t k_max, std::vector<double> initial)
       : Holo(backend, foci, amps), _eps_1(eps_1), _eps_2(eps_2), _tau(tau), _k_max(k_max), _initial(std::move(initial)) {}
 
  private:
@@ -239,12 +242,12 @@ class Greedy final : public Holo {
    * @param[in] amps amplitudes of the foci
    * @param[in] phase_div resolution of the phase to be searched
    */
-  static std::shared_ptr<Greedy> create(std::vector<core::Vector3>& foci, std::vector<double>& amps, const size_t phase_div = 16) {
+  static std::shared_ptr<Greedy> create(const std::vector<core::Vector3>& foci, const std::vector<double>& amps, const size_t phase_div = 16) {
     return std::make_shared<Greedy>(foci, amps, phase_div);
   }
 
   void calc(const core::GeometryPtr& geometry) override;
-  Greedy(std::vector<core::Vector3>& foci, std::vector<double>& amps, const size_t phase_div) : Holo(nullptr, foci, amps) {
+  Greedy(const std::vector<core::Vector3>& foci, const std::vector<double>& amps, const size_t phase_div) : Holo(nullptr, foci, amps) {
     this->_phases.reserve(phase_div);
     for (size_t i = 0; i < phase_div; i++)
       this->_phases.emplace_back(std::exp(complex(0., 2.0 * M_PI * static_cast<double>(i) / static_cast<double>(phase_div))));

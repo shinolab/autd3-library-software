@@ -3,7 +3,7 @@
 // Created Date: 17/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/08/2021
+// Last Modified: 06/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -47,8 +47,8 @@ void AUTDDeleteBackend(void* backend) {
 
 void AUTDGainHoloSDP(void** gain, void* backend, const double* points, const double* amps, const int32_t size, const double alpha,
                      const double lambda, const uint64_t repeat, const bool normalize) {
-  auto holo = PackFoci(points, size);
-  auto amps_ = PackAmps(amps, size);
+  const auto holo = PackFoci(points, size);
+  const auto amps_ = PackAmps(amps, size);
   const auto b = static_cast<BackendWrapper*>(backend);
   auto* g = GainCreate(autd::gain::holo::SDP::create(b->ptr, holo, amps_, alpha, lambda, repeat, normalize));
   *gain = g;
@@ -56,32 +56,32 @@ void AUTDGainHoloSDP(void** gain, void* backend, const double* points, const dou
 
 void AUTDGainHoloEVD(void** gain, void* backend, const double* points, const double* amps, const int32_t size, const double gamma,
                      const bool normalize) {
-  auto holo = PackFoci(points, size);
-  auto amps_ = PackAmps(amps, size);
+  const auto holo = PackFoci(points, size);
+  const auto amps_ = PackAmps(amps, size);
   const auto b = static_cast<BackendWrapper*>(backend);
   auto* g = GainCreate(autd::gain::holo::EVD::create(b->ptr, holo, amps_, gamma, normalize));
   *gain = g;
 }
 
 void AUTDGainHoloNaive(void** gain, void* backend, const double* points, const double* amps, const int32_t size) {
-  auto holo = PackFoci(points, size);
-  auto amps_ = PackAmps(amps, size);
+  const auto holo = PackFoci(points, size);
+  const auto amps_ = PackAmps(amps, size);
   const auto b = static_cast<BackendWrapper*>(backend);
   auto* g = GainCreate(autd::gain::holo::Naive::create(b->ptr, holo, amps_));
   *gain = g;
 }
 
 void AUTDGainHoloGS(void** gain, void* backend, const double* points, const double* amps, const int32_t size, const uint64_t repeat) {
-  auto holo = PackFoci(points, size);
-  auto amps_ = PackAmps(amps, size);
+  const auto holo = PackFoci(points, size);
+  const auto amps_ = PackAmps(amps, size);
   const auto b = static_cast<BackendWrapper*>(backend);
   auto* g = GainCreate(autd::gain::holo::GS::create(b->ptr, holo, amps_, repeat));
   *gain = g;
 }
 
 void AUTDGainHoloGSPAT(void** gain, void* backend, const double* points, const double* amps, const int32_t size, const uint64_t repeat) {
-  auto holo = PackFoci(points, size);
-  auto amps_ = PackAmps(amps, size);
+  const auto holo = PackFoci(points, size);
+  const auto amps_ = PackAmps(amps, size);
   const auto b = static_cast<BackendWrapper*>(backend);
   auto* g = GainCreate(autd::gain::holo::GSPAT::create(b->ptr, holo, amps_, repeat));
   *gain = g;
@@ -89,8 +89,8 @@ void AUTDGainHoloGSPAT(void** gain, void* backend, const double* points, const d
 
 void AUTDGainHoloLM(void** gain, void* backend, double* points, const double* amps, const int32_t size, const double eps_1, const double eps_2,
                     const double tau, const uint64_t k_max, double* initial, const int32_t initial_size) {
-  auto holo = PackFoci(points, size);
-  auto amps_ = PackAmps(amps, size);
+  const auto holo = PackFoci(points, size);
+  const auto amps_ = PackAmps(amps, size);
 
   std::vector<double> initial_;
   initial_.reserve(initial_size);
@@ -102,8 +102,8 @@ void AUTDGainHoloLM(void** gain, void* backend, double* points, const double* am
 }
 
 void AUTDGainHoloGreedy(void** gain, const double* points, const double* amps, const int32_t size, const int32_t phase_div) {
-  auto holo = PackFoci(points, size);
-  auto amps_ = PackAmps(amps, size);
+  const auto holo = PackFoci(points, size);
+  const auto amps_ = PackAmps(amps, size);
 
   auto* g = GainCreate(autd::gain::holo::Greedy::create(holo, amps_, static_cast<size_t>(phase_div)));
   *gain = g;

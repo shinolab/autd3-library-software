@@ -82,8 +82,8 @@ struct Matrix {
 };
 
 using complex = std::complex<double>;
-constexpr complex One = complex(1.0, 0.0);
-constexpr complex Zero = complex(0.0, 0.0);
+constexpr complex ONE = complex(1.0, 0.0);
+constexpr complex ZERO = complex(0.0, 0.0);
 using MatrixXc = Matrix<complex>;
 using MatrixX = Matrix<double>;
 

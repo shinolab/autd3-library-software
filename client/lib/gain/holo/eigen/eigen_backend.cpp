@@ -17,18 +17,18 @@
 namespace autd::gain::holo {
 BackendPtr Eigen3Backend::create() { return std::make_shared<Eigen3Backend>(); }
 
-void Eigen3Backend::make_complex(std::shared_ptr<MatrixX> r, std::shared_ptr<MatrixX> i, std::shared_ptr<MatrixXc> c) {
+void Eigen3Backend::make_complex(const std::shared_ptr<MatrixX> r, const std::shared_ptr<MatrixX> i, const std::shared_ptr<MatrixXc> c) {
   for (Eigen::Index col = 0; col < c->data.cols(); col++)
     for (Eigen::Index row = 0; row < c->data.rows(); row++) c->data(row, col) = complex(r->data(row, col), i->data(row, col));
 }
-void Eigen3Backend::exp(std::shared_ptr<MatrixXc> a) { a->data = a->data.array().exp(); }
-void Eigen3Backend::scale(std::shared_ptr<MatrixXc> a, complex s) { a->data *= s; }
-void Eigen3Backend::hadamard_product(const std::shared_ptr<MatrixXc> a, const std::shared_ptr<MatrixXc> b, std::shared_ptr<MatrixXc> c) {
+void Eigen3Backend::exp(const std::shared_ptr<MatrixXc> a) { a->data = a->data.array().exp(); }
+void Eigen3Backend::scale(const std::shared_ptr<MatrixXc> a, const complex s) { a->data *= s; }
+void Eigen3Backend::hadamard_product(const std::shared_ptr<MatrixXc> a, const std::shared_ptr<MatrixXc> b, const std::shared_ptr<MatrixXc> c) {
   c->data.noalias() = a->data.cwiseProduct(b->data);
 }
-void Eigen3Backend::real(const std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixX> b) { b->data.noalias() = a->data.real(); }
-void Eigen3Backend::arg(const std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> c) { c->data = a->data.cwiseQuotient(a->data.cwiseAbs()); }
-void Eigen3Backend::pseudo_inverse_svd(const std::shared_ptr<MatrixXc> matrix, const double alpha, std::shared_ptr<MatrixXc> result) {
+void Eigen3Backend::real(const std::shared_ptr<MatrixXc> a, const std::shared_ptr<MatrixX> b) { b->data.noalias() = a->data.real(); }
+void Eigen3Backend::arg(const std::shared_ptr<MatrixXc> a, const std::shared_ptr<MatrixXc> c) { c->data = a->data.cwiseQuotient(a->data.cwiseAbs()); }
+void Eigen3Backend::pseudo_inverse_svd(const std::shared_ptr<MatrixXc> matrix, const double alpha, const std::shared_ptr<MatrixXc> result) {
   const Eigen::BDCSVD svd(matrix->data, Eigen::ComputeFullU | Eigen::ComputeFullV);
   auto singular_values_inv = svd.singularValues();
   const auto size = singular_values_inv.size();
@@ -36,18 +36,18 @@ void Eigen3Backend::pseudo_inverse_svd(const std::shared_ptr<MatrixXc> matrix, c
 
   result->data.noalias() = svd.matrixV() * singular_values_inv.asDiagonal() * svd.matrixU().adjoint();
 }
-std::shared_ptr<MatrixXc> Eigen3Backend::max_eigen_vector(std::shared_ptr<MatrixXc> matrix) {
+std::shared_ptr<MatrixXc> Eigen3Backend::max_eigen_vector(const std::shared_ptr<MatrixXc> matrix) {
   const Eigen::ComplexEigenSolver<Eigen::Matrix<complex, -1, -1, Eigen::ColMajor>> ces(matrix->data);
   auto idx = 0;
   ces.eigenvalues().cwiseAbs2().maxCoeff(&idx);
   return std::make_shared<MatrixXc>(ces.eigenvectors().col(idx));
 }
 
-void Eigen3Backend::matrix_add(const double alpha, const std::shared_ptr<MatrixX> a, std::shared_ptr<MatrixX> b) {
+void Eigen3Backend::matrix_add(const double alpha, const std::shared_ptr<MatrixX> a, const std::shared_ptr<MatrixX> b) {
   b->data.noalias() += alpha * a->data;
 }
 void Eigen3Backend::matrix_mul(const TRANSPOSE trans_a, const TRANSPOSE trans_b, const complex alpha, const std::shared_ptr<MatrixXc> a,
-                               const std::shared_ptr<MatrixXc> b, const complex beta, std::shared_ptr<MatrixXc> c) {
+                               const std::shared_ptr<MatrixXc> b, const complex beta, const std::shared_ptr<MatrixXc> c) {
   c->data *= beta;
   switch (trans_a) {
     case TRANSPOSE::CONJ_TRANS:
@@ -117,7 +117,7 @@ void Eigen3Backend::matrix_mul(const TRANSPOSE trans_a, const TRANSPOSE trans_b,
   }
 }
 void Eigen3Backend::matrix_mul(const TRANSPOSE trans_a, const TRANSPOSE trans_b, const double alpha, const std::shared_ptr<MatrixX> a,
-                               const std::shared_ptr<MatrixX> b, const double beta, std::shared_ptr<MatrixX> c) {
+                               const std::shared_ptr<MatrixX> b, const double beta, const std::shared_ptr<MatrixX> c) {
   c->data *= beta;
   switch (trans_a) {
     case TRANSPOSE::TRANS:
@@ -152,11 +152,11 @@ void Eigen3Backend::matrix_mul(const TRANSPOSE trans_a, const TRANSPOSE trans_b,
   }
 }
 
-void Eigen3Backend::solve_g(std::shared_ptr<MatrixX> a, std::shared_ptr<MatrixX> b, std::shared_ptr<MatrixX> c) {
+void Eigen3Backend::solve_g(const std::shared_ptr<MatrixX> a, const std::shared_ptr<MatrixX> b, const std::shared_ptr<MatrixX> c) {
   const Eigen::HouseholderQR<Eigen::Matrix<double, -1, -1, Eigen::ColMajor>> qr(a->data);
   c->data.noalias() = qr.solve(b->data);
 }
-void Eigen3Backend::solve_ch(std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> b) {
+void Eigen3Backend::solve_ch(const std::shared_ptr<MatrixXc> a, const std::shared_ptr<MatrixXc> b) {
   const Eigen::LLT<Eigen::Matrix<complex, -1, -1, Eigen::ColMajor>> llt(a->data);
   llt.solveInPlace(b->data);
 }
@@ -174,8 +174,8 @@ std::shared_ptr<MatrixXc> Eigen3Backend::concat_col(const std::shared_ptr<Matrix
   c << a->data, b->data;
   return std::make_shared<MatrixXc>(c);
 }
-void Eigen3Backend::mat_cpy(const std::shared_ptr<MatrixX> a, std::shared_ptr<MatrixX> b) { b->data = a->data; }
-void Eigen3Backend::mat_cpy(const std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> b) { b->data = a->data; }
+void Eigen3Backend::mat_cpy(const std::shared_ptr<MatrixX> a, const std::shared_ptr<MatrixX> b) { b->data = a->data; }
+void Eigen3Backend::mat_cpy(const std::shared_ptr<MatrixXc> a, const std::shared_ptr<MatrixXc> b) { b->data = a->data; }
 
 void Eigen3Backend::set_from_complex_drive(std::vector<core::DataArray>& data, const std::shared_ptr<MatrixXc> drive, const bool normalize,
                                            const double max_coefficient) {
@@ -214,7 +214,7 @@ std::shared_ptr<MatrixXc> Eigen3Backend::transfer_matrix(const std::vector<core:
   return g;
 }
 
-void Eigen3Backend::set_bcd_result(std::shared_ptr<MatrixXc> mat, std::shared_ptr<MatrixXc> vec, const Eigen::Index idx) {
+void Eigen3Backend::set_bcd_result(const std::shared_ptr<MatrixXc> mat, const std::shared_ptr<MatrixXc> vec, const Eigen::Index idx) {
   const Eigen::Index m = vec->data.size();
   for (Eigen::Index i = 0; i < idx; i++) mat->data(idx, i) = std::conj(vec->data(i, 0));
   for (Eigen::Index i = idx + 1; i < m; i++) mat->data(idx, i) = std::conj(vec->data(i, 0));
@@ -222,7 +222,7 @@ void Eigen3Backend::set_bcd_result(std::shared_ptr<MatrixXc> mat, std::shared_pt
   for (Eigen::Index i = idx + 1; i < m; i++) mat->data(i, idx) = vec->data(i, 0);
 }
 
-std::shared_ptr<MatrixXc> Eigen3Backend::back_prop(std::shared_ptr<MatrixXc> transfer, const std::vector<complex>& amps) {
+std::shared_ptr<MatrixXc> Eigen3Backend::back_prop(const std::shared_ptr<MatrixXc> transfer, const std::vector<complex>& amps) {
   const auto m = transfer->data.rows();
   const auto n = transfer->data.cols();
 
@@ -241,12 +241,13 @@ std::shared_ptr<MatrixXc> Eigen3Backend::back_prop(std::shared_ptr<MatrixXc> tra
   return b;
 }
 
-std::shared_ptr<MatrixXc> Eigen3Backend::sigma_regularization(std::shared_ptr<MatrixXc> transfer, const std::vector<complex>& amps, double gamma) {
+std::shared_ptr<MatrixXc> Eigen3Backend::sigma_regularization(const std::shared_ptr<MatrixXc> transfer, const std::vector<complex>& amps,
+                                                              const double gamma) {
   const auto m = transfer->data.rows();
   const auto n = transfer->data.cols();
 
   auto sigma = allocate_matrix_c("sigma", n, n);
-  sigma->fill(Zero);
+  sigma->fill(ZERO);
   for (Eigen::Index j = 0; j < n; j++) {
     double tmp = 0;
     for (Eigen::Index i = 0; i < m; i++) tmp += std::abs(transfer->data(i, j) * amps[i]);
@@ -255,7 +256,7 @@ std::shared_ptr<MatrixXc> Eigen3Backend::sigma_regularization(std::shared_ptr<Ma
   return sigma;
 }
 
-void Eigen3Backend::col_sum_imag(std::shared_ptr<MatrixXc> mat, std::shared_ptr<MatrixX> dst) {
+void Eigen3Backend::col_sum_imag(const std::shared_ptr<MatrixXc> mat, const std::shared_ptr<MatrixX> dst) {
   const auto n = dst->data.size();
   for (Eigen::Index i = 0; i < n; i++) {
     double tmp = 0;
