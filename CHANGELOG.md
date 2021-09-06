@@ -2,6 +2,7 @@
 * Add `wait_for_msg_processed` option to `Controller::send()`
 * Support duty ratio in `PointSequence`
 * Delete `IGNORE_EXAMPLE` CMake option, add `BUILD_EXAMPLES` instead
+* Add `CUDABackend` for `HoloGain`
 
 # 1.7
 * Extend `GAIN_SEQ_BUFFER_SIZE_MAX` from 1024 to 2048

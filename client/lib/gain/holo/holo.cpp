@@ -67,7 +67,7 @@ void SDP::calc(const core::GeometryPtr& geometry) {
 
   std::random_device rnd;
   std::mt19937 mt(rnd());
-  const std::uniform_real_distribution<double> range(0, 1);
+  std::uniform_real_distribution<double> range(0, 1);
   const auto zero = _backend->allocate_matrix_c("zero", m, 1);
   zero->fill(ZERO);
   const auto x = _backend->allocate_matrix_c("x", m, 1);

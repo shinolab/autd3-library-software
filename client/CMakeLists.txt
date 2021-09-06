@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.16)
 
 project(autd3)
 set(VERSION_MAJOR   1   CACHE STRING "Project major version number.")

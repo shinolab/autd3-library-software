@@ -47,34 +47,34 @@ struct EigenMatrix final : Matrix<T> {
   EigenMatrix(const EigenMatrix&& v) = delete;
   EigenMatrix& operator=(EigenMatrix&& obj) = delete;
 
-  [[nodiscard]] T at(size_t row, size_t col) const override { return data(row, col); }
-  [[nodiscard]] const T* ptr() const override { return data.data(); }
-  T* ptr() override { return data.data(); }
+  [[nodiscard]] T at(size_t row, size_t col) const override { return this->data(row, col); }
+  [[nodiscard]] const T* ptr() const override { return this->data.data(); }
+  T* ptr() override { return this->data.data(); }
 
   [[nodiscard]] double max_element() const override;
-  void set(const Eigen::Index row, const Eigen::Index col, T v) override { data(row, col) = v; }
+  void set(const Eigen::Index row, const Eigen::Index col, T v) override { this->data(row, col) = v; }
   void get_col(const Eigen::Index i, std::shared_ptr<Matrix<T>> dst) override {
-    const auto& col = data.col(i);
+    const auto& col = this->data.col(i);
     std::memcpy(dst->data.data(), col.data(), sizeof(T) * col.size());
   }
-  void fill(T v) override { data.fill(v); }
+  void fill(T v) override { this->data.fill(v); }
   void get_diagonal(std::shared_ptr<Matrix<T>> v) override {
-    for (Eigen::Index i = 0; i < (std::min)(data.rows(), data.cols()); i++) v->data(i) = data(i, i);
+    for (Eigen::Index i = 0; i < (std::min)(this->data.rows(), this->data.cols()); i++) v->data(i) = this->data(i, i);
   }
-  void set_diagonal(std::shared_ptr<Matrix<T>> v) override { data.diagonal() = v->data; }
-  void copy_from(const std::vector<T>& v) override { std::memcpy(data.data(), v.data(), sizeof(T) * v.size()); }
-  void copy_from(const T* v) override { std::memcpy(data.data(), v, sizeof(T) * data.size()); }
+  void set_diagonal(std::shared_ptr<Matrix<T>> v) override { this->data.diagonal() = v->data; }
+  void copy_from(const std::vector<T>& v) override { std::memcpy(this->data.data(), v.data(), sizeof(T) * v.size()); }
+  void copy_from(const T* v) override { std::memcpy(this->data.data(), v, sizeof(T) * this->data.size()); }
   void copy_to_host() override {}
 };
 
 template <>
 inline double EigenMatrix<double>::max_element() const {
-  return data.maxCoeff();
+  return this->data.maxCoeff();
 }
 
 template <>
 inline double EigenMatrix<complex>::max_element() const {
-  return std::sqrt(data.cwiseAbs2().maxCoeff());
+  return std::sqrt(this->data.cwiseAbs2().maxCoeff());
 }
 
 /**
