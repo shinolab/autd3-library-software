@@ -20,6 +20,22 @@
 #include "autd3/gain/linalg_backend.hpp"
 #include "autd3/utils.hpp"
 
+namespace {
+std::shared_ptr<autd::gain::holo::MatrixXc> generate_transfer_matrix(const autd::gain::holo::BackendPtr& backend,
+                                                                     const std::vector<autd::core::Vector3>& foci,
+                                                                     const autd::core::GeometryPtr& geometry) {
+  std::vector<const double*> positions, directions;
+  positions.reserve(geometry->num_devices());
+  directions.reserve(geometry->num_devices());
+  for (size_t i = 0; i < geometry->num_devices(); i++) {
+    positions.emplace_back(geometry->position(i, 0).data());
+    directions.emplace_back(geometry->direction(i).data());
+  }
+  return backend->transfer_matrix(reinterpret_cast<const double*>(foci.data()), foci.size(), positions, directions, geometry->wavelength(),
+                                  geometry->attenuation_coefficient());
+}
+}  // namespace
+
 namespace autd::gain::holo {
 
 void SDP::calc(const core::GeometryPtr& geometry) {
@@ -32,7 +48,7 @@ void SDP::calc(const core::GeometryPtr& geometry) {
   p->fill(0.0);
   p->set_diagonal(amps);
 
-  const auto b = _backend->transfer_matrix(_foci, geometry);
+  const auto b = generate_transfer_matrix(_backend, _foci, geometry);
   const auto pseudo_inv_b = _backend->allocate_matrix_c("pinvb", n, m);
   _backend->pseudo_inverse_svd(b, _alpha, pseudo_inv_b);
 
@@ -86,7 +102,7 @@ void EVD::calc(const core::GeometryPtr& geometry) {
   const auto m = static_cast<Eigen::Index>(_foci.size());
   const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
 
-  const auto g = _backend->transfer_matrix(_foci, geometry);
+  const auto g = generate_transfer_matrix(_backend, _foci, geometry);
   const auto amps = _backend->allocate_matrix_c("amps", m, 1);
   amps->copy_from(_amps);
 
@@ -125,7 +141,7 @@ void Naive::calc(const core::GeometryPtr& geometry) {
   const auto m = static_cast<Eigen::Index>(_foci.size());
   const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
 
-  const auto g = _backend->transfer_matrix(_foci, geometry);
+  const auto g = generate_transfer_matrix(_backend, _foci, geometry);
   const auto p = _backend->allocate_matrix_c("amps", m, 1);
   p->copy_from(_amps);
 
@@ -142,7 +158,7 @@ void GS::calc(const core::GeometryPtr& geometry) {
   const auto m = static_cast<Eigen::Index>(_foci.size());
   const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
 
-  const auto g = _backend->transfer_matrix(_foci, geometry);
+  const auto g = generate_transfer_matrix(_backend, _foci, geometry);
   const auto amps = _backend->allocate_matrix_c("amps", m, 1);
   amps->copy_from(_amps);
 
@@ -173,7 +189,7 @@ void GSPAT::calc(const core::GeometryPtr& geometry) {
   const auto m = static_cast<Eigen::Index>(_foci.size());
   const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
 
-  const auto g = _backend->transfer_matrix(_foci, geometry);
+  const auto g = generate_transfer_matrix(_backend, _foci, geometry);
 
   const auto b = _backend->back_prop(g, _amps);
 
@@ -218,7 +234,7 @@ void LM::calc(const core::GeometryPtr& geometry) {
     backend->scale(amps, complex(-1.0, 0.0));
     p->set_diagonal(amps);
 
-    const auto g = backend->transfer_matrix(foci, geo);
+    const auto g = generate_transfer_matrix(backend, foci, geo);
 
     const auto b = backend->concat_col(g, p);
 

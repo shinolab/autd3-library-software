@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/09/2021
+// Last Modified: 06/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -34,7 +34,8 @@
 
 #include "hardware_defined.hpp"
 
-namespace autd::core {
+namespace autd {
+namespace core {
 
 class Geometry;
 using GeometryPtr = std::unique_ptr<Geometry>;
@@ -69,8 +70,9 @@ struct Device {
   }
 
   static Device create(const Vector3& position, const Vector3& euler_angles) {
-    const Quaternion quaternion = Eigen::AngleAxis(euler_angles.x(), Vector3::UnitZ()) * Eigen::AngleAxis(euler_angles.y(), Vector3::UnitY()) *
-                                  Eigen::AngleAxis(euler_angles.z(), Vector3::UnitZ());
+    const Quaternion quaternion = Eigen::AngleAxis<double>(euler_angles.x(), Vector3::UnitZ()) *
+                                  Eigen::AngleAxis<double>(euler_angles.y(), Vector3::UnitY()) *
+                                  Eigen::AngleAxis<double>(euler_angles.z(), Vector3::UnitZ());
     return create(position, quaternion);
   }
 
@@ -217,4 +219,5 @@ class Geometry {
   double _wavelength;
   double _attenuation;
 };
-}  // namespace autd::core
+}  // namespace core
+}  // namespace autd

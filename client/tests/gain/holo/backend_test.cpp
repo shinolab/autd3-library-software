@@ -270,20 +270,6 @@ TYPED_TEST(BackendTest, matrix_mul_c) {
   ASSERT_NEAR_COMPLEX(c->data(0, 1), complex(-28, 82), 1e-6);
   ASSERT_NEAR_COMPLEX(c->data(1, 0), complex(-32, 238), 1e-6);
   ASSERT_NEAR_COMPLEX(c->data(1, 1), complex(-36, 282), 1e-6);
-
-  this->_backend->matrix_mul(TRANSPOSE::TRANS, TRANSPOSE::CONJ_NO_TRANS, ONE, a, b, ZERO, c);
-  c->copy_to_host();
-  ASSERT_NEAR_COMPLEX(c->data(0, 0), complex(122, 16), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(0, 1), complex(142, 20), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(1, 0), complex(206, 12), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(1, 1), complex(242, 16), 1e-6);
-
-  this->_backend->matrix_mul(TRANSPOSE::CONJ_NO_TRANS, TRANSPOSE::CONJ_TRANS, ONE, a, b, ONE, c);
-  c->copy_to_host();
-  ASSERT_NEAR_COMPLEX(c->data(0, 0), complex(100, -44), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(0, 1), complex(112, -64), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(1, 0), complex(176, -200), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(1, 1), complex(204, -284), 1e-6);
 }
 
 TYPED_TEST(BackendTest, matrix_mul) {
