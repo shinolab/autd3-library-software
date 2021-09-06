@@ -183,7 +183,7 @@ void Eigen3Backend::set_from_complex_drive(std::vector<core::DataArray>& data, c
   size_t dev_idx = 0;
   size_t trans_idx = 0;
   for (Eigen::Index j = 0; j < n; j++) {
-    const auto f_amp = normalize ? 1.0 : std::abs(drive->data(j)) / max_coefficient;
+    const auto f_amp = normalize ? 1.0 : std::abs(drive->data(j, 0)) / max_coefficient;
     const auto f_phase = std::arg(drive->data(j)) / (2.0 * M_PI);
     const auto phase = core::Utilities::to_phase(f_phase);
     const auto duty = core::Utilities::to_duty(f_amp);
@@ -216,10 +216,10 @@ std::shared_ptr<MatrixXc> Eigen3Backend::transfer_matrix(const std::vector<core:
 
 void Eigen3Backend::set_bcd_result(std::shared_ptr<MatrixXc> mat, std::shared_ptr<MatrixXc> vec, const Eigen::Index idx) {
   const Eigen::Index m = vec->data.size();
-  for (Eigen::Index i = 0; i < idx; i++) mat->data(idx, i) = std::conj(vec->data(i));
-  for (Eigen::Index i = idx + 1; i < m; i++) mat->data(idx, i) = std::conj(vec->data(i));
-  for (Eigen::Index i = 0; i < idx; i++) mat->data(i, idx) = vec->data(i);
-  for (Eigen::Index i = idx + 1; i < m; i++) mat->data(i, idx) = vec->data(i);
+  for (Eigen::Index i = 0; i < idx; i++) mat->data(idx, i) = std::conj(vec->data(i, 0));
+  for (Eigen::Index i = idx + 1; i < m; i++) mat->data(idx, i) = std::conj(vec->data(i, 0));
+  for (Eigen::Index i = 0; i < idx; i++) mat->data(i, idx) = vec->data(i, 0);
+  for (Eigen::Index i = idx + 1; i < m; i++) mat->data(i, idx) = vec->data(i, 0);
 }
 
 std::shared_ptr<MatrixXc> Eigen3Backend::back_prop(std::shared_ptr<MatrixXc> transfer, const std::vector<complex>& amps) {
@@ -260,7 +260,7 @@ void Eigen3Backend::col_sum_imag(std::shared_ptr<MatrixXc> mat, std::shared_ptr<
   for (Eigen::Index i = 0; i < n; i++) {
     double tmp = 0;
     for (Eigen::Index k = 0; k < n; k++) tmp += mat->data(i, k).imag();
-    dst->data(i) = tmp;
+    dst->data(i, 0) = tmp;
   }
 }
 }  // namespace autd::gain::holo

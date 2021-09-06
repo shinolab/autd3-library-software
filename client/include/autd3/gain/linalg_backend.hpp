@@ -14,6 +14,10 @@
 #include <algorithm>
 #include <complex>
 #include <memory>
+#include <string>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 #include "autd3/core/geometry.hpp"
 #include "autd3/core/hardware_defined.hpp"
@@ -146,7 +150,7 @@ class Backend {
                                       double max_coefficient) = 0;
   virtual std::shared_ptr<MatrixXc> transfer_matrix(const std::vector<core::Vector3>& foci, const core::GeometryPtr& geometry) = 0;
 
-  // TODO: following functions are too specialized
+  // FIXME: following functions are too specialized
   virtual void set_bcd_result(std::shared_ptr<MatrixXc> mat, std::shared_ptr<MatrixXc> vec, Eigen::Index idx) = 0;
   virtual std::shared_ptr<MatrixXc> back_prop(std::shared_ptr<MatrixXc> transfer, const std::vector<complex>& amps) = 0;
   virtual std::shared_ptr<MatrixXc> sigma_regularization(std::shared_ptr<MatrixXc> transfer, const std::vector<complex>& amps, double gamma) = 0;
