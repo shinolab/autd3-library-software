@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/09/2021
+// Last Modified: 07/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -57,17 +57,10 @@ struct EigenMatrix final : Matrix<T> {
     std::memcpy(dst->data.data(), col.data(), sizeof(T) * col.size());
   }
   void fill(T v) override { data.fill(v); }
-  std::vector<T> get_diagonal() override {
-    auto n = (std::min)(data.rows(), data.cols());
-    std::vector<T> v;
-    for (Eigen::Index i = 0; i < n; i++) v.emplace_back(data(i, i));
-    return v;
+  void get_diagonal(std::shared_ptr<Matrix<T>> v) override {
+    for (Eigen::Index i = 0; i < (std::min)(data.rows(), data.cols()); i++) v->data(i) = data(i, i);
   }
   void set_diagonal(std::shared_ptr<Matrix<T>> v) override { data.diagonal() = v->data; }
-  void set_diagonal(const T v) override {
-    auto n = (std::min)(data.rows(), data.cols());
-    data.diagonal() = Eigen::Matrix<T, -1, 1, Eigen::ColMajor>::Constant(n, 1, v);
-  }
   void copy_from(const std::vector<T>& v) override { std::memcpy(data.data(), v.data(), sizeof(T) * v.size()); }
   void copy_from(const T* v) override { std::memcpy(data.data(), v, sizeof(T) * data.size()); }
   void copy_to_host() override {}
@@ -142,8 +135,8 @@ class Eigen3Backend : public Backend {
                                             const std::vector<const double*>& directions, double wavelength, double attenuation) override;
 
   void set_bcd_result(std::shared_ptr<MatrixXc> mat, std::shared_ptr<MatrixXc> vec, size_t index) override;
-  std::shared_ptr<MatrixXc> back_prop(std::shared_ptr<MatrixXc> transfer, const std::vector<complex>& amps) override;
-  std::shared_ptr<MatrixXc> sigma_regularization(std::shared_ptr<MatrixXc> transfer, const std::vector<complex>& amps, double gamma) override;
+  std::shared_ptr<MatrixXc> back_prop(std::shared_ptr<MatrixXc> transfer, std::shared_ptr<MatrixXc> amps) override;
+  std::shared_ptr<MatrixXc> sigma_regularization(std::shared_ptr<MatrixXc> transfer, std::shared_ptr<MatrixXc> amps, double gamma) override;
   void col_sum_imag(std::shared_ptr<MatrixXc> mat, std::shared_ptr<MatrixX> dst) override;
 };
 }  // namespace autd::gain::holo

@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/09/2021
+// Last Modified: 07/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -201,7 +201,7 @@ void Eigen3Backend::set_bcd_result(const std::shared_ptr<MatrixXc> mat, const st
   for (Eigen::Index i = idx + 1; i < m; i++) mat->data(i, idx) = vec->data(i, 0);
 }
 
-std::shared_ptr<MatrixXc> Eigen3Backend::back_prop(const std::shared_ptr<MatrixXc> transfer, const std::vector<complex>& amps) {
+std::shared_ptr<MatrixXc> Eigen3Backend::back_prop(const std::shared_ptr<MatrixXc> transfer, const std::shared_ptr<MatrixXc> amps) {
   const auto m = transfer->data.rows();
   const auto n = transfer->data.cols();
 
@@ -214,13 +214,13 @@ std::shared_ptr<MatrixXc> Eigen3Backend::back_prop(const std::shared_ptr<MatrixX
 
   auto b = allocate_matrix_c("b", n, m);
   for (Eigen::Index i = 0; i < m; i++) {
-    auto c = amps[i] / denominator(i);
+    auto c = amps->data(i) / denominator(i);
     for (Eigen::Index j = 0; j < n; j++) b->data(j, i) = c * std::conj(transfer->data(i, j));
   }
   return b;
 }
 
-std::shared_ptr<MatrixXc> Eigen3Backend::sigma_regularization(const std::shared_ptr<MatrixXc> transfer, const std::vector<complex>& amps,
+std::shared_ptr<MatrixXc> Eigen3Backend::sigma_regularization(const std::shared_ptr<MatrixXc> transfer, std::shared_ptr<MatrixXc> amps,
                                                               const double gamma) {
   const auto m = transfer->data.rows();
   const auto n = transfer->data.cols();
@@ -229,7 +229,7 @@ std::shared_ptr<MatrixXc> Eigen3Backend::sigma_regularization(const std::shared_
   sigma->fill(ZERO);
   for (Eigen::Index j = 0; j < n; j++) {
     double tmp = 0;
-    for (Eigen::Index i = 0; i < m; i++) tmp += std::abs(transfer->data(i, j) * amps[i]);
+    for (Eigen::Index i = 0; i < m; i++) tmp += std::abs(transfer->data(i, j) * amps->data(i));
     sigma->data(j, j) = complex(std::pow(std::sqrt(tmp / static_cast<double>(m)), gamma), 0.0);
   }
   return sigma;

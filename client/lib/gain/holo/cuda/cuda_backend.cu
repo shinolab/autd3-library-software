@@ -51,22 +51,15 @@ struct CuMatrix final : public Matrix<T> {
   const T* ptr() const override { return _d_vec.data().get(); }
   T* ptr() override { return _d_vec.data().get(); }
   [[nodiscard]] double max_element() const override;
-  void set(const Eigen::Index row, const Eigen::Index col, T v) override { data(row, col) = v; }
+  void set(const Eigen::Index row, const Eigen::Index col, T v) override {
+    cudaMemcpy((void*)(&_d_vec[row + col * _row]).get(), &v, sizeof(T), cudaMemcpyHostToDevice);
+  }
   void get_col(const Eigen::Index i, std::shared_ptr<Matrix<T>> dst) override {
-    const auto& col = data.col(i);
-    std::memcpy(dst->data.data(), col.data(), sizeof(T) * col.size());
+    cudaMemcpy(dst->ptr(), ptr() + i * _row, _row * sizeof(T), cudaMemcpyDeviceToDevice);
   }
   void fill(T v) override { thrust::fill(_d_vec.begin(), _d_vec.end(), v); }
-  std::vector<T> get_diagonal() override {
-    std::vector<T> v;
-    // todo
-    return v;
-  }
-  void set_diagonal(std::shared_ptr<Matrix<T>> v) override {  // todo
-  }
-  void set_diagonal(const T v) override {
-    // todo
-  }
+  void get_diagonal(std::shared_ptr<Matrix<T>> v) override { cu_get_diagonal(ptr(), v->ptr(), (uint32_t)(std::min)(data.rows(), data.cols())); }
+  void set_diagonal(std::shared_ptr<Matrix<T>> v) override { cu_set_diagonal(v->ptr(), ptr(), (uint32_t)(std::min)(data.rows(), data.cols())); }
   void copy_from(const std::vector<T>& v) override { cudaMemcpy(_d_vec.data().get(), v.data(), v.size() * sizeof(T), cudaMemcpyHostToDevice); }
   void copy_from(const T* v) override { cudaMemcpy(_d_vec.data().get(), v, _d_vec.size() * sizeof(T), cudaMemcpyHostToDevice); }
   void copy_to_host() override { cudaMemcpy(data.data(), _d_vec.data().get(), _row * _col * sizeof(T), cudaMemcpyDeviceToHost); }
@@ -142,22 +135,23 @@ void CUDABackend::pseudo_inverse_svd(const std::shared_ptr<MatrixXc> matrix, con
 
   const auto lda = static_cast<int>(nr);
   const auto ldu = static_cast<int>(nr);
-  const auto ldvt = static_cast<int>(nc);
+  const auto ldv = static_cast<int>(nc);
 
   const auto s_size = std::min(nr, nc);
   double* d_s = nullptr;
   cudaMalloc((void**)&d_s, sizeof(double) * s_size);
   const auto a = this->allocate_matrix_c("_pis_a", matrix->data.rows(), matrix->data.cols());
   const auto u = this->allocate_matrix_c("_pis_u", nr, nr);
-  const auto vt = this->allocate_matrix_c("_pis_vt", nc, nc);
+  const auto v = this->allocate_matrix_c("_pis_v", nc, nc);
   cudaMemcpy(a->ptr(), matrix->ptr(), matrix->data.rows() * matrix->data.cols() * sizeof(complex), cudaMemcpyDeviceToDevice);
 
   size_t workspace_in_bytes_on_device;
   size_t workspace_in_bytes_on_host;
 
-  cusolverDnXgesvd_bufferSize(_handle_s, NULL, 'A', 'A', static_cast<int>(nr), static_cast<int>(nc), cudaDataType::CUDA_C_64F, a->ptr(), lda,
-                              cudaDataType::CUDA_R_64F, d_s, cudaDataType::CUDA_C_64F, u->ptr(), ldu, cudaDataType::CUDA_C_64F, vt->ptr(), ldvt,
-                              cudaDataType::CUDA_C_64F, &workspace_in_bytes_on_device, &workspace_in_bytes_on_host);
+  cusolverDnXgesvdp_bufferSize(_handle_s, NULL, cusolverEigMode_t::CUSOLVER_EIG_MODE_VECTOR, 0, static_cast<int>(nr), static_cast<int>(nc),
+                               cudaDataType::CUDA_C_64F, a->ptr(), lda, cudaDataType::CUDA_R_64F, d_s, cudaDataType::CUDA_C_64F, u->ptr(), ldu,
+                               cudaDataType::CUDA_C_64F, v->ptr(), ldv, cudaDataType::CUDA_C_64F, &workspace_in_bytes_on_device,
+                               &workspace_in_bytes_on_host);
   void* workspace_buffer_on_device = nullptr;
   void* workspace_buffer_on_host = nullptr;
   cudaMalloc((void**)&workspace_buffer_on_device, workspace_in_bytes_on_device);
@@ -165,17 +159,18 @@ void CUDABackend::pseudo_inverse_svd(const std::shared_ptr<MatrixXc> matrix, con
 
   int* info;
   cudaMalloc((void**)&info, sizeof(int));
-  cusolverDnXgesvd(_handle_s, NULL, 'A', 'A', static_cast<int>(nr), static_cast<int>(nc), cudaDataType::CUDA_C_64F, a->ptr(), lda,
-                   cudaDataType::CUDA_R_64F, d_s, cudaDataType::CUDA_C_64F, u->ptr(), ldu, cudaDataType::CUDA_C_64F, vt->ptr(), ldvt,
-                   cudaDataType::CUDA_C_64F, workspace_buffer_on_device, workspace_in_bytes_on_device, workspace_buffer_on_host,
-                   workspace_in_bytes_on_host, info);
+  double h_err_sigma;
+  cusolverDnXgesvdp(_handle_s, NULL, cusolverEigMode_t::CUSOLVER_EIG_MODE_VECTOR, 0, static_cast<int>(nr), static_cast<int>(nc),
+                    cudaDataType::CUDA_C_64F, a->ptr(), lda, cudaDataType::CUDA_R_64F, d_s, cudaDataType::CUDA_C_64F, u->ptr(), ldu,
+                    cudaDataType::CUDA_C_64F, v->ptr(), ldv, cudaDataType::CUDA_C_64F, workspace_buffer_on_device, workspace_in_bytes_on_device,
+                    workspace_buffer_on_host, workspace_in_bytes_on_host, info, &h_err_sigma);
 
-  const auto singular_inv = this->allocate_matrix_c("_pis_si", s_size, s_size);
+  const auto singular_inv = this->allocate_matrix_c("_pis_si", nc, nr);
   calc_singular_inv(d_s, (uint32_t)s_size, alpha, (cuDoubleComplex*)singular_inv->ptr());
 
   const auto tmp = this->allocate_matrix_c("_pis_tmp", nc, nr);
   CUDABackend::matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::CONJ_TRANS, ONE, singular_inv, u, ZERO, tmp);
-  CUDABackend::matrix_mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, ONE, vt, tmp, ZERO, result);
+  CUDABackend::matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, v, tmp, ZERO, result);
   cudaFree(d_s);
   cudaFree(info);
   cudaFree(workspace_buffer_on_device);
@@ -362,43 +357,49 @@ std::shared_ptr<MatrixXc> CUDABackend::transfer_matrix(const double* foci, size_
   return g;
 }
 
-void CUDABackend::set_bcd_result(const std::shared_ptr<MatrixXc> mat, const std::shared_ptr<MatrixXc> vec, const size_t idx) {}
+void CUDABackend::set_bcd_result(const std::shared_ptr<MatrixXc> mat, const std::shared_ptr<MatrixXc> vec, const size_t idx) {
+  const uint32_t m = (uint32_t)vec->data.size();
+  cu_set_bcd_result((const cuDoubleComplex*)vec->ptr(), m, (uint32_t)idx, (cuDoubleComplex*)mat->ptr());
+}
 
-std::shared_ptr<MatrixXc> CUDABackend::back_prop(const std::shared_ptr<MatrixXc> transfer, const std::vector<complex>& amps) {
+std::shared_ptr<MatrixXc> CUDABackend::back_prop(const std::shared_ptr<MatrixXc> transfer, const std::shared_ptr<MatrixXc> amps) {
   const auto m = transfer->data.rows();
   const auto n = transfer->data.cols();
 
-  // Eigen::Matrix<double, -1, 1, Eigen::ColMajor> denominator(m);
-  // for (Eigen::Index i = 0; i < m; i++) {
-  //    auto tmp = 0.0;
-  //    for (Eigen::Index j = 0; j < n; j++) tmp += std::abs(transfer->data(i, j));
-  //    denominator(i) = tmp;
-  //}
+  auto denominator = allocate_matrix("denomi", m, 1);
+  auto buffer = allocate_matrix("_bp_buf", m, 16);
+  cu_col_sum_abs((const cuDoubleComplex*)transfer->ptr(), (uint32_t)m, (uint32_t)n, denominator->ptr(), buffer->ptr());
 
   auto b = allocate_matrix_c("b", n, m);
-  // for (Eigen::Index i = 0; i < m; i++) {
-  //    auto c = amps[i] / denominator(i);
-  //    for (Eigen::Index j = 0; j < n; j++) b->data(j, i) = c * std::conj(transfer->data(i, j));
-  //}
+  cu_make_back_prop((const cuDoubleComplex*)amps->ptr(), denominator->ptr(), (const cuDoubleComplex*)transfer->ptr(), (uint32_t)m, (uint32_t)n,
+                    (cuDoubleComplex*)b->ptr());
   return b;
 }
 
-std::shared_ptr<MatrixXc> CUDABackend::sigma_regularization(const std::shared_ptr<MatrixXc> transfer, const std::vector<complex>& amps,
+std::shared_ptr<MatrixXc> CUDABackend::sigma_regularization(const std::shared_ptr<MatrixXc> transfer, const std::shared_ptr<MatrixXc> amps,
                                                             const double gamma) {
   const auto m = transfer->data.rows();
   const auto n = transfer->data.cols();
 
+  auto tmp = allocate_matrix_c("_sr_tmp", n, 1);
+  auto buffer = allocate_matrix("_sr_buffer", 16, n);
+  cu_make_sigma_diagonal((const cuDoubleComplex*)transfer->ptr(), (uint32_t)m, (uint32_t)n, (const cuDoubleComplex*)amps->ptr(), gamma,
+                         (cuDoubleComplex*)tmp->ptr(), buffer->ptr());
+
   auto sigma = allocate_matrix_c("sigma", n, n);
   sigma->fill(ZERO);
-  // for (Eigen::Index j = 0; j < n; j++) {
-  //    double tmp = 0;
-  //    for (Eigen::Index i = 0; i < m; i++) tmp += std::abs(transfer->data(i, j) * amps[i]);
-  //    sigma->data(j, j) = complex(std::pow(std::sqrt(tmp / static_cast<double>(m)), gamma), 0.0);
-  //}
+  sigma->set_diagonal(tmp);
+
   return sigma;
 }
 
-void CUDABackend::col_sum_imag(const std::shared_ptr<MatrixXc> mat, const std::shared_ptr<MatrixX> dst) {}
+void CUDABackend::col_sum_imag(const std::shared_ptr<MatrixXc> mat, const std::shared_ptr<MatrixX> dst) {
+  const auto m = mat->data.rows();
+  const auto n = mat->data.cols();
+
+  auto buffer = allocate_matrix("_csi_buf", m, 16);
+  cu_col_sum_imag((const cuDoubleComplex*)mat->ptr(), (uint32_t)m, (uint32_t)n, dst->ptr(), buffer->ptr());
+}
 
 }  // namespace holo
 }  // namespace gain
