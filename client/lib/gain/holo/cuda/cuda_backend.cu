@@ -331,7 +331,15 @@ void CUDABackend::mat_cpy(const std::shared_ptr<MatrixXc> a, const std::shared_p
 }
 
 void CUDABackend::set_from_complex_drive(std::vector<core::DataArray>& data, const std::shared_ptr<MatrixXc> drive, const bool normalize,
-                                         const double max_coefficient) {}
+                                         const double max_coefficient) {
+  uint16_t* d_data = nullptr;
+  cudaMalloc((void**)&d_data, data.size() * core::NUM_TRANS_IN_UNIT * sizeof(uint16_t));
+
+  cu_set_from_complex_drive((const cuDoubleComplex*)drive->ptr(), (uint32_t)(data.size() * core::NUM_TRANS_IN_UNIT), normalize, max_coefficient,
+                            d_data);
+  for (size_t i = 0; i < data.size(); i++)
+    cudaMemcpy(data[i].data(), d_data + i * core::NUM_TRANS_IN_UNIT, core::NUM_TRANS_IN_UNIT * sizeof(uint16_t), cudaMemcpyDeviceToHost);
+}
 
 std::shared_ptr<MatrixXc> CUDABackend::transfer_matrix(const double* foci, size_t foci_num, const std::vector<const double*>& positions,
                                                        const std::vector<const double*>& directions, double wavelength, double attenuation) {
@@ -340,16 +348,17 @@ std::shared_ptr<MatrixXc> CUDABackend::transfer_matrix(const double* foci, size_
 
   auto g = allocate_matrix_c("g", m, n);
 
-  // const auto wave_number = 2.0 * M_PI / geometry->wavelength();
-  // const auto attenuation = geometry->attenuation_coefficient();
-  // for (Eigen::Index i = 0; i < m; i++) {
-  //    const auto& tp = foci[i];
-  //    for (Eigen::Index j = 0; j < n; j++) {
-  //        const auto& pos = geometry->position(j);
-  //        const auto& dir = geometry->direction(j / core::NUM_TRANS_IN_UNIT);
-  //        g->data(i, j) = utils::transfer(pos, dir, tp, wave_number, attenuation);
-  //    }
-  //}
+  auto d_foci = allocate_matrix("_foci", 3, m);
+  auto d_pos = allocate_matrix("_pos", 3, n);
+  auto d_dir = allocate_matrix("_dir", 3, directions.size());
+  cudaMemcpy(d_foci->ptr(), foci, m * 3 * sizeof(double), cudaMemcpyHostToDevice);
+  for (size_t i = 0; i < positions.size(); i++)
+    cudaMemcpy(d_pos->ptr() + core::NUM_TRANS_IN_UNIT * 3 * i, positions[i], core::NUM_TRANS_IN_UNIT * 3 * sizeof(double), cudaMemcpyHostToDevice);
+  for (size_t i = 0; i < directions.size(); i++) cudaMemcpy(d_dir->ptr() + 3 * i, directions[i], 3 * sizeof(double), cudaMemcpyHostToDevice);
+
+  cu_transfer_matrix((const double3*)d_foci->ptr(), (uint32_t)m, (const double3*)d_pos->ptr(), (const double3*)d_dir->ptr(), (uint32_t)n,
+                     2.0 * M_PI / wavelength, attenuation, (cuDoubleComplex*)g->ptr());
+
   return g;
 }
 
