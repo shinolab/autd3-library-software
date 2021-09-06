@@ -72,11 +72,11 @@ void BLASBackend::pseudo_inverse_svd(const std::shared_ptr<MatrixXc> matrix, con
   BLASBackend::matrix_mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, ONE, vt, tmp, ZERO, result);
 }
 
-std::shared_ptr<MatrixXc> BLASBackend::max_eigen_vector(const std::shared_ptr<MatrixXc> matrix) {
+void BLASBackend::max_eigen_vector(const std::shared_ptr<MatrixXc> matrix, const std::shared_ptr<MatrixXc> ev) {
   const auto size = matrix->data.cols();
   const auto eigenvalues = std::make_unique<double[]>(size);
   AUTD_HEEV(CblasColMajor, 'V', 'U', static_cast<int>(size), matrix->data.data(), static_cast<int>(size), eigenvalues.get());
-  return std::make_shared<EigenMatrix<complex>>(matrix->data.col(size - 1));
+  std::memcpy(ev->data.data(), matrix->data.data() + size * (size - 1), size * sizeof(complex));
 }
 
 void BLASBackend::matrix_add(const double alpha, const std::shared_ptr<MatrixX> a, const std::shared_ptr<MatrixX> b) {

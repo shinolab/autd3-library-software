@@ -46,9 +46,11 @@ struct EigenMatrix final : Matrix<T> {
   EigenMatrix(const EigenMatrix&& v) = delete;
   EigenMatrix& operator=(EigenMatrix&& obj) = delete;
 
+  [[nodiscard]] T at(size_t row, size_t col) const override { return data(row, col); };
   [[nodiscard]] const T* ptr() const override { return data.data(); }
   T* ptr() override { return data.data(); }
 
+  [[nodiscard]] double max_element() const override;
   void set(const Eigen::Index row, const Eigen::Index col, T v) override { data(row, col) = v; }
   void get_col(const Eigen::Index i, std::shared_ptr<Matrix<T>> dst) override {
     const auto& col = data.col(i);
@@ -70,6 +72,16 @@ struct EigenMatrix final : Matrix<T> {
   void copy_from(const T* v) override { std::memcpy(data.data(), v, sizeof(T) * data.size()); }
   void copy_to_host() override {}
 };
+
+template <>
+inline double EigenMatrix<double>::max_element() const {
+  return data.maxCoeff();
+}
+
+template <>
+inline double EigenMatrix<complex>::max_element() const {
+  return std::sqrt(data.cwiseAbs2().maxCoeff());
+}
 
 /**
  * \brief Linear algebra calculation backend using Eigen3.
@@ -108,7 +120,7 @@ class Eigen3Backend : public Backend {
   void real(std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixX> b) override;
   void arg(std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> c) override;
   void pseudo_inverse_svd(std::shared_ptr<MatrixXc> matrix, double alpha, std::shared_ptr<MatrixXc> result) override;
-  std::shared_ptr<MatrixXc> max_eigen_vector(std::shared_ptr<MatrixXc> matrix) override;
+  void max_eigen_vector(std::shared_ptr<MatrixXc> matrix, std::shared_ptr<MatrixXc> ev) override;
   void matrix_add(double alpha, std::shared_ptr<MatrixX> a, std::shared_ptr<MatrixX> b) override;
   void matrix_mul(TRANSPOSE trans_a, TRANSPOSE trans_b, complex alpha, std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> b, complex beta,
                   std::shared_ptr<MatrixXc> c) override;

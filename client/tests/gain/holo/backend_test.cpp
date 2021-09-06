@@ -218,7 +218,8 @@ TYPED_TEST(BackendTest, max_eigen_vector) {
 
   auto a = this->_backend->allocate_matrix_c("a", n, n);
   a->copy_from(a_vals.data());
-  const auto b = this->_backend->max_eigen_vector(a);
+  const auto b = this->_backend->allocate_matrix_c("b", n, 1);
+  this->_backend->max_eigen_vector(a, b);
 
   b->copy_to_host();
   const auto k = b->data(0) / u.col(n - 1)(0);
@@ -392,7 +393,7 @@ TYPED_TEST(BackendTest, max_coefficient_c) {
   auto v = this->_backend->allocate_matrix_c("v", n, 1);
   v->copy_from(vals_c);
 
-  ASSERT_EQ(this->_backend->max_coefficient(v), complex(vals[n - 1], 0));
+  ASSERT_NEAR(this->_backend->max_coefficient(v), vals[n - 1], 1e-6);
 }
 
 TYPED_TEST(BackendTest, concat_row) {

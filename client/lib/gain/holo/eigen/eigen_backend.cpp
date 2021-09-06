@@ -36,11 +36,12 @@ void Eigen3Backend::pseudo_inverse_svd(const std::shared_ptr<MatrixXc> matrix, c
 
   result->data.noalias() = svd.matrixV() * singular_values_inv.asDiagonal() * svd.matrixU().adjoint();
 }
-std::shared_ptr<MatrixXc> Eigen3Backend::max_eigen_vector(const std::shared_ptr<MatrixXc> matrix) {
+void Eigen3Backend::max_eigen_vector(const std::shared_ptr<MatrixXc> matrix, const std::shared_ptr<MatrixXc> ev) {
   const Eigen::ComplexEigenSolver<Eigen::Matrix<complex, -1, -1, Eigen::ColMajor>> ces(matrix->data);
   auto idx = 0;
   ces.eigenvalues().cwiseAbs2().maxCoeff(&idx);
-  return std::make_shared<EigenMatrix<complex>>(ces.eigenvectors().col(idx));
+  const Eigen::Matrix<complex, -1, 1, Eigen::ColMajor>& max_ev = ces.eigenvectors().col(idx);
+  std::memcpy(ev->data.data(), max_ev.data(), max_ev.size() * sizeof(complex));
 }
 
 void Eigen3Backend::matrix_add(const double alpha, const std::shared_ptr<MatrixX> a, const std::shared_ptr<MatrixX> b) {
