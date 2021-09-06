@@ -13,6 +13,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -46,7 +47,7 @@ struct EigenMatrix final : Matrix<T> {
   EigenMatrix(const EigenMatrix&& v) = delete;
   EigenMatrix& operator=(EigenMatrix&& obj) = delete;
 
-  [[nodiscard]] T at(size_t row, size_t col) const override { return data(row, col); };
+  [[nodiscard]] T at(size_t row, size_t col) const override { return data(row, col); }
   [[nodiscard]] const T* ptr() const override { return data.data(); }
   T* ptr() override { return data.data(); }
 
@@ -87,7 +88,7 @@ class Eigen3Backend : public Backend {
   static std::shared_ptr<T> allocate_matrix_impl(const std::string& name, const size_t row, const size_t col,
                                                  std::unordered_map<std::string, std::shared_ptr<T>>& cache) {
     if (const auto it = cache.find(name); it != cache.end()) {
-      if (it->second->data.rows() == row && it->second->data.cols() == col) return it->second;
+      if (static_cast<size_t>(it->second->data.rows()) == row && static_cast<size_t>(it->second->data.cols()) == col) return it->second;
       cache.erase(name);
     }
     std::shared_ptr<T> v = std::make_shared<E>(row, col);

@@ -289,9 +289,9 @@ void LM::calc(const core::GeometryPtr& geometry) {
   const auto g = _backend->allocate_matrix("g", n_param, 1);
   _backend->col_sum_imag(bhb_tth, g);
 
-  auto a_diag = _backend->allocate_matrix("a_diag", n_param, 1);
+  const auto a_diag = _backend->allocate_matrix("a_diag", n_param, 1);
   a->get_diagonal(a_diag);
-  double a_max = a_diag->max_element();
+  const double a_max = a_diag->max_element();
 
   auto mu = _tau * a_max;
 
@@ -304,7 +304,7 @@ void LM::calc(const core::GeometryPtr& geometry) {
   double fx = _backend->dot(t, tmp_vec_c).real();
 
   const auto identity = _backend->allocate_matrix("identity", n_param, n_param);
-  auto one = _backend->allocate_matrix("one", n_param, 1);
+  const auto one = _backend->allocate_matrix("one", n_param, 1);
   one->fill(1.0);
   identity->set_diagonal(one);
 
