@@ -9,6 +9,7 @@
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
+#include <cmath>
 #include <random>
 
 #if _MSC_VER
@@ -89,17 +90,44 @@ std::vector<complex> random_vector_complex(T n, const double minimum = -1.0, con
   return v;
 }
 
+TYPED_TEST(BackendTest, make_complex) {
+  auto r = this->backend->allocate_matrix("r", 2, 1);
+  auto i = this->backend->allocate_matrix("i", 2, 1);
+
+  r->copy_from({0, 1});
+  i->copy_from({2, 3});
+
+  auto a = this->backend->allocate_matrix_c("a", 2, 1);
+
+  this->backend->make_complex(r, i, a);
+
+  a->copy_to_host();
+  ASSERT_NEAR_COMPLEX(a->data(0, 0), complex(0, 2), 1e-6);
+  ASSERT_NEAR_COMPLEX(a->data(1, 0), complex(1, 3), 1e-6);
+}
+
+TYPED_TEST(BackendTest, exp) {
+  auto a = this->backend->allocate_matrix_c("a", 2, 1);
+  a->copy_from({complex(0, 1), complex(2, 3)});
+
+  this->backend->exp(a);
+
+  a->copy_to_host();
+  ASSERT_NEAR_COMPLEX(a->data(0, 0), std::exp(complex(0, 1)), 1e-6);
+  ASSERT_NEAR_COMPLEX(a->data(1, 0), std::exp(complex(2, 3)), 1e-6);
+}
+
 TYPED_TEST(BackendTest, scale) {
-  auto a = this->backend->allocate_vector_c("a", 4);
+  auto a = this->backend->allocate_matrix_c("a", 4, 1);
   a->copy_from({complex(0, 1), complex(2, 3), complex(4, 5), complex(6, 7)});
 
   this->backend->scale(a, complex(1, 1));
 
   a->copy_to_host();
-  ASSERT_NEAR_COMPLEX(a->data(0), std::complex(-1, 1), 1e-6);
-  ASSERT_NEAR_COMPLEX(a->data(1), std::complex(-1, 5), 1e-6);
-  ASSERT_NEAR_COMPLEX(a->data(2), std::complex(-1, 9), 1e-6);
-  ASSERT_NEAR_COMPLEX(a->data(3), std::complex(-1, 13), 1e-6);
+  ASSERT_NEAR_COMPLEX(a->data(0, 0), complex(-1, 1), 1e-6);
+  ASSERT_NEAR_COMPLEX(a->data(1, 0), complex(-1, 5), 1e-6);
+  ASSERT_NEAR_COMPLEX(a->data(2, 0), complex(-1, 9), 1e-6);
+  ASSERT_NEAR_COMPLEX(a->data(3, 0), complex(-1, 13), 1e-6);
 }
 
 TYPED_TEST(BackendTest, hadamard_product) {
@@ -112,26 +140,10 @@ TYPED_TEST(BackendTest, hadamard_product) {
   this->backend->hadamard_product(a, b, c);
 
   c->copy_to_host();
-  ASSERT_NEAR_COMPLEX(c->data(0, 0), std::complex(-9, 8), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(1, 0), std::complex(-13, 52), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(0, 1), std::complex(-17, 112), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(1, 1), std::complex(-21, 188), 1e-6);
-}
-
-TYPED_TEST(BackendTest, hadamard_product_v) {
-  auto a = this->backend->allocate_vector_c("a", 4);
-  auto b = this->backend->allocate_vector_c("b", 4);
-  a->copy_from({complex(0, 1), complex(2, 3), complex(4, 5), complex(6, 7)});
-  b->copy_from({complex(8, 9), complex(10, 11), complex(12, 13), complex(14, 15)});
-
-  auto c = this->backend->allocate_vector_c("c", 4);
-  this->backend->hadamard_product(a, b, c);
-
-  c->copy_to_host();
-  ASSERT_NEAR_COMPLEX(c->data(0), std::complex(-9, 8), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(1), std::complex(-13, 52), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(2), std::complex(-17, 112), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(3), std::complex(-21, 188), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(0, 0), complex(-9, 8), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(1, 0), complex(-13, 52), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(0, 1), complex(-17, 112), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(1, 1), complex(-21, 188), 1e-6);
 }
 
 TYPED_TEST(BackendTest, real) {
@@ -147,6 +159,19 @@ TYPED_TEST(BackendTest, real) {
   ASSERT_EQ(b->data(1, 0), 2.0);
   ASSERT_EQ(b->data(0, 1), 4.0);
   ASSERT_EQ(b->data(1, 1), 6.0);
+}
+
+TYPED_TEST(BackendTest, arg) {
+  auto a = this->backend->allocate_matrix_c("a", 2, 1);
+  a->copy_from({std::exp(complex(0, 1)) * 2.0, std::exp(complex(0, 2)) * 4.0});
+
+  auto b = this->backend->allocate_matrix_c("b", 2, 1);
+
+  this->backend->arg(a, b);
+
+  b->copy_to_host();
+  ASSERT_NEAR_COMPLEX(b->data(0, 0), std::exp(complex(0, 1)), 1e-6);
+  ASSERT_NEAR_COMPLEX(b->data(1, 0), std::exp(complex(0, 2)), 1e-6);
 }
 
 TYPED_TEST(BackendTest, pseudo_inverse_svd) {
@@ -234,31 +259,31 @@ TYPED_TEST(BackendTest, matrix_mul_c) {
 
   this->backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, One, a, b, Zero, c);
   c->copy_to_host();
-  ASSERT_NEAR_COMPLEX(c->data(0, 0), std::complex(-24, 70), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(0, 1), std::complex(-28, 82), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(1, 0), std::complex(-32, 238), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(1, 1), std::complex(-36, 282), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(0, 0), complex(-24, 70), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(0, 1), complex(-28, 82), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(1, 0), complex(-32, 238), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(1, 1), complex(-36, 282), 1e-6);
 
   this->backend->matrix_mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::TRANS, Zero, a, b, One, c);
   c->copy_to_host();
-  ASSERT_NEAR_COMPLEX(c->data(0, 0), std::complex(-24, 70), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(0, 1), std::complex(-28, 82), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(1, 0), std::complex(-32, 238), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(1, 1), std::complex(-36, 282), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(0, 0), complex(-24, 70), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(0, 1), complex(-28, 82), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(1, 0), complex(-32, 238), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(1, 1), complex(-36, 282), 1e-6);
 
   this->backend->matrix_mul(TRANSPOSE::TRANS, TRANSPOSE::CONJ_NO_TRANS, One, a, b, Zero, c);
   c->copy_to_host();
-  ASSERT_NEAR_COMPLEX(c->data(0, 0), std::complex(122, 16), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(0, 1), std::complex(142, 20), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(1, 0), std::complex(206, 12), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(1, 1), std::complex(242, 16), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(0, 0), complex(122, 16), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(0, 1), complex(142, 20), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(1, 0), complex(206, 12), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(1, 1), complex(242, 16), 1e-6);
 
   this->backend->matrix_mul(TRANSPOSE::CONJ_NO_TRANS, TRANSPOSE::CONJ_TRANS, One, a, b, One, c);
   c->copy_to_host();
-  ASSERT_NEAR_COMPLEX(c->data(0, 0), std::complex(100, -44), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(0, 1), std::complex(112, -64), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(1, 0), std::complex(176, -200), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(1, 1), std::complex(204, -284), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(0, 0), complex(100, -44), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(0, 1), complex(112, -64), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(1, 0), complex(176, -200), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(1, 1), complex(204, -284), 1e-6);
 }
 
 TYPED_TEST(BackendTest, matrix_mul) {
@@ -284,71 +309,6 @@ TYPED_TEST(BackendTest, matrix_mul) {
   ASSERT_NEAR(c->data(1, 1), 59.0, 1e-6);
 }
 
-TYPED_TEST(BackendTest, matrix_vector_mul_c) {
-  auto a = this->backend->allocate_matrix_c("a", 2, 2);
-  auto b = this->backend->allocate_vector_c("b", 2);
-  a->copy_from({complex(0, 1), complex(4, 5), complex(2, 3), complex(6, 7)});
-  b->copy_from({complex(8, 9), complex(10, 11)});
-
-  auto c = this->backend->allocate_vector_c("c", 2);
-
-  this->backend->matrix_vector_mul(TRANSPOSE::NO_TRANS, One, a, b, Zero, c);
-  c->copy_to_host();
-  ASSERT_NEAR_COMPLEX(c->data(0), std::complex(-22, 60), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(1), std::complex(-30, 212), 1e-6);
-
-  this->backend->matrix_vector_mul(TRANSPOSE::TRANS, Zero, a, b, complex(2, 0), c);
-  c->copy_to_host();
-  ASSERT_NEAR_COMPLEX(c->data(0), std::complex(-44, 120), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(1), std::complex(-60, 424), 1e-6);
-
-  this->backend->matrix_vector_mul(TRANSPOSE::CONJ_TRANS, One, a, b, One, c);
-  c->copy_to_host();
-  ASSERT_NEAR_COMPLEX(c->data(0), std::complex(60, 106), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(1), std::complex(120, 414), 1e-6);
-
-  this->backend->matrix_vector_mul(TRANSPOSE::CONJ_NO_TRANS, complex(0, 1), a, b, complex(0, 1), c);
-  c->copy_to_host();
-  ASSERT_NEAR_COMPLEX(c->data(0), std::complex(-90, 122), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(1), std::complex(-406, 334), 1e-6);
-}
-
-TYPED_TEST(BackendTest, matrix_vector_mul) {
-  auto a = this->backend->allocate_matrix("a", 2, 2);
-  auto b = this->backend->allocate_vector("b", 2);
-  a->copy_from({0, 2, 1, 3});
-  b->copy_from({4, 5});
-
-  auto c = this->backend->allocate_vector("c", 2);
-
-  this->backend->matrix_vector_mul(TRANSPOSE::NO_TRANS, 1, a, b, 0, c);
-  c->copy_to_host();
-  ASSERT_NEAR(c->data(0), 5, 1e-6);
-  ASSERT_NEAR(c->data(1), 23, 1e-6);
-
-  this->backend->matrix_vector_mul(TRANSPOSE::TRANS, 1, a, b, 1, c);
-  c->copy_to_host();
-  ASSERT_NEAR(c->data(0), 15, 1e-6);
-  ASSERT_NEAR(c->data(1), 42, 1e-6);
-}
-
-TYPED_TEST(BackendTest, vector_add) {
-  auto a = this->backend->allocate_vector("a", 2);
-  auto b = this->backend->allocate_vector("b", 2);
-  a->copy_from({0, 1});
-  b->copy_from({1, 0});
-
-  this->backend->vector_add(1, a, b);
-  b->copy_to_host();
-  ASSERT_NEAR(b->data(0), 1, 1e-6);
-  ASSERT_NEAR(b->data(1), 1, 1e-6);
-
-  this->backend->vector_add(2, a, b);
-  b->copy_to_host();
-  ASSERT_NEAR(b->data(0), 1, 1e-6);
-  ASSERT_NEAR(b->data(1), 3, 1e-6);
-}
-
 TYPED_TEST(BackendTest, solve_ch) {
   constexpr Eigen::Index n = 5;
 
@@ -359,11 +319,11 @@ TYPED_TEST(BackendTest, solve_ch) {
   this->backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::CONJ_TRANS, One, tmp, tmp, Zero, a);
   auto x_expected = random_vector_complex(n);
 
-  auto x = this->backend->allocate_vector_c("x", n);
+  auto x = this->backend->allocate_matrix_c("x", n, 1);
   x->copy_from(x_expected);
 
-  auto b = this->backend->allocate_vector_c("b", n);
-  this->backend->matrix_vector_mul(TRANSPOSE::NO_TRANS, One, a, x, Zero, b);
+  auto b = this->backend->allocate_matrix_c("b", n, 1);
+  this->backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, One, a, x, Zero, b);
 
   this->backend->solve_ch(a, b);
 
@@ -381,13 +341,13 @@ TYPED_TEST(BackendTest, solve_g) {
   this->backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::TRANS, 1.0, tmp, tmp, 0.0, a);
   auto x_expected = random_vector(n);
 
-  auto x = this->backend->allocate_vector("x", n);
+  auto x = this->backend->allocate_matrix("x", n, 1);
   x->copy_from(x_expected);
 
-  auto b = this->backend->allocate_vector("b", n);
-  this->backend->matrix_vector_mul(TRANSPOSE::NO_TRANS, 1.0, a, x, 0.0, b);
+  auto b = this->backend->allocate_matrix("b", n, 1);
+  this->backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, 1.0, a, x, 0.0, b);
 
-  auto xs = this->backend->allocate_vector("xs", n);
+  auto xs = this->backend->allocate_matrix("xs", n, 1);
   this->backend->solve_g(a, b, xs);
 
   xs->copy_to_host();
@@ -402,9 +362,9 @@ TYPED_TEST(BackendTest, dot) {
   auto expected = 0.0;
   for (Eigen::Index i = 0; i < n; i++) expected += a_vals[i] * b_vals[i];
 
-  auto a = this->backend->allocate_vector("a", n);
+  auto a = this->backend->allocate_matrix("a", n, 1);
   a->copy_from(a_vals);
-  auto b = this->backend->allocate_vector("b", n);
+  auto b = this->backend->allocate_matrix("b", n, 1);
   b->copy_from(b_vals);
 
   ASSERT_NEAR(this->backend->dot(a, b), expected, 1e-6);
@@ -416,11 +376,11 @@ TYPED_TEST(BackendTest, dot_c) {
   auto b_vals = random_vector_complex(n, 1.0, 10.0);
 
   auto expected = complex(0, 0);
-  for (Eigen::Index i = 0; i < n; i++) expected += a_vals[i] * b_vals[i];
+  for (Eigen::Index i = 0; i < n; i++) expected += std::conj(a_vals[i]) * b_vals[i];
 
-  auto a = this->backend->allocate_vector_c("a", n);
+  auto a = this->backend->allocate_matrix_c("a", n, 1);
   a->copy_from(a_vals);
-  auto b = this->backend->allocate_vector_c("b", n);
+  auto b = this->backend->allocate_matrix_c("b", n, 1);
   b->copy_from(b_vals);
 
   ASSERT_NEAR_COMPLEX(this->backend->dot(a, b), expected, 1e-6);
@@ -430,7 +390,7 @@ TYPED_TEST(BackendTest, max_coefficient) {
   constexpr Eigen::Index n = 100;
   auto vals = random_vector(n, -20.0, 2.0);
   std::sort(vals.begin(), vals.end());
-  auto v = this->backend->allocate_vector("v", n);
+  auto v = this->backend->allocate_matrix("v", n, 1);
   v->copy_from(vals);
 
   ASSERT_EQ(this->backend->max_coefficient(v), complex(vals[n - 1], 0));
@@ -442,7 +402,7 @@ TYPED_TEST(BackendTest, max_coefficient_c) {
   std::sort(vals.begin(), vals.end());
   std::vector<complex> vals_c;
   for (const auto v : vals) vals_c.emplace_back(complex(v, 0.0));
-  auto v = this->backend->allocate_vector_c("v", n);
+  auto v = this->backend->allocate_matrix_c("v", n, 1);
   v->copy_from(vals_c);
 
   ASSERT_EQ(this->backend->max_coefficient(v), complex(vals[n - 1], 0));
@@ -457,10 +417,10 @@ TYPED_TEST(BackendTest, concat_row) {
   auto c = this->backend->concat_row(a, b);
 
   c->copy_to_host();
-  ASSERT_NEAR_COMPLEX(c->data(0, 0), std::complex(0, 1), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(1, 0), std::complex(8, 9), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(0, 1), std::complex(2, 3), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(1, 1), std::complex(10, 11), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(0, 0), complex(0, 1), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(1, 0), complex(8, 9), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(0, 1), complex(2, 3), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(1, 1), complex(10, 11), 1e-6);
 }
 
 TYPED_TEST(BackendTest, concat_col) {
@@ -472,10 +432,10 @@ TYPED_TEST(BackendTest, concat_col) {
   auto c = this->backend->concat_col(a, b);
 
   c->copy_to_host();
-  ASSERT_NEAR_COMPLEX(c->data(0, 0), std::complex(0, 1), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(1, 0), std::complex(8, 9), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(0, 1), std::complex(2, 3), 1e-6);
-  ASSERT_NEAR_COMPLEX(c->data(1, 1), std::complex(10, 11), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(0, 0), complex(0, 1), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(1, 0), complex(8, 9), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(0, 1), complex(2, 3), 1e-6);
+  ASSERT_NEAR_COMPLEX(c->data(1, 1), complex(10, 11), 1e-6);
 }
 
 TYPED_TEST(BackendTest, mat_cpy) {
@@ -487,34 +447,21 @@ TYPED_TEST(BackendTest, mat_cpy) {
   this->backend->mat_cpy(a, b);
 
   b->copy_to_host();
-  ASSERT_NEAR(b->data(0, 0), 0.0, 1e-6);
-  ASSERT_NEAR(b->data(1, 0), 1.0, 1e-6);
-  ASSERT_NEAR(b->data(0, 1), 2.0, 1e-6);
-  ASSERT_NEAR(b->data(1, 1), 3.0, 1e-6);
+  ASSERT_EQ(b->data(0, 0), 0.0);
+  ASSERT_EQ(b->data(1, 0), 1.0);
+  ASSERT_EQ(b->data(0, 1), 2.0);
+  ASSERT_EQ(b->data(1, 1), 3.0);
 }
 
-TYPED_TEST(BackendTest, vec_cpy) {
-  auto a = this->backend->allocate_vector("a", 2);
-  a->copy_from({0.0, 1.0});
+TYPED_TEST(BackendTest, mat_cpy_c) {
+  auto a = this->backend->allocate_matrix_c("a", 2, 1);
+  a->copy_from({complex(0, 1), complex(8, 9)});
 
-  auto b = this->backend->allocate_vector("b", 2);
+  auto b = this->backend->allocate_matrix_c("b", 2, 1);
 
-  this->backend->vec_cpy(a, b);
-
-  b->copy_to_host();
-  ASSERT_NEAR(b->data(0), 0.0, 1e-6);
-  ASSERT_NEAR(b->data(1), 1.0, 1e-6);
-}
-
-TYPED_TEST(BackendTest, vec_cpy_c) {
-  auto a = this->backend->allocate_vector_c("a", 2);
-  a->copy_from({complex(0, 1), complex(2, 3)});
-
-  auto b = this->backend->allocate_vector_c("b", 2);
-
-  this->backend->vec_cpy(a, b);
+  this->backend->mat_cpy(a, b);
 
   b->copy_to_host();
-  ASSERT_NEAR_COMPLEX(b->data(0), std::complex(0, 1), 1e-6);
-  ASSERT_NEAR_COMPLEX(b->data(1), std::complex(2, 3), 1e-6);
+  ASSERT_EQ(b->data(0, 0), complex(0, 1));
+  ASSERT_EQ(b->data(1, 0), complex(8, 9));
 }
