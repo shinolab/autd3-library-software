@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/09/2021
+// Last Modified: 07/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -60,9 +60,8 @@ struct Matrix {
   virtual void get_col(Eigen::Index i, std::shared_ptr<Matrix<T>> dst) = 0;
   [[nodiscard]] virtual double max_element() const = 0;
   virtual void fill(T v) = 0;
-  virtual std::vector<T> get_diagonal() = 0;
+  virtual void get_diagonal(std::shared_ptr<Matrix<T>> v) = 0;
   virtual void set_diagonal(std::shared_ptr<Matrix<T>> v) = 0;
-  virtual void set_diagonal(T v) = 0;
   virtual void copy_from(const std::vector<T>& v) = 0;
   virtual void copy_from(const T* v) = 0;
   virtual void copy_to_host() = 0;
@@ -121,8 +120,8 @@ class Backend {
 
   // FIXME: following functions are too specialized
   virtual void set_bcd_result(std::shared_ptr<MatrixXc> mat, std::shared_ptr<MatrixXc> vec, size_t index) = 0;
-  virtual std::shared_ptr<MatrixXc> back_prop(std::shared_ptr<MatrixXc> transfer, const std::vector<complex>& amps) = 0;
-  virtual std::shared_ptr<MatrixXc> sigma_regularization(std::shared_ptr<MatrixXc> transfer, const std::vector<complex>& amps, double gamma) = 0;
+  virtual std::shared_ptr<MatrixXc> back_prop(std::shared_ptr<MatrixXc> transfer, std::shared_ptr<MatrixXc> amps) = 0;
+  virtual std::shared_ptr<MatrixXc> sigma_regularization(std::shared_ptr<MatrixXc> transfer, std::shared_ptr<MatrixXc> amps, double gamma) = 0;
   virtual void col_sum_imag(std::shared_ptr<MatrixXc> mat, std::shared_ptr<MatrixX> dst) = 0;
 };
 }  // namespace holo

@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/09/2021
+// Last Modified: 07/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -20,7 +20,6 @@
 #include "autd3/gain/holo.hpp"
 
 using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SPACING_MM;
-using autd::gain::holo::Eigen3Backend;
 
 inline autd::GainPtr select_opt(const std::vector<autd::Vector3>& foci, const std::vector<double>& amps) {
   std::cout << "Select Optimization Method (default is SDP)" << std::endl;
@@ -33,7 +32,7 @@ inline autd::GainPtr select_opt(const std::vector<autd::Vector3>& foci, const st
   std::stringstream s(in);
   if (const auto empty = in == "\n"; !(s >> idx) || idx >= opts.size() || empty) idx = 0;
 
-  const auto backend = Eigen3Backend::create();
+  const auto backend = autd::gain::holo::Eigen3Backend::create();
   switch (idx) {
     case 0:
       return autd::gain::holo::SDP::create(backend, foci, amps);
