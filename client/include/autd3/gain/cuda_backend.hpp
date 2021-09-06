@@ -11,7 +11,15 @@
 
 #pragma once
 
+#if _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 26439 26478 26812 26495)
+#endif
 #include <cublas_v2.h>
+#include <cusolverDn.h>
+#if _MSC_VER
+#pragma warning(pop)
+#endif
 
 #include <memory>
 #include <unordered_map>
@@ -47,7 +55,7 @@ class CUDABackend final : public Backend {
   void real(std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixX> b) override;
   void arg(std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> c) override;
   void pseudo_inverse_svd(std::shared_ptr<MatrixXc> matrix, double alpha, std::shared_ptr<MatrixXc> result) override;
-  std::shared_ptr<MatrixXc> max_eigen_vector(std::shared_ptr<MatrixXc> matrix) override;
+  void max_eigen_vector(std::shared_ptr<MatrixXc> matrix, std::shared_ptr<MatrixXc> ev) override;
   void matrix_add(double alpha, std::shared_ptr<MatrixX> a, std::shared_ptr<MatrixX> b) override;
   void matrix_mul(TRANSPOSE trans_a, TRANSPOSE trans_b, complex alpha, std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> b, complex beta,
                   std::shared_ptr<MatrixXc> c) override;
@@ -75,6 +83,7 @@ class CUDABackend final : public Backend {
 
  private:
   cublasHandle_t _handle;
+  cusolverDnHandle_t _handle_s;
 };
 }  // namespace holo
 }  // namespace gain

@@ -84,7 +84,8 @@ void SDP::calc(const core::GeometryPtr& geometry) {
     }
   }
 
-  const auto u = _backend->max_eigen_vector(x_mat);
+  const auto u = _backend->allocate_matrix_c("u", m, 1);
+  _backend->max_eigen_vector(x_mat, u);
 
   const auto ut = _backend->allocate_matrix_c("ut", m, 1);
   _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, p, u, ZERO, ut);
@@ -110,7 +111,8 @@ void EVD::calc(const core::GeometryPtr& geometry) {
 
   const auto r = _backend->allocate_matrix_c("r", m, m);
   _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, g, x, ZERO, r);
-  const auto max_ev = _backend->max_eigen_vector(r);
+  const auto max_ev = _backend->allocate_matrix_c("max_ev", m, 1);
+  _backend->max_eigen_vector(r, max_ev);
 
   const auto sigma = _backend->sigma_regularization(g, _amps, _gamma);
 

@@ -53,10 +53,12 @@ struct Matrix {
   Matrix(const Matrix&& v) = delete;
   Matrix& operator=(Matrix&& obj) = delete;
 
+  [[nodiscard]] virtual T at(size_t row, size_t col) const = 0;
   [[nodiscard]] virtual const T* ptr() const = 0;
   virtual T* ptr() = 0;
   virtual void set(Eigen::Index row, Eigen::Index col, T v) = 0;
   virtual void get_col(Eigen::Index i, std::shared_ptr<Matrix<T>> dst) = 0;
+  [[nodiscard]] virtual double max_element() const = 0;
   virtual void fill(T v) = 0;
   virtual std::vector<T> get_diagonal() = 0;
   virtual void set_diagonal(std::shared_ptr<Matrix<T>> v) = 0;
@@ -96,7 +98,7 @@ class Backend {
   virtual void real(std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixX> b) = 0;
   virtual void arg(std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> c) = 0;
   virtual void pseudo_inverse_svd(std::shared_ptr<MatrixXc> matrix, double alpha, std::shared_ptr<MatrixXc> result) = 0;
-  virtual std::shared_ptr<MatrixXc> max_eigen_vector(std::shared_ptr<MatrixXc> matrix) = 0;
+  virtual void max_eigen_vector(std::shared_ptr<MatrixXc> matrix, std::shared_ptr<MatrixXc> ev) = 0;
   virtual void matrix_add(double alpha, std::shared_ptr<MatrixX> a, std::shared_ptr<MatrixX> b) = 0;
   virtual void matrix_mul(TRANSPOSE trans_a, TRANSPOSE trans_b, complex alpha, std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> b, complex beta,
                           std::shared_ptr<MatrixXc> c) = 0;

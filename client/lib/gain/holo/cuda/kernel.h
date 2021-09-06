@@ -11,8 +11,20 @@
 
 #pragma once
 
+#include <cuComplex.h>
+
+#include <cstdint>
+
 namespace autd {
 namespace gain {
-namespace holo {}  // namespace holo
+namespace holo {
+void cu_make_complex(double* r, double* i, uint32_t row, uint32_t col, cuDoubleComplex* c);
+void cu_exp(uint32_t row, uint32_t col, cuDoubleComplex* c);
+void cu_hadamard_product(const cuDoubleComplex* a, const cuDoubleComplex* b, uint32_t row, uint32_t col, cuDoubleComplex* c);
+void cu_real(const cuDoubleComplex* a, uint32_t row, uint32_t col, double* b);
+void cu_arg(const cuDoubleComplex* a, uint32_t row, uint32_t col, cuDoubleComplex* b);
+void calc_singular_inv(double* d_s, uint32_t s_size, double alpha, cuDoubleComplex* p_singular_inv);
+
+}  // namespace holo
 }  // namespace gain
 }  // namespace autd
