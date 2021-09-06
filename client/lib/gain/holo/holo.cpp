@@ -28,38 +28,38 @@ void SDP::calc(const core::GeometryPtr& geometry) {
 
   const auto amps = _backend->allocate_matrix_c("amps", m, 1);
   amps->copy_from(_amps);
-  auto p = _backend->allocate_matrix_c("P", m, m);
+  const auto p = _backend->allocate_matrix_c("P", m, m);
   p->fill(0.0);
   p->set_diagonal(amps);
 
-  auto b = _backend->transfer_matrix(this->_foci, geometry);
-  auto pseudo_inv_b = _backend->allocate_matrix_c("pinvb", n, m);
+  const auto b = _backend->transfer_matrix(this->_foci, geometry);
+  const auto pseudo_inv_b = _backend->allocate_matrix_c("pinvb", n, m);
   _backend->pseudo_inverse_svd(b, _alpha, pseudo_inv_b);
 
-  auto mm = _backend->allocate_matrix_c("mm", m, m);
-  mm->set_diagonal(One);
-  _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, One, b, pseudo_inv_b, -One, mm);
-  auto tmp = _backend->allocate_matrix_c("tmp", m, m);
-  _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, One, p, mm, Zero, tmp);
-  _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, One, tmp, p, Zero, mm);
+  const auto mm = _backend->allocate_matrix_c("mm", m, m);
+  mm->set_diagonal(ONE);
+  _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, b, pseudo_inv_b, -ONE, mm);
+  const auto tmp = _backend->allocate_matrix_c("tmp", m, m);
+  _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, p, mm, ZERO, tmp);
+  _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, tmp, p, ZERO, mm);
 
-  auto x_mat = _backend->allocate_matrix_c("x_mat", m, m);
-  x_mat->set_diagonal(One);
+  const auto x_mat = _backend->allocate_matrix_c("x_mat", m, m);
+  x_mat->set_diagonal(ONE);
 
   std::random_device rnd;
   std::mt19937 mt(rnd());
-  std::uniform_real_distribution<double> range(0, 1);
-  auto zero = _backend->allocate_matrix_c("zero", m, 1);
-  zero->fill(Zero);
-  auto x = _backend->allocate_matrix_c("x", m, 1);
-  auto mmc = _backend->allocate_matrix_c("mmc", m, 1);
+  const std::uniform_real_distribution<double> range(0, 1);
+  const auto zero = _backend->allocate_matrix_c("zero", m, 1);
+  zero->fill(ZERO);
+  const auto x = _backend->allocate_matrix_c("x", m, 1);
+  const auto mmc = _backend->allocate_matrix_c("mmc", m, 1);
   for (size_t i = 0; i < _repeat; i++) {
     const auto ii = static_cast<Eigen::Index>(static_cast<double>(m) * range(mt));
 
     mm->get_col(ii, mmc);
-    mmc->set(ii, 0, Zero);
+    mmc->set(ii, 0, ZERO);
 
-    _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, One, x_mat, mmc, Zero, x);
+    _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, x_mat, mmc, ZERO, x);
     if (complex gamma = this->_backend->dot(x, mmc); gamma.real() > 0) {
       _backend->scale(x, complex(-std::sqrt(_lambda / gamma.real()), 0.0));
       _backend->set_bcd_result(x_mat, x, ii);
@@ -70,11 +70,11 @@ void SDP::calc(const core::GeometryPtr& geometry) {
 
   const auto u = _backend->max_eigen_vector(x_mat);
 
-  auto ut = _backend->allocate_matrix_c("ut", m, 1);
-  _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, One, p, u, Zero, ut);
+  const auto ut = _backend->allocate_matrix_c("ut", m, 1);
+  _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, p, u, ZERO, ut);
 
-  auto q = _backend->allocate_matrix_c("q", n, 1);
-  _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, One, pseudo_inv_b, ut, Zero, q);
+  const auto q = _backend->allocate_matrix_c("q", n, 1);
+  _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, pseudo_inv_b, ut, ZERO, q);
 
   const auto max_coefficient = _backend->max_coefficient(q);
   _backend->set_from_complex_drive(this->_data, q, _normalize, max_coefficient);
@@ -87,31 +87,31 @@ void EVD::calc(const core::GeometryPtr& geometry) {
   const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
 
   const auto g = _backend->transfer_matrix(this->_foci, geometry);
-  auto amps = _backend->allocate_matrix_c("amps", m, 1);
+  const auto amps = _backend->allocate_matrix_c("amps", m, 1);
   amps->copy_from(_amps);
 
-  auto x = _backend->back_prop(g, this->_amps);
+  const auto x = _backend->back_prop(g, this->_amps);
 
-  auto r = _backend->allocate_matrix_c("r", m, m);
-  _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, One, g, x, Zero, r);
-  auto max_ev = this->_backend->max_eigen_vector(r);
+  const auto r = _backend->allocate_matrix_c("r", m, m);
+  _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, g, x, ZERO, r);
+  const auto max_ev = this->_backend->max_eigen_vector(r);
 
-  auto sigma = _backend->sigma_regularization(g, this->_amps, _gamma);
+  const auto sigma = _backend->sigma_regularization(g, this->_amps, _gamma);
 
   const auto gr = this->_backend->concat_row(g, sigma);
 
-  auto fm = _backend->allocate_matrix_c("fm", m, 1);
+  const auto fm = _backend->allocate_matrix_c("fm", m, 1);
   _backend->arg(max_ev, fm);
   _backend->hadamard_product(amps, fm, fm);
-  auto fn = _backend->allocate_matrix_c("fn", n, 1);
+  const auto fn = _backend->allocate_matrix_c("fn", n, 1);
   fn->fill(0.0);
-  auto f = _backend->concat_row(fm, fn);
+  const auto f = _backend->concat_row(fm, fn);
 
-  auto gtg = _backend->allocate_matrix_c("gtg", n, n);
-  this->_backend->matrix_mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, One, gr, gr, Zero, gtg);
+  const auto gtg = _backend->allocate_matrix_c("gtg", n, n);
+  this->_backend->matrix_mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, ONE, gr, gr, ZERO, gtg);
 
-  auto gtf = _backend->allocate_matrix_c("gtf", n, 1);
-  this->_backend->matrix_mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, One, gr, f, Zero, gtf);
+  const auto gtf = _backend->allocate_matrix_c("gtf", n, 1);
+  this->_backend->matrix_mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, ONE, gr, f, ZERO, gtf);
 
   this->_backend->solve_ch(gtg, gtf);
 
@@ -129,9 +129,9 @@ void Naive::calc(const core::GeometryPtr& geometry) {
   const auto p = _backend->allocate_matrix_c("amps", m, 1);
   p->copy_from(_amps);
 
-  auto q = _backend->allocate_matrix_c("q", n, 1);
+  const auto q = _backend->allocate_matrix_c("q", n, 1);
 
-  _backend->matrix_mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, One, g, p, Zero, q);
+  _backend->matrix_mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, ONE, g, p, ZERO, q);
 
   _backend->set_from_complex_drive(this->_data, q, true, 1.0);
 
@@ -146,20 +146,20 @@ void GS::calc(const core::GeometryPtr& geometry) {
   const auto amps = _backend->allocate_matrix_c("amps", m, 1);
   amps->copy_from(_amps);
 
-  auto q0 = _backend->allocate_matrix_c("q0", n, 1);
-  q0->fill(One);
+  const auto q0 = _backend->allocate_matrix_c("q0", n, 1);
+  q0->fill(ONE);
 
-  auto q = _backend->allocate_matrix_c("q", n, 1);
+  const auto q = _backend->allocate_matrix_c("q", n, 1);
   this->_backend->mat_cpy(q0, q);
 
-  auto gamma = _backend->allocate_matrix_c("gamma", m, 1);
-  auto p = _backend->allocate_matrix_c("p", m, 1);
-  auto xi = _backend->allocate_matrix_c("xi", n, 1);
+  const auto gamma = _backend->allocate_matrix_c("gamma", m, 1);
+  const auto p = _backend->allocate_matrix_c("p", m, 1);
+  const auto xi = _backend->allocate_matrix_c("xi", n, 1);
   for (size_t k = 0; k < _repeat; k++) {
-    _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, One, g, q, Zero, gamma);
+    _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, g, q, ZERO, gamma);
     _backend->arg(gamma, gamma);
     _backend->hadamard_product(gamma, amps, p);
-    this->_backend->matrix_mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, One, g, p, Zero, xi);
+    this->_backend->matrix_mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, ONE, g, p, ZERO, xi);
     _backend->arg(xi, xi);
     _backend->hadamard_product(xi, q0, q);
   }
@@ -177,8 +177,8 @@ void GSPAT::calc(const core::GeometryPtr& geometry) {
 
   const auto b = _backend->back_prop(g, this->_amps);
 
-  auto r = _backend->allocate_matrix_c("r", m, m);
-  _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, One, g, b, Zero, r);
+  const auto r = _backend->allocate_matrix_c("r", m, m);
+  _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, g, b, ZERO, r);
 
   const auto amps = _backend->allocate_matrix_c("amps", m, 1);
   amps->copy_from(_amps);
@@ -186,12 +186,12 @@ void GSPAT::calc(const core::GeometryPtr& geometry) {
   const auto p = _backend->allocate_matrix_c("p", m, 1);
   p->copy_from(_amps);
 
-  auto gamma = _backend->allocate_matrix_c("gamma", m, 1);
-  _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, One, r, p, Zero, gamma);
+  const auto gamma = _backend->allocate_matrix_c("gamma", m, 1);
+  _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, r, p, ZERO, gamma);
   for (size_t k = 0; k < _repeat; k++) {
     _backend->arg(gamma, gamma);
     _backend->hadamard_product(gamma, amps, p);
-    _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, One, r, p, Zero, gamma);
+    _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, r, p, ZERO, gamma);
   }
 
   gamma->copy_to_host();
@@ -199,8 +199,8 @@ void GSPAT::calc(const core::GeometryPtr& geometry) {
     p->data(i, 0) =
         gamma->data(i, 0) / (std::abs(gamma->data(i, 0)) * std::abs(gamma->data(i, 0))) * std::abs(this->_amps[i]) * std::abs(this->_amps[i]);
 
-  auto q = _backend->allocate_matrix_c("q", n, 1);
-  _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, One, b, p, Zero, q);
+  const auto q = _backend->allocate_matrix_c("q", n, 1);
+  _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, b, p, ZERO, q);
 
   _backend->set_from_complex_drive(this->_data, q, true, 1.0);
 
@@ -208,12 +208,13 @@ void GSPAT::calc(const core::GeometryPtr& geometry) {
 }
 
 void LM::calc(const core::GeometryPtr& geometry) {
-  auto make_bhb = [](BackendPtr backend, const std::vector<core::Vector3>& foci, std::shared_ptr<MatrixXc> amps, const core::GeometryPtr& geo) {
+  auto make_bhb = [](const BackendPtr& backend, const std::vector<core::Vector3>& foci, const std::shared_ptr<MatrixXc>& amps,
+                     const core::GeometryPtr& geo) {
     const auto m = static_cast<Eigen::Index>(foci.size());
     const auto n = static_cast<Eigen::Index>(geo->num_transducers());
     const Eigen::Index n_param = n + m;
 
-    auto p = backend->allocate_matrix_c("p", m, m);
+    const auto p = backend->allocate_matrix_c("p", m, m);
     p->fill(0.0);
     backend->scale(amps, complex(-1.0, 0.0));
     p->set_diagonal(amps);
@@ -223,12 +224,12 @@ void LM::calc(const core::GeometryPtr& geometry) {
     const auto b = backend->concat_col(g, p);
 
     auto bhb = backend->allocate_matrix_c("bhb", n_param, n_param);
-    backend->matrix_mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, One, b, b, Zero, bhb);
+    backend->matrix_mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, ONE, b, b, ZERO, bhb);
     return bhb;
   };
 
-  auto calc_t_th = [](const BackendPtr& backend, const std::shared_ptr<MatrixX> zero, const std::shared_ptr<MatrixX> x,
-                      std::shared_ptr<MatrixXc> tth) {
+  auto calc_t_th = [](const BackendPtr& backend, const std::shared_ptr<MatrixX>& zero, const std::shared_ptr<MatrixX> x,
+                      const std::shared_ptr<MatrixXc>& tth) {
     const auto len = x->data.size();
     const auto t = backend->allocate_matrix_c("T", len, 1);
 
@@ -236,7 +237,7 @@ void LM::calc(const core::GeometryPtr& geometry) {
     backend->scale(t, complex(-1, 0));
     backend->exp(t);
 
-    backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::CONJ_TRANS, One, t, t, Zero, tth);
+    backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::CONJ_TRANS, ONE, t, t, ZERO, tth);
   };
 
   const auto m = static_cast<Eigen::Index>(this->_foci.size());
@@ -254,15 +255,15 @@ void LM::calc(const core::GeometryPtr& geometry) {
 
   auto nu = 2.0;
 
-  auto tth = _backend->allocate_matrix_c("tth", n_param, n_param);
+  const auto tth = _backend->allocate_matrix_c("tth", n_param, n_param);
   const auto zero = _backend->allocate_matrix("zero", n_param, 1);
   zero->fill(0.0);
   calc_t_th(this->_backend, zero, x, tth);
 
-  auto bhb_tth = _backend->allocate_matrix_c("bhb_tth", n_param, n_param);
+  const auto bhb_tth = _backend->allocate_matrix_c("bhb_tth", n_param, n_param);
   this->_backend->hadamard_product(bhb, tth, bhb_tth);
 
-  auto a = _backend->allocate_matrix("a", n_param, n_param);
+  const auto a = _backend->allocate_matrix("a", n_param, n_param);
   this->_backend->real(bhb_tth, a);
 
   const auto g = _backend->allocate_matrix("g", n_param, 1);
@@ -279,16 +280,16 @@ void LM::calc(const core::GeometryPtr& geometry) {
   _backend->exp(t);
 
   const auto tmp_vec_c = _backend->allocate_matrix_c("tmp_vec_c", n_param, 1);
-  _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, One, bhb, t, Zero, tmp_vec_c);
+  _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, bhb, t, ZERO, tmp_vec_c);
   double fx = _backend->dot(t, tmp_vec_c).real();
 
-  auto identity = _backend->allocate_matrix("identity", n_param, n_param);
+  const auto identity = _backend->allocate_matrix("identity", n_param, n_param);
   identity->set_diagonal(1.0);
 
   const auto tmp_vec = _backend->allocate_matrix("tmp_vec", n_param, 1);
   const auto h_lm = _backend->allocate_matrix("h_lm", n_param, 1);
   const auto x_new = _backend->allocate_matrix("x_new", n_param, 1);
-  auto tmp_mat = _backend->allocate_matrix("tmp_mat", n_param, n_param);
+  const auto tmp_mat = _backend->allocate_matrix("tmp_mat", n_param, n_param);
   for (size_t k = 0; k < _k_max; k++) {
     if (_backend->max_coefficient(g) <= _eps_1) break;
 
@@ -302,7 +303,7 @@ void LM::calc(const core::GeometryPtr& geometry) {
     _backend->make_complex(zero, x_new, t);
     _backend->exp(t);
 
-    _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, One, bhb, t, Zero, tmp_vec_c);
+    _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, bhb, t, ZERO, tmp_vec_c);
     const double fx_new = _backend->dot(t, tmp_vec_c).real();
 
     _backend->mat_cpy(g, tmp_vec);
