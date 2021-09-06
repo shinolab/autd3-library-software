@@ -357,9 +357,9 @@ std::shared_ptr<MatrixXc> CUDABackend::transfer_matrix(const double* foci, size_
   return g;
 }
 
-void CUDABackend::set_bcd_result(const std::shared_ptr<MatrixXc> mat, const std::shared_ptr<MatrixXc> vec, const size_t idx) {
+void CUDABackend::set_bcd_result(const std::shared_ptr<MatrixXc> mat, const std::shared_ptr<MatrixXc> vec, const size_t index) {
   const uint32_t m = (uint32_t)vec->data.size();
-  cu_set_bcd_result((const cuDoubleComplex*)vec->ptr(), m, (uint32_t)idx, (cuDoubleComplex*)mat->ptr());
+  cu_set_bcd_result((const cuDoubleComplex*)vec->ptr(), m, (uint32_t)index, (cuDoubleComplex*)mat->ptr());
 }
 
 std::shared_ptr<MatrixXc> CUDABackend::back_prop(const std::shared_ptr<MatrixXc> transfer, const std::shared_ptr<MatrixXc> amps) {
