@@ -87,6 +87,8 @@ void EVD::calc(const core::GeometryPtr& geometry) {
   const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
 
   const auto g = _backend->transfer_matrix(this->_foci, geometry);
+  auto amps = _backend->allocate_matrix_c("amps", m, 1);
+  amps->copy_from(_amps);
 
   auto x = _backend->back_prop(g, this->_amps);
 
@@ -98,12 +100,12 @@ void EVD::calc(const core::GeometryPtr& geometry) {
 
   const auto gr = this->_backend->concat_row(g, sigma);
 
-  std::vector<complex> f_vals;
-  f_vals.resize(m + n, Zero);
-  max_ev->copy_to_host();
-  for (Eigen::Index i = 0; i < m; i++) f_vals[i] = this->_amps[i] * max_ev->data(i) / std::abs(max_ev->data(i));
-  auto f = _backend->allocate_matrix_c("f", m + n, 1);
-  f->copy_from(f_vals);
+  auto fm = _backend->allocate_matrix_c("fm", m, 1);
+  _backend->arg(max_ev, fm);
+  _backend->hadamard_product(amps, fm, fm);
+  auto fn = _backend->allocate_matrix_c("fn", n, 1);
+  fn->fill(0.0);
+  auto f = _backend->concat_row(fm, fn);
 
   auto gtg = _backend->allocate_matrix_c("gtg", n, n);
   this->_backend->matrix_mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, One, gr, gr, Zero, gtg);
@@ -194,7 +196,8 @@ void GSPAT::calc(const core::GeometryPtr& geometry) {
 
   gamma->copy_to_host();
   for (Eigen::Index i = 0; i < m; i++)
-    p->data(i) = gamma->data(i) / (std::abs(gamma->data(i)) * std::abs(gamma->data(i))) * std::abs(this->_amps[i]) * std::abs(this->_amps[i]);
+    p->data(i, 0) =
+        gamma->data(i, 0) / (std::abs(gamma->data(i, 0)) * std::abs(gamma->data(i, 0))) * std::abs(this->_amps[i]) * std::abs(this->_amps[i]);
 
   auto q = _backend->allocate_matrix_c("q", n, 1);
   _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, One, b, p, Zero, q);
@@ -327,7 +330,7 @@ void LM::calc(const core::GeometryPtr& geometry) {
   size_t trans_idx = 0;
   for (Eigen::Index j = 0; j < n; j++) {
     constexpr uint8_t duty = 0xFF;
-    const auto f_phase = x->data(j) / (2 * M_PI);
+    const auto f_phase = x->data(j, 0) / (2 * M_PI);
     const auto phase = core::Utilities::to_phase(f_phase);
     this->_data[dev_idx][trans_idx++] = core::Utilities::pack_to_u16(duty, phase);
     if (trans_idx == core::NUM_TRANS_IN_UNIT) {

@@ -11,6 +11,9 @@
 
 #pragma once
 
+#include <memory>
+#include <vector>
+
 #include "linalg_backend.hpp"
 
 namespace autd::gain::holo {
