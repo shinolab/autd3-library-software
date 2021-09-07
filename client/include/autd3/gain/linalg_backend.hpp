@@ -44,6 +44,9 @@ using BackendPtr = std::shared_ptr<Backend>;
 
 enum class TRANSPOSE { NO_TRANS = 111, TRANS = 112, CONJ_TRANS = 113 };
 
+/**
+ * \brief Matrix wrapper for Backend
+ */
 template <typename T>
 struct Matrix {
   explicit Matrix(const Eigen::Index row, const Eigen::Index col) : data(row, col) {}

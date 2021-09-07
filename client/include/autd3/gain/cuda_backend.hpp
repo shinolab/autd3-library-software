@@ -32,6 +32,9 @@ namespace autd {
 namespace gain {
 namespace holo {
 
+/**
+ * \brief Linear algebra calculation backend using CUDA
+ */
 class CUDABackend final : public Backend {
   std::unordered_map<std::string, std::shared_ptr<MatrixX>> _cache_mat;
   std::unordered_map<std::string, std::shared_ptr<MatrixXc>> _cache_mat_c;
