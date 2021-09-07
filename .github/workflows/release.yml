@@ -55,9 +55,12 @@ jobs:
           msbuild autd3.sln /t:build /p:Configuration=Release -maxcpucount
           mkdir publish
           mkdir publish/lib
+          mkdir publish/lib/wpcap
           mkdir publish/bin
           cd ../..
           copy client/build/lib/Release/*.lib client/build/publish/lib
+          copy client/lib/link/soem/Lib/LICENSE client/build/publish/lib/wpcap
+          copy client/lib/link/soem/Lib/x64/*.lib client/build/publish/lib/wpcap
           copy client/build/bin/Release/*.dll client/build/publish/bin
           Compress-Archive -Path LICENSE, NOTICE, dist/AUTDServer, dist/firmware, client/include, client/build/publish/lib, client/build/publish/bin -DestinationPath assets_x64.zip
       - name: Build project x86
@@ -68,9 +71,12 @@ jobs:
           msbuild autd3.sln /t:build /p:Configuration=Release -maxcpucount
           mkdir publish
           mkdir publish/lib
+          mkdir publish/lib/wpcap
           mkdir publish/bin
           cd ../..
           copy client/build_x86/lib/Release/*.lib client/build_x86/publish/lib
+          copy client/lib/link/soem/Lib/LICENSE client/build/publish/lib/wpcap
+          copy client/lib/link/soem/Lib/*.lib client/build/publish/lib/wpcap
           copy client/build_x86/bin/Release/*.dll client/build_x86/publish/bin
           Compress-Archive -Path LICENSE, NOTICE, dist/AUTDServer, dist/firmware, client/include, client/build_x86/publish/lib, client/build_x86/publish/bin -DestinationPath assets_x86.zip
       - name: Load Release URL File from release job
