@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 28/07/2021
+// Last Modified: 03/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -37,9 +37,9 @@ EXPORT_AUTD void AUTDSetWavelength(void* handle, double wavelength);
 EXPORT_AUTD void AUTDSetAttenuation(void* handle, double attenuation);
 EXPORT_AUTD bool AUTDGetFPGAInfo(void* handle, uint8_t* out);
 EXPORT_AUTD bool AUTDUpdateCtrlFlags(void* handle);
-EXPORT_AUTD bool AUTDSetOutputDelay(void* handle, uint8_t* delay);
-EXPORT_AUTD bool AUTDSetDutyOffset(void* handle, uint8_t* offset);
-EXPORT_AUTD bool AUTDSetDelayOffset(void* handle, uint8_t* delay, uint8_t* offset);
+EXPORT_AUTD bool AUTDSetOutputDelay(void* handle, const uint8_t* delay);
+EXPORT_AUTD bool AUTDSetDutyOffset(void* handle, const uint8_t* offset);
+EXPORT_AUTD bool AUTDSetDelayOffset(void* handle, const uint8_t* delay, const uint8_t* offset);
 
 EXPORT_AUTD int32_t AUTDGetLastError(char* error);
 
@@ -62,7 +62,7 @@ EXPORT_AUTD void AUTDGainGroupedAdd(void* grouped_gain, int32_t id, void* gain);
 EXPORT_AUTD void AUTDGainFocalPoint(void** gain, double x, double y, double z, uint8_t duty);
 EXPORT_AUTD void AUTDGainBesselBeam(void** gain, double x, double y, double z, double n_x, double n_y, double n_z, double theta_z, uint8_t duty);
 EXPORT_AUTD void AUTDGainPlaneWave(void** gain, double n_x, double n_y, double n_z, uint8_t duty);
-EXPORT_AUTD void AUTDGainCustom(void** gain, uint16_t* data, int32_t data_length);
+EXPORT_AUTD void AUTDGainCustom(void** gain, const uint16_t* data, int32_t data_length);
 EXPORT_AUTD void AUTDGainTransducerTest(void** gain, int32_t idx, uint8_t duty, uint8_t phase);
 EXPORT_AUTD void AUTDDeleteGain(void* gain);
 
@@ -76,8 +76,8 @@ EXPORT_AUTD void AUTDDeleteModulation(void* mod);
 
 EXPORT_AUTD void AUTDSequence(void** out);
 EXPORT_AUTD void AUTDGainSequence(void** out, uint16_t gain_mode);
-EXPORT_AUTD bool AUTDSequenceAddPoint(void* seq, double x, double y, double z);
-EXPORT_AUTD bool AUTDSequenceAddPoints(void* seq, double* points, uint64_t size);
+EXPORT_AUTD bool AUTDSequenceAddPoint(void* seq, double x, double y, double z, uint8_t duty);
+EXPORT_AUTD bool AUTDSequenceAddPoints(void* seq, const double* points, uint64_t points_size, uint8_t* duties, uint64_t duties_size);
 EXPORT_AUTD bool AUTDSequenceAddGain(void* seq, void* gain);
 EXPORT_AUTD double AUTDSequenceSetFreq(void* seq, double freq);
 EXPORT_AUTD double AUTDSequenceFreq(void* seq);

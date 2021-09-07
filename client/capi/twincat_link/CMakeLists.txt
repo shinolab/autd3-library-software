@@ -1,9 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
-
-
-set(INCLUDE_LIST
-  ${PROJECT_SOURCE_DIR}/include
-)
+cmake_minimum_required(VERSION 3.16)
 
 add_library(autd3capi-twincat-link SHARED
   c_api.cpp
@@ -12,9 +7,7 @@ add_library(autd3capi-twincat-link SHARED
   ../base/wrapper_link.hpp
 )
 
-include_directories(${INCLUDE_LIST})
-
-target_link_libraries(autd3capi-twincat-link link_twincat)
+target_link_libraries(autd3capi-twincat-link twincat_link)
 if(WIN32)
   target_link_libraries(autd3capi-twincat-link ws2_32.lib)
 elseif(APPLE)
@@ -29,6 +22,8 @@ set_target_properties(autd3capi-twincat-link
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
 
-if(NOT WIN32)
+if(WIN32)
+  set_target_properties(autd3capi-twincat-link PROPERTIES FOLDER "capi")
+else()
   set_target_properties(autd3capi-twincat-link PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

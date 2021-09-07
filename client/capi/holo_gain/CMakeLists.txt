@@ -1,10 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
-
-
-set(INCLUDE_LIST
-  ${PROJECT_SOURCE_DIR}/include
-  ${EIGEN_PATH}
-)
+cmake_minimum_required(VERSION 3.16)
 
 add_library(autd3capi-holo-gain SHARED
   c_api.cpp
@@ -13,9 +7,7 @@ add_library(autd3capi-holo-gain SHARED
   ../base/wrapper.hpp
 )
 
-include_directories(${INCLUDE_LIST})
-
-target_link_libraries(autd3capi-holo-gain gain_holo)
+target_link_libraries(autd3capi-holo-gain holo_gain)
 if(WIN32)
 elseif(APPLE)
 else()
@@ -29,6 +21,8 @@ set_target_properties(autd3capi-holo-gain
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
 
-if(NOT WIN32)
+if(WIN32)
+  set_target_properties(autd3capi-holo-gain PROPERTIES FOLDER "capi")
+else()
   set_target_properties(autd3capi-holo-gain PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

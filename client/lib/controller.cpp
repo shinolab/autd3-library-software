@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 27/07/2021
+// Last Modified: 03/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -51,7 +51,7 @@ std::vector<uint8_t> Controller::fpga_info() {
   return _fpga_infos;
 }
 
-bool Controller::update_ctrl_flag() { return this->send(nullptr, nullptr); }
+bool Controller::update_ctrl_flag() { return this->send(nullptr, nullptr, true); }
 
 void Controller::open(core::LinkPtr link) {
   if (is_open()) this->close();
@@ -81,7 +81,7 @@ bool Controller::clear() {
 }
 
 bool Controller::send_header(const core::COMMAND cmd) const {
-  const auto send_size = sizeof(core::RxGlobalHeader);
+  constexpr auto send_size = sizeof(core::RxGlobalHeader);
   uint8_t msg_id = 0;
   core::Logic::pack_header(cmd, _props.ctrl_flag(), &_tx_buf[0], &msg_id);
   _link->send(&_tx_buf[0], send_size);
@@ -137,12 +137,15 @@ bool Controller::stop() {
 bool Controller::pause() const { return this->send_header(core::COMMAND::PAUSE); }
 bool Controller::resume() const { return this->send_header(core::COMMAND::RESUME); }
 
-bool Controller::send(const core::GainPtr& gain) { return this->send(gain, nullptr); }
+bool Controller::send(const core::GainPtr& gain, const bool wait_for_msg_processed) { return this->send(gain, nullptr, wait_for_msg_processed); }
 
-bool Controller::send(const core::ModulationPtr& mod) { return this->send(nullptr, mod); }
+bool Controller::send(const core::ModulationPtr& mod) { return this->send(nullptr, mod, true); }
 
-bool Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod) {
-  if (mod != nullptr) mod->build();
+bool Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod, bool wait_for_msg_processed) {
+  if (mod != nullptr) {
+    mod->build();
+    wait_for_msg_processed = true;
+  }
   if (gain != nullptr) {
     this->_props._seq_mode = false;
     gain->build(this->_geometry);
@@ -156,6 +159,7 @@ bool Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod)
     uint8_t msg_id = 0;
     core::Logic::pack_header(mod, _props.ctrl_flag(), &this->_tx_buf[0], &msg_id);
     this->_link->send(&this->_tx_buf[0], size);
+    if (!wait_for_msg_processed && mod_finished(mod)) return false;
     if (const auto res = wait_msg_processed(msg_id); !res || mod_finished(mod)) return res;
   }
 }
@@ -277,6 +281,24 @@ void Controller::STMController::finish() {
 
 void Controller::STMController::stop() {
   if (this->_handler == nullptr) this->_handler = this->_timer->stop();
+}
+
+void Controller::STMTimerCallback::add(std::unique_ptr<uint8_t[]> data, const size_t size) {
+  this->_bodies.emplace_back(std::move(data));
+  this->_sizes.emplace_back(size);
+}
+void Controller::STMTimerCallback::clear() {
+  std::vector<std::unique_ptr<uint8_t[]>>().swap(this->_bodies);
+  std::vector<size_t>().swap(this->_sizes);
+  this->_idx = 0;
+}
+
+void Controller::STMTimerCallback::callback() {
+  if (auto expected = false; _lock.compare_exchange_weak(expected, true)) {
+    this->_link->send(&this->_bodies[_idx][0], this->_sizes[_idx]);
+    this->_idx = (this->_idx + 1) % this->_bodies.size();
+    _lock.store(false, std::memory_order_release);
+  }
 }
 
 }  // namespace autd

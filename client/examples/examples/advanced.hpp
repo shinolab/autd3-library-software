@@ -3,7 +3,7 @@
 // Created Date: 19/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/07/2021
+// Last Modified: 13/08/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,7 +11,10 @@
 
 #pragma once
 
-#include <autd3.hpp>
+#include <memory>
+#include <vector>
+
+#include "autd3.hpp"
 
 class BurstModulation final : public autd::core::Modulation {
  public:
@@ -39,7 +42,7 @@ class UniformGain final : public autd::core::Gain {
   }
 };
 
-inline void advanced_test(autd::ControllerPtr& autd) {
+inline void advanced_test(const autd::ControllerPtr& autd) {
   autd->silent_mode() = false;
 
   std::vector<std::array<uint8_t, autd::NUM_TRANS_IN_UNIT>> delays;

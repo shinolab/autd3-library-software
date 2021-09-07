@@ -4,7 +4,7 @@
 # Created Date: 25/08/2019
 # Author: Shun Suzuki
 # -----
-# Last Modified: 01/05/2021
+# Last Modified: 03/09/2021
 # Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 # -----
 # Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -13,7 +13,7 @@
 
 Param(
     [string]$BUILD_DIR = "./build",
-    [ValidateSet(2017 , 2019)]$VS_VERSION = 2019,
+    [ValidateSet(2017 , 2019, 2022)]$VS_VERSION = 2019,
     [string]$ARCH = "x64"
 )
 
@@ -55,8 +55,12 @@ if ($VS_VERSION -eq 2017) {
 elseif ($VS_VERSION -eq 2019) {
     $IDE_NAME = $IDE_NAME + "16 2019"
 }
+elseif ($VS_VERSION -eq 2022) {
+    $IDE_NAME = $IDE_NAME + "17 2022"
+}
 else {
-    ColorEcho "Red" "Error" "This Library only support Visual Studio 2017 or 2019."
+    ColorEcho "Red" "Error" "This script only support Visual Studio 2017, 2019, or 2022."
+    exit
 }
 ColorEcho "Green" "INFO" "Use", $IDE_NAME, "with", $ARCH, "architecture."
 

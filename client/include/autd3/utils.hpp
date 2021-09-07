@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 06/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -12,6 +12,8 @@
 #pragma once
 
 #include <cmath>
+
+#include "core/geometry.hpp"
 
 namespace autd::utils {
 constexpr double DIR_COEFFICIENT_A[] = {1.0, 1.0, 1.0, 0.891250938, 0.707945784, 0.501187234, 0.354813389, 0.251188643, 0.199526231};
@@ -45,4 +47,13 @@ class Directivity {
     return a + b * x + c * x * x + d * x * x * x;
   }
 };
+
+inline std::complex<double> transfer(const core::Vector3& trans_pos, const core::Vector3& trans_norm, const core::Vector3& target_pos,
+                                     const double wave_number, const double attenuation) {
+  const auto diff = target_pos - trans_pos;
+  const auto dist = diff.norm();
+  const auto theta = std::atan2(diff.dot(trans_norm), dist * trans_norm.norm()) * 180.0 / M_PI;
+  const auto directivity = Directivity::t4010a1(theta);
+  return directivity / dist * std::exp(std::complex<double>(-dist * attenuation, -wave_number * dist));
+}
 }  // namespace autd::utils

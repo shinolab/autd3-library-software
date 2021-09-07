@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/07/2021
+// Last Modified: 03/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -57,7 +57,7 @@ class EmulatorImpl final : public Emulator {
   std::vector<uint8_t> _geometry_buf;
 
   static std::vector<uint8_t> init_geometry_buf(const core::GeometryPtr& geometry) {
-    const auto vec_size = 9 * sizeof(float);
+    constexpr auto vec_size = 9 * sizeof(float);
     const auto size = sizeof(core::RxGlobalHeader) + geometry->num_devices() * vec_size;
     std::vector<uint8_t> buf;
     buf.resize(size);
@@ -71,18 +71,18 @@ class EmulatorImpl final : public Emulator {
     auto* const cursor = reinterpret_cast<float*>(&buf[sizeof(core::RxGlobalHeader)]);
     for (size_t i = 0; i < geometry->num_devices(); i++) {
       const auto trans_id = i * core::NUM_TRANS_IN_UNIT;
-      auto origin = geometry->position(trans_id);
-      auto right = geometry->x_direction(i);
-      auto up = geometry->y_direction(i);
-      cursor[9 * i] = static_cast<float>(origin.x());
-      cursor[9 * i + 1] = static_cast<float>(origin.y());
-      cursor[9 * i + 2] = static_cast<float>(origin.z());
-      cursor[9 * i + 3] = static_cast<float>(right.x());
-      cursor[9 * i + 4] = static_cast<float>(right.y());
-      cursor[9 * i + 5] = static_cast<float>(right.z());
-      cursor[9 * i + 6] = static_cast<float>(up.x());
-      cursor[9 * i + 7] = static_cast<float>(up.y());
-      cursor[9 * i + 8] = static_cast<float>(up.z());
+      auto origin = geometry->position(trans_id).cast<float>();
+      auto right = geometry->x_direction(i).cast<float>();
+      auto up = geometry->y_direction(i).cast<float>();
+      cursor[9 * i] = origin.x();
+      cursor[9 * i + 1] = origin.y();
+      cursor[9 * i + 2] = origin.z();
+      cursor[9 * i + 3] = right.x();
+      cursor[9 * i + 4] = right.y();
+      cursor[9 * i + 5] = right.z();
+      cursor[9 * i + 6] = up.x();
+      cursor[9 * i + 7] = up.y();
+      cursor[9 * i + 8] = up.z();
     }
 
     return buf;
