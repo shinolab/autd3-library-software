@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.16)
 
 project(autd3)
 set(VERSION_MAJOR   1   CACHE STRING "Project major version number.")
 set(VERSION_MINOR   7   CACHE STRING "Project minor version number.")
-set(VERSION_PATCH   0   CACHE STRING "Project patch version number.")
+set(VERSION_PATCH   1   CACHE STRING "Project patch version number.")
 mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
 
 set (CMAKE_CXX_STANDARD 17)
@@ -12,15 +12,23 @@ option(BUILD_ALL "BUILD_ALL" OFF)
 option(BUILD_DOC "BUILD_DOC" OFF)
 
 option(BUILD_HOLO_GAIN "BUILD_HOLO_GAIN" ON)
-option(BUILD_HOLO_GAIN "BUILD_FROM_FILE_MODULATION" OFF)
+option(BUILD_BLAS_BACKEND "BUILD_BLAS_BACKEND" OFF)
+set(BLAS_LIB_DIR CACHE PATH "BLAS library directory")
+set(BLAS_DEPEND_LIB_DIR CACHE PATH "Additional library directory for BLAS")
+set(BLAS_INCLUDE_DIR CACHE PATH "BLAS include directory")
+option(USE_MKL "USE_MKL" OFF)
+option(BUILD_CUDA_BACKEND "BUILD_CUDA_BACKEND" OFF)
+
+option(BUILD_FROM_FILE_MODULATION "BUILD_FROM_FILE_MODULATION" OFF)
 
 option(BUILD_SOEM_LINK "BUILD_SOEM_LINK" ON)
 option(BUILD_TWINCAT_LINK "BUILD_TWINCAT_LINK" OFF)
 option(BUILD_EMULATOR_LINK "BUILD_EMULATOR_LINK" OFF)
 
-option(IGNORE_EXAMPLE "IGNORE_EXAMPLE" OFF)
+option(BUILD_EXAMPLES "BUILD_EXAMPLES" ON)
 option(BUILD_CAPI "BUILD_CAPI" OFF)
 option(ENABLE_LINT "ENABLE_LINT" OFF)
+option(BUILD_TEST "BUILD_TEST" OFF)
 
 if(BUILD_ALL)
   set(BUILD_HOLO_GAIN ON)
@@ -76,7 +84,7 @@ if(ENABLE_LINT)
   if(Git_FOUND)
   execute_process(COMMAND git -C ${PROJECT_SOURCE_DIR} submodule update --init --recursive -- ${PROJECT_SOURCE_DIR}/deps/cpplint)
   endif()
-  file(GLOB_RECURSE lint_files lib/*.cpp lib/*.hpp include/*.hpp capi/*.cpp capi/*.hpp capi/*.h link/*.cpp link/*.hpp)
+  file(GLOB_RECURSE lint_files lib/*.cpp lib/*.hpp include/*.hpp capi/*.cpp capi/*.hpp examples/*.cpp examples/*.hpp)
   ADD_CUSTOM_TARGET(cpplint
     python
     ${PROJECT_SOURCE_DIR}/deps/cpplint/cpplint.py
@@ -97,22 +105,27 @@ endif()
 if(Git_FOUND)
   execute_process(COMMAND git -C ${PROJECT_SOURCE_DIR} submodule update --init --recursive -- ${PROJECT_SOURCE_DIR}/deps/Eigen3)
 endif()
-add_definitions(-DEIGEN_MPL2_ONLY)
+add_compile_definitions(EIGEN_MPL2_ONLY)
 set(EIGEN_PATH ${PROJECT_SOURCE_DIR}/deps/Eigen3)
+
+add_subdirectory(lib)
 
 # Gain
 if(BUILD_HOLO_GAIN)
   add_subdirectory(lib/gain/holo)
+  target_link_libraries(autd3 INTERFACE holo_gain)
 endif()
 
 # Modulation
 if(BUILD_FROM_FILE_MODULATION)
   add_subdirectory(lib/modulation/from_file)
+  target_link_libraries(autd3 INTERFACE from_file_modulation)
 endif()
 
 # Link
 if(BUILD_TWINCAT_LINK)
   add_subdirectory(lib/link/twincat)
+  target_link_libraries(autd3 INTERFACE twincat_link)
 endif()
 if(BUILD_SOEM_LINK)
   if(Git_FOUND)
@@ -120,12 +133,12 @@ if(BUILD_SOEM_LINK)
   endif()
   set(SOEM_PATH ${PROJECT_SOURCE_DIR}/deps/SOEM)
   add_subdirectory(lib/link/soem)
+  target_link_libraries(autd3 INTERFACE soem_link)
 endif()
 if(BUILD_EMULATOR_LINK)
   add_subdirectory(lib/link/emulator)
+  target_link_libraries(autd3 INTERFACE emulator_link)
 endif()
-
-add_subdirectory(lib)
 
 if(BUILD_CAPI)
   add_subdirectory(capi/base)
@@ -150,9 +163,15 @@ if(BUILD_DOC)
   add_subdirectory(doc)
 endif()
 
-if(NOT IGNORE_EXAMPLE)
+if(BUILD_EXAMPLES)
   add_subdirectory(examples)
   if(WIN32 AND BUILD_SOEM_LINK)
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT example_soem)
   endif()
+endif()
+
+if(BUILD_TEST)
+  set(CMAKE_POLICY_DEFAULT_CMP0077 NEW) 
+  include(${PROJECT_SOURCE_DIR}/cmakes/gtest.cmake)
+  add_subdirectory(tests)
 endif()

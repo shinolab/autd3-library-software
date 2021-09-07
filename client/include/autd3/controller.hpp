@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/07/2021
+// Last Modified: 04/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -160,9 +160,10 @@ class Controller {
   /**
    * @brief Send gain to the device
    * @param[in] gain Gain to display
+   * @param[in] wait_for_msg_processed if true, this function waits until the data is processed in the devices
    * \return if true, It guarantees that the devices have processed the data
    */
-  bool send(const core::GainPtr& gain);
+  bool send(const core::GainPtr& gain, bool wait_for_msg_processed = true);
 
   /**
    * @brief Send modulation to the device
@@ -175,9 +176,11 @@ class Controller {
    * @brief Send gain and modulation to the device
    * @param[in] gain Gain to display
    * @param[in] mod Amplitude modulation to display
+   * @param[in] wait_for_msg_processed see details
+   * @details if wait_for_msg_processed is true OR mod is not nullptr, this function waits until the data is processed in the devices
    * \return if true, It guarantees that the devices have processed the data
    */
-  bool send(const core::GainPtr& gain, const core::ModulationPtr& mod);
+  bool send(const core::GainPtr& gain, const core::ModulationPtr& mod, bool wait_for_msg_processed = true);
 
   /**
    * @brief Send sequence to the device
@@ -267,23 +270,9 @@ class Controller {
 
     explicit STMTimerCallback(core::LinkPtr link) : _link(std::move(link)), _idx(0), _lock(false) {}
 
-    void add(std::unique_ptr<uint8_t[]> data, const size_t size) {
-      this->_bodies.emplace_back(std::move(data));
-      this->_sizes.emplace_back(size);
-    }
-    void clear() {
-      std::vector<std::unique_ptr<uint8_t[]>>().swap(this->_bodies);
-      std::vector<size_t>().swap(this->_sizes);
-      this->_idx = 0;
-    }
-
-    void callback() override {
-      if (auto expected = false; _lock.compare_exchange_weak(expected, true)) {
-        this->_link->send(&this->_bodies[_idx][0], this->_sizes[_idx]);
-        this->_idx = (this->_idx + 1) % this->_bodies.size();
-        _lock.store(false, std::memory_order_release);
-      }
-    }
+    void add(std::unique_ptr<uint8_t[]> data, size_t size);
+    void clear();
+    void callback() override;
 
    private:
     core::LinkPtr _link;

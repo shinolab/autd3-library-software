@@ -1,12 +1,6 @@
-cmake_minimum_required(VERSION 3.12)
-
+cmake_minimum_required(VERSION 3.16)
 
 find_package(Threads REQUIRED)
-
-set(INCLUDE_LIST
-  ${PROJECT_SOURCE_DIR}/include
-  ${EIGEN_PATH}
-)
 
 file(GLOB include_files  ${PROJECT_SOURCE_DIR}/include/*.hpp *.hpp)
 
@@ -17,8 +11,6 @@ add_library(autd3capi SHARED
   ${include_files}
 )
  
-include_directories(${INCLUDE_LIST})
-
 target_link_libraries(autd3capi ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(autd3capi autd3)
 
@@ -40,9 +32,7 @@ set_target_properties(autd3capi
 )
 
 if (WIN32)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4068")
-endif()
-
-if(NOT WIN32)
+  set_target_properties(autd3capi PROPERTIES FOLDER "capi")
+else()
   set_target_properties(autd3capi PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

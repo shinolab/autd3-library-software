@@ -3,7 +3,7 @@
 // Created Date: 14/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 27/07/2021
+// Last Modified: 03/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -96,7 +96,6 @@ class Sequence {
 class PointSequence : virtual public Sequence {
  public:
   PointSequence() noexcept : Sequence() {}
-  explicit PointSequence(std::vector<Vector3> control_points) noexcept : Sequence(), _control_points(std::move(control_points)) {}
 
   size_t size() const override { return this->_control_points.size(); }
 
@@ -106,42 +105,63 @@ class PointSequence : virtual public Sequence {
   static PointSequencePtr create() noexcept { return std::make_shared<PointSequence>(); }
 
   /**
-   * @brief Generate PointSequence with control points.
-   */
-  static PointSequencePtr create(const std::vector<Vector3>& control_points) noexcept { return std::make_shared<PointSequence>(control_points); }
-
-  /**
    * @brief Add control point
    * @param[in] point control point
+   * @param[in] duty duty ratio
    */
-  void add_point(const Vector3& point) {
+  void add_point(const Vector3& point, const uint8_t duty = 0xFF) {
     if (this->_control_points.size() + 1 > POINT_SEQ_BUFFER_SIZE_MAX)
       throw core::SequenceBuildError(
           std::string("Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX)));
 
     this->_control_points.emplace_back(point);
+    this->_duties.emplace_back(duty);
   }
 
   /**
    * @brief Add control points
-   * @param[in] points control point
+   * @param[in] points control points
+   * @param[in] duties duty ratios
+   * @details duties.resize(points.size(), 0xFF) will be called.
    */
-  void add_points(const std::vector<Vector3>& points) {
+  void add_points(const std::vector<Vector3>& points, std::vector<uint8_t>& duties) {
     if (this->_control_points.size() + points.size() > POINT_SEQ_BUFFER_SIZE_MAX)
       throw core::SequenceBuildError(
           std::string("Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX)));
 
     this->_control_points.reserve(this->_control_points.size() + points.size());
-    for (const auto& p : points) this->_control_points.emplace_back(p);
+    this->_control_points.insert(this->_control_points.end(), points.begin(), points.end());
+
+    duties.resize(points.size(), 0xFF);
+    this->_duties.reserve(this->_duties.size() + duties.size());
+    this->_duties.insert(this->_duties.end(), duties.begin(), duties.end());
   }
+
+  /**
+   * @param[in] index control point index
+   * @return Vector3 Control point of the sequence
+   */
+  [[nodiscard]] Vector3& control_point(size_t index) { return this->_control_points[index]; }
+
+  /**
+   * @param[in] index control point index
+   * @return uint8_t Duty ratio of the sequence
+   */
+  [[nodiscard]] uint8_t& duty(size_t index) { return this->_duties[index]; }
 
   /**
    * @return std::vector<Vector3> Control points of the sequence
    */
-  [[nodiscard]] std::vector<Vector3>& control_points() { return this->_control_points; }
+  [[nodiscard]] const std::vector<Vector3>& control_points() { return this->_control_points; }
+
+  /**
+   * @return std::vector<uint8_t> Duty ratios of the sequence
+   */
+  [[nodiscard]] const std::vector<uint8_t>& duties() { return this->_duties; }
 
  private:
   std::vector<Vector3> _control_points;
+  std::vector<uint8_t> _duties;
 };
 
 /**
@@ -199,7 +219,7 @@ class GainSequence : virtual public Sequence {
   /**
    * @return std::vector<GainPtr> Gain list of the sequence
    */
-  [[nodiscard]] std::vector<GainPtr>& gains() { return this->_gains; }
+  [[nodiscard]] const std::vector<GainPtr>& gains() { return this->_gains; }
 
   /**
    * @return GAIN_MODE

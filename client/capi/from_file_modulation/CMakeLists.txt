@@ -1,8 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
-
-set(INCLUDE_LIST
-  ${PROJECT_SOURCE_DIR}/include
-)
+cmake_minimum_required(VERSION 3.16)
 
 add_library(autd3capi-from-file-modulation SHARED
   c_api.cpp
@@ -11,9 +7,7 @@ add_library(autd3capi-from-file-modulation SHARED
   ../base/wrapper_modulation.hpp
 )
 
-include_directories(${INCLUDE_LIST})
-
-target_link_libraries(autd3capi-from-file-modulation modulation_from_file)
+target_link_libraries(autd3capi-from-file-modulation from_file_modulation)
 if(WIN32)
 elseif(APPLE)
 else()
@@ -27,6 +21,8 @@ set_target_properties(autd3capi-from-file-modulation
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
 
-if(NOT WIN32)
+if(WIN32)
+  set_target_properties(autd3capi-from-file-modulation PROPERTIES FOLDER "capi")
+else()
   set_target_properties(autd3capi-from-file-modulation PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

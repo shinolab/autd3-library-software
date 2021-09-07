@@ -1,9 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
-
-
-set(INCLUDE_LIST
-  ${PROJECT_SOURCE_DIR}/include
-)
+cmake_minimum_required(VERSION 3.16)
 
 add_library(autd3capi-soem-link SHARED
   c_api.cpp
@@ -12,9 +7,7 @@ add_library(autd3capi-soem-link SHARED
   ../base/wrapper_link.hpp
 )
 
-include_directories(${INCLUDE_LIST})
-
-target_link_libraries(autd3capi-soem-link link_soem)
+target_link_libraries(autd3capi-soem-link soem_link)
 if(WIN32)
   target_link_libraries(autd3capi-soem-link ws2_32.lib)
   target_link_libraries(autd3capi-soem-link winmm.lib)
@@ -32,6 +25,8 @@ set_target_properties(autd3capi-soem-link
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
 
-if(NOT WIN32)
+if(WIN32)
+  set_target_properties(autd3capi-soem-link PROPERTIES FOLDER "capi")
+else()
   set_target_properties(autd3capi-soem-link PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

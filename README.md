@@ -3,7 +3,7 @@
 
 # [AUTD3](https://hapislab.org/airborne-ultrasound-tactile-display?lang=en)
 
-Version: 1.7.0
+Version: 1.7.1
 
 ## :blue_book: **[Wiki for beginners](https://github.com/shinolab/autd3-library-software/wiki)**
 
@@ -16,8 +16,10 @@ Version: 1.7.0
 ## :ballot_box_with_check: Requirements
 
 * If you use `link::SOEM` on Windows, install [Npcap](https://nmap.org/npcap/) with WinPcap API-compatible mode (recommended) or [WinPcap](https://www.winpcap.org/).
+    * This works on Windows 11
 
 * If you use `link::TwinCAT`, please see [how to install AUTDServer](https://github.com/shinolab/autd3-library-software/wiki/How-to-install-AUTDServer).
+    * Windows 11 might not be supported by TwinCAT
 
 ## :hammer_and_wrench: Build
 
@@ -49,10 +51,6 @@ Version: 1.7.0
 See `client/examples`
 
 If you are using Linux/macOS, you may need to run as root.
-
-## :heavy_plus_sign: Additional plugins
-
-* [BLAS backend for Holo gain](https://github.com/shinolab/autd3-BLAS-backend)
 
 ## :link: For other programming languages
 
