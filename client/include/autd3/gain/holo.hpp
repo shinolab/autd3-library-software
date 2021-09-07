@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/09/2021
+// Last Modified: 07/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -188,7 +188,7 @@ class GSPAT final : public Holo {
 };
 
 /**
- * @brief Gain to produce multiple focal points with GS-PAT method.
+ * @brief Gain to produce multiple focal points with Levenberg-Marquardt method.
  * Refer to K.Levenberg, “A method for the solution of certain non-linear problems in
  * least squares,” Quarterly of applied mathematics, vol.2, no.2, pp.164–168, 1944.
  * D.W.Marquardt, “An algorithm for least-squares estimation of non-linear parameters,” Journal of the society for Industrial and

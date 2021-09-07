@@ -37,6 +37,10 @@
 #include "linalg_backend.hpp"
 
 namespace autd::gain::holo {
+
+/**
+ * \brief Matrix wrapper for Eigen3Backend and BLASBackend
+ */
 template <typename T>
 struct EigenMatrix final : Matrix<T> {
   explicit EigenMatrix(const Eigen::Index row, const Eigen::Index col) : Matrix<T>(row, col) {}
