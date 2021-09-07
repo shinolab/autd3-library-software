@@ -28,7 +28,7 @@ Version: 1.7.1
         ```
         git clone https://github.com/shinolab/autd3-library-software.git --recursive 
         ```
-        Then, run `client/build.ps1` (Visual Studio 2019 is required) or build with CMake
+        Then, run `client/build.ps1` (Visual Studio 2019/2022 is required) or build with CMake
     * Linux/macOS: 
         ```
         git clone https://github.com/shinolab/autd3-library-software.git --recursive
