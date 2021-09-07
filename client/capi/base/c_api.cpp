@@ -346,7 +346,7 @@ bool AUTDSequenceAddPoint(void* const seq, const double x, const double y, const
     return true;
   })
 }
-bool AUTDSequenceAddPoints(void* const seq, const double* points, const uint64_t points_size, const uint8_t* duties, const uint64_t duties_size) {
+bool AUTDSequenceAddPoints(void* const seq, double* const points, const uint64_t points_size, uint8_t* const duties, const uint64_t duties_size) {
   const auto* seq_w = static_cast<SequenceWrapper*>(seq);
   std::vector<autd::Vector3> p;
   for (size_t i = 0; i < points_size; i++) p.emplace_back(ToVec3(points[3 * i], points[3 * i + 1], points[3 * i + 2]));
