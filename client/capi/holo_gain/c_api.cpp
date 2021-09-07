@@ -3,7 +3,7 @@
 // Created Date: 17/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/09/2021
+// Last Modified: 07/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -87,7 +87,7 @@ void AUTDGainHoloGSPAT(void** gain, void* backend, const double* points, const d
   *gain = g;
 }
 
-void AUTDGainHoloLM(void** gain, void* backend, double* points, const double* amps, const int32_t size, const double eps_1, const double eps_2,
+void AUTDGainHoloLM(void** gain, void* backend, const double* points, const double* amps, const int32_t size, const double eps_1, const double eps_2,
                     const double tau, const uint64_t k_max, double* initial, const int32_t initial_size) {
   const auto holo = PackFoci(points, size);
   const auto amps_ = PackAmps(amps, size);
