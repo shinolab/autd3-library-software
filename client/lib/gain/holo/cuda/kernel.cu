@@ -11,6 +11,8 @@
  *
  */
 
+#include <cuda_runtime_api.h>
+
 #include <complex>
 
 #include "./kernel.h"
@@ -217,12 +219,32 @@ __device__ double dot(const double3& a, const double3& b) {
 
 __device__ double norm(const double3& a) { return sqrt(dot(a, a)); }
 
+__constant__ double DIR_COEF_A[9] = {1.0, 1.0, 1.0, 0.891250938, 0.707945784, 0.501187234, 0.354813389, 0.251188643, 0.199526231};
+__constant__ double DIR_COEF_B[9] = {
+    0., 0., -0.00459648054721, -0.0155520765675, -0.0208114779827, -0.0182211227016, -0.0122437497109, -0.00780345575475, -0.00312857467007};
+__constant__ double DIR_COEF_C[9]{
+    0., 0., -0.000787968093807, -0.000307591508224, -0.000218348633296, 0.00047738416141, 0.000120353137658, 0.000323676257958, 0.000143850511};
+__constant__ double DIR_COEF_D[9]{
+    0., 0., 1.60125528528e-05, 2.9747624976e-06, 2.31910931569e-05, -1.1901034125e-05, 6.77743734332e-06, -5.99548024824e-06, -4.79372835035e-06};
+
+__device__ double t4010a1(double theta_deg) {
+  theta_deg = std::abs(theta_deg);
+  theta_deg = theta_deg > 90.0 ? 180.0 - theta_deg : theta_deg;
+  const auto i = (uint32_t)(ceil(theta_deg / 10.0));
+  if (i == 0) return 1.0;
+  const auto a = DIR_COEF_A[i - 1];
+  const auto b = DIR_COEF_B[i - 1];
+  const auto c = DIR_COEF_C[i - 1];
+  const auto d = DIR_COEF_D[i - 1];
+  const auto x = theta_deg - (double)(i - 1) * 10.0;
+  return a + (b + (c + d * x) * x) * x;
+}
+
 __device__ cuDoubleComplex transfer(double3& pos, double3& dir, double3 focus, double wavenum, double attenuation) {
   const auto diff = sub(focus, pos);
   const auto dist = norm(diff);
-  // const auto theta = atan2(dot(diff, dir), dist * norm(dir)) * 180.0 / M_PI;
-  // const auto directivity = Directivity::t4010a1(theta);
-  const auto directivity = 1.0;
+  const auto theta = atan2(dot(diff, dir), dist * norm(dir)) * 180.0 / M_PI;
+  const auto directivity = t4010a1(theta);
 
   const auto v = make_cuDoubleComplex(-dist * attenuation, -wavenum * dist);
   auto r = expc(v);
@@ -446,7 +468,6 @@ void cu_col_sum_imag(const cuDoubleComplex* mat, uint32_t m, uint32_t n, double*
   col_sum_imag_kernel<<<grid, block, BLOCK_SIZE / 2 * sizeof(double)>>>(mat, m, n, buffer);
   col_sum_kernel<<<dim3(m, 1, 1), dim3(1, grid.y / 2, 1), grid.y / 2 * sizeof(double)>>>(buffer, m, grid.y, result);
 }
-
 }  // namespace holo
 }  // namespace gain
 }  // namespace autd

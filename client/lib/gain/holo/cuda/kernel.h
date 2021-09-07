@@ -42,7 +42,6 @@ void cu_make_back_prop(const cuDoubleComplex* amps, const double* denominator, c
 void cu_make_sigma_diagonal(const cuDoubleComplex* transfer, uint32_t m, uint32_t n, const cuDoubleComplex* amps, double gamma,
                             cuDoubleComplex* result, double* buffer);
 void cu_col_sum_imag(const cuDoubleComplex* mat, uint32_t m, uint32_t n, double* result, double* buffer);
-
 }  // namespace holo
 }  // namespace gain
 }  // namespace autd
