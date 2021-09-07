@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/09/2021
+// Last Modified: 07/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -412,21 +412,21 @@ bool AUTDResume(void* const handle) {
   const auto* wrapper = static_cast<ControllerWrapper*>(handle);
   AUTD3_CAPI_TRY(return wrapper->ptr->resume())
 }
-bool AUTDSendGain(void* const handle, void* const gain) {
+bool AUTDSendGain(void* const handle, void* const gain, const bool wait_for_msg_processed) {
   const auto* wrapper = static_cast<ControllerWrapper*>(handle);
   const auto g = gain == nullptr ? nullptr : static_cast<GainWrapper*>(gain)->ptr;
-  AUTD3_CAPI_TRY(return wrapper->ptr->send(g))
+  AUTD3_CAPI_TRY(return wrapper->ptr->send(g, wait_for_msg_processed))
 }
 bool AUTDSendModulation(void* const handle, void* const mod) {
   const auto* wrapper = static_cast<ControllerWrapper*>(handle);
   const auto m = mod == nullptr ? nullptr : static_cast<ModulationWrapper*>(mod)->ptr;
   AUTD3_CAPI_TRY(return wrapper->ptr->send(m))
 }
-bool AUTDSendGainModulation(void* const handle, void* const gain, void* const mod) {
+bool AUTDSendGainModulation(void* const handle, void* const gain, void* const mod, const bool wait_for_msg_processed) {
   const auto* wrapper = static_cast<ControllerWrapper*>(handle);
   const auto g = gain == nullptr ? nullptr : static_cast<GainWrapper*>(gain)->ptr;
   const auto m = mod == nullptr ? nullptr : static_cast<ModulationWrapper*>(mod)->ptr;
-  AUTD3_CAPI_TRY(return wrapper->ptr->send(g, m))
+  AUTD3_CAPI_TRY(return wrapper->ptr->send(g, m, wait_for_msg_processed))
 }
 bool AUTDSendSequence(void* const handle, void* const seq) {
   const auto* wrapper = static_cast<ControllerWrapper*>(handle);

@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/09/2021
+// Last Modified: 07/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -91,9 +91,9 @@ EXPORT_AUTD void AUTDCircumSequence(void** out, double x, double y, double z, do
 EXPORT_AUTD bool AUTDStop(void* handle);
 EXPORT_AUTD bool AUTDPause(void* handle);
 EXPORT_AUTD bool AUTDResume(void* handle);
-EXPORT_AUTD bool AUTDSendGain(void* handle, void* gain);
+EXPORT_AUTD bool AUTDSendGain(void* handle, void* gain, bool wait_for_msg_processed);
 EXPORT_AUTD bool AUTDSendModulation(void* handle, void* mod);
-EXPORT_AUTD bool AUTDSendGainModulation(void* handle, void* gain, void* mod);
+EXPORT_AUTD bool AUTDSendGainModulation(void* handle, void* gain, void* mod, bool wait_for_msg_processed);
 EXPORT_AUTD bool AUTDSendSequence(void* handle, void* seq);
 EXPORT_AUTD bool AUTDSendGainSequence(void* handle, void* seq);
 
