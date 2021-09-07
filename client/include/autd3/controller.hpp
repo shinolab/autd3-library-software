@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/09/2021
+// Last Modified: 07/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -161,14 +161,14 @@ class Controller {
    * @brief Send gain to the device
    * @param[in] gain Gain to display
    * @param[in] wait_for_msg_processed if true, this function waits until the data is processed in the devices
-   * \return if true, It guarantees that the devices have processed the data
+   * \return if true, it guarantees that the devices have processed the data
    */
   bool send(const core::GainPtr& gain, bool wait_for_msg_processed = true);
 
   /**
    * @brief Send modulation to the device
    * @param[in] mod Amplitude modulation to display
-   * \return if true, It guarantees that the devices have processed the data
+   * \return if true, it guarantees that the devices have processed the data
    */
   bool send(const core::ModulationPtr& mod);
 
@@ -178,21 +178,21 @@ class Controller {
    * @param[in] mod Amplitude modulation to display
    * @param[in] wait_for_msg_processed see details
    * @details if wait_for_msg_processed is true OR mod is not nullptr, this function waits until the data is processed in the devices
-   * \return if true, It guarantees that the devices have processed the data
+   * \return if true, it guarantees that the devices have processed the data
    */
   bool send(const core::GainPtr& gain, const core::ModulationPtr& mod, bool wait_for_msg_processed = true);
 
   /**
    * @brief Send sequence to the device
    * @param[in] seq Sequence to display
-   * \return if true, It guarantees that the devices have processed the data
+   * \return if true, it guarantees that the devices have processed the data
    */
   bool send(const core::PointSequencePtr& seq);
 
   /**
    * @brief Send sequence to the device
    * @param[in] seq Sequence to display
-   * \return if true, It guarantees that the devices have processed the data
+   * \return if true, it guarantees that the devices have processed the data
    */
   bool send(const core::GainSequencePtr& seq);
 
