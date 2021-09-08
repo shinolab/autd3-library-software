@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 07/09/2021
+// Last Modified: 08/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -101,8 +101,10 @@ class Backend {
   virtual void real(std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixX> b) = 0;
   virtual void arg(std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> c) = 0;
   virtual void pseudo_inverse_svd(std::shared_ptr<MatrixXc> matrix, double alpha, std::shared_ptr<MatrixXc> result) = 0;
+  virtual void pseudo_inverse_svd(std::shared_ptr<MatrixX> matrix, double alpha, std::shared_ptr<MatrixX> result) = 0;
   virtual void max_eigen_vector(std::shared_ptr<MatrixXc> matrix, std::shared_ptr<MatrixXc> ev) = 0;
   virtual void matrix_add(double alpha, std::shared_ptr<MatrixX> a, std::shared_ptr<MatrixX> b) = 0;
+  virtual void matrix_add(complex alpha, std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> b) = 0;
   virtual void matrix_mul(TRANSPOSE trans_a, TRANSPOSE trans_b, complex alpha, std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> b, complex beta,
                           std::shared_ptr<MatrixXc> c) = 0;
   virtual void matrix_mul(TRANSPOSE trans_a, TRANSPOSE trans_b, double alpha, std::shared_ptr<MatrixX> a, std::shared_ptr<MatrixX> b, double beta,

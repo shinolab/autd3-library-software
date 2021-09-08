@@ -176,6 +176,53 @@ void CUDABackend::pseudo_inverse_svd(const std::shared_ptr<MatrixXc> matrix, con
   cudaFree(workspace_buffer_on_device);
   free(workspace_buffer_on_host);
 }
+void CUDABackend::pseudo_inverse_svd(const std::shared_ptr<MatrixX> matrix, const double alpha, const std::shared_ptr<MatrixX> result) {
+  const auto nc = matrix->data.cols();
+  const auto nr = matrix->data.rows();
+
+  const auto lda = static_cast<int>(nr);
+  const auto ldu = static_cast<int>(nr);
+  const auto ldv = static_cast<int>(nc);
+
+  const auto s_size = std::min(nr, nc);
+  double* d_s = nullptr;
+  cudaMalloc((void**)&d_s, sizeof(double) * s_size);
+  const auto a = this->allocate_matrix("_pis_a", matrix->data.rows(), matrix->data.cols());
+  const auto u = this->allocate_matrix("_pis_u", nr, nr);
+  const auto v = this->allocate_matrix("_pis_v", nc, nc);
+  cudaMemcpy(a->ptr(), matrix->ptr(), matrix->data.rows() * matrix->data.cols() * sizeof(double), cudaMemcpyDeviceToDevice);
+
+  size_t workspace_in_bytes_on_device;
+  size_t workspace_in_bytes_on_host;
+
+  cusolverDnXgesvdp_bufferSize(_handle_s, NULL, cusolverEigMode_t::CUSOLVER_EIG_MODE_VECTOR, 0, static_cast<int>(nr), static_cast<int>(nc),
+                               cudaDataType::CUDA_R_64F, a->ptr(), lda, cudaDataType::CUDA_R_64F, d_s, cudaDataType::CUDA_R_64F, u->ptr(), ldu,
+                               cudaDataType::CUDA_R_64F, v->ptr(), ldv, cudaDataType::CUDA_R_64F, &workspace_in_bytes_on_device,
+                               &workspace_in_bytes_on_host);
+  void* workspace_buffer_on_device = nullptr;
+  void* workspace_buffer_on_host = nullptr;
+  cudaMalloc((void**)&workspace_buffer_on_device, workspace_in_bytes_on_device);
+  if (workspace_in_bytes_on_host > 0) workspace_buffer_on_host = (void*)malloc(workspace_in_bytes_on_host);
+
+  int* info;
+  cudaMalloc((void**)&info, sizeof(int));
+  double h_err_sigma;
+  cusolverDnXgesvdp(_handle_s, NULL, cusolverEigMode_t::CUSOLVER_EIG_MODE_VECTOR, 0, static_cast<int>(nr), static_cast<int>(nc),
+                    cudaDataType::CUDA_R_64F, a->ptr(), lda, cudaDataType::CUDA_R_64F, d_s, cudaDataType::CUDA_R_64F, u->ptr(), ldu,
+                    cudaDataType::CUDA_R_64F, v->ptr(), ldv, cudaDataType::CUDA_R_64F, workspace_buffer_on_device, workspace_in_bytes_on_device,
+                    workspace_buffer_on_host, workspace_in_bytes_on_host, info, &h_err_sigma);
+
+  const auto singular_inv = this->allocate_matrix("_pis_si", nc, nr);
+  calc_singular_inv(d_s, (uint32_t)s_size, alpha, singular_inv->ptr());
+
+  const auto tmp = this->allocate_matrix("_pis_tmp", nc, nr);
+  CUDABackend::matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::TRANS, 1.0, singular_inv, u, 0.0, tmp);
+  CUDABackend::matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, 1.0, v, tmp, 0.0, result);
+  cudaFree(d_s);
+  cudaFree(info);
+  cudaFree(workspace_buffer_on_device);
+  free(workspace_buffer_on_host);
+}
 void CUDABackend::max_eigen_vector(const std::shared_ptr<MatrixXc> matrix, const std::shared_ptr<MatrixXc> ev) {
   const auto size = matrix->data.cols();
 
@@ -208,6 +255,10 @@ void CUDABackend::max_eigen_vector(const std::shared_ptr<MatrixXc> matrix, const
 
 void CUDABackend::matrix_add(const double alpha, const std::shared_ptr<MatrixX> a, const std::shared_ptr<MatrixX> b) {
   cublasDaxpy_v2(_handle, static_cast<int>(a->data.size()), &alpha, a->ptr(), 1, b->ptr(), 1);
+}
+void CUDABackend::matrix_add(const complex alpha, const std::shared_ptr<MatrixXc> a, const std::shared_ptr<MatrixXc> b) {
+  cublasZaxpy_v2(_handle, static_cast<int>(a->data.size()), (const cuDoubleComplex*)&alpha, (const cuDoubleComplex*)a->ptr(), 1,
+                 (cuDoubleComplex*)b->ptr(), 1);
 }
 void CUDABackend::matrix_mul(const TRANSPOSE trans_a, const TRANSPOSE trans_b, const complex alpha, const std::shared_ptr<MatrixXc> a,
                              const std::shared_ptr<MatrixXc> b, const complex beta, const std::shared_ptr<MatrixXc> c) {

@@ -4,7 +4,7 @@
  * Created Date: 06/09/2021
  * Author: Shun Suzuki
  * -----
- * Last Modified: 07/09/2021
+ * Last Modified: 08/09/2021
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -165,7 +165,24 @@ __global__ void calc_singular_inv_kernel(double* d_s, uint32_t s_size, double al
     p_singular_inv[xi + yi * s_size] = make_cuDoubleComplex(d_s[xi] / (d_s[xi] * d_s[xi] + alpha), 0.0);
 }
 
+__global__ void calc_singular_inv_kernel(double* d_s, uint32_t s_size, double alpha, double* p_singular_inv) {
+  int xi = blockIdx.x * blockDim.x + threadIdx.x;
+  int yi = blockIdx.y * blockDim.y + threadIdx.y;
+  if (xi >= s_size || yi >= s_size) return;
+
+  if (xi != yi)
+    p_singular_inv[xi + yi * s_size] = 0.0;
+  else
+    p_singular_inv[xi + yi * s_size] = d_s[xi] / (d_s[xi] * d_s[xi] + alpha);
+}
+
 void calc_singular_inv(double* d_s, uint32_t s_size, double alpha, cuDoubleComplex* p_singular_inv) {
+  dim3 block(BLOCK_SIZE, BLOCK_SIZE, 1);
+  dim3 grid((s_size - 1) / BLOCK_SIZE + 1, (s_size - 1) / BLOCK_SIZE + 1, 1);
+  calc_singular_inv_kernel<<<grid, block>>>(d_s, s_size, alpha, p_singular_inv);
+}
+
+void calc_singular_inv(double* d_s, uint32_t s_size, double alpha, double* p_singular_inv) {
   dim3 block(BLOCK_SIZE, BLOCK_SIZE, 1);
   dim3 grid((s_size - 1) / BLOCK_SIZE + 1, (s_size - 1) / BLOCK_SIZE + 1, 1);
   calc_singular_inv_kernel<<<grid, block>>>(d_s, s_size, alpha, p_singular_inv);
