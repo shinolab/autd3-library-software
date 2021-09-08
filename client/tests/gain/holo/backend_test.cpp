@@ -3,7 +3,7 @@
 // Created Date: 13/08/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 07/09/2021
+// Last Modified: 08/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -49,23 +49,23 @@ class BackendTest : public testing::Test {
 
 using testing::Types;
 
-// FIXME: make more elegant
+#define Eigen3BackendType autd::gain::holo::Eigen3Backend
+
 #ifdef TEST_BLAS_BACKEND
 #include "autd3/gain/blas_backend.hpp"
+#define BLASBackendType , autd::gain::holo::BLASBackend
+#else
+#define BLASBackendType
+#endif
+
 #ifdef TEST_CUDA_BACKEND
 #include "autd3/gain/cuda_backend.hpp"
-typedef Types<autd::gain::holo::Eigen3Backend, autd::gain::holo::BLASBackend, autd::gain::holo::CUDABackend> Implementations;
+#define CUDABackendType , autd::gain::holo::CUDABackend
 #else
-typedef Types<autd::gain::holo::Eigen3Backend, autd::gain::holo::BLASBackend> Implementations;
+#define CUDABackendType
 #endif
-#else
-#ifdef TEST_CUDA_BACKEND
-#include "autd3/gain/cuda_backend.hpp"
-typedef Types<autd::gain::holo::Eigen3Backend, autd::gain::holo::CUDABackend> Implementations;
-#else
-typedef Types<autd::gain::holo::Eigen3Backend> Implementations;
-#endif
-#endif
+
+typedef Types<Eigen3BackendType BLASBackendType CUDABackendType> Implementations;
 
 TYPED_TEST_SUITE(BackendTest, Implementations);
 
@@ -176,6 +176,26 @@ TYPED_TEST(BackendTest, arg) {
 
 TYPED_TEST(BackendTest, pseudo_inverse_svd) {
   constexpr auto n = 5;
+  auto a = this->_backend->allocate_matrix("a", n, n);
+  a->copy_from(random_vector(n * n));
+
+  auto b = this->_backend->allocate_matrix("b", n, n);
+  this->_backend->pseudo_inverse_svd(a, 1e-4, b);
+
+  auto c = this->_backend->allocate_matrix("c", n, n);
+  this->_backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, 1.0, a, b, 0.0, c);
+  c->copy_to_host();
+  for (Eigen::Index i = 0; i < n; i++)
+    for (Eigen::Index j = 0; j < n; j++) {
+      if (i == j)
+        ASSERT_NEAR(c->data(i, j), 1.0, 0.1);
+      else
+        ASSERT_NEAR(c->data(i, j), 0.0, 0.1);
+    }
+}
+
+TYPED_TEST(BackendTest, pseudo_inverse_svd_c) {
+  constexpr auto n = 5;
   auto a = this->_backend->allocate_matrix_c("a", n, n);
   a->copy_from(random_vector_complex(n * n));
 
@@ -188,9 +208,9 @@ TYPED_TEST(BackendTest, pseudo_inverse_svd) {
   for (Eigen::Index i = 0; i < n; i++)
     for (Eigen::Index j = 0; j < n; j++) {
       if (i == j)
-        ASSERT_NEAR(c->data(i, j).real(), 1.0, 0.05);
+        ASSERT_NEAR(c->data(i, j).real(), 1.0, 0.1);
       else
-        ASSERT_NEAR(c->data(i, j).real(), 0.0, 0.05);
+        ASSERT_NEAR(c->data(i, j).real(), 0.0, 0.1);
       ASSERT_NEAR(c->data(i, j).imag(), 0.0, 0.05);
     }
 }

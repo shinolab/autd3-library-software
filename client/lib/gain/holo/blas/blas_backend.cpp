@@ -3,7 +3,7 @@
 // Created Date: 17/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/09/2021
+// Last Modified: 08/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -30,10 +30,12 @@
 
 namespace autd::gain::holo {
 
-constexpr auto AUTD_GESVD = LAPACKE_zgesdd;
+constexpr auto AUTD_GESVD = LAPACKE_dgesdd;
+constexpr auto AUTD_GESVDC = LAPACKE_zgesdd;
 constexpr auto AUTD_HEEV = LAPACKE_zheev;
 constexpr auto AUTD_ZSCAL = cblas_zscal;
 constexpr auto AUTD_AXPY = cblas_daxpy;
+constexpr auto AUTD_AXPYC = cblas_zaxpy;
 constexpr auto AUTD_DGEMM = cblas_dgemm;
 constexpr auto AUTD_ZGEMM = cblas_zgemm;
 constexpr auto AUTD_DOTC = cblas_zdotc_sub;
@@ -62,7 +64,7 @@ void BLASBackend::pseudo_inverse_svd(const std::shared_ptr<MatrixXc> matrix, con
   const auto vt = this->allocate_matrix_c("_pis_vt", nc, nc);
 
   Eigen::Matrix<complex, -1, -1, Eigen::ColMajor> m = matrix->data;
-  AUTD_GESVD(LAPACK_COL_MAJOR, 'A', static_cast<int>(nr), static_cast<int>(nc), m.data(), lda, s.get(), u->data.data(), ldu, vt->data.data(), ldvt);
+  AUTD_GESVDC(LAPACK_COL_MAJOR, 'A', static_cast<int>(nr), static_cast<int>(nc), m.data(), lda, s.get(), u->data.data(), ldu, vt->data.data(), ldvt);
   Eigen::Matrix<complex, -1, -1, Eigen::ColMajor> singular_inv = Eigen::Matrix<complex, -1, -1, Eigen::ColMajor>::Zero(nc, nr);
   for (int i = 0; i < s_size; i++) singular_inv(i, i) = s[i] / (s[i] * s[i] + alpha);
 
@@ -70,6 +72,30 @@ void BLASBackend::pseudo_inverse_svd(const std::shared_ptr<MatrixXc> matrix, con
   const auto tmp = this->allocate_matrix_c("_pis_tmp", nc, nr);
   BLASBackend::matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::CONJ_TRANS, ONE, si, u, ZERO, tmp);
   BLASBackend::matrix_mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, ONE, vt, tmp, ZERO, result);
+}
+
+void BLASBackend::pseudo_inverse_svd(const std::shared_ptr<MatrixX> matrix, const double alpha, const std::shared_ptr<MatrixX> result) {
+  const auto nc = matrix->data.cols();
+  const auto nr = matrix->data.rows();
+
+  const auto lda = static_cast<int>(nr);
+  const auto ldu = static_cast<int>(nr);
+  const auto ldvt = static_cast<int>(nc);
+
+  const auto s_size = std::min(nr, nc);
+  const auto s = std::make_unique<double[]>(s_size);
+  const auto u = this->allocate_matrix("_pis_u", nr, nr);
+  const auto vt = this->allocate_matrix("_pis_vt", nc, nc);
+
+  Eigen::Matrix<double, -1, -1, Eigen::ColMajor> m = matrix->data;
+  AUTD_GESVD(LAPACK_COL_MAJOR, 'A', static_cast<int>(nr), static_cast<int>(nc), m.data(), lda, s.get(), u->data.data(), ldu, vt->data.data(), ldvt);
+  Eigen::Matrix<double, -1, -1, Eigen::ColMajor> singular_inv = Eigen::Matrix<double, -1, -1, Eigen::ColMajor>::Zero(nc, nr);
+  for (int i = 0; i < s_size; i++) singular_inv(i, i) = s[i] / (s[i] * s[i] + alpha);
+
+  const auto si = std::make_shared<EigenMatrix<double>>(singular_inv);
+  const auto tmp = this->allocate_matrix("_pis_tmp", nc, nr);
+  BLASBackend::matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::TRANS, 1.0, si, u, 0.0, tmp);
+  BLASBackend::matrix_mul(TRANSPOSE::TRANS, TRANSPOSE::NO_TRANS, 1.0, vt, tmp, 0.0, result);
 }
 
 void BLASBackend::max_eigen_vector(const std::shared_ptr<MatrixXc> matrix, const std::shared_ptr<MatrixXc> ev) {
@@ -81,6 +107,9 @@ void BLASBackend::max_eigen_vector(const std::shared_ptr<MatrixXc> matrix, const
 
 void BLASBackend::matrix_add(const double alpha, const std::shared_ptr<MatrixX> a, const std::shared_ptr<MatrixX> b) {
   AUTD_AXPY(static_cast<int>(a->data.size()), alpha, a->data.data(), 1, b->data.data(), 1);
+}
+void BLASBackend::matrix_add(const complex alpha, const std::shared_ptr<MatrixXc> a, const std::shared_ptr<MatrixXc> b) {
+  AUTD_AXPYC(static_cast<int>(a->data.size()), &alpha, a->data.data(), 1, b->data.data(), 1);
 }
 
 void BLASBackend::matrix_mul(const TRANSPOSE trans_a, const TRANSPOSE trans_b, const complex alpha, const std::shared_ptr<MatrixXc> a,

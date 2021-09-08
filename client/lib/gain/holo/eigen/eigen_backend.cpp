@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 07/09/2021
+// Last Modified: 08/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -36,6 +36,13 @@ void Eigen3Backend::pseudo_inverse_svd(const std::shared_ptr<MatrixXc> matrix, c
 
   result->data.noalias() = svd.matrixV() * singular_values_inv.asDiagonal() * svd.matrixU().adjoint();
 }
+void Eigen3Backend::pseudo_inverse_svd(const std::shared_ptr<MatrixX> matrix, const double alpha, const std::shared_ptr<MatrixX> result) {
+  const Eigen::BDCSVD svd(matrix->data, Eigen::ComputeFullU | Eigen::ComputeFullV);
+  auto singular_values_inv = svd.singularValues();
+  const auto size = singular_values_inv.size();
+  for (Eigen::Index i = 0; i < size; i++) singular_values_inv(i) = singular_values_inv(i) / (singular_values_inv(i) * singular_values_inv(i) + alpha);
+  result->data.noalias() = svd.matrixV() * singular_values_inv.asDiagonal() * svd.matrixU().transpose();
+}
 void Eigen3Backend::max_eigen_vector(const std::shared_ptr<MatrixXc> matrix, const std::shared_ptr<MatrixXc> ev) {
   const Eigen::ComplexEigenSolver<Eigen::Matrix<complex, -1, -1, Eigen::ColMajor>> ces(matrix->data);
   auto idx = 0;
@@ -45,6 +52,9 @@ void Eigen3Backend::max_eigen_vector(const std::shared_ptr<MatrixXc> matrix, con
 }
 
 void Eigen3Backend::matrix_add(const double alpha, const std::shared_ptr<MatrixX> a, const std::shared_ptr<MatrixX> b) {
+  b->data.noalias() += alpha * a->data;
+}
+void Eigen3Backend::matrix_add(const complex alpha, const std::shared_ptr<MatrixXc> a, const std::shared_ptr<MatrixXc> b) {
   b->data.noalias() += alpha * a->data;
 }
 void Eigen3Backend::matrix_mul(const TRANSPOSE trans_a, const TRANSPOSE trans_b, const complex alpha, const std::shared_ptr<MatrixXc> a,
