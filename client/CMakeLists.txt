@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.16)
 project(autd3)
 set(VERSION_MAJOR   1   CACHE STRING "Project major version number.")
 set(VERSION_MINOR   7   CACHE STRING "Project minor version number.")
-set(VERSION_PATCH   1   CACHE STRING "Project patch version number.")
+set(VERSION_PATCH   2   CACHE STRING "Project patch version number.")
 mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
 
 set (CMAKE_CXX_STANDARD 17)
@@ -29,6 +29,8 @@ option(BUILD_EXAMPLES "BUILD_EXAMPLES" ON)
 option(BUILD_CAPI "BUILD_CAPI" OFF)
 option(ENABLE_LINT "ENABLE_LINT" OFF)
 option(BUILD_TEST "BUILD_TEST" OFF)
+
+option(BUILD_WITH_STATIC_CRT "BUILD_WITH_STATIC_CRT" OFF)
 
 if(BUILD_ALL)
   set(BUILD_HOLO_GAIN ON)
