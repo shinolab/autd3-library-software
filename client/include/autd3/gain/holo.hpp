@@ -194,16 +194,18 @@ class NLS : public Holo {
       : Holo(backend, foci, amps), _eps(eps), _k_max(k_max), _initial(std::move(initial)) {}
 
  protected:
-  static std::shared_ptr<MatrixXc> make_BhB(const BackendPtr& backend, const std::vector<core::Vector3>& foci, const std::shared_ptr<MatrixXc>& amps,
+  static std::shared_ptr<MatrixXc> make_bhb(const BackendPtr& backend, const std::vector<core::Vector3>& foci, const std::shared_ptr<MatrixXc>& amps,
                                             const core::GeometryPtr& geo);
-  static void make_T(const BackendPtr& backend, const std::shared_ptr<MatrixX>& zero, std::shared_ptr<MatrixX> x, std::shared_ptr<MatrixXc> T);
-  static void calc_Jtf(const BackendPtr& backend, std::shared_ptr<MatrixXc> BhB, std::shared_ptr<MatrixXc> T, std::shared_ptr<MatrixXc> TTh,
-                       std::shared_ptr<MatrixXc> BhB_TTh, std::shared_ptr<MatrixX> Jtf);
-  static void calc_JtJ_Jtf(const BackendPtr& backend, std::shared_ptr<MatrixXc> BhB, std::shared_ptr<MatrixXc> T, std::shared_ptr<MatrixXc> TTh,
-                           std::shared_ptr<MatrixXc> BhB_TTh, std::shared_ptr<MatrixX> JtJ, std::shared_ptr<MatrixX> Jtf);
-  static double calc_Fx(const BackendPtr& backend, std::shared_ptr<MatrixXc> BhB, const std::shared_ptr<MatrixX>& zero, std::shared_ptr<MatrixX> x,
-                        std::shared_ptr<MatrixXc> t, std::shared_ptr<MatrixXc> buf);
-  void set_result(std::shared_ptr<MatrixX> x, size_t n);
+  static void make_t(const BackendPtr& backend, const std::shared_ptr<MatrixX>& zero, const std::shared_ptr<MatrixX>& x,
+                     const std::shared_ptr<MatrixXc>& t);
+  static void calc_jtf(const BackendPtr& backend, const std::shared_ptr<MatrixXc>& bh_b, const std::shared_ptr<MatrixXc>& t,
+                       const std::shared_ptr<MatrixXc>& tth, const std::shared_ptr<MatrixXc>& bhb_tth, const std::shared_ptr<MatrixX>& jtf);
+  static void calc_jtj_jtf(const BackendPtr& backend, const std::shared_ptr<MatrixXc>& bhb, const std::shared_ptr<MatrixXc>& t,
+                           const std::shared_ptr<MatrixXc>& tth, const std::shared_ptr<MatrixXc>& bhb_tth, const std::shared_ptr<MatrixX>& jtj,
+                           const std::shared_ptr<MatrixX>& jtf);
+  static double calc_fx(const BackendPtr& backend, const std::shared_ptr<MatrixXc>& bh_b, const std::shared_ptr<MatrixX>& zero,
+                        const std::shared_ptr<MatrixX>& x, const std::shared_ptr<MatrixXc>& t, const std::shared_ptr<MatrixXc>& buf);
+  void set_result(const std::shared_ptr<MatrixX>& x, size_t n);
 
   double _eps;
   size_t _k_max;
@@ -322,7 +324,9 @@ class APO final : public Holo {
    * @param[in] backend linear algebra calculation backend
    * @param[in] foci focal points
    * @param[in] amps amplitudes of the foci
-   * @param[in] repeat parameter
+   * @param[in] eps parameter
+   * @param[in] lambda parameter
+   * @param[in] k_max parameter
    */
   static std::shared_ptr<APO> create(const BackendPtr& backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps,
                                      const double eps = 1e-8, const double lambda = 1.0, const size_t k_max = 200) {
