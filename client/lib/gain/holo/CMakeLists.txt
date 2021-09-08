@@ -31,6 +31,16 @@ if(BUILD_CUDA_BACKEND)
   endif()
 endif()
 
+# ArrayFire backend
+if(BUILD_ARRAYFIRE_BACKEND)
+  find_package(ArrayFire REQUIRED)
+  if(ArrayFire_FOUND AND CUDAToolkit_FOUND)
+    message("ArrayFire version: " ${ArrayFire_VERSION})
+    add_subdirectory(array_fire)
+    target_link_libraries(holo_gain INTERFACE arrayfire_backend)
+  endif()
+endif()
+
 set_target_properties(holo_gain
     PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"

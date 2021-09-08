@@ -65,7 +65,14 @@ using testing::Types;
 #define CUDABackendType
 #endif
 
-typedef Types<Eigen3BackendType BLASBackendType CUDABackendType> Implementations;
+#ifdef TEST_ARRAYFIRE_BACKEND
+#include "autd3/gain/arrayfire_backend.hpp"
+#define ArrayFireBackendType , autd::gain::holo::ArrayFireBackend
+#else
+#define ArrayFireBackendType
+#endif
+
+typedef Types<Eigen3BackendType BLASBackendType CUDABackendType ArrayFireBackendType> Implementations;
 
 TYPED_TEST_SUITE(BackendTest, Implementations);
 
