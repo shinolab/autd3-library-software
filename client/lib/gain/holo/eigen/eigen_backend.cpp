@@ -204,7 +204,7 @@ std::shared_ptr<MatrixXc> Eigen3Backend::transfer_matrix(const double* foci, con
 
 void Eigen3Backend::set_bcd_result(const std::shared_ptr<MatrixXc> mat, const std::shared_ptr<MatrixXc> vec, const size_t index) {
   const Eigen::Index m = vec->data.size();
-  const Eigen::Index idx = static_cast<Eigen::Index>(index);
+  const auto idx = static_cast<Eigen::Index>(index);
   for (Eigen::Index i = 0; i < idx; i++) mat->data(idx, i) = std::conj(vec->data(i, 0));
   for (Eigen::Index i = idx + 1; i < m; i++) mat->data(idx, i) = std::conj(vec->data(i, 0));
   for (Eigen::Index i = 0; i < idx; i++) mat->data(i, idx) = vec->data(i, 0);

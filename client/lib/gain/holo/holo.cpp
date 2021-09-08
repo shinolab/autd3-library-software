@@ -227,7 +227,7 @@ void GSPAT::calc(const core::GeometryPtr& geometry) {
   _built = true;
 }
 
-std::shared_ptr<MatrixXc> NLS::make_BhB(const BackendPtr& backend, const std::vector<core::Vector3>& foci, const std::shared_ptr<MatrixXc>& amps,
+std::shared_ptr<MatrixXc> NLS::make_bhb(const BackendPtr& backend, const std::vector<core::Vector3>& foci, const std::shared_ptr<MatrixXc>& amps,
                                         const core::GeometryPtr& geo) {
   const auto m = static_cast<Eigen::Index>(foci.size());
   const auto n = static_cast<Eigen::Index>(geo->num_transducers());
@@ -247,37 +247,39 @@ std::shared_ptr<MatrixXc> NLS::make_BhB(const BackendPtr& backend, const std::ve
   return bhb;
 }
 
-void NLS::make_T(const BackendPtr& backend, const std::shared_ptr<MatrixX>& zero, const std::shared_ptr<MatrixX> x, std::shared_ptr<MatrixXc> T) {
-  backend->make_complex(zero, x, T);
-  backend->scale(T, complex(-1, 0));
-  backend->exp(T);
+void NLS::make_t(const BackendPtr& backend, const std::shared_ptr<MatrixX>& zero, const std::shared_ptr<MatrixX>& x,
+                 const std::shared_ptr<MatrixXc>& t) {
+  backend->make_complex(zero, x, t);
+  backend->scale(t, complex(-1, 0));
+  backend->exp(t);
 }
 
-void NLS::calc_Jtf(const BackendPtr& backend, const std::shared_ptr<MatrixXc> BhB, const std::shared_ptr<MatrixXc> T,
-                   const std::shared_ptr<MatrixXc> TTh, const std::shared_ptr<MatrixXc> BhB_TTh, const std::shared_ptr<MatrixX> Jtf) {
-  backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::CONJ_TRANS, ONE, T, T, ZERO, TTh);
-  backend->hadamard_product(BhB, TTh, BhB_TTh);
-  backend->col_sum_imag(BhB_TTh, Jtf);
+void NLS::calc_jtf(const BackendPtr& backend, const std::shared_ptr<MatrixXc>& bh_b, const std::shared_ptr<MatrixXc>& t,
+                   const std::shared_ptr<MatrixXc>& tth, const std::shared_ptr<MatrixXc>& bhb_tth, const std::shared_ptr<MatrixX>& jtf) {
+  backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::CONJ_TRANS, ONE, t, t, ZERO, tth);
+  backend->hadamard_product(bh_b, tth, bhb_tth);
+  backend->col_sum_imag(bhb_tth, jtf);
 }
 
-void NLS::calc_JtJ_Jtf(const BackendPtr& backend, std::shared_ptr<MatrixXc> BhB, std::shared_ptr<MatrixXc> T, std::shared_ptr<MatrixXc> TTh,
-                       std::shared_ptr<MatrixXc> BhB_TTh, std::shared_ptr<MatrixX> JtJ, std::shared_ptr<MatrixX> Jtf) {
-  backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::CONJ_TRANS, ONE, T, T, ZERO, TTh);
-  backend->hadamard_product(BhB, TTh, BhB_TTh);
-  backend->real(BhB_TTh, JtJ);
-  backend->col_sum_imag(BhB_TTh, Jtf);
+void NLS::calc_jtj_jtf(const BackendPtr& backend, const std::shared_ptr<MatrixXc>& bhb, const std::shared_ptr<MatrixXc>& t,
+                       const std::shared_ptr<MatrixXc>& tth, const std::shared_ptr<MatrixXc>& bhb_tth, const std::shared_ptr<MatrixX>& jtj,
+                       const std::shared_ptr<MatrixX>& jtf) {
+  backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::CONJ_TRANS, ONE, t, t, ZERO, tth);
+  backend->hadamard_product(bhb, tth, bhb_tth);
+  backend->real(bhb_tth, jtj);
+  backend->col_sum_imag(bhb_tth, jtf);
 }
 
-double NLS::calc_Fx(const BackendPtr& backend, std::shared_ptr<MatrixXc> BhB, const std::shared_ptr<MatrixX>& zero, std::shared_ptr<MatrixX> x,
-                    std::shared_ptr<MatrixXc> t, std::shared_ptr<MatrixXc> buf) {
+double NLS::calc_fx(const BackendPtr& backend, const std::shared_ptr<MatrixXc>& bh_b, const std::shared_ptr<MatrixX>& zero,
+                    const std::shared_ptr<MatrixX>& x, const std::shared_ptr<MatrixXc>& t, const std::shared_ptr<MatrixXc>& buf) {
   backend->make_complex(zero, x, t);
   backend->exp(t);
 
-  backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, BhB, t, ZERO, buf);
+  backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, bh_b, t, ZERO, buf);
   return backend->dot(t, buf).real();
 }
 
-void NLS::set_result(std::shared_ptr<MatrixX> x, const size_t n) {
+void NLS::set_result(const std::shared_ptr<MatrixX>& x, const size_t n) {
   x->copy_to_host();
   size_t dev_idx = 0;
   size_t trans_idx = 0;
@@ -301,7 +303,7 @@ void LM::calc(const core::GeometryPtr& geometry) {
   const auto amps = _backend->allocate_matrix_c("amps", m, 1);
   amps->copy_from(_amps);
 
-  const auto bhb = make_BhB(_backend, _foci, amps, geometry);
+  const auto bhb = make_bhb(_backend, _foci, amps, geometry);
 
   const auto x = _backend->allocate_matrix("x", n_param, 1);
   x->fill(0.0);
@@ -309,16 +311,16 @@ void LM::calc(const core::GeometryPtr& geometry) {
 
   auto nu = 2.0;
 
-  const auto T = _backend->allocate_matrix_c("T", n_param, 1);
+  const auto t = _backend->allocate_matrix_c("T", n_param, 1);
   const auto zero = _backend->allocate_matrix("zero", n_param, 1);
   zero->fill(0.0);
-  make_T(_backend, zero, x, T);
+  make_t(_backend, zero, x, t);
 
   const auto tth = _backend->allocate_matrix_c("tth", n_param, n_param);
   const auto bhb_tth = _backend->allocate_matrix_c("bhb_tth", n_param, n_param);
   const auto a = _backend->allocate_matrix("a", n_param, n_param);
   const auto g = _backend->allocate_matrix("g", n_param, 1);
-  calc_JtJ_Jtf(_backend, bhb, T, tth, bhb_tth, a, g);
+  calc_jtj_jtf(_backend, bhb, t, tth, bhb_tth, a, g);
 
   const auto a_diag = _backend->allocate_matrix("a_diag", n_param, 1);
   a->get_diagonal(a_diag);
@@ -327,8 +329,8 @@ void LM::calc(const core::GeometryPtr& geometry) {
   auto mu = _tau * a_max;
 
   const auto tmp_vec_c = _backend->allocate_matrix_c("tmp_vec_c", n_param, 1);
-  const auto t = _backend->allocate_matrix_c("t", n_param, 1);
-  double fx = calc_Fx(_backend, bhb, zero, x, t, tmp_vec_c);
+  const auto t_ = _backend->allocate_matrix_c("t", n_param, 1);
+  double fx = calc_fx(_backend, bhb, zero, x, t_, tmp_vec_c);
 
   const auto identity = _backend->allocate_matrix("identity", n_param, n_param);
   const auto one = _backend->allocate_matrix("one", n_param, 1);
@@ -350,7 +352,7 @@ void LM::calc(const core::GeometryPtr& geometry) {
     _backend->mat_cpy(x, x_new);
     _backend->matrix_add(-1.0, h_lm, x_new);
 
-    const double fx_new = calc_Fx(_backend, bhb, zero, x_new, t, tmp_vec_c);
+    const double fx_new = calc_fx(_backend, bhb, zero, x_new, t_, tmp_vec_c);
 
     _backend->mat_cpy(g, tmp_vec);
     _backend->matrix_add(mu, h_lm, tmp_vec);
@@ -361,8 +363,8 @@ void LM::calc(const core::GeometryPtr& geometry) {
     if (rho > 0) {
       _backend->mat_cpy(x_new, x);
 
-      make_T(_backend, zero, x, T);
-      calc_JtJ_Jtf(_backend, bhb, T, tth, bhb_tth, a, g);
+      make_t(_backend, zero, x, t);
+      calc_jtj_jtf(_backend, bhb, t, tth, bhb_tth, a, g);
 
       mu *= std::max(1. / 3., std::pow(1 - (2 * rho - 1), 3.0));
       nu = 2;
@@ -385,22 +387,22 @@ void GaussNewton::calc(const core::GeometryPtr& geometry) {
   const auto amps = _backend->allocate_matrix_c("amps", m, 1);
   amps->copy_from(_amps);
 
-  const auto bhb = make_BhB(_backend, _foci, amps, geometry);
+  const auto bhb = make_bhb(_backend, _foci, amps, geometry);
 
   const auto x = _backend->allocate_matrix("x", n_param, 1);
   x->fill(0.0);
   x->copy_from(_initial);
 
-  const auto T = _backend->allocate_matrix_c("T", n_param, 1);
+  const auto t = _backend->allocate_matrix_c("T", n_param, 1);
   const auto zero = _backend->allocate_matrix("zero", n_param, 1);
   zero->fill(0.0);
-  make_T(_backend, zero, x, T);
+  make_t(_backend, zero, x, t);
 
   const auto tth = _backend->allocate_matrix_c("tth", n_param, n_param);
   const auto bhb_tth = _backend->allocate_matrix_c("bhb_tth", n_param, n_param);
   const auto a = _backend->allocate_matrix("a", n_param, n_param);
   const auto g = _backend->allocate_matrix("g", n_param, 1);
-  calc_JtJ_Jtf(_backend, bhb, T, tth, bhb_tth, a, g);
+  calc_jtj_jtf(_backend, bhb, t, tth, bhb_tth, a, g);
 
   const auto h_lm = _backend->allocate_matrix("h_lm", n_param, 1);
   const auto pia = _backend->allocate_matrix("pis", n_param, n_param);
@@ -414,8 +416,8 @@ void GaussNewton::calc(const core::GeometryPtr& geometry) {
 
     _backend->matrix_add(-1.0, h_lm, x);
 
-    make_T(_backend, zero, x, T);
-    calc_JtJ_Jtf(_backend, bhb, T, tth, bhb_tth, a, g);
+    make_t(_backend, zero, x, t);
+    calc_jtj_jtf(_backend, bhb, t, tth, bhb_tth, a, g);
   }
 
   set_result(x, n);
@@ -431,13 +433,13 @@ void GradientDescent::calc(const core::GeometryPtr& geometry) {
   const auto amps = _backend->allocate_matrix_c("amps", m, 1);
   amps->copy_from(_amps);
 
-  const auto bhb = make_BhB(_backend, _foci, amps, geometry);
+  const auto bhb = make_bhb(_backend, _foci, amps, geometry);
 
   const auto x = _backend->allocate_matrix("x", n_param, 1);
   x->fill(0.0);
   x->copy_from(_initial);
 
-  const auto T = _backend->allocate_matrix_c("T", n_param, 1);
+  const auto t = _backend->allocate_matrix_c("T", n_param, 1);
   const auto zero = _backend->allocate_matrix("zero", n_param, 1);
   zero->fill(0.0);
 
@@ -445,8 +447,8 @@ void GradientDescent::calc(const core::GeometryPtr& geometry) {
   const auto bhb_tth = _backend->allocate_matrix_c("bhb_tth", n_param, n_param);
   const auto jtf = _backend->allocate_matrix("jtf", n_param, 1);
   for (size_t k = 0; k < _k_max; k++) {
-    make_T(_backend, zero, x, T);
-    calc_Jtf(_backend, bhb, T, tth, bhb_tth, jtf);
+    make_t(_backend, zero, x, t);
+    calc_jtf(_backend, bhb, t, tth, bhb_tth, jtf);
     if (jtf->max_element() <= _eps) break;
     _backend->matrix_add(-_step, jtf, x);
   }
@@ -457,7 +459,7 @@ void GradientDescent::calc(const core::GeometryPtr& geometry) {
 }
 
 void APO::calc(const core::GeometryPtr& geometry) {
-  auto make_ri = [](const BackendPtr& backend, std::shared_ptr<MatrixXc> g, const Eigen::Index i) {
+  auto make_ri = [](const BackendPtr& backend, const std::shared_ptr<MatrixXc>& g, const Eigen::Index i) {
     const auto m = g->data.rows();
     const auto n = g->data.cols();
 
@@ -472,8 +474,8 @@ void APO::calc(const core::GeometryPtr& geometry) {
     return ri;
   };
 
-  auto calc_nabla_j = [](const BackendPtr& backend, const std::shared_ptr<MatrixXc> p2, const std::shared_ptr<MatrixXc> q,
-                         const std::vector<std::shared_ptr<MatrixXc>>& ris, const double lambda, const std::shared_ptr<MatrixXc> nabla_j) {
+  auto calc_nabla_j = [](const BackendPtr& backend, const std::shared_ptr<MatrixXc>& p2, const std::shared_ptr<MatrixXc>& q,
+                         const std::vector<std::shared_ptr<MatrixXc>>& ris, const double lambda, const std::shared_ptr<MatrixXc>& nabla_j) {
     const auto n = q->data.rows();
 
     const auto tmp = backend->allocate_matrix_c("cnj_tmp", n, 1);
@@ -487,7 +489,7 @@ void APO::calc(const core::GeometryPtr& geometry) {
     backend->matrix_add(complex(lambda, 0), q, nabla_j);
   };
 
-  auto calc_j = [](const BackendPtr& backend, const std::shared_ptr<MatrixXc> p2, const std::shared_ptr<MatrixXc> q,
+  auto calc_j = [](const BackendPtr& backend, const std::shared_ptr<MatrixXc>& p2, const std::shared_ptr<MatrixXc>& q,
                    const std::vector<std::shared_ptr<MatrixXc>>& ris, const double lambda) {
     const auto n = q->data.rows();
 
@@ -503,15 +505,13 @@ void APO::calc(const core::GeometryPtr& geometry) {
     return j;
   };
 
-  auto line_search = [&calc_j](const BackendPtr& backend, const std::shared_ptr<MatrixXc> d, const std::shared_ptr<MatrixXc> p2,
-                               const std::shared_ptr<MatrixXc> q, const std::vector<std::shared_ptr<MatrixXc>>& ris, const double lambda,
-                               const size_t line_search_max) {
+  auto line_search = [&calc_j](const BackendPtr& backend, const std::shared_ptr<MatrixXc>& p2, const std::shared_ptr<MatrixXc>& q,
+                               const std::vector<std::shared_ptr<MatrixXc>>& ris, const double lambda, const size_t line_search_max) {
     auto alpha = 0.0;
     auto min = std::numeric_limits<double>::max();
     for (size_t i = 0; i < line_search_max; i++) {
       const auto a = static_cast<double>(i) / static_cast<double>(line_search_max);
-      const auto v = calc_j(backend, p2, q, ris, lambda);
-      if (v < min) {
+      if (const auto v = calc_j(backend, p2, q, ris, lambda); v < min) {
         alpha = a;
         min = v;
       }
@@ -556,7 +556,7 @@ void APO::calc(const core::GeometryPtr& geometry) {
   for (size_t k = 0; k < _k_max; k++) {
     _backend->matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, -ONE, h, nabla_j, ZERO, d);
 
-    const auto alpha = line_search(_backend, d, p2, q, ris, _lambda, _line_search_max);
+    const auto alpha = line_search(_backend, p2, q, ris, _lambda, _line_search_max);
 
     _backend->scale(d, complex(alpha, 0));
 
