@@ -6,7 +6,7 @@ add_library(arrayfire_backend
     ${PROJECT_SOURCE_DIR}/include/autd3/gain/arrayfire_backend.hpp
 )
 
-target_include_directories(arrayfire_backend PRIVATE ${ArrayFire_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
+target_include_directories(arrayfire_backend PUBLIC ${ArrayFire_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
 target_link_libraries(arrayfire_backend INTERFACE ${ArrayFire_LIBRARIES})
 
 set_target_properties(arrayfire_backend

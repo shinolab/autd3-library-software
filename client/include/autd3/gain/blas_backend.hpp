@@ -16,7 +16,7 @@
 namespace autd::gain::holo {
 
 /**
- * \brief Linear algebra calculation backend using BLAS and LAPACK.
+ * \brief BLAS matrix
  */
 template <typename T>
 struct BLASMatrix final : EigenMatrix<T> {
@@ -38,9 +38,10 @@ struct BLASMatrix final : EigenMatrix<T> {
   T dot(const std::shared_ptr<const EigenMatrix<T>>& a) override;
   [[nodiscard]] double max_element() const override;
 
-  void copy_from(const std::shared_ptr<const EigenMatrix<T>>& a) override { copy_from(a->data.data()); }
-  void copy_from(const std::vector<T>& v) override { copy_from(v.data()); }
-  void copy_from(const T* v) override;
+  void copy_from(const std::shared_ptr<const EigenMatrix<T>>& a) override { copy_from(a->data.data(), a->data.size()); }
+  void copy_from(const std::vector<T>& v) override { copy_from(v.data(), v.size()); }
+  void copy_from(const T* v) override { copy_from(v, this->data.size()); }
+  void copy_from(const T* v, size_t);
 };
 
 using BLASBackend = MatrixBufferPool<BLASMatrix<double>, BLASMatrix<complex>>;

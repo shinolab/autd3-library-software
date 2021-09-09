@@ -75,6 +75,7 @@ endif()
 
 add_compile_definitions(_USE_MATH_DEFINES)
 if(WIN32)
+  add_compile_definitions(NOMINMAX)
   add_compile_definitions(__STDC_LIMIT_MACROS)
 endif()
 

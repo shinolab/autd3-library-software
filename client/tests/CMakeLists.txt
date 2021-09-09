@@ -16,6 +16,7 @@ if(BUILD_HOLO_GAIN)
   endif()  
   if(BUILD_ARRAYFIRE_BACKEND)
     target_compile_definitions(test_autd3 PRIVATE TEST_ARRAYFIRE_BACKEND)
+    target_link_libraries(test_autd3 PRIVATE arrayfire_backend)
   endif()
 endif()
 

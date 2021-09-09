@@ -44,9 +44,9 @@ void EigenMatrix<complex>::transfer_matrix(const double* foci, const size_t foci
     for (size_t dev = 0; dev < positions.size(); dev++) {
       const double* p = positions[dev];
       const auto dir = core::Vector3(directions[dev][0], directions[dev][1], directions[dev][2]);
-      for (Eigen::Index j = 0; j < (Eigen::Index)core::NUM_TRANS_IN_UNIT; j++, k++) {
+      for (Eigen::Index j = 0; j < static_cast<Eigen::Index>(core::NUM_TRANS_IN_UNIT); j++, k++) {
         const auto pos = core::Vector3(p[3 * j], p[3 * j + 1], p[3 * j + 2]);
-        data(i, j) = utils::transfer(pos, dir, tp, wave_number, attenuation);
+        data(i, k) = utils::transfer(pos, dir, tp, wave_number, attenuation);
       }
     }
   }
@@ -66,7 +66,7 @@ void EigenMatrix<complex>::set_from_complex_drive(std::vector<core::DataArray>& 
   size_t trans_idx = 0;
   for (Eigen::Index j = 0; j < n; j++) {
     const auto f_amp = normalize ? 1.0 : std::abs(data(j, 0)) / max_coefficient;
-    const auto f_phase = std::arg(data(j)) / (2.0 * M_PI);
+    const auto f_phase = std::arg(data(j, 0)) / (2.0 * M_PI);
     const auto phase = core::Utilities::to_phase(f_phase);
     const auto duty = core::Utilities::to_duty(f_amp);
     dst[dev_idx][trans_idx++] = core::Utilities::pack_to_u16(duty, phase);

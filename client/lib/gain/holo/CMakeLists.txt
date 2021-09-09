@@ -30,7 +30,7 @@ endif()
 # ArrayFire backend
 if(BUILD_ARRAYFIRE_BACKEND)
   find_package(ArrayFire REQUIRED)
-  if(ArrayFire_FOUND AND CUDAToolkit_FOUND)
+  if(ArrayFire_FOUND)
     message("ArrayFire version: " ${ArrayFire_VERSION})
     add_subdirectory(array_fire)
     target_link_libraries(holo_gain INTERFACE arrayfire_backend)
