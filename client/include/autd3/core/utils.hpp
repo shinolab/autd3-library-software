@@ -3,7 +3,7 @@
 // Created Date: 08/06/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 20/07/2021
+// Last Modified: 08/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -13,6 +13,8 @@
 
 #include <algorithm>
 #include <cmath>
+
+#include "autd3/core/hardware_defined.hpp"
 
 namespace autd::core {
 

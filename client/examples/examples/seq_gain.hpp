@@ -3,7 +3,7 @@
 // Created Date: 20/07/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/08/2021
+// Last Modified: 09/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -19,7 +19,7 @@
 #include "autd3/gain/holo.hpp"
 
 using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SPACING_MM;
-using autd::gain::holo::Eigen3Backend;
+using autd::gain::holo::EigenBackend;
 
 inline void seq_gain_test(const autd::ControllerPtr& autd) {
   autd->silent_mode() = false;
@@ -28,7 +28,6 @@ inline void seq_gain_test(const autd::ControllerPtr& autd) {
   autd->send(m);
 
   const auto seq = autd::sequence::GainSequence::create();
-  const auto backend = Eigen3Backend::create();
 
   const autd::Vector3 center(TRANS_SPACING_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SPACING_MM * ((NUM_TRANS_Y - 1) / 2.0), 150.0);
   constexpr auto point_num = 200;
@@ -38,7 +37,7 @@ inline void seq_gain_test(const autd::ControllerPtr& autd) {
     const autd::Vector3 p(radius * std::cos(theta), radius * std::sin(theta), 0);
     std::vector<autd::Vector3> foci = {center + p, center - p};
     std::vector<double> amps = {1, 1};
-    const auto g = autd::gain::holo::SDP::create(backend, foci, amps);
+    const auto g = autd::gain::holo::SDP<EigenBackend>::create(foci, amps);
     // const auto g = autd::gain::FocalPoint::create(center + p);
     seq->add_gain(g);
   }

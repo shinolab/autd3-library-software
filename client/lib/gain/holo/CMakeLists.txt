@@ -1,11 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
-add_library(holo_gain
-    holo.cpp
-    ${PROJECT_SOURCE_DIR}/include/autd3/gain/linalg_backend.hpp
-    ${PROJECT_SOURCE_DIR}/include/autd3/gain/holo.hpp
-)
-target_include_directories(holo_gain PUBLIC ${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
+add_library(holo_gain INTERFACE)
+target_include_directories(holo_gain INTERFACE ${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
 
 add_subdirectory(eigen)
 target_link_libraries(holo_gain INTERFACE eigen_backend)
@@ -28,6 +24,16 @@ if(BUILD_CUDA_BACKEND)
     message("CUDA toolkit version: " ${CUDAToolkit_VERSION})
     add_subdirectory(cuda)
     target_link_libraries(holo_gain INTERFACE cuda_backend)
+  endif()
+endif()
+
+# ArrayFire backend
+if(BUILD_ARRAYFIRE_BACKEND)
+  find_package(ArrayFire REQUIRED)
+  if(ArrayFire_FOUND)
+    message("ArrayFire version: " ${ArrayFire_VERSION})
+    add_subdirectory(array_fire)
+    target_link_libraries(holo_gain INTERFACE arrayfire_backend)
   endif()
 endif()
 

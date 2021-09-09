@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/09/2021
+// Last Modified: 09/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -23,20 +23,20 @@
 using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SPACING_MM;
 
 inline autd::GainPtr select_opt(const std::vector<autd::Vector3>& foci, const std::vector<double>& amps) {
-  const auto backend = autd::gain::holo::Eigen3Backend::create();
+  using Backend = autd::gain::holo::EigenBackend;
 
   std::cout << "Select Optimization Method (default is SDP)" << std::endl;
 
   std::vector<std::tuple<std::string, autd::GainPtr>> opts;
-  opts.emplace_back(std::make_tuple("SDP", autd::gain::holo::SDP::create(backend, foci, amps)));
-  opts.emplace_back(std::make_tuple("EVD", autd::gain::holo::EVD::create(backend, foci, amps)));
-  opts.emplace_back(std::make_tuple("GS", autd::gain::holo::GS::create(backend, foci, amps)));
-  opts.emplace_back(std::make_tuple("GSPAT", autd::gain::holo::GSPAT::create(backend, foci, amps)));
-  opts.emplace_back(std::make_tuple("Naive", autd::gain::holo::Naive::create(backend, foci, amps)));
-  opts.emplace_back(std::make_tuple("LM", autd::gain::holo::LM::create(backend, foci, amps)));
-  opts.emplace_back(std::make_tuple("GaussNewton (slow)", autd::gain::holo::GaussNewton::create(backend, foci, amps)));
-  opts.emplace_back(std::make_tuple("GradientDescent", autd::gain::holo::GradientDescent::create(backend, foci, amps)));
-  opts.emplace_back(std::make_tuple("APO", autd::gain::holo::APO::create(backend, foci, amps)));
+  opts.emplace_back(std::make_tuple("SDP", autd::gain::holo::SDP<Backend>::create(foci, amps)));
+  opts.emplace_back(std::make_tuple("EVD", autd::gain::holo::EVD<Backend>::create(foci, amps)));
+  opts.emplace_back(std::make_tuple("GS", autd::gain::holo::GS<Backend>::create(foci, amps)));
+  opts.emplace_back(std::make_tuple("GSPAT", autd::gain::holo::GSPAT<Backend>::create(foci, amps)));
+  opts.emplace_back(std::make_tuple("Naive", autd::gain::holo::Naive<Backend>::create(foci, amps)));
+  opts.emplace_back(std::make_tuple("LM", autd::gain::holo::LM<Backend>::create(foci, amps)));
+  opts.emplace_back(std::make_tuple("GaussNewton (slow)", autd::gain::holo::GaussNewton<Backend>::create(foci, amps)));
+  opts.emplace_back(std::make_tuple("GradientDescent", autd::gain::holo::GradientDescent<Backend>::create(foci, amps)));
+  opts.emplace_back(std::make_tuple("APO", autd::gain::holo::APO<Backend>::create(foci, amps)));
   opts.emplace_back(std::make_tuple("Greedy", autd::gain::holo::Greedy::create(foci, amps)));
 
   size_t i = 0;
