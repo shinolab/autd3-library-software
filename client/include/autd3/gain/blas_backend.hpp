@@ -3,7 +3,7 @@
 // Created Date: 17/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/09/2021
+// Last Modified: 09/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,36 +11,39 @@
 
 #pragma once
 
-#include <memory>
-
 #include "eigen_backend.hpp"
 
 namespace autd::gain::holo {
 
 /**
- * \brief Linear algebra calculation backend using BLAS and LAPACK.
+ * \brief BLAS matrix
  */
-class BLASBackend final : public Eigen3Backend {
- public:
-  static BackendPtr create();
+template <typename T>
+struct BLASMatrix final : EigenMatrix<T> {
+  explicit BLASMatrix(const size_t row, const size_t col) : EigenMatrix(row, col) {}
+  explicit BLASMatrix(Eigen::Matrix<T, -1, -1, Eigen::ColMajor> other) : EigenMatrix(std::move(other)) {}
+  ~BLASMatrix() override = default;
+  BLASMatrix(const BLASMatrix& obj) = delete;
+  BLASMatrix& operator=(const BLASMatrix& obj) = delete;
+  BLASMatrix(const BLASMatrix&& v) = delete;
+  BLASMatrix& operator=(BLASMatrix&& obj) = delete;
 
-  void scale(std::shared_ptr<MatrixXc> a, complex s) override;
-  void pseudo_inverse_svd(std::shared_ptr<MatrixXc> matrix, double alpha, std::shared_ptr<MatrixXc> result) override;
-  void pseudo_inverse_svd(std::shared_ptr<MatrixX> matrix, double alpha, std::shared_ptr<MatrixX> result) override;
-  void max_eigen_vector(std::shared_ptr<MatrixXc> matrix, std::shared_ptr<MatrixXc> ev) override;
-  void matrix_add(double alpha, std::shared_ptr<MatrixX> a, std::shared_ptr<MatrixX> b) override;
-  void matrix_add(complex alpha, std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> b) override;
-  void matrix_mul(TRANSPOSE trans_a, TRANSPOSE trans_b, complex alpha, std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> b, complex beta,
-                  std::shared_ptr<MatrixXc> c) override;
-  void matrix_mul(TRANSPOSE trans_a, TRANSPOSE trans_b, double alpha, std::shared_ptr<MatrixX> a, std::shared_ptr<MatrixX> b, double beta,
-                  std::shared_ptr<MatrixX> c) override;
-  void solve_ch(std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> b) override;
-  void solve_g(std::shared_ptr<MatrixX> a, std::shared_ptr<MatrixX> b, std::shared_ptr<MatrixX> c) override;
-  double dot(std::shared_ptr<MatrixX> a, std::shared_ptr<MatrixX> b) override;
-  complex dot(std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> b) override;
-  double max_coefficient(std::shared_ptr<MatrixX> v) override;
-  double max_coefficient(std::shared_ptr<MatrixXc> v) override;
-  void mat_cpy(std::shared_ptr<MatrixX> a, std::shared_ptr<MatrixX> b) override;
-  void mat_cpy(std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> b) override;
+  void pseudo_inverse_svd(const std::shared_ptr<EigenMatrix<T>>& matrix, double alpha, const std::shared_ptr<EigenMatrix<T>>& u,
+                          const std::shared_ptr<EigenMatrix<T>>& vt, const std::shared_ptr<EigenMatrix<T>>& buf) override;
+  void max_eigen_vector(const std::shared_ptr<EigenMatrix<T>>& ev) override;
+  void add(T alpha, const std::shared_ptr<EigenMatrix<T>>& a) override;
+  void mul(TRANSPOSE trans_a, TRANSPOSE trans_b, T alpha, const std::shared_ptr<const EigenMatrix<T>>& a,
+           const std::shared_ptr<const EigenMatrix<T>>& b, T beta) override;
+  void solve(const std::shared_ptr<EigenMatrix<T>>& b) override;
+  T dot(const std::shared_ptr<const EigenMatrix<T>>& a) override;
+  [[nodiscard]] double max_element() const override;
+
+  void copy_from(const std::shared_ptr<const EigenMatrix<T>>& a) override { copy_from(a->data.data(), a->data.size()); }
+  void copy_from(const std::vector<T>& v) override { copy_from(v.data(), v.size()); }
+  void copy_from(const T* v) override { copy_from(v, this->data.size()); }
+  void copy_from(const T* v, size_t);
 };
+
+using BLASBackend = MatrixBufferPool<BLASMatrix<double>, BLASMatrix<complex>>;
+
 }  // namespace autd::gain::holo

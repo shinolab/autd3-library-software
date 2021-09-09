@@ -3,19 +3,18 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 23/07/2021
+// Last Modified: 09/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
 #if _WINDOWS
-#define NOMINMAX
 #include <Windows.h>
 #endif
 
 #include <sstream>
-#include <string>
+#include <string> 
 
 #include "autd3/core/exception.hpp"
 #include "autd3/core/link.hpp"
