@@ -49,7 +49,7 @@ class BackendTest : public testing::Test {
 
 using testing::Types;
 
-#define Eigen3BackendType autd::gain::holo::MatrixBufferPool<autd::gain::holo::EigenMatrix<double>, autd::gain::holo::EigenMatrix<complex>>
+#define Eigen3BackendType autd::gain::holo::EigenBackend
 
 #ifdef TEST_BLAS_BACKEND
 #include "autd3/gain/blas_backend.hpp"
@@ -159,7 +159,7 @@ TYPED_TEST(BackendTest, real) {
 
   auto b = this->_pool.rent("b", 2, 2);
 
-  a->real(b);
+  b->real(a);
 
   b->copy_to_host();
   ASSERT_EQ(b->at(0, 0), 0.0);
@@ -174,7 +174,7 @@ TYPED_TEST(BackendTest, arg) {
 
   auto b = this->_pool.rent_c("b", 2, 1);
 
-  a->arg(b);
+  b->arg(a);
 
   b->copy_to_host();
   ASSERT_NEAR_COMPLEX(b->at(0, 0), std::exp(complex(0, 1)), 1e-6);
@@ -187,7 +187,10 @@ TYPED_TEST(BackendTest, pseudo_inverse_svd) {
   a->copy_from(random_vector(n * n));
 
   auto b = this->_pool.rent("b", n, n);
-  b->pseudo_inverse_svd(a, 0.0);
+  auto u = this->_pool.rent("u", n, n);
+  auto vt = this->_pool.rent("vt", n, n);
+  auto buf = this->_pool.rent("buf", n, n);
+  b->pseudo_inverse_svd(a, 0.0, u, vt, buf);
 
   auto c = this->_pool.rent("c", n, n);
   c->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, 1.0, a, b, 0.0);
@@ -207,7 +210,10 @@ TYPED_TEST(BackendTest, pseudo_inverse_svd_c) {
   a->copy_from(random_vector_complex(n * n));
 
   auto b = this->_pool.rent_c("b", n, n);
-  b->pseudo_inverse_svd(a, 0.0);
+  auto u = this->_pool.rent_c("u", n, n);
+  auto vt = this->_pool.rent_c("vt", n, n);
+  auto buf = this->_pool.rent_c("buf", n, n);
+  b->pseudo_inverse_svd(a, 0.0, u, vt, buf);
 
   auto c = this->_pool.rent_c("c", n, n);
   c->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, 1.0, a, b, 0.0);

@@ -87,8 +87,8 @@ class SDP final : public Holo<P> {
   }
 
   void calc(const core::GeometryPtr& geometry) {
-    const auto m = static_cast<Eigen::Index>(_foci.size());
-    const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
+    const auto m = (_foci.size());
+    const auto n = (geometry->num_transducers());
 
     const auto amps = _pool.rent_c("amps", m, 1);
     amps->copy_from(_amps);
@@ -122,9 +122,9 @@ class SDP final : public Holo<P> {
     const auto x = _pool.rent_c("x", m, 1);
     const auto mmc = _pool.rent_c("mmc", m, 1);
     for (size_t i = 0; i < _repeat; i++) {
-      const auto ii = static_cast<Eigen::Index>(static_cast<double>(m) * range(mt));
+      const auto ii = (static_cast<double>(m) * range(mt));
 
-      mm->get_col(ii, mmc);
+      mmc->get_col(mm, ii);
       mmc->set(ii, 0, ZERO);
 
       x->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, x_mat, mmc, ZERO);
@@ -184,8 +184,8 @@ class EVD final : public Holo<P> {
   }
 
   void calc(const core::GeometryPtr& geometry) {
-    const auto m = static_cast<Eigen::Index>(_foci.size());
-    const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
+    const auto m = (_foci.size());
+    const auto n = (geometry->num_transducers());
 
     const auto g = _pool.rent_c("g", m, n);
     generate_transfer_matrix(_foci, geometry, g);
@@ -253,8 +253,8 @@ class Naive final : public Holo<P> {
   }
 
   void calc(const core::GeometryPtr& geometry) override {
-    const auto m = static_cast<Eigen::Index>(_foci.size());
-    const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
+    const auto m = (_foci.size());
+    const auto n = (geometry->num_transducers());
 
     const auto g = _pool.rent_c("g", m, n);
     generate_transfer_matrix(_foci, geometry, g);
@@ -293,8 +293,8 @@ class GS final : public Holo<P> {
   }
 
   void calc(const core::GeometryPtr& geometry) override {
-    const auto m = static_cast<Eigen::Index>(_foci.size());
-    const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
+    const auto m = (_foci.size());
+    const auto n = (geometry->num_transducers());
 
     const auto g = _pool.rent_c("g", m, n);
     generate_transfer_matrix(_foci, geometry, g);
@@ -351,8 +351,8 @@ class GSPAT final : public Holo<P> {
     return std::make_shared<GSPAT>(foci, amps, repeat);
   }
   void calc(const core::GeometryPtr& geometry) override {
-    const auto m = static_cast<Eigen::Index>(_foci.size());
-    const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
+    const auto m = (_foci.size());
+    const auto n = (geometry->num_transducers());
 
     const auto g = _pool.rent_c("g", m, n);
     generate_transfer_matrix(_foci, geometry, g);
@@ -407,8 +407,8 @@ class NLS : public Holo<P> {
 
  protected:
   void make_bhb(const std::vector<core::Vector3>& foci, const core::GeometryPtr& geo) {
-    const auto m = static_cast<Eigen::Index>(foci.size());
-    const auto n = static_cast<Eigen::Index>(geo->num_transducers());
+    const auto m = (foci.size());
+    const auto n = (geo->num_transducers());
     const auto n_param = n + m;
 
     const auto amps = _pool.rent_c("amps", m, 1);
@@ -505,9 +505,9 @@ class LM final : public NLS<P> {
   }
 
   void calc(const core::GeometryPtr& geometry) override {
-    const auto m = static_cast<Eigen::Index>(_foci.size());
-    const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
-    const Eigen::Index n_param = n + m;
+    const auto m = (_foci.size());
+    const auto n = (geometry->num_transducers());
+    const size_t n_param = n + m;
 
     const auto amps = _pool.rent_c("amps", m, 1);
     amps->copy_from(_amps);
@@ -533,7 +533,7 @@ class LM final : public NLS<P> {
     calc_jtj_jtf(n_param);
 
     const auto a_diag = _pool.rent("a_diag", n_param, 1);
-    a->get_diagonal(a_diag);
+    a_diag->get_diagonal(a);
     const double a_max = a_diag->max_element();
 
     auto mu = _tau * a_max;
@@ -621,9 +621,9 @@ class GaussNewton final : public NLS<P> {
   }
 
   void calc(const core::GeometryPtr& geometry) override {
-    const auto m = static_cast<Eigen::Index>(_foci.size());
-    const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
-    const Eigen::Index n_param = n + m;
+    const auto m = (_foci.size());
+    const auto n = (geometry->num_transducers());
+    const size_t n_param = n + m;
 
     const auto amps = _pool.rent_c("amps", m, 1);
     amps->copy_from(_amps);
@@ -697,9 +697,9 @@ class GradientDescent final : public NLS<P> {
   }
 
   void calc(const core::GeometryPtr& geometry) override {
-    const auto m = static_cast<Eigen::Index>(_foci.size());
-    const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
-    const Eigen::Index n_param = n + m;
+    const auto m = (_foci.size());
+    const auto n = (geometry->num_transducers());
+    const size_t n_param = n + m;
 
     const auto amps = _pool.rent_c("amps", m, 1);
     amps->copy_from(_amps);
@@ -819,8 +819,8 @@ class APO final : public Holo<P> {
       return alpha;
     };
 
-    const auto m = static_cast<Eigen::Index>(_foci.size());
-    const auto n = static_cast<Eigen::Index>(geometry->num_transducers());
+    const auto m = (_foci.size());
+    const auto n = (geometry->num_transducers());
 
     const auto g = _pool.rent_c("g", m, n);
     generate_transfer_matrix(_foci, geometry, g);
@@ -844,7 +844,7 @@ class APO final : public Holo<P> {
     q->mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, ONE, g, p, ZERO);
     tmp->solve(q);
 
-    for (Eigen::Index i = 0; i < m; i++) make_ri(_pool, m, n, i);
+    for (size_t i = 0; i < m; i++) make_ri(_pool, m, n, i);
 
     const auto nabla_j = _pool.rent_c("nabla_j", n, 1);
     calc_nabla_j(_pool, m, n, _lambda, "nabla_j");
