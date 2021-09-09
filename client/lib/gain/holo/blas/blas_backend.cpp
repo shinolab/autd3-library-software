@@ -63,7 +63,7 @@ void BLASMatrix<complex>::pseudo_inverse_svd(const std::shared_ptr<EigenMatrix<c
   AUTD_GESVDC(LAPACK_COL_MAJOR, 'A', static_cast<int>(nr), static_cast<int>(nc), m.data(), lda, s.get(), u->data.data(), ldu, vt->data.data(), ldvt);
   Eigen::Matrix<complex, -1, -1, Eigen::ColMajor> singular_inv =
       Eigen::Matrix<complex, -1, -1, Eigen::ColMajor>::Zero(static_cast<Eigen::Index>(nc), static_cast<Eigen::Index>(nr));
-  for (size_t i = 0; i < s_size; i++) singular_inv(i, i) = s[i] / (s[i] * s[i] + alpha);
+  for (Eigen::Index i = 0; i < static_cast<Eigen::Index>(s_size); i++) singular_inv(i, i) = s[i] / (s[i] * s[i] + alpha);
 
   const auto si = std::make_shared<BLASMatrix<complex>>(std::move(singular_inv));
   buf->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::CONJ_TRANS, ONE, si, u, ZERO);

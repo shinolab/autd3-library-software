@@ -44,7 +44,7 @@ void EigenMatrix<complex>::transfer_matrix(const double* foci, const size_t foci
     for (size_t dev = 0; dev < positions.size(); dev++) {
       const double* p = positions[dev];
       const auto dir = core::Vector3(directions[dev][0], directions[dev][1], directions[dev][2]);
-      for (size_t j = 0; j < core::NUM_TRANS_IN_UNIT; j++, k++) {
+      for (Eigen::Index j = 0; j < (Eigen::Index)core::NUM_TRANS_IN_UNIT; j++, k++) {
         const auto pos = core::Vector3(p[3 * j], p[3 * j + 1], p[3 * j + 2]);
         data(i, j) = utils::transfer(pos, dir, tp, wave_number, attenuation);
       }
