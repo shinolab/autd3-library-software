@@ -45,8 +45,8 @@ struct EigenMatrix {
   Eigen::Matrix<T, -1, -1, Eigen::ColMajor> data;
 
   explicit EigenMatrix(const size_t row, const size_t col) : data(row, col) {}
-  explicit EigenMatrix(Eigen::Matrix<T, -1, -1, Eigen::ColMajor> mat) : data(std::move(mat)) {}
-  ~EigenMatrix() = default;
+  explicit EigenMatrix(Eigen::Matrix<T, -1, -1, Eigen::ColMajor> other) : data(std::move(other)) {}
+  virtual ~EigenMatrix() = default;
   EigenMatrix(const EigenMatrix& obj) = delete;
   EigenMatrix& operator=(const EigenMatrix& obj) = delete;
   EigenMatrix(const EigenMatrix&& v) = delete;
@@ -55,34 +55,28 @@ struct EigenMatrix {
   void make_complex(const std::shared_ptr<const EigenMatrix<double>>& r, const std::shared_ptr<const EigenMatrix<double>>& i);
   void exp() { data = data.array().exp(); }
   void scale(const T s) { data *= s; }
-  void reciprocal(const std::shared_ptr<EigenMatrix<T>>& src) {
+  void reciprocal(const std::shared_ptr<const EigenMatrix<T>>& src) {
     data = Eigen::Matrix<T, -1, -1, Eigen::ColMajor>::Ones(src->data.size(), 1).cwiseQuotient(data);
   }
-  void abs(const std::shared_ptr<EigenMatrix<T>>& src) { data = src->data.cwiseAbs(); }
-  void real(const std::shared_ptr<EigenMatrix<complex>>& src);
-  void arg(const std::shared_ptr<EigenMatrix<complex>>& src);
+  void abs(const std::shared_ptr<const EigenMatrix<T>>& src) { data = src->data.cwiseAbs(); }
+  void real(const std::shared_ptr<const EigenMatrix<complex>>& src);
+  void arg(const std::shared_ptr<const EigenMatrix<complex>>& src);
   void hadamard_product(const std::shared_ptr<const EigenMatrix<T>>& a, const std::shared_ptr<const EigenMatrix<T>>& b) {
     data.noalias() = a->data.cwiseProduct(b->data);
   }
-  void pseudo_inverse_svd(const std::shared_ptr<EigenMatrix<T>>& matrix, double alpha) {
+  virtual void pseudo_inverse_svd(const std::shared_ptr<EigenMatrix<T>>& matrix, double alpha, const std::shared_ptr<EigenMatrix<T>>&,
+                                  const std::shared_ptr<EigenMatrix<T>>&, const std::shared_ptr<EigenMatrix<T>>&) {
     const Eigen::BDCSVD svd(matrix->data, Eigen::ComputeFullU | Eigen::ComputeFullV);
     auto singular_values_inv = svd.singularValues();
     const auto size = singular_values_inv.size();
     for (Eigen::Index i = 0; i < size; i++)
       singular_values_inv(i) = singular_values_inv(i) / (singular_values_inv(i) * singular_values_inv(i) + alpha);
-
     data.noalias() = svd.matrixV() * singular_values_inv.asDiagonal() * svd.matrixU().adjoint();
   }
-  void max_eigen_vector(const std::shared_ptr<EigenMatrix<T>> ev) {
-    const Eigen::ComplexEigenSolver<Eigen::Matrix<T, -1, -1, Eigen::ColMajor>> ces(data);
-    auto idx = 0;
-    ces.eigenvalues().cwiseAbs2().maxCoeff(&idx);
-    const Eigen::Matrix<T, -1, 1, Eigen::ColMajor>& max_ev = ces.eigenvectors().col(idx);
-    ev->copy_from(max_ev.data());
-  }
-  void add(const T alpha, const std::shared_ptr<EigenMatrix<T>> a) { data.noalias() += alpha * a->data; }
-  void mul(const TRANSPOSE trans_a, const TRANSPOSE trans_b, const T alpha, const std::shared_ptr<const EigenMatrix<T>>& a,
-           const std::shared_ptr<const EigenMatrix<T>>& b, const T beta) {
+  virtual void max_eigen_vector(const std::shared_ptr<EigenMatrix<T>>& ev) {}
+  virtual void add(const T alpha, const std::shared_ptr<EigenMatrix<T>>& a) { data.noalias() += alpha * a->data; }
+  virtual void mul(const TRANSPOSE trans_a, const TRANSPOSE trans_b, const T alpha, const std::shared_ptr<const EigenMatrix<T>>& a,
+                   const std::shared_ptr<const EigenMatrix<T>>& b, const T beta) {
     data *= beta;
     switch (trans_a) {
       case TRANSPOSE::CONJ_TRANS:
@@ -126,12 +120,12 @@ struct EigenMatrix {
         break;
     }
   }
-  void solve(const std::shared_ptr<const EigenMatrix<T>>& b) {
+  virtual void solve(const std::shared_ptr<EigenMatrix<T>>& b) {
     const Eigen::LLT<Eigen::Matrix<T, -1, -1, Eigen::ColMajor>> llt(data);
     llt.solveInPlace(b->data);
   }
-  T dot(const std::shared_ptr<const EigenMatrix<T>> a) { return (data.adjoint() * a->data)(0); }
-  [[nodiscard]] double max_element() const;
+  virtual T dot(const std::shared_ptr<const EigenMatrix<T>>& a) { return (data.adjoint() * a->data)(0); }
+  [[nodiscard]] virtual double max_element() const;
   void concat_row(const std::shared_ptr<const EigenMatrix<T>>& a, const std::shared_ptr<const EigenMatrix<T>>& b) { data << a->data, b->data; }
   void concat_col(const std::shared_ptr<const EigenMatrix<T>>& a, const std::shared_ptr<const EigenMatrix<T>>& b) { data << a->data, b->data; }
 
@@ -140,19 +134,19 @@ struct EigenMatrix {
   [[nodiscard]] size_t cols() const { return data.cols(); }
 
   void set(const size_t row, const size_t col, T v) { data(row, col) = v; }
-  void get_col(const size_t i, std::shared_ptr<EigenMatrix<T>> dst) {
-    const auto& col = data.col(i);
-    std::memcpy(dst->data.data(), col.data(), sizeof(T) * col.size());
+  void get_col(const std::shared_ptr<const EigenMatrix<T>>& src, const size_t i) {
+    const auto& col = src->data.col(i);
+    std::memcpy(data.data(), col.data(), sizeof(T) * col.size());
   }
   void fill(T v) { data.fill(v); }
-  void get_diagonal(const std::shared_ptr<EigenMatrix<T>>& v) {
-    for (Eigen::Index i = 0; i < (std::min)(this->data.rows(), this->data.cols()); i++) v->data(i, 0) = this->data(i, i);
+  void get_diagonal(const std::shared_ptr<const EigenMatrix<T>>& src) {
+    for (Eigen::Index i = 0; i < (std::min)(src->data.rows(), src->data.cols()); i++) data(i, 0) = src->data(i, i);
   }
   void set_diagonal(const std::shared_ptr<const EigenMatrix<T>>& v) { data.diagonal() = v->data; }
-  void copy_from(const std::shared_ptr<const EigenMatrix<T>>& a) { data = a->data; }
-  void copy_from(const std::vector<T>& v) { std::memcpy(this->data.data(), v.data(), sizeof(T) * v.size()); }
-  void copy_from(const T* v) { std::memcpy(this->data.data(), v, sizeof(T) * this->data.size()); }
-  void copy_to_host() {}
+  virtual void copy_from(const std::shared_ptr<const EigenMatrix<T>>& a) { data = a->data; }
+  virtual void copy_from(const std::vector<T>& v) { std::memcpy(this->data.data(), v.data(), sizeof(T) * v.size()); }
+  virtual void copy_from(const T* v) { std::memcpy(this->data.data(), v, sizeof(T) * this->data.size()); }
+  virtual void copy_to_host() {}
 
   // FIXME: following functions are too specialized
   void transfer_matrix(const double* foci, size_t foci_num, const std::vector<const double*>& positions, const std::vector<const double*>& directions,

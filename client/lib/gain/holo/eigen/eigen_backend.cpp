@@ -20,14 +20,21 @@ void EigenMatrix<complex>::make_complex(const std::shared_ptr<const EigenMatrix<
   data.real() = r->data;
   data.imag() = i->data;
 }
-void EigenMatrix<double>::real(const std::shared_ptr<EigenMatrix<complex>>& src) { data = src->data.real(); }
-void EigenMatrix<complex>::arg(const std::shared_ptr<EigenMatrix<complex>>& src) { data = src->data.cwiseQuotient(src->data.cwiseAbs()); }
+void EigenMatrix<double>::real(const std::shared_ptr<const EigenMatrix<complex>>& src) { data = src->data.real(); }
+void EigenMatrix<complex>::arg(const std::shared_ptr<const EigenMatrix<complex>>& src) { data = src->data.cwiseQuotient(src->data.cwiseAbs()); }
 double EigenMatrix<double>::max_element() const { return this->data.maxCoeff(); }
-
 double EigenMatrix<complex>::max_element() const { return std::sqrt(this->data.cwiseAbs2().maxCoeff()); }
+template <>
+void EigenMatrix<complex>::max_eigen_vector(const std::shared_ptr<EigenMatrix<complex>>& ev) {
+  const Eigen::ComplexEigenSolver<Eigen::Matrix<complex, -1, -1, Eigen::ColMajor>> ces(data);
+  auto idx = 0;
+  ces.eigenvalues().cwiseAbs2().maxCoeff(&idx);
+  const Eigen::Matrix<complex, -1, 1, Eigen::ColMajor>& max_ev = ces.eigenvectors().col(idx);
+  ev->copy_from(max_ev.data());
+}
 
-void EigenMatrix<complex>::transfer_matrix(const double* foci, size_t foci_num, const std::vector<const double*>& positions,
-                                           const std::vector<const double*>& directions, double wavelength, double attenuation) {
+void EigenMatrix<complex>::transfer_matrix(const double* foci, const size_t foci_num, const std::vector<const double*>& positions,
+                                           const std::vector<const double*>& directions, const double wavelength, const double attenuation) {
   const auto m = static_cast<Eigen::Index>(foci_num);
 
   const auto wave_number = 2.0 * M_PI / wavelength;
@@ -37,7 +44,7 @@ void EigenMatrix<complex>::transfer_matrix(const double* foci, size_t foci_num, 
     for (size_t dev = 0; dev < positions.size(); dev++) {
       const double* p = positions[dev];
       const auto dir = core::Vector3(directions[dev][0], directions[dev][1], directions[dev][2]);
-      for (Eigen::Index j = 0; j < core::NUM_TRANS_IN_UNIT; j++, k++) {
+      for (size_t j = 0; j < core::NUM_TRANS_IN_UNIT; j++, k++) {
         const auto pos = core::Vector3(p[3 * j], p[3 * j + 1], p[3 * j + 2]);
         data(i, j) = utils::transfer(pos, dir, tp, wave_number, attenuation);
       }
@@ -45,7 +52,7 @@ void EigenMatrix<complex>::transfer_matrix(const double* foci, size_t foci_num, 
   }
 }
 
-void EigenMatrix<complex>::set_bcd_result(const std::shared_ptr<const EigenMatrix<complex>>& vec, size_t index) {
+void EigenMatrix<complex>::set_bcd_result(const std::shared_ptr<const EigenMatrix<complex>>& vec, const size_t index) {
   const auto m = vec->data.size();
   const auto idx = static_cast<Eigen::Index>(index);
   for (Eigen::Index i = 0; i < idx; i++) data(idx, i) = std::conj(vec->data(i, 0));
@@ -53,7 +60,7 @@ void EigenMatrix<complex>::set_bcd_result(const std::shared_ptr<const EigenMatri
   for (Eigen::Index i = 0; i < idx; i++) data(i, idx) = vec->data(i, 0);
   for (Eigen::Index i = idx + 1; i < m; i++) data(i, idx) = vec->data(i, 0);
 }
-void EigenMatrix<complex>::set_from_complex_drive(std::vector<core::DataArray>& dst, bool normalize, double max_coefficient) {
+void EigenMatrix<complex>::set_from_complex_drive(std::vector<core::DataArray>& dst, const bool normalize, const double max_coefficient) {
   const Eigen::Index n = data.size();
   size_t dev_idx = 0;
   size_t trans_idx = 0;
@@ -103,7 +110,7 @@ void EigenMatrix<complex>::back_prop(const std::shared_ptr<const EigenMatrix<com
 }
 
 void EigenMatrix<complex>::sigma_regularization(const std::shared_ptr<const EigenMatrix<complex>>& transfer,
-                                                const std::shared_ptr<const EigenMatrix<complex>>& amps, double gamma) {
+                                                const std::shared_ptr<const EigenMatrix<complex>>& amps, const double gamma) {
   const auto m = transfer->data.rows();
   const auto n = transfer->data.cols();
 
