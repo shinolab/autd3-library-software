@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/09/2021
+// Last Modified: 10/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -73,7 +73,6 @@ class SDP final : public Holo<P> {
  public:
   /**
    * @brief Generate function
-   * @param[in] backend linear algebra calculation backend
    * @param[in] foci focal points
    * @param[in] amps amplitudes of the foci
    * @param[in] alpha parameter
@@ -174,7 +173,6 @@ class EVD final : public Holo<P> {
  public:
   /**
    * @brief Generate function
-   * @param[in] backend linear algebra calculation backend
    * @param[in] foci focal points
    * @param[in] amps amplitudes of the foci
    * @param[in] gamma parameter
@@ -246,7 +244,6 @@ class Naive final : public Holo<P> {
  public:
   /**
    * @brief Generate function
-   * @param[in] backend linear algebra calculation backend
    * @param[in] foci focal points
    * @param[in] amps amplitudes of the foci
    */
@@ -285,7 +282,6 @@ class GS final : public Holo<P> {
  public:
   /**
    * @brief Generate function
-   * @param[in] backend linear algebra calculation backend
    * @param[in] foci focal points
    * @param[in] amps amplitudes of the foci
    * @param[in] repeat parameter
@@ -344,7 +340,6 @@ class GSPAT final : public Holo<P> {
  public:
   /**
    * @brief Generate function
-   * @param[in] backend linear algebra calculation backend
    * @param[in] foci focal points
    * @param[in] amps amplitudes of the foci
    * @param[in] repeat parameter
@@ -490,7 +485,6 @@ class LM final : public NLS<P> {
  public:
   /**
    * @brief Generate function
-   * @param[in] backend linear algebra calculation backend
    * @param[in] foci focal points
    * @param[in] amps amplitudes of the foci
    * @param[in] eps_1 parameter
@@ -608,7 +602,6 @@ class GaussNewton final : public NLS<P> {
  public:
   /**
    * @brief Generate function
-   * @param[in] backend linear algebra calculation backend
    * @param[in] foci focal points
    * @param[in] amps amplitudes of the foci
    * @param[in] eps_1 parameter
@@ -687,7 +680,6 @@ class GradientDescent final : public NLS<P> {
  public:
   /**
    * @brief Generate function
-   * @param[in] backend linear algebra calculation backend
    * @param[in] foci focal points
    * @param[in] amps amplitudes of the foci
    * @param[in] eps parameter
@@ -751,7 +743,6 @@ class APO final : public Holo<P> {
  public:
   /**
    * @brief Generate function
-   * @param[in] backend linear algebra calculation backend
    * @param[in] foci focal points
    * @param[in] amps amplitudes of the foci
    * @param[in] eps parameter
