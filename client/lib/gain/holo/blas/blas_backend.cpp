@@ -43,8 +43,8 @@ constexpr auto AUTD_DOT = cblas_ddot;
 constexpr auto AUTD_IMAXC = cblas_izamax;
 constexpr auto AUTD_SYSV = LAPACKE_dsysv;
 constexpr auto AUTD_POSVC = LAPACKE_zposv;
-constexpr auto AUTD_CPY = LAPACKE_dlacpy;
-constexpr auto AUTD_CPYC = LAPACKE_zlacpy;
+constexpr auto AUTD_CPY = cblas_dcopy;
+constexpr auto AUTD_CPYC = cblas_zcopy;
 
 void BLASMatrix<complex>::pseudo_inverse_svd(const std::shared_ptr<EigenMatrix<complex>>& matrix, const double alpha,
                                              const std::shared_ptr<EigenMatrix<complex>>& u, const std::shared_ptr<EigenMatrix<complex>>& vt,
@@ -168,12 +168,6 @@ double BLASMatrix<double>::max_element() const {
   // return v->data(idx);
 }
 
-void BLASMatrix<double>::copy_from(const double* v) {
-  AUTD_CPY(LAPACK_COL_MAJOR, 'A', static_cast<int>(data.rows()), static_cast<int>(data.cols()), v, static_cast<int>(data.rows()), data.data(),
-           static_cast<int>(data.rows()));
-}
-void BLASMatrix<complex>::copy_from(const complex* v) {
-  AUTD_CPYC(LAPACK_COL_MAJOR, 'A', static_cast<int>(data.rows()), static_cast<int>(data.cols()), v, static_cast<int>(data.rows()), data.data(),
-            static_cast<int>(data.rows()));
-}
+void BLASMatrix<double>::copy_from(const double* v, const size_t n) { AUTD_CPY(n, v, 1, data.data(), 1); }
+void BLASMatrix<complex>::copy_from(const complex* v, const size_t n) { AUTD_CPYC(n, v, 1, data.data(), 1); }
 }  // namespace autd::gain::holo

@@ -93,18 +93,20 @@ class SDP final : public Holo<P> {
     const auto amps = _pool.rent_c("amps", m, 1);
     amps->copy_from(_amps);
     const auto p = _pool.rent_c("P", m, m);
-    p->fill(0.0);
-    p->set_diagonal(amps);
+    p->create_diagonal(amps);
 
     const auto b = _pool.rent_c("b", m, n);
     generate_transfer_matrix(_foci, geometry, b);
     const auto pseudo_inv_b = _pool.rent_c("pinvb", n, m);
-    pseudo_inv_b->pseudo_inverse_svd(b, _alpha);
+    auto u_ = this->_pool.rent_c("u_", m, m);
+    auto vt = this->_pool.rent_c("vt", n, n);
+    auto buf = this->_pool.rent_c("buf", n, m);
+    pseudo_inv_b->pseudo_inverse_svd(b, _alpha, u_, vt, buf);
 
     const auto mm = _pool.rent_c("mm", m, m);
     const auto one = _pool.rent_c("onec", m, 1);
     one->fill(ONE);
-    mm->set_diagonal(one);
+    mm->create_diagonal(one);
 
     mm->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, -ONE, b, pseudo_inv_b, ONE);
     const auto tmp = _pool.rent_c("tmp", m, m);
@@ -112,7 +114,7 @@ class SDP final : public Holo<P> {
     mm->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, tmp, p, ZERO);
 
     const auto x_mat = _pool.rent_c("x_mat", m, m);
-    x_mat->set_diagonal(one);
+    x_mat->create_diagonal(one);
 
     std::random_device rnd;
     std::mt19937 mt(rnd());
@@ -414,9 +416,8 @@ class NLS : public Holo<P> {
     const auto amps = _pool.rent_c("amps", m, 1);
 
     const auto p = _pool.rent_c("p", m, m);
-    p->fill(0.0);
     amps->scale(complex(-1.0, 0.0));
-    p->set_diagonal(amps);
+    p->create_diagonal(amps);
 
     const auto g = _pool.rent_c("g", m, n);
     generate_transfer_matrix(_foci, geo, g);
@@ -545,7 +546,7 @@ class LM final : public NLS<P> {
     const auto identity = _pool.rent("identity", n_param, n_param);
     const auto one = _pool.rent("one", n_param, 1);
     one->fill(1.0);
-    identity->set_diagonal(one);
+    identity->create_diagonal(one);
 
     const auto tmp_vec = _pool.rent("tmp_vec", n_param, 1);
     const auto h_lm = _pool.rent("h_lm", n_param, 1);
@@ -648,11 +649,14 @@ class GaussNewton final : public NLS<P> {
 
     const auto h_lm = _pool.rent("h_lm", n_param, 1);
     const auto pia = _pool.rent("pis", n_param, n_param);
+    auto u = this->_pool.rent("u", n_param, n_param);
+    auto vt = this->_pool.rent("vt", n_param, n_param);
+    auto buf = this->_pool.rent("buf", n_param, n_param);
     for (size_t k = 0; k < _k_max; k++) {
       if (g->max_element() <= _eps) break;
 
       //_backend->solve_g(a, g, h_lm);
-      pia->pseudo_inverse_svd(a, 1e-3);
+      pia->pseudo_inverse_svd(a, 1e-3, u, vt, buf);
       h_lm->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, 1.0, pia, g, 0.0);
       if (std::sqrt(h_lm->dot(h_lm)) <= _eps_2 * (std::sqrt(x->dot(x)) + _eps_2)) break;
 
@@ -724,7 +728,6 @@ class GradientDescent final : public NLS<P> {
       if (jtf->max_element() <= _eps) break;
       x->add(-_step, jtf);
     }
-
     x->set_from_arg(_data, n);
 
     _built = true;
@@ -834,7 +837,7 @@ class APO final : public Holo<P> {
     const auto one = _pool.rent_c("one", n, 1);
     one->fill(ONE);
     const auto h = _pool.rent_c("h", n, n);
-    h->set_diagonal(one);
+    h->create_diagonal(one);
 
     const auto tmp = _pool.rent_c("tmp", n, n);
     tmp->mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, ONE, g, g, ZERO);

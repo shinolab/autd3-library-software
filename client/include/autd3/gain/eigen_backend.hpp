@@ -38,7 +38,7 @@
 namespace autd::gain::holo {
 
 /**
- * \brief Matrix wrapper for Eigen3Backend and BLASBackend
+ * \brief Eigen3 matrix
  */
 template <typename T>
 struct EigenMatrix {
@@ -56,7 +56,7 @@ struct EigenMatrix {
   void exp() { data = data.array().exp(); }
   void scale(const T s) { data *= s; }
   void reciprocal(const std::shared_ptr<const EigenMatrix<T>>& src) {
-    data = Eigen::Matrix<T, -1, -1, Eigen::ColMajor>::Ones(src->data.size(), 1).cwiseQuotient(data);
+    data = Eigen::Matrix<T, -1, -1, Eigen::ColMajor>::Ones(src->data.rows(), src->data.cols()).cwiseQuotient(src->data);
   }
   void abs(const std::shared_ptr<const EigenMatrix<T>>& src) { data = src->data.cwiseAbs(); }
   void real(const std::shared_ptr<const EigenMatrix<complex>>& src);
@@ -142,7 +142,10 @@ struct EigenMatrix {
   void get_diagonal(const std::shared_ptr<const EigenMatrix<T>>& src) {
     for (Eigen::Index i = 0; i < (std::min)(src->data.rows(), src->data.cols()); i++) data(i, 0) = src->data(i, i);
   }
-  void set_diagonal(const std::shared_ptr<const EigenMatrix<T>>& v) { data.diagonal() = v->data; }
+  void create_diagonal(const std::shared_ptr<const EigenMatrix<T>>& v) {
+    fill(0.0);
+    data.diagonal() = v->data;
+  }
   virtual void copy_from(const std::shared_ptr<const EigenMatrix<T>>& a) { data = a->data; }
   virtual void copy_from(const std::vector<T>& v) { std::memcpy(this->data.data(), v.data(), sizeof(T) * v.size()); }
   virtual void copy_from(const T* v) { std::memcpy(this->data.data(), v, sizeof(T) * this->data.size()); }
