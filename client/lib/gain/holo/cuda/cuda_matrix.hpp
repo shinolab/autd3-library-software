@@ -1,6 +1,6 @@
-// File: cuda_backend.hpp
-// Project: gain
-// Created Date: 04/09/2021
+// File: cuda_matrix.hpp
+// Project: cuda
+// Created Date: 10/09/2021
 // Author: Shun Suzuki
 // -----
 // Last Modified: 10/09/2021
@@ -25,7 +25,8 @@
 #include <vector>
 
 #include "autd3/core/hardware_defined.hpp"
-#include "linalg_backend.hpp"
+#include "autd3/gain/matrix.hpp"
+#include "matrix_pool.hpp"
 
 namespace autd {
 namespace gain {
@@ -36,7 +37,7 @@ struct CuContext {
   static cusolverDnHandle_t handle_s;
   static size_t cnt;
 
-  static void init();
+  static void init(int device_idx);
   static void free();
 };
 
@@ -121,7 +122,7 @@ template <>
 void CuMatrix<complex>::mul(TRANSPOSE trans_a, TRANSPOSE trans_b, complex alpha, const std::shared_ptr<const CuMatrix<complex>>& a,
                             const std::shared_ptr<const CuMatrix<complex>>& b, complex beta);
 
-using CUDABackend = MatrixBufferPool<CuMatrix<double>, CuMatrix<complex>, CuContext>;
+using CUDABackend = MatrixBufferPool<CuMatrix<double>, CuMatrix<complex>>;
 
 }  // namespace holo
 }  // namespace gain

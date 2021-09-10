@@ -7,13 +7,13 @@ cuda_add_library(cuda_backend
     kernel.h
     kernel.cu
     cuda_backend.cu
-    ${PROJECT_SOURCE_DIR}/include/autd3/gain/linalg_backend.hpp
+    ${PROJECT_SOURCE_DIR}/include/autd3/gain/backend.hpp
     ${PROJECT_SOURCE_DIR}/include/autd3/gain/cuda_backend.hpp
 )
 cuda_add_cublas_to_target(cuda_backend)
 target_link_libraries(cuda_backend INTERFACE ${CUDA_cusolver_LIBRARY})
 target_include_directories(cuda_backend INTERFACE ${CUDA_INCLUDE_DIRS})
-target_include_directories(cuda_backend PUBLIC ${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
+target_include_directories(cuda_backend PRIVATE ${PROJECT_SOURCE_DIR}/lib/gain/holo ${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
 
 set_target_properties(cuda_backend
     PROPERTIES
