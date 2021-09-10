@@ -11,6 +11,10 @@
 
 #pragma once
 
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include "eigen_backend.hpp"
 
 namespace autd::gain::holo {

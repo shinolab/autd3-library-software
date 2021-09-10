@@ -9,6 +9,8 @@
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
+#include <iostream>
+
 #if _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 6031 26450 26451 26454 26495 26812)
@@ -25,10 +27,8 @@
 #pragma GCC diagnostic pop
 #endif
 
-#include <autd3/core/geometry.hpp>
-#include <autd3/core/utils.hpp>
-#include <iostream>
-
+#include "autd3/core/geometry.hpp"
+#include "autd3/core/utils.hpp"
 #include "autd3/gain/arrayfire_backend.hpp"
 #include "autd3/utils.hpp"
 
