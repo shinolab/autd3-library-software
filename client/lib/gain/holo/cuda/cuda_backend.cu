@@ -197,10 +197,6 @@ struct CuMatrix<double>::Impl {
     cudaMemcpy(_d_vec.data().get(), src->ptr(), _row * _col * sizeof(double), cudaMemcpyDeviceToDevice);
   }
   void copy_from(const double* v, const size_t n) { cudaMemcpy(_d_vec.data().get(), v, n * sizeof(double), cudaMemcpyHostToDevice); }
-  void copy_to_host() {
-    if (_h_vec == nullptr) _h_vec = std::make_unique<double[]>(_row * _col);
-    cudaMemcpy(_h_vec.get(), _d_vec.data().get(), _row * _col * sizeof(double), cudaMemcpyDeviceToHost);
-  }
 
   void set_from_arg(std::vector<core::DataArray>& data, const size_t n) {
     uint16_t* d_data = nullptr;
@@ -417,10 +413,6 @@ struct CuMatrix<complex>::Impl {
     cudaMemcpy(_d_vec.data().get(), src->ptr(), _row * _col * sizeof(complex), cudaMemcpyDeviceToDevice);
   }
   void copy_from(const complex* v, const size_t n) { cudaMemcpy(_d_vec.data().get(), v, n * sizeof(complex), cudaMemcpyHostToDevice); }
-  void copy_to_host() {
-    if (_h_vec == nullptr) _h_vec = std::make_unique<complex[]>(_row * _col);
-    cudaMemcpy(_h_vec.get(), _d_vec.data().get(), _row * _col * sizeof(complex), cudaMemcpyDeviceToHost);
-  }
 
   void set_from_complex_drive(std::vector<core::DataArray>& data, const bool normalize, const double max_coefficient) {
     uint16_t* d_data = nullptr;
@@ -590,8 +582,6 @@ void CuMatrix<double>::copy_from(const std::shared_ptr<const CuMatrix<double>>& 
 void CuMatrix<complex>::copy_from(const std::shared_ptr<const CuMatrix<complex>>& src) { _pimpl->copy_from(src); }
 void CuMatrix<double>::copy_from(const double* v, const size_t n) { _pimpl->copy_from(v, n); }
 void CuMatrix<complex>::copy_from(const complex* v, const size_t n) { _pimpl->copy_from(v, n); }
-void CuMatrix<double>::copy_to_host() { _pimpl->copy_to_host(); }
-void CuMatrix<complex>::copy_to_host() { _pimpl->copy_to_host(); }
 
 void CuMatrix<double>::transfer_matrix(const double* foci, size_t foci_num, const std::vector<const double*>& positions,
                                        const std::vector<const double*>& directions, double wavelength, double attenuation) {}

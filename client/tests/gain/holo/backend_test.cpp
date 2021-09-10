@@ -109,7 +109,6 @@ TYPED_TEST(BackendTest, make_complex) {
 
   a->make_complex(r, i);
 
-  a->copy_to_host();
   ASSERT_NEAR_COMPLEX(a->at(0, 0), complex(0, 2), 1e-6);
   ASSERT_NEAR_COMPLEX(a->at(1, 0), complex(1, 3), 1e-6);
 }
@@ -120,7 +119,6 @@ TYPED_TEST(BackendTest, exp) {
 
   a->exp();
 
-  a->copy_to_host();
   ASSERT_NEAR_COMPLEX(a->at(0, 0), std::exp(complex(0, 1)), 1e-6);
   ASSERT_NEAR_COMPLEX(a->at(1, 0), std::exp(complex(2, 3)), 1e-6);
 }
@@ -131,7 +129,6 @@ TYPED_TEST(BackendTest, scale) {
 
   a->scale(complex(1, 1));
 
-  a->copy_to_host();
   ASSERT_NEAR_COMPLEX(a->at(0, 0), complex(-1, 1), 1e-6);
   ASSERT_NEAR_COMPLEX(a->at(1, 0), complex(-1, 5), 1e-6);
   ASSERT_NEAR_COMPLEX(a->at(2, 0), complex(-1, 9), 1e-6);
@@ -145,7 +142,6 @@ TYPED_TEST(BackendTest, reciprocal) {
   auto b = this->_pool.rent("b", 2, 1);
   b->reciprocal(a);
 
-  b->copy_to_host();
   ASSERT_NEAR(b->at(0, 0), 1.0 / 1.0, 1e-6);
   ASSERT_NEAR(b->at(1, 0), 1.0 / 2.0, 1e-6);
 }
@@ -157,7 +153,6 @@ TYPED_TEST(BackendTest, reciprocal_c) {
   auto b = this->_pool.rent_c("b", 2, 1);
   b->reciprocal(a);
 
-  b->copy_to_host();
   ASSERT_NEAR_COMPLEX(b->at(0, 0), complex(0, -1), 1e-6);
   ASSERT_NEAR_COMPLEX(b->at(1, 0), complex(2.0 / 13.0, -3.0 / 13.0), 1e-6);
 }
@@ -170,7 +165,6 @@ TYPED_TEST(BackendTest, abs_c) {
 
   b->abs(a);
 
-  b->copy_to_host();
   ASSERT_NEAR(b->at(0, 0).real(), std::abs(complex(0, 1)), 1e-6);
   ASSERT_NEAR(b->at(1, 0).real(), std::abs(complex(2, 3)), 1e-6);
 }
@@ -183,7 +177,6 @@ TYPED_TEST(BackendTest, real) {
 
   b->real(a);
 
-  b->copy_to_host();
   ASSERT_EQ(b->at(0, 0), 0.0);
   ASSERT_EQ(b->at(1, 0), 2.0);
   ASSERT_EQ(b->at(0, 1), 4.0);
@@ -198,7 +191,6 @@ TYPED_TEST(BackendTest, arg) {
 
   b->arg(a);
 
-  b->copy_to_host();
   ASSERT_NEAR_COMPLEX(b->at(0, 0), std::exp(complex(0, 1)), 1e-6);
   ASSERT_NEAR_COMPLEX(b->at(1, 0), std::exp(complex(0, 2)), 1e-6);
 }
@@ -212,7 +204,6 @@ TYPED_TEST(BackendTest, hadamard_product) {
   auto c = this->_pool.rent_c("c", 2, 2);
   c->hadamard_product(a, b);
 
-  c->copy_to_host();
   ASSERT_NEAR_COMPLEX(c->at(0, 0), complex(-9, 8), 1e-6);
   ASSERT_NEAR_COMPLEX(c->at(1, 0), complex(-13, 52), 1e-6);
   ASSERT_NEAR_COMPLEX(c->at(0, 1), complex(-17, 112), 1e-6);
@@ -235,7 +226,7 @@ TYPED_TEST(BackendTest, pseudo_inverse_svd) {
 
   auto c = this->_pool.rent("c", n, n);
   c->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, 1.0, a, b, 0.0);
-  c->copy_to_host();
+
   for (Eigen::Index i = 0; i < n; i++)
     for (Eigen::Index j = 0; j < n; j++) {
       if (i == j)
@@ -261,7 +252,7 @@ TYPED_TEST(BackendTest, pseudo_inverse_svd_c) {
 
   auto c = this->_pool.rent_c("c", n, n);
   c->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, 1.0, a, b, 0.0);
-  c->copy_to_host();
+
   for (Eigen::Index i = 0; i < n; i++)
     for (Eigen::Index j = 0; j < n; j++) {
       if (i == j)
@@ -297,7 +288,6 @@ TYPED_TEST(BackendTest, max_eigen_vector) {
   const auto b = this->_pool.rent_c("b", n, 1);
   a->max_eigen_vector(b);
 
-  b->copy_to_host();
   const auto k = b->at(0, 0) / u.col(n - 1)(0);
   const Eigen::Matrix<complex, -1, 1, Eigen::ColMajor> expected = u.col(n - 1) * k;
 
@@ -312,14 +302,14 @@ TYPED_TEST(BackendTest, matrix_add) {
   b->fill(0.0);
 
   b->add(0.0, a);
-  b->copy_to_host();
+
   ASSERT_NEAR(b->at(0, 0), 0.0, 1e-6);
   ASSERT_NEAR(b->at(0, 1), 0.0, 1e-6);
   ASSERT_NEAR(b->at(1, 0), 0.0, 1e-6);
   ASSERT_NEAR(b->at(1, 1), 0.0, 1e-6);
 
   b->add(2.0, a);
-  b->copy_to_host();
+
   ASSERT_NEAR(b->at(0, 0), 0.0, 1e-6);
   ASSERT_NEAR(b->at(0, 1), 2.0, 1e-6);
   ASSERT_NEAR(b->at(1, 0), 4.0, 1e-6);
@@ -336,14 +326,13 @@ TYPED_TEST(BackendTest, matrix_mul_c) {
 
   c->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, a, b, ZERO);
 
-  c->copy_to_host();
   ASSERT_NEAR_COMPLEX(c->at(0, 0), complex(-24, 70), 1e-6);
   ASSERT_NEAR_COMPLEX(c->at(0, 1), complex(-28, 82), 1e-6);
   ASSERT_NEAR_COMPLEX(c->at(1, 0), complex(-32, 238), 1e-6);
   ASSERT_NEAR_COMPLEX(c->at(1, 1), complex(-36, 282), 1e-6);
 
   c->mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::TRANS, ZERO, a, b, ONE);
-  c->copy_to_host();
+
   ASSERT_NEAR_COMPLEX(c->at(0, 0), complex(-24, 70), 1e-6);
   ASSERT_NEAR_COMPLEX(c->at(0, 1), complex(-28, 82), 1e-6);
   ASSERT_NEAR_COMPLEX(c->at(1, 0), complex(-32, 238), 1e-6);
@@ -359,7 +348,7 @@ TYPED_TEST(BackendTest, matrix_mul) {
   auto c = this->_pool.rent("c", 2, 2);
 
   c->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::TRANS, 1.0, a, b, 0.0);
-  c->copy_to_host();
+
   ASSERT_NEAR(c->at(0, 0), 5.0, 1e-6);
   ASSERT_NEAR(c->at(0, 1), 7.0, 1e-6);
   ASSERT_NEAR(c->at(1, 0), 23.0, 1e-6);
@@ -367,7 +356,6 @@ TYPED_TEST(BackendTest, matrix_mul) {
 
   c->mul(TRANSPOSE::TRANS, TRANSPOSE::NO_TRANS, 1.0, a, b, 1);
 
-  c->copy_to_host();
   ASSERT_NEAR(c->at(0, 0), 17.0, 1e-6);
   ASSERT_NEAR(c->at(0, 1), 21.0, 1e-6);
   ASSERT_NEAR(c->at(1, 0), 45.0, 1e-6);
@@ -392,7 +380,6 @@ TYPED_TEST(BackendTest, solve_c) {
 
   a->solve(b);
 
-  b->copy_to_host();
   for (Eigen::Index i = 0; i < n; i++) ASSERT_NEAR_COMPLEX(b->at(i, 0), x_expected[i], 1e-6);
 }
 
@@ -414,7 +401,6 @@ TYPED_TEST(BackendTest, solve) {
 
   a->solve(b);
 
-  b->copy_to_host();
   for (Eigen::Index i = 0; i < n; i++) ASSERT_NEAR(b->at(i, 0), x_expected[i], 1e-6);
 }
 
@@ -483,7 +469,6 @@ TYPED_TEST(BackendTest, concat_row) {
 
   c->concat_row(a, b);
 
-  c->copy_to_host();
   ASSERT_NEAR_COMPLEX(c->at(0, 0), complex(0, 1), 1e-6);
   ASSERT_NEAR_COMPLEX(c->at(1, 0), complex(8, 9), 1e-6);
   ASSERT_NEAR_COMPLEX(c->at(0, 1), complex(2, 3), 1e-6);
@@ -500,7 +485,6 @@ TYPED_TEST(BackendTest, concat_col) {
 
   c->concat_col(a, b);
 
-  c->copy_to_host();
   ASSERT_NEAR_COMPLEX(c->at(0, 0), complex(0, 1), 1e-6);
   ASSERT_NEAR_COMPLEX(c->at(1, 0), complex(8, 9), 1e-6);
   ASSERT_NEAR_COMPLEX(c->at(0, 1), complex(2, 3), 1e-6);
@@ -515,7 +499,6 @@ TYPED_TEST(BackendTest, mat_cpy) {
 
   b->copy_from(a);
 
-  b->copy_to_host();
   ASSERT_EQ(b->at(0, 0), 0.0);
   ASSERT_EQ(b->at(1, 0), 1.0);
   ASSERT_EQ(b->at(0, 1), 2.0);
@@ -530,7 +513,6 @@ TYPED_TEST(BackendTest, mat_cpy_c) {
 
   b->copy_from(a);
 
-  b->copy_to_host();
   ASSERT_EQ(b->at(0, 0), complex(0, 1));
   ASSERT_EQ(b->at(1, 0), complex(8, 9));
 }
@@ -538,14 +520,14 @@ TYPED_TEST(BackendTest, mat_cpy_c) {
 TYPED_TEST(BackendTest, set) {
   auto a = this->_pool.rent("a", 1, 1);
   a->set(0, 0, 10.0);
-  a->copy_to_host();
+
   ASSERT_EQ(a->at(0, 0), 10.0);
 }
 
 TYPED_TEST(BackendTest, set_c) {
   auto a = this->_pool.rent_c("a", 1, 1);
   a->set(0, 0, complex(10.0, 5.0));
-  a->copy_to_host();
+
   ASSERT_EQ(a->at(0, 0), complex(10.0, 5.0));
 }
 
@@ -557,7 +539,6 @@ TYPED_TEST(BackendTest, get_col) {
 
   b->get_col(a, 0);
 
-  b->copy_to_host();
   ASSERT_EQ(b->at(0, 0), 0.0);
   ASSERT_EQ(b->at(1, 0), 1.0);
 }
@@ -570,7 +551,6 @@ TYPED_TEST(BackendTest, get_col_c) {
 
   b->get_col(a, 0);
 
-  b->copy_to_host();
   ASSERT_EQ(b->at(0, 0), complex(0.0, 1.0));
   ASSERT_EQ(b->at(1, 0), complex(2.0, 3.0));
 }
@@ -578,14 +558,14 @@ TYPED_TEST(BackendTest, get_col_c) {
 TYPED_TEST(BackendTest, fill) {
   auto a = this->_pool.rent("a", 1, 1);
   a->fill(10.0);
-  a->copy_to_host();
+
   ASSERT_EQ(a->at(0, 0), 10.0);
 }
 
 TYPED_TEST(BackendTest, fill_c) {
   auto a = this->_pool.rent_c("a", 1, 1);
   a->fill(complex(10.0, 5.0));
-  a->copy_to_host();
+
   ASSERT_EQ(a->at(0, 0), complex(10.0, 5.0));
 }
 
@@ -597,7 +577,6 @@ TYPED_TEST(BackendTest, get_diagonal) {
 
   b->get_diagonal(a);
 
-  b->copy_to_host();
   ASSERT_EQ(b->at(0, 0), 0.0);
   ASSERT_EQ(b->at(1, 0), 3.0);
 }
@@ -610,7 +589,6 @@ TYPED_TEST(BackendTest, get_diagonal_c) {
 
   b->get_diagonal(a);
 
-  b->copy_to_host();
   ASSERT_EQ(b->at(0, 0), complex(0.0, 1.0));
   ASSERT_EQ(b->at(1, 0), complex(6.0, 7.0));
 }
@@ -623,7 +601,6 @@ TYPED_TEST(BackendTest, create_diagonal) {
 
   b->create_diagonal(a);
 
-  b->copy_to_host();
   ASSERT_EQ(b->at(0, 0), 0.0);
   ASSERT_EQ(b->at(1, 0), 0.0);
   ASSERT_EQ(b->at(0, 1), 0.0);
@@ -638,7 +615,6 @@ TYPED_TEST(BackendTest, create_diagonal_c) {
 
   b->create_diagonal(a);
 
-  b->copy_to_host();
   ASSERT_EQ(b->at(0, 0), complex(0.0, 1.0));
   ASSERT_EQ(b->at(1, 0), ZERO);
   ASSERT_EQ(b->at(0, 1), ZERO);
@@ -654,7 +630,6 @@ TYPED_TEST(BackendTest, set_bcd_result) {
 
   a->set_bcd_result(v, 1);
 
-  a->copy_to_host();
   ASSERT_EQ(a->at(0, 0), ZERO);
   ASSERT_EQ(a->at(1, 0), complex(0.0, -1.0));
   ASSERT_EQ(a->at(2, 0), ZERO);
@@ -787,7 +762,6 @@ TYPED_TEST(BackendTest, col_sum_imag) {
 
   b->col_sum_imag(a);
 
-  b->copy_to_host();
   ASSERT_NEAR(b->at(0, 0), 6.0, 1e-6);
   ASSERT_NEAR(b->at(1, 0), 10.0, 1e-6);
 }

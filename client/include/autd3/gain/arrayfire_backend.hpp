@@ -136,7 +136,6 @@ struct AFMatrix {
     if (n == 0) return;
     af_array.write(reinterpret_cast<const void*>(v), n * sizeof(T));
   }
-  void copy_to_host() {}
 
   void transfer_matrix(const double* foci, size_t foci_num, const std::vector<const double*>& positions, const std::vector<const double*>& directions,
                        double wavelength, double attenuation);
