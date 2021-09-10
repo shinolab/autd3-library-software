@@ -84,7 +84,7 @@ std::vector<double> random_vector(T n, const double minimum = -1.0, const double
   std::uniform_real_distribution dist(minimum, maximum);
   std::vector<double> v;
   v.reserve(n);
-  for (size_t i = 0; i < n; i++) v.emplace_back(dist(engine));
+  for (T i = 0; i < n; ++i) v.emplace_back(dist(engine));
   return v;
 }
 
@@ -94,7 +94,7 @@ std::vector<complex> random_vector_complex(T n, const double minimum = -1.0, con
   const auto im = random_vector(n, minimum, maximum);
   std::vector<complex> v;
   v.reserve(n);
-  for (size_t i = 0; i < n; i++) v.emplace_back(complex(re[i], im[i]));
+  for (T i = 0; i < n; ++i) v.emplace_back(complex(re[i], im[i]));
   return v;
 }
 
@@ -102,8 +102,8 @@ TYPED_TEST(BackendTest, make_complex) {
   auto r = this->_pool.rent("r", 2, 1);
   auto i = this->_pool.rent("i", 2, 1);
 
-  r->copy_from({0, 1});
-  i->copy_from({2, 3});
+  r->copy_from({0.0, 1.0});
+  i->copy_from({2.0, 3.0});
 
   auto a = this->_pool.rent_c("a", 2, 1);
 
@@ -288,7 +288,9 @@ TYPED_TEST(BackendTest, max_eigen_vector) {
   const auto b = this->_pool.rent_c("b", n, 1);
   a->max_eigen_vector(b);
 
-  const auto k = b->at(0, 0) / u.col(n - 1)(0);
+  Eigen::MatrixXf::Index max_idx;
+  u.col(n - 1).cwiseAbs2().maxCoeff(&max_idx);
+  const auto k = b->at(max_idx, 0) / u.col(n - 1)(max_idx);
   const Eigen::Matrix<complex, -1, 1, Eigen::ColMajor> expected = u.col(n - 1) * k;
 
   for (Eigen::Index i = 0; i < n; i++) ASSERT_NEAR_COMPLEX(b->at(i, 0), expected(i), 1e-6);
@@ -296,7 +298,7 @@ TYPED_TEST(BackendTest, max_eigen_vector) {
 
 TYPED_TEST(BackendTest, matrix_add) {
   auto a = this->_pool.rent("a", 2, 2);
-  a->copy_from({0, 2, 1, 3});
+  a->copy_from({0.0, 2.0, 1.0, 3.0});
 
   auto b = this->_pool.rent("b", 2, 2);
   b->fill(0.0);
@@ -342,8 +344,8 @@ TYPED_TEST(BackendTest, matrix_mul_c) {
 TYPED_TEST(BackendTest, matrix_mul) {
   auto a = this->_pool.rent("a", 2, 2);
   auto b = this->_pool.rent("b", 2, 2);
-  a->copy_from({0, 2, 1, 3});
-  b->copy_from({4, 6, 5, 7});
+  a->copy_from({0.0, 2.0, 1.0, 3.0});
+  b->copy_from({4.0, 6.0, 5.0, 7.0});
 
   auto c = this->_pool.rent("c", 2, 2);
 
@@ -684,8 +686,8 @@ TYPED_TEST(BackendTest, set_from_arg) {
 }
 
 TYPED_TEST(BackendTest, back_prop) {
-  constexpr auto m = 2;
-  constexpr auto dev = 4;
+  constexpr size_t m = 2;
+  constexpr size_t dev = 4;
   constexpr auto n = autd::core::NUM_TRANS_IN_UNIT * dev;
 
   auto tmp_t = random_vector_complex(m * n, 0.0, 1.0);
@@ -699,9 +701,9 @@ TYPED_TEST(BackendTest, back_prop) {
     denominator.emplace_back(tmp);
   }
 
-  for (auto i = 0; i < m; i++) {
+  for (size_t i = 0; i < m; i++) {
     auto c = tmp_a[i] / denominator[i];
-    for (auto j = 0; j < n; j++) expected.emplace_back(c * std::conj(tmp_t[i + m * j]));
+    for (size_t j = 0; j < n; j++) expected.emplace_back(c * std::conj(tmp_t[i + m * j]));
   }
 
   auto t = this->_pool.rent_c("a", m, n);
@@ -712,8 +714,6 @@ TYPED_TEST(BackendTest, back_prop) {
 
   auto s = this->_pool.rent_c("s", n, m);
   s->back_prop(t, a);
-
-  s->copy_to_host();
 
   for (size_t i = 0; i < n; i++)
     for (size_t j = 0; j < m; j++) ASSERT_NEAR_COMPLEX(s->at(i, j), expected[i + j * n], 1e-6);
@@ -742,8 +742,6 @@ TYPED_TEST(BackendTest, sigma_regularization) {
 
   auto s = this->_pool.rent_c("s", n, n);
   s->sigma_regularization(t, a, gamma);
-
-  s->copy_to_host();
 
   for (auto j = 0; j < n; j++) {
     for (auto i = 0; i < m; i++)
