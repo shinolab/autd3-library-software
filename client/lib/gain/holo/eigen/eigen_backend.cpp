@@ -16,7 +16,7 @@
 #include "matrix_pool.hpp"
 
 namespace autd::gain::holo {
-class EigenBackendImpl : public EigenBackend {
+class EigenBackendImpl final : public EigenBackend {
  public:
   EigenBackendImpl() = default;
   ~EigenBackendImpl() override = default;

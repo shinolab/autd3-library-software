@@ -17,7 +17,7 @@
 #include "matrix_pool.hpp"
 
 namespace autd::gain::holo {
-class ArrayFireBackendImpl : public ArrayFireBackend {
+class ArrayFireBackendImpl final : public ArrayFireBackend {
  public:
   ArrayFireBackendImpl() = default;
   ~ArrayFireBackendImpl() override = default;
