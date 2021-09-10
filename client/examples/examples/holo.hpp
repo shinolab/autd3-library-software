@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/09/2021
+// Last Modified: 10/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -23,7 +23,7 @@
 using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SPACING_MM;
 
 inline autd::GainPtr select_opt(const std::vector<autd::Vector3>& foci, const std::vector<double>& amps) {
-  using Backend = autd::gain::holo::EigenBackend;
+  using Backend = EigenBackend;
 
   std::cout << "Select Optimization Method (default is SDP)" << std::endl;
 

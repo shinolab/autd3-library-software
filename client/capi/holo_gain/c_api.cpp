@@ -74,7 +74,7 @@ void AUTDGainHoloGSPAT(void** gain, const double* points, const double* amps, co
 }
 
 void AUTDGainHoloLM(void** gain, const double* points, const double* amps, const int32_t size, const double eps_1, const double eps_2,
-                    const double tau, const uint64_t k_max, double* initial, const int32_t initial_size) {
+                    const double tau, const uint64_t k_max, const double* initial, const int32_t initial_size) {
   const auto holo = PackFoci(points, size);
   const auto amps_ = PackAmps(amps, size);
 
@@ -83,6 +83,39 @@ void AUTDGainHoloLM(void** gain, const double* points, const double* amps, const
   for (auto i = 0; i < initial_size; i++) initial_.emplace_back(initial[i]);
 
   auto* g = GainCreate(autd::gain::holo::LM<Backend>::create(holo, amps_, eps_1, eps_2, tau, k_max, initial_));
+  *gain = g;
+}
+
+void AUTDGainHoloGaussNewton(void** gain, const double* points, const double* amps, const int32_t size, const double eps_1, const double eps_2,
+                             const uint64_t k_max, const double* initial, const int32_t initial_size) {
+  const auto holo = PackFoci(points, size);
+  const auto amps_ = PackAmps(amps, size);
+
+  std::vector<double> initial_;
+  initial_.reserve(initial_size);
+  for (auto i = 0; i < initial_size; i++) initial_.emplace_back(initial[i]);
+
+  auto* g = GainCreate(autd::gain::holo::GaussNewton<Backend>::create(holo, amps_, eps_1, eps_2, k_max, initial_));
+  *gain = g;
+}
+void AUTDGainHoloGradientDescent(void** gain, const double* points, const double* amps, const int32_t size, const double eps, const double step,
+                                 const uint64_t k_max, const double* initial, const int32_t initial_size) {
+  const auto holo = PackFoci(points, size);
+  const auto amps_ = PackAmps(amps, size);
+
+  std::vector<double> initial_;
+  initial_.reserve(initial_size);
+  for (auto i = 0; i < initial_size; i++) initial_.emplace_back(initial[i]);
+
+  auto* g = GainCreate(autd::gain::holo::GradientDescent<Backend>::create(holo, amps_, eps, step, k_max, initial_));
+  *gain = g;
+}
+void AUTDGainHoloAPO(void** gain, const double* points, const double* amps, const int32_t size, const double eps, const double lambda,
+                     const uint64_t k_max) {
+  const auto holo = PackFoci(points, size);
+  const auto amps_ = PackAmps(amps, size);
+
+  auto* g = GainCreate(autd::gain::holo::APO<Backend>::create(holo, amps_, eps, lambda, k_max));
   *gain = g;
 }
 

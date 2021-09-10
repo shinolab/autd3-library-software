@@ -79,8 +79,8 @@ struct CuMatrix {
   [[nodiscard]] size_t rows() const { return _row; }
   [[nodiscard]] size_t cols() const { return _col; }
 
-  void set(const size_t row, const size_t col, T v);
-  void get_col(const std::shared_ptr<const CuMatrix<T>>& src, const size_t i);
+  void set(size_t row, size_t col, T v);
+  void get_col(const std::shared_ptr<const CuMatrix<T>>& src, size_t i);
   void fill(T v);
   void get_diagonal(const std::shared_ptr<const CuMatrix<T>>& src);
   void create_diagonal(const std::shared_ptr<const CuMatrix<T>>& v);
