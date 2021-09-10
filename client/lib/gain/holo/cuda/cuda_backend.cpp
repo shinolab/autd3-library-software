@@ -1,6 +1,6 @@
-// File: eigen_backend.cpp
-// Project: holo_gain
-// Created Date: 16/05/2021
+// File: cuda_backend.cpp
+// Project: cuda
+// Created Date: 10/09/2021
 // Author: Shun Suzuki
 // -----
 // Last Modified: 10/09/2021
@@ -9,21 +9,21 @@
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
 //
 
-#include "autd3/gain/eigen_backend.hpp"
+#include "autd3/gain/cuda_backend.hpp"
 
-#include "eigen/eigen_matrix.hpp"
+#include "cuda_matrix.hpp"
 #include "holo_impl.hpp"
 #include "matrix_pool.hpp"
 
 namespace autd::gain::holo {
-class EigenBackendImpl final : public EigenBackend {
+class CUDABackendImpl : public CUDABackend {
  public:
-  EigenBackendImpl() = default;
-  ~EigenBackendImpl() override = default;
-  EigenBackendImpl(const EigenBackendImpl& v) noexcept = delete;
-  EigenBackendImpl& operator=(const EigenBackendImpl& obj) = delete;
-  EigenBackendImpl(EigenBackendImpl&& obj) = delete;
-  EigenBackendImpl& operator=(EigenBackendImpl&& obj) = delete;
+  explicit CUDABackendImpl(const int device_idx) { CuContext::init(device_idx); }
+  ~CUDABackendImpl() override { CuContext::free(); }
+  CUDABackendImpl(const CUDABackendImpl& v) noexcept = delete;
+  CUDABackendImpl& operator=(const CUDABackendImpl& obj) = delete;
+  CUDABackendImpl(CUDABackendImpl&& obj) = delete;
+  CUDABackendImpl& operator=(CUDABackendImpl&& obj) = delete;
 
   void sdp(const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, const double alpha,
            const double lambda, const size_t repeat, const bool normalize, std::vector<core::DataArray>& dst) override {
@@ -70,6 +70,6 @@ class EigenBackendImpl final : public EigenBackend {
   MatrixBufferPool<EigenMatrix<double>, EigenMatrix<complex>> _pool;
 };
 
-BackendPtr EigenBackend::create() { return std::make_unique<EigenBackendImpl>(); }
+BackendPtr CUDABackend::create(const int device_idx) { return std::make_unique<CUDABackendImpl>(device_idx); }
 
 }  // namespace autd::gain::holo

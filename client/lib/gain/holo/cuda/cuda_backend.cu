@@ -15,7 +15,8 @@
 #include <thrust/reduce.h>
 
 #include "./kernel.h"
-#include "autd3/gain/cuda_backend.hpp"
+#include "autd3/gain/matrix.hpp"
+#include "cuda_matrix.hpp"
 
 namespace {
 cublasOperation_t convert(autd::gain::holo::TRANSPOSE trans) {
@@ -40,8 +41,9 @@ cublasHandle_t CuContext::handle = nullptr;
 cusolverDnHandle_t CuContext::handle_s = nullptr;
 size_t CuContext::cnt = 0;
 
-void CuContext::init() {
+void CuContext::init(const int device_idx) {
   if (cnt++ > 0) return;
+  cudaSetDevice(device_idx);
   cublasCreate_v2(&CuContext::handle);
   cusolverDnCreate(&CuContext::handle_s);
 }

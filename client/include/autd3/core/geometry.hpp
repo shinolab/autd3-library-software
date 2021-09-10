@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/09/2021
+// Last Modified: 10/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -13,7 +13,7 @@
 
 #if _MSC_VER
 #pragma warning(push)
-#pragma warning(disable : 6031 26450 26451 26454 26495 26812)
+#pragma warning(disable : 6031 6255 6294 26450 26451 26454 26495 26812)
 #endif
 #if defined(__GNUC__) && !defined(__llvm__)
 #pragma GCC diagnostic push
