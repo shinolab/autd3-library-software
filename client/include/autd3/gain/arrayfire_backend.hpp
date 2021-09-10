@@ -3,7 +3,7 @@
 // Created Date: 08/09/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/09/2021
+// Last Modified: 10/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -46,7 +46,7 @@ struct AFMatrix {
     _af_array = a->_af_array * b->_af_array;
   }
   void pseudo_inverse_svd(const std::shared_ptr<AFMatrix<T>>& matrix, double alpha, const std::shared_ptr<AFMatrix<T>>& u,
-                          const std::shared_ptr<AFMatrix<T>>& vt, const std::shared_ptr<AFMatrix<T>>& buf);
+                          const std::shared_ptr<AFMatrix<T>>& s, const std::shared_ptr<AFMatrix<T>>& vt, const std::shared_ptr<AFMatrix<T>>& buf);
   void max_eigen_vector(const std::shared_ptr<AFMatrix<T>>& ev);
   void add(const T alpha, const std::shared_ptr<AFMatrix<T>>& a) { _af_array += cast(alpha) * a->_af_array; }
   void mul(const TRANSPOSE trans_a, const TRANSPOSE trans_b, const T alpha, const std::shared_ptr<const AFMatrix<T>>& a,
@@ -145,6 +145,6 @@ struct AFMatrix {
   void col_sum_imag(const std::shared_ptr<AFMatrix<complex>>& src);
 };
 
-using ArrayFireBackend = MatrixBufferPool<AFMatrix<double>, AFMatrix<complex>>;
+using ArrayFireBackend = MatrixBufferPool<AFMatrix<double>, AFMatrix<complex>, Context>;
 
 }  // namespace autd::gain::holo

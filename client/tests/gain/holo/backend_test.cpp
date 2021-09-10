@@ -3,7 +3,7 @@
 // Created Date: 13/08/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/09/2021
+// Last Modified: 10/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -172,8 +172,8 @@ TYPED_TEST(BackendTest, abs_c) {
   b->abs(a);
 
   b->copy_to_host();
-  ASSERT_EQ(b->at(0, 0).real(), std::abs(complex(0, 1)));
-  ASSERT_EQ(b->at(1, 0).real(), std::abs(complex(2, 3)));
+  ASSERT_NEAR(b->at(0, 0).real(), std::abs(complex(0, 1)), 1e-6);
+  ASSERT_NEAR(b->at(1, 0).real(), std::abs(complex(2, 3)), 1e-6);
 }
 
 TYPED_TEST(BackendTest, real) {
@@ -227,9 +227,12 @@ TYPED_TEST(BackendTest, pseudo_inverse_svd) {
 
   auto b = this->_pool.rent("b", n, n);
   auto u = this->_pool.rent("u", n, n);
+  auto s = this->_pool.rent("s", n, n);
   auto vt = this->_pool.rent("vt", n, n);
   auto buf = this->_pool.rent("buf", n, n);
-  b->pseudo_inverse_svd(a, 0.0, u, vt, buf);
+  auto mat = this->_pool.rent("mat", n, n);
+  mat->copy_from(a);
+  b->pseudo_inverse_svd(mat, 0.0, u, s, vt, buf);
 
   auto c = this->_pool.rent("c", n, n);
   c->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, 1.0, a, b, 0.0);
@@ -250,9 +253,12 @@ TYPED_TEST(BackendTest, pseudo_inverse_svd_c) {
 
   auto b = this->_pool.rent_c("b", n, n);
   auto u = this->_pool.rent_c("u", n, n);
+  auto s = this->_pool.rent_c("s", n, n);
   auto vt = this->_pool.rent_c("vt", n, n);
   auto buf = this->_pool.rent_c("buf", n, n);
-  b->pseudo_inverse_svd(a, 0.0, u, vt, buf);
+  auto mat = this->_pool.rent_c("mat", n, n);
+  mat->copy_from(a);
+  b->pseudo_inverse_svd(mat, 0.0, u, s, vt, buf);
 
   auto c = this->_pool.rent_c("c", n, n);
   c->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, 1.0, a, b, 0.0);
@@ -705,10 +711,11 @@ TYPED_TEST(BackendTest, set_from_arg) {
 
 TYPED_TEST(BackendTest, back_prop) {
   const auto m = 2;
-  const auto n = 3;
+  const auto dev = 4;
+  const auto n = autd::core::NUM_TRANS_IN_UNIT * dev;
 
-  auto tmp_t = random_vector_complex(m * n);
-  auto tmp_a = random_vector_complex(m);
+  auto tmp_t = random_vector_complex(m * n, 0.0, 1.0);
+  auto tmp_a = random_vector_complex(m, 0.0, 1.0);
   std::vector<complex> expected;
 
   std::vector<double> denominator;

@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/09/2021
+// Last Modified: 10/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -29,11 +29,11 @@ constexpr complex ZERO = complex(0.0, 0.0);
 /**
  * \brief Linear algebra calculation backend
  */
-template <typename M, typename Mc>
+template <typename M, typename Mc, typename C>
 class MatrixBufferPool final {
  public:
-  MatrixBufferPool() = default;
-  ~MatrixBufferPool() = default;
+  MatrixBufferPool() { C::init(); }
+  ~MatrixBufferPool() { C::free(); }
   MatrixBufferPool(const MatrixBufferPool& obj) = delete;
   MatrixBufferPool& operator=(const MatrixBufferPool& obj) = delete;
   MatrixBufferPool(const MatrixBufferPool&& v) = delete;
@@ -49,7 +49,8 @@ class MatrixBufferPool final {
   template <typename T>
   static std::shared_ptr<T> rent_impl(const std::string& name, const size_t row, const size_t col,
                                       std::unordered_map<std::string, std::shared_ptr<T>>& cache) {
-    if (const auto it = cache.find(name); it != cache.end()) {
+    const auto it = cache.find(name);
+    if (it != cache.end()) {
       if (static_cast<size_t>(it->second->rows()) == row && static_cast<size_t>(it->second->cols()) == col) return it->second;
       cache.erase(name);
     }
@@ -60,6 +61,11 @@ class MatrixBufferPool final {
 };
 
 struct Backend {};
+
+struct Context {
+  static void init() {}
+  static void free() {}
+};
 
 }  // namespace holo
 }  // namespace gain

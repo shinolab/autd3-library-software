@@ -3,7 +3,7 @@
 // Created Date: 17/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/09/2021
+// Last Modified: 10/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -47,8 +47,8 @@ constexpr auto AUTD_CPY = cblas_dcopy;
 constexpr auto AUTD_CPYC = cblas_zcopy;
 
 void BLASMatrix<complex>::pseudo_inverse_svd(const std::shared_ptr<EigenMatrix<complex>>& matrix, const double alpha,
-                                             const std::shared_ptr<EigenMatrix<complex>>& u, const std::shared_ptr<EigenMatrix<complex>>& vt,
-                                             const std::shared_ptr<EigenMatrix<complex>>& buf) {
+                                             const std::shared_ptr<EigenMatrix<complex>>& u, const std::shared_ptr<EigenMatrix<complex>>& s,
+                                             const std::shared_ptr<EigenMatrix<complex>>& vt, const std::shared_ptr<EigenMatrix<complex>>& buf) {
   const auto nc = matrix->cols();
   const auto nr = matrix->rows();
 
@@ -57,22 +57,23 @@ void BLASMatrix<complex>::pseudo_inverse_svd(const std::shared_ptr<EigenMatrix<c
   const auto ldvt = static_cast<int>(nc);
 
   const auto s_size = std::min(nr, nc);
-  const auto s = std::make_unique<double[]>(s_size);
+  const auto sigma = std::make_unique<double[]>(s_size);
 
   Eigen::Matrix<complex, -1, -1, Eigen::ColMajor> m = matrix->data;
-  AUTD_GESVDC(LAPACK_COL_MAJOR, 'A', static_cast<int>(nr), static_cast<int>(nc), m.data(), lda, s.get(), u->data.data(), ldu, vt->data.data(), ldvt);
+  AUTD_GESVDC(LAPACK_COL_MAJOR, 'A', static_cast<int>(nr), static_cast<int>(nc), m.data(), lda, sigma.get(), u->data.data(), ldu, vt->data.data(),
+              ldvt);
   Eigen::Matrix<complex, -1, -1, Eigen::ColMajor> singular_inv =
       Eigen::Matrix<complex, -1, -1, Eigen::ColMajor>::Zero(static_cast<Eigen::Index>(nc), static_cast<Eigen::Index>(nr));
-  for (Eigen::Index i = 0; i < static_cast<Eigen::Index>(s_size); i++) singular_inv(i, i) = s[i] / (s[i] * s[i] + alpha);
+  for (Eigen::Index i = 0; i < static_cast<Eigen::Index>(s_size); i++) singular_inv(i, i) = sigma[i] / (sigma[i] * sigma[i] + alpha);
 
-  const auto si = std::make_shared<BLASMatrix<complex>>(std::move(singular_inv));
-  buf->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::CONJ_TRANS, ONE, si, u, ZERO);
+  s->copy_from(singular_inv.data());
+  buf->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::CONJ_TRANS, ONE, s, u, ZERO);
   this->mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, ONE, vt, buf, ZERO);
 }
 
 void BLASMatrix<double>::pseudo_inverse_svd(const std::shared_ptr<EigenMatrix<double>>& matrix, const double alpha,
-                                            const std::shared_ptr<EigenMatrix<double>>& u, const std::shared_ptr<EigenMatrix<double>>& vt,
-                                            const std::shared_ptr<EigenMatrix<double>>& buf) {
+                                            const std::shared_ptr<EigenMatrix<double>>& u, const std::shared_ptr<EigenMatrix<double>>& s,
+                                            const std::shared_ptr<EigenMatrix<double>>& vt, const std::shared_ptr<EigenMatrix<double>>& buf) {
   const auto nc = matrix->data.cols();
   const auto nr = matrix->data.rows();
 
@@ -81,15 +82,16 @@ void BLASMatrix<double>::pseudo_inverse_svd(const std::shared_ptr<EigenMatrix<do
   const auto ldvt = static_cast<int>(nc);
 
   const auto s_size = std::min(nr, nc);
-  const auto s = std::make_unique<double[]>(s_size);
+  const auto sigma = std::make_unique<double[]>(s_size);
 
   Eigen::Matrix<double, -1, -1, Eigen::ColMajor> m = matrix->data;
-  AUTD_GESVD(LAPACK_COL_MAJOR, 'A', static_cast<int>(nr), static_cast<int>(nc), m.data(), lda, s.get(), u->data.data(), ldu, vt->data.data(), ldvt);
+  AUTD_GESVD(LAPACK_COL_MAJOR, 'A', static_cast<int>(nr), static_cast<int>(nc), m.data(), lda, sigma.get(), u->data.data(), ldu, vt->data.data(),
+             ldvt);
   Eigen::Matrix<double, -1, -1, Eigen::ColMajor> singular_inv = Eigen::Matrix<double, -1, -1, Eigen::ColMajor>::Zero(nc, nr);
-  for (int i = 0; i < s_size; i++) singular_inv(i, i) = s[i] / (s[i] * s[i] + alpha);
+  for (int i = 0; i < s_size; i++) singular_inv(i, i) = sigma[i] / (sigma[i] * sigma[i] + alpha);
 
-  const auto si = std::make_shared<BLASMatrix<double>>(std::move(singular_inv));
-  buf->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::TRANS, 1.0, si, u, 0.0);
+  s->copy_from(singular_inv.data());
+  buf->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::TRANS, 1.0, s, u, 0.0);
   this->mul(TRANSPOSE::TRANS, TRANSPOSE::NO_TRANS, 1.0, vt, buf, 0.0);
 }
 void BLASMatrix<complex>::max_eigen_vector(const std::shared_ptr<EigenMatrix<complex>>& ev) {

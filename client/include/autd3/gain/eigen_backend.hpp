@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/09/2021
+// Last Modified: 10/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -65,7 +65,8 @@ struct EigenMatrix {
     data.noalias() = a->data.cwiseProduct(b->data);
   }
   virtual void pseudo_inverse_svd(const std::shared_ptr<EigenMatrix<T>>& matrix, double alpha, const std::shared_ptr<EigenMatrix<T>>&,
-                                  const std::shared_ptr<EigenMatrix<T>>&, const std::shared_ptr<EigenMatrix<T>>&) {
+                                  const std::shared_ptr<EigenMatrix<T>>&, const std::shared_ptr<EigenMatrix<T>>&,
+                                  const std::shared_ptr<EigenMatrix<T>>&) {
     const Eigen::BDCSVD svd(matrix->data, Eigen::ComputeFullU | Eigen::ComputeFullV);
     auto singular_values_inv = svd.singularValues();
     const auto size = singular_values_inv.size();
@@ -162,5 +163,5 @@ struct EigenMatrix {
   void col_sum_imag(const std::shared_ptr<EigenMatrix<complex>>& src);
 };
 
-using EigenBackend = MatrixBufferPool<EigenMatrix<double>, EigenMatrix<complex>>;
+using EigenBackend = MatrixBufferPool<EigenMatrix<double>, EigenMatrix<complex>, Context>;
 }  // namespace autd::gain::holo
