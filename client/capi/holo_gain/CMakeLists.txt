@@ -7,7 +7,8 @@ add_library(autd3capi-holo-gain SHARED
   ../base/wrapper.hpp
 )
 
-target_link_libraries(autd3capi-holo-gain holo_gain)
+target_include_directories(autd3capi-holo-gain PRIVATE ${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
+target_link_libraries(autd3capi-holo-gain eigen_backend)
 if(WIN32)
 elseif(APPLE)
 else()

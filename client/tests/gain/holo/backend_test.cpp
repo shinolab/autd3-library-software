@@ -30,9 +30,12 @@
 #pragma warning(pop)
 #endif
 
+#include "array_fire/arrayfire_matrix.hpp"
 #include "autd3/core/utils.hpp"
 #include "autd3/gain/eigen_backend.hpp"
-#include "autd3/gain/linalg_backend.hpp"
+#include "blas/blas_matrix.hpp"
+#include "eigen/eigen_matrix.hpp"
+#include "matrix_pool.hpp"
 #include "test_utils.hpp"
 
 using autd::gain::holo::complex;
@@ -50,11 +53,11 @@ class BackendTest : public testing::Test {
 
 using testing::Types;
 
-#define Eigen3BackendType autd::gain::holo::EigenBackend
+#define Eigen3BackendType autd::gain::holo::MatrixBufferPool<autd::gain::holo::EigenMatrix<double>, autd::gain::holo::EigenMatrix<complex>>
 
 #ifdef TEST_BLAS_BACKEND
 #include "autd3/gain/blas_backend.hpp"
-#define BLASBackendType , autd::gain::holo::BLASBackend
+#define BLASBackendType , autd::gain::holo::MatrixBufferPool<autd::gain::holo::BLASMatrix<double>, autd::gain::holo::BLASMatrix<complex>>
 #else
 #define BLASBackendType
 #endif
@@ -68,7 +71,7 @@ using testing::Types;
 
 #ifdef TEST_ARRAYFIRE_BACKEND
 #include "autd3/gain/arrayfire_backend.hpp"
-#define ArrayFireBackendType , autd::gain::holo::ArrayFireBackend
+#define ArrayFireBackendType , autd::gain::holo::MatrixBufferPool<autd::gain::holo::AFMatrix<double>, autd::gain::holo::AFMatrix<complex>>
 #else
 #define ArrayFireBackendType
 #endif
