@@ -170,6 +170,6 @@ double BLASMatrix<double>::max_element() const {
   // return v->data(idx);
 }
 
-void BLASMatrix<double>::copy_from(const double* v, const size_t n) { AUTD_CPY(n, v, 1, data.data(), 1); }
-void BLASMatrix<complex>::copy_from(const complex* v, const size_t n) { AUTD_CPYC(n, v, 1, data.data(), 1); }
+void BLASMatrix<double>::copy_from(const double* v, const size_t n) { AUTD_CPY(static_cast<int>(n), v, 1, data.data(), 1); }
+void BLASMatrix<complex>::copy_from(const complex* v, const size_t n) { AUTD_CPYC(static_cast<int>(n), v, 1, data.data(), 1); }
 }  // namespace autd::gain::holo

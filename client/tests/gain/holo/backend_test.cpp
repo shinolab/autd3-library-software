@@ -33,7 +33,6 @@
 #include "autd3/core/utils.hpp"
 #include "autd3/gain/eigen_backend.hpp"
 #include "autd3/gain/linalg_backend.hpp"
-#include "autd3/utils.hpp"
 #include "test_utils.hpp"
 
 using autd::gain::holo::complex;
@@ -85,7 +84,7 @@ std::vector<double> random_vector(T n, const double minimum = -1.0, const double
   std::uniform_real_distribution dist(minimum, maximum);
   std::vector<double> v;
   v.reserve(n);
-  for (Eigen::Index i = 0; i < n; i++) v.emplace_back(dist(engine));
+  for (size_t i = 0; i < n; i++) v.emplace_back(dist(engine));
   return v;
 }
 
@@ -95,7 +94,7 @@ std::vector<complex> random_vector_complex(T n, const double minimum = -1.0, con
   const auto im = random_vector(n, minimum, maximum);
   std::vector<complex> v;
   v.reserve(n);
-  for (Eigen::Index i = 0; i < n; i++) v.emplace_back(complex(re[i], im[i]));
+  for (size_t i = 0; i < n; i++) v.emplace_back(complex(re[i], im[i]));
   return v;
 }
 
@@ -668,7 +667,7 @@ TYPED_TEST(BackendTest, set_bcd_result) {
 }
 
 TYPED_TEST(BackendTest, set_from_complex_drive) {
-  const auto n = 249;
+  constexpr auto n = 249;
   constexpr bool normalize = false;
   auto a = this->_pool.rent_c("a", n, 1);
   std::vector drive = random_vector_complex(n);
@@ -691,7 +690,7 @@ TYPED_TEST(BackendTest, set_from_complex_drive) {
 }
 
 TYPED_TEST(BackendTest, set_from_arg) {
-  const auto n = 3;
+  constexpr auto n = 3;
   auto a = this->_pool.rent("a", n, 1);
   std::vector args = {0.0, M_PI, 2.0 * M_PI};
   a->copy_from(args);
@@ -710,18 +709,18 @@ TYPED_TEST(BackendTest, set_from_arg) {
 }
 
 TYPED_TEST(BackendTest, back_prop) {
-  const auto m = 2;
-  const auto dev = 4;
-  const auto n = autd::core::NUM_TRANS_IN_UNIT * dev;
+  constexpr auto m = 2;
+  constexpr auto dev = 4;
+  constexpr auto n = autd::core::NUM_TRANS_IN_UNIT * dev;
 
   auto tmp_t = random_vector_complex(m * n, 0.0, 1.0);
   auto tmp_a = random_vector_complex(m, 0.0, 1.0);
   std::vector<complex> expected;
 
   std::vector<double> denominator;
-  for (auto i = 0; i < m; i++) {
+  for (size_t i = 0; i < m; i++) {
     auto tmp = 0.0;
-    for (auto j = 0; j < n; j++) tmp += std::abs(tmp_t[i + m * j]);
+    for (size_t j = 0; j < n; j++) tmp += std::abs(tmp_t[i + m * j]);
     denominator.emplace_back(tmp);
   }
 
@@ -741,13 +740,13 @@ TYPED_TEST(BackendTest, back_prop) {
 
   s->copy_to_host();
 
-  for (auto i = 0; i < n; i++)
-    for (auto j = 0; j < m; j++) ASSERT_NEAR_COMPLEX(s->at(i, j), expected[i + j * n], 1e-6);
+  for (size_t i = 0; i < n; i++)
+    for (size_t j = 0; j < m; j++) ASSERT_NEAR_COMPLEX(s->at(i, j), expected[i + j * n], 1e-6);
 }
 
 TYPED_TEST(BackendTest, sigma_regularization) {
-  const auto m = 2;
-  const auto n = 3;
+  constexpr auto m = 2;
+  constexpr auto n = 3;
 
   double gamma = 1.5;
 
