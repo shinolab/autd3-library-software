@@ -11,7 +11,10 @@
 
 #pragma once
 
-#include "arrayfire.h"
+#include <memory>
+#include <vector>
+
+#include "./arrayfire.h"
 #include "autd3/core/hardware_defined.hpp"
 #include "autd3/gain/linalg_backend.hpp"
 
