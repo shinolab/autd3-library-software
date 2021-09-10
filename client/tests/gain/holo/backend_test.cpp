@@ -30,10 +30,7 @@
 #pragma warning(pop)
 #endif
 
-#include "array_fire/arrayfire_matrix.hpp"
 #include "autd3/core/utils.hpp"
-#include "autd3/gain/eigen_backend.hpp"
-#include "blas/blas_matrix.hpp"
 #include "eigen/eigen_matrix.hpp"
 #include "matrix_pool.hpp"
 #include "test_utils.hpp"
@@ -47,6 +44,7 @@ template <typename P>
 class BackendTest : public testing::Test {
  protected:
   BackendTest() : _pool() {}
+  ~BackendTest() override {}
 
   P _pool;
 };
@@ -56,21 +54,29 @@ using testing::Types;
 #define Eigen3BackendType autd::gain::holo::MatrixBufferPool<autd::gain::holo::EigenMatrix<double>, autd::gain::holo::EigenMatrix<complex>>
 
 #ifdef TEST_BLAS_BACKEND
-#include "autd3/gain/blas_backend.hpp"
+#include "blas/blas_matrix.hpp"
 #define BLASBackendType , autd::gain::holo::MatrixBufferPool<autd::gain::holo::BLASMatrix<double>, autd::gain::holo::BLASMatrix<complex>>
 #else
 #define BLASBackendType
 #endif
 
 #ifdef TEST_CUDA_BACKEND
-#include "autd3/gain/cuda_backend.hpp"
-#define CUDABackendType , autd::gain::holo::CUDABackend
+#include "cuda/cuda_matrix.hpp"
+#define CUDABackendType , autd::gain::holo::MatrixBufferPool<autd::gain::holo::CuMatrix<double>, autd::gain::holo::CuMatrix<complex>>
+template <>
+BackendTest<autd::gain::holo::MatrixBufferPool<autd::gain::holo::CuMatrix<double>, autd::gain::holo::CuMatrix<complex>>>::BackendTest() : _pool() {
+  autd::gain::holo::CuContext::init(0);
+}
+template <>
+BackendTest<autd::gain::holo::MatrixBufferPool<autd::gain::holo::CuMatrix<double>, autd::gain::holo::CuMatrix<complex>>>::~BackendTest() {
+  autd::gain::holo::CuContext::free();
+}
 #else
 #define CUDABackendType
 #endif
 
 #ifdef TEST_ARRAYFIRE_BACKEND
-#include "autd3/gain/arrayfire_backend.hpp"
+#include "array_fire/arrayfire_matrix.hpp"
 #define ArrayFireBackendType , autd::gain::holo::MatrixBufferPool<autd::gain::holo::AFMatrix<double>, autd::gain::holo::AFMatrix<complex>>
 #else
 #define ArrayFireBackendType
@@ -647,26 +653,29 @@ TYPED_TEST(BackendTest, set_bcd_result) {
 }
 
 TYPED_TEST(BackendTest, set_from_complex_drive) {
-  constexpr auto n = 249;
+  constexpr size_t dev = 4;
+  constexpr auto n = dev * autd::core::NUM_TRANS_IN_UNIT;
   constexpr bool normalize = false;
   auto a = this->_pool.rent_c("a", n, 1);
-  std::vector drive = random_vector_complex(n);
+  std::vector drive = random_vector_complex(n, 0.0, 1.0);
   a->copy_from(drive);
 
   std::vector<autd::core::DataArray> data;
-  data.emplace_back(autd::core::DataArray{});
+  for (size_t d = 0; d < dev; d++) data.emplace_back(autd::core::DataArray{});
 
   auto max_coef = a->max_element();
   a->set_from_complex_drive(data, normalize, max_coef);
 
-  for (auto i = 0; i < n; i++) {
-    const auto f_amp = normalize ? 1.0 : std::abs(drive[i]) / max_coef;
-    const auto f_phase = std::arg(drive[i]) / (2.0 * M_PI);
-    const auto phase = autd::core::Utilities::to_phase(f_phase);
-    const auto duty = autd::core::Utilities::to_duty(f_amp);
-    const auto p = autd::core::Utilities::pack_to_u16(duty, phase);
-    ASSERT_EQ(data[0][i], p);
-  }
+  size_t k = 0;
+  for (size_t d = 0; d < dev; d++)
+    for (size_t i = 0; i < autd::core::NUM_TRANS_IN_UNIT; i++, k++) {
+      const auto f_amp = normalize ? 1.0 : std::abs(drive[k]) / max_coef;
+      const auto f_phase = std::arg(drive[k]) / (2.0 * M_PI);
+      const auto phase = autd::core::Utilities::to_phase(f_phase);
+      const auto duty = autd::core::Utilities::to_duty(f_amp);
+      const auto p = autd::core::Utilities::pack_to_u16(duty, phase);
+      ASSERT_EQ(data[d][i], p);
+    }
 }
 
 TYPED_TEST(BackendTest, set_from_arg) {
