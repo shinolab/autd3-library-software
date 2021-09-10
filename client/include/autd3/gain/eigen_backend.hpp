@@ -74,7 +74,7 @@ struct EigenMatrix {
       singular_values_inv(i) = singular_values_inv(i) / (singular_values_inv(i) * singular_values_inv(i) + alpha);
     data.noalias() = svd.matrixV() * singular_values_inv.asDiagonal() * svd.matrixU().adjoint();
   }
-  virtual void max_eigen_vector(const std::shared_ptr<EigenMatrix<T>>& ev) {}
+  virtual void max_eigen_vector(const std::shared_ptr<EigenMatrix<T>>& ev);
   virtual void add(const T alpha, const std::shared_ptr<EigenMatrix<T>>& a) { data.noalias() += alpha * a->data; }
   virtual void mul(const TRANSPOSE trans_a, const TRANSPOSE trans_b, const T alpha, const std::shared_ptr<const EigenMatrix<T>>& a,
                    const std::shared_ptr<const EigenMatrix<T>>& b, const T beta) {

@@ -38,6 +38,8 @@ double EigenMatrix<complex>::max_element() const {
   return std::sqrt(this->data.cwiseAbs2().maxCoeff());
 }
 template <>
+void EigenMatrix<double>::max_eigen_vector(const std::shared_ptr<EigenMatrix<double>>&) {}
+template <>
 void EigenMatrix<complex>::max_eigen_vector(const std::shared_ptr<EigenMatrix<complex>>& ev) {
   const Eigen::ComplexEigenSolver<Eigen::Matrix<complex, -1, -1, Eigen::ColMajor>> ces(data);
   auto idx = 0;
