@@ -3,7 +3,7 @@
 // Created Date: 20/07/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/09/2021
+// Last Modified: 10/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -37,7 +37,7 @@ inline void seq_gain_test(const autd::ControllerPtr& autd) {
     const autd::Vector3 p(radius * std::cos(theta), radius * std::sin(theta), 0);
     std::vector<autd::Vector3> foci = {center + p, center - p};
     std::vector<double> amps = {1, 1};
-    const auto g = autd::gain::holo::SDP<EigenBackend>::create(foci, amps);
+    const auto g = autd::gain::holo::SDP::create(EigenBackend::create(), foci, amps);
     // const auto g = autd::gain::FocalPoint::create(center + p);
     seq->add_gain(g);
   }

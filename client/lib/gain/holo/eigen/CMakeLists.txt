@@ -2,10 +2,10 @@ cmake_minimum_required(VERSION 3.16)
 
 add_library(eigen_backend
     eigen_backend.cpp
-    ${PROJECT_SOURCE_DIR}/include/autd3/gain/linalg_backend.hpp
+    ${PROJECT_SOURCE_DIR}/include/autd3/gain/backend.hpp
     ${PROJECT_SOURCE_DIR}/include/autd3/gain/eigen_backend.hpp
 )
-target_include_directories(eigen_backend PUBLIC ${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
+target_include_directories(eigen_backend PRIVATE ${PROJECT_SOURCE_DIR}/lib/gain/holo ${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
 
 set_target_properties(eigen_backend
     PROPERTIES
