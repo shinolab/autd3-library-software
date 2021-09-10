@@ -37,15 +37,6 @@ if(BUILD_ARRAYFIRE_BACKEND)
   endif()
 endif()
 
-set_target_properties(holo_gain
-    PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-)
-
 if(WIN32)
   set_target_properties(holo_gain PROPERTIES FOLDER "gain")
-else()
-  set_target_properties(holo_gain PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
