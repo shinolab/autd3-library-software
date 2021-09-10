@@ -1,5 +1,6 @@
 # 1.7.2
 * Impl `Holo::GaussNewton`, `Holo::GradientDescent`, and `Holo::APO`
+* Add `ArrayFireBackend`
 
 # 1.7.1
 * Add `wait_for_msg_processed` option to `Controller::send()`
