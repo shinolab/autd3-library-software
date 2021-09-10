@@ -150,7 +150,6 @@ struct EigenMatrix {
   virtual void copy_from(const std::shared_ptr<const EigenMatrix<T>>& a) { data = a->data; }
   virtual void copy_from(const std::vector<T>& v) { std::memcpy(this->data.data(), v.data(), sizeof(T) * v.size()); }
   virtual void copy_from(const T* v) { std::memcpy(this->data.data(), v, sizeof(T) * this->data.size()); }
-  virtual void copy_to_host() {}
 
   // FIXME: following functions are too specialized
   void transfer_matrix(const double* foci, size_t foci_num, const std::vector<const double*>& positions, const std::vector<const double*>& directions,

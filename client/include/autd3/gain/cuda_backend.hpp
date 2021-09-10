@@ -88,7 +88,6 @@ struct CuMatrix {
   void copy_from(const std::vector<T>& v) { copy_from(v.data(), v.size()); }
   void copy_from(const T* v) { copy_from(v, _row * _col); }
   void copy_from(const T* v, size_t n);
-  void copy_to_host();
 
   void transfer_matrix(const double* foci, size_t foci_num, const std::vector<const double*>& positions, const std::vector<const double*>& directions,
                        double wavelength, double attenuation);
