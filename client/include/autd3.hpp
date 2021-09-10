@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 28/07/2021
+// Last Modified: 10/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -21,23 +21,25 @@
 #include "autd3/sequence/primitive.hpp"
 
 namespace autd {
-using Matrix4X4 = core::Matrix4X4;
-using Quaternion = core::Quaternion;
-using Vector3 = core::Vector3;
-using LinkPtr = core::LinkPtr;
-using GeometryPtr = core::GeometryPtr;
-using ModulationPtr = modulation::ModulationPtr;
-using GainPtr = gain::GainPtr;
-using PointSequencePtr = sequence::PointSequencePtr;
-using GainSequencePtr = sequence::GainSequencePtr;
-using GAIN_MODE = sequence::GAIN_MODE;
-using DataArray = core::DataArray;
+using core::DataArray;
+using core::GeometryPtr;
+using core::LinkPtr;
+using core::Matrix4X4;
+using core::Quaternion;
+using core::Vector3;
+using gain::GainPtr;
+using modulation::ModulationPtr;
+using sequence::GAIN_MODE;
+using sequence::GainSequencePtr;
+using sequence::PointSequencePtr;
 
-constexpr auto NUM_TRANS_IN_UNIT = core::NUM_TRANS_IN_UNIT;
-constexpr auto NUM_TRANS_X = core::NUM_TRANS_X;
-constexpr auto NUM_TRANS_Y = core::NUM_TRANS_Y;
-constexpr auto TRANS_SPACING_MM = core::TRANS_SPACING_MM;
-constexpr auto AUTD_WIDTH = core::AUTD_WIDTH;
-constexpr auto AUTD_HEIGHT = core::AUTD_HEIGHT;
-constexpr auto ULTRASOUND_FREQUENCY = core::ULTRASOUND_FREQUENCY;
+using core::NUM_TRANS_IN_UNIT;
+using core::NUM_TRANS_X;
+using core::NUM_TRANS_Y;
+using core::TRANS_SPACING_MM;
+[[deprecated("please use DEVICE_WIDTH")]] constexpr double AUTD_WIDTH = core::DEVICE_WIDTH;
+[[deprecated("please use DEVICE_HEIGHT")]] constexpr double AUTD_HEIGHT = core::DEVICE_HEIGHT;
+using core::DEVICE_HEIGHT;
+using core::DEVICE_WIDTH;
+using core::ULTRASOUND_FREQUENCY;
 }  // namespace autd

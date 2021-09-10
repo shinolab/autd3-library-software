@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/09/2021
+// Last Modified: 10/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -20,8 +20,8 @@ constexpr size_t NUM_TRANS_IN_UNIT = 249;
 constexpr size_t NUM_TRANS_X = 18;
 constexpr size_t NUM_TRANS_Y = 14;
 constexpr double TRANS_SPACING_MM = 10.16;
-constexpr double AUTD_WIDTH = 192.0;
-constexpr double AUTD_HEIGHT = 151.4;
+constexpr double DEVICE_WIDTH = 192.0;
+constexpr double DEVICE_HEIGHT = 151.4;
 
 template <typename T>
 constexpr auto is_missing_transducer(T x, T y) {
