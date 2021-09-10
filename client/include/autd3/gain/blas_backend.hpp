@@ -3,7 +3,7 @@
 // Created Date: 17/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/09/2021
+// Last Modified: 10/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -29,7 +29,8 @@ struct BLASMatrix final : EigenMatrix<T> {
   BLASMatrix& operator=(BLASMatrix&& obj) = delete;
 
   void pseudo_inverse_svd(const std::shared_ptr<EigenMatrix<T>>& matrix, double alpha, const std::shared_ptr<EigenMatrix<T>>& u,
-                          const std::shared_ptr<EigenMatrix<T>>& vt, const std::shared_ptr<EigenMatrix<T>>& buf) override;
+                          const std::shared_ptr<EigenMatrix<T>>& s, const std::shared_ptr<EigenMatrix<T>>& vt,
+                          const std::shared_ptr<EigenMatrix<T>>& buf) override;
   void max_eigen_vector(const std::shared_ptr<EigenMatrix<T>>& ev) override;
   void add(T alpha, const std::shared_ptr<EigenMatrix<T>>& a) override;
   void mul(TRANSPOSE trans_a, TRANSPOSE trans_b, T alpha, const std::shared_ptr<const EigenMatrix<T>>& a,
@@ -44,6 +45,6 @@ struct BLASMatrix final : EigenMatrix<T> {
   void copy_from(const T* v, size_t);
 };
 
-using BLASBackend = MatrixBufferPool<BLASMatrix<double>, BLASMatrix<complex>>;
+using BLASBackend = MatrixBufferPool<BLASMatrix<double>, BLASMatrix<complex>, Context>;
 
 }  // namespace autd::gain::holo

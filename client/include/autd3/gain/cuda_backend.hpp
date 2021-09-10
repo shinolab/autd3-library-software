@@ -3,7 +3,7 @@
 // Created Date: 04/09/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/09/2021
+// Last Modified: 10/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -22,75 +22,108 @@
 #endif
 
 #include <memory>
-#include <string>
-#include <unordered_map>
 #include <vector>
 
+#include "autd3/core/hardware_defined.hpp"
 #include "linalg_backend.hpp"
 
 namespace autd {
 namespace gain {
 namespace holo {
 
+struct CuContext {
+  static cublasHandle_t handle;
+  static cusolverDnHandle_t handle_s;
+  static size_t cnt;
+
+  static void init();
+  static void free();
+};
+
 /**
- * \brief Linear algebra calculation backend using CUDA
+ * \brief CUDA matrix
  */
-class CUDABackend final : public Backend {
-  std::unordered_map<std::string, std::shared_ptr<MatrixX>> _cache_mat;
-  std::unordered_map<std::string, std::shared_ptr<MatrixXc>> _cache_mat_c;
+template <typename T>
+struct CuMatrix {
+  explicit CuMatrix(size_t row, size_t col);
+  ~CuMatrix() = default;
+  CuMatrix(const CuMatrix& obj) = delete;
+  CuMatrix& operator=(const CuMatrix& obj) = delete;
+  CuMatrix(const CuMatrix&& v) = delete;
+  CuMatrix& operator=(CuMatrix&& obj) = delete;
 
- public:
-  CUDABackend();
-  ~CUDABackend() override;
-  CUDABackend(const CUDABackend& obj) = delete;
-  CUDABackend& operator=(const CUDABackend& obj) = delete;
-  CUDABackend(const CUDABackend&& v) = delete;
-  CUDABackend& operator=(CUDABackend&& obj) = delete;
+  [[nodiscard]] const T* ptr() const;
+  T* ptr();
 
-  std::shared_ptr<MatrixX> allocate_matrix(const std::string& name, size_t row, size_t col) override;
-  std::shared_ptr<MatrixXc> allocate_matrix_c(const std::string& name, size_t row, size_t col) override;
+  void make_complex(const std::shared_ptr<const CuMatrix<double>>& r, const std::shared_ptr<const CuMatrix<double>>& i);
+  void exp();
+  void scale(T s);
+  void reciprocal(const std::shared_ptr<const CuMatrix<T>>& src);
+  void abs(const std::shared_ptr<const CuMatrix<T>>& src);
+  void real(const std::shared_ptr<const CuMatrix<complex>>& src);
+  void arg(const std::shared_ptr<const CuMatrix<complex>>& src);
+  void hadamard_product(const std::shared_ptr<const CuMatrix<T>>& a, const std::shared_ptr<const CuMatrix<T>>& b);
+  void pseudo_inverse_svd(const std::shared_ptr<CuMatrix<T>>& matrix, double alpha, const std::shared_ptr<CuMatrix<T>>& u,
+                          const std::shared_ptr<CuMatrix<T>>& s, const std::shared_ptr<CuMatrix<T>>& vt, const std::shared_ptr<CuMatrix<T>>& buf);
+  void max_eigen_vector(const std::shared_ptr<CuMatrix<T>>& ev);
+  void add(T alpha, const std::shared_ptr<CuMatrix<T>>& a);
+  void mul(TRANSPOSE trans_a, TRANSPOSE trans_b, T alpha, const std::shared_ptr<const CuMatrix<T>>& a, const std::shared_ptr<const CuMatrix<T>>& b,
+           T beta);
+  void solve(const std::shared_ptr<CuMatrix<T>>& b);
+  T dot(const std::shared_ptr<const CuMatrix<T>>& a);
+  [[nodiscard]] double max_element() const;
+  void concat_row(const std::shared_ptr<const CuMatrix<T>>& a, const std::shared_ptr<const CuMatrix<T>>& b);
+  void concat_col(const std::shared_ptr<const CuMatrix<T>>& a, const std::shared_ptr<const CuMatrix<T>>& b);
 
-  static BackendPtr create();
+  [[nodiscard]] T at(size_t row, size_t col);
+  [[nodiscard]] size_t rows() const { return _row; }
+  [[nodiscard]] size_t cols() const { return _col; }
 
-  void make_complex(std::shared_ptr<MatrixX> r, std::shared_ptr<MatrixX> i, std::shared_ptr<MatrixXc> c) override;
-  void exp(std::shared_ptr<MatrixXc> a) override;
-  void scale(std::shared_ptr<MatrixXc> a, complex s) override;
-  void hadamard_product(std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> b, std::shared_ptr<MatrixXc> c) override;
-  void real(std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixX> b) override;
-  void arg(std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> c) override;
-  void pseudo_inverse_svd(std::shared_ptr<MatrixXc> matrix, double alpha, std::shared_ptr<MatrixXc> result) override;
-  void pseudo_inverse_svd(std::shared_ptr<MatrixX> matrix, double alpha, std::shared_ptr<MatrixX> result) override;
-  void max_eigen_vector(std::shared_ptr<MatrixXc> matrix, std::shared_ptr<MatrixXc> ev) override;
-  void matrix_add(double alpha, std::shared_ptr<MatrixX> a, std::shared_ptr<MatrixX> b) override;
-  void matrix_add(complex alpha, std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> b) override;
-  void matrix_mul(TRANSPOSE trans_a, TRANSPOSE trans_b, complex alpha, std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> b, complex beta,
-                  std::shared_ptr<MatrixXc> c) override;
-  void matrix_mul(TRANSPOSE trans_a, TRANSPOSE trans_b, double alpha, std::shared_ptr<MatrixX> a, std::shared_ptr<MatrixX> b, double beta,
-                  std::shared_ptr<MatrixX> c) override;
-  void solve_ch(std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> b) override;
-  void solve_g(std::shared_ptr<MatrixX> a, std::shared_ptr<MatrixX> b, std::shared_ptr<MatrixX> c) override;
-  double dot(std::shared_ptr<MatrixX> a, std::shared_ptr<MatrixX> b) override;
-  complex dot(std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> b) override;
-  double max_coefficient(std::shared_ptr<MatrixX> v) override;
-  double max_coefficient(std::shared_ptr<MatrixXc> v) override;
-  std::shared_ptr<MatrixXc> concat_row(std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> b) override;
-  std::shared_ptr<MatrixXc> concat_col(std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> b) override;
-  void mat_cpy(std::shared_ptr<MatrixX> a, std::shared_ptr<MatrixX> b) override;
-  void mat_cpy(std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> b) override;
+  void set(const size_t row, const size_t col, T v);
+  void get_col(const std::shared_ptr<const CuMatrix<T>>& src, const size_t i);
+  void fill(T v);
+  void get_diagonal(const std::shared_ptr<const CuMatrix<T>>& src);
+  void create_diagonal(const std::shared_ptr<const CuMatrix<T>>& v);
+  void copy_from(const std::shared_ptr<const CuMatrix<T>>& a);
+  void copy_from(const std::vector<T>& v) { copy_from(v.data(), v.size()); }
+  void copy_from(const T* v) { copy_from(v, _row * _col); }
+  void copy_from(const T* v, size_t n);
+  void copy_to_host();
 
-  void set_from_complex_drive(std::vector<core::DataArray>& data, std::shared_ptr<MatrixXc> drive, bool normalize, double max_coefficient) override;
-  std::shared_ptr<MatrixXc> transfer_matrix(const double* foci, size_t foci_num, const std::vector<const double*>& positions,
-                                            const std::vector<const double*>& directions, double wavelength, double attenuation) override;
-
-  void set_bcd_result(std::shared_ptr<MatrixXc> mat, std::shared_ptr<MatrixXc> vec, size_t index) override;
-  std::shared_ptr<MatrixXc> back_prop(std::shared_ptr<MatrixXc> transfer, std::shared_ptr<MatrixXc> amps) override;
-  std::shared_ptr<MatrixXc> sigma_regularization(std::shared_ptr<MatrixXc> transfer, std::shared_ptr<MatrixXc> amps, double gamma) override;
-  void col_sum_imag(std::shared_ptr<MatrixXc> mat, std::shared_ptr<MatrixX> dst) override;
+  void transfer_matrix(const double* foci, size_t foci_num, const std::vector<const double*>& positions, const std::vector<const double*>& directions,
+                       double wavelength, double attenuation);
+  void set_bcd_result(const std::shared_ptr<const CuMatrix<T>>& vec, size_t index);
+  void set_from_complex_drive(std::vector<core::DataArray>& dst, bool normalize, double max_coefficient);
+  void set_from_arg(std::vector<core::DataArray>& dst, size_t n);
+  void back_prop(const std::shared_ptr<const CuMatrix<T>>& transfer, const std::shared_ptr<const CuMatrix<T>>& amps);
+  void sigma_regularization(const std::shared_ptr<const CuMatrix<T>>& transfer, const std::shared_ptr<const CuMatrix<T>>& amps, double gamma);
+  void col_sum_imag(const std::shared_ptr<CuMatrix<complex>>& src);
 
  private:
-  cublasHandle_t _handle;
-  cusolverDnHandle_t _handle_s;
+  size_t _row;
+  size_t _col;
+  struct Impl;
+  std::shared_ptr<Impl> _pimpl;
 };
+
+template <>
+const double* CuMatrix<double>::ptr() const;
+template <>
+const complex* CuMatrix<complex>::ptr() const;
+template <>
+double* CuMatrix<double>::ptr();
+template <>
+complex* CuMatrix<complex>::ptr();
+
+template <>
+void CuMatrix<double>::mul(TRANSPOSE trans_a, TRANSPOSE trans_b, double alpha, const std::shared_ptr<const CuMatrix<double>>& a,
+                           const std::shared_ptr<const CuMatrix<double>>& b, double beta);
+template <>
+void CuMatrix<complex>::mul(TRANSPOSE trans_a, TRANSPOSE trans_b, complex alpha, const std::shared_ptr<const CuMatrix<complex>>& a,
+                            const std::shared_ptr<const CuMatrix<complex>>& b, complex beta);
+
+using CUDABackend = MatrixBufferPool<CuMatrix<double>, CuMatrix<complex>, CuContext>;
+
 }  // namespace holo
 }  // namespace gain
 }  // namespace autd

@@ -3,7 +3,7 @@
 // Created Date: 08/09/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/09/2021
+// Last Modified: 10/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -44,18 +44,8 @@ void AFMatrix<complex>::reciprocal(const std::shared_ptr<const AFMatrix<complex>
 }
 
 void AFMatrix<double>::pseudo_inverse_svd(const std::shared_ptr<AFMatrix<double>>& matrix, const double alpha,
-                                          const std::shared_ptr<AFMatrix<double>>& u, const std::shared_ptr<AFMatrix<double>>& vt,
-                                          const std::shared_ptr<AFMatrix<double>>& buf) {
-  af::array s_vec;
-  af::svd(u->_af_array, s_vec, vt->_af_array, matrix->_af_array);
-  s_vec = s_vec / (s_vec * s_vec + af::constant(alpha, s_vec.dims(0), af::dtype::f64));
-  const af::array s_mat = diag(s_vec, 0, false);
-  buf->_af_array = af::matmul(s_mat, u->_af_array, AF_MAT_NONE, AF_MAT_TRANS);
-  _af_array = af::matmul(vt->_af_array, buf->_af_array, AF_MAT_TRANS, AF_MAT_NONE);
-}
-void AFMatrix<complex>::pseudo_inverse_svd(const std::shared_ptr<AFMatrix<complex>>& matrix, const double alpha,
-                                           const std::shared_ptr<AFMatrix<complex>>& u, const std::shared_ptr<AFMatrix<complex>>& vt,
-                                           const std::shared_ptr<AFMatrix<complex>>& buf) {
+                                          const std::shared_ptr<AFMatrix<double>>& u, const std::shared_ptr<AFMatrix<double>>& s,
+                                          const std::shared_ptr<AFMatrix<double>>& vt, const std::shared_ptr<AFMatrix<double>>& buf) {
   const auto m = matrix->rows();
   const auto n = matrix->cols();
   af::array s_vec;
@@ -63,8 +53,22 @@ void AFMatrix<complex>::pseudo_inverse_svd(const std::shared_ptr<AFMatrix<comple
   s_vec = s_vec / (s_vec * s_vec + af::constant(alpha, s_vec.dims(0), af::dtype::f64));
   const af::array s_mat = diag(s_vec, 0, false);
   const af::array zero = af::constant(0.0, n - m, m, af::dtype::f64);
-  const af::array s_mat_c = af::complex(af::join(0, s_mat, zero), 0);
-  buf->_af_array = af::matmul(s_mat_c, u->_af_array, AF_MAT_NONE, AF_MAT_CTRANS);
+  s->_af_array = af::join(0, s_mat, zero);
+  buf->_af_array = af::matmul(s->_af_array, u->_af_array, AF_MAT_NONE, AF_MAT_TRANS);
+  _af_array = af::matmul(vt->_af_array, buf->_af_array, AF_MAT_TRANS, AF_MAT_NONE);
+}
+void AFMatrix<complex>::pseudo_inverse_svd(const std::shared_ptr<AFMatrix<complex>>& matrix, const double alpha,
+                                           const std::shared_ptr<AFMatrix<complex>>& u, const std::shared_ptr<AFMatrix<complex>>& s,
+                                           const std::shared_ptr<AFMatrix<complex>>& vt, const std::shared_ptr<AFMatrix<complex>>& buf) {
+  const auto m = matrix->rows();
+  const auto n = matrix->cols();
+  af::array s_vec;
+  af::svd(u->_af_array, s_vec, vt->_af_array, matrix->_af_array);
+  s_vec = s_vec / (s_vec * s_vec + af::constant(alpha, s_vec.dims(0), af::dtype::f64));
+  const af::array s_mat = diag(s_vec, 0, false);
+  const af::array zero = af::constant(0.0, n - m, m, af::dtype::f64);
+  s->_af_array = af::complex(af::join(0, s_mat, zero), 0);
+  buf->_af_array = af::matmul(s->_af_array, u->_af_array, AF_MAT_NONE, AF_MAT_CTRANS);
   _af_array = af::matmul(vt->_af_array, buf->_af_array, AF_MAT_CTRANS, AF_MAT_NONE);
 }
 
