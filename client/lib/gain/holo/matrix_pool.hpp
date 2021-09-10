@@ -1,6 +1,6 @@
-// File: linalg_backend.hpp
-// Project: include
-// Created Date: 16/05/2021
+// File: matrix_pool.hpp
+// Project: gain
+// Created Date: 06/07/2021
 // Author: Shun Suzuki
 // -----
 // Last Modified: 10/09/2021
@@ -20,20 +20,14 @@ namespace autd {
 namespace gain {
 namespace holo {
 
-enum class TRANSPOSE { NO_TRANS = 111, TRANS = 112, CONJ_TRANS = 113 };
-
-using complex = std::complex<double>;
-constexpr complex ONE = complex(1.0, 0.0);
-constexpr complex ZERO = complex(0.0, 0.0);
-
 /**
  * \brief Linear algebra calculation backend
  */
-template <typename M, typename Mc, typename C>
+template <typename M, typename Mc>
 class MatrixBufferPool final {
  public:
-  MatrixBufferPool() { C::init(); }
-  ~MatrixBufferPool() { C::free(); }
+  MatrixBufferPool() = default;
+  ~MatrixBufferPool() = default;
   MatrixBufferPool(const MatrixBufferPool& obj) = delete;
   MatrixBufferPool& operator=(const MatrixBufferPool& obj) = delete;
   MatrixBufferPool(const MatrixBufferPool&& v) = delete;
@@ -58,13 +52,6 @@ class MatrixBufferPool final {
     cache.emplace(name, v);
     return v;
   }
-};
-
-struct Backend {};
-
-struct Context {
-  static void init() {}
-  static void free() {}
 };
 
 }  // namespace holo
