@@ -16,7 +16,7 @@
 #include "matrix_pool.hpp"
 
 namespace autd::gain::holo {
-class BLASBackendImpl : public BLASBackend {
+class BLASBackendImpl final : public BLASBackend {
  public:
   BLASBackendImpl() = default;
   ~BLASBackendImpl() override = default;

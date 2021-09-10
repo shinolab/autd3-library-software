@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include "autd3/gain/backend.hpp"
 
 namespace autd::gain::holo {
