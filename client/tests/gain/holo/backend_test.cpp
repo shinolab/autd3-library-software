@@ -3,7 +3,7 @@
 // Created Date: 13/08/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/09/2021
+// Last Modified: 11/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -64,7 +64,7 @@ using testing::Types;
 #include "cuda/cuda_matrix.hpp"
 #define CUDABackendType , autd::gain::holo::MatrixBufferPool<autd::gain::holo::CuMatrix<double>, autd::gain::holo::CuMatrix<complex>>
 template <>
-BackendTest<autd::gain::holo::MatrixBufferPool<autd::gain::holo::CuMatrix<double>, autd::gain::holo::CuMatrix<complex>>>::BackendTest() : _pool() {
+BackendTest<autd::gain::holo::MatrixBufferPool<autd::gain::holo::CuMatrix<double>, autd::gain::holo::CuMatrix<complex>>>::BackendTest() {
   autd::gain::holo::CuContext::init(0);
 }
 template <>

@@ -16,7 +16,7 @@
 #include "matrix_pool.hpp"
 
 namespace autd::gain::holo {
-class CUDABackendImpl : public CUDABackend {
+class CUDABackendImpl final : public CUDABackend {
  public:
   explicit CUDABackendImpl(const int device_idx) { CuContext::init(device_idx); }
   ~CUDABackendImpl() override { CuContext::free(); }
