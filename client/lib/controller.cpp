@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/09/2021
+// Last Modified: 11/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -195,7 +195,7 @@ bool Controller::send(const core::GainSequencePtr& seq) {
 }
 
 bool Controller::set_output_delay(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& delay) {
-  if (delay.size() != this->_geometry->num_devices()) throw core::SetOutputConfigError("The number of devices is wrong");
+  if (delay.size() != this->_geometry->num_devices()) throw core::exception::SetOutputConfigError("The number of devices is wrong");
 
   for (size_t dev = 0; dev < this->_geometry->num_devices(); dev++) std::memcpy(&this->_delay[dev][0], &delay[dev][0], core::NUM_TRANS_IN_UNIT);
 
@@ -203,7 +203,7 @@ bool Controller::set_output_delay(const std::vector<std::array<uint8_t, core::NU
 }
 
 bool Controller::set_duty_offset(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& offset) {
-  if (offset.size() != this->_geometry->num_devices()) throw core::SetOutputConfigError("The number of devices is wrong");
+  if (offset.size() != this->_geometry->num_devices()) throw core::exception::SetOutputConfigError("The number of devices is wrong");
 
   for (size_t dev = 0; dev < this->_geometry->num_devices(); dev++) std::memcpy(&this->_offset[dev][0], &offset[dev][0], core::NUM_TRANS_IN_UNIT);
 
@@ -213,7 +213,7 @@ bool Controller::set_duty_offset(const std::vector<std::array<uint8_t, core::NUM
 bool Controller::set_delay_offset(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& delay,
                                   const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& offset) {
   if (delay.size() != this->_geometry->num_devices() || offset.size() != this->_geometry->num_devices())
-    throw core::SetOutputConfigError("The number of devices is wrong");
+    throw core::exception::SetOutputConfigError("The number of devices is wrong");
 
   for (size_t dev = 0; dev < this->_geometry->num_devices(); dev++) {
     std::memcpy(&this->_delay[dev][0], &delay[dev][0], core::NUM_TRANS_IN_UNIT);
@@ -265,7 +265,7 @@ void Controller::STMController::add_gain(const core::GainPtr& gain) const {
 }
 
 void Controller::STMController::start(const double freq) {
-  if (this->_handler == nullptr) throw core::STMError("STM has been already started");
+  if (this->_handler == nullptr) throw core::exception::STMError("STM has been already started");
 
   const auto len = this->_handler->_bodies.size();
   const auto interval_us = static_cast<uint32_t>(1000000. / static_cast<double>(freq) / static_cast<double>(len));

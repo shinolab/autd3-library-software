@@ -3,7 +3,7 @@
 // Created Date: 01/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/09/2021
+// Last Modified: 11/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -19,6 +19,7 @@
 #include <utility>
 
 #include "../osal_callback.hpp"
+#include "autd3/core/exception.hpp"
 
 namespace autd::core {
 
@@ -39,7 +40,7 @@ class Timer {
 
     const auto timer_id = timeSetEvent(interval_us / 1000, u_resolution, timer_thread, reinterpret_cast<DWORD_PTR>(handler.get()),
                                        TIME_PERIODIC | TIME_CALLBACK_FUNCTION | TIME_KILL_SYNCHRONOUS);
-    if (timer_id == 0) throw TimerError("timeSetEvent failed");
+    if (timer_id == 0) throw exception::TimerError("timeSetEvent failed");
 
     return std::make_unique<Timer>(std::move(handler), timer_id);
   }
@@ -48,7 +49,7 @@ class Timer {
     if (_is_closed) return std::unique_ptr<T>(nullptr);
     const uint32_t u_resolution = 1;
     timeEndPeriod(u_resolution);
-    if (timeKillEvent(_timer_id) != TIMERR_NOERROR) throw TimerError("timeKillEvent failed");
+    if (timeKillEvent(_timer_id) != TIMERR_NOERROR) throw exception::TimerError("timeKillEvent failed");
     _is_closed = true;
     return std::move(this->_handler);
   }

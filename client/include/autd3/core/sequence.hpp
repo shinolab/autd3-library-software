@@ -3,7 +3,7 @@
 // Created Date: 14/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/09/2021
+// Last Modified: 11/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -111,7 +111,7 @@ class PointSequence : virtual public Sequence {
    */
   void add_point(const Vector3& point, const uint8_t duty = 0xFF) {
     if (this->_control_points.size() + 1 > POINT_SEQ_BUFFER_SIZE_MAX)
-      throw core::SequenceBuildError(
+      throw core::exception::SequenceBuildError(
           std::string("Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX)));
 
     this->_control_points.emplace_back(point);
@@ -126,7 +126,7 @@ class PointSequence : virtual public Sequence {
    */
   void add_points(const std::vector<Vector3>& points, std::vector<uint8_t>& duties) {
     if (this->_control_points.size() + points.size() > POINT_SEQ_BUFFER_SIZE_MAX)
-      throw core::SequenceBuildError(
+      throw core::exception::SequenceBuildError(
           std::string("Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX)));
 
     this->_control_points.reserve(this->_control_points.size() + points.size());
@@ -197,7 +197,7 @@ class GainSequence : virtual public Sequence {
    */
   void add_gain(const GainPtr& gain) {
     if (this->_gains.size() + 1 > GAIN_SEQ_BUFFER_SIZE_MAX)
-      throw core::SequenceBuildError(
+      throw core::exception::SequenceBuildError(
           std::string("Gain sequence buffer overflow. Maximum available buffer size is " + std::to_string(GAIN_SEQ_BUFFER_SIZE_MAX)));
 
     this->_gains.emplace_back(gain);
@@ -209,7 +209,7 @@ class GainSequence : virtual public Sequence {
    */
   void add_points(const std::vector<GainPtr>& gains) {
     if (this->_gains.size() + gains.size() > GAIN_SEQ_BUFFER_SIZE_MAX)
-      throw core::SequenceBuildError(
+      throw core::exception::SequenceBuildError(
           std::string("Gain sequence buffer overflow. Maximum available buffer size is " + std::to_string(GAIN_SEQ_BUFFER_SIZE_MAX)));
 
     this->_gains.reserve(this->_gains.size() + gains.size());

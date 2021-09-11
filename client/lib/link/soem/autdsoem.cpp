@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 23/07/2021
+// Last Modified: 11/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -39,7 +39,7 @@ void SOEMCallback::callback() {
 bool SOEMController::is_open() const { return _is_open; }
 
 void SOEMController::send(const uint8_t* buf, const size_t size) const {
-  if (!_is_open) throw core::LinkError("link is closed");
+  if (!_is_open) throw core::exception::LinkError("link is closed");
 
   const auto body_size = this->_config.body_size;
   const auto header_size = this->_config.header_size;
@@ -50,7 +50,7 @@ void SOEMController::send(const uint8_t* buf, const size_t size) const {
 }
 
 void SOEMController::read(uint8_t* rx) const {
-  if (!_is_open) throw core::LinkError("link is closed");
+  if (!_is_open) throw core::exception::LinkError("link is closed");
   std::memcpy(rx, &_io_map[this->_output_size], this->_dev_num * this->_config.input_frame_size);
 }
 
@@ -77,16 +77,16 @@ void SOEMController::open(const char* ifname, const size_t dev_num, const ECConf
   if (ec_init(ifname) <= 0) {
     std::stringstream ss;
     ss << "No socket connection on" << ifname;
-    throw core::LinkError(ss.str());
+    throw core::exception::LinkError(ss.str());
   }
 
   const auto wc = ec_config_init(0);
-  if (wc <= 0) throw core::LinkError("No slaves found!");
+  if (wc <= 0) throw core::exception::LinkError("No slaves found!");
 
   if (static_cast<size_t>(wc) != dev_num) {
     std::stringstream ss;
     ss << "The number of slaves you added: " << dev_num << ", but found: " << wc;
-    throw core::LinkError(ss.str());
+    throw core::exception::LinkError(ss.str());
   }
 
   ec_config_map(&_io_map[0]);
@@ -106,7 +106,7 @@ void SOEMController::open(const char* ifname, const size_t dev_num, const ECConf
     ec_statecheck(0, EC_STATE_OPERATIONAL, 50000);
   } while (chk-- && ec_slave[0].state != EC_STATE_OPERATIONAL);
 
-  if (ec_slave[0].state != EC_STATE_OPERATIONAL) throw core::LinkError("One ore more slaves are not responding");
+  if (ec_slave[0].state != EC_STATE_OPERATIONAL) throw core::exception::LinkError("One ore more slaves are not responding");
 
   setup_sync0(true, config.ec_sync0_cycle_time_ns);
 
