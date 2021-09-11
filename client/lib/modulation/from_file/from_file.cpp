@@ -3,7 +3,7 @@
 // Created Date: 17/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/08/2021
+// Last Modified: 11/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -30,7 +30,7 @@ core::ModulationPtr RawPCM::create(const std::string& filename, const double sam
   std::ifstream ifs;
   ifs.open(filename, std::ios::binary);
 
-  if (ifs.fail()) throw core::ModulationBuildError("Error on opening file");
+  if (ifs.fail()) throw core::exception::ModulationBuildError("Error on opening file");
 
   std::vector<uint8_t> tmp;
   char buf[sizeof(uint8_t)];
@@ -89,7 +89,7 @@ namespace {
 template <class T>
 T ReadFromStream(std::ifstream& fsp) {
   char buf[sizeof(T)];
-  if (!fsp.read(buf, sizeof(T))) throw core::ModulationBuildError("Invalid data length");
+  if (!fsp.read(buf, sizeof(T))) throw core::exception::ModulationBuildError("Invalid data length");
   T v{};
   std::memcpy(&v, buf, sizeof(T));
   return v;
@@ -99,21 +99,21 @@ T ReadFromStream(std::ifstream& fsp) {
 core::ModulationPtr Wav::create(const std::string& filename, const uint16_t mod_sampling_freq_div) {
   std::ifstream fs;
   fs.open(filename, std::ios::binary);
-  if (fs.fail()) throw core::ModulationBuildError("Error on opening file");
+  if (fs.fail()) throw core::exception::ModulationBuildError("Error on opening file");
 
-  if (const auto riff_tag = ReadFromStream<uint32_t>(fs); riff_tag != 0x46464952u) throw core::ModulationBuildError("Invalid data format");
+  if (const auto riff_tag = ReadFromStream<uint32_t>(fs); riff_tag != 0x46464952u) throw core::exception::ModulationBuildError("Invalid data format");
 
   [[maybe_unused]] const auto chunk_size = ReadFromStream<uint32_t>(fs);
 
-  if (const auto wav_desc = ReadFromStream<uint32_t>(fs); wav_desc != 0x45564157u) throw core::ModulationBuildError("Invalid data format");
-  if (const auto fmt_desc = ReadFromStream<uint32_t>(fs); fmt_desc != 0x20746d66u) throw core::ModulationBuildError("Invalid data format");
+  if (const auto wav_desc = ReadFromStream<uint32_t>(fs); wav_desc != 0x45564157u) throw core::exception::ModulationBuildError("Invalid data format");
+  if (const auto fmt_desc = ReadFromStream<uint32_t>(fs); fmt_desc != 0x20746d66u) throw core::exception::ModulationBuildError("Invalid data format");
   if (const auto fmt_chunk_size = ReadFromStream<uint32_t>(fs); fmt_chunk_size != 0x00000010u)
-    throw core::ModulationBuildError("Invalid data format");
+    throw core::exception::ModulationBuildError("Invalid data format");
 
   if (const auto wave_fmt = ReadFromStream<uint16_t>(fs); wave_fmt != 0x0001u)
-    throw core::ModulationBuildError("Invalid data format. This supports only uncompressed linear PCM data.");
+    throw core::exception::ModulationBuildError("Invalid data format. This supports only uncompressed linear PCM data.");
   if (const auto channel = ReadFromStream<uint16_t>(fs); channel != 0x0001u)
-    throw core::ModulationBuildError("Invalid data format. This supports only monaural audio.");
+    throw core::exception::ModulationBuildError("Invalid data format. This supports only monaural audio.");
 
   const auto sample_freq = ReadFromStream<uint32_t>(fs);
   [[maybe_unused]] const auto bytes_per_sec = ReadFromStream<uint32_t>(fs);
@@ -121,11 +121,13 @@ core::ModulationPtr Wav::create(const std::string& filename, const uint16_t mod_
 
   const auto bits_per_sample = ReadFromStream<uint16_t>(fs);
 
-  if (const auto data_desc = ReadFromStream<uint32_t>(fs); data_desc != 0x61746164u) throw core::ModulationBuildError("Invalid data format");
+  if (const auto data_desc = ReadFromStream<uint32_t>(fs); data_desc != 0x61746164u)
+    throw core::exception::ModulationBuildError("Invalid data format");
 
   const auto data_chunk_size = ReadFromStream<uint32_t>(fs);
 
-  if (bits_per_sample != 8 && bits_per_sample != 16) throw core::ModulationBuildError("This only supports 8 or 16 bits per sampling data.");
+  if (bits_per_sample != 8 && bits_per_sample != 16)
+    throw core::exception::ModulationBuildError("This only supports 8 or 16 bits per sampling data.");
 
   std::vector<uint8_t> tmp;
   const auto data_size = data_chunk_size / (bits_per_sample / 8);

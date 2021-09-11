@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/09/2021
+// Last Modified: 11/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -30,7 +30,7 @@ namespace autd::gain::holo {
 class Holo : public core::Gain {
  public:
   Holo(BackendPtr backend, std::vector<core::Vector3> foci, const std::vector<double>& amps) : _backend(std::move(backend)), _foci(std::move(foci)) {
-    if (this->_foci.size() != amps.size()) throw core::GainBuildError("The size of foci and amps are not the same");
+    if (this->_foci.size() != amps.size()) throw core::exception::GainBuildError("The size of foci and amps are not the same");
     this->_amps.reserve(amps.size());
     for (const auto amp : amps) this->_amps.emplace_back(complex(amp, 0.0));
   }

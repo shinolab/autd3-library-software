@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/09/2021
+// Last Modified: 11/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -102,7 +102,7 @@ void EmulatorImpl::send(const uint8_t* buf, const size_t size) {
   _last_msg_id = header->msg_id;
   _last_command = header->command;
   if (sendto(_socket, reinterpret_cast<const char*>(buf), static_cast<int>(size), 0, reinterpret_cast<sockaddr*>(&_addr), sizeof _addr) == -1)
-    throw core::LinkError("failed to send data");
+    throw core::exception::LinkError("failed to send data");
 }
 
 void EmulatorImpl::open() {
@@ -122,7 +122,7 @@ void EmulatorImpl::open() {
 #else
   if (_socket < 0)
 #endif
-    throw core::LinkError("cannot connect to emulator");
+    throw core::exception::LinkError("cannot connect to emulator");
 
   _addr.sin_family = AF_INET;
   _addr.sin_port = htons(this->_port);
