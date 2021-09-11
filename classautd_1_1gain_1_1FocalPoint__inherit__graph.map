@@ -1,0 +1,4 @@
+<map id="autd::gain::FocalPoint" name="autd::gain::FocalPoint">
+<area shape="rect" id="node1" title="Gain to produce single focal point." alt="" coords="5,80,151,107"/>
+<area shape="rect" id="node2" href="$classautd_1_1core_1_1Gain.html" title="Gain controls the duty ratio and phase of each transducer in AUTD devices." alt="" coords="23,5,133,32"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="autd::core::is_missing_transducer" name="autd::core::is_missing_transducer">
+<area shape="rect" id="node1" title=" " alt="" coords="365,39,512,80"/>
+<area shape="rect" id="node2" href="$structautd_1_1core_1_1Device.html#a7d1af850f02f2fc155cff6291e64e0f6" title=" " alt="" coords="193,39,317,80"/>
+<area shape="rect" id="node3" href="$classautd_1_1core_1_1Geometry.html#a3d74911ca7416550a7ea09dfc110acfd" title="Add new device with position and rotation. Note that the transform is done with order: Translate &#45;&gt; R..." alt="" coords="5,5,145,47"/>
+<area shape="rect" id="node4" href="$structautd_1_1core_1_1Device.html#a0afb7743ff5dcbd8f4e4c3285dc41f72" title=" " alt="" coords="13,71,137,112"/>
+</map>

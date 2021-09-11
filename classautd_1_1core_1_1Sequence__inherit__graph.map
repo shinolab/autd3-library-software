@@ -1,0 +1,6 @@
+<map id="autd::core::Sequence" name="autd::core::Sequence">
+<area shape="rect" id="node1" title=" " alt="" coords="116,5,259,32"/>
+<area shape="rect" id="node2" href="$classautd_1_1core_1_1GainSequence.html" title="GainSequence provides a function to display Gain sequentially and periodically." alt="" coords="5,80,175,107"/>
+<area shape="rect" id="node3" href="$classautd_1_1core_1_1PointSequence.html" title="PointSequence provides a function to display the focus sequentially and periodically." alt="" coords="199,80,371,107"/>
+<area shape="rect" id="node4" href="$classautd_1_1sequence_1_1Circumference.html" title="Utility to generate PointSequence on a circumference." alt="" coords="185,155,384,181"/>
+</map>

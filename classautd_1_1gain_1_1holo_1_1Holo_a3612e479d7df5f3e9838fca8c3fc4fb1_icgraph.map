@@ -1,0 +1,8 @@
+<map id="autd::gain::holo::Holo::backend" name="autd::gain::holo::Holo::backend">
+<area shape="rect" id="node1" title=" " alt="" coords="212,136,352,177"/>
+<area shape="rect" id="node2" href="$classautd_1_1gain_1_1holo_1_1SDP.html#a67755df2bba1c9b08e5a2f0880f82b5f" title="Generate function." alt="" coords="15,5,155,47"/>
+<area shape="rect" id="node3" href="$classautd_1_1gain_1_1holo_1_1EVD.html#aaa8c73b6673faf49aef0d2727c51a4c6" title="Generate function." alt="" coords="15,71,154,112"/>
+<area shape="rect" id="node4" href="$classautd_1_1gain_1_1holo_1_1Naive.html#a0f28e01649b56412110967e49689c399" title="Generate function." alt="" coords="11,136,158,177"/>
+<area shape="rect" id="node5" href="$classautd_1_1gain_1_1holo_1_1GS.html#a3fc58e0f8ab806fa800ddfda350da70b" title="Generate function." alt="" coords="19,201,151,243"/>
+<area shape="rect" id="node6" href="$classautd_1_1gain_1_1holo_1_1GSPAT.html#add274431b4fdfeea16d338cfcdf391e3" title="Generate function." alt="" coords="5,267,164,308"/>
+</map>

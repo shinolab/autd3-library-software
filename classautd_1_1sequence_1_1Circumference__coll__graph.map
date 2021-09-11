@@ -1,0 +1,5 @@
+<map id="autd::sequence::Circumference" name="autd::sequence::Circumference">
+<area shape="rect" id="node1" title="Utility to generate PointSequence on a circumference." alt="" coords="5,155,204,181"/>
+<area shape="rect" id="node2" href="$classautd_1_1core_1_1PointSequence.html" title="PointSequence provides a function to display the focus sequentially and periodically." alt="" coords="49,80,160,107"/>
+<area shape="rect" id="node3" href="$classautd_1_1core_1_1Sequence.html" title=" " alt="" coords="33,5,176,32"/>
+</map>

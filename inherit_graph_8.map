@@ -1,0 +1,10 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classautd_1_1core_1_1Modulation.html" title="Modulation controls the amplitude modulation." alt="" coords="5,157,152,184"/>
+<area shape="rect" id="node2" href="$classautd_1_1modulation_1_1Custom.html" title="Custom wave modulation." alt="" coords="217,5,383,32"/>
+<area shape="rect" id="node3" href="$classautd_1_1modulation_1_1RawPCM.html" title="Modulation created from raw pcm data." alt="" coords="211,56,389,83"/>
+<area shape="rect" id="node4" href="$classautd_1_1modulation_1_1Sine.html" title="Sine wave modulation in ultrasound amplitude." alt="" coords="226,107,374,133"/>
+<area shape="rect" id="node5" href="$classautd_1_1modulation_1_1SineLegacy.html" title="Sine wave modulation in ultrasound amplitude (Legacy)" alt="" coords="205,157,395,184"/>
+<area shape="rect" id="node6" href="$classautd_1_1modulation_1_1SinePressure.html" title="Sine wave modulation in radiation pressure." alt="" coords="200,208,400,235"/>
+<area shape="rect" id="node7" href="$classautd_1_1modulation_1_1Square.html" title="Square wave modulation." alt="" coords="219,259,381,285"/>
+<area shape="rect" id="node8" href="$classautd_1_1modulation_1_1Wav.html" title="Modulation created from wav file." alt="" coords="226,309,374,336"/>
+</map>

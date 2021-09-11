@@ -1,0 +1,7 @@
+<map id="autd::core::Geometry::add_device" name="autd::core::Geometry::add_device">
+<area shape="rect" id="node1" title="Add new device with position and rotation. Note that the transform is done with order: Translate &#45;&gt; R..." alt="" coords="5,39,145,80"/>
+<area shape="rect" id="node2" href="$structautd_1_1core_1_1Device.html#a7d1af850f02f2fc155cff6291e64e0f6" title=" " alt="" coords="201,5,325,47"/>
+<area shape="rect" id="node4" href="$classautd_1_1core_1_1Geometry.html#a0c53fa22ee906e1b43ff4465c501cd57" title="Position of a transducer specified by id." alt="" coords="193,71,333,112"/>
+<area shape="rect" id="node3" href="$namespaceautd_1_1core.html#ab6ab1adeb29b6730a92561f0fa2b33b4" title=" " alt="" coords="393,5,540,47"/>
+<area shape="rect" id="node5" href="$classautd_1_1core_1_1Geometry.html#ab80271ba7cec4a9fe62a243da44304d4" title="Convert transducer index into device index." alt="" coords="381,71,552,112"/>
+</map>
