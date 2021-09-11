@@ -38,9 +38,6 @@
 
 namespace autd::gain::holo {
 
-/**
- * \brief Eigen3 matrix
- */
 template <typename T>
 struct EigenMatrix {
   Eigen::Matrix<T, -1, -1, Eigen::ColMajor> data;

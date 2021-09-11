@@ -37,9 +37,6 @@
 
 namespace autd::gain::holo {
 
-/**
- * \brief BLAS matrix
- */
 template <typename T>
 struct BLASMatrix final : public EigenMatrix<T> {
   explicit BLASMatrix(const size_t row, const size_t col) : EigenMatrix(row, col) {}
