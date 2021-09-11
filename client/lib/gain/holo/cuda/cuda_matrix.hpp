@@ -41,9 +41,6 @@ struct CuContext {
   static void free();
 };
 
-/**
- * \brief CUDA matrix
- */
 template <typename T>
 struct CuMatrix {
   explicit CuMatrix(size_t row, size_t col);
