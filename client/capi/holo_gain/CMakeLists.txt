@@ -27,3 +27,15 @@ if(WIN32)
 else()
   set_target_properties(autd3capi-holo-gain PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
+
+if(BUILD_BLAS_BACKEND)
+  add_subdirectory(blas)
+endif()
+
+if(BUILD_CUDA_BACKEND)
+  add_subdirectory(cuda)
+endif()
+
+if(BUILD_ARRAYFIRE_BACKEND)
+  add_subdirectory(arrayfire)
+endif()
