@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 add_library(blas_backend
     blas_backend.cpp
+    blas_matrix.hpp
     ${PROJECT_SOURCE_DIR}/include/autd3/gain/backend.hpp
     ${PROJECT_SOURCE_DIR}/include/autd3/gain/blas_backend.hpp
 )

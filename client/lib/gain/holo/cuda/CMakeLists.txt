@@ -7,6 +7,8 @@ cuda_add_library(cuda_backend
     kernel.h
     kernel.cu
     cuda_backend.cu
+    cuda_backend.cpp
+    cuda_matrix.hpp
     ${PROJECT_SOURCE_DIR}/include/autd3/gain/backend.hpp
     ${PROJECT_SOURCE_DIR}/include/autd3/gain/cuda_backend.hpp
 )
