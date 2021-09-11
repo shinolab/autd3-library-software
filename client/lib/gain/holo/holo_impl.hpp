@@ -3,7 +3,7 @@
 // Created Date: 10/09/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/09/2021
+// Last Modified: 11/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -615,8 +615,9 @@ void apo_impl(P& pool, const core::GeometryPtr& geometry, const std::vector<core
   q->set_from_complex_drive(dst, true, max_coefficient);
 }
 
-void greedy_impl(const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, const size_t phase_div,
-                 std::vector<core::DataArray>& dst) {
+template <typename P>
+void greedy_impl(P&, const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps,
+                 const size_t phase_div, std::vector<core::DataArray>& dst) {
   const auto m = foci.size();
 
   std::vector<complex> phases;

@@ -3,7 +3,7 @@
 // Created Date: 10/09/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/09/2021
+// Last Modified: 11/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -121,9 +121,6 @@ void CuMatrix<double>::mul(TRANSPOSE trans_a, TRANSPOSE trans_b, double alpha, c
 template <>
 void CuMatrix<complex>::mul(TRANSPOSE trans_a, TRANSPOSE trans_b, complex alpha, const std::shared_ptr<const CuMatrix<complex>>& a,
                             const std::shared_ptr<const CuMatrix<complex>>& b, complex beta);
-
-using CUDABackend = MatrixBufferPool<CuMatrix<double>, CuMatrix<complex>>;
-
 }  // namespace holo
 }  // namespace gain
 }  // namespace autd

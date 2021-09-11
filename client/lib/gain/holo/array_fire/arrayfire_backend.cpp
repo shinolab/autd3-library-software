@@ -3,7 +3,7 @@
 // Created Date: 08/09/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/09/2021
+// Last Modified: 11/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -64,7 +64,7 @@ class ArrayFireBackendImpl final : public ArrayFireBackend {
   }
   void greedy(const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, const size_t phase_div,
               std::vector<core::DataArray>& dst) override {
-    greedy_impl(geometry, foci, amps, phase_div, dst);
+    greedy_impl(_pool, geometry, foci, amps, phase_div, dst);
   }
 
  private:

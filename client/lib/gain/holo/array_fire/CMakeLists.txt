@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 add_library(arrayfire_backend
     arrayfire_backend.cpp
+    arrayfire_matrix.hpp
     ${PROJECT_SOURCE_DIR}/include/autd3/gain/backend.hpp
     ${PROJECT_SOURCE_DIR}/include/autd3/gain/arrayfire_backend.hpp
 )
