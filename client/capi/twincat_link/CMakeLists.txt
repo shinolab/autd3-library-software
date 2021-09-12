@@ -9,7 +9,6 @@ add_library(autd3capi-twincat-link SHARED
 
 target_link_libraries(autd3capi-twincat-link twincat_link)
 if(WIN32)
-  target_link_libraries(autd3capi-twincat-link ws2_32.lib)
 elseif(APPLE)
 else()
   target_link_libraries(autd3capi-twincat-link -static-libgcc -static-libstdc++)

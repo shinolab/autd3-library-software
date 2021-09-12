@@ -15,7 +15,7 @@ set_target_properties(from_file_modulation
 )
 
 if(WIN32)
-  set_target_properties(from_file_modulation PROPERTIES FOLDER "gain")
+  set_target_properties(from_file_modulation PROPERTIES FOLDER "modulation")
 else()
   set_target_properties(from_file_modulation PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

@@ -1,9 +1,9 @@
-// File: blas_backend.hpp
-// Project: include
-// Created Date: 17/05/2021
+// File: eigen_backend.hpp
+// Project: gain
+// Created Date: 10/09/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 07/09/2021
+// Last Modified: 11/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,34 +11,46 @@
 
 #pragma once
 
-#include <memory>
+#include <vector>
 
-#include "eigen_backend.hpp"
+#include "autd3/gain/backend.hpp"
 
 namespace autd::gain::holo {
 
 /**
- * \brief Linear algebra calculation backend using BLAS and LAPACK.
+ * \brief BLAS/LAPACK Backend for HoloGain
  */
-class BLASBackend final : public Eigen3Backend {
+class BLASBackend : virtual public Backend {
  public:
+  BLASBackend() = default;
+  ~BLASBackend() override = default;
+  BLASBackend(const BLASBackend& v) noexcept = default;
+  BLASBackend& operator=(const BLASBackend& obj) = default;
+  BLASBackend(BLASBackend&& obj) = default;
+  BLASBackend& operator=(BLASBackend&& obj) = default;
+
   static BackendPtr create();
 
-  void scale(std::shared_ptr<MatrixXc> a, complex s) override;
-  void pseudo_inverse_svd(std::shared_ptr<MatrixXc> matrix, double alpha, std::shared_ptr<MatrixXc> result) override;
-  void max_eigen_vector(std::shared_ptr<MatrixXc> matrix, std::shared_ptr<MatrixXc> ev) override;
-  void matrix_add(double alpha, std::shared_ptr<MatrixX> a, std::shared_ptr<MatrixX> b) override;
-  void matrix_mul(TRANSPOSE trans_a, TRANSPOSE trans_b, complex alpha, std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> b, complex beta,
-                  std::shared_ptr<MatrixXc> c) override;
-  void matrix_mul(TRANSPOSE trans_a, TRANSPOSE trans_b, double alpha, std::shared_ptr<MatrixX> a, std::shared_ptr<MatrixX> b, double beta,
-                  std::shared_ptr<MatrixX> c) override;
-  void solve_ch(std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> b) override;
-  void solve_g(std::shared_ptr<MatrixX> a, std::shared_ptr<MatrixX> b, std::shared_ptr<MatrixX> c) override;
-  double dot(std::shared_ptr<MatrixX> a, std::shared_ptr<MatrixX> b) override;
-  complex dot(std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> b) override;
-  double max_coefficient(std::shared_ptr<MatrixX> v) override;
-  double max_coefficient(std::shared_ptr<MatrixXc> v) override;
-  void mat_cpy(std::shared_ptr<MatrixX> a, std::shared_ptr<MatrixX> b) override;
-  void mat_cpy(std::shared_ptr<MatrixXc> a, std::shared_ptr<MatrixXc> b) override;
+  void sdp(const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, double alpha, double lambda,
+           size_t repeat, bool normalize, std::vector<core::DataArray>& dst) override = 0;
+  void evd(const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, double gamma, bool normalize,
+           std::vector<core::DataArray>& dst) override = 0;
+  void naive(const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps,
+             std::vector<core::DataArray>& dst) override = 0;
+  void gs(const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, size_t repeat,
+          std::vector<core::DataArray>& dst) override = 0;
+  void gspat(const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, size_t repeat,
+             std::vector<core::DataArray>& dst) override = 0;
+  void lm(const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, double eps_1, double eps_2,
+          double tau, size_t k_max, const std::vector<double>& initial, std::vector<core::DataArray>& dst) override = 0;
+  void gauss_newton(const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, double eps_1,
+                    double eps_2, size_t k_max, const std::vector<double>& initial, std::vector<core::DataArray>& dst) override = 0;
+  void gradient_descent(const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, double eps,
+                        double step, size_t k_max, const std::vector<double>& initial, std::vector<core::DataArray>& dst) override = 0;
+  void apo(const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, double eps, double lambda,
+           size_t k_max, std::vector<core::DataArray>& dst) override = 0;
+  void greedy(const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, size_t phase_div,
+              std::vector<core::DataArray>& dst) override = 0;
 };
+
 }  // namespace autd::gain::holo
