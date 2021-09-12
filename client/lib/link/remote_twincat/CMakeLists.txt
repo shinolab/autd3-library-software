@@ -1,0 +1,38 @@
+cmake_minimum_required(VERSION 3.16)
+
+add_library(remote_twincat_link
+  remote_twincat.cpp
+  ${PROJECT_SOURCE_DIR}/include/autd3/link/remote_twincat.hpp
+
+  ${ADS_PATH}/AdsLib/AdsDef.cpp
+  ${ADS_PATH}/AdsLib/AdsDevice.cpp
+  ${ADS_PATH}/AdsLib/Log.cpp
+  ${ADS_PATH}/AdsLib/Sockets.cpp
+  ${ADS_PATH}/AdsLib/Frame.cpp
+  ${ADS_PATH}/AdsLib/standalone/AdsLib.cpp
+  ${ADS_PATH}/AdsLib/standalone/AmsConnection.cpp
+  ${ADS_PATH}/AdsLib/standalone/AmsNetId.cpp
+  ${ADS_PATH}/AdsLib/standalone/AmsPort.cpp
+  ${ADS_PATH}/AdsLib/standalone/AmsRouter.cpp
+  ${ADS_PATH}/AdsLib/standalone/NotificationDispatcher.cpp
+)
+
+target_include_directories(remote_twincat_link PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(remote_twincat_link PRIVATE ${ADS_PATH}/AdsLib ${ADS_PATH}/AdsLib/standalone)
+
+if(WIN32)
+  target_link_libraries(remote_twincat_link INTERFACE ws2_32.lib)
+endif()
+
+set_target_properties(remote_twincat_link
+  PROPERTIES
+  ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+)
+
+if(WIN32)
+  set_target_properties(remote_twincat_link PROPERTIES FOLDER "link")
+else()
+  set_target_properties(remote_twincat_link PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()

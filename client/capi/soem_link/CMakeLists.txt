@@ -9,12 +9,8 @@ add_library(autd3capi-soem-link SHARED
 
 target_link_libraries(autd3capi-soem-link soem_link)
 if(WIN32)
-  target_link_libraries(autd3capi-soem-link ws2_32.lib)
-  target_link_libraries(autd3capi-soem-link winmm.lib)
 elseif(APPLE)
-  target_link_libraries(autd3capi-soem-link pcap)
 else()
-  target_link_libraries(autd3capi-soem-link rt)
   target_link_libraries(autd3capi-soem-link -static-libgcc -static-libstdc++)
 endif()
 

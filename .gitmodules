@@ -7,3 +7,6 @@
 [submodule "client/deps/SOEM"]
 	path = client/deps/SOEM
 	url = https://github.com/OpenEtherCATsociety/SOEM.git
+[submodule "client/deps/BeckhoffADS"]
+	path = client/deps/BeckhoffADS
+	url = https://github.com/Beckhoff/ADS.git
