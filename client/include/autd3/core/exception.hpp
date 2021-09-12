@@ -3,7 +3,7 @@
 // Created Date: 04/07/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 11/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -14,7 +14,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace autd::core {
+namespace autd::core::exception {
 
 class GainBuildError : public std::runtime_error {
  public:
@@ -58,4 +58,4 @@ class LinkError : public std::runtime_error {
   explicit LinkError(char const* message) : std::runtime_error(message) {}
 };
 
-}  // namespace autd::core
+}  // namespace autd::core::exception

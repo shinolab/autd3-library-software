@@ -4,7 +4,7 @@
  * Created Date: 06/09/2021
  * Author: Shun Suzuki
  * -----
- * Last Modified: 07/09/2021
+ * Last Modified: 10/09/2021
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -17,8 +17,6 @@
 
 #include "./kernel.h"
 #include "autd3/core/hardware_defined.hpp"
-
-#define BLOCK_SIZE (32)
 
 namespace autd {
 namespace gain {
@@ -66,7 +64,7 @@ void cu_set_diagonal(const std::complex<double>* src, std::complex<double>* dst,
   set_diagonal_kernel<<<grid, block>>>(src, dst, size);
 }
 
-__global__ void make_complex_kernel(double* r, double* i, const uint32_t row, const uint32_t col, cuDoubleComplex* c) {
+__global__ void make_complex_kernel(const double* r, const double* i, const uint32_t row, const uint32_t col, cuDoubleComplex* c) {
   int xi = blockIdx.x * blockDim.x + threadIdx.x;
   int yi = blockIdx.y * blockDim.y + threadIdx.y;
   if (xi >= row || yi >= col) return;
@@ -75,7 +73,7 @@ __global__ void make_complex_kernel(double* r, double* i, const uint32_t row, co
   c[idx] = make_cuDoubleComplex(r[idx], i[idx]);
 }
 
-void cu_make_complex(double* r, double* i, const uint32_t row, const uint32_t col, cuDoubleComplex* c) {
+void cu_make_complex(const double* r, const double* i, const uint32_t row, const uint32_t col, cuDoubleComplex* c) {
   dim3 block(BLOCK_SIZE, BLOCK_SIZE, 1);
   dim3 grid((row - 1) / BLOCK_SIZE + 1, (col - 1) / BLOCK_SIZE + 1, 1);
   make_complex_kernel<<<grid, block>>>(r, i, row, col, c);
@@ -88,6 +86,14 @@ __device__ cuDoubleComplex expc(cuDoubleComplex x) {
   return make_cuDoubleComplex(s * r, s * i);
 }
 
+__global__ void exp_kernel(const uint32_t row, const uint32_t col, double* c) {
+  int xi = blockIdx.x * blockDim.x + threadIdx.x;
+  int yi = blockIdx.y * blockDim.y + threadIdx.y;
+  if (xi >= row || yi >= col) return;
+
+  int idx = xi + yi * row;
+  c[idx] = exp(c[idx]);
+}
 __global__ void exp_kernel(const uint32_t row, const uint32_t col, cuDoubleComplex* c) {
   int xi = blockIdx.x * blockDim.x + threadIdx.x;
   int yi = blockIdx.y * blockDim.y + threadIdx.y;
@@ -97,14 +103,88 @@ __global__ void exp_kernel(const uint32_t row, const uint32_t col, cuDoubleCompl
   c[idx] = expc(c[idx]);
 }
 
+void cu_exp(const uint32_t row, const uint32_t col, double* c) {
+  dim3 block(BLOCK_SIZE, BLOCK_SIZE, 1);
+  dim3 grid((row - 1) / BLOCK_SIZE + 1, (col - 1) / BLOCK_SIZE + 1, 1);
+  exp_kernel<<<grid, block>>>(row, col, c);
+}
 void cu_exp(const uint32_t row, const uint32_t col, cuDoubleComplex* c) {
   dim3 block(BLOCK_SIZE, BLOCK_SIZE, 1);
   dim3 grid((row - 1) / BLOCK_SIZE + 1, (col - 1) / BLOCK_SIZE + 1, 1);
   exp_kernel<<<grid, block>>>(row, col, c);
 }
 
+__device__ cuDoubleComplex conj(cuDoubleComplex a) { return make_cuDoubleComplex(a.x, -a.y); }
+__device__ double absc2(cuDoubleComplex x) { return x.x * x.x + x.y * x.y; }
+__device__ double absc(cuDoubleComplex x) { return sqrt(absc2(x)); }
+
+__global__ void reciprocal_kernel(const uint32_t row, const uint32_t col, const double* src, double* dst) {
+  int xi = blockIdx.x * blockDim.x + threadIdx.x;
+  int yi = blockIdx.y * blockDim.y + threadIdx.y;
+  if (xi >= row || yi >= col) return;
+
+  int idx = xi + yi * row;
+  dst[idx] = 1.0 / src[idx];
+}
+__global__ void reciprocal_kernel(const uint32_t row, const uint32_t col, const cuDoubleComplex* src, cuDoubleComplex* dst) {
+  int xi = blockIdx.x * blockDim.x + threadIdx.x;
+  int yi = blockIdx.y * blockDim.y + threadIdx.y;
+  if (xi >= row || yi >= col) return;
+
+  int idx = xi + yi * row;
+  double d = absc2(src[idx]);
+  dst[idx] = make_cuDoubleComplex(src[idx].x / d, -src[idx].y / d);
+}
+
+void cu_reciprocal(const uint32_t row, const uint32_t col, const double* src, double* dst) {
+  dim3 block(BLOCK_SIZE, BLOCK_SIZE, 1);
+  dim3 grid((row - 1) / BLOCK_SIZE + 1, (col - 1) / BLOCK_SIZE + 1, 1);
+  reciprocal_kernel<<<grid, block>>>(row, col, src, dst);
+}
+void cu_reciprocal(const uint32_t row, const uint32_t col, const cuDoubleComplex* src, cuDoubleComplex* dst) {
+  dim3 block(BLOCK_SIZE, BLOCK_SIZE, 1);
+  dim3 grid((row - 1) / BLOCK_SIZE + 1, (col - 1) / BLOCK_SIZE + 1, 1);
+  reciprocal_kernel<<<grid, block>>>(row, col, src, dst);
+}
+
+__global__ void abs_kernel(const uint32_t row, const uint32_t col, const double* src, double* dst) {
+  int xi = blockIdx.x * blockDim.x + threadIdx.x;
+  int yi = blockIdx.y * blockDim.y + threadIdx.y;
+  if (xi >= row || yi >= col) return;
+
+  int idx = xi + yi * row;
+  dst[idx] = abs(src[idx]);
+}
+__global__ void abs_kernel(const uint32_t row, const uint32_t col, const cuDoubleComplex* src, cuDoubleComplex* dst) {
+  int xi = blockIdx.x * blockDim.x + threadIdx.x;
+  int yi = blockIdx.y * blockDim.y + threadIdx.y;
+  if (xi >= row || yi >= col) return;
+
+  int idx = xi + yi * row;
+  dst[idx] = make_cuDoubleComplex(absc(src[idx]), 0.0);
+}
+
+void cu_abs(const uint32_t row, const uint32_t col, const double* src, double* dst) {
+  dim3 block(BLOCK_SIZE, BLOCK_SIZE, 1);
+  dim3 grid((row - 1) / BLOCK_SIZE + 1, (col - 1) / BLOCK_SIZE + 1, 1);
+  abs_kernel<<<grid, block>>>(row, col, src, dst);
+}
+void cu_abs(const uint32_t row, const uint32_t col, const cuDoubleComplex* src, cuDoubleComplex* dst) {
+  dim3 block(BLOCK_SIZE, BLOCK_SIZE, 1);
+  dim3 grid((row - 1) / BLOCK_SIZE + 1, (col - 1) / BLOCK_SIZE + 1, 1);
+  abs_kernel<<<grid, block>>>(row, col, src, dst);
+}
+
 __device__ cuDoubleComplex mulc(cuDoubleComplex a, cuDoubleComplex b) { return make_cuDoubleComplex(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x); }
 
+__global__ void hadamard_product_kernel(const double* a, const double* b, const uint32_t row, const uint32_t col, double* c) {
+  int xi = blockIdx.x * blockDim.x + threadIdx.x;
+  int yi = blockIdx.y * blockDim.y + threadIdx.y;
+  if (xi >= row || yi >= col) return;
+
+  int idx = xi + yi * row;
+  c[idx] = a[idx] * b[idx];
+}
 __global__ void hadamard_product_kernel(const cuDoubleComplex* a, const cuDoubleComplex* b, const uint32_t row, const uint32_t col,
                                         cuDoubleComplex* c) {
   int xi = blockIdx.x * blockDim.x + threadIdx.x;
@@ -115,6 +195,11 @@ __global__ void hadamard_product_kernel(const cuDoubleComplex* a, const cuDouble
   c[idx] = mulc(a[idx], b[idx]);
 }
 
+void cu_hadamard_product(const double* a, const double* b, uint32_t row, uint32_t col, double* c) {
+  dim3 block(BLOCK_SIZE, BLOCK_SIZE, 1);
+  dim3 grid((row - 1) / BLOCK_SIZE + 1, (col - 1) / BLOCK_SIZE + 1, 1);
+  hadamard_product_kernel<<<grid, block>>>(a, b, row, col, c);
+}
 void cu_hadamard_product(const cuDoubleComplex* a, const cuDoubleComplex* b, uint32_t row, uint32_t col, cuDoubleComplex* c) {
   dim3 block(BLOCK_SIZE, BLOCK_SIZE, 1);
   dim3 grid((row - 1) / BLOCK_SIZE + 1, (col - 1) / BLOCK_SIZE + 1, 1);
@@ -135,8 +220,6 @@ void cu_real(const cuDoubleComplex* a, uint32_t row, uint32_t col, double* b) {
   dim3 grid((row - 1) / BLOCK_SIZE + 1, (col - 1) / BLOCK_SIZE + 1, 1);
   real_kernel<<<grid, block>>>(a, row, col, b);
 }
-
-__device__ double absc(cuDoubleComplex x) { return sqrt(x.x * x.x + x.y * x.y); }
 
 __global__ void arg_kernel(const cuDoubleComplex* a, const uint32_t row, const uint32_t col, cuDoubleComplex* b) {
   int xi = blockIdx.x * blockDim.x + threadIdx.x;
@@ -165,7 +248,24 @@ __global__ void calc_singular_inv_kernel(double* d_s, uint32_t s_size, double al
     p_singular_inv[xi + yi * s_size] = make_cuDoubleComplex(d_s[xi] / (d_s[xi] * d_s[xi] + alpha), 0.0);
 }
 
+__global__ void calc_singular_inv_kernel(double* d_s, uint32_t s_size, double alpha, double* p_singular_inv) {
+  int xi = blockIdx.x * blockDim.x + threadIdx.x;
+  int yi = blockIdx.y * blockDim.y + threadIdx.y;
+  if (xi >= s_size || yi >= s_size) return;
+
+  if (xi != yi)
+    p_singular_inv[xi + yi * s_size] = 0.0;
+  else
+    p_singular_inv[xi + yi * s_size] = d_s[xi] / (d_s[xi] * d_s[xi] + alpha);
+}
+
 void calc_singular_inv(double* d_s, uint32_t s_size, double alpha, cuDoubleComplex* p_singular_inv) {
+  dim3 block(BLOCK_SIZE, BLOCK_SIZE, 1);
+  dim3 grid((s_size - 1) / BLOCK_SIZE + 1, (s_size - 1) / BLOCK_SIZE + 1, 1);
+  calc_singular_inv_kernel<<<grid, block>>>(d_s, s_size, alpha, p_singular_inv);
+}
+
+void calc_singular_inv(double* d_s, uint32_t s_size, double alpha, double* p_singular_inv) {
   dim3 block(BLOCK_SIZE, BLOCK_SIZE, 1);
   dim3 grid((s_size - 1) / BLOCK_SIZE + 1, (s_size - 1) / BLOCK_SIZE + 1, 1);
   calc_singular_inv_kernel<<<grid, block>>>(d_s, s_size, alpha, p_singular_inv);
@@ -182,7 +282,7 @@ __device__ uint8_t to_duty(const double amp) {
 }
 
 __device__ uint8_t to_phase(const double phase) noexcept {
-  const uint8_t d_phase = (uint8_t)((int)(round(phase * 256.0)) & 0xFF);
+  const uint8_t d_phase = (uint8_t)((int)(round((phase + 0.5) * 256.0)) & 0xFF);
   return core::PHASE_INVERTED ? d_phase : 0xFF - d_phase;
 }
 
@@ -201,6 +301,22 @@ void cu_set_from_complex_drive(const cuDoubleComplex* drive, uint32_t size, bool
   dim3 block(BLOCK_SIZE, 1, 1);
   dim3 grid((size - 1) / BLOCK_SIZE + 1, 1, 1);
   set_from_complex_drive_kernel<<<grid, block>>>(drive, size, normalize, max_coefficient, d_data);
+}
+
+__global__ void set_from_arg(const double* drive, uint32_t size, uint16_t* d_data) {
+  int xi = blockIdx.x * blockDim.x + threadIdx.x;
+  if (xi >= size) return;
+
+  const auto f_phase = drive[xi] / (2.0 * M_PI);
+  const uint16_t phase = (uint16_t)to_phase(f_phase);
+  const uint16_t duty = 0xFF00;
+  d_data[xi] = duty | phase;
+}
+
+void cu_set_from_arg(const double* drive, uint32_t size, uint16_t* d_data) {
+  dim3 block(BLOCK_SIZE, 1, 1);
+  dim3 grid((size - 1) / BLOCK_SIZE + 1, 1, 1);
+  set_from_arg<<<grid, block>>>(drive, size, d_data);
 }
 
 __device__ double3 sub(const double3& a, const double3& b) {
@@ -273,8 +389,6 @@ void cu_transfer_matrix(const double3* foci, uint32_t foci_num, const double3* p
   dim3 grid((foci_num - 1) / BLOCK_SIZE + 1, (trans_num - 1) / BLOCK_SIZE + 1, 1);
   transfer_matrix_kernel<<<grid, block>>>(foci, foci_num, positions, directions, trans_num, wavenum, attenuation, result);
 }
-
-__device__ cuDoubleComplex conj(cuDoubleComplex a) { return make_cuDoubleComplex(a.x, -a.y); }
 
 __global__ void set_bcd_result_kernel(const cuDoubleComplex* vec, uint32_t m, uint32_t idx, cuDoubleComplex* mat) {
   uint32_t xi = blockIdx.x * blockDim.x + threadIdx.x;
@@ -432,7 +546,7 @@ void cu_make_sigma_diagonal(const cuDoubleComplex* transfer, uint32_t m, uint32_
   dim3 grid((m - 1) / BLOCK_SIZE + 1, n, 1);
 
   row_sum_abs_kernel<<<grid, block, BLOCK_SIZE / 2 * sizeof(double)>>>(transfer, amps, m, n, buffer);
-  row_sum_kernel<<<dim3(1, n, 1), dim3(grid.x / 2, 1, 1), grid.x / 2 * sizeof(double)>>>(buffer, grid.x, n, buffer);
+  row_sum_kernel<<<dim3(1, n, 1), dim3(max(grid.x / 2, 1), 1, 1), max(grid.x / 2, 1) * sizeof(double)>>>(buffer, grid.x, n, buffer);
 
   transfer_sigma_kernel<<<dim3((n - 1) / BLOCK_SIZE + 1, 1, 1), dim3(BLOCK_SIZE, 1, 1)>>>(buffer, m, n, gamma, result);
 }
@@ -466,7 +580,7 @@ void cu_col_sum_imag(const cuDoubleComplex* mat, uint32_t m, uint32_t n, double*
   dim3 grid(m, (n - 1) / BLOCK_SIZE + 1, 1);
 
   col_sum_imag_kernel<<<grid, block, BLOCK_SIZE / 2 * sizeof(double)>>>(mat, m, n, buffer);
-  col_sum_kernel<<<dim3(m, 1, 1), dim3(1, grid.y / 2, 1), grid.y / 2 * sizeof(double)>>>(buffer, m, grid.y, result);
+  col_sum_kernel<<<dim3(m, 1, 1), dim3(1, max(grid.y / 2, 1), 1), max(grid.y / 2, 1) * sizeof(double)>>>(buffer, m, grid.y, result);
 }
 }  // namespace holo
 }  // namespace gain

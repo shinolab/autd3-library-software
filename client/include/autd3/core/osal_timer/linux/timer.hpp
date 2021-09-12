@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 23/07/2021
+// Last Modified: 11/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -45,14 +45,14 @@ class Timer {
     se.sigev_notify_attributes = NULL;
 
     timer_t timer_id;
-    if (timer_create(CLOCK_REALTIME, &se, &timer_id) < 0) throw TimerError("timer_create failed");
-    if (timer_settime(timer_id, 0, &itval, NULL) < 0) throw TimerError("timer_settime failed");
+    if (timer_create(CLOCK_REALTIME, &se, &timer_id) < 0) throw exception::TimerError("timer_create failed");
+    if (timer_settime(timer_id, 0, &itval, NULL) < 0) throw exception::TimerError("timer_settime failed");
 
     return std::make_unique<Timer>(std::move(handler), timer_id);
   }
   [[nodiscard]] std::unique_ptr<T> stop() {
     if (_is_closed) return std::unique_ptr<T>(nullptr);
-    if (timer_delete(_timer_id) < 0) throw TimerError("timer_delete failed");
+    if (timer_delete(_timer_id) < 0) throw exception::TimerError("timer_delete failed");
     _is_closed = true;
     return std::move(this->_handler);
   }

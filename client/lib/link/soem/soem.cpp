@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/09/2021
+// Last Modified: 11/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -54,7 +54,7 @@ std::unique_ptr<SOEM> SOEM::create(const std::string& ifname, const size_t devic
 }
 
 void SOEMImpl::open() {
-  if (_ifname.empty()) throw core::LinkError("Interface name is empty");
+  if (_ifname.empty()) throw core::exception::LinkError("Interface name is empty");
 
   _config = autdsoem::ECConfig{};
   _config.ec_sm3_cycle_time_ns = core::EC_SM3_CYCLE_TIME_NANO_SEC * _cycle_ticks;

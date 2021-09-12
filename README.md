@@ -3,7 +3,7 @@
 
 # [AUTD3](https://hapislab.org/airborne-ultrasound-tactile-display?lang=en)
 
-Version: 1.7.1
+Version: 1.7.2
 
 ## :blue_book: **[Wiki for beginners](https://github.com/shinolab/autd3-library-software/wiki)**
 
@@ -18,17 +18,17 @@ Version: 1.7.1
 * If you use `link::SOEM` on Windows, install [Npcap](https://nmap.org/npcap/) with WinPcap API-compatible mode (recommended) or [WinPcap](https://www.winpcap.org/).
     * This works on Windows 11
 
-* If you use `link::TwinCAT`, please see [how to install AUTDServer](https://github.com/shinolab/autd3-library-software/wiki/How-to-install-AUTDServer).
+* If you use `link::TwinCAT` or `link::RemoteTwinCAT`, please see [how to install AUTDServer](https://github.com/shinolab/autd3-library-software/wiki/How-to-install-AUTDServer).
     * Windows 11 might not be supported by TwinCAT
 
 ## :hammer_and_wrench: Build
 
-* Pre-built binaries and header files are on the [GitHub Release page](https://github.com/shinolab/autd3-library-software/releases). Instead, if you want to build from source, install CMake version 3.12 or higher and follow the instructions below.
+* Pre-built binaries and header files are on the [GitHub Release page](https://github.com/shinolab/autd3-library-software/releases). Instead, if you want to build from source, install CMake version 3.16 or higher and follow the instructions below.
     * Windows:
         ```
         git clone https://github.com/shinolab/autd3-library-software.git --recursive 
         ```
-        Then, run `client/build.ps1` (Visual Studio 2019/2022 is required) or build with CMake
+        Then, run `client/build.ps1` (Visual Studio 2017 or 2019 or 2022 is required) or build with CMake
     * Linux/macOS: 
         ```
         git clone https://github.com/shinolab/autd3-library-software.git --recursive

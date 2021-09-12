@@ -1,3 +1,8 @@
+# 1.7.2
+* Impl `Holo::GaussNewton`, `Holo::GradientDescent`, and `Holo::APO`
+* Add `ArrayFireBackend`
+* Add `RemoteTwinCAT` link
+
 # 1.7.1
 * Add `wait_for_msg_processed` option to `Controller::send()`
 * Support duty ratio in `PointSequence`

@@ -10,6 +10,7 @@
 * BUILD_BLAS_BACKEND = [OFF]
 * USE_MKL = [OFF]
 * BUILD_CUDA_BACKEND = [OFF]
+* BUILD_ARRAYFIRE_BACKEND = [OFF]
 * BUILD_FROM_FILE_MODULATION = [OFF]
 * BUILD_SOEM_LINK = [ON]
 * BUILD_TWINCAT_LINK = [OFF]
@@ -79,6 +80,25 @@ cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_BLAS_BACKEND=ON -DBLAS_LIB_DIR=<your BLAS 
     ```
 
     * If you get `flangxxx.lib` link error, add `-DBLAS_DEPEND_LIB_DIR=<your conda path>\Library\lib` option
+
+
+# Build CUDA backend for HoloGain
+
+* Install CUDA Toolkit, and set `BUILD_CUDA_BACKEND` ON
+  * Tested CUDA Toolkit version is 11.4.100
+
+```
+cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_CUDA_BACKEND=ON
+```
+
+# Build ArrayFire backend for HoloGain
+
+* Install ArrayFire, and set `BUILD_ARRAYFIRE_BACKEND` ON
+    * You may need to add `%AF_PATH%\lib` to PATH, where `AF_PATH` is your ArrayFire install directory
+
+```
+cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_ARRAYFIRE_BACKEND=ON
+```
 
 # Author
 

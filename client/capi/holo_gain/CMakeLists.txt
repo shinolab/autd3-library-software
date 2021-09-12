@@ -7,7 +7,8 @@ add_library(autd3capi-holo-gain SHARED
   ../base/wrapper.hpp
 )
 
-target_link_libraries(autd3capi-holo-gain holo_gain)
+target_include_directories(autd3capi-holo-gain PRIVATE ${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
+target_link_libraries(autd3capi-holo-gain eigen_backend)
 if(WIN32)
 elseif(APPLE)
 else()
@@ -25,4 +26,16 @@ if(WIN32)
   set_target_properties(autd3capi-holo-gain PROPERTIES FOLDER "capi")
 else()
   set_target_properties(autd3capi-holo-gain PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+
+if(BUILD_BLAS_BACKEND)
+  add_subdirectory(blas)
+endif()
+
+if(BUILD_CUDA_BACKEND)
+  add_subdirectory(cuda)
+endif()
+
+if(BUILD_ARRAYFIRE_BACKEND)
+  add_subdirectory(arrayfire)
 endif()

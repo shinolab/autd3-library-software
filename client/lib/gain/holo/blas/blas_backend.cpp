@@ -3,7 +3,7 @@
 // Created Date: 17/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/09/2021
+// Last Modified: 11/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,139 +11,65 @@
 
 #include "autd3/gain/blas_backend.hpp"
 
-#define lapack_complex_float std::complex<float>
-#define lapack_complex_double std::complex<double>
-#ifdef USE_BLAS_MKL
-#include "./mkl_cblas.h"
-#include "./mkl_lapacke.h"
-#else
-#include "./cblas.h"
-#if _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4190)
-#endif
-#include "./lapacke.h"
-#if _MSC_VER
-#pragma warning(pop)
-#endif
-#endif
+#include "blas_matrix.hpp"
+#include "holo_impl.hpp"
+#include "matrix_pool.hpp"
 
 namespace autd::gain::holo {
+class BLASBackendImpl final : public BLASBackend {
+ public:
+  BLASBackendImpl() = default;
+  ~BLASBackendImpl() override = default;
+  BLASBackendImpl(const BLASBackendImpl& v) noexcept = delete;
+  BLASBackendImpl& operator=(const BLASBackendImpl& obj) = delete;
+  BLASBackendImpl(BLASBackendImpl&& obj) = delete;
+  BLASBackendImpl& operator=(BLASBackendImpl&& obj) = delete;
 
-constexpr auto AUTD_GESVD = LAPACKE_zgesdd;
-constexpr auto AUTD_HEEV = LAPACKE_zheev;
-constexpr auto AUTD_ZSCAL = cblas_zscal;
-constexpr auto AUTD_AXPY = cblas_daxpy;
-constexpr auto AUTD_DGEMM = cblas_dgemm;
-constexpr auto AUTD_ZGEMM = cblas_zgemm;
-constexpr auto AUTD_DOTC = cblas_zdotc_sub;
-constexpr auto AUTD_DOT = cblas_ddot;
-constexpr auto AUTD_IMAXC = cblas_izamax;
-constexpr auto AUTD_SYSV = LAPACKE_dsysv;
-constexpr auto AUTD_POSVC = LAPACKE_zposv;
-constexpr auto AUTD_CPY = LAPACKE_dlacpy;
-constexpr auto AUTD_CPYC = LAPACKE_zlacpy;
+  void sdp(const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, const double alpha,
+           const double lambda, const size_t repeat, const bool normalize, std::vector<core::DataArray>& dst) override {
+    sdp_impl(_pool, geometry, foci, amps, alpha, lambda, repeat, normalize, dst);
+  }
+  void evd(const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, const double gamma,
+           const bool normalize, std::vector<core::DataArray>& dst) override {
+    evd_impl(_pool, geometry, foci, amps, gamma, normalize, dst);
+  }
+  void naive(const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps,
+             std::vector<core::DataArray>& dst) override {
+    naive_impl(_pool, geometry, foci, amps, dst);
+  }
+  void gs(const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, const size_t repeat,
+          std::vector<core::DataArray>& dst) override {
+    gs_impl(_pool, geometry, foci, amps, repeat, dst);
+  }
+  void gspat(const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, const size_t repeat,
+             std::vector<core::DataArray>& dst) override {
+    gspat_impl(_pool, geometry, foci, amps, repeat, dst);
+  }
+  void lm(const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, const double eps_1,
+          const double eps_2, const double tau, const size_t k_max, const std::vector<double>& initial, std::vector<core::DataArray>& dst) override {
+    lm_impl(_pool, geometry, foci, amps, eps_1, eps_2, tau, k_max, initial, dst);
+  }
+  void gauss_newton(const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, const double eps_1,
+                    const double eps_2, const size_t k_max, const std::vector<double>& initial, std::vector<core::DataArray>& dst) override {
+    gauss_newton_impl(_pool, geometry, foci, amps, eps_1, eps_2, k_max, initial, dst);
+  }
+  void gradient_descent(const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, const double eps,
+                        const double step, const size_t k_max, const std::vector<double>& initial, std::vector<core::DataArray>& dst) override {
+    gradient_descent_impl(_pool, geometry, foci, amps, eps, step, k_max, initial, dst);
+  }
+  void apo(const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, const double eps,
+           const double lambda, const size_t k_max, std::vector<core::DataArray>& dst) override {
+    apo_impl(_pool, geometry, foci, amps, eps, lambda, 100, k_max, dst);
+  }
+  void greedy(const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, const size_t phase_div,
+              std::vector<core::DataArray>& dst) override {
+    greedy_impl(_pool, geometry, foci, amps, phase_div, dst);
+  }
 
-BackendPtr BLASBackend::create() { return std::make_shared<BLASBackend>(); }
+ private:
+  MatrixBufferPool<BLASMatrix<double>, BLASMatrix<complex>> _pool;
+};
 
-void BLASBackend::scale(const std::shared_ptr<MatrixXc> a, const complex s) { AUTD_ZSCAL(static_cast<int>(a->data.size()), &s, a->data.data(), 1); }
+BackendPtr BLASBackend::create() { return std::make_unique<BLASBackendImpl>(); }
 
-void BLASBackend::pseudo_inverse_svd(const std::shared_ptr<MatrixXc> matrix, const double alpha, const std::shared_ptr<MatrixXc> result) {
-  const auto nc = matrix->data.cols();
-  const auto nr = matrix->data.rows();
-
-  const auto lda = static_cast<int>(nr);
-  const auto ldu = static_cast<int>(nr);
-  const auto ldvt = static_cast<int>(nc);
-
-  const auto s_size = std::min(nr, nc);
-  const auto s = std::make_unique<double[]>(s_size);
-  const auto u = this->allocate_matrix_c("_pis_u", nr, nr);
-  const auto vt = this->allocate_matrix_c("_pis_vt", nc, nc);
-
-  Eigen::Matrix<complex, -1, -1, Eigen::ColMajor> m = matrix->data;
-  AUTD_GESVD(LAPACK_COL_MAJOR, 'A', static_cast<int>(nr), static_cast<int>(nc), m.data(), lda, s.get(), u->data.data(), ldu, vt->data.data(), ldvt);
-  Eigen::Matrix<complex, -1, -1, Eigen::ColMajor> singular_inv = Eigen::Matrix<complex, -1, -1, Eigen::ColMajor>::Zero(nc, nr);
-  for (int i = 0; i < s_size; i++) singular_inv(i, i) = s[i] / (s[i] * s[i] + alpha);
-
-  const auto si = std::make_shared<EigenMatrix<complex>>(singular_inv);
-  const auto tmp = this->allocate_matrix_c("_pis_tmp", nc, nr);
-  BLASBackend::matrix_mul(TRANSPOSE::NO_TRANS, TRANSPOSE::CONJ_TRANS, ONE, si, u, ZERO, tmp);
-  BLASBackend::matrix_mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, ONE, vt, tmp, ZERO, result);
-}
-
-void BLASBackend::max_eigen_vector(const std::shared_ptr<MatrixXc> matrix, const std::shared_ptr<MatrixXc> ev) {
-  const auto size = matrix->data.cols();
-  const auto eigenvalues = std::make_unique<double[]>(size);
-  AUTD_HEEV(CblasColMajor, 'V', 'U', static_cast<int>(size), matrix->data.data(), static_cast<int>(size), eigenvalues.get());
-  std::memcpy(ev->data.data(), matrix->data.data() + size * (size - 1), size * sizeof(complex));
-}
-
-void BLASBackend::matrix_add(const double alpha, const std::shared_ptr<MatrixX> a, const std::shared_ptr<MatrixX> b) {
-  AUTD_AXPY(static_cast<int>(a->data.size()), alpha, a->data.data(), 1, b->data.data(), 1);
-}
-
-void BLASBackend::matrix_mul(const TRANSPOSE trans_a, const TRANSPOSE trans_b, const complex alpha, const std::shared_ptr<MatrixXc> a,
-                             const std::shared_ptr<MatrixXc> b, const complex beta, const std::shared_ptr<MatrixXc> c) {
-  const auto lda = static_cast<int>(a->data.rows());
-  const auto ldb = static_cast<int>(b->data.rows());
-  const auto ldc = trans_a == TRANSPOSE::NO_TRANS ? static_cast<int>(a->data.rows()) : static_cast<int>(a->data.cols());
-  const auto n = trans_b == TRANSPOSE::NO_TRANS ? static_cast<int>(b->data.cols()) : static_cast<int>(b->data.rows());
-  const auto k = trans_a == TRANSPOSE::NO_TRANS ? static_cast<int>(a->data.cols()) : static_cast<int>(a->data.rows());
-  AUTD_ZGEMM(CblasColMajor, static_cast<CBLAS_TRANSPOSE>(trans_a), static_cast<CBLAS_TRANSPOSE>(trans_b), ldc, n, k, &alpha, a->data.data(), lda,
-             b->data.data(), ldb, &beta, c->data.data(), ldc);
-}
-
-void BLASBackend::matrix_mul(const TRANSPOSE trans_a, const TRANSPOSE trans_b, const double alpha, const std::shared_ptr<MatrixX> a,
-                             const std::shared_ptr<MatrixX> b, const double beta, const std::shared_ptr<MatrixX> c) {
-  const auto lda = static_cast<int>(a->data.rows());
-  const auto ldb = static_cast<int>(b->data.rows());
-  const auto ldc = trans_a == TRANSPOSE::NO_TRANS ? static_cast<int>(a->data.rows()) : static_cast<int>(a->data.cols());
-  const auto n = trans_b == TRANSPOSE::NO_TRANS ? static_cast<int>(b->data.cols()) : static_cast<int>(b->data.rows());
-  const auto k = trans_a == TRANSPOSE::NO_TRANS ? static_cast<int>(a->data.cols()) : static_cast<int>(a->data.rows());
-  AUTD_DGEMM(CblasColMajor, static_cast<CBLAS_TRANSPOSE>(trans_a), static_cast<CBLAS_TRANSPOSE>(trans_b), ldc, n, k, alpha, a->data.data(), lda,
-             b->data.data(), ldb, beta, c->data.data(), ldc);
-}
-
-void BLASBackend::solve_g(const std::shared_ptr<MatrixX> a, const std::shared_ptr<MatrixX> b, const std::shared_ptr<MatrixX> c) {
-  const auto n = static_cast<int>(a->data.cols());
-  const auto lda = static_cast<int>(a->data.rows());
-  const auto ldb = static_cast<int>(b->data.size());
-  std::memcpy(c->data.data(), b->data.data(), ldb * sizeof(double));
-  const auto ipiv = std::make_unique<int[]>(n);
-  AUTD_SYSV(CblasColMajor, 'U', n, 1, a->data.data(), lda, ipiv.get(), c->data.data(), ldb);
-}
-void BLASBackend::solve_ch(const std::shared_ptr<MatrixXc> a, const std::shared_ptr<MatrixXc> b) {
-  const auto n = static_cast<int>(a->data.cols());
-  const auto lda = static_cast<int>(a->data.rows());
-  const auto ldb = static_cast<int>(b->data.size());
-  auto ipiv = std::make_unique<int[]>(n);
-  AUTD_POSVC(CblasColMajor, 'U', n, 1, a->data.data(), lda, b->data.data(), ldb);
-}
-double BLASBackend::dot(const std::shared_ptr<MatrixX> a, const std::shared_ptr<MatrixX> b) {
-  return AUTD_DOT(static_cast<int>(a->data.size()), a->data.data(), 1, b->data.data(), 1);
-}
-complex BLASBackend::dot(const std::shared_ptr<MatrixXc> a, const std::shared_ptr<MatrixXc> b) {
-  complex d;
-  AUTD_DOTC(static_cast<int>(a->data.size()), a->data.data(), 1, b->data.data(), 1, &d);
-  return d;
-}
-double BLASBackend::max_coefficient(const std::shared_ptr<MatrixXc> v) {
-  const auto idx = AUTD_IMAXC(static_cast<int>(v->data.size()), v->data.data(), 1);
-  return std::abs(v->data(static_cast<Eigen::Index>(idx)));
-}
-double BLASBackend::max_coefficient(const std::shared_ptr<MatrixX> v) {
-  return Eigen3Backend::max_coefficient(v);
-  // idamax return the first occurrence of the the maximum 'absolute' value
-  // const auto idx = AUTD_IMAX(static_cast<int>(v->data.size()), v->data.data(), 1);
-  // return v->data(idx);
-}
-void BLASBackend::mat_cpy(const std::shared_ptr<MatrixX> a, const std::shared_ptr<MatrixX> b) {
-  AUTD_CPY(LAPACK_COL_MAJOR, 'A', static_cast<int>(a->data.rows()), static_cast<int>(a->data.cols()), a->data.data(),
-           static_cast<int>(a->data.rows()), b->data.data(), static_cast<int>(b->data.rows()));
-}
-void BLASBackend::mat_cpy(const std::shared_ptr<MatrixXc> a, const std::shared_ptr<MatrixXc> b) {
-  AUTD_CPYC(LAPACK_COL_MAJOR, 'A', static_cast<int>(a->data.rows()), static_cast<int>(a->data.cols()), a->data.data(),
-            static_cast<int>(a->data.rows()), b->data.data(), static_cast<int>(b->data.rows()));
-}
 }  // namespace autd::gain::holo
