@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">1.7.1</span>
+   &#160;<span id="projectnumber">1.7.2</span>
    </div>
   </td>
  </tr>
@@ -73,37 +73,44 @@ $(function() {
 <div class="title">holo.hpp File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;memory&gt;</code><br />
+<div class="textblock"><code>#include &lt;limits&gt;</code><br />
+<code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;random&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
 <code>#include &lt;utility&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 <code>#include &quot;<a class="el" href="exception_8hpp_source.html">autd3/core/exception.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="gain_8hpp_source.html">autd3/core/gain.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="linalg__backend_8hpp_source.html">linalg_backend.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="utils_8hpp_source.html">autd3/utils.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="backend_8hpp_source.html">backend.hpp</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for holo.hpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="holo_8hpp__incl.png" border="0" usemap="#include_2autd3_2gain_2holo_8hpp" alt=""/></div>
 <map name="include_2autd3_2gain_2holo_8hpp" id="include_2autd3_2gain_2holo_8hpp">
-<area shape="rect" title=" " alt="" coords="279,5,405,47"/>
-<area shape="rect" title=" " alt="" coords="5,244,73,271"/>
-<area shape="rect" title=" " alt="" coords="387,244,439,271"/>
-<area shape="rect" title=" " alt="" coords="98,244,157,271"/>
-<area shape="rect" href="exception_8hpp.html" title=" " alt="" coords="593,169,760,196"/>
-<area shape="rect" href="gain_8hpp.html" title=" " alt="" coords="324,95,459,121"/>
-<area shape="rect" href="linalg__backend_8hpp.html" title=" " alt="" coords="212,169,344,196"/>
-<area shape="rect" title=" " alt="" coords="903,244,981,271"/>
-<area shape="rect" title=" " alt="" coords="635,244,689,271"/>
-<area shape="rect" href="geometry_8hpp.html" title=" " alt="" coords="369,169,467,196"/>
-<area shape="rect" href="hardware__defined_8hpp.html" title=" " alt="" coords="463,244,610,271"/>
-<area shape="rect" href="core_2utils_8hpp.html" title=" " alt="" coords="1008,169,1079,196"/>
-<area shape="rect" title=" " alt="" coords="713,244,808,271"/>
-<area shape="rect" title=" " alt="" coords="832,244,879,271"/>
-<area shape="rect" title=" " alt="" coords="471,319,522,345"/>
-<area shape="rect" title=" " alt="" coords="546,319,607,345"/>
-<area shape="rect" title=" " alt="" coords="1006,244,1081,271"/>
-<area shape="rect" title=" " alt="" coords="1105,244,1163,271"/>
-<area shape="rect" title=" " alt="" coords="181,244,252,271"/>
-<area shape="rect" title=" " alt="" coords="277,244,362,271"/>
+<area shape="rect" title=" " alt="" coords="441,5,567,47"/>
+<area shape="rect" title=" " alt="" coords="5,95,59,121"/>
+<area shape="rect" title=" " alt="" coords="118,244,186,271"/>
+<area shape="rect" title=" " alt="" coords="695,95,761,121"/>
+<area shape="rect" title=" " alt="" coords="927,169,982,196"/>
+<area shape="rect" title=" " alt="" coords="487,244,539,271"/>
+<area shape="rect" title=" " alt="" coords="215,244,273,271"/>
+<area shape="rect" href="exception_8hpp.html" title=" " alt="" coords="871,95,1038,121"/>
+<area shape="rect" href="gain_8hpp.html" title=" " alt="" coords="235,95,370,121"/>
+<area shape="rect" href="utils_8hpp.html" title=" " alt="" coords="513,95,620,121"/>
+<area shape="rect" href="backend_8hpp.html" title=" " alt="" coords="394,95,489,121"/>
+<area shape="rect" title=" " alt="" coords="1006,169,1085,196"/>
+<area shape="rect" href="geometry_8hpp.html" title=" " alt="" coords="391,169,489,196"/>
+<area shape="rect" href="hardware__defined_8hpp.html" title=" " alt="" coords="564,244,711,271"/>
+<area shape="rect" href="core_2utils_8hpp.html" title=" " alt="" coords="675,169,746,196"/>
+<area shape="rect" title=" " alt="" coords="298,244,393,271"/>
+<area shape="rect" title=" " alt="" coords="417,244,463,271"/>
+<area shape="rect" title=" " alt="" coords="572,319,623,345"/>
+<area shape="rect" title=" " alt="" coords="647,319,708,345"/>
+<area shape="rect" title=" " alt="" coords="735,244,809,271"/>
+<area shape="rect" title=" " alt="" coords="833,244,892,271"/>
+<area shape="rect" href="matrix_8hpp.html" title=" " alt="" coords="822,169,903,196"/>
+<area shape="rect" title=" " alt="" coords="917,244,987,271"/>
 </map>
 </div>
 </div>
@@ -135,6 +142,15 @@ sound-fields for phased arrays of transducers," ACMTrans-actions on Graphics (TO
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1LM.html">autd::gain::holo::LM</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gain to produce multiple focal points with Levenberg-Marquardt method. Refer to K.Levenberg, “A method for the solution of certain non-linear problems in least squares,” Quarterly of applied mathematics, vol.2, no.2, pp.164–168, 1944. D.W.Marquardt, “An algorithm for least-squares estimation of non-linear parameters,” Journal of the society for Industrial and AppliedMathematics, vol.11, no.2, pp.431–441, 1963. K.Madsen, H.Nielsen, and O.Tingleff, “Methods for non-linear least squares problems (2nd ed.),” 2004.  <a href="classautd_1_1gain_1_1holo_1_1LM.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1GaussNewton.html">autd::gain::holo::GaussNewton</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gain to produce multiple focal points with Gauss-Newton method.  <a href="classautd_1_1gain_1_1holo_1_1GaussNewton.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1GradientDescent.html">autd::gain::holo::GradientDescent</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gain to produce multiple focal points with <a class="el" href="classautd_1_1gain_1_1holo_1_1GradientDescent.html" title="Gain to produce multiple focal points with GradientDescent method.">GradientDescent</a> method.  <a href="classautd_1_1gain_1_1holo_1_1GradientDescent.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1APO.html">autd::gain::holo::APO</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gain to produce multiple focal points with Acoustic Power Optimization method. Refer to Keisuke Hasegawa, Hiroyuki Shinoda, and Takaaki Nara. Volumetric acoustic holography and its application to self-positioning by single channel measurement.Journal of Applied Physics,127(24):244904, 2020.7.  <a href="classautd_1_1gain_1_1holo_1_1APO.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Greedy.html">autd::gain::holo::Greedy</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gain to produce multiple focal points with <a class="el" href="classautd_1_1gain_1_1holo_1_1Greedy.html" title="Gain to produce multiple focal points with Greedy algorithm. Refer to Shun suzuki,...">Greedy</a> algorithm. Refer to Shun suzuki, et al. “Radiation Pressure Field Reconstruction for Ultrasound Midair Haptics by <a class="el" href="classautd_1_1gain_1_1holo_1_1Greedy.html" title="Gain to produce multiple focal points with Greedy algorithm. Refer to Shun suzuki,...">Greedy</a> Algorithm with Brute-Force Search,” in IEEE Transactions on Haptics, doi: 10.1109/TOH.2021.3076489.  <a href="classautd_1_1gain_1_1holo_1_1Greedy.html#details">More...</a><br /></td></tr>

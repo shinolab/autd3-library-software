@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">1.7.1</span>
+   &#160;<span id="projectnumber">1.7.2</span>
    </div>
   </td>
  </tr>
@@ -71,11 +71,11 @@ $(function() {
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="classautd_1_1gain_1_1holo_1_1CUDABackend-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">autd::gain::holo::CUDABackend Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div>  </div>
+<div class="title">autd::gain::holo::CUDABackend Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>Linear algebra calculation backend using CUDA.  
+<p>CUDA <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html" title="Backend for HoloGain.">Backend</a> for HoloGain.  
  <a href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="cuda__backend_8hpp_source.html">cuda_backend.hpp</a>&gt;</code></p>
@@ -84,8 +84,8 @@ Inheritance diagram for autd::gain::holo::CUDABackend:</div>
 <div class="dyncontent">
 <div class="center"><img src="classautd_1_1gain_1_1holo_1_1CUDABackend__inherit__graph.png" border="0" usemap="#autd_1_1gain_1_1holo_1_1CUDABackend_inherit__map" alt="Inheritance graph"/></div>
 <map name="autd_1_1gain_1_1holo_1_1CUDABackend_inherit__map" id="autd_1_1gain_1_1holo_1_1CUDABackend_inherit__map">
-<area shape="rect" title="Linear algebra calculation backend using CUDA." alt="" coords="5,80,207,107"/>
-<area shape="rect" href="classautd_1_1gain_1_1holo_1_1Backend.html" title="Linear algebra calculation backend." alt="" coords="24,5,188,32"/>
+<area shape="rect" title="CUDA Backend for HoloGain." alt="" coords="5,80,207,107"/>
+<area shape="rect" href="classautd_1_1gain_1_1holo_1_1Backend.html" title="Backend for HoloGain." alt="" coords="24,5,188,32"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
@@ -93,112 +93,77 @@ Collaboration diagram for autd::gain::holo::CUDABackend:</div>
 <div class="dyncontent">
 <div class="center"><img src="classautd_1_1gain_1_1holo_1_1CUDABackend__coll__graph.png" border="0" usemap="#autd_1_1gain_1_1holo_1_1CUDABackend_coll__map" alt="Collaboration graph"/></div>
 <map name="autd_1_1gain_1_1holo_1_1CUDABackend_coll__map" id="autd_1_1gain_1_1holo_1_1CUDABackend_coll__map">
-<area shape="rect" title="Linear algebra calculation backend using CUDA." alt="" coords="5,80,207,107"/>
-<area shape="rect" href="classautd_1_1gain_1_1holo_1_1Backend.html" title="Linear algebra calculation backend." alt="" coords="24,5,188,32"/>
+<area shape="rect" title="CUDA Backend for HoloGain." alt="" coords="5,80,207,107"/>
+<area shape="rect" href="classautd_1_1gain_1_1holo_1_1Backend.html" title="Backend for HoloGain." alt="" coords="24,5,188,32"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a2c9be71764de604c8a25aead287b4219"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a2c9be71764de604c8a25aead287b4219">CUDABackend</a> ()</td></tr>
-<tr class="separator:a2c9be71764de604c8a25aead287b4219"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5ce8fb81a1da4bda3e6cafff5cdadedd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a5ce8fb81a1da4bda3e6cafff5cdadedd">~CUDABackend</a> () override</td></tr>
-<tr class="separator:a5ce8fb81a1da4bda3e6cafff5cdadedd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3ccaadc201e63c6870dedaf68a2be43c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a3ccaadc201e63c6870dedaf68a2be43c">CUDABackend</a> (const <a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html">CUDABackend</a> &amp;obj)=delete</td></tr>
-<tr class="separator:a3ccaadc201e63c6870dedaf68a2be43c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a35cb2fb6cd8aecf862b6c28ac230c7fb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html">CUDABackend</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a35cb2fb6cd8aecf862b6c28ac230c7fb">operator=</a> (const <a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html">CUDABackend</a> &amp;obj)=delete</td></tr>
-<tr class="separator:a35cb2fb6cd8aecf862b6c28ac230c7fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a88de81afe64b0b14ae640e1b619e861a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a88de81afe64b0b14ae640e1b619e861a">CUDABackend</a> (const <a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html">CUDABackend</a> &amp;&amp;v)=delete</td></tr>
-<tr class="separator:a88de81afe64b0b14ae640e1b619e861a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a44c7ed2834388a217b14ceaaea9efd6f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html">CUDABackend</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a44c7ed2834388a217b14ceaaea9efd6f">operator=</a> (<a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html">CUDABackend</a> &amp;&amp;obj)=delete</td></tr>
-<tr class="separator:a44c7ed2834388a217b14ceaaea9efd6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2cb0ef71cd32db23ab685430f53fc97c"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a2cb0ef71cd32db23ab685430f53fc97c">allocate_matrix</a> (const std::string &amp;name, size_t row, size_t col) override</td></tr>
-<tr class="separator:a2cb0ef71cd32db23ab685430f53fc97c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae40156d7ac98603a5368b89889b6dba5"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#ae40156d7ac98603a5368b89889b6dba5">allocate_matrix_c</a> (const std::string &amp;name, size_t row, size_t col) override</td></tr>
-<tr class="separator:ae40156d7ac98603a5368b89889b6dba5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f0aa3d856cdc051a134ab86a5b00742"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a5f0aa3d856cdc051a134ab86a5b00742">make_complex</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; r, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; i, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; c) override</td></tr>
-<tr class="separator:a5f0aa3d856cdc051a134ab86a5b00742"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2e255382a931a8617ed6ccce4cbcc540"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a2e255382a931a8617ed6ccce4cbcc540">exp</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; a) override</td></tr>
-<tr class="separator:a2e255382a931a8617ed6ccce4cbcc540"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae84e7a3f9a795db8f5beea01f6393af1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#ae84e7a3f9a795db8f5beea01f6393af1">scale</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; a, <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> s) override</td></tr>
-<tr class="separator:ae84e7a3f9a795db8f5beea01f6393af1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad38d52c8223eb424c827d5b727f32603"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#ad38d52c8223eb424c827d5b727f32603">hadamard_product</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; b, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; c) override</td></tr>
-<tr class="separator:ad38d52c8223eb424c827d5b727f32603"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6cd08622d382b33b4a166a5861abac98"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a6cd08622d382b33b4a166a5861abac98">real</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; b) override</td></tr>
-<tr class="separator:a6cd08622d382b33b4a166a5861abac98"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeab78c90fe9e1d71476507423609e8ec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#aeab78c90fe9e1d71476507423609e8ec">arg</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; c) override</td></tr>
-<tr class="separator:aeab78c90fe9e1d71476507423609e8ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8da62768ba7a6d20767b35d536b0dc34"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a8da62768ba7a6d20767b35d536b0dc34">pseudo_inverse_svd</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; matrix, double alpha, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; result) override</td></tr>
-<tr class="separator:a8da62768ba7a6d20767b35d536b0dc34"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a53e6eb8294e981bc339bf0bb1d8284b9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a53e6eb8294e981bc339bf0bb1d8284b9">max_eigen_vector</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; matrix, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; ev) override</td></tr>
-<tr class="separator:a53e6eb8294e981bc339bf0bb1d8284b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a78610cce4c3f1fe6fd5eb641c84b9d87"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a78610cce4c3f1fe6fd5eb641c84b9d87">matrix_add</a> (double alpha, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; b) override</td></tr>
-<tr class="separator:a78610cce4c3f1fe6fd5eb641c84b9d87"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a76c04c1fe385a8c7e414925c0e90af52"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a76c04c1fe385a8c7e414925c0e90af52">matrix_mul</a> (<a class="el" href="namespaceautd_1_1gain_1_1holo.html#a1e64d32be5947b46b7c11888905946ef">TRANSPOSE</a> trans_a, <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a1e64d32be5947b46b7c11888905946ef">TRANSPOSE</a> trans_b, <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> alpha, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; b, <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> beta, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; c) override</td></tr>
-<tr class="separator:a76c04c1fe385a8c7e414925c0e90af52"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf7b9647c4634683c27331c929c51067"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#abf7b9647c4634683c27331c929c51067">matrix_mul</a> (<a class="el" href="namespaceautd_1_1gain_1_1holo.html#a1e64d32be5947b46b7c11888905946ef">TRANSPOSE</a> trans_a, <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a1e64d32be5947b46b7c11888905946ef">TRANSPOSE</a> trans_b, double alpha, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; b, double beta, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; c) override</td></tr>
-<tr class="separator:abf7b9647c4634683c27331c929c51067"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6d30504eb3f784afc9a82aa322c1a6e5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a6d30504eb3f784afc9a82aa322c1a6e5">solve_ch</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; b) override</td></tr>
-<tr class="separator:a6d30504eb3f784afc9a82aa322c1a6e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acafe52a820a9f0bb847073425301e63c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#acafe52a820a9f0bb847073425301e63c">solve_g</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; b, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; c) override</td></tr>
-<tr class="separator:acafe52a820a9f0bb847073425301e63c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a911321b59b6e98df5faed38ef9616952"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a911321b59b6e98df5faed38ef9616952">dot</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; b) override</td></tr>
-<tr class="separator:a911321b59b6e98df5faed38ef9616952"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2a769e981acb28c979f4c77eca9a4943"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a2a769e981acb28c979f4c77eca9a4943">dot</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; b) override</td></tr>
-<tr class="separator:a2a769e981acb28c979f4c77eca9a4943"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab71f548305e6b97de3354653f6643b44"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#ab71f548305e6b97de3354653f6643b44">max_coefficient</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; v) override</td></tr>
-<tr class="separator:ab71f548305e6b97de3354653f6643b44"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acb95a03793d3bee1e39576c109a445a3"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#acb95a03793d3bee1e39576c109a445a3">max_coefficient</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; v) override</td></tr>
-<tr class="separator:acb95a03793d3bee1e39576c109a445a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a443b030b63c886920a62897d61d24d06"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a443b030b63c886920a62897d61d24d06">concat_row</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; b) override</td></tr>
-<tr class="separator:a443b030b63c886920a62897d61d24d06"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa97fbc6930525b6d6586c4b0ab15263a"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#aa97fbc6930525b6d6586c4b0ab15263a">concat_col</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; b) override</td></tr>
-<tr class="separator:aa97fbc6930525b6d6586c4b0ab15263a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1209fa440c5832977bc6706539ce3363"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a1209fa440c5832977bc6706539ce3363">mat_cpy</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; b) override</td></tr>
-<tr class="separator:a1209fa440c5832977bc6706539ce3363"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a03a2c60b55e360a580ad102cb32c4660"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a03a2c60b55e360a580ad102cb32c4660">mat_cpy</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; b) override</td></tr>
-<tr class="separator:a03a2c60b55e360a580ad102cb32c4660"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0fe22dacb5f164533bdd884c34f27407"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a0fe22dacb5f164533bdd884c34f27407">set_from_complex_drive</a> (std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;data, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; drive, bool normalize, double <a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#ab71f548305e6b97de3354653f6643b44">max_coefficient</a>) override</td></tr>
-<tr class="separator:a0fe22dacb5f164533bdd884c34f27407"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7deaf7d64e9a3efec786b66cffbbdbcd"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a7deaf7d64e9a3efec786b66cffbbdbcd">transfer_matrix</a> (const double *foci, size_t foci_num, const std::vector&lt; const double * &gt; &amp;positions, const std::vector&lt; const double * &gt; &amp;directions, double wavelength, double attenuation) override</td></tr>
-<tr class="separator:a7deaf7d64e9a3efec786b66cffbbdbcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae79c5badad1311291836978b4403e5fe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#ae79c5badad1311291836978b4403e5fe">set_bcd_result</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; mat, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; vec, size_t index) override</td></tr>
-<tr class="separator:ae79c5badad1311291836978b4403e5fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac5da009877ec340539b329a220c7d8fb"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#ac5da009877ec340539b329a220c7d8fb">back_prop</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; transfer, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; amps) override</td></tr>
-<tr class="separator:ac5da009877ec340539b329a220c7d8fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a03a571cb0400924f483175d35319e8f1"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a03a571cb0400924f483175d35319e8f1">sigma_regularization</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; transfer, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; amps, double gamma) override</td></tr>
-<tr class="separator:a03a571cb0400924f483175d35319e8f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e49591274d2f070b17a88795db317a9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a0e49591274d2f070b17a88795db317a9">col_sum_imag</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; mat, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; dst) override</td></tr>
-<tr class="separator:a0e49591274d2f070b17a88795db317a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fd7c779b50c9e76577c6f68425add92"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a3fd7c779b50c9e76577c6f68425add92">CUDABackend</a> ()=default</td></tr>
+<tr class="separator:a3fd7c779b50c9e76577c6f68425add92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fcb8ac1d5957702de98c1b06760b5af"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a1fcb8ac1d5957702de98c1b06760b5af">~CUDABackend</a> () override=default</td></tr>
+<tr class="separator:a1fcb8ac1d5957702de98c1b06760b5af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80633a61f8bb571ab5f8c19d19c967e9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a80633a61f8bb571ab5f8c19d19c967e9">CUDABackend</a> (const <a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html">CUDABackend</a> &amp;v) noexcept=default</td></tr>
+<tr class="separator:a80633a61f8bb571ab5f8c19d19c967e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19e0ad1caef53bdbe2f1cb9e5068a9ad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html">CUDABackend</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a19e0ad1caef53bdbe2f1cb9e5068a9ad">operator=</a> (const <a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html">CUDABackend</a> &amp;obj)=default</td></tr>
+<tr class="separator:a19e0ad1caef53bdbe2f1cb9e5068a9ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a569bffaa9a4413d69ba20a115935fab4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a569bffaa9a4413d69ba20a115935fab4">CUDABackend</a> (<a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html">CUDABackend</a> &amp;&amp;obj)=default</td></tr>
+<tr class="separator:a569bffaa9a4413d69ba20a115935fab4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34fe2c2a5e4aa099d164f81ddbae5318"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html">CUDABackend</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a34fe2c2a5e4aa099d164f81ddbae5318">operator=</a> (<a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html">CUDABackend</a> &amp;&amp;obj)=default</td></tr>
+<tr class="separator:a34fe2c2a5e4aa099d164f81ddbae5318"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a868e9f9916e0120882badf75645cd7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a0a868e9f9916e0120882badf75645cd7">sdp</a> (const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;geometry, const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;foci, const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;amps, double alpha, double lambda, size_t repeat, bool normalize, std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;dst) override=0</td></tr>
+<tr class="separator:a0a868e9f9916e0120882badf75645cd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade52758afa833beb625ad594ac1d3046"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#ade52758afa833beb625ad594ac1d3046">evd</a> (const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;geometry, const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;foci, const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;amps, double gamma, bool normalize, std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;dst) override=0</td></tr>
+<tr class="separator:ade52758afa833beb625ad594ac1d3046"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f8ef6d9f986591181411411b41846ea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a5f8ef6d9f986591181411411b41846ea">naive</a> (const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;geometry, const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;foci, const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;amps, std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;dst) override=0</td></tr>
+<tr class="separator:a5f8ef6d9f986591181411411b41846ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5a9185d90cf11c297535a9210364ff6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#ac5a9185d90cf11c297535a9210364ff6">gs</a> (const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;geometry, const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;foci, const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;amps, size_t repeat, std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;dst) override=0</td></tr>
+<tr class="separator:ac5a9185d90cf11c297535a9210364ff6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a762b7459b085e147ffb256bc5630a9b2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a762b7459b085e147ffb256bc5630a9b2">gspat</a> (const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;geometry, const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;foci, const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;amps, size_t repeat, std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;dst) override=0</td></tr>
+<tr class="separator:a762b7459b085e147ffb256bc5630a9b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50c83464a7fff72eb2cfbd2876004226"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a50c83464a7fff72eb2cfbd2876004226">lm</a> (const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;geometry, const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;foci, const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;amps, double eps_1, double eps_2, double tau, size_t k_max, const std::vector&lt; double &gt; &amp;initial, std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;dst) override=0</td></tr>
+<tr class="separator:a50c83464a7fff72eb2cfbd2876004226"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf1ad68c38cca42fee618e2d74433f1e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#adf1ad68c38cca42fee618e2d74433f1e">gauss_newton</a> (const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;geometry, const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;foci, const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;amps, double eps_1, double eps_2, size_t k_max, const std::vector&lt; double &gt; &amp;initial, std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;dst) override=0</td></tr>
+<tr class="separator:adf1ad68c38cca42fee618e2d74433f1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa93ef4c4e49c9bd84bbf3cb8d298e4b0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#aa93ef4c4e49c9bd84bbf3cb8d298e4b0">gradient_descent</a> (const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;geometry, const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;foci, const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;amps, double eps, double step, size_t k_max, const std::vector&lt; double &gt; &amp;initial, std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;dst) override=0</td></tr>
+<tr class="separator:aa93ef4c4e49c9bd84bbf3cb8d298e4b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd56aa6dea50720400330890add1037b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#abd56aa6dea50720400330890add1037b">apo</a> (const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;geometry, const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;foci, const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;amps, double eps, double lambda, size_t k_max, std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;dst) override=0</td></tr>
+<tr class="separator:abd56aa6dea50720400330890add1037b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a7617edf61408597bac15c9d9960130"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a9a7617edf61408597bac15c9d9960130">greedy</a> (const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;geometry, const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;foci, const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;amps, size_t phase_div, std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;dst) override=0</td></tr>
+<tr class="separator:a9a7617edf61408597bac15c9d9960130"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classautd_1_1gain_1_1holo_1_1Backend')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html">autd::gain::holo::Backend</a></td></tr>
 <tr class="memitem:a049d8f1615dba3ec8a4ee0a4264e6419 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a049d8f1615dba3ec8a4ee0a4264e6419">Backend</a> ()=default</td></tr>
 <tr class="separator:a049d8f1615dba3ec8a4ee0a4264e6419 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa4b178601761bf05f066a8bb2f38a927 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#aa4b178601761bf05f066a8bb2f38a927">~Backend</a> ()=default</td></tr>
 <tr class="separator:aa4b178601761bf05f066a8bb2f38a927 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a02cc7385de98afbe39625a8d6385ee04 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a02cc7385de98afbe39625a8d6385ee04">Backend</a> (const <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html">Backend</a> &amp;obj)=delete</td></tr>
-<tr class="separator:a02cc7385de98afbe39625a8d6385ee04 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af33296a75da40a72560233246ba60ec2 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html">Backend</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#af33296a75da40a72560233246ba60ec2">operator=</a> (const <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html">Backend</a> &amp;obj)=delete</td></tr>
-<tr class="separator:af33296a75da40a72560233246ba60ec2 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab5c9dbeb5cc0c163c145c3c1514a20ac inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#ab5c9dbeb5cc0c163c145c3c1514a20ac">Backend</a> (const <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html">Backend</a> &amp;&amp;v)=delete</td></tr>
-<tr class="separator:ab5c9dbeb5cc0c163c145c3c1514a20ac inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab303e533e1071e33070291a88f4bb13d inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html">Backend</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#ab303e533e1071e33070291a88f4bb13d">operator=</a> (<a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html">Backend</a> &amp;&amp;obj)=delete</td></tr>
-<tr class="separator:ab303e533e1071e33070291a88f4bb13d inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54722c747b63013747732ecd195defbf inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a54722c747b63013747732ecd195defbf">Backend</a> (const <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html">Backend</a> &amp;v) noexcept=default</td></tr>
+<tr class="separator:a54722c747b63013747732ecd195defbf inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d79e9c7d86b036264bdc45ba138399e inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html">Backend</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a5d79e9c7d86b036264bdc45ba138399e">operator=</a> (const <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html">Backend</a> &amp;obj)=default</td></tr>
+<tr class="separator:a5d79e9c7d86b036264bdc45ba138399e inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65a9137cfa6492345ea27e075c935efe inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a65a9137cfa6492345ea27e075c935efe">Backend</a> (<a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html">Backend</a> &amp;&amp;obj)=default</td></tr>
+<tr class="separator:a65a9137cfa6492345ea27e075c935efe inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae650f6396904370409c231a166924d72 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html">Backend</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#ae650f6396904370409c231a166924d72">operator=</a> (<a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html">Backend</a> &amp;&amp;obj)=default</td></tr>
+<tr class="separator:ae650f6396904370409c231a166924d72 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a53179cbe52ea5faa141d840769a17a73"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a07a3acae6012e81793f8e2c951bec559">BackendPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a53179cbe52ea5faa141d840769a17a73">create</a> ()</td></tr>
-<tr class="separator:a53179cbe52ea5faa141d840769a17a73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4dc9bb55f81d9e967d1bf7eca2d52bd2"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a07a3acae6012e81793f8e2c951bec559">BackendPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a4dc9bb55f81d9e967d1bf7eca2d52bd2">create</a> (int device_idx=0)</td></tr>
+<tr class="separator:a4dc9bb55f81d9e967d1bf7eca2d52bd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Linear algebra calculation backend using CUDA. </p>
+<div class="textblock"><p>CUDA <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html" title="Backend for HoloGain.">Backend</a> for HoloGain. </p>
 
-<p class="definition">Definition at line <a class="el" href="cuda__backend_8hpp_source.html#l00038">38</a> of file <a class="el" href="cuda__backend_8hpp_source.html">cuda_backend.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="cuda__backend_8hpp_source.html#l00026">26</a> of file <a class="el" href="cuda__backend_8hpp_source.html">cuda_backend.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a2c9be71764de604c8a25aead287b4219"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2c9be71764de604c8a25aead287b4219">&#9670;&nbsp;</a></span>CUDABackend() <span class="overload">[1/3]</span></h2>
+<a id="a3fd7c779b50c9e76577c6f68425add92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fd7c779b50c9e76577c6f68425add92">&#9670;&nbsp;</a></span>CUDABackend() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">autd::gain::holo::CUDABackend::CUDABackend </td>
@@ -207,12 +172,17 @@ Static Public Member Functions</h2></td></tr>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a5ce8fb81a1da4bda3e6cafff5cdadedd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5ce8fb81a1da4bda3e6cafff5cdadedd">&#9670;&nbsp;</a></span>~CUDABackend()</h2>
+<a id="a1fcb8ac1d5957702de98c1b06760b5af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1fcb8ac1d5957702de98c1b06760b5af">&#9670;&nbsp;</a></span>~CUDABackend()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -229,15 +199,15 @@ Static Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">default</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a3ccaadc201e63c6870dedaf68a2be43c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3ccaadc201e63c6870dedaf68a2be43c">&#9670;&nbsp;</a></span>CUDABackend() <span class="overload">[2/3]</span></h2>
+<a id="a80633a61f8bb571ab5f8c19d19c967e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80633a61f8bb571ab5f8c19d19c967e9">&#9670;&nbsp;</a></span>CUDABackend() <span class="overload">[2/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -249,21 +219,21 @@ Static Public Member Functions</h2></td></tr>
           <td class="memname">autd::gain::holo::CUDABackend::CUDABackend </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html">CUDABackend</a> &amp;&#160;</td>
-          <td class="paramname"><em>obj</em></td><td>)</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a88de81afe64b0b14ae640e1b619e861a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a88de81afe64b0b14ae640e1b619e861a">&#9670;&nbsp;</a></span>CUDABackend() <span class="overload">[3/3]</span></h2>
+<a id="a569bffaa9a4413d69ba20a115935fab4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a569bffaa9a4413d69ba20a115935fab4">&#9670;&nbsp;</a></span>CUDABackend() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -274,14 +244,14 @@ Static Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">autd::gain::holo::CUDABackend::CUDABackend </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html">CUDABackend</a> &amp;&amp;&#160;</td>
-          <td class="paramname"><em>v</em></td><td>)</td>
+          <td class="paramtype"><a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html">CUDABackend</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>obj</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -289,8 +259,8 @@ Static Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a2cb0ef71cd32db23ab685430f53fc97c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2cb0ef71cd32db23ab685430f53fc97c">&#9670;&nbsp;</a></span>allocate_matrix()</h2>
+<a id="abd56aa6dea50720400330890add1037b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd56aa6dea50720400330890add1037b">&#9670;&nbsp;</a></span>apo()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -299,179 +269,45 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt;<a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a>&gt; autd::gain::holo::CUDABackend::allocate_matrix </td>
+          <td class="memname">void autd::gain::holo::CUDABackend::apo </td>
           <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>name</em>, </td>
+          <td class="paramtype">const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>foci</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>amps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>eps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>lambda</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>row</em>, </td>
+          <td class="paramname"><em>k_max</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>col</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#acab3c0629bd556fc255f74a4b204808d">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="ae40156d7ac98603a5368b89889b6dba5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae40156d7ac98603a5368b89889b6dba5">&#9670;&nbsp;</a></span>allocate_matrix_c()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::shared_ptr&lt;<a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a>&gt; autd::gain::holo::CUDABackend::allocate_matrix_c </td>
-          <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>name</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>row</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>col</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#ae9fd4a44a6b39a1a9505f292e7c8713d">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="aeab78c90fe9e1d71476507423609e8ec"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aeab78c90fe9e1d71476507423609e8ec">&#9670;&nbsp;</a></span>arg()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void autd::gain::holo::CUDABackend::arg </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>a</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>c</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#acfe81f0c4d684746ac1dc4b245fc6253">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="ac5da009877ec340539b329a220c7d8fb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac5da009877ec340539b329a220c7d8fb">&#9670;&nbsp;</a></span>back_prop()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::shared_ptr&lt;<a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a>&gt; autd::gain::holo::CUDABackend::back_prop </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>transfer</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>amps</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a9ffec6dc5dc30cbc4c7c83eddbcb5684">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="a0e49591274d2f070b17a88795db317a9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0e49591274d2f070b17a88795db317a9">&#9670;&nbsp;</a></span>col_sum_imag()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void autd::gain::holo::CUDABackend::col_sum_imag </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>mat</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dst</em>&#160;</td>
         </tr>
         <tr>
@@ -482,93 +318,17 @@ Static Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">pure virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#afe0d8732c5567d2ceb082628c51d1763">autd::gain::holo::Backend</a>.</p>
+<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a94d4b86d29920c49ce03b3f7b3b367d2">autd::gain::holo::Backend</a>.</p>
 
 </div>
 </div>
-<a id="aa97fbc6930525b6d6586c4b0ab15263a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa97fbc6930525b6d6586c4b0ab15263a">&#9670;&nbsp;</a></span>concat_col()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::shared_ptr&lt;<a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a>&gt; autd::gain::holo::CUDABackend::concat_col </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>a</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>b</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a068959ca84eae0373828e4461e75aa9d">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="a443b030b63c886920a62897d61d24d06"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a443b030b63c886920a62897d61d24d06">&#9670;&nbsp;</a></span>concat_row()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::shared_ptr&lt;<a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a>&gt; autd::gain::holo::CUDABackend::concat_row </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>a</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>b</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a2d7b4d3305a9d6055809835253ae54d0">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="a53179cbe52ea5faa141d840769a17a73"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a53179cbe52ea5faa141d840769a17a73">&#9670;&nbsp;</a></span>create()</h2>
+<a id="a4dc9bb55f81d9e967d1bf7eca2d52bd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4dc9bb55f81d9e967d1bf7eca2d52bd2">&#9670;&nbsp;</a></span>create()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -579,7 +339,8 @@ Static Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">static <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a07a3acae6012e81793f8e2c951bec559">BackendPtr</a> autd::gain::holo::CUDABackend::create </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>device_idx</em> = <code>0</code></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -592,8 +353,8 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a911321b59b6e98df5faed38ef9616952"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a911321b59b6e98df5faed38ef9616952">&#9670;&nbsp;</a></span>dot() <span class="overload">[1/2]</span></h2>
+<a id="ade52758afa833beb625ad594ac1d3046"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade52758afa833beb625ad594ac1d3046">&#9670;&nbsp;</a></span>evd()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -602,426 +363,114 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">double autd::gain::holo::CUDABackend::dot </td>
+          <td class="memname">void autd::gain::holo::CUDABackend::evd </td>
           <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
-          <td class="paramname"><em>a</em>, </td>
+          <td class="paramtype">const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometry</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
-          <td class="paramname"><em>b</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#acf67f0c51ed08ba374d9143a5e3297fc">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="a2a769e981acb28c979f4c77eca9a4943"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2a769e981acb28c979f4c77eca9a4943">&#9670;&nbsp;</a></span>dot() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> autd::gain::holo::CUDABackend::dot </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>a</em>, </td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>foci</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>b</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a1689150d7316eb9ad583f7b103881f39">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="a2e255382a931a8617ed6ccce4cbcc540"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2e255382a931a8617ed6ccce4cbcc540">&#9670;&nbsp;</a></span>exp()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void autd::gain::holo::CUDABackend::exp </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>a</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a319a1d721481ab9ec3fa0a8fbd994f97">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="ad38d52c8223eb424c827d5b727f32603"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad38d52c8223eb424c827d5b727f32603">&#9670;&nbsp;</a></span>hadamard_product()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void autd::gain::holo::CUDABackend::hadamard_product </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>a</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>b</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>c</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a8d492ddb9de0962573bc9a77f739e730">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="a5f0aa3d856cdc051a134ab86a5b00742"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5f0aa3d856cdc051a134ab86a5b00742">&#9670;&nbsp;</a></span>make_complex()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void autd::gain::holo::CUDABackend::make_complex </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
-          <td class="paramname"><em>r</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
-          <td class="paramname"><em>i</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>c</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a4c8a1e73a5ee3b90300c0bb752c0db74">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="a1209fa440c5832977bc6706539ce3363"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1209fa440c5832977bc6706539ce3363">&#9670;&nbsp;</a></span>mat_cpy() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void autd::gain::holo::CUDABackend::mat_cpy </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
-          <td class="paramname"><em>a</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
-          <td class="paramname"><em>b</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#aed359923048507876708e956930b2e64">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="a03a2c60b55e360a580ad102cb32c4660"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a03a2c60b55e360a580ad102cb32c4660">&#9670;&nbsp;</a></span>mat_cpy() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void autd::gain::holo::CUDABackend::mat_cpy </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>a</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>b</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a32622546cb7281e669eb31bbef95cde7">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="a78610cce4c3f1fe6fd5eb641c84b9d87"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a78610cce4c3f1fe6fd5eb641c84b9d87">&#9670;&nbsp;</a></span>matrix_add()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void autd::gain::holo::CUDABackend::matrix_add </td>
-          <td>(</td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>alpha</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
-          <td class="paramname"><em>a</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
-          <td class="paramname"><em>b</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#af98150f1d785d3a2b111baf40340de03">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="a76c04c1fe385a8c7e414925c0e90af52"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a76c04c1fe385a8c7e414925c0e90af52">&#9670;&nbsp;</a></span>matrix_mul() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void autd::gain::holo::CUDABackend::matrix_mul </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespaceautd_1_1gain_1_1holo.html#a1e64d32be5947b46b7c11888905946ef">TRANSPOSE</a>&#160;</td>
-          <td class="paramname"><em>trans_a</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespaceautd_1_1gain_1_1holo.html#a1e64d32be5947b46b7c11888905946ef">TRANSPOSE</a>&#160;</td>
-          <td class="paramname"><em>trans_b</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a>&#160;</td>
-          <td class="paramname"><em>alpha</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>a</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>b</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a>&#160;</td>
-          <td class="paramname"><em>beta</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>c</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a834be497265a1a68a499c2d0c7d1c400">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="abf7b9647c4634683c27331c929c51067"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abf7b9647c4634683c27331c929c51067">&#9670;&nbsp;</a></span>matrix_mul() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void autd::gain::holo::CUDABackend::matrix_mul </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespaceautd_1_1gain_1_1holo.html#a1e64d32be5947b46b7c11888905946ef">TRANSPOSE</a>&#160;</td>
-          <td class="paramname"><em>trans_a</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespaceautd_1_1gain_1_1holo.html#a1e64d32be5947b46b7c11888905946ef">TRANSPOSE</a>&#160;</td>
-          <td class="paramname"><em>trans_b</em>, </td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>amps</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>alpha</em>, </td>
+          <td class="paramname"><em>gamma</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
-          <td class="paramname"><em>a</em>, </td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>normalize</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
-          <td class="paramname"><em>b</em>, </td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>dst</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a1fa118fc8cd42cdeb06d6182cdb4d110">autd::gain::holo::Backend</a>.</p>
+
+</div>
+</div>
+<a id="adf1ad68c38cca42fee618e2d74433f1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf1ad68c38cca42fee618e2d74433f1e">&#9670;&nbsp;</a></span>gauss_newton()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void autd::gain::holo::CUDABackend::gauss_newton </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>foci</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>amps</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>beta</em>, </td>
+          <td class="paramname"><em>eps_1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
-          <td class="paramname"><em>c</em>&#160;</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>eps_2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>k_max</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>initial</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>dst</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1031,17 +480,17 @@ Static Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">pure virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a42239eb47ebef9a4c4d89222153b3432">autd::gain::holo::Backend</a>.</p>
+<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a52baad633cd4bb308a3f3ed2fd37af49">autd::gain::holo::Backend</a>.</p>
 
 </div>
 </div>
-<a id="ab71f548305e6b97de3354653f6643b44"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab71f548305e6b97de3354653f6643b44">&#9670;&nbsp;</a></span>max_coefficient() <span class="overload">[1/2]</span></h2>
+<a id="aa93ef4c4e49c9bd84bbf3cb8d298e4b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa93ef4c4e49c9bd84bbf3cb8d298e4b0">&#9670;&nbsp;</a></span>gradient_descent()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1050,72 +499,52 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">double autd::gain::holo::CUDABackend::max_coefficient </td>
+          <td class="memname">void autd::gain::holo::CUDABackend::gradient_descent </td>
           <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
-          <td class="paramname"><em>v</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#ab20d9aae7b172e3f3d951ec69bab429c">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="acb95a03793d3bee1e39576c109a445a3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acb95a03793d3bee1e39576c109a445a3">&#9670;&nbsp;</a></span>max_coefficient() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">double autd::gain::holo::CUDABackend::max_coefficient </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>v</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a3e780e96958ca44ae6ad306d7634502e">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="a53e6eb8294e981bc339bf0bb1d8284b9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a53e6eb8294e981bc339bf0bb1d8284b9">&#9670;&nbsp;</a></span>max_eigen_vector()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void autd::gain::holo::CUDABackend::max_eigen_vector </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>matrix</em>, </td>
+          <td class="paramtype">const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometry</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>ev</em>&#160;</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>foci</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>amps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>eps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>step</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>k_max</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>initial</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>dst</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1125,17 +554,315 @@ Static Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">pure virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a10699b8244b7a4b37d542cd9c1c65d41">autd::gain::holo::Backend</a>.</p>
+<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a5bb2df60020f5fccaa7aa6aee3a95fa2">autd::gain::holo::Backend</a>.</p>
 
 </div>
 </div>
-<a id="a35cb2fb6cd8aecf862b6c28ac230c7fb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a35cb2fb6cd8aecf862b6c28ac230c7fb">&#9670;&nbsp;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+<a id="a9a7617edf61408597bac15c9d9960130"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a7617edf61408597bac15c9d9960130">&#9670;&nbsp;</a></span>greedy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void autd::gain::holo::CUDABackend::greedy </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>foci</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>amps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>phase_div</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>dst</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a1a1e6dcf5b8bdd5f2ccea7c01cc6feb3">autd::gain::holo::Backend</a>.</p>
+
+</div>
+</div>
+<a id="ac5a9185d90cf11c297535a9210364ff6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5a9185d90cf11c297535a9210364ff6">&#9670;&nbsp;</a></span>gs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void autd::gain::holo::CUDABackend::gs </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>foci</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>amps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>repeat</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>dst</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#ad9680dbed662b91d2df4d351e2f77576">autd::gain::holo::Backend</a>.</p>
+
+</div>
+</div>
+<a id="a762b7459b085e147ffb256bc5630a9b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a762b7459b085e147ffb256bc5630a9b2">&#9670;&nbsp;</a></span>gspat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void autd::gain::holo::CUDABackend::gspat </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>foci</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>amps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>repeat</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>dst</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a6f690b606e1bf3743916a4f31b2baad4">autd::gain::holo::Backend</a>.</p>
+
+</div>
+</div>
+<a id="a50c83464a7fff72eb2cfbd2876004226"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50c83464a7fff72eb2cfbd2876004226">&#9670;&nbsp;</a></span>lm()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void autd::gain::holo::CUDABackend::lm </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>foci</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>amps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>eps_1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>eps_2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>tau</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>k_max</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>initial</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>dst</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#ad17e5b450d40f65e207ec9fbd4a59e0c">autd::gain::holo::Backend</a>.</p>
+
+</div>
+</div>
+<a id="a5f8ef6d9f986591181411411b41846ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f8ef6d9f986591181411411b41846ea">&#9670;&nbsp;</a></span>naive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void autd::gain::holo::CUDABackend::naive </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>foci</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>amps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>dst</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a1d915b435663d7acd7ca12438b0cd3ad">autd::gain::holo::Backend</a>.</p>
+
+</div>
+</div>
+<a id="a19e0ad1caef53bdbe2f1cb9e5068a9ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19e0ad1caef53bdbe2f1cb9e5068a9ad">&#9670;&nbsp;</a></span>operator=() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1153,15 +880,15 @@ Static Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a44c7ed2834388a217b14ceaaea9efd6f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a44c7ed2834388a217b14ceaaea9efd6f">&#9670;&nbsp;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+<a id="a34fe2c2a5e4aa099d164f81ddbae5318"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34fe2c2a5e4aa099d164f81ddbae5318">&#9670;&nbsp;</a></span>operator=() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1179,15 +906,15 @@ Static Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a8da62768ba7a6d20767b35d536b0dc34"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8da62768ba7a6d20767b35d536b0dc34">&#9670;&nbsp;</a></span>pseudo_inverse_svd()</h2>
+<a id="a0a868e9f9916e0120882badf75645cd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a868e9f9916e0120882badf75645cd7">&#9670;&nbsp;</a></span>sdp()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1196,10 +923,22 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void autd::gain::holo::CUDABackend::pseudo_inverse_svd </td>
+          <td class="memname">void autd::gain::holo::CUDABackend::sdp </td>
           <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>matrix</em>, </td>
+          <td class="paramtype">const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>foci</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>amps</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1210,166 +949,14 @@ Static Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>result</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a2bd2a46580db24f3b94a880674f92c35">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="a6cd08622d382b33b4a166a5861abac98"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6cd08622d382b33b4a166a5861abac98">&#9670;&nbsp;</a></span>real()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void autd::gain::holo::CUDABackend::real </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>a</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
-          <td class="paramname"><em>b</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a22b022b8b8c1ab9be536dd80486455b0">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="ae84e7a3f9a795db8f5beea01f6393af1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae84e7a3f9a795db8f5beea01f6393af1">&#9670;&nbsp;</a></span>scale()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void autd::gain::holo::CUDABackend::scale </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>a</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a>&#160;</td>
-          <td class="paramname"><em>s</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a2fe1b23ea9958c9fcbf6a811da3bfdaf">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="ae79c5badad1311291836978b4403e5fe"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae79c5badad1311291836978b4403e5fe">&#9670;&nbsp;</a></span>set_bcd_result()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void autd::gain::holo::CUDABackend::set_bcd_result </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>mat</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>vec</em>, </td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>lambda</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>index</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a0ff0c55d69f7aeb60d79c2a90bce1c6f">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="a0fe22dacb5f164533bdd884c34f27407"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0fe22dacb5f164533bdd884c34f27407">&#9670;&nbsp;</a></span>set_from_complex_drive()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void autd::gain::holo::CUDABackend::set_from_complex_drive </td>
-          <td>(</td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>data</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>drive</em>, </td>
+          <td class="paramname"><em>repeat</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1380,8 +967,8 @@ Static Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>max_coefficient</em>&#160;</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>dst</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1391,200 +978,12 @@ Static Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">pure virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#afdf0677f4c9491809fc59b80d3d5a066">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="a03a571cb0400924f483175d35319e8f1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a03a571cb0400924f483175d35319e8f1">&#9670;&nbsp;</a></span>sigma_regularization()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::shared_ptr&lt;<a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a>&gt; autd::gain::holo::CUDABackend::sigma_regularization </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>transfer</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>amps</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>gamma</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a7b69347f2c802b5f81546fed21917a0c">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="a6d30504eb3f784afc9a82aa322c1a6e5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6d30504eb3f784afc9a82aa322c1a6e5">&#9670;&nbsp;</a></span>solve_ch()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void autd::gain::holo::CUDABackend::solve_ch </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>a</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>b</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a7c2809b82ace980108f9b9acc4758b9d">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="acafe52a820a9f0bb847073425301e63c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acafe52a820a9f0bb847073425301e63c">&#9670;&nbsp;</a></span>solve_g()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void autd::gain::holo::CUDABackend::solve_g </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
-          <td class="paramname"><em>a</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
-          <td class="paramname"><em>b</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
-          <td class="paramname"><em>c</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a4066b2296ccaee62f711444d014fbd66">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="a7deaf7d64e9a3efec786b66cffbbdbcd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7deaf7d64e9a3efec786b66cffbbdbcd">&#9670;&nbsp;</a></span>transfer_matrix()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::shared_ptr&lt;<a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a>&gt; autd::gain::holo::CUDABackend::transfer_matrix </td>
-          <td>(</td>
-          <td class="paramtype">const double *&#160;</td>
-          <td class="paramname"><em>foci</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>foci_num</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::vector&lt; const double * &gt; &amp;&#160;</td>
-          <td class="paramname"><em>positions</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::vector&lt; const double * &gt; &amp;&#160;</td>
-          <td class="paramname"><em>directions</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>wavelength</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>attenuation</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#ae6329e593c27e869a6652bd0d78287c0">autd::gain::holo::Backend</a>.</p>
+<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#afc1ee44b8c73318d352816a47f3d77cb">autd::gain::holo::Backend</a>.</p>
 
 </div>
 </div>

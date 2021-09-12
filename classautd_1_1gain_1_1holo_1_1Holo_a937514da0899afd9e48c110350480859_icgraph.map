@@ -1,9 +1,10 @@
 <map id="autd::gain::holo::Holo::foci" name="autd::gain::holo::Holo::foci">
-<area shape="rect" id="node1" title=" " alt="" coords="212,169,352,211"/>
-<area shape="rect" id="node2" href="$classautd_1_1gain_1_1holo_1_1SDP.html#a67755df2bba1c9b08e5a2f0880f82b5f" title="Generate function." alt="" coords="15,5,155,47"/>
-<area shape="rect" id="node3" href="$classautd_1_1gain_1_1holo_1_1EVD.html#aaa8c73b6673faf49aef0d2727c51a4c6" title="Generate function." alt="" coords="15,71,154,112"/>
-<area shape="rect" id="node4" href="$classautd_1_1gain_1_1holo_1_1Naive.html#a0f28e01649b56412110967e49689c399" title="Generate function." alt="" coords="11,136,158,177"/>
-<area shape="rect" id="node5" href="$classautd_1_1gain_1_1holo_1_1GS.html#a3fc58e0f8ab806fa800ddfda350da70b" title="Generate function." alt="" coords="19,201,151,243"/>
-<area shape="rect" id="node6" href="$classautd_1_1gain_1_1holo_1_1GSPAT.html#add274431b4fdfeea16d338cfcdf391e3" title="Generate function." alt="" coords="5,267,164,308"/>
-<area shape="rect" id="node7" href="$classautd_1_1gain_1_1holo_1_1Greedy.html#ab6e6eaca67becf30ec86e2a8d671df0a" title="Generate function." alt="" coords="7,332,162,373"/>
+<area shape="rect" id="node1" title=" " alt="" coords="212,201,352,243"/>
+<area shape="rect" id="node2" href="$classautd_1_1gain_1_1holo_1_1SDP.html#acb2e145f5fa7eaa7d69655fab2962bc1" title="Generate function." alt="" coords="15,5,155,47"/>
+<area shape="rect" id="node3" href="$classautd_1_1gain_1_1holo_1_1EVD.html#ab7a3d23510ad95d4f32bf9c387eb67b8" title="Generate function." alt="" coords="15,71,154,112"/>
+<area shape="rect" id="node4" href="$classautd_1_1gain_1_1holo_1_1Naive.html#a1d158469156dd7381a51e5d2f05833ce" title="Generate function." alt="" coords="11,136,158,177"/>
+<area shape="rect" id="node5" href="$classautd_1_1gain_1_1holo_1_1GS.html#a728482decb090431ddb014790942827f" title="Generate function." alt="" coords="19,201,151,243"/>
+<area shape="rect" id="node6" href="$classautd_1_1gain_1_1holo_1_1GSPAT.html#a9c681d5e2f65b510df9bb3b6bdc42305" title="Generate function." alt="" coords="5,267,164,308"/>
+<area shape="rect" id="node7" href="$classautd_1_1gain_1_1holo_1_1APO.html#abde7871c43972bed321259d1f2b1ccb1" title="Generate function." alt="" coords="14,332,155,373"/>
+<area shape="rect" id="node8" href="$classautd_1_1gain_1_1holo_1_1Greedy.html#a784deb24d17cb2af7ccaef298dde6807" title="Generate function." alt="" coords="7,397,162,439"/>
 </map>

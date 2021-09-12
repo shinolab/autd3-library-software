@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">1.7.1</span>
+   &#160;<span id="projectnumber">1.7.2</span>
    </div>
   </td>
  </tr>
@@ -73,42 +73,26 @@ $(function() {
 <div class="title">eigen_backend.hpp File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;algorithm&gt;</code><br />
-<code>#include &lt;memory&gt;</code><br />
-<code>#include &lt;string&gt;</code><br />
-<code>#include &lt;unordered_map&gt;</code><br />
-<code>#include &lt;utility&gt;</code><br />
-<code>#include &lt;vector&gt;</code><br />
-<code>#include &lt;Eigen/Dense&gt;</code><br />
-<code>#include &quot;<a class="el" href="linalg__backend_8hpp_source.html">linalg_backend.hpp</a>&quot;</code><br />
+<div class="textblock"><code>#include &lt;vector&gt;</code><br />
+<code>#include &quot;<a class="el" href="backend_8hpp_source.html">autd3/gain/backend.hpp</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for eigen_backend.hpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="eigen__backend_8hpp__incl.png" border="0" usemap="#include_2autd3_2gain_2eigen__backend_8hpp" alt=""/></div>
 <map name="include_2autd3_2gain_2eigen__backend_8hpp" id="include_2autd3_2gain_2eigen__backend_8hpp">
-<area shape="rect" title=" " alt="" coords="202,5,339,47"/>
-<area shape="rect" title=" " alt="" coords="5,95,80,121"/>
-<area shape="rect" title=" " alt="" coords="41,177,109,203"/>
-<area shape="rect" title=" " alt="" coords="133,177,187,203"/>
-<area shape="rect" title=" " alt="" coords="465,95,575,121"/>
-<area shape="rect" title=" " alt="" coords="211,177,263,203"/>
-<area shape="rect" title=" " alt="" coords="657,177,716,203"/>
-<area shape="rect" title=" " alt="" coords="599,95,694,121"/>
-<area shape="rect" href="linalg__backend_8hpp.html" title=" " alt="" coords="257,95,389,121"/>
-<area shape="rect" title=" " alt="" coords="287,177,358,203"/>
-<area shape="rect" title=" " alt="" coords="383,177,468,203"/>
-<area shape="rect" href="hardware__defined_8hpp.html" title=" " alt="" coords="493,169,633,211"/>
-<area shape="rect" title=" " alt="" coords="497,259,548,285"/>
-<area shape="rect" title=" " alt="" coords="572,259,633,285"/>
-</map>
-</div>
-</div><div class="textblock"><div class="dynheader">
-This graph shows which files directly or indirectly include this file:</div>
-<div class="dyncontent">
-<div class="center"><img src="eigen__backend_8hpp__dep__incl.png" border="0" usemap="#include_2autd3_2gain_2eigen__backend_8hppdep" alt=""/></div>
-<map name="include_2autd3_2gain_2eigen__backend_8hppdep" id="include_2autd3_2gain_2eigen__backend_8hppdep">
-<area shape="rect" title=" " alt="" coords="5,5,143,47"/>
-<area shape="rect" href="blas__backend_8hpp.html" title=" " alt="" coords="9,95,139,136"/>
+<area shape="rect" title=" " alt="" coords="25,5,162,47"/>
+<area shape="rect" title=" " alt="" coords="5,244,64,271"/>
+<area shape="rect" href="backend_8hpp.html" title=" " alt="" coords="125,95,283,121"/>
+<area shape="rect" title=" " alt="" coords="89,244,157,271"/>
+<area shape="rect" href="geometry_8hpp.html" title=" " alt="" coords="174,169,338,196"/>
+<area shape="rect" href="hardware__defined_8hpp.html" title=" " alt="" coords="447,244,593,271"/>
+<area shape="rect" href="matrix_8hpp.html" title=" " alt="" coords="549,169,630,196"/>
+<area shape="rect" title=" " alt="" coords="181,244,275,271"/>
+<area shape="rect" title=" " alt="" coords="299,244,346,271"/>
+<area shape="rect" title=" " alt="" coords="370,244,422,271"/>
+<area shape="rect" title=" " alt="" coords="455,319,505,345"/>
+<area shape="rect" title=" " alt="" coords="529,319,591,345"/>
+<area shape="rect" title=" " alt="" coords="618,244,689,271"/>
 </map>
 </div>
 </div>
@@ -116,11 +100,8 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structautd_1_1gain_1_1holo_1_1EigenMatrix.html">autd::gain::holo::EigenMatrix&lt; T &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structautd_1_1gain_1_1holo_1_1Matrix.html" title="Matrix wrapper for Backend.">Matrix</a> wrapper for <a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html" title="Linear algebra calculation backend using Eigen3.">Eigen3Backend</a> and <a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html" title="Linear algebra calculation backend using BLAS and LAPACK.">BLASBackend</a>.  <a href="structautd_1_1gain_1_1holo_1_1EigenMatrix.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html">autd::gain::holo::Eigen3Backend</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Linear algebra calculation backend using Eigen3.  <a href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1EigenBackend.html">autd::gain::holo::EigenBackend</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Eigen <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html" title="Backend for HoloGain.">Backend</a> for HoloGain.  <a href="classautd_1_1gain_1_1holo_1_1EigenBackend.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>

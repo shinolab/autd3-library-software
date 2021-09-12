@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['rawpcm_339',['RawPCM',['../classautd_1_1modulation_1_1RawPCM.html',1,'autd::modulation']]],
-  ['rxglobalheader_340',['RxGlobalHeader',['../structautd_1_1core_1_1RxGlobalHeader.html',1,'autd::core']]]
+  ['planewave_316',['PlaneWave',['../classautd_1_1gain_1_1PlaneWave.html',1,'autd::gain']]],
+  ['pointsequence_317',['PointSequence',['../classautd_1_1core_1_1PointSequence.html',1,'autd::core']]]
 ];

@@ -1,14 +1,14 @@
 <map id="include/autd3/core/modulation.hpp" name="include/autd3/core/modulation.hpp">
 <area shape="rect" id="node1" title=" " alt="" coords="166,5,294,47"/>
 <area shape="rect" id="node2" title=" " alt="" coords="5,95,73,121"/>
-<area shape="rect" id="node3" title=" " alt="" coords="124,169,179,196"/>
+<area shape="rect" id="node3" title=" " alt="" coords="100,169,155,196"/>
 <area shape="rect" id="node4" title=" " alt="" coords="149,95,207,121"/>
 <area shape="rect" id="node5" href="$exception_8hpp.html" title=" " alt="" coords="231,95,333,121"/>
-<area shape="rect" id="node7" href="$hardware__defined_8hpp.html" title=" " alt="" coords="357,95,503,121"/>
-<area shape="rect" id="node10" href="$core_2utils_8hpp.html" title=" " alt="" coords="528,95,599,121"/>
-<area shape="rect" id="node6" title=" " alt="" coords="243,169,321,196"/>
-<area shape="rect" id="node8" title=" " alt="" coords="355,169,406,196"/>
-<area shape="rect" id="node9" title=" " alt="" coords="430,169,491,196"/>
-<area shape="rect" id="node11" title=" " alt="" coords="521,169,595,196"/>
-<area shape="rect" id="node12" title=" " alt="" coords="619,169,678,196"/>
+<area shape="rect" id="node7" href="$hardware__defined_8hpp.html" title=" " alt="" coords="297,169,443,196"/>
+<area shape="rect" id="node10" href="$core_2utils_8hpp.html" title=" " alt="" coords="439,95,509,121"/>
+<area shape="rect" id="node6" title=" " alt="" coords="193,169,272,196"/>
+<area shape="rect" id="node8" title=" " alt="" coords="305,244,355,271"/>
+<area shape="rect" id="node9" title=" " alt="" coords="379,244,441,271"/>
+<area shape="rect" id="node11" title=" " alt="" coords="467,169,542,196"/>
+<area shape="rect" id="node12" title=" " alt="" coords="566,169,625,196"/>
 </map>

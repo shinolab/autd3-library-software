@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">1.7.1</span>
+   &#160;<span id="projectnumber">1.7.2</span>
    </div>
   </td>
  </tr>
@@ -71,11 +71,11 @@ $(function() {
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="classautd_1_1gain_1_1holo_1_1BLASBackend-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">autd::gain::holo::BLASBackend Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div>  </div>
+<div class="title">autd::gain::holo::BLASBackend Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>Linear algebra calculation backend using BLAS and LAPACK.  
+<p>BLAS/LAPACK <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html" title="Backend for HoloGain.">Backend</a> for HoloGain.  
  <a href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="blas__backend_8hpp_source.html">blas_backend.hpp</a>&gt;</code></p>
@@ -84,9 +84,8 @@ Inheritance diagram for autd::gain::holo::BLASBackend:</div>
 <div class="dyncontent">
 <div class="center"><img src="classautd_1_1gain_1_1holo_1_1BLASBackend__inherit__graph.png" border="0" usemap="#autd_1_1gain_1_1holo_1_1BLASBackend_inherit__map" alt="Inheritance graph"/></div>
 <map name="autd_1_1gain_1_1holo_1_1BLASBackend_inherit__map" id="autd_1_1gain_1_1holo_1_1BLASBackend_inherit__map">
-<area shape="rect" title="Linear algebra calculation backend using BLAS and LAPACK." alt="" coords="5,169,204,196"/>
-<area shape="rect" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html" title="Linear algebra calculation backend using Eigen3." alt="" coords="29,80,181,121"/>
-<area shape="rect" href="classautd_1_1gain_1_1holo_1_1Backend.html" title="Linear algebra calculation backend." alt="" coords="23,5,187,32"/>
+<area shape="rect" title="BLAS/LAPACK Backend for HoloGain." alt="" coords="5,80,204,107"/>
+<area shape="rect" href="classautd_1_1gain_1_1holo_1_1Backend.html" title="Backend for HoloGain." alt="" coords="23,5,187,32"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
@@ -94,128 +93,240 @@ Collaboration diagram for autd::gain::holo::BLASBackend:</div>
 <div class="dyncontent">
 <div class="center"><img src="classautd_1_1gain_1_1holo_1_1BLASBackend__coll__graph.png" border="0" usemap="#autd_1_1gain_1_1holo_1_1BLASBackend_coll__map" alt="Collaboration graph"/></div>
 <map name="autd_1_1gain_1_1holo_1_1BLASBackend_coll__map" id="autd_1_1gain_1_1holo_1_1BLASBackend_coll__map">
-<area shape="rect" title="Linear algebra calculation backend using BLAS and LAPACK." alt="" coords="5,169,204,196"/>
-<area shape="rect" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html" title="Linear algebra calculation backend using Eigen3." alt="" coords="29,80,181,121"/>
-<area shape="rect" href="classautd_1_1gain_1_1holo_1_1Backend.html" title="Linear algebra calculation backend." alt="" coords="23,5,187,32"/>
+<area shape="rect" title="BLAS/LAPACK Backend for HoloGain." alt="" coords="5,80,204,107"/>
+<area shape="rect" href="classautd_1_1gain_1_1holo_1_1Backend.html" title="Backend for HoloGain." alt="" coords="23,5,187,32"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8bb88c61ecde2c5bc23cae6d1396b7e7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#a8bb88c61ecde2c5bc23cae6d1396b7e7">scale</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; a, <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> s) override</td></tr>
-<tr class="separator:a8bb88c61ecde2c5bc23cae6d1396b7e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4a9f145c349f11bca1c491bff796fce6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#a4a9f145c349f11bca1c491bff796fce6">pseudo_inverse_svd</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; matrix, double alpha, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; result) override</td></tr>
-<tr class="separator:a4a9f145c349f11bca1c491bff796fce6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7e9edbb9ba0787669261031164d291c6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#a7e9edbb9ba0787669261031164d291c6">max_eigen_vector</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; matrix, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; ev) override</td></tr>
-<tr class="separator:a7e9edbb9ba0787669261031164d291c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acb4f5ee0a6baa63b08d630d2bd11dfcf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#acb4f5ee0a6baa63b08d630d2bd11dfcf">matrix_add</a> (double alpha, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; b) override</td></tr>
-<tr class="separator:acb4f5ee0a6baa63b08d630d2bd11dfcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a795d3597480754ca6452cd2d7f06e7b9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#a795d3597480754ca6452cd2d7f06e7b9">matrix_mul</a> (<a class="el" href="namespaceautd_1_1gain_1_1holo.html#a1e64d32be5947b46b7c11888905946ef">TRANSPOSE</a> trans_a, <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a1e64d32be5947b46b7c11888905946ef">TRANSPOSE</a> trans_b, <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> alpha, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; b, <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> beta, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; c) override</td></tr>
-<tr class="separator:a795d3597480754ca6452cd2d7f06e7b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7e9b6806ab62e120dff2ff9ca4092d83"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#a7e9b6806ab62e120dff2ff9ca4092d83">matrix_mul</a> (<a class="el" href="namespaceautd_1_1gain_1_1holo.html#a1e64d32be5947b46b7c11888905946ef">TRANSPOSE</a> trans_a, <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a1e64d32be5947b46b7c11888905946ef">TRANSPOSE</a> trans_b, double alpha, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; b, double beta, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; c) override</td></tr>
-<tr class="separator:a7e9b6806ab62e120dff2ff9ca4092d83"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a748ab325f0e86c0628f8522ace57dbe7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#a748ab325f0e86c0628f8522ace57dbe7">solve_ch</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; b) override</td></tr>
-<tr class="separator:a748ab325f0e86c0628f8522ace57dbe7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8a2b2527c3c7399835df170add03a3b7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#a8a2b2527c3c7399835df170add03a3b7">solve_g</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; b, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; c) override</td></tr>
-<tr class="separator:a8a2b2527c3c7399835df170add03a3b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aba194f2b65030492b1ad3acc52f2767b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#aba194f2b65030492b1ad3acc52f2767b">dot</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; b) override</td></tr>
-<tr class="separator:aba194f2b65030492b1ad3acc52f2767b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0dd2c394396372632185f95a75d94be8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#a0dd2c394396372632185f95a75d94be8">dot</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; b) override</td></tr>
-<tr class="separator:a0dd2c394396372632185f95a75d94be8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab027b256389d37555ffee0d67a494c28"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#ab027b256389d37555ffee0d67a494c28">max_coefficient</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; v) override</td></tr>
-<tr class="separator:ab027b256389d37555ffee0d67a494c28"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3937c5dfb9baa474a77c0455cfb7df4c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#a3937c5dfb9baa474a77c0455cfb7df4c">max_coefficient</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; v) override</td></tr>
-<tr class="separator:a3937c5dfb9baa474a77c0455cfb7df4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab2473ff4d6aaf790fe7c9e2d6076564d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#ab2473ff4d6aaf790fe7c9e2d6076564d">mat_cpy</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; b) override</td></tr>
-<tr class="separator:ab2473ff4d6aaf790fe7c9e2d6076564d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3fa828eca915e4deb42bcc571bd6b043"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#a3fa828eca915e4deb42bcc571bd6b043">mat_cpy</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; b) override</td></tr>
-<tr class="separator:a3fa828eca915e4deb42bcc571bd6b043"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html">autd::gain::holo::Eigen3Backend</a></td></tr>
-<tr class="memitem:ac8a4c3a76edd2d99c399b845f6599a80 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#ac8a4c3a76edd2d99c399b845f6599a80">allocate_matrix</a> (const std::string &amp;name, const size_t row, const size_t col) override</td></tr>
-<tr class="separator:ac8a4c3a76edd2d99c399b845f6599a80 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a027f9886197b7db2104b9badf5b4d739 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#a027f9886197b7db2104b9badf5b4d739">allocate_matrix_c</a> (const std::string &amp;name, const size_t row, const size_t col) override</td></tr>
-<tr class="separator:a027f9886197b7db2104b9badf5b4d739 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a16d7a23da6dd30879b9d634a2aece584 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#a16d7a23da6dd30879b9d634a2aece584">make_complex</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; r, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; i, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; c) override</td></tr>
-<tr class="separator:a16d7a23da6dd30879b9d634a2aece584 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad0c9c160caa71e009a3cb0cdb76a607e inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#ad0c9c160caa71e009a3cb0cdb76a607e">exp</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; a) override</td></tr>
-<tr class="separator:ad0c9c160caa71e009a3cb0cdb76a607e inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a59cbfa1b2573a0a5eca5d047a91a4a7f inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#a59cbfa1b2573a0a5eca5d047a91a4a7f">scale</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; a, <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> s) override</td></tr>
-<tr class="separator:a59cbfa1b2573a0a5eca5d047a91a4a7f inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3cdf914da9f0fca8bdf0d8f530169aa0 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#a3cdf914da9f0fca8bdf0d8f530169aa0">hadamard_product</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; b, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; c) override</td></tr>
-<tr class="separator:a3cdf914da9f0fca8bdf0d8f530169aa0 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afd4ce581cb1101b0eb09fe80c32a18f2 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#afd4ce581cb1101b0eb09fe80c32a18f2">real</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; b) override</td></tr>
-<tr class="separator:afd4ce581cb1101b0eb09fe80c32a18f2 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a67a34dbd8a937fa73b35ad454cb13339 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#a67a34dbd8a937fa73b35ad454cb13339">arg</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; c) override</td></tr>
-<tr class="separator:a67a34dbd8a937fa73b35ad454cb13339 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ff500d2e2e4c73aed44929c831e4220 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#a0ff500d2e2e4c73aed44929c831e4220">pseudo_inverse_svd</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; matrix, double alpha, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; result) override</td></tr>
-<tr class="separator:a0ff500d2e2e4c73aed44929c831e4220 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6d6434c14e7b46d6772462517b8ef067 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#a6d6434c14e7b46d6772462517b8ef067">max_eigen_vector</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; matrix, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; ev) override</td></tr>
-<tr class="separator:a6d6434c14e7b46d6772462517b8ef067 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a50e0833dc56c6290b308bc9ddee13e43 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#a50e0833dc56c6290b308bc9ddee13e43">matrix_add</a> (double alpha, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; b) override</td></tr>
-<tr class="separator:a50e0833dc56c6290b308bc9ddee13e43 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa6181c76c654e16fc9d8dd029d92af3e inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#aa6181c76c654e16fc9d8dd029d92af3e">matrix_mul</a> (<a class="el" href="namespaceautd_1_1gain_1_1holo.html#a1e64d32be5947b46b7c11888905946ef">TRANSPOSE</a> trans_a, <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a1e64d32be5947b46b7c11888905946ef">TRANSPOSE</a> trans_b, <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> alpha, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; b, <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> beta, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; c) override</td></tr>
-<tr class="separator:aa6181c76c654e16fc9d8dd029d92af3e inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab70e0966d114a85453b73b304d6b2b98 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#ab70e0966d114a85453b73b304d6b2b98">matrix_mul</a> (<a class="el" href="namespaceautd_1_1gain_1_1holo.html#a1e64d32be5947b46b7c11888905946ef">TRANSPOSE</a> trans_a, <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a1e64d32be5947b46b7c11888905946ef">TRANSPOSE</a> trans_b, double alpha, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; b, double beta, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; c) override</td></tr>
-<tr class="separator:ab70e0966d114a85453b73b304d6b2b98 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5e4c05445080a3734b0a9b3ca783cbc8 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#a5e4c05445080a3734b0a9b3ca783cbc8">solve_ch</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; b) override</td></tr>
-<tr class="separator:a5e4c05445080a3734b0a9b3ca783cbc8 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5236c9d16fc1d3053a9364d3bdffa543 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#a5236c9d16fc1d3053a9364d3bdffa543">solve_g</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; b, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; c) override</td></tr>
-<tr class="separator:a5236c9d16fc1d3053a9364d3bdffa543 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae97079deca98b7253dc769e47460033e inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#ae97079deca98b7253dc769e47460033e">dot</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; b) override</td></tr>
-<tr class="separator:ae97079deca98b7253dc769e47460033e inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0764a6020f028c96b9ceea617a7a54da inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#a0764a6020f028c96b9ceea617a7a54da">dot</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; b) override</td></tr>
-<tr class="separator:a0764a6020f028c96b9ceea617a7a54da inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a653d4f93c57e514ebccb5e8245a4fc0b inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#a653d4f93c57e514ebccb5e8245a4fc0b">max_coefficient</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; v) override</td></tr>
-<tr class="separator:a653d4f93c57e514ebccb5e8245a4fc0b inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8e8221a466607969aae50c0c593e153f inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#a8e8221a466607969aae50c0c593e153f">max_coefficient</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; v) override</td></tr>
-<tr class="separator:a8e8221a466607969aae50c0c593e153f inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af79ed23ecb71e07ef053343692fae636 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#af79ed23ecb71e07ef053343692fae636">concat_row</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; b) override</td></tr>
-<tr class="separator:af79ed23ecb71e07ef053343692fae636 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f8cf80e77b42ba0ab38561064f1ca1b inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#a8f8cf80e77b42ba0ab38561064f1ca1b">concat_col</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; b) override</td></tr>
-<tr class="separator:a8f8cf80e77b42ba0ab38561064f1ca1b inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afaccc1eadd9448d76901bf349ccdffb0 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#afaccc1eadd9448d76901bf349ccdffb0">mat_cpy</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; b) override</td></tr>
-<tr class="separator:afaccc1eadd9448d76901bf349ccdffb0 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af1abdfccdfaa725be134547867cc8a7d inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#af1abdfccdfaa725be134547867cc8a7d">mat_cpy</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; a, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; b) override</td></tr>
-<tr class="separator:af1abdfccdfaa725be134547867cc8a7d inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac36875d87b6fdf16847459d7d2605d99 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#ac36875d87b6fdf16847459d7d2605d99">set_from_complex_drive</a> (std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;data, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; drive, bool normalize, double <a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#a653d4f93c57e514ebccb5e8245a4fc0b">max_coefficient</a>) override</td></tr>
-<tr class="separator:ac36875d87b6fdf16847459d7d2605d99 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a92e90316b073ef634253001f4b70fa7f inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#a92e90316b073ef634253001f4b70fa7f">transfer_matrix</a> (const double *foci, size_t foci_num, const std::vector&lt; const double * &gt; &amp;positions, const std::vector&lt; const double * &gt; &amp;directions, double wavelength, double attenuation) override</td></tr>
-<tr class="separator:a92e90316b073ef634253001f4b70fa7f inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad19d2f8d4b5263d48088a4e868d10adb inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#ad19d2f8d4b5263d48088a4e868d10adb">set_bcd_result</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; mat, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; vec, size_t index) override</td></tr>
-<tr class="separator:ad19d2f8d4b5263d48088a4e868d10adb inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa75e0f0d2fd986fcb916a4f7bf38efd3 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#aa75e0f0d2fd986fcb916a4f7bf38efd3">back_prop</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; transfer, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; amps) override</td></tr>
-<tr class="separator:aa75e0f0d2fd986fcb916a4f7bf38efd3 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a934a7699fa9ae19f184c9c616b499590 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#a934a7699fa9ae19f184c9c616b499590">sigma_regularization</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; transfer, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; amps, double gamma) override</td></tr>
-<tr class="separator:a934a7699fa9ae19f184c9c616b499590 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a805e09d06998aebc1b4fcecbd4e35c6c inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#a805e09d06998aebc1b4fcecbd4e35c6c">col_sum_imag</a> (std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt; mat, std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt; dst) override</td></tr>
-<tr class="separator:a805e09d06998aebc1b4fcecbd4e35c6c inherit pub_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9731ff682475ce6447149208bc73cf51"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#a9731ff682475ce6447149208bc73cf51">BLASBackend</a> ()=default</td></tr>
+<tr class="separator:a9731ff682475ce6447149208bc73cf51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6631e6956e03c3f4703e55a61b8b5520"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#a6631e6956e03c3f4703e55a61b8b5520">~BLASBackend</a> () override=default</td></tr>
+<tr class="separator:a6631e6956e03c3f4703e55a61b8b5520"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5add9c1a15db6e977e86641c065304ad"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#a5add9c1a15db6e977e86641c065304ad">BLASBackend</a> (const <a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html">BLASBackend</a> &amp;v) noexcept=default</td></tr>
+<tr class="separator:a5add9c1a15db6e977e86641c065304ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3c13480405f263802c36571d8790962"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html">BLASBackend</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#ab3c13480405f263802c36571d8790962">operator=</a> (const <a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html">BLASBackend</a> &amp;obj)=default</td></tr>
+<tr class="separator:ab3c13480405f263802c36571d8790962"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bdb8fa932735b03e32f55d33b0e116e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#a7bdb8fa932735b03e32f55d33b0e116e">BLASBackend</a> (<a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html">BLASBackend</a> &amp;&amp;obj)=default</td></tr>
+<tr class="separator:a7bdb8fa932735b03e32f55d33b0e116e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31653652235ea90abc17296102faa3c9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html">BLASBackend</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#a31653652235ea90abc17296102faa3c9">operator=</a> (<a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html">BLASBackend</a> &amp;&amp;obj)=default</td></tr>
+<tr class="separator:a31653652235ea90abc17296102faa3c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45163b09cebed7b8f9f314616a6707aa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#a45163b09cebed7b8f9f314616a6707aa">sdp</a> (const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;geometry, const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;foci, const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;amps, double alpha, double lambda, size_t repeat, bool normalize, std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;dst) override=0</td></tr>
+<tr class="separator:a45163b09cebed7b8f9f314616a6707aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a4a11b68198a0c49428d5e0b04bebca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#a1a4a11b68198a0c49428d5e0b04bebca">evd</a> (const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;geometry, const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;foci, const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;amps, double gamma, bool normalize, std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;dst) override=0</td></tr>
+<tr class="separator:a1a4a11b68198a0c49428d5e0b04bebca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af74e4e68c62b44c47db8cf59cf2d3d8d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#af74e4e68c62b44c47db8cf59cf2d3d8d">naive</a> (const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;geometry, const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;foci, const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;amps, std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;dst) override=0</td></tr>
+<tr class="separator:af74e4e68c62b44c47db8cf59cf2d3d8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17d06806b07d6ee77b858d9ad8cc1366"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#a17d06806b07d6ee77b858d9ad8cc1366">gs</a> (const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;geometry, const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;foci, const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;amps, size_t repeat, std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;dst) override=0</td></tr>
+<tr class="separator:a17d06806b07d6ee77b858d9ad8cc1366"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad29aafa08d8100fbc9ecf9444bc17343"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#ad29aafa08d8100fbc9ecf9444bc17343">gspat</a> (const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;geometry, const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;foci, const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;amps, size_t repeat, std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;dst) override=0</td></tr>
+<tr class="separator:ad29aafa08d8100fbc9ecf9444bc17343"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73f23f2b64e3412dcb0ffb27a8cb2414"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#a73f23f2b64e3412dcb0ffb27a8cb2414">lm</a> (const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;geometry, const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;foci, const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;amps, double eps_1, double eps_2, double tau, size_t k_max, const std::vector&lt; double &gt; &amp;initial, std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;dst) override=0</td></tr>
+<tr class="separator:a73f23f2b64e3412dcb0ffb27a8cb2414"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70cd9fc096bc3add88a2d8da03ce4496"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#a70cd9fc096bc3add88a2d8da03ce4496">gauss_newton</a> (const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;geometry, const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;foci, const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;amps, double eps_1, double eps_2, size_t k_max, const std::vector&lt; double &gt; &amp;initial, std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;dst) override=0</td></tr>
+<tr class="separator:a70cd9fc096bc3add88a2d8da03ce4496"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74d845934e1e72988ba81eacc095162c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#a74d845934e1e72988ba81eacc095162c">gradient_descent</a> (const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;geometry, const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;foci, const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;amps, double eps, double step, size_t k_max, const std::vector&lt; double &gt; &amp;initial, std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;dst) override=0</td></tr>
+<tr class="separator:a74d845934e1e72988ba81eacc095162c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3d813cb027ceaba5fdb2fab2cb8f86b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#af3d813cb027ceaba5fdb2fab2cb8f86b">apo</a> (const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;geometry, const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;foci, const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;amps, double eps, double lambda, size_t k_max, std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;dst) override=0</td></tr>
+<tr class="separator:af3d813cb027ceaba5fdb2fab2cb8f86b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93e56693ec61199d46dd3c58cf234e99"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#a93e56693ec61199d46dd3c58cf234e99">greedy</a> (const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;geometry, const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;foci, const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;amps, size_t phase_div, std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;dst) override=0</td></tr>
+<tr class="separator:a93e56693ec61199d46dd3c58cf234e99"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classautd_1_1gain_1_1holo_1_1Backend')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html">autd::gain::holo::Backend</a></td></tr>
 <tr class="memitem:a049d8f1615dba3ec8a4ee0a4264e6419 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a049d8f1615dba3ec8a4ee0a4264e6419">Backend</a> ()=default</td></tr>
 <tr class="separator:a049d8f1615dba3ec8a4ee0a4264e6419 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa4b178601761bf05f066a8bb2f38a927 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#aa4b178601761bf05f066a8bb2f38a927">~Backend</a> ()=default</td></tr>
 <tr class="separator:aa4b178601761bf05f066a8bb2f38a927 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a02cc7385de98afbe39625a8d6385ee04 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a02cc7385de98afbe39625a8d6385ee04">Backend</a> (const <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html">Backend</a> &amp;obj)=delete</td></tr>
-<tr class="separator:a02cc7385de98afbe39625a8d6385ee04 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af33296a75da40a72560233246ba60ec2 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html">Backend</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#af33296a75da40a72560233246ba60ec2">operator=</a> (const <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html">Backend</a> &amp;obj)=delete</td></tr>
-<tr class="separator:af33296a75da40a72560233246ba60ec2 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab5c9dbeb5cc0c163c145c3c1514a20ac inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#ab5c9dbeb5cc0c163c145c3c1514a20ac">Backend</a> (const <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html">Backend</a> &amp;&amp;v)=delete</td></tr>
-<tr class="separator:ab5c9dbeb5cc0c163c145c3c1514a20ac inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab303e533e1071e33070291a88f4bb13d inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html">Backend</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#ab303e533e1071e33070291a88f4bb13d">operator=</a> (<a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html">Backend</a> &amp;&amp;obj)=delete</td></tr>
-<tr class="separator:ab303e533e1071e33070291a88f4bb13d inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54722c747b63013747732ecd195defbf inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a54722c747b63013747732ecd195defbf">Backend</a> (const <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html">Backend</a> &amp;v) noexcept=default</td></tr>
+<tr class="separator:a54722c747b63013747732ecd195defbf inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d79e9c7d86b036264bdc45ba138399e inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html">Backend</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a5d79e9c7d86b036264bdc45ba138399e">operator=</a> (const <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html">Backend</a> &amp;obj)=default</td></tr>
+<tr class="separator:a5d79e9c7d86b036264bdc45ba138399e inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65a9137cfa6492345ea27e075c935efe inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a65a9137cfa6492345ea27e075c935efe">Backend</a> (<a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html">Backend</a> &amp;&amp;obj)=default</td></tr>
+<tr class="separator:a65a9137cfa6492345ea27e075c935efe inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae650f6396904370409c231a166924d72 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html">Backend</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#ae650f6396904370409c231a166924d72">operator=</a> (<a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html">Backend</a> &amp;&amp;obj)=default</td></tr>
+<tr class="separator:ae650f6396904370409c231a166924d72 inherit pub_methods_classautd_1_1gain_1_1holo_1_1Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a6500fab7695d7eea1dd8985231ddbb73"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a07a3acae6012e81793f8e2c951bec559">BackendPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html#a6500fab7695d7eea1dd8985231ddbb73">create</a> ()</td></tr>
 <tr class="separator:a6500fab7695d7eea1dd8985231ddbb73"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_static_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend')"><img src="closed.png" alt="-"/>&#160;Static Public Member Functions inherited from <a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html">autd::gain::holo::Eigen3Backend</a></td></tr>
-<tr class="memitem:a43d77154301827c2053c61e9f9341fb9 inherit pub_static_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a07a3acae6012e81793f8e2c951bec559">BackendPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1holo_1_1Eigen3Backend.html#a43d77154301827c2053c61e9f9341fb9">create</a> ()</td></tr>
-<tr class="separator:a43d77154301827c2053c61e9f9341fb9 inherit pub_static_methods_classautd_1_1gain_1_1holo_1_1Eigen3Backend"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Linear algebra calculation backend using BLAS and LAPACK. </p>
+<div class="textblock"><p>BLAS/LAPACK <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html" title="Backend for HoloGain.">Backend</a> for HoloGain. </p>
 
 <p class="definition">Definition at line <a class="el" href="blas__backend_8hpp_source.html#l00023">23</a> of file <a class="el" href="blas__backend_8hpp_source.html">blas_backend.hpp</a>.</p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a9731ff682475ce6447149208bc73cf51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9731ff682475ce6447149208bc73cf51">&#9670;&nbsp;</a></span>BLASBackend() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">autd::gain::holo::BLASBackend::BLASBackend </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6631e6956e03c3f4703e55a61b8b5520"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6631e6956e03c3f4703e55a61b8b5520">&#9670;&nbsp;</a></span>~BLASBackend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">autd::gain::holo::BLASBackend::~BLASBackend </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5add9c1a15db6e977e86641c065304ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5add9c1a15db6e977e86641c065304ad">&#9670;&nbsp;</a></span>BLASBackend() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">autd::gain::holo::BLASBackend::BLASBackend </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html">BLASBackend</a> &amp;&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7bdb8fa932735b03e32f55d33b0e116e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bdb8fa932735b03e32f55d33b0e116e">&#9670;&nbsp;</a></span>BLASBackend() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">autd::gain::holo::BLASBackend::BLASBackend </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html">BLASBackend</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>obj</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="af3d813cb027ceaba5fdb2fab2cb8f86b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3d813cb027ceaba5fdb2fab2cb8f86b">&#9670;&nbsp;</a></span>apo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void autd::gain::holo::BLASBackend::apo </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>foci</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>amps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>eps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>lambda</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>k_max</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>dst</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a94d4b86d29920c49ce03b3f7b3b367d2">autd::gain::holo::Backend</a>.</p>
+
+</div>
+</div>
 <a id="a6500fab7695d7eea1dd8985231ddbb73"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6500fab7695d7eea1dd8985231ddbb73">&#9670;&nbsp;</a></span>create()</h2>
 
@@ -241,8 +352,8 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aba194f2b65030492b1ad3acc52f2767b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aba194f2b65030492b1ad3acc52f2767b">&#9670;&nbsp;</a></span>dot() <span class="overload">[1/2]</span></h2>
+<a id="a1a4a11b68198a0c49428d5e0b04bebca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a4a11b68198a0c49428d5e0b04bebca">&#9670;&nbsp;</a></span>evd()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -251,16 +362,40 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">double autd::gain::holo::BLASBackend::dot </td>
+          <td class="memname">void autd::gain::holo::BLASBackend::evd </td>
           <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
-          <td class="paramname"><em>a</em>, </td>
+          <td class="paramtype">const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometry</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
-          <td class="paramname"><em>b</em>&#160;</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>foci</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>amps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>gamma</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>normalize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>dst</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -270,17 +405,17 @@ Static Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">pure virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#acf67f0c51ed08ba374d9143a5e3297fc">autd::gain::holo::Backend</a>.</p>
+<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a1fa118fc8cd42cdeb06d6182cdb4d110">autd::gain::holo::Backend</a>.</p>
 
 </div>
 </div>
-<a id="a0dd2c394396372632185f95a75d94be8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0dd2c394396372632185f95a75d94be8">&#9670;&nbsp;</a></span>dot() <span class="overload">[2/2]</span></h2>
+<a id="a70cd9fc096bc3add88a2d8da03ce4496"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70cd9fc096bc3add88a2d8da03ce4496">&#9670;&nbsp;</a></span>gauss_newton()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -289,16 +424,52 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> autd::gain::holo::BLASBackend::dot </td>
+          <td class="memname">void autd::gain::holo::BLASBackend::gauss_newton </td>
           <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>a</em>, </td>
+          <td class="paramtype">const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometry</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>b</em>&#160;</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>foci</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>amps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>eps_1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>eps_2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>k_max</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>initial</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>dst</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -308,17 +479,17 @@ Static Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">pure virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a1689150d7316eb9ad583f7b103881f39">autd::gain::holo::Backend</a>.</p>
+<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a52baad633cd4bb308a3f3ed2fd37af49">autd::gain::holo::Backend</a>.</p>
 
 </div>
 </div>
-<a id="ab2473ff4d6aaf790fe7c9e2d6076564d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab2473ff4d6aaf790fe7c9e2d6076564d">&#9670;&nbsp;</a></span>mat_cpy() <span class="overload">[1/2]</span></h2>
+<a id="a74d845934e1e72988ba81eacc095162c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74d845934e1e72988ba81eacc095162c">&#9670;&nbsp;</a></span>gradient_descent()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -327,16 +498,52 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void autd::gain::holo::BLASBackend::mat_cpy </td>
+          <td class="memname">void autd::gain::holo::BLASBackend::gradient_descent </td>
           <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
-          <td class="paramname"><em>a</em>, </td>
+          <td class="paramtype">const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometry</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
-          <td class="paramname"><em>b</em>&#160;</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>foci</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>amps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>eps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>step</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>k_max</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>initial</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>dst</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -346,17 +553,17 @@ Static Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">pure virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#aed359923048507876708e956930b2e64">autd::gain::holo::Backend</a>.</p>
+<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a5bb2df60020f5fccaa7aa6aee3a95fa2">autd::gain::holo::Backend</a>.</p>
 
 </div>
 </div>
-<a id="a3fa828eca915e4deb42bcc571bd6b043"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3fa828eca915e4deb42bcc571bd6b043">&#9670;&nbsp;</a></span>mat_cpy() <span class="overload">[2/2]</span></h2>
+<a id="a93e56693ec61199d46dd3c58cf234e99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93e56693ec61199d46dd3c58cf234e99">&#9670;&nbsp;</a></span>greedy()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -365,16 +572,34 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void autd::gain::holo::BLASBackend::mat_cpy </td>
+          <td class="memname">void autd::gain::holo::BLASBackend::greedy </td>
           <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>a</em>, </td>
+          <td class="paramtype">const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometry</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>b</em>&#160;</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>foci</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>amps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>phase_div</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>dst</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -384,17 +609,17 @@ Static Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">pure virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a32622546cb7281e669eb31bbef95cde7">autd::gain::holo::Backend</a>.</p>
+<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a1a1e6dcf5b8bdd5f2ccea7c01cc6feb3">autd::gain::holo::Backend</a>.</p>
 
 </div>
 </div>
-<a id="acb4f5ee0a6baa63b08d630d2bd11dfcf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acb4f5ee0a6baa63b08d630d2bd11dfcf">&#9670;&nbsp;</a></span>matrix_add()</h2>
+<a id="a17d06806b07d6ee77b858d9ad8cc1366"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17d06806b07d6ee77b858d9ad8cc1366">&#9670;&nbsp;</a></span>gs()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -403,158 +628,346 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void autd::gain::holo::BLASBackend::matrix_add </td>
+          <td class="memname">void autd::gain::holo::BLASBackend::gs </td>
           <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>foci</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>amps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>repeat</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>dst</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#ad9680dbed662b91d2df4d351e2f77576">autd::gain::holo::Backend</a>.</p>
+
+</div>
+</div>
+<a id="ad29aafa08d8100fbc9ecf9444bc17343"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad29aafa08d8100fbc9ecf9444bc17343">&#9670;&nbsp;</a></span>gspat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void autd::gain::holo::BLASBackend::gspat </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>foci</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>amps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>repeat</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>dst</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a6f690b606e1bf3743916a4f31b2baad4">autd::gain::holo::Backend</a>.</p>
+
+</div>
+</div>
+<a id="a73f23f2b64e3412dcb0ffb27a8cb2414"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73f23f2b64e3412dcb0ffb27a8cb2414">&#9670;&nbsp;</a></span>lm()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void autd::gain::holo::BLASBackend::lm </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>foci</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>amps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>eps_1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>eps_2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>tau</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>k_max</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>initial</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>dst</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#ad17e5b450d40f65e207ec9fbd4a59e0c">autd::gain::holo::Backend</a>.</p>
+
+</div>
+</div>
+<a id="af74e4e68c62b44c47db8cf59cf2d3d8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af74e4e68c62b44c47db8cf59cf2d3d8d">&#9670;&nbsp;</a></span>naive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void autd::gain::holo::BLASBackend::naive </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>foci</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>amps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>dst</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a1d915b435663d7acd7ca12438b0cd3ad">autd::gain::holo::Backend</a>.</p>
+
+</div>
+</div>
+<a id="a31653652235ea90abc17296102faa3c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31653652235ea90abc17296102faa3c9">&#9670;&nbsp;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html">BLASBackend</a>&amp; autd::gain::holo::BLASBackend::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html">BLASBackend</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>obj</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab3c13480405f263802c36571d8790962"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3c13480405f263802c36571d8790962">&#9670;&nbsp;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html">BLASBackend</a>&amp; autd::gain::holo::BLASBackend::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classautd_1_1gain_1_1holo_1_1BLASBackend.html">BLASBackend</a> &amp;&#160;</td>
+          <td class="paramname"><em>obj</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a45163b09cebed7b8f9f314616a6707aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45163b09cebed7b8f9f314616a6707aa">&#9670;&nbsp;</a></span>sdp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void autd::gain::holo::BLASBackend::sdp </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610">core::Vector3</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>foci</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>amps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">double&#160;</td>
           <td class="paramname"><em>alpha</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
-          <td class="paramname"><em>a</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
-          <td class="paramname"><em>b</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#af98150f1d785d3a2b111baf40340de03">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="a795d3597480754ca6452cd2d7f06e7b9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a795d3597480754ca6452cd2d7f06e7b9">&#9670;&nbsp;</a></span>matrix_mul() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void autd::gain::holo::BLASBackend::matrix_mul </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespaceautd_1_1gain_1_1holo.html#a1e64d32be5947b46b7c11888905946ef">TRANSPOSE</a>&#160;</td>
-          <td class="paramname"><em>trans_a</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespaceautd_1_1gain_1_1holo.html#a1e64d32be5947b46b7c11888905946ef">TRANSPOSE</a>&#160;</td>
-          <td class="paramname"><em>trans_b</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a>&#160;</td>
-          <td class="paramname"><em>alpha</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>a</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>b</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a>&#160;</td>
-          <td class="paramname"><em>beta</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>c</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a834be497265a1a68a499c2d0c7d1c400">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="a7e9b6806ab62e120dff2ff9ca4092d83"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7e9b6806ab62e120dff2ff9ca4092d83">&#9670;&nbsp;</a></span>matrix_mul() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void autd::gain::holo::BLASBackend::matrix_mul </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespaceautd_1_1gain_1_1holo.html#a1e64d32be5947b46b7c11888905946ef">TRANSPOSE</a>&#160;</td>
-          <td class="paramname"><em>trans_a</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespaceautd_1_1gain_1_1holo.html#a1e64d32be5947b46b7c11888905946ef">TRANSPOSE</a>&#160;</td>
-          <td class="paramname"><em>trans_b</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>alpha</em>, </td>
+          <td class="paramname"><em>lambda</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
-          <td class="paramname"><em>a</em>, </td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>repeat</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
-          <td class="paramname"><em>b</em>, </td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>normalize</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>beta</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
-          <td class="paramname"><em>c</em>&#160;</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceautd_1_1core.html#a74be7779b27479da7e4076005748427d">core::DataArray</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>dst</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -564,270 +977,12 @@ Static Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">pure virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a42239eb47ebef9a4c4d89222153b3432">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="ab027b256389d37555ffee0d67a494c28"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab027b256389d37555ffee0d67a494c28">&#9670;&nbsp;</a></span>max_coefficient() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">double autd::gain::holo::BLASBackend::max_coefficient </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
-          <td class="paramname"><em>v</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#ab20d9aae7b172e3f3d951ec69bab429c">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="a3937c5dfb9baa474a77c0455cfb7df4c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3937c5dfb9baa474a77c0455cfb7df4c">&#9670;&nbsp;</a></span>max_coefficient() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">double autd::gain::holo::BLASBackend::max_coefficient </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>v</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a3e780e96958ca44ae6ad306d7634502e">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="a7e9edbb9ba0787669261031164d291c6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7e9edbb9ba0787669261031164d291c6">&#9670;&nbsp;</a></span>max_eigen_vector()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void autd::gain::holo::BLASBackend::max_eigen_vector </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>matrix</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>ev</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a10699b8244b7a4b37d542cd9c1c65d41">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="a4a9f145c349f11bca1c491bff796fce6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4a9f145c349f11bca1c491bff796fce6">&#9670;&nbsp;</a></span>pseudo_inverse_svd()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void autd::gain::holo::BLASBackend::pseudo_inverse_svd </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>matrix</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>alpha</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>result</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a2bd2a46580db24f3b94a880674f92c35">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="a8bb88c61ecde2c5bc23cae6d1396b7e7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8bb88c61ecde2c5bc23cae6d1396b7e7">&#9670;&nbsp;</a></span>scale()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void autd::gain::holo::BLASBackend::scale </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>a</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespaceautd_1_1gain_1_1holo.html#a39dcdf77cee7ed616e4c2766be7505a1">complex</a>&#160;</td>
-          <td class="paramname"><em>s</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a2fe1b23ea9958c9fcbf6a811da3bfdaf">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="a748ab325f0e86c0628f8522ace57dbe7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a748ab325f0e86c0628f8522ace57dbe7">&#9670;&nbsp;</a></span>solve_ch()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void autd::gain::holo::BLASBackend::solve_ch </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>a</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#ae2e9eba1162345eb002a3771d63007c8">MatrixXc</a> &gt;&#160;</td>
-          <td class="paramname"><em>b</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a7c2809b82ace980108f9b9acc4758b9d">autd::gain::holo::Backend</a>.</p>
-
-</div>
-</div>
-<a id="a8a2b2527c3c7399835df170add03a3b7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8a2b2527c3c7399835df170add03a3b7">&#9670;&nbsp;</a></span>solve_g()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void autd::gain::holo::BLASBackend::solve_g </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
-          <td class="paramname"><em>a</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
-          <td class="paramname"><em>b</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="namespaceautd_1_1gain_1_1holo.html#a3f57561796dab3ce13f6985922b677a5">MatrixX</a> &gt;&#160;</td>
-          <td class="paramname"><em>c</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#a4066b2296ccaee62f711444d014fbd66">autd::gain::holo::Backend</a>.</p>
+<p>Implements <a class="el" href="classautd_1_1gain_1_1holo_1_1Backend.html#afc1ee44b8c73318d352816a47f3d77cb">autd::gain::holo::Backend</a>.</p>
 
 </div>
 </div>

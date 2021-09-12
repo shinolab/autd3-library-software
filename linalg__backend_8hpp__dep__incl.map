@@ -1,7 +1,0 @@
-<map id="include/autd3/gain/linalg_backend.hpp" name="include/autd3/gain/linalg_backend.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="166,5,302,47"/>
-<area shape="rect" id="node2" href="$eigen__backend_8hpp.html" title=" " alt="" coords="5,95,143,136"/>
-<area shape="rect" id="node4" href="$cuda__backend_8hpp.html" title=" " alt="" coords="167,95,301,136"/>
-<area shape="rect" id="node5" href="$holo_8hpp.html" title=" " alt="" coords="325,95,452,136"/>
-<area shape="rect" id="node3" href="$blas__backend_8hpp.html" title=" " alt="" coords="9,184,139,225"/>
-</map>

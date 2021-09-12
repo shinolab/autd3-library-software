@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['utilities_356',['Utilities',['../classautd_1_1core_1_1Utilities.html',1,'autd::core']]]
+  ['timererror_333',['TimerError',['../classautd_1_1core_1_1exception_1_1TimerError.html',1,'autd::core::exception']]],
+  ['transducertest_334',['TransducerTest',['../classautd_1_1gain_1_1TransducerTest.html',1,'autd::gain']]],
+  ['twincat_335',['TwinCAT',['../classautd_1_1link_1_1TwinCAT.html',1,'autd::link']]]
 ];

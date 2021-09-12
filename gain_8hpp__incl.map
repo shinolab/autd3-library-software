@@ -1,10 +1,10 @@
 <map id="include/autd3/core/gain.hpp" name="include/autd3/core/gain.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="211,5,339,47"/>
+<area shape="rect" id="node1" title=" " alt="" coords="198,5,326,47"/>
 <area shape="rect" id="node2" title=" " alt="" coords="5,169,73,196"/>
 <area shape="rect" id="node3" title=" " alt="" coords="98,169,157,196"/>
-<area shape="rect" id="node4" href="$geometry_8hpp.html" title=" " alt="" coords="226,95,325,121"/>
+<area shape="rect" id="node4" href="$geometry_8hpp.html" title=" " alt="" coords="213,95,311,121"/>
 <area shape="rect" id="node8" href="$hardware__defined_8hpp.html" title=" " alt="" coords="447,169,594,196"/>
-<area shape="rect" id="node11" href="$core_2utils_8hpp.html" title=" " alt="" coords="620,95,691,121"/>
+<area shape="rect" id="node11" href="$core_2utils_8hpp.html" title=" " alt="" coords="552,95,623,121"/>
 <area shape="rect" id="node5" title=" " alt="" coords="181,169,276,196"/>
 <area shape="rect" id="node6" title=" " alt="" coords="300,169,347,196"/>
 <area shape="rect" id="node7" title=" " alt="" coords="371,169,423,196"/>
