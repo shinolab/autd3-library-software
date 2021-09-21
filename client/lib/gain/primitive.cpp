@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/09/2021
+// Last Modified: 22/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -34,7 +34,6 @@ void Grouped::calc(const core::GeometryPtr& geometry) {
     auto group_id = geometry->group_id_for_device_idx(i);
     this->_data[i] = _gain_map.count(group_id) ? _gain_map[group_id]->data()[i] : DataArray{0x0000};
   }
-  this->_built = true;
 }
 
 GainPtr PlaneWave::create(const Vector3& direction, const double amp) { return create(direction, core::Utilities::to_duty(amp)); }
@@ -51,8 +50,6 @@ void PlaneWave::calc(const core::GeometryPtr& geometry) {
       const auto phase = core::Utilities::to_phase(dist / ultrasound_wavelength);
       this->_data[dev][i] = core::Utilities::pack_to_u16(this->_duty, phase);
     }
-
-  this->_built = true;
 }
 
 GainPtr FocalPoint::create(const Vector3& point, const double amp) { return create(point, core::Utilities::to_duty(amp)); }
@@ -66,8 +63,6 @@ void FocalPoint::calc(const core::GeometryPtr& geometry) {
       const auto phase = core::Utilities::to_phase(dist / ultrasound_wavelength);
       this->_data[dev][i] = core::Utilities::pack_to_u16(this->_duty, phase);
     }
-
-  this->_built = true;
 }
 
 GainPtr BesselBeam::create(const Vector3& point, const Vector3& vec_n, const double theta_z, const double amp) {
@@ -94,7 +89,6 @@ void BesselBeam::calc(const core::GeometryPtr& geometry) {
       const auto phase = core::Utilities::to_phase(d / ultrasound_wavelength);
       this->_data[dev][i] = core::Utilities::pack_to_u16(this->_duty, phase);
     }
-  this->_built = true;
 }
 
 GainPtr Custom::create(const uint16_t* data, const size_t data_length) {
@@ -109,10 +103,7 @@ GainPtr Custom::create(const uint16_t* data, const size_t data_length) {
 
 GainPtr Custom::create(const std::vector<DataArray>& data) { return std::make_shared<Custom>(data); }
 
-void Custom::calc(const core::GeometryPtr&) {
-  this->_data = std::move(this->_raw_data);
-  this->_built = true;
-}
+void Custom::calc(const core::GeometryPtr&) { this->_data = std::move(this->_raw_data); }
 
 GainPtr TransducerTest::create(const size_t transducer_index, const uint8_t duty, const uint8_t phase) {
   return std::make_shared<TransducerTest>(transducer_index, duty, phase);
@@ -121,7 +112,5 @@ GainPtr TransducerTest::create(const size_t transducer_index, const uint8_t duty
 void TransducerTest::calc(const core::GeometryPtr& geometry) {
   this->_data[geometry->device_idx_for_trans_idx(_transducer_idx)][_transducer_idx % NUM_TRANS_IN_UNIT] =
       core::Utilities::pack_to_u16(this->_duty, this->_phase);
-
-  this->_built = true;
 }
 }  // namespace autd::gain

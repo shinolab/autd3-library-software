@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/09/2021
+// Last Modified: 22/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -30,7 +30,7 @@ using ModulationPtr = std::shared_ptr<Modulation>;
 class Modulation {
  public:
   Modulation() noexcept : Modulation(10) {}
-  explicit Modulation(const uint16_t freq_div) noexcept : _freq_div(freq_div), _sent(0) {}
+  explicit Modulation(const uint16_t freq_div) noexcept : _built(false), _freq_div(freq_div), _sent(0) {}
   virtual ~Modulation() = default;
   Modulation(const Modulation& v) noexcept = default;
   Modulation& operator=(const Modulation& obj) = default;
@@ -62,9 +62,10 @@ class Modulation {
    * \brief Build modulation data
    */
   void build() {
+    if (this->_built) return;
     this->calc();
     if (this->_buffer.size() > MOD_BUF_SIZE_MAX) throw core::exception::ModulationBuildError("Modulation buffer overflow");
-    return;
+    this->_built = true;
   }
 
   /**
@@ -75,7 +76,7 @@ class Modulation {
   /**
    * \brief modulation data
    */
-  std::vector<uint8_t>& buffer() { return _buffer; }
+  const std::vector<uint8_t>& buffer() const { return _buffer; }
 
   /**
    * \brief modulation sampling frequency division
@@ -88,6 +89,7 @@ class Modulation {
   [[nodiscard]] double sampling_freq() const noexcept { return static_cast<double>(MOD_SAMPLING_FREQ_BASE) / static_cast<double>(this->_freq_div); }
 
  protected:
+  bool _built;
   uint16_t _freq_div;
   size_t _sent;
   std::vector<uint8_t> _buffer;
