@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 23/07/2021
+// Last Modified: 22/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -39,7 +39,6 @@ class Gain {
    */
   virtual void calc(const GeometryPtr& geometry) {
     for (size_t i = 0; i < geometry->num_devices(); i++) this->_data[i].fill(0x0000);
-    this->_built = true;
   }
 
   /**
@@ -54,7 +53,8 @@ class Gain {
     this->_data.clear();
     this->_data.resize(num_device);
 
-    return this->calc(geometry);
+    this->calc(geometry);
+    this->_built = true;
   }
 
   /**
@@ -63,14 +63,14 @@ class Gain {
    */
   void rebuild(const GeometryPtr& geometry) {
     this->_built = false;
-    return this->build(geometry);
+    this->build(geometry);
   }
 
   /**
    * @brief Getter function for the data of duty ratio and phase of each transducers
    * @details Each data is 16 bit unsigned integer, where high 8bits represents duty ratio and low 8bits represents phase
    */
-  std::vector<DataArray>& data() { return _data; }
+  const std::vector<DataArray>& data() const { return _data; }
 
   Gain() noexcept : _built(false) {}
   virtual ~Gain() = default;

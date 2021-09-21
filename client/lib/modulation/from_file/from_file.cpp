@@ -3,7 +3,7 @@
 // Created Date: 17/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/09/2021
+// Last Modified: 22/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -79,9 +79,9 @@ void RawPCM::calc() {
   }
 
   if (max_v - min_v < std::numeric_limits<double>::epsilon()) max_v = min_v + 1;
-  this->buffer().resize(lpf_buf.size(), 0);
+  this->_buffer.resize(lpf_buf.size(), 0);
   for (size_t i = 0; i < lpf_buf.size(); i++) {
-    this->buffer().at(i) = static_cast<uint8_t>(round(255 * ((lpf_buf.at(i) - min_v) / (max_v - min_v))));
+    this->_buffer[i] = static_cast<uint8_t>(round(255 * ((lpf_buf.at(i) - min_v) / (max_v - min_v))));
   }
 }
 
@@ -161,6 +161,6 @@ void Wav::calc() {
     sample_buf.at(i) = _buf.at(idx);
   }
 
-  this->buffer() = std::move(sample_buf);
+  this->_buffer = std::move(sample_buf);
 }
 }  // namespace autd::modulation
