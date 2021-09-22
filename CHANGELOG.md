@@ -1,3 +1,6 @@
+# 1.7.3
+* Fix minor bugs
+
 # 1.7.2
 * Impl `Holo::GaussNewton`, `Holo::GradientDescent`, and `Holo::APO`
 * Add `ArrayFireBackend`
