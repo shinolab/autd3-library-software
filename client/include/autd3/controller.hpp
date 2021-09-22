@@ -59,6 +59,18 @@ class Controller {
   class STMController;
   class STMTimer;
 
+  Controller() noexcept
+      : _link(nullptr),
+        _geometry(std::make_unique<core::Geometry>()),
+        _props(ControllerProps(true, false, false, false)),
+        _tx_buf(nullptr),
+        _rx_buf(nullptr) {}
+  ~Controller();
+  Controller(const Controller& v) noexcept = delete;
+  Controller& operator=(const Controller& obj) = delete;
+  Controller(Controller&& obj) = default;
+  Controller& operator=(Controller&& obj) = default;
+
   static ControllerPtr create();
 
   /**
@@ -251,13 +263,6 @@ class Controller {
   };
 
  private:
-  Controller() noexcept
-      : _link(nullptr),
-        _geometry(std::make_unique<core::Geometry>()),
-        _props(ControllerProps(true, false, false, false)),
-        _tx_buf(nullptr),
-        _rx_buf(nullptr) {}
-
   class STMTimerCallback final : core::CallbackHandler {
    public:
     friend class STMController;
