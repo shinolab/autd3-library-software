@@ -1,4 +1,4 @@
-﻿// File: primitive_gain.hpp
+// File: primitive_gain.hpp
 // Project: include
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
@@ -127,24 +127,25 @@ class BesselBeam final : public Gain {
  public:
   /**
    * @brief Generate function
-   * @param[in] point start point of the beam
+   * @param[in] apex apex of the conical wavefront of the beam
    * @param[in] vec_n direction of the beam
    * @param[in] theta_z angle between the conical wavefront of the beam and the direction
    * @param[in] duty duty ratio of driving signal
    */
-  static GainPtr create(const Vector3& point, const Vector3& vec_n, double theta_z, uint8_t duty = 0xff);
+  static GainPtr create(const Vector3& apex, const Vector3& vec_n, double theta_z, uint8_t duty = 0xff);
+
   /**
    * @brief Generate function
-   * @param[in] point start point of the beam
+   * @param[in] apex apex of the conical wavefront of the beam
    * @param[in] vec_n direction of the beam
    * @param[in] theta_z angle between the conical wavefront of the beam and the direction
    * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
    */
-  static GainPtr create(const Vector3& point, const Vector3& vec_n, double theta_z, double amp);
+  static GainPtr create(const Vector3& apex, const Vector3& vec_n, double theta_z, double amp);
 
   void calc(const core::GeometryPtr& geometry) override;
-  explicit BesselBeam(Vector3 point, Vector3 vec_n, const double theta_z, const uint8_t duty)
-      : Gain(), _point(std::move(point)), _vec_n(std::move(vec_n)), _theta_z(theta_z), _duty(duty) {}
+  explicit BesselBeam(Vector3 apex, Vector3 vec_n, const double theta_z, const uint8_t duty)
+      : Gain(), _apex(std::move(apex)), _vec_n(std::move(vec_n)), _theta_z(theta_z), _duty(duty) {}
   ~BesselBeam() override = default;
   BesselBeam(const BesselBeam& v) noexcept = default;
   BesselBeam& operator=(const BesselBeam& obj) = default;
@@ -152,10 +153,10 @@ class BesselBeam final : public Gain {
   BesselBeam& operator=(BesselBeam&& obj) = default;
 
  private:
-  Vector3 _point = Vector3::Zero();
-  Vector3 _vec_n = Vector3::UnitZ();
-  double _theta_z = 0;
-  uint8_t _duty = 0xff;
+  Vector3 _apex;
+  Vector3 _vec_n;
+  double _theta_z;
+  uint8_t _duty;
 };
 
 /**
