@@ -1,9 +1,9 @@
-// File: primitive_gain.hpp
+﻿// File: primitive_gain.hpp
 // Project: include
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/07/2021
+// Last Modified: 22/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -85,8 +85,8 @@ class PlaneWave final : public Gain {
   PlaneWave& operator=(PlaneWave&& obj) = default;
 
  private:
-  Vector3 _direction = Vector3::UnitZ();
-  uint8_t _duty = 0xFF;
+  Vector3 _direction;
+  uint8_t _duty;
 };
 
 /**
@@ -116,8 +116,8 @@ class FocalPoint final : public Gain {
   FocalPoint& operator=(FocalPoint&& obj) = default;
 
  private:
-  Vector3 _point = Vector3::Zero();
-  uint8_t _duty = 0xff;
+  Vector3 _point;
+  uint8_t _duty;
 };
 
 /**
@@ -213,8 +213,8 @@ class TransducerTest final : public Gain {
   TransducerTest& operator=(TransducerTest&& obj) = default;
 
  protected:
-  size_t _transducer_idx = 0;
-  uint8_t _duty = 0;
-  uint8_t _phase = 0;
+  size_t _transducer_idx;
+  uint8_t _duty;
+  uint8_t _phase;
 };
 }  // namespace autd::gain
