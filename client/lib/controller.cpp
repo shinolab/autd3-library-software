@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/09/2021
+// Last Modified: 22/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -44,7 +44,7 @@ bool& Controller::silent_mode() noexcept { return this->_props._silent_mode; }
 bool& Controller::reads_fpga_info() noexcept { return this->_props._reads_fpga_info; }
 bool& Controller::force_fan() noexcept { return this->_props._force_fan; }
 
-std::vector<uint8_t> Controller::fpga_info() {
+const std::vector<uint8_t>& Controller::fpga_info() {
   const auto num_devices = this->_geometry->num_devices();
   this->_link->read(&_rx_buf[0], num_devices * core::EC_INPUT_FRAME_SIZE);
   for (size_t i = 0; i < num_devices; i++) this->_fpga_infos[i] = _rx_buf[2 * i];
@@ -65,7 +65,7 @@ void Controller::open(core::LinkPtr link) {
   init_delay_offset();
 
   this->_link = std::move(link);
-  return this->_link->open();
+  this->_link->open();
 }
 
 void Controller::init_delay_offset() {
