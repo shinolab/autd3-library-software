@@ -29,12 +29,9 @@ uint8_t Controller::ControllerProps::ctrl_flag() const {
   return flag;
 }
 
-ControllerPtr Controller::create() {
-  struct Impl : Controller {
-    Impl() : Controller() {}
-  };
-  return std::make_unique<Impl>();
-}
+Controller::~Controller() { this->close(); }
+
+ControllerPtr Controller::create() { return std::make_unique<Controller>(); }
 
 bool Controller::is_open() const { return this->_link != nullptr && this->_link->is_open(); }
 
@@ -288,8 +285,8 @@ void Controller::STMTimerCallback::add(std::unique_ptr<uint8_t[]> data, const si
   this->_sizes.emplace_back(size);
 }
 void Controller::STMTimerCallback::clear() {
-  std::vector<std::unique_ptr<uint8_t[]>>().swap(this->_bodies);
-  std::vector<size_t>().swap(this->_sizes);
+  this->_bodies.clear();
+  this->_sizes.clear();
   this->_idx = 0;
 }
 
