@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 07/09/2021
+// Last Modified: 22/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -91,7 +91,7 @@ class Controller {
    *  \return ok with FPGA information if succeeded, or err with error message if failed
    *  \details the first bit of FPGA info represents whether the fan is running.
    */
-  std::vector<uint8_t> fpga_info();
+  const std::vector<uint8_t>& fpga_info();
 
   /**
    * @brief Update control flag
