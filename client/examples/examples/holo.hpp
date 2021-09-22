@@ -25,7 +25,7 @@ using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SPACING_MM;
 inline autd::GainPtr select_opt(const std::vector<autd::Vector3>& foci, const std::vector<double>& amps) {
   std::cout << "Select Optimization Method (default is SDP)" << std::endl;
 
-  const auto backend = EigenBackend::create();
+  const auto backend = autd::gain::holo::EigenBackend::create();
 
   std::vector<std::tuple<std::string, autd::GainPtr>> opts;
   opts.emplace_back(std::make_tuple("SDP", autd::gain::holo::SDP::create(backend, foci, amps)));
