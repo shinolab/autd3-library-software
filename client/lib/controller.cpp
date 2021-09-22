@@ -61,8 +61,8 @@ void Controller::open(core::LinkPtr link) {
   this->_offset.resize(this->_geometry->num_devices());
   init_delay_offset();
 
+  link->open();
   this->_link = std::move(link);
-  this->_link->open();
 }
 
 void Controller::init_delay_offset() {
