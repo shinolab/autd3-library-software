@@ -65,7 +65,7 @@ class Controller {
         _props(ControllerProps(true, false, false, false)),
         _tx_buf(nullptr),
         _rx_buf(nullptr) {}
-  ~Controller();
+  ~Controller() noexcept;
   Controller(const Controller& v) noexcept = delete;
   Controller& operator=(const Controller& obj) = delete;
   Controller(Controller&& obj) = default;

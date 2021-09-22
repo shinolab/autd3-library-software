@@ -65,12 +65,12 @@ void FocalPoint::calc(const core::GeometryPtr& geometry) {
     }
 }
 
-GainPtr BesselBeam::create(const Vector3& point, const Vector3& vec_n, const double theta_z, const double amp) {
-  return create(point, vec_n, theta_z, core::Utilities::to_duty(amp));
+GainPtr BesselBeam::create(const Vector3& apex, const Vector3& vec_n, const double theta_z, const double amp) {
+  return create(apex, vec_n, theta_z, core::Utilities::to_duty(amp));
 }
 
-GainPtr BesselBeam::create(const Vector3& point, const Vector3& vec_n, double theta_z, uint8_t duty) {
-  return std::make_shared<BesselBeam>(point, vec_n, theta_z, duty);
+GainPtr BesselBeam::create(const Vector3& apex, const Vector3& vec_n, double theta_z, uint8_t duty) {
+  return std::make_shared<BesselBeam>(apex, vec_n, theta_z, duty);
 }
 
 void BesselBeam::calc(const core::GeometryPtr& geometry) {
