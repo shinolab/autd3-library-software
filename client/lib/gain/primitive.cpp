@@ -43,11 +43,11 @@ GainPtr PlaneWave::create(const Vector3& direction, uint8_t duty) { return std::
 void PlaneWave::calc(const core::GeometryPtr& geometry) {
   const auto dir = this->_direction.normalized();
 
-  const auto ultrasound_wavelength = geometry->wavelength();
+  const auto wavenum = 2.0 * M_PI / geometry->wavelength();
   for (size_t dev = 0; dev < geometry->num_devices(); dev++)
     for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
       const auto dist = geometry->position(dev, i).dot(dir);
-      const auto phase = core::Utilities::to_phase(dist / ultrasound_wavelength);
+      const auto phase = core::Utilities::to_phase(dist * wavenum);
       this->_data[dev][i] = core::Utilities::pack_to_u16(this->_duty, phase);
     }
 }
@@ -56,11 +56,11 @@ GainPtr FocalPoint::create(const Vector3& point, const double amp) { return crea
 GainPtr FocalPoint::create(const Vector3& point, uint8_t duty) { return std::make_shared<FocalPoint>(point, duty); }
 
 void FocalPoint::calc(const core::GeometryPtr& geometry) {
-  const auto ultrasound_wavelength = geometry->wavelength();
+  const auto wavenum = 2.0 * M_PI / geometry->wavelength();
   for (size_t dev = 0; dev < geometry->num_devices(); dev++)
     for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
       const auto dist = (geometry->position(dev, i) - this->_point).norm();
-      const auto phase = core::Utilities::to_phase(dist / ultrasound_wavelength);
+      const auto phase = core::Utilities::to_phase(dist * wavenum);
       this->_data[dev][i] = core::Utilities::pack_to_u16(this->_duty, phase);
     }
 }
@@ -79,14 +79,14 @@ void BesselBeam::calc(const core::GeometryPtr& geometry) {
 
   const auto theta_w = std::asin(v.norm());
 
-  const auto ultrasound_wavelength = geometry->wavelength();
+  const auto wavenum = 2.0 * M_PI / geometry->wavelength();
   for (size_t dev = 0; dev < geometry->num_devices(); dev++)
     for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
       const auto r = geometry->position(dev, i) - this->_point;
       const auto v_x_r = r.cross(v);
       const auto rr = std::cos(theta_w) * r + std::sin(theta_w) * v_x_r + v.dot(r) * (1.0 - std::cos(theta_w)) * v;
       const auto d = std::sin(_theta_z) * std::sqrt(rr.x() * rr.x() + rr.y() * rr.y()) - std::cos(_theta_z) * rr.z();
-      const auto phase = core::Utilities::to_phase(d / ultrasound_wavelength);
+      const auto phase = core::Utilities::to_phase(d * wavenum);
       this->_data[dev][i] = core::Utilities::pack_to_u16(this->_duty, phase);
     }
 }
