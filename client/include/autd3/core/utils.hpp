@@ -3,7 +3,7 @@
 // Created Date: 08/06/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/09/2021
+// Last Modified: 22/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -31,12 +31,12 @@ class Utilities {
   }
 
   /**
-   * \brief Convert normalized phase to descrete phase.
-   * \param phase nomalized phase
+   * \brief Convert phase in radian to descrete phase used in device.
+   * \param phase phase in radian
    * \return descrete phase
    */
   inline static uint8_t to_phase(const double phase) noexcept {
-    const uint8_t d_phase = static_cast<uint8_t>(static_cast<int>(std::round((phase + 0.5) * 256.0)) & 0xFF);
+    const uint8_t d_phase = static_cast<uint8_t>(static_cast<int>(std::round((phase / (2.0 * M_PI) + 0.5) * 256.0)) & 0xFF);
     return core::PHASE_INVERTED ? d_phase : 0xFF - d_phase;
   }
 

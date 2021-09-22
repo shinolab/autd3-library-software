@@ -3,7 +3,7 @@
 // Created Date: 08/09/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/09/2021
+// Last Modified: 22/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -251,8 +251,7 @@ inline void AFMatrix<complex>::set_from_complex_drive(std::vector<core::DataArra
   size_t trans_idx = 0;
   for (size_t j = 0; j < n; j++) {
     const auto f_amp = normalize ? 1.0 : std::abs(data[j]) / max_coefficient;
-    const auto f_phase = std::arg(data[j]) / (2.0 * M_PI);
-    const auto phase = core::Utilities::to_phase(f_phase);
+    const auto phase = core::Utilities::to_phase(std::arg(data[j]));
     const auto duty = core::Utilities::to_duty(f_amp);
     dst[dev_idx][trans_idx++] = core::Utilities::pack_to_u16(duty, phase);
     if (trans_idx == core::NUM_TRANS_IN_UNIT) {
@@ -270,8 +269,7 @@ inline void AFMatrix<double>::set_from_arg(std::vector<core::DataArray>& dst, co
   af_array(af::seq(static_cast<double>(n))).host(data.get());
   for (size_t j = 0; j < n; j++) {
     constexpr uint8_t duty = 0xFF;
-    const auto f_phase = data[j] / (2 * M_PI);
-    const auto phase = core::Utilities::to_phase(f_phase);
+    const auto phase = core::Utilities::to_phase(data[j]);
     dst[dev_idx][trans_idx++] = core::Utilities::pack_to_u16(duty, phase);
     if (trans_idx == core::NUM_TRANS_IN_UNIT) {
       dev_idx++;
