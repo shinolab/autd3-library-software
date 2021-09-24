@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/09/2021
+// Last Modified: 24/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -129,7 +129,7 @@ class BesselBeam final : public Gain {
    * @brief Generate function
    * @param[in] apex apex of the conical wavefront of the beam
    * @param[in] vec_n direction of the beam
-   * @param[in] theta_z angle between the conical wavefront of the beam and the direction
+   * @param[in] theta_z angle between the side of the cone and the plane perpendicular to direction of the beam
    * @param[in] duty duty ratio of driving signal
    */
   static GainPtr create(const Vector3& apex, const Vector3& vec_n, double theta_z, uint8_t duty = 0xff);
