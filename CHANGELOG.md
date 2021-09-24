@@ -1,5 +1,6 @@
 # 1.7.3
 * Fix minor bugs
+* Add duty ratio to `Modulation::Square`
 
 # 1.7.2
 * Impl `Holo::GaussNewton`, `Holo::GradientDescent`, and `Holo::APO`
