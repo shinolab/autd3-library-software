@@ -1,4 +1,4 @@
-// File: primitive.cpp
+﻿// File: primitive.cpp
 // Project: modulation
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
@@ -75,20 +75,29 @@ void SineLegacy::calc() {
   }
 }
 
-ModulationPtr Square::create(const int freq, const uint8_t low, const uint8_t high) { return std::make_shared<Square>(freq, low, high); }
-ModulationPtr Square::create(const int freq, const double low, const double high) {
-  return create(freq, core::Utilities::to_duty(low), core::Utilities::to_duty(high));
+ModulationPtr Square::create(const int freq, const uint8_t low, const uint8_t high, const double duty) {
+  return std::make_shared<Square>(freq, low, high, duty);
+}
+ModulationPtr Square::create(const int freq, const double low, const double high, const double duty) {
+  return create(freq, core::Utilities::to_duty(low), core::Utilities::to_duty(high), duty);
 }
 
 void Square::calc() {
-  const auto sf = static_cast<int32_t>(sampling_freq());
-  const auto freq = std::clamp(this->_freq, 1, sf / 2);
-  const auto d = std::gcd(sf, freq);
-  const size_t n = sf / d;
+  const auto f_s = static_cast<int32_t>(sampling_freq());
+  const auto f = std::clamp(this->_freq, 1, f_s / 2);
+  const auto k = std::gcd(f_s, f);
+  const size_t n = f_s / k;
+  const size_t d = f / k;
 
-  std::fill(this->_buffer.begin(), this->_buffer.end(), this->_high);
-  this->_buffer.resize(n, this->_high);
-  std::memset(&this->_buffer[0], this->_low, n / 2);
+  std::fill(this->_buffer.begin(), this->_buffer.end(), this->_low);
+  this->_buffer.resize(n, this->_low);
+
+  auto* cursor = this->_buffer.data();
+  for (size_t i = 0; i < d; i++) {
+    const size_t size = (n + i) / d;
+    std::memset(cursor, this->_high, static_cast<size_t>(std::round(static_cast<double>(size) * _duty)));
+    cursor += size;
+  }
 }
 
 ModulationPtr Custom::create(const std::vector<uint8_t>& buffer) { return std::make_shared<Custom>(buffer); }
