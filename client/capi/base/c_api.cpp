@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/09/2021
+// Last Modified: 24/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -309,8 +309,8 @@ void AUTDModulationCustom(void** mod, const uint8_t* const buf, const uint32_t s
   auto* m = ModulationCreate(autd::modulation::Custom::create(buffer));
   *mod = m;
 }
-void AUTDModulationSquare(void** mod, const int32_t freq, const uint8_t low, const uint8_t high) {
-  auto* m = ModulationCreate(autd::modulation::Square::create(freq, low, high));
+void AUTDModulationSquare(void** mod, const int32_t freq, const uint8_t low, const uint8_t high, const double duty) {
+  auto* m = ModulationCreate(autd::modulation::Square::create(freq, low, high, duty));
   *mod = m;
 }
 void AUTDModulationSine(void** mod, const int32_t freq, const double amp, const double offset) {
