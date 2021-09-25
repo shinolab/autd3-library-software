@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 24/09/2021
+// Last Modified: 25/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -21,8 +21,8 @@ EXPORT_AUTD int32_t AUTDAddDeviceQuaternion(const void* handle, double x, double
                                             int32_t gid);
 EXPORT_AUTD int32_t AUTDDeleteDevice(const void* handle, int32_t idx);
 EXPORT_AUTD void AUTDClearDevices(const void* handle);
-EXPORT_AUTD bool AUTDCloseController(const void* handle);
-EXPORT_AUTD bool AUTDClear(const void* handle);
+EXPORT_AUTD int32_t AUTDCloseController(const void* handle);
+EXPORT_AUTD int32_t AUTDClear(const void* handle);
 EXPORT_AUTD void AUTDFreeController(const void* handle);
 EXPORT_AUTD bool AUTDIsOpen(const void* handle);
 EXPORT_AUTD bool AUTDIsSilentMode(const void* handle);
