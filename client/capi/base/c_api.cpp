@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 24/09/2021
+// Last Modified: 25/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -79,13 +79,13 @@ void AUTDClearDevices(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   wrapper->ptr->geometry()->clear_devices();
 }
-bool AUTDCloseController(const void* const handle) {
+int32_t AUTDCloseController(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  AUTD3_CAPI_TRY(return wrapper->ptr->close())
+  AUTD3_CAPI_TRY2(return wrapper->ptr->close() ? 1 : 0)
 }
-bool AUTDClear(const void* const handle) {
+int32_t AUTDClear(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  AUTD3_CAPI_TRY(return wrapper->ptr->clear())
+  AUTD3_CAPI_TRY2(return wrapper->ptr->clear() ? 1 : 0)
 }
 void AUTDFreeController(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
