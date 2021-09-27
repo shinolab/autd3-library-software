@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/07/2021
+// Last Modified: 27/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -58,7 +58,7 @@ class SOEMController {
   SOEMController& operator=(SOEMController&& obj) = delete;
 
   void open(const char* ifname, size_t dev_num, ECConfig config);
-  void set_lost_handler(std::function<void(std::string)> handler);
+  void on_lost(std::function<void(std::string)> callback);
   void close();
 
   [[nodiscard]] bool is_open() const;
@@ -70,7 +70,7 @@ class SOEMController {
   void setup_sync0(bool activate, uint32_t cycle_time_ns) const;
 
   bool error_handle();
-  std::function<void(std::string)> _link_lost_handle = nullptr;
+  std::function<void(std::string)> _on_lost = nullptr;
 
   std::unique_ptr<uint8_t[]> _io_map;
   size_t _io_map_size;

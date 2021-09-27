@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/09/2021
+// Last Modified: 27/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -118,7 +118,7 @@ void SOEMController::open(const char* ifname, const size_t dev_num, const ECConf
   _is_open = true;
 }
 
-void SOEMController::set_lost_handler(std::function<void(std::string)> handler) { _link_lost_handle = std::move(handler); }
+void SOEMController::on_lost(std::function<void(std::string)> callback) { _on_lost = std::move(callback); }
 
 void SOEMController::close() {
   if (!is_open()) return;
@@ -182,7 +182,7 @@ bool SOEMController::error_handle() {
   if (!ec_group[0].docheckstate) return true;
 
   this->_is_open = false;
-  if (_link_lost_handle != nullptr) _link_lost_handle(ss.str());
+  if (_on_lost != nullptr) _on_lost(ss.str());
   return false;
 }
 

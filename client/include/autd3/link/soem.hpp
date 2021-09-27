@@ -3,7 +3,7 @@
 // Created Date: 10/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/07/2021
+// Last Modified: 27/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -63,7 +63,7 @@ class SOEM : virtual public core::Link {
   void close() override = 0;
   void send(const uint8_t* buf, size_t size) override = 0;
   void read(uint8_t* rx, size_t buffer_len) override = 0;
-  virtual void set_lost_handler(std::function<void(std::string)> handler) = 0;
+  virtual void on_lost(std::function<void(std::string)> callback) = 0;
   bool is_open() override = 0;
 };
 }  // namespace autd::link

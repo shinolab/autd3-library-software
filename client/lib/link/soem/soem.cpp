@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/09/2021
+// Last Modified: 27/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -38,7 +38,7 @@ class SOEMImpl final : public SOEM {
   void close() override;
   void send(const uint8_t* buf, size_t size) override;
   void read(uint8_t* rx, size_t buffer_len) override;
-  void set_lost_handler(std::function<void(std::string)> handler) override;
+  void on_lost(std::function<void(std::string)> callback) override;
   bool is_open() override;
 
  private:
@@ -74,5 +74,5 @@ void SOEMImpl::read(uint8_t* rx, size_t) { return _cnt.read(rx); }
 
 bool SOEMImpl::is_open() { return _cnt.is_open(); }
 
-void SOEMImpl::set_lost_handler(std::function<void(std::string)> handler) { _cnt.set_lost_handler(std::move(handler)); }
+void SOEMImpl::on_lost(std::function<void(std::string)> callback) { _cnt.on_lost(std::move(callback)); }
 }  // namespace autd::link
