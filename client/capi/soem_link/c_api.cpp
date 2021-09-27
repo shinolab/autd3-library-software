@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/08/2021
+// Last Modified: 27/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -39,9 +39,9 @@ void AUTDFreeAdapterPointer(void* p_adapter) {
   EtherCATAdaptersDelete(wrapper);
 }
 
-void AUTDLinkSOEM(void** out, const char* ifname, const int32_t device_num, const uint32_t cycle_ticks, ErrorHandler handler) {
+void AUTDLinkSOEM(void** out, const char* ifname, const int32_t device_num, const uint32_t cycle_ticks, OnLostCallback callback) {
   auto soem_link = autd::link::SOEM::create(std::string(ifname), static_cast<size_t>(device_num), cycle_ticks);
-  if (handler != nullptr) soem_link->set_lost_handler([handler](const std::string& msg) { handler(msg.c_str()); });
+  if (callback != nullptr) soem_link->on_lost([callback](const std::string& msg) { callback(msg.c_str()); });
   auto* link = LinkCreate(std::move(soem_link));
   *out = link;
 }
