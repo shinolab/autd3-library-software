@@ -65,26 +65,26 @@ void FocalPoint::calc(const core::GeometryPtr& geometry) {
     }
 }
 
-GainPtr BesselBeam::create(const Vector3& point, const Vector3& vec_n, const double theta_z, const double amp) {
-  return create(point, vec_n, theta_z, core::Utilities::to_duty(amp));
+GainPtr BesselBeam::create(const Vector3& apex, const Vector3& vec_n, const double theta_z, const double amp) {
+  return create(apex, vec_n, theta_z, core::Utilities::to_duty(amp));
 }
 
-GainPtr BesselBeam::create(const Vector3& point, const Vector3& vec_n, double theta_z, uint8_t duty) {
-  return std::make_shared<BesselBeam>(point, vec_n, theta_z, duty);
+GainPtr BesselBeam::create(const Vector3& apex, const Vector3& vec_n, double theta_z, uint8_t duty) {
+  return std::make_shared<BesselBeam>(apex, vec_n, theta_z, duty);
 }
 
 void BesselBeam::calc(const core::GeometryPtr& geometry) {
-  if (_vec_n.norm() > 0) _vec_n = _vec_n.normalized();
-  const Vector3 v(_vec_n.y(), -_vec_n.x(), 0.);
-
-  const auto theta_w = std::asin(v.norm());
+  _vec_n.normalize();
+  Vector3 v = Vector3::UnitZ().cross(_vec_n);
+  const auto theta_v = std::asin(v.norm());
+  v.normalize();
+  const Eigen::AngleAxisd rot(-theta_v, v);
 
   const auto wavenum = 2.0 * M_PI / geometry->wavelength();
   for (size_t dev = 0; dev < geometry->num_devices(); dev++)
     for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
-      const auto r = geometry->position(dev, i) - this->_point;
-      const auto v_x_r = r.cross(v);
-      const auto rr = std::cos(theta_w) * r + std::sin(theta_w) * v_x_r + v.dot(r) * (1.0 - std::cos(theta_w)) * v;
+      const auto r = geometry->position(dev, i) - this->_apex;
+      const auto rr = rot * r;
       const auto d = std::sin(_theta_z) * std::sqrt(rr.x() * rr.x() + rr.y() * rr.y()) - std::cos(_theta_z) * rr.z();
       const auto phase = core::Utilities::to_phase(d * wavenum);
       this->_data[dev][i] = core::Utilities::pack_to_u16(this->_duty, phase);
