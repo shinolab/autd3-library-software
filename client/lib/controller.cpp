@@ -29,7 +29,12 @@ uint8_t Controller::ControllerProps::ctrl_flag() const {
   return flag;
 }
 
-Controller::~Controller() { this->close(); }
+Controller::~Controller() noexcept {
+  try {
+    this->close();
+  } catch (...) {
+  }
+}
 
 ControllerPtr Controller::create() { return std::make_unique<Controller>(); }
 
