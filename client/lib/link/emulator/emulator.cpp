@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/09/2021
+// Last Modified: 28/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -58,17 +58,17 @@ class EmulatorImpl final : public Emulator {
 
   static std::vector<uint8_t> init_geometry_buf(const core::GeometryPtr& geometry) {
     constexpr auto vec_size = 9 * sizeof(float);
-    const auto size = sizeof(core::RxGlobalHeader) + geometry->num_devices() * vec_size;
+    const auto size = sizeof(core::GlobalHeader) + geometry->num_devices() * vec_size;
     std::vector<uint8_t> buf;
     buf.resize(size);
 
-    auto* const uh = reinterpret_cast<core::RxGlobalHeader*>(&buf[0]);
+    auto* const uh = reinterpret_cast<core::GlobalHeader*>(&buf[0]);
     uh->msg_id = 0x00;
     uh->control_flags = 0x00;
     uh->command = core::COMMAND::EMULATOR_SET_GEOMETRY;
     uh->mod_size = 0x00;
 
-    auto* const cursor = reinterpret_cast<float*>(&buf[sizeof(core::RxGlobalHeader)]);
+    auto* const cursor = reinterpret_cast<float*>(&buf[sizeof(core::GlobalHeader)]);
     for (size_t i = 0; i < geometry->num_devices(); i++) {
       const auto trans_id = i * core::NUM_TRANS_IN_UNIT;
       auto origin = geometry->position(trans_id).cast<float>();
@@ -98,7 +98,7 @@ EmulatorImpl::EmulatorImpl(const uint16_t port, const core::GeometryPtr& geometr
     : _is_open(false), _port(port), _geometry_buf(init_geometry_buf(geometry)) {}
 
 void EmulatorImpl::send(const uint8_t* buf, const size_t size) {
-  const auto* header = reinterpret_cast<const core::RxGlobalHeader*>(buf);
+  const auto* header = reinterpret_cast<const core::GlobalHeader*>(buf);
   _last_msg_id = header->msg_id;
   _last_command = header->command;
   if (sendto(_socket, reinterpret_cast<const char*>(buf), static_cast<int>(size), 0, reinterpret_cast<sockaddr*>(&_addr), sizeof _addr) == -1)
@@ -167,8 +167,6 @@ void EmulatorImpl::read(uint8_t* rx, size_t buffer_len) {
     case core::COMMAND::SEQ_FOCI_MODE:
     case core::COMMAND::CLEAR:
     case core::COMMAND::SET_DELAY_OFFSET:
-    case core::COMMAND::PAUSE:
-    case core::COMMAND::RESUME:
     case core::COMMAND::SEQ_GAIN_MODE:
     case core::COMMAND::EMULATOR_SET_GEOMETRY:
       break;

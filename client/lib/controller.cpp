@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/09/2021
+// Last Modified: 28/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -22,10 +22,18 @@ namespace autd {
 
 uint8_t Controller::ControllerProps::ctrl_flag() const {
   uint8_t flag = 0;
+  if (this->_output_enable) flag |= core::OUTPUT_ENABLE;
+  if (this->_output_balance) flag |= core::OUTPUT_BALANCE;
   if (this->_silent_mode) flag |= core::SILENT;
-  if (this->_seq_mode) flag |= core::SEQ_MODE;
-  if (this->_reads_fpga_info) flag |= core::READ_FPGA_INFO;
   if (this->_force_fan) flag |= core::FORCE_FAN;
+  if (this->_op_mode) flag |= core::OP_MODE;
+  if (this->_seq_mode) flag |= core::SEQ_MODE;
+  return flag;
+}
+
+uint8_t Controller::ControllerProps::cmd_flag() const {
+  uint8_t flag = 0;
+  if (this->_reads_fpga_info) flag |= core::READS_FPGA_INFO;
   return flag;
 }
 
@@ -45,6 +53,7 @@ core::GeometryPtr& Controller::geometry() noexcept { return this->_geometry; }
 bool& Controller::silent_mode() noexcept { return this->_props._silent_mode; }
 bool& Controller::reads_fpga_info() noexcept { return this->_props._reads_fpga_info; }
 bool& Controller::force_fan() noexcept { return this->_props._force_fan; }
+bool& Controller::output_balance() noexcept { return this->_props._output_balance; }
 
 const std::vector<uint8_t>& Controller::fpga_info() {
   const auto num_devices = this->_geometry->num_devices();
@@ -83,16 +92,16 @@ bool Controller::clear() {
 }
 
 bool Controller::send_header(const core::COMMAND cmd) const {
-  constexpr auto send_size = sizeof(core::RxGlobalHeader);
+  constexpr auto send_size = sizeof(core::GlobalHeader);
   uint8_t msg_id = 0;
-  core::Logic::pack_header(cmd, _props.ctrl_flag(), &_tx_buf[0], &msg_id);
+  core::Logic::pack_header(cmd, _props.ctrl_flag(), _props.cmd_flag(), &_tx_buf[0], &msg_id);
   _link->send(&_tx_buf[0], send_size);
   return wait_msg_processed(msg_id);
 }
 
 bool Controller::send_delay_offset() const {
   uint8_t msg_id;
-  core::Logic::pack_header(core::COMMAND::SET_DELAY_OFFSET, _props.ctrl_flag(), &this->_tx_buf[0], &msg_id);
+  core::Logic::pack_header(core::COMMAND::SET_DELAY_OFFSET, _props.ctrl_flag(), _props.cmd_flag(), &this->_tx_buf[0], &msg_id);
   size_t size = 0;
   core::Logic::pack_delay_offset_body(this->_delay, this->_offset, &this->_tx_buf[0], &size);
   this->_link->send(&this->_tx_buf[0], size);
@@ -136,8 +145,14 @@ bool Controller::stop() {
   return this->pause() && res;
 }
 
-bool Controller::pause() const { return this->send_header(core::COMMAND::PAUSE); }
-bool Controller::resume() const { return this->send_header(core::COMMAND::RESUME); }
+bool Controller::pause() {
+  this->_props._output_enable = false;
+  return this->update_ctrl_flag();
+}
+bool Controller::resume() {
+  this->_props._output_enable = true;
+  return this->update_ctrl_flag();
+}
 
 bool Controller::send(const core::GainPtr& gain, const bool wait_for_msg_processed) { return this->send(gain, nullptr, wait_for_msg_processed); }
 
@@ -149,7 +164,8 @@ bool Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod,
     wait_for_msg_processed = true;
   }
   if (gain != nullptr) {
-    this->_props._seq_mode = false;
+    this->_props._output_enable = true;
+    this->_props._op_mode = core::OP_MODE_NORMAL;
     gain->build(this->_geometry);
   }
 
@@ -159,7 +175,7 @@ bool Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod,
   auto mod_finished = [](const core::ModulationPtr& m) { return m == nullptr || m->sent() == m->buffer().size(); };
   while (true) {
     uint8_t msg_id = 0;
-    core::Logic::pack_header(mod, _props.ctrl_flag(), &this->_tx_buf[0], &msg_id);
+    core::Logic::pack_header(mod, _props.ctrl_flag(), _props.cmd_flag(), &this->_tx_buf[0], &msg_id);
     this->_link->send(&this->_tx_buf[0], size);
     if (!wait_for_msg_processed && mod_finished(mod)) return false;
     if (const auto res = wait_msg_processed(msg_id); !res || mod_finished(mod)) return res;
@@ -169,10 +185,11 @@ bool Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod,
 bool Controller::send(const core::PointSequencePtr& seq) {
   auto seq_finished = [](const core::PointSequencePtr& s) { return s == nullptr || s->sent() == s->control_points().size(); };
 
-  this->_props._seq_mode = true;
+  this->_props._op_mode = core::OP_MODE_SEQ;
+  this->_props._seq_mode = core::SEQ_MODE_POINT;
   while (true) {
     uint8_t msg_id;
-    core::Logic::pack_header(core::COMMAND::SEQ_FOCI_MODE, _props.ctrl_flag(), &this->_tx_buf[0], &msg_id);
+    core::Logic::pack_header(core::COMMAND::SEQ_FOCI_MODE, _props.ctrl_flag(), _props.cmd_flag(), &this->_tx_buf[0], &msg_id);
     size_t size;
     core::Logic::pack_body(seq, this->_geometry, &this->_tx_buf[0], &size);
     this->_link->send(&this->_tx_buf[0], size);
@@ -185,10 +202,11 @@ bool Controller::send(const core::GainSequencePtr& seq) {
 
   for (auto&& g : seq->gains()) g->build(this->_geometry);
 
-  this->_props._seq_mode = true;
+  this->_props._op_mode = core::OP_MODE_SEQ;
+  this->_props._seq_mode = core::SEQ_MODE_GAIN;
   while (true) {
     uint8_t msg_id;
-    core::Logic::pack_header(core::COMMAND::SEQ_GAIN_MODE, _props.ctrl_flag(), &this->_tx_buf[0], &msg_id);
+    core::Logic::pack_header(core::COMMAND::SEQ_GAIN_MODE, _props.ctrl_flag(), _props.cmd_flag(), &this->_tx_buf[0], &msg_id);
     size_t size;
     core::Logic::pack_body(seq, this->_geometry, &this->_tx_buf[0], &size);
     this->_link->send(&this->_tx_buf[0], size);
@@ -259,7 +277,7 @@ void Controller::STMController::add_gain(const core::GainPtr& gain) const {
 
   uint8_t msg_id = 0;
   auto build_buf = std::make_unique<uint8_t[]>(this->_p_cnt->_geometry->num_devices() * core::EC_OUTPUT_FRAME_SIZE);
-  core::Logic::pack_header(nullptr, this->_p_cnt->_props.ctrl_flag(), &build_buf[0], &msg_id);
+  core::Logic::pack_header(nullptr, this->_p_cnt->_props.ctrl_flag(), this->_p_cnt->_props.cmd_flag(), &build_buf[0], &msg_id);
   size_t size = 0;
   core::Logic::pack_body(gain, &build_buf[0], &size);
 
