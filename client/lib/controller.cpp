@@ -55,6 +55,8 @@ bool& Controller::reads_fpga_info() noexcept { return this->_props._reads_fpga_i
 bool& Controller::force_fan() noexcept { return this->_props._force_fan; }
 bool& Controller::output_balance() noexcept { return this->_props._output_balance; }
 
+bool& Controller::hand_shake() noexcept { return this->_hand_shake; }
+
 const std::vector<uint8_t>& Controller::fpga_info() {
   const auto num_devices = this->_geometry->num_devices();
   this->_link->read(&_rx_buf[0], num_devices * core::EC_INPUT_FRAME_SIZE);
@@ -62,7 +64,7 @@ const std::vector<uint8_t>& Controller::fpga_info() {
   return _fpga_infos;
 }
 
-bool Controller::update_ctrl_flag() { return this->send(nullptr, nullptr, true); }
+bool Controller::update_ctrl_flag() { return this->send(nullptr, nullptr); }
 
 void Controller::open(core::LinkPtr link) {
   if (is_open()) this->close();
@@ -109,6 +111,7 @@ bool Controller::send_delay_offset() const {
 }
 
 bool Controller::wait_msg_processed(const uint8_t msg_id, const size_t max_trial) const {
+  if (!this->_hand_shake) return true;
   const auto num_devices = this->_geometry->num_devices();
   const auto buffer_len = num_devices * core::EC_INPUT_FRAME_SIZE;
   for (size_t i = 0; i < max_trial; i++) {
@@ -154,14 +157,13 @@ bool Controller::resume() {
   return this->update_ctrl_flag();
 }
 
-bool Controller::send(const core::GainPtr& gain, const bool wait_for_msg_processed) { return this->send(gain, nullptr, wait_for_msg_processed); }
+bool Controller::send(const core::GainPtr& gain) { return this->send(gain, nullptr); }
 
-bool Controller::send(const core::ModulationPtr& mod) { return this->send(nullptr, mod, true); }
+bool Controller::send(const core::ModulationPtr& mod) { return this->send(nullptr, mod); }
 
-bool Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod, bool wait_for_msg_processed) {
+bool Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod) {
   if (mod != nullptr) {
     mod->build();
-    wait_for_msg_processed = true;
   }
   if (gain != nullptr) {
     this->_props._output_enable = true;
@@ -177,7 +179,6 @@ bool Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod,
     uint8_t msg_id = 0;
     core::Logic::pack_header(mod, _props.ctrl_flag(), _props.cmd_flag(), &this->_tx_buf[0], &msg_id);
     this->_link->send(&this->_tx_buf[0], size);
-    if (!wait_for_msg_processed && mod_finished(mod)) return false;
     if (const auto res = wait_msg_processed(msg_id); !res || mod_finished(mod)) return res;
   }
 }
@@ -243,12 +244,15 @@ bool Controller::set_delay_offset(const std::vector<std::array<uint8_t, core::NU
   return this->send_delay_offset();
 }
 
-std::vector<FirmwareInfo> Controller::firmware_info_list() const {
+std::vector<FirmwareInfo> Controller::firmware_info_list() {
   auto concat_byte = [](const uint8_t high, const uint16_t low) { return static_cast<uint16_t>(static_cast<uint16_t>(high) << 8 | low); };
 
   std::vector<FirmwareInfo> infos;
 
   const auto num_devices = this->_geometry->num_devices();
+  const auto hand_shake = this->_hand_shake;
+  this->_hand_shake = true;
+
   std::vector<uint16_t> cpu_versions(num_devices);
   if (const auto res = send_header(core::COMMAND::READ_CPU_VER_LSB); !res) return infos;
   for (size_t i = 0; i < num_devices; i++) cpu_versions[i] = this->_rx_buf[2 * i];
@@ -260,6 +264,8 @@ std::vector<FirmwareInfo> Controller::firmware_info_list() const {
   for (size_t i = 0; i < num_devices; i++) fpga_versions[i] = this->_rx_buf[2 * i];
   if (const auto res = send_header(core::COMMAND::READ_FPGA_VER_MSB); !res) return infos;
   for (size_t i = 0; i < num_devices; i++) fpga_versions[i] = concat_byte(this->_rx_buf[2 * i], fpga_versions[i]);
+
+  this->_hand_shake = hand_shake;
 
   for (size_t i = 0; i < num_devices; i++) infos.emplace_back(FirmwareInfo(static_cast<uint16_t>(i), cpu_versions[i], fpga_versions[i]));
   return infos;

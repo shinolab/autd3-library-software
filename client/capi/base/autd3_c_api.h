@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/09/2021
+// Last Modified: 28/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -28,8 +28,12 @@ EXPORT_AUTD bool AUTDIsOpen(const void* handle);
 EXPORT_AUTD bool AUTDIsSilentMode(const void* handle);
 EXPORT_AUTD bool AUTDIsForceFan(const void* handle);
 EXPORT_AUTD bool AUTDIsReadsFPGAInfo(const void* handle);
+EXPORT_AUTD bool AUTDIsOutputBalance(const void* handle);
+EXPORT_AUTD bool AUTDIsHandShake(const void* handle);
 EXPORT_AUTD void AUTDSetSilentMode(const void* handle, bool mode);
 EXPORT_AUTD void AUTDSetReadsFPGAInfo(const void* handle, bool reads_fpga_info);
+EXPORT_AUTD void AUTDSetOutputBalance(const void* handle, bool output_balance);
+EXPORT_AUTD void AUTDSetHandShake(const void* handle, bool hand_shake);
 EXPORT_AUTD void AUTDSetForceFan(const void* handle, bool force);
 EXPORT_AUTD double AUTDGetWavelength(const void* handle);
 EXPORT_AUTD double AUTDGetAttenuation(const void* handle);
@@ -84,9 +88,9 @@ EXPORT_AUTD void AUTDDeleteSequence(const void* seq);
 EXPORT_AUTD int32_t AUTDStop(const void* handle);
 EXPORT_AUTD int32_t AUTDPause(const void* handle);
 EXPORT_AUTD int32_t AUTDResume(const void* handle);
-EXPORT_AUTD int32_t AUTDSendGain(const void* handle, const void* gain, bool wait_for_msg_processed);
+EXPORT_AUTD int32_t AUTDSendGain(const void* handle, const void* gain);
 EXPORT_AUTD int32_t AUTDSendModulation(const void* handle, const void* mod);
-EXPORT_AUTD int32_t AUTDSendGainModulation(const void* handle, const void* gain, const void* mod, bool wait_for_msg_processed);
+EXPORT_AUTD int32_t AUTDSendGainModulation(const void* handle, const void* gain, const void* mod);
 EXPORT_AUTD int32_t AUTDSendSequence(const void* handle, const void* seq);
 EXPORT_AUTD int32_t AUTDSendGainSequence(const void* handle, const void* seq);
 EXPORT_AUTD void AUTDSTMController(void** out, const void* handle);

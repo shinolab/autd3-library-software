@@ -70,7 +70,12 @@ class Controller {
   class STMTimer;
 
   Controller() noexcept
-      : _link(nullptr), _geometry(std::make_unique<core::Geometry>()), _props(ControllerProps()), _tx_buf(nullptr), _rx_buf(nullptr) {}
+      : _link(nullptr),
+        _geometry(std::make_unique<core::Geometry>()),
+        _props(ControllerProps()),
+        _hand_shake(true),
+        _tx_buf(nullptr),
+        _rx_buf(nullptr) {}
   ~Controller() noexcept;
   Controller(const Controller& v) noexcept = delete;
   Controller& operator=(const Controller& obj) = delete;
@@ -104,7 +109,15 @@ class Controller {
    */
   bool& force_fan() noexcept;
 
+  /**
+   * @brief If true, the applied voltage to transducers is dropped to GND while transducers are not being outputting.
+   */
   bool& output_balance() noexcept;
+
+  /**
+   * @brief hand shake mode
+   */
+  bool& hand_shake() noexcept;
 
   /**
    * @brief FPGA info
@@ -180,10 +193,9 @@ class Controller {
   /**
    * @brief Send gain to the device
    * @param[in] gain Gain to display
-   * @param[in] wait_for_msg_processed if true, this function waits until the data is processed in the devices
    * \return if true, it guarantees that the devices have processed the data
    */
-  bool send(const core::GainPtr& gain, bool wait_for_msg_processed = true);
+  bool send(const core::GainPtr& gain);
 
   /**
    * @brief Send modulation to the device
@@ -196,11 +208,9 @@ class Controller {
    * @brief Send gain and modulation to the device
    * @param[in] gain Gain to display
    * @param[in] mod Amplitude modulation to display
-   * @param[in] wait_for_msg_processed see details
-   * @details if wait_for_msg_processed is true OR mod is not nullptr, this function waits until the data is processed in the devices
    * \return if true, it guarantees that the devices have processed the data
    */
-  bool send(const core::GainPtr& gain, const core::ModulationPtr& mod, bool wait_for_msg_processed = true);
+  bool send(const core::GainPtr& gain, const core::ModulationPtr& mod);
 
   /**
    * @brief Send sequence to the device
@@ -220,7 +230,7 @@ class Controller {
    * @brief Enumerate firmware information
    * \return firmware information list. If failed, the vector is empty.
    */
-  [[nodiscard]] std::vector<FirmwareInfo> firmware_info_list() const;
+  [[nodiscard]] std::vector<FirmwareInfo> firmware_info_list();
 
   /**
    * \brief return pointer to software spatio-temporal modulation controller.
@@ -303,6 +313,7 @@ class Controller {
   core::LinkPtr _link;
   core::GeometryPtr _geometry;
   ControllerProps _props;
+  bool _hand_shake;
   std::unique_ptr<uint8_t[]> _tx_buf;
   std::unique_ptr<uint8_t[]> _rx_buf;
 

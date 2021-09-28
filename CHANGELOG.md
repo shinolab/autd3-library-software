@@ -1,6 +1,10 @@
-# 1.7.3
+# 1.8
 * Fix minor bugs
 * Add duty ratio to `Modulation::Square`
+* Add `Controller::output_balance`
+* Del `wait_for_msg_processed` option to `Controller::send()`
+    * Add `Controller::hand_shake` instead
+* Update firmware version to 1.8
 
 # 1.7.2
 * Impl `Holo::GaussNewton`, `Holo::GradientDescent`, and `Holo::APO`
