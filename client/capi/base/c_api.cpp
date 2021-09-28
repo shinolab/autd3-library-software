@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 25/09/2021
+// Last Modified: 28/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -91,7 +91,6 @@ void AUTDFreeController(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   ControllerDelete(wrapper);
 }
-
 bool AUTDIsOpen(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   return wrapper->ptr->is_open();
@@ -108,6 +107,14 @@ bool AUTDIsReadsFPGAInfo(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   return wrapper->ptr->reads_fpga_info();
 }
+bool AUTDIsOutputBalance(const void* const handle) {
+  const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
+  return wrapper->ptr->output_balance();
+}
+bool AUTDIsHandShake(const void* const handle) {
+  const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
+  return wrapper->ptr->hand_shake();
+}
 void AUTDSetSilentMode(const void* const handle, const bool mode) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   wrapper->ptr->silent_mode() = mode;
@@ -119,6 +126,14 @@ void AUTDSetForceFan(const void* const handle, const bool force) {
 void AUTDSetReadsFPGAInfo(const void* const handle, const bool reads_fpga_info) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   wrapper->ptr->reads_fpga_info() = reads_fpga_info;
+}
+void AUTDSetOutputBalance(const void* const handle, const bool output_balance) {
+  const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
+  wrapper->ptr->output_balance() = output_balance;
+}
+void AUTDSetHandShake(const void* const handle, const bool hand_shake) {
+  const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
+  wrapper->ptr->hand_shake() = hand_shake;
 }
 double AUTDGetWavelength(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
@@ -421,21 +436,21 @@ int32_t AUTDResume(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   AUTD3_CAPI_TRY2(return wrapper->ptr->resume() ? 1 : 0)
 }
-int32_t AUTDSendGain(const void* const handle, const void* const gain, const bool wait_for_msg_processed) {
+int32_t AUTDSendGain(const void* const handle, const void* const gain) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   const auto g = gain == nullptr ? nullptr : static_cast<const GainWrapper*>(gain)->ptr;
-  AUTD3_CAPI_TRY(return wrapper->ptr->send(g, wait_for_msg_processed) ? 1 : 0)
+  AUTD3_CAPI_TRY(return wrapper->ptr->send(g) ? 1 : 0)
 }
 int32_t AUTDSendModulation(const void* const handle, const void* const mod) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   const auto m = mod == nullptr ? nullptr : static_cast<const ModulationWrapper*>(mod)->ptr;
   AUTD3_CAPI_TRY(return wrapper->ptr->send(m) ? 1 : 0)
 }
-int32_t AUTDSendGainModulation(const void* const handle, const void* const gain, const void* const mod, const bool wait_for_msg_processed) {
+int32_t AUTDSendGainModulation(const void* const handle, const void* const gain, const void* const mod) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   const auto g = gain == nullptr ? nullptr : static_cast<const GainWrapper*>(gain)->ptr;
   const auto m = mod == nullptr ? nullptr : static_cast<const ModulationWrapper*>(mod)->ptr;
-  AUTD3_CAPI_TRY(return wrapper->ptr->send(g, m, wait_for_msg_processed) ? 1 : 0)
+  AUTD3_CAPI_TRY(return wrapper->ptr->send(g, m) ? 1 : 0)
 }
 int32_t AUTDSendSequence(const void* const handle, const void* const seq) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
