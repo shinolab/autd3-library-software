@@ -179,7 +179,8 @@ bool Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod)
     uint8_t msg_id = 0;
     core::Logic::pack_header(mod, _props.ctrl_flag(), _props.cmd_flag(), &this->_tx_buf[0], &msg_id);
     this->_link->send(&this->_tx_buf[0], size);
-    if (const auto res = wait_msg_processed(msg_id); !res || mod_finished(mod)) return res;
+    if (!wait_msg_processed(msg_id)) return false;
+    if (mod_finished(mod)) return true;
   }
 }
 
@@ -194,7 +195,11 @@ bool Controller::send(const core::PointSequencePtr& seq) {
     size_t size;
     core::Logic::pack_body(seq, this->_geometry, &this->_tx_buf[0], &size);
     this->_link->send(&this->_tx_buf[0], size);
-    if (const auto res = wait_msg_processed(msg_id); !res || seq_finished(seq)) return res;
+    if (!wait_msg_processed(msg_id)) return false;
+    if (seq_finished(seq)) {
+      this->_props._output_enable = true;
+      return true;
+    }
   }
 }
 
@@ -211,7 +216,11 @@ bool Controller::send(const core::GainSequencePtr& seq) {
     size_t size;
     core::Logic::pack_body(seq, this->_geometry, &this->_tx_buf[0], &size);
     this->_link->send(&this->_tx_buf[0], size);
-    if (const auto res = wait_msg_processed(msg_id); !res || seq_finished(seq)) return res;
+    if (!wait_msg_processed(msg_id)) return false;
+    if (seq_finished(seq)) {
+      this->_props._output_enable = true;
+      return true;
+    }
   }
 }
 
