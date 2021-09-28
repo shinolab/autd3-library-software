@@ -111,9 +111,9 @@ bool AUTDIsOutputBalance(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   return wrapper->ptr->output_balance();
 }
-bool AUTDIsHandShake(const void* const handle) {
+bool AUTDIsCheckAck(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  return wrapper->ptr->hand_shake();
+  return wrapper->ptr->check_ack();
 }
 void AUTDSetSilentMode(const void* const handle, const bool mode) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
@@ -131,9 +131,9 @@ void AUTDSetOutputBalance(const void* const handle, const bool output_balance) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   wrapper->ptr->output_balance() = output_balance;
 }
-void AUTDSetHandShake(const void* const handle, const bool hand_shake) {
+void AUTDSetCheckAck(const void* const handle, const bool check_ack) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  wrapper->ptr->hand_shake() = hand_shake;
+  wrapper->ptr->check_ack() = check_ack;
 }
 double AUTDGetWavelength(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);

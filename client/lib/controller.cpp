@@ -55,7 +55,7 @@ bool& Controller::reads_fpga_info() noexcept { return this->_props._reads_fpga_i
 bool& Controller::force_fan() noexcept { return this->_props._force_fan; }
 bool& Controller::output_balance() noexcept { return this->_props._output_balance; }
 
-bool& Controller::hand_shake() noexcept { return this->_hand_shake; }
+bool& Controller::check_ack() noexcept { return this->_check_ack; }
 
 const std::vector<uint8_t>& Controller::fpga_info() {
   const auto num_devices = this->_geometry->num_devices();
@@ -111,7 +111,7 @@ bool Controller::send_delay_offset() const {
 }
 
 bool Controller::wait_msg_processed(const uint8_t msg_id, const size_t max_trial) const {
-  if (!this->_hand_shake) return true;
+  if (!this->_check_ack) return true;
   const auto num_devices = this->_geometry->num_devices();
   const auto buffer_len = num_devices * core::EC_INPUT_FRAME_SIZE;
   for (size_t i = 0; i < max_trial; i++) {
@@ -259,8 +259,8 @@ std::vector<FirmwareInfo> Controller::firmware_info_list() {
   std::vector<FirmwareInfo> infos;
 
   const auto num_devices = this->_geometry->num_devices();
-  const auto hand_shake = this->_hand_shake;
-  this->_hand_shake = true;
+  const auto check_ack = this->_check_ack;
+  this->_check_ack = true;
 
   std::vector<uint16_t> cpu_versions(num_devices);
   if (const auto res = send_header(core::COMMAND::READ_CPU_VER_LSB); !res) return infos;
@@ -274,7 +274,7 @@ std::vector<FirmwareInfo> Controller::firmware_info_list() {
   if (const auto res = send_header(core::COMMAND::READ_FPGA_VER_MSB); !res) return infos;
   for (size_t i = 0; i < num_devices; i++) fpga_versions[i] = concat_byte(this->_rx_buf[2 * i], fpga_versions[i]);
 
-  this->_hand_shake = hand_shake;
+  this->_check_ack = check_ack;
 
   for (size_t i = 0; i < num_devices; i++) infos.emplace_back(FirmwareInfo(static_cast<uint16_t>(i), cpu_versions[i], fpga_versions[i]));
   return infos;
