@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/09/2021
+// Last Modified: 28/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -55,38 +55,41 @@ class Logic {
    * \brief Pack header with COMMAND
    * \param cmd command
    * \param ctrl_flag control flag
+   * \param cmd_flag command flag
    * \param[out] data pointer to transmission data
    * \param[out] msg_id message id
    */
-  static void pack_header(const COMMAND cmd, const uint8_t ctrl_flag, uint8_t* data, uint8_t* const msg_id) {
-    auto* header = reinterpret_cast<RxGlobalHeader*>(data);
+  static void pack_header(const COMMAND cmd, const uint8_t ctrl_flag, const uint8_t cmd_flag, uint8_t* data, uint8_t* const msg_id) {
+    auto* header = reinterpret_cast<GlobalHeader*>(data);
     *msg_id = get_id();
     header->msg_id = *msg_id;
     header->control_flags = ctrl_flag;
-    header->mod_size = 0;
     header->command = cmd;
+    header->command_flags = cmd_flag;
+    header->mod_size = 0;
   }
 
   /**
    * \brief Pack header with modulation data
    * \param mod Modulation
    * \param ctrl_flag control flag
+   * \param cmd_flag command flag
    * \param[out] data pointer to transmission data
    * \param[out] msg_id message id
    */
-  static void pack_header(const ModulationPtr& mod, const uint8_t ctrl_flag, uint8_t* data, uint8_t* const msg_id) {
-    pack_header(COMMAND::OP, ctrl_flag, data, msg_id);
+  static void pack_header(const ModulationPtr& mod, const uint8_t ctrl_flag, const uint8_t cmd_flag, uint8_t* data, uint8_t* const msg_id) {
+    pack_header(COMMAND::OP, ctrl_flag, cmd_flag, data, msg_id);
     if (mod == nullptr) return;
-    auto* header = reinterpret_cast<RxGlobalHeader*>(data);
+    auto* header = reinterpret_cast<GlobalHeader*>(data);
     size_t offset = 0;
     if (mod->sent() == 0) {
-      header->control_flags |= MOD_BEGIN;
+      header->command_flags |= MOD_BEGIN;
       header->mod[0] = static_cast<uint8_t>(mod->sampling_frequency_division() & 0xFF);
       header->mod[1] = static_cast<uint8_t>(mod->sampling_frequency_division() >> 8 & 0xFF);
       offset += 2;
     }
     const auto mod_size = static_cast<uint8_t>(std::clamp(mod->buffer().size() - mod->sent(), size_t{0}, MOD_FRAME_SIZE - offset));
-    if (mod->sent() + mod_size >= mod->buffer().size()) header->control_flags |= MOD_END;
+    if (mod->sent() + mod_size >= mod->buffer().size()) header->command_flags |= MOD_END;
     header->mod_size = mod_size;
 
     std::memcpy(&header->mod[offset], &mod->buffer()[mod->sent()], mod_size);
@@ -102,10 +105,10 @@ class Logic {
   static void pack_body(const GainPtr& gain, uint8_t* data, size_t* size) {
     const auto num_devices = gain != nullptr ? gain->data().size() : 0;
 
-    *size = sizeof(RxGlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;
+    *size = sizeof(GlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;
     if (gain == nullptr) return;
 
-    auto* cursor = data + sizeof(RxGlobalHeader);
+    auto* cursor = data + sizeof(GlobalHeader);
     const auto byte_size = NUM_TRANS_IN_UNIT * sizeof(uint16_t);
     for (size_t i = 0; i < num_devices; i++, cursor += byte_size) std::memcpy(cursor, &gain->data()[i].at(0), byte_size);
   }
@@ -120,14 +123,14 @@ class Logic {
   static void pack_body(const PointSequencePtr& seq, const GeometryPtr& geometry, uint8_t* data, size_t* const size) {
     const auto num_devices = seq != nullptr ? geometry->num_devices() : 0;
 
-    *size = sizeof(RxGlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;
+    *size = sizeof(GlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;
     if (seq == nullptr) return;
 
-    auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(RxGlobalHeader));
+    auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(GlobalHeader));
     size_t offset = 1;
-    auto* header = reinterpret_cast<RxGlobalHeader*>(data);
+    auto* header = reinterpret_cast<GlobalHeader*>(data);
     if (seq->sent() == 0) {
-      header->control_flags |= SEQ_BEGIN;
+      header->command_flags |= SEQ_BEGIN;
       for (size_t device = 0; device < num_devices; device++) {
         cursor[device * NUM_TRANS_IN_UNIT + 1] = seq->sampling_frequency_division();
         cursor[device * NUM_TRANS_IN_UNIT + 2] = static_cast<uint16_t>(geometry->wavelength() * 1000);
@@ -136,7 +139,10 @@ class Logic {
     }
     const auto send_size = static_cast<uint16_t>(
         std::clamp(seq->control_points().size() - seq->sent(), size_t{0}, sizeof(uint16_t) * (NUM_TRANS_IN_UNIT - offset) / sizeof(SeqFocus)));
-    if (seq->sent() + send_size >= seq->control_points().size()) header->control_flags |= SEQ_END;
+    if (seq->sent() + send_size >= seq->control_points().size()) {
+      header->control_flags |= OUTPUT_ENABLE;
+      header->command_flags |= SEQ_END;
+    }
 
     const auto fixed_num_unit = 256.0 / geometry->wavelength();
     for (size_t device = 0; device < num_devices; device++, cursor += NUM_TRANS_IN_UNIT) {
@@ -160,14 +166,14 @@ class Logic {
   static void pack_body(const GainSequencePtr& seq, const GeometryPtr& geometry, uint8_t* data, size_t* const size) {
     const auto num_devices = seq != nullptr ? geometry->num_devices() : 0;
 
-    *size = sizeof(RxGlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;
+    *size = sizeof(GlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;
     if (seq == nullptr) return;
 
-    auto* header = reinterpret_cast<RxGlobalHeader*>(data);
+    auto* header = reinterpret_cast<GlobalHeader*>(data);
     const auto seq_sent = static_cast<size_t>(seq->gain_mode());
     if (seq->sent() == 0) {
-      header->control_flags |= SEQ_BEGIN;
-      auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(RxGlobalHeader));
+      header->command_flags |= SEQ_BEGIN;
+      auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(GlobalHeader));
       for (size_t device = 0; device < num_devices; device++) {
         cursor[device * NUM_TRANS_IN_UNIT] = static_cast<uint16_t>(seq_sent);
         cursor[device * NUM_TRANS_IN_UNIT + 1] = seq->sampling_frequency_division();
@@ -177,9 +183,12 @@ class Logic {
       return;
     }
 
-    if (seq->sent() + seq_sent > seq->gains().size()) header->control_flags |= SEQ_END;
+    if (seq->sent() + seq_sent > seq->gains().size()) {
+      header->control_flags |= OUTPUT_ENABLE;
+      header->command_flags |= SEQ_END;
+    }
 
-    auto* cursor = data + sizeof(RxGlobalHeader);
+    auto* cursor = data + sizeof(GlobalHeader);
     const auto byte_size = NUM_TRANS_IN_UNIT * sizeof(uint16_t);
     const auto gain_idx = seq->sent() - 1;
     for (size_t device = 0; device < num_devices; device++, cursor += byte_size) {
@@ -220,8 +229,8 @@ class Logic {
    */
   static void pack_delay_offset_body(const std::vector<std::array<uint8_t, NUM_TRANS_IN_UNIT>>& delay,
                                      const std::vector<std::array<uint8_t, NUM_TRANS_IN_UNIT>>& offset, uint8_t* data, size_t* const size) {
-    *size = sizeof(RxGlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * delay.size();
-    auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(RxGlobalHeader));
+    *size = sizeof(GlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * delay.size();
+    auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(GlobalHeader));
     for (size_t dev = 0; dev < delay.size(); dev++)
       for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) *cursor++ = Utilities::pack_to_u16(offset[dev][i], delay[dev][i]);
   }

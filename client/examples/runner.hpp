@@ -3,7 +3,7 @@
 // Created Date: 03/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/08/2021
+// Last Modified: 28/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -77,9 +77,9 @@ inline int run(autd::ControllerPtr autd) {
 
     std::cout << "finish." << std::endl;
     autd->stop();
-    autd->clear();
   }
 
+  autd->clear();
   autd->close();
 
   return 0;

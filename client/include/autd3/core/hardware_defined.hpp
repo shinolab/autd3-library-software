@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/09/2021
+// Last Modified: 28/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -31,12 +31,12 @@ constexpr auto is_missing_transducer(T x, T y) {
 constexpr size_t FPGA_CLOCK = 20480000;
 constexpr size_t ULTRASOUND_FREQUENCY = 40000;
 
-constexpr size_t MOD_BUF_SIZE_MAX = 65535;
+constexpr size_t MOD_BUF_SIZE_MAX = 65536;
 constexpr size_t MOD_SAMPLING_FREQ_BASE = 40000;
 constexpr size_t MOD_SAMPLING_FREQ_DIV_MAX = 65535;
-constexpr size_t MOD_FRAME_SIZE = 124;
+constexpr size_t MOD_FRAME_SIZE = 123;
 
-constexpr size_t POINT_SEQ_BUFFER_SIZE_MAX = 65535;
+constexpr size_t POINT_SEQ_BUFFER_SIZE_MAX = 65536;
 constexpr size_t GAIN_SEQ_BUFFER_SIZE_MAX = 2048;
 constexpr size_t SEQ_BASE_FREQ = 40000;
 
@@ -44,16 +44,12 @@ constexpr bool PHASE_INVERTED = true;
 
 using DataArray = std::array<uint16_t, NUM_TRANS_IN_UNIT>;
 
-enum RX_GLOBAL_CONTROL_FLAGS {
-  MOD_BEGIN = 1 << 0,
-  MOD_END = 1 << 1,
-  READ_FPGA_INFO = 1 << 2,
-  SILENT = 1 << 3,
-  FORCE_FAN = 1 << 4,
-  SEQ_MODE = 1 << 5,
-  SEQ_BEGIN = 1 << 6,
-  SEQ_END = 1 << 7
-};
+enum FPGA_CONTROL_FLAGS { OUTPUT_ENABLE = 1 << 0, OUTPUT_BALANCE = 1 << 1, SILENT = 1 << 3, FORCE_FAN = 1 << 4, OP_MODE = 1 << 5, SEQ_MODE = 1 << 6 };
+
+constexpr bool OP_MODE_NORMAL = false;
+constexpr bool OP_MODE_SEQ = true;
+constexpr bool SEQ_MODE_POINT = false;
+constexpr bool SEQ_MODE_GAIN = true;
 
 enum class COMMAND : uint8_t {
   OP = 0x00,
@@ -64,19 +60,26 @@ enum class COMMAND : uint8_t {
   SEQ_FOCI_MODE = 0x06,
   CLEAR = 0x09,
   SET_DELAY_OFFSET = 0x0A,
-  PAUSE = 0x0B,
-  RESUME = 0x0C,
   SEQ_GAIN_MODE = 0x0D,
   EMULATOR_SET_GEOMETRY = 0xFF
+};
+
+enum CPU_CONTROL_FLAGS : uint8_t {
+  MOD_BEGIN = 1 << 0,
+  MOD_END = 1 << 1,
+  SEQ_BEGIN = 1 << 2,
+  SEQ_END = 1 << 3,
+  READS_FPGA_INFO = 1 << 4,
 };
 
 /**
  * \brief Data header common to all devices
  */
-struct RxGlobalHeader {
+struct GlobalHeader {
   uint8_t msg_id;
   uint8_t control_flags;
   COMMAND command;
+  uint8_t command_flags;
   uint8_t mod_size;
   uint8_t mod[MOD_FRAME_SIZE];
 };

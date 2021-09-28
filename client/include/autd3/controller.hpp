@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/09/2021
+// Last Modified: 28/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -38,8 +38,14 @@ class Controller {
   struct ControllerProps {
     friend class Controller;
     friend class STMController;
-    ControllerProps(const bool silent_mode, const bool reads_fpga_info, const bool seq_mode, const bool force_fan)
-        : _silent_mode(silent_mode), _reads_fpga_info(reads_fpga_info), _seq_mode(seq_mode), _force_fan(force_fan) {}
+    ControllerProps()
+        : _output_enable(false),
+          _output_balance(false),
+          _silent_mode(true),
+          _force_fan(false),
+          _op_mode(core::OP_MODE_NORMAL),
+          _seq_mode(core::SEQ_MODE_POINT),
+          _reads_fpga_info(false) {}
     ~ControllerProps() = default;
     ControllerProps(const ControllerProps& v) noexcept = delete;
     ControllerProps& operator=(const ControllerProps& obj) = delete;
@@ -48,11 +54,15 @@ class Controller {
 
    private:
     [[nodiscard]] uint8_t ctrl_flag() const;
+    [[nodiscard]] uint8_t cmd_flag() const;
 
+    bool _output_enable;
+    bool _output_balance;
     bool _silent_mode;
-    bool _reads_fpga_info;
-    bool _seq_mode;
     bool _force_fan;
+    bool _op_mode;
+    bool _seq_mode;
+    bool _reads_fpga_info;
   };
 
  public:
@@ -60,11 +70,7 @@ class Controller {
   class STMTimer;
 
   Controller() noexcept
-      : _link(nullptr),
-        _geometry(std::make_unique<core::Geometry>()),
-        _props(ControllerProps(true, false, false, false)),
-        _tx_buf(nullptr),
-        _rx_buf(nullptr) {}
+      : _link(nullptr), _geometry(std::make_unique<core::Geometry>()), _props(ControllerProps()), _tx_buf(nullptr), _rx_buf(nullptr) {}
   ~Controller() noexcept;
   Controller(const Controller& v) noexcept = delete;
   Controller& operator=(const Controller& obj) = delete;
@@ -97,6 +103,8 @@ class Controller {
    * @brief If true, the fan will be forced to start.
    */
   bool& force_fan() noexcept;
+
+  bool& output_balance() noexcept;
 
   /**
    * @brief FPGA info
@@ -161,13 +169,13 @@ class Controller {
    * @brief Pause outputting
    * \return if true, It guarantees that the devices have processed the data
    */
-  bool pause() const;
+  bool pause();
 
   /**
    * @brief Resume outputting
    * \return if true, It guarantees that the devices have processed the data
    */
-  bool resume() const;
+  bool resume();
 
   /**
    * @brief Send gain to the device
