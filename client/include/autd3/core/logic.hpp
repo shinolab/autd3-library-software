@@ -108,6 +108,9 @@ class Logic {
     *size = sizeof(GlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;
     if (gain == nullptr) return;
 
+    auto* header = reinterpret_cast<GlobalHeader*>(data);
+    header->control_flags |= OUTPUT_ENABLE;
+
     auto* cursor = data + sizeof(GlobalHeader);
     const auto byte_size = NUM_TRANS_IN_UNIT * sizeof(uint16_t);
     for (size_t i = 0; i < num_devices; i++, cursor += byte_size) std::memcpy(cursor, &gain->data()[i].at(0), byte_size);
