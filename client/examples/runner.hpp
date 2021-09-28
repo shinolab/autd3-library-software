@@ -56,7 +56,6 @@ inline int run(autd::ControllerPtr autd) {
   autd->geometry()->wavelength() = 8.5;  // mm
 
   autd->clear();
-  autd->hand_shake() = true;
 
   for (auto&& firm_info : autd->firmware_info_list()) std::cout << firm_info << std::endl;
 
