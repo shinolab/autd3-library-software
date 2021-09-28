@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 27/09/2021
+// Last Modified: 28/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -28,25 +28,37 @@
 namespace autd::autdsoem {
 
 void SOEMCallback::callback() {
-  if (auto expected = false; _autd3_rt_lock.compare_exchange_weak(expected, true)) {
+  if (auto expected = false; _rt_lock.compare_exchange_weak(expected, true)) {
     ec_send_processdata();
+    this->_sent->store(true, std::memory_order_release);
     if (const auto wkc = ec_receive_processdata(EC_TIMEOUTRET); wkc != _expected_wkc)
       if (!this->_error_handler()) return;
-    _autd3_rt_lock.store(false, std::memory_order_release);
+    _rt_lock.store(false, std::memory_order_release);
   }
 }
 
 bool SOEMController::is_open() const { return _is_open; }
 
-void SOEMController::send(const uint8_t* buf, const size_t size) const {
+void SOEMController::send(const uint8_t* buf, const size_t size) {
   if (!_is_open) throw core::exception::LinkError("link is closed");
 
-  const auto body_size = this->_config.body_size;
-  const auto header_size = this->_config.header_size;
+  while (_send_idx.size() >= SEND_BUF_SIZE) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(this->_config.ec_sm3_cycle_time_ns / 1000 / 1000));
+  }
 
-  if (size > header_size)
-    for (size_t i = 0; i < _dev_num; i++) std::memcpy(&_io_map[(header_size + body_size) * i], &buf[header_size + body_size * i], body_size);
-  for (size_t i = 0; i < _dev_num; i++) std::memcpy(&_io_map[(header_size + body_size) * i + body_size], &buf[0], header_size);
+  {
+    const auto body_size = this->_config.body_size;
+    const auto header_size = this->_config.header_size;
+    std::lock_guard lock(_send_mtx);
+    if (size > header_size)
+      for (size_t i = 0; i < _dev_num; i++)
+        std::memcpy(&_send_buf[_send_buf_cursor][(header_size + body_size) * i], &buf[header_size + body_size * i], body_size);
+    for (size_t i = 0; i < _dev_num; i++) std::memcpy(&_send_buf[_send_buf_cursor][(header_size + body_size) * i + body_size], &buf[0], header_size);
+    _send_idx.push(_send_buf_cursor);
+    _send_buf_cursor = (_send_buf_cursor + 1) % SEND_BUF_SIZE;
+  }
+
+  _send_cond.notify_one();
 }
 
 void SOEMController::read(uint8_t* rx) const {
@@ -66,6 +78,9 @@ void SOEMController::open(const char* ifname, const size_t dev_num, const ECConf
   const auto body_size = config.body_size;
   const auto output_size = (header_size + body_size) * _dev_num;
   _output_size = output_size;
+
+  this->_send_buf = std::make_unique<std::unique_ptr<uint8_t[]>[]>(SEND_BUF_SIZE);
+  for (size_t i = 0; i < SEND_BUF_SIZE; i++) this->_send_buf[i] = std::make_unique<uint8_t[]>(output_size);
 
   if (const auto size = _output_size + config.input_frame_size * _dev_num; size != _io_map_size) {
     _io_map_size = size;
@@ -112,10 +127,27 @@ void SOEMController::open(const char* ifname, const size_t dev_num, const ECConf
 
   const auto expected_wkc = ec_group[0].outputsWKC * 2 + ec_group[0].inputsWKC;
   const auto interval_us = config.ec_sm3_cycle_time_ns / 1000;
-  this->_timer =
-      core::Timer<SOEMCallback>::start(std::make_unique<SOEMCallback>(expected_wkc, [this]() { return this->error_handle(); }), interval_us);
+  this->_timer = core::Timer<SOEMCallback>::start(std::make_unique<SOEMCallback>(
+                                                      expected_wkc, [this]() { return this->error_handle(); }, &this->_sent),
+                                                  interval_us);
 
   _is_open = true;
+  this->_send_thread = std::thread([this]() {
+    while (true) {
+      std::unique_lock lock(this->_send_mtx);
+      this->_send_cond.wait(lock, [this] { return !this->_is_open || !this->_send_idx.empty(); });
+      if (!this->_is_open) return;
+      while (!this->_send_idx.empty()) {
+        const auto idx = this->_send_idx.front();
+        this->_send_idx.pop();
+        std::memcpy(this->_io_map.get(), this->_send_buf[idx].get(), this->_output_size);
+        this->_sent.store(false, std::memory_order_release);
+        while (this->_is_open && !this->_sent.load(std::memory_order_acquire)) {
+          std::this_thread::sleep_for(std::chrono::milliseconds(this->_config.ec_sm3_cycle_time_ns / 1000 / 1000));
+        }
+      }
+    }
+  });
 }
 
 void SOEMController::on_lost(std::function<void(std::string)> callback) { _on_lost = std::move(callback); }
@@ -124,7 +156,8 @@ void SOEMController::close() {
   if (!is_open()) return;
   this->_is_open = false;
 
-  std::memset(&_io_map[0], 0x00, _output_size);
+  this->_send_cond.notify_one();
+  if (this->_send_thread.joinable()) this->_send_thread.join();
 
   const auto _ = this->_timer->stop();
 
@@ -186,7 +219,7 @@ bool SOEMController::error_handle() {
   return false;
 }
 
-SOEMController::SOEMController() : _io_map(nullptr), _io_map_size(0), _output_size(0), _dev_num(0), _config(), _is_open(false) {}
+SOEMController::SOEMController() : _io_map(nullptr), _io_map_size(0), _output_size(0), _dev_num(0), _config(), _is_open(false), _send_buf_cursor(0) {}
 
 SOEMController::~SOEMController() {
   try {
