@@ -3,7 +3,7 @@
 // Created Date: 06/07/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/09/2021
+// Last Modified: 29/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -64,14 +64,14 @@ struct EigenMatrix {
     data.noalias() = a->data.cwiseProduct(b->data);
   }
   virtual void pseudo_inverse_svd(const std::shared_ptr<EigenMatrix<T>>& matrix, double alpha, const std::shared_ptr<EigenMatrix<T>>&,
-                                  const std::shared_ptr<EigenMatrix<T>>&, const std::shared_ptr<EigenMatrix<T>>&,
+                                  const std::shared_ptr<EigenMatrix<T>>& s, const std::shared_ptr<EigenMatrix<T>>&,
                                   const std::shared_ptr<EigenMatrix<T>>&) {
     const Eigen::BDCSVD svd(matrix->data, Eigen::ComputeFullU | Eigen::ComputeFullV);
-    auto singular_values_inv = svd.singularValues();
-    const auto size = singular_values_inv.size();
-    for (Eigen::Index i = 0; i < size; i++)
-      singular_values_inv(i) = singular_values_inv(i) / (singular_values_inv(i) * singular_values_inv(i) + alpha);
-    data.noalias() = svd.matrixV() * singular_values_inv.asDiagonal() * svd.matrixU().adjoint();
+    s->data.fill(0);
+    auto singular_values = svd.singularValues();
+    const auto size = singular_values.size();
+    for (Eigen::Index i = 0; i < size; i++) s->data(i, i) = singular_values(i) / (singular_values(i) * singular_values(i) + alpha);
+    data.noalias() = svd.matrixV() * s->data * svd.matrixU().adjoint();
   }
   virtual void max_eigen_vector(const std::shared_ptr<EigenMatrix<T>>& ev);
   virtual void add(const T alpha, const std::shared_ptr<EigenMatrix<T>>& a) { data.noalias() += alpha * a->data; }
