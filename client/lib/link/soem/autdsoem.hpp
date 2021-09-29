@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 28/09/2021
+// Last Modified: 29/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -16,7 +16,6 @@
 #include <functional>
 #include <memory>
 #include <mutex>
-#include <queue>
 #include <string>
 #include <utility>
 #include <vector>
@@ -52,7 +51,7 @@ struct ECConfig {
   size_t input_frame_size;
 };
 
-constexpr size_t SEND_BUF_SIZE = 1024;
+constexpr size_t SEND_BUF_SIZE = 32;
 
 class SOEMController {
  public:
@@ -85,11 +84,11 @@ class SOEMController {
   ECConfig _config;
   bool _is_open;
 
+  std::unique_ptr<std::unique_ptr<uint8_t[]>[]> _send_buf;
   size_t _send_buf_cursor;
+  size_t _send_buf_size;
   std::mutex _send_mtx;
   std::condition_variable _send_cond;
-  std::unique_ptr<std::unique_ptr<uint8_t[]>[]> _send_buf;
-  std::queue<size_t> _send_idx;
   std::thread _send_thread;
   std::atomic<bool> _sent;
 
