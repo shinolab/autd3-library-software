@@ -6,6 +6,10 @@ add_library(emulator_link
 )
 target_include_directories(emulator_link PUBLIC ${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
 
+if(WIN32)
+  target_link_libraries(emulator_link ${AUTD_LINK_LIBRARIES_KEYWORD} ws2_32)
+endif()
+
 set_target_properties(emulator_link
   PROPERTIES
   ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"

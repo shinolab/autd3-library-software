@@ -8,13 +8,14 @@ add_library(blas_backend
 )
 
 target_include_directories(blas_backend PRIVATE ${BLAS_INCLUDE_DIR} ${PROJECT_SOURCE_DIR}/lib/gain/holo ${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
-target_link_directories(blas_backend INTERFACE ${BLAS_DEPEND_LIB_DIR} eigen_backend)
-target_link_libraries(blas_backend INTERFACE ${BLAS_LIBRARIES})
-if(NOT WIN32)
-  target_link_libraries(blas_backend INTERFACE gfortran)
-endif()
 if(USE_MKL)
   target_compile_definitions(blas_backend PRIVATE USE_BLAS_MKL)
+endif()
+
+target_link_directories(blas_backend ${AUTD_LINK_LIBRARIES_KEYWORD} ${BLAS_DEPEND_LIB_DIR} eigen_backend)
+target_link_libraries(blas_backend ${AUTD_LINK_LIBRARIES_KEYWORD} ${BLAS_LIBRARIES})
+if(NOT WIN32)
+  target_link_libraries(blas_backend ${AUTD_LINK_LIBRARIES_KEYWORD} gfortran)
 endif()
 
 set_target_properties(blas_backend
