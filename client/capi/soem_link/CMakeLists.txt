@@ -9,6 +9,7 @@ add_library(autd3capi-soem-link SHARED
 
 target_link_libraries(autd3capi-soem-link soem_link)
 if(WIN32)
+  target_link_libraries(autd3capi-soem-link winmm ws2_32)
 elseif(APPLE)
 else()
   target_link_libraries(autd3capi-soem-link -static-libgcc -static-libstdc++)
@@ -22,7 +23,7 @@ set_target_properties(autd3capi-soem-link
 )
 
 if(WIN32)
-  set_target_properties(autd3capi-soem-link PROPERTIES FOLDER "capi")
+  set_target_properties(autd3capi-soem-link PROPERTIES FOLDER "capi/link")
 else()
   set_target_properties(autd3capi-soem-link PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

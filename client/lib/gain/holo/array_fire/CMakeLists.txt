@@ -7,8 +7,9 @@ add_library(arrayfire_backend
     ${PROJECT_SOURCE_DIR}/include/autd3/gain/arrayfire_backend.hpp
 )
 
-target_include_directories(arrayfire_backend PRIVATE ${PROJECT_SOURCE_DIR}/lib/gain/holo ${ArrayFire_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
-target_link_libraries(arrayfire_backend INTERFACE ${ArrayFire_LIBRARIES})
+target_include_directories(arrayfire_backend PRIVATE ${PROJECT_SOURCE_DIR}/lib/gain/holo ${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
+target_include_directories(arrayfire_backend PUBLIC ${ArrayFire_INCLUDE_DIRS})
+target_link_libraries(arrayfire_backend ${AUTD_LINK_LIBRARIES_KEYWORD} ${ArrayFire_LIBRARIES})
 
 set_target_properties(arrayfire_backend
     PROPERTIES
