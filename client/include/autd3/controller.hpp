@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 28/09/2021
+// Last Modified: 30/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -73,7 +73,7 @@ class Controller {
       : _link(nullptr),
         _geometry(std::make_unique<core::Geometry>()),
         _props(ControllerProps()),
-        _check_ack(true),
+        _check_ack(false),
         _tx_buf(nullptr),
         _rx_buf(nullptr) {}
   ~Controller() noexcept;
