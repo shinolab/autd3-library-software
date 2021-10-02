@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/09/2021
+// Last Modified: 28/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -31,17 +31,6 @@ std::string get_adapter_name() {
   return adapters[i].name;
 }
 
-[[noreturn]] static void error_handler(const std::string& msg) {
-  std::cerr << "Link is lost\n";
-  std::cerr << msg;
-#ifdef __APPLE__
-  // mac does not have quick_exit??
-  exit(-1);
-#else
-  std::quick_exit(-1);
-#endif
-}
-
 int main() try {
   auto autd = autd::Controller::create();
 
@@ -53,7 +42,16 @@ int main() try {
   const auto ifname = get_adapter_name();
   auto link = autd::link::SOEM::create(ifname, autd->geometry()->num_devices());
 
-  link->set_lost_handler(error_handler);
+  link->on_lost([](const std::string& msg) {
+    std::cerr << "Link is lost\n";
+    std::cerr << msg;
+#ifdef __APPLE__
+    // mac does not have quick_exit??
+    exit(-1);
+#else
+    std::quick_exit(-1);
+#endif
+  });
 
   autd->open(std::move(link));
   return run(std::move(autd));

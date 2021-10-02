@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 28/07/2021
+// Last Modified: 24/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -116,23 +116,26 @@ class Square final : public Modulation {
    * @param[in] freq Frequency of the square wave
    * @param[in] low low level in duty
    * @param[in] high high level in duty
+   * @param[in] duty duty ratio of square wave
    */
-  static ModulationPtr create(int freq, uint8_t low = 0, uint8_t high = 0xff);
+  static ModulationPtr create(int freq, uint8_t low = 0, uint8_t high = 0xff, double duty = 0.5);
 
   /**
    * @brief Generate function
    * @param[in] freq Frequency of the square wave
    * @param[in] low low level in relative amplitude (0 to 1)
    * @param[in] high high level in relative amplitude (0 to 1)
+   * @param[in] duty duty ratio of square wave
    */
-  static ModulationPtr create(int freq, double low = 0.0, double high = 1.0);
+  static ModulationPtr create(int freq, double low, double high, double duty);
 
   void calc() override;
-  Square(const int freq, const uint8_t low, const uint8_t high) : Modulation(), _freq(freq), _low(low), _high(high) {}
+  Square(const int freq, const uint8_t low, const uint8_t high, double duty) : Modulation(), _freq(freq), _low(low), _high(high), _duty(duty) {}
 
  private:
   int _freq;
   uint8_t _low;
   uint8_t _high;
+  double _duty;
 };
 }  // namespace autd::modulation

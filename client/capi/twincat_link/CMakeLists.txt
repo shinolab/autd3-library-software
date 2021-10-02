@@ -8,11 +8,6 @@ add_library(autd3capi-twincat-link SHARED
 )
 
 target_link_libraries(autd3capi-twincat-link twincat_link)
-if(WIN32)
-elseif(APPLE)
-else()
-  target_link_libraries(autd3capi-twincat-link -static-libgcc -static-libstdc++)
-endif()
 
 set_target_properties(autd3capi-twincat-link
   PROPERTIES
@@ -21,8 +16,4 @@ set_target_properties(autd3capi-twincat-link
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
 
-if(WIN32)
-  set_target_properties(autd3capi-twincat-link PROPERTIES FOLDER "capi")
-else()
-  set_target_properties(autd3capi-twincat-link PROPERTIES POSITION_INDEPENDENT_CODE ON)
-endif()
+set_target_properties(autd3capi-twincat-link PROPERTIES FOLDER "capi/link")

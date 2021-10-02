@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 07/09/2021
+// Last Modified: 30/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -38,8 +38,14 @@ class Controller {
   struct ControllerProps {
     friend class Controller;
     friend class STMController;
-    ControllerProps(const bool silent_mode, const bool reads_fpga_info, const bool seq_mode, const bool force_fan)
-        : _silent_mode(silent_mode), _reads_fpga_info(reads_fpga_info), _seq_mode(seq_mode), _force_fan(force_fan) {}
+    ControllerProps()
+        : _output_enable(false),
+          _output_balance(false),
+          _silent_mode(true),
+          _force_fan(false),
+          _op_mode(core::OP_MODE_NORMAL),
+          _seq_mode(core::SEQ_MODE_POINT),
+          _reads_fpga_info(false) {}
     ~ControllerProps() = default;
     ControllerProps(const ControllerProps& v) noexcept = delete;
     ControllerProps& operator=(const ControllerProps& obj) = delete;
@@ -48,16 +54,33 @@ class Controller {
 
    private:
     [[nodiscard]] uint8_t ctrl_flag() const;
+    [[nodiscard]] uint8_t cmd_flag() const;
 
+    bool _output_enable;
+    bool _output_balance;
     bool _silent_mode;
-    bool _reads_fpga_info;
-    bool _seq_mode;
     bool _force_fan;
+    bool _op_mode;
+    bool _seq_mode;
+    bool _reads_fpga_info;
   };
 
  public:
   class STMController;
   class STMTimer;
+
+  Controller() noexcept
+      : _link(nullptr),
+        _geometry(std::make_unique<core::Geometry>()),
+        _props(ControllerProps()),
+        _check_ack(false),
+        _tx_buf(nullptr),
+        _rx_buf(nullptr) {}
+  ~Controller() noexcept;
+  Controller(const Controller& v) noexcept = delete;
+  Controller& operator=(const Controller& obj) = delete;
+  Controller(Controller&& obj) = default;
+  Controller& operator=(Controller&& obj) = default;
 
   static ControllerPtr create();
 
@@ -87,28 +110,39 @@ class Controller {
   bool& force_fan() noexcept;
 
   /**
+   * @brief If true, the applied voltage to transducers is dropped to GND while transducers are not being outputting.
+   */
+  bool& output_balance() noexcept;
+
+  /**
+   * @brief If true, this controller check ack from devices.
+   */
+  bool& check_ack() noexcept;
+
+  /**
    * @brief FPGA info
    *  \return ok with FPGA information if succeeded, or err with error message if failed
    *  \details the first bit of FPGA info represents whether the fan is running.
    */
-  std::vector<uint8_t> fpga_info();
+  const std::vector<uint8_t>& fpga_info();
 
   /**
    * @brief Update control flag
+   * \return if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true.
    */
   bool update_ctrl_flag();
 
   /**
    * \brief Set output delay
    * \param[in] delay delay for each transducer in units of ultrasound period (i.e. 25us).
-   * \return if true, It guarantees that the devices have processed the data
+   * \return if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true.
    */
   bool set_output_delay(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& delay);
 
   /**
    * \brief Set duty offset
    * \param[in] offset duty offset for each transducers (only the lowest 1 bit will be used)
-   * \return if true, It guarantees that the devices have processed the data
+   * \return if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true.
    */
   bool set_duty_offset(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& offset);
 
@@ -116,7 +150,7 @@ class Controller {
    * \brief Set delay and duty offset
    * \param[in] delay delay
    * \param[in] offset duty offset
-   * \return if true, It guarantees that the devices have processed the data
+   * \return if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true.
    */
   bool set_delay_offset(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& delay,
                         const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& offset);
@@ -129,46 +163,45 @@ class Controller {
 
   /**
    * @brief Clear all data in hardware
-   * \return if true, It guarantees that the devices have processed the data
+   * \return if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true.
    */
   bool clear();
 
   /**
    * @brief Close the controller
-   * \return if true, It guarantees that the devices have processed the data
+   * \return if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true.
    */
   bool close();
 
   /**
    * @brief Stop outputting
-   * \return if true, It guarantees that the devices have processed the data
+   * \return if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true.
    */
   bool stop();
 
   /**
    * @brief Pause outputting
-   * \return if true, It guarantees that the devices have processed the data
+   * \return if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true.
    */
-  bool pause() const;
+  bool pause();
 
   /**
    * @brief Resume outputting
-   * \return if true, It guarantees that the devices have processed the data
+   * \return if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true.
    */
-  bool resume() const;
+  bool resume();
 
   /**
    * @brief Send gain to the device
    * @param[in] gain Gain to display
-   * @param[in] wait_for_msg_processed if true, this function waits until the data is processed in the devices
-   * \return if true, it guarantees that the devices have processed the data
+   * \return if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true.
    */
-  bool send(const core::GainPtr& gain, bool wait_for_msg_processed = true);
+  bool send(const core::GainPtr& gain);
 
   /**
    * @brief Send modulation to the device
    * @param[in] mod Amplitude modulation to display
-   * \return if true, it guarantees that the devices have processed the data
+   * \return if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true.
    */
   bool send(const core::ModulationPtr& mod);
 
@@ -176,23 +209,21 @@ class Controller {
    * @brief Send gain and modulation to the device
    * @param[in] gain Gain to display
    * @param[in] mod Amplitude modulation to display
-   * @param[in] wait_for_msg_processed see details
-   * @details if wait_for_msg_processed is true OR mod is not nullptr, this function waits until the data is processed in the devices
-   * \return if true, it guarantees that the devices have processed the data
+   * \return if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true.
    */
-  bool send(const core::GainPtr& gain, const core::ModulationPtr& mod, bool wait_for_msg_processed = true);
+  bool send(const core::GainPtr& gain, const core::ModulationPtr& mod);
 
   /**
    * @brief Send sequence to the device
    * @param[in] seq Sequence to display
-   * \return if true, it guarantees that the devices have processed the data
+   * \return if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true.
    */
   bool send(const core::PointSequencePtr& seq);
 
   /**
    * @brief Send sequence to the device
    * @param[in] seq Sequence to display
-   * \return if true, it guarantees that the devices have processed the data
+   * \return if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true.
    */
   bool send(const core::GainSequencePtr& seq);
 
@@ -200,7 +231,7 @@ class Controller {
    * @brief Enumerate firmware information
    * \return firmware information list. If failed, the vector is empty.
    */
-  [[nodiscard]] std::vector<FirmwareInfo> firmware_info_list() const;
+  [[nodiscard]] std::vector<FirmwareInfo> firmware_info_list();
 
   /**
    * \brief return pointer to software spatio-temporal modulation controller.
@@ -251,13 +282,6 @@ class Controller {
   };
 
  private:
-  Controller() noexcept
-      : _link(nullptr),
-        _geometry(std::make_unique<core::Geometry>()),
-        _props(ControllerProps(true, false, false, false)),
-        _tx_buf(nullptr),
-        _rx_buf(nullptr) {}
-
   class STMTimerCallback final : core::CallbackHandler {
    public:
     friend class STMController;
@@ -290,6 +314,7 @@ class Controller {
   core::LinkPtr _link;
   core::GeometryPtr _geometry;
   ControllerProps _props;
+  bool _check_ack;
   std::unique_ptr<uint8_t[]> _tx_buf;
   std::unique_ptr<uint8_t[]> _rx_buf;
 

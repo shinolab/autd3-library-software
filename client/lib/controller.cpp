@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/09/2021
+// Last Modified: 02/10/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -22,19 +22,29 @@ namespace autd {
 
 uint8_t Controller::ControllerProps::ctrl_flag() const {
   uint8_t flag = 0;
+  if (this->_output_enable) flag |= core::OUTPUT_ENABLE;
+  if (this->_output_balance) flag |= core::OUTPUT_BALANCE;
   if (this->_silent_mode) flag |= core::SILENT;
-  if (this->_seq_mode) flag |= core::SEQ_MODE;
-  if (this->_reads_fpga_info) flag |= core::READ_FPGA_INFO;
   if (this->_force_fan) flag |= core::FORCE_FAN;
+  if (this->_op_mode) flag |= core::OP_MODE;
+  if (this->_seq_mode) flag |= core::SEQ_MODE;
   return flag;
 }
 
-ControllerPtr Controller::create() {
-  struct Impl : Controller {
-    Impl() : Controller() {}
-  };
-  return std::make_unique<Impl>();
+uint8_t Controller::ControllerProps::cmd_flag() const {
+  uint8_t flag = 0;
+  if (this->_reads_fpga_info) flag |= core::READS_FPGA_INFO;
+  return flag;
 }
+
+Controller::~Controller() noexcept {
+  try {
+    this->close();
+  } catch (...) {
+  }
+}
+
+ControllerPtr Controller::create() { return std::make_unique<Controller>(); }
 
 bool Controller::is_open() const { return this->_link != nullptr && this->_link->is_open(); }
 
@@ -43,15 +53,18 @@ core::GeometryPtr& Controller::geometry() noexcept { return this->_geometry; }
 bool& Controller::silent_mode() noexcept { return this->_props._silent_mode; }
 bool& Controller::reads_fpga_info() noexcept { return this->_props._reads_fpga_info; }
 bool& Controller::force_fan() noexcept { return this->_props._force_fan; }
+bool& Controller::output_balance() noexcept { return this->_props._output_balance; }
 
-std::vector<uint8_t> Controller::fpga_info() {
+bool& Controller::check_ack() noexcept { return this->_check_ack; }
+
+const std::vector<uint8_t>& Controller::fpga_info() {
   const auto num_devices = this->_geometry->num_devices();
   this->_link->read(&_rx_buf[0], num_devices * core::EC_INPUT_FRAME_SIZE);
   for (size_t i = 0; i < num_devices; i++) this->_fpga_infos[i] = _rx_buf[2 * i];
   return _fpga_infos;
 }
 
-bool Controller::update_ctrl_flag() { return this->send(nullptr, nullptr, true); }
+bool Controller::update_ctrl_flag() { return this->send(nullptr, nullptr); }
 
 void Controller::open(core::LinkPtr link) {
   if (is_open()) this->close();
@@ -64,8 +77,8 @@ void Controller::open(core::LinkPtr link) {
   this->_offset.resize(this->_geometry->num_devices());
   init_delay_offset();
 
+  link->open();
   this->_link = std::move(link);
-  return this->_link->open();
 }
 
 void Controller::init_delay_offset() {
@@ -81,16 +94,16 @@ bool Controller::clear() {
 }
 
 bool Controller::send_header(const core::COMMAND cmd) const {
-  constexpr auto send_size = sizeof(core::RxGlobalHeader);
+  constexpr auto send_size = sizeof(core::GlobalHeader);
   uint8_t msg_id = 0;
-  core::Logic::pack_header(cmd, _props.ctrl_flag(), &_tx_buf[0], &msg_id);
+  core::Logic::pack_header(cmd, _props.ctrl_flag(), _props.cmd_flag(), &_tx_buf[0], &msg_id);
   _link->send(&_tx_buf[0], send_size);
   return wait_msg_processed(msg_id);
 }
 
 bool Controller::send_delay_offset() const {
   uint8_t msg_id;
-  core::Logic::pack_header(core::COMMAND::SET_DELAY_OFFSET, _props.ctrl_flag(), &this->_tx_buf[0], &msg_id);
+  core::Logic::pack_header(core::COMMAND::SET_DELAY_OFFSET, _props.ctrl_flag(), _props.cmd_flag(), &this->_tx_buf[0], &msg_id);
   size_t size = 0;
   core::Logic::pack_delay_offset_body(this->_delay, this->_offset, &this->_tx_buf[0], &size);
   this->_link->send(&this->_tx_buf[0], size);
@@ -98,6 +111,7 @@ bool Controller::send_delay_offset() const {
 }
 
 bool Controller::wait_msg_processed(const uint8_t msg_id, const size_t max_trial) const {
+  if (!this->_check_ack) return true;
   const auto num_devices = this->_geometry->num_devices();
   const auto buffer_len = num_devices * core::EC_INPUT_FRAME_SIZE;
   for (size_t i = 0; i < max_trial; i++) {
@@ -134,20 +148,24 @@ bool Controller::stop() {
   return this->pause() && res;
 }
 
-bool Controller::pause() const { return this->send_header(core::COMMAND::PAUSE); }
-bool Controller::resume() const { return this->send_header(core::COMMAND::RESUME); }
+bool Controller::pause() {
+  this->_props._output_enable = false;
+  return this->update_ctrl_flag();
+}
+bool Controller::resume() {
+  this->_props._output_enable = true;
+  return this->update_ctrl_flag();
+}
 
-bool Controller::send(const core::GainPtr& gain, const bool wait_for_msg_processed) { return this->send(gain, nullptr, wait_for_msg_processed); }
+bool Controller::send(const core::GainPtr& gain) { return this->send(gain, nullptr); }
 
-bool Controller::send(const core::ModulationPtr& mod) { return this->send(nullptr, mod, true); }
+bool Controller::send(const core::ModulationPtr& mod) { return this->send(nullptr, mod); }
 
-bool Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod, bool wait_for_msg_processed) {
-  if (mod != nullptr) {
-    mod->build();
-    wait_for_msg_processed = true;
-  }
+bool Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod) {
+  if (mod != nullptr) mod->build();
   if (gain != nullptr) {
-    this->_props._seq_mode = false;
+    this->_props._output_enable = true;
+    this->_props._op_mode = core::OP_MODE_NORMAL;
     gain->build(this->_geometry);
   }
 
@@ -157,24 +175,29 @@ bool Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod,
   auto mod_finished = [](const core::ModulationPtr& m) { return m == nullptr || m->sent() == m->buffer().size(); };
   while (true) {
     uint8_t msg_id = 0;
-    core::Logic::pack_header(mod, _props.ctrl_flag(), &this->_tx_buf[0], &msg_id);
+    core::Logic::pack_header(mod, _props.ctrl_flag(), _props.cmd_flag(), &this->_tx_buf[0], &msg_id);
     this->_link->send(&this->_tx_buf[0], size);
-    if (!wait_for_msg_processed && mod_finished(mod)) return false;
-    if (const auto res = wait_msg_processed(msg_id); !res || mod_finished(mod)) return res;
+    if (!wait_msg_processed(msg_id)) return false;
+    if (mod_finished(mod)) return true;
   }
 }
 
 bool Controller::send(const core::PointSequencePtr& seq) {
   auto seq_finished = [](const core::PointSequencePtr& s) { return s == nullptr || s->sent() == s->control_points().size(); };
 
-  this->_props._seq_mode = true;
+  this->_props._op_mode = core::OP_MODE_SEQ;
+  this->_props._seq_mode = core::SEQ_MODE_POINT;
   while (true) {
     uint8_t msg_id;
-    core::Logic::pack_header(core::COMMAND::SEQ_FOCI_MODE, _props.ctrl_flag(), &this->_tx_buf[0], &msg_id);
+    core::Logic::pack_header(core::COMMAND::SEQ_FOCI_MODE, _props.ctrl_flag(), _props.cmd_flag(), &this->_tx_buf[0], &msg_id);
     size_t size;
     core::Logic::pack_body(seq, this->_geometry, &this->_tx_buf[0], &size);
     this->_link->send(&this->_tx_buf[0], size);
-    if (const auto res = wait_msg_processed(msg_id); !res || seq_finished(seq)) return res;
+    if (!wait_msg_processed(msg_id)) return false;
+    if (seq_finished(seq)) {
+      this->_props._output_enable = true;
+      return true;
+    }
   }
 }
 
@@ -183,14 +206,19 @@ bool Controller::send(const core::GainSequencePtr& seq) {
 
   for (auto&& g : seq->gains()) g->build(this->_geometry);
 
-  this->_props._seq_mode = true;
+  this->_props._op_mode = core::OP_MODE_SEQ;
+  this->_props._seq_mode = core::SEQ_MODE_GAIN;
   while (true) {
     uint8_t msg_id;
-    core::Logic::pack_header(core::COMMAND::SEQ_GAIN_MODE, _props.ctrl_flag(), &this->_tx_buf[0], &msg_id);
+    core::Logic::pack_header(core::COMMAND::SEQ_GAIN_MODE, _props.ctrl_flag(), _props.cmd_flag(), &this->_tx_buf[0], &msg_id);
     size_t size;
     core::Logic::pack_body(seq, this->_geometry, &this->_tx_buf[0], &size);
     this->_link->send(&this->_tx_buf[0], size);
-    if (const auto res = wait_msg_processed(msg_id); !res || seq_finished(seq)) return res;
+    if (!wait_msg_processed(msg_id)) return false;
+    if (seq_finished(seq)) {
+      this->_props._output_enable = true;
+      return true;
+    }
   }
 }
 
@@ -223,12 +251,15 @@ bool Controller::set_delay_offset(const std::vector<std::array<uint8_t, core::NU
   return this->send_delay_offset();
 }
 
-std::vector<FirmwareInfo> Controller::firmware_info_list() const {
+std::vector<FirmwareInfo> Controller::firmware_info_list() {
   auto concat_byte = [](const uint8_t high, const uint16_t low) { return static_cast<uint16_t>(static_cast<uint16_t>(high) << 8 | low); };
 
   std::vector<FirmwareInfo> infos;
 
   const auto num_devices = this->_geometry->num_devices();
+  const auto check_ack = this->_check_ack;
+  this->_check_ack = true;
+
   std::vector<uint16_t> cpu_versions(num_devices);
   if (const auto res = send_header(core::COMMAND::READ_CPU_VER_LSB); !res) return infos;
   for (size_t i = 0; i < num_devices; i++) cpu_versions[i] = this->_rx_buf[2 * i];
@@ -240,6 +271,8 @@ std::vector<FirmwareInfo> Controller::firmware_info_list() const {
   for (size_t i = 0; i < num_devices; i++) fpga_versions[i] = this->_rx_buf[2 * i];
   if (const auto res = send_header(core::COMMAND::READ_FPGA_VER_MSB); !res) return infos;
   for (size_t i = 0; i < num_devices; i++) fpga_versions[i] = concat_byte(this->_rx_buf[2 * i], fpga_versions[i]);
+
+  this->_check_ack = check_ack;
 
   for (size_t i = 0; i < num_devices; i++) infos.emplace_back(FirmwareInfo(static_cast<uint16_t>(i), cpu_versions[i], fpga_versions[i]));
   return infos;
@@ -257,7 +290,7 @@ void Controller::STMController::add_gain(const core::GainPtr& gain) const {
 
   uint8_t msg_id = 0;
   auto build_buf = std::make_unique<uint8_t[]>(this->_p_cnt->_geometry->num_devices() * core::EC_OUTPUT_FRAME_SIZE);
-  core::Logic::pack_header(nullptr, this->_p_cnt->_props.ctrl_flag(), &build_buf[0], &msg_id);
+  core::Logic::pack_header(nullptr, this->_p_cnt->_props.ctrl_flag(), this->_p_cnt->_props.cmd_flag(), &build_buf[0], &msg_id);
   size_t size = 0;
   core::Logic::pack_body(gain, &build_buf[0], &size);
 
@@ -288,8 +321,8 @@ void Controller::STMTimerCallback::add(std::unique_ptr<uint8_t[]> data, const si
   this->_sizes.emplace_back(size);
 }
 void Controller::STMTimerCallback::clear() {
-  std::vector<std::unique_ptr<uint8_t[]>>().swap(this->_bodies);
-  std::vector<size_t>().swap(this->_sizes);
+  this->_bodies.clear();
+  this->_sizes.clear();
   this->_idx = 0;
 }
 

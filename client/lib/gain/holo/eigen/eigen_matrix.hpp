@@ -3,7 +3,7 @@
 // Created Date: 06/07/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/09/2021
+// Last Modified: 29/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -64,14 +64,14 @@ struct EigenMatrix {
     data.noalias() = a->data.cwiseProduct(b->data);
   }
   virtual void pseudo_inverse_svd(const std::shared_ptr<EigenMatrix<T>>& matrix, double alpha, const std::shared_ptr<EigenMatrix<T>>&,
-                                  const std::shared_ptr<EigenMatrix<T>>&, const std::shared_ptr<EigenMatrix<T>>&,
+                                  const std::shared_ptr<EigenMatrix<T>>& s, const std::shared_ptr<EigenMatrix<T>>&,
                                   const std::shared_ptr<EigenMatrix<T>>&) {
     const Eigen::BDCSVD svd(matrix->data, Eigen::ComputeFullU | Eigen::ComputeFullV);
-    auto singular_values_inv = svd.singularValues();
-    const auto size = singular_values_inv.size();
-    for (Eigen::Index i = 0; i < size; i++)
-      singular_values_inv(i) = singular_values_inv(i) / (singular_values_inv(i) * singular_values_inv(i) + alpha);
-    data.noalias() = svd.matrixV() * singular_values_inv.asDiagonal() * svd.matrixU().adjoint();
+    s->data.fill(0);
+    auto singular_values = svd.singularValues();
+    const auto size = singular_values.size();
+    for (Eigen::Index i = 0; i < size; i++) s->data(i, i) = singular_values(i) / (singular_values(i) * singular_values(i) + alpha);
+    data.noalias() = svd.matrixV() * s->data * svd.matrixU().adjoint();
   }
   virtual void max_eigen_vector(const std::shared_ptr<EigenMatrix<T>>& ev);
   virtual void add(const T alpha, const std::shared_ptr<EigenMatrix<T>>& a) { data.noalias() += alpha * a->data; }
@@ -231,8 +231,7 @@ inline void EigenMatrix<complex>::set_from_complex_drive(std::vector<core::DataA
   size_t trans_idx = 0;
   for (Eigen::Index j = 0; j < n; j++) {
     const auto f_amp = normalize ? 1.0 : std::abs(data(j, 0)) / max_coefficient;
-    const auto f_phase = std::arg(data(j, 0)) / (2.0 * M_PI);
-    const auto phase = core::Utilities::to_phase(f_phase);
+    const auto phase = core::Utilities::to_phase(std::arg(data(j, 0)));
     const auto duty = core::Utilities::to_duty(f_amp);
     dst[dev_idx][trans_idx++] = core::Utilities::pack_to_u16(duty, phase);
     if (trans_idx == core::NUM_TRANS_IN_UNIT) {
@@ -248,8 +247,7 @@ inline void EigenMatrix<double>::set_from_arg(std::vector<core::DataArray>& dst,
   size_t trans_idx = 0;
   for (Eigen::Index j = 0; j < static_cast<Eigen::Index>(n); j++) {
     constexpr uint8_t duty = 0xFF;
-    const auto f_phase = data(j, 0) / (2 * M_PI);
-    const auto phase = core::Utilities::to_phase(f_phase);
+    const auto phase = core::Utilities::to_phase(data(j, 0));
     dst[dev_idx][trans_idx++] = core::Utilities::pack_to_u16(duty, phase);
     if (trans_idx == core::NUM_TRANS_IN_UNIT) {
       dev_idx++;

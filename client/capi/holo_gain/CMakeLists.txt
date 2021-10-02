@@ -23,7 +23,7 @@ set_target_properties(autd3capi-holo-gain
 )
 
 if(WIN32)
-  set_target_properties(autd3capi-holo-gain PROPERTIES FOLDER "capi")
+  set_target_properties(autd3capi-holo-gain PROPERTIES FOLDER "capi/gain")
 else()
   set_target_properties(autd3capi-holo-gain PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

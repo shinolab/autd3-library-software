@@ -4,7 +4,7 @@
  * Created Date: 06/09/2021
  * Author: Shun Suzuki
  * -----
- * Last Modified: 10/09/2021
+ * Last Modified: 22/09/2021
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -282,7 +282,7 @@ __device__ uint8_t to_duty(const double amp) {
 }
 
 __device__ uint8_t to_phase(const double phase) noexcept {
-  const uint8_t d_phase = (uint8_t)((int)(round((phase + 0.5) * 256.0)) & 0xFF);
+  const uint8_t d_phase = (uint8_t)((int)(round((phase / (2.0 * M_PI) + 0.5) * 256.0)) & 0xFF);
   return core::PHASE_INVERTED ? d_phase : 0xFF - d_phase;
 }
 
@@ -291,8 +291,7 @@ __global__ void set_from_complex_drive_kernel(const cuDoubleComplex* drive, uint
   if (xi >= size) return;
 
   const auto f_amp = normalize ? 1.0 : absc(drive[xi]) / max_coefficient;
-  const auto f_phase = atan2(drive[xi].y, drive[xi].x) / (2.0 * M_PI);
-  const uint16_t phase = (uint16_t)to_phase(f_phase);
+  const uint16_t phase = (uint16_t)to_phase(atan2(drive[xi].y, drive[xi].x));
   const uint16_t duty = (uint16_t)to_duty(f_amp);
   d_data[xi] = (duty << 8) | phase;
 }
@@ -307,8 +306,7 @@ __global__ void set_from_arg(const double* drive, uint32_t size, uint16_t* d_dat
   int xi = blockIdx.x * blockDim.x + threadIdx.x;
   if (xi >= size) return;
 
-  const auto f_phase = drive[xi] / (2.0 * M_PI);
-  const uint16_t phase = (uint16_t)to_phase(f_phase);
+  const uint16_t phase = (uint16_t)to_phase(drive[xi]);
   const uint16_t duty = 0xFF00;
   d_data[xi] = duty | phase;
 }

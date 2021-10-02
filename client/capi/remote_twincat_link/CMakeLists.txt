@@ -9,6 +9,7 @@ add_library(autd3capi-remote-twincat-link SHARED
 
 target_link_libraries(autd3capi-remote-twincat-link remote_twincat_link)
 if(WIN32)
+  target_link_libraries(autd3capi-remote-twincat-link ws2_32)
 elseif(APPLE)
 else()
   target_link_libraries(autd3capi-remote-twincat-link -static-libgcc -static-libstdc++)
@@ -22,7 +23,7 @@ set_target_properties(autd3capi-remote-twincat-link
 )
 
 if(WIN32)
-  set_target_properties(autd3capi-remote-twincat-link PROPERTIES FOLDER "capi")
+  set_target_properties(autd3capi-remote-twincat-link PROPERTIES FOLDER "capi/link")
 else()
   set_target_properties(autd3capi-remote-twincat-link PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
