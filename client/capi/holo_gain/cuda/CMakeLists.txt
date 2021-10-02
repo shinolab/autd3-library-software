@@ -23,7 +23,7 @@ set_target_properties(autd3capi-cuda-backend
 )
 
 if(WIN32)
-  set_target_properties(autd3capi-cuda-backend PROPERTIES FOLDER "capi/backend")
+  set_target_properties(autd3capi-cuda-backend PROPERTIES FOLDER "capi/gain/backend")
 else()
   set_target_properties(autd3capi-cuda-backend PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

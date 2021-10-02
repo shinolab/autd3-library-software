@@ -20,7 +20,7 @@ inline void bessel_test(const autd::ControllerPtr& autd) {
 
   const auto m = autd::modulation::Sine::create(150);  // 150Hz AM
 
-  const autd::Vector3 start(TRANS_SPACING_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SPACING_MM * ((NUM_TRANS_Y - 1) / 2.0), 0);
-  const auto g = autd::gain::BesselBeam::create(start, autd::Vector3::UnitZ(), 13.0 / 180.0 * M_PI);
+  const autd::Vector3 apex(TRANS_SPACING_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SPACING_MM * ((NUM_TRANS_Y - 1) / 2.0), 0);
+  const auto g = autd::gain::BesselBeam::create(apex, autd::Vector3::UnitZ(), 13.0 / 180.0 * M_PI);
   autd->send(g, m);
 }

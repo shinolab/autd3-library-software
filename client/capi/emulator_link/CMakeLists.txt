@@ -9,7 +9,7 @@ add_library(autd3capi-emulator-link SHARED
 
 target_link_libraries(autd3capi-emulator-link emulator_link autd3)
 if(WIN32)
-  target_link_libraries(autd3capi-emulator-link ws2_32.lib winmm.lib)
+  target_link_libraries(autd3capi-emulator-link ws2_32 winmm)
 elseif(APPLE)
 else()
   target_link_libraries(autd3capi-emulator-link -static-libgcc -static-libstdc++)
@@ -23,7 +23,7 @@ set_target_properties(autd3capi-emulator-link
 )
 
 if(WIN32)
-  set_target_properties(autd3capi-emulator-link PROPERTIES FOLDER "capi")
+  set_target_properties(autd3capi-emulator-link PROPERTIES FOLDER "capi/link")
 else()
   set_target_properties(autd3capi-emulator-link PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

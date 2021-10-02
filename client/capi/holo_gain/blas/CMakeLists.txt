@@ -23,7 +23,7 @@ set_target_properties(autd3capi-blas-backend
 )
 
 if(WIN32)
-  set_target_properties(autd3capi-blas-backend PROPERTIES FOLDER "capi/backend")
+  set_target_properties(autd3capi-blas-backend PROPERTIES FOLDER "capi/gain/backend")
 else()
   set_target_properties(autd3capi-blas-backend PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

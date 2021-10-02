@@ -22,7 +22,7 @@ set_target_properties(autd3capi-from-file-modulation
 )
 
 if(WIN32)
-  set_target_properties(autd3capi-from-file-modulation PROPERTIES FOLDER "capi")
+  set_target_properties(autd3capi-from-file-modulation PROPERTIES FOLDER "capi/modulation")
 else()
   set_target_properties(autd3capi-from-file-modulation PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

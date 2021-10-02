@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/09/2021
+// Last Modified: 22/09/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -73,7 +73,6 @@ class SDP final : public Holo {
 
   void calc(const core::GeometryPtr& geometry) {
     this->_backend->sdp(geometry, this->_foci, this->_amps, _alpha, _lambda, _repeat, _normalize, this->_data);
-    this->_built = true;
   }
 
   SDP(BackendPtr backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps, const double alpha, const double lambda,
@@ -106,10 +105,7 @@ class EVD final : public Holo {
     return std::make_shared<EVD>(std::move(backend), foci, amps, gamma, normalize);
   }
 
-  void calc(const core::GeometryPtr& geometry) {
-    this->_backend->evd(geometry, this->_foci, this->_amps, _gamma, _normalize, this->_data);
-    this->_built = true;
-  }
+  void calc(const core::GeometryPtr& geometry) { this->_backend->evd(geometry, this->_foci, this->_amps, _gamma, _normalize, this->_data); }
 
   EVD(BackendPtr backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps, const double gamma, const bool normalize)
       : Holo(std::move(backend), foci, amps), _gamma(gamma), _normalize(normalize) {}
@@ -132,10 +128,7 @@ class Naive final : public Holo {
   static std::shared_ptr<Naive> create(BackendPtr backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps) {
     return std::make_shared<Naive>(std::move(backend), foci, amps);
   }
-  void calc(const core::GeometryPtr& geometry) {
-    this->_backend->naive(geometry, this->_foci, this->_amps, this->_data);
-    this->_built = true;
-  }
+  void calc(const core::GeometryPtr& geometry) { this->_backend->naive(geometry, this->_foci, this->_amps, this->_data); }
 
   Naive(BackendPtr backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps) : Holo(std::move(backend), foci, amps) {}
 };
@@ -158,10 +151,7 @@ class GS final : public Holo {
     return std::make_shared<GS>(std::move(backend), foci, amps, repeat);
   }
 
-  void calc(const core::GeometryPtr& geometry) {
-    this->_backend->gs(geometry, this->_foci, this->_amps, _repeat, this->_data);
-    this->_built = true;
-  }
+  void calc(const core::GeometryPtr& geometry) { this->_backend->gs(geometry, this->_foci, this->_amps, _repeat, this->_data); }
 
   GS(BackendPtr backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps, const size_t repeat)
       : Holo(std::move(backend), foci, amps), _repeat(repeat) {}
@@ -189,10 +179,7 @@ class GSPAT final : public Holo {
     return std::make_shared<GSPAT>(std::move(backend), foci, amps, repeat);
   }
 
-  void calc(const core::GeometryPtr& geometry) {
-    this->_backend->gspat(geometry, this->_foci, this->_amps, _repeat, this->_data);
-    this->_built = true;
-  }
+  void calc(const core::GeometryPtr& geometry) { this->_backend->gspat(geometry, this->_foci, this->_amps, _repeat, this->_data); }
 
   GSPAT(BackendPtr backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps, const size_t repeat)
       : Holo(std::move(backend), foci, amps), _repeat(repeat) {}
@@ -229,7 +216,6 @@ class LM final : public Holo {
 
   void calc(const core::GeometryPtr& geometry) {
     this->_backend->lm(geometry, this->_foci, this->_amps, _eps_1, _eps_2, _tau, _k_max, _initial, this->_data);
-    this->_built = true;
   }
 
   LM(BackendPtr backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps, const double eps_1, const double eps_2,
@@ -266,7 +252,6 @@ class GaussNewton final : public Holo {
 
   void calc(const core::GeometryPtr& geometry) {
     this->_backend->gauss_newton(geometry, this->_foci, this->_amps, _eps_1, _eps_2, _k_max, _initial, this->_data);
-    this->_built = true;
   }
 
   GaussNewton(BackendPtr backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps, const double eps_1, const double eps_2,
@@ -302,7 +287,6 @@ class GradientDescent final : public Holo {
 
   void calc(const core::GeometryPtr& geometry) {
     this->_backend->gradient_descent(geometry, this->_foci, this->_amps, _eps, _step, _k_max, _initial, this->_data);
-    this->_built = true;
   }
 
   GradientDescent(BackendPtr backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps, const double eps, const double step,
@@ -336,10 +320,7 @@ class APO final : public Holo {
     return std::make_shared<APO>(std::move(backend), foci, amps, eps, lambda, k_max);
   }
 
-  void calc(const core::GeometryPtr& geometry) {
-    this->_backend->apo(geometry, this->_foci, this->_amps, _eps, _lambda, _k_max, this->_data);
-    this->_built = true;
-  }
+  void calc(const core::GeometryPtr& geometry) { this->_backend->apo(geometry, this->_foci, this->_amps, _eps, _lambda, _k_max, this->_data); }
 
   APO(BackendPtr backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps, const double eps, const double lambda,
       const size_t k_max)
@@ -371,10 +352,7 @@ class Greedy final : public Holo {
     return std::make_shared<Greedy>(std::move(backend), foci, amps, phase_div);
   }
 
-  void calc(const core::GeometryPtr& geometry) {
-    this->_backend->greedy(geometry, this->_foci, this->_amps, _phase_div, this->_data);
-    this->_built = true;
-  }
+  void calc(const core::GeometryPtr& geometry) { this->_backend->greedy(geometry, this->_foci, this->_amps, _phase_div, this->_data); }
 
   Greedy(BackendPtr backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps, const size_t phase_div)
       : Holo(std::move(backend), foci, amps), _phase_div(phase_div) {}
