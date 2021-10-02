@@ -130,7 +130,7 @@ void SOEMController::open(const char* ifname, const size_t dev_num, const ECConf
 
   _is_open = true;
   this->_send_thread = std::thread([this]() {
-    while (true) {
+    while (this->_is_open) {
       {
         std::unique_lock lock(this->_send_mtx);
         this->_send_cond.wait(lock, [this] { return !this->_is_open || this->_send_buf_size != 0; });
