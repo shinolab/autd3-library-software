@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 28/09/2021
+// Last Modified: 02/10/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -162,9 +162,7 @@ bool Controller::send(const core::GainPtr& gain) { return this->send(gain, nullp
 bool Controller::send(const core::ModulationPtr& mod) { return this->send(nullptr, mod); }
 
 bool Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod) {
-  if (mod != nullptr) {
-    mod->build();
-  }
+  if (mod != nullptr) mod->build();
   if (gain != nullptr) {
     this->_props._output_enable = true;
     this->_props._op_mode = core::OP_MODE_NORMAL;
