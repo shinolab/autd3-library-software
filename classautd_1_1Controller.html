@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">1.7.2</span>
+   &#160;<span id="projectnumber">1.8.0</span>
    </div>
   </td>
  </tr>
@@ -89,6 +89,18 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a42d72cfd944d41a4dc78f3d014d1fb12"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a42d72cfd944d41a4dc78f3d014d1fb12">Controller</a> () noexcept</td></tr>
+<tr class="separator:a42d72cfd944d41a4dc78f3d014d1fb12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37755fd21de989d67ea7ba7e6eefb80f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a37755fd21de989d67ea7ba7e6eefb80f">~Controller</a> () noexcept</td></tr>
+<tr class="separator:a37755fd21de989d67ea7ba7e6eefb80f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f982253a46d8948b11125b92bf38364"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a7f982253a46d8948b11125b92bf38364">Controller</a> (const <a class="el" href="classautd_1_1Controller.html">Controller</a> &amp;v) noexcept=delete</td></tr>
+<tr class="separator:a7f982253a46d8948b11125b92bf38364"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb2165bbf9873bc93017170d2e486556"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classautd_1_1Controller.html">Controller</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#acb2165bbf9873bc93017170d2e486556">operator=</a> (const <a class="el" href="classautd_1_1Controller.html">Controller</a> &amp;obj)=delete</td></tr>
+<tr class="separator:acb2165bbf9873bc93017170d2e486556"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2befe907950b80175ae7b2528b5d13a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#ae2befe907950b80175ae7b2528b5d13a">Controller</a> (<a class="el" href="classautd_1_1Controller.html">Controller</a> &amp;&amp;obj)=default</td></tr>
+<tr class="separator:ae2befe907950b80175ae7b2528b5d13a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a7fcf5ba083e6cb4190b52887b1778e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classautd_1_1Controller.html">Controller</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a1a7fcf5ba083e6cb4190b52887b1778e">operator=</a> (<a class="el" href="classautd_1_1Controller.html">Controller</a> &amp;&amp;obj)=default</td></tr>
+<tr class="separator:a1a7fcf5ba083e6cb4190b52887b1778e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e40bb050081b6ae61fbc67d1f21ffd0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a8e40bb050081b6ae61fbc67d1f21ffd0">is_open</a> () const</td></tr>
 <tr class="memdesc:a8e40bb050081b6ae61fbc67d1f21ffd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verify the device is properly connected.  <a href="classautd_1_1Controller.html#a8e40bb050081b6ae61fbc67d1f21ffd0">More...</a><br /></td></tr>
 <tr class="separator:a8e40bb050081b6ae61fbc67d1f21ffd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -99,14 +111,20 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:aaf6653050c4716612c6bbb3fc8af446f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Silent mode.  <a href="classautd_1_1Controller.html#aaf6653050c4716612c6bbb3fc8af446f">More...</a><br /></td></tr>
 <tr class="separator:aaf6653050c4716612c6bbb3fc8af446f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a11e7dc7f7da5c92428bafc83dfb05837"><td class="memItemLeft" align="right" valign="top">bool &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a11e7dc7f7da5c92428bafc83dfb05837">reads_fpga_info</a> () noexcept</td></tr>
-<tr class="memdesc:a11e7dc7f7da5c92428bafc83dfb05837"><td class="mdescLeft">&#160;</td><td class="mdescRight">If true, the devices return FPGA info in all frames. The FPGA info can be read by <a class="el" href="classautd_1_1Controller.html#a72e9b2f67c1a90c61122f77771f74063" title="FPGA info.">fpga_info()</a>.  <a href="classautd_1_1Controller.html#a11e7dc7f7da5c92428bafc83dfb05837">More...</a><br /></td></tr>
+<tr class="memdesc:a11e7dc7f7da5c92428bafc83dfb05837"><td class="mdescLeft">&#160;</td><td class="mdescRight">If true, the devices return FPGA info in all frames. The FPGA info can be read by <a class="el" href="classautd_1_1Controller.html#a49119848079418ff312bbe04e39a7f14" title="FPGA info.">fpga_info()</a>.  <a href="classautd_1_1Controller.html#a11e7dc7f7da5c92428bafc83dfb05837">More...</a><br /></td></tr>
 <tr class="separator:a11e7dc7f7da5c92428bafc83dfb05837"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a95537a272f7663bcdc8e47781f76798a"><td class="memItemLeft" align="right" valign="top">bool &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a95537a272f7663bcdc8e47781f76798a">force_fan</a> () noexcept</td></tr>
 <tr class="memdesc:a95537a272f7663bcdc8e47781f76798a"><td class="mdescLeft">&#160;</td><td class="mdescRight">If true, the fan will be forced to start.  <a href="classautd_1_1Controller.html#a95537a272f7663bcdc8e47781f76798a">More...</a><br /></td></tr>
 <tr class="separator:a95537a272f7663bcdc8e47781f76798a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a72e9b2f67c1a90c61122f77771f74063"><td class="memItemLeft" align="right" valign="top">std::vector&lt; uint8_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a72e9b2f67c1a90c61122f77771f74063">fpga_info</a> ()</td></tr>
-<tr class="memdesc:a72e9b2f67c1a90c61122f77771f74063"><td class="mdescLeft">&#160;</td><td class="mdescRight">FPGA info.  <a href="classautd_1_1Controller.html#a72e9b2f67c1a90c61122f77771f74063">More...</a><br /></td></tr>
-<tr class="separator:a72e9b2f67c1a90c61122f77771f74063"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a945c8eefee3da12c6bd9299b532f35b3"><td class="memItemLeft" align="right" valign="top">bool &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a945c8eefee3da12c6bd9299b532f35b3">output_balance</a> () noexcept</td></tr>
+<tr class="memdesc:a945c8eefee3da12c6bd9299b532f35b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">If true, the applied voltage to transducers is dropped to GND while transducers are not being outputting.  <a href="classautd_1_1Controller.html#a945c8eefee3da12c6bd9299b532f35b3">More...</a><br /></td></tr>
+<tr class="separator:a945c8eefee3da12c6bd9299b532f35b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf9049fe702156625e584edef47c1f8f"><td class="memItemLeft" align="right" valign="top">bool &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#aaf9049fe702156625e584edef47c1f8f">check_ack</a> () noexcept</td></tr>
+<tr class="memdesc:aaf9049fe702156625e584edef47c1f8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">If true, this controller check ack from devices.  <a href="classautd_1_1Controller.html#aaf9049fe702156625e584edef47c1f8f">More...</a><br /></td></tr>
+<tr class="separator:aaf9049fe702156625e584edef47c1f8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49119848079418ff312bbe04e39a7f14"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; uint8_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a49119848079418ff312bbe04e39a7f14">fpga_info</a> ()</td></tr>
+<tr class="memdesc:a49119848079418ff312bbe04e39a7f14"><td class="mdescLeft">&#160;</td><td class="mdescRight">FPGA info.  <a href="classautd_1_1Controller.html#a49119848079418ff312bbe04e39a7f14">More...</a><br /></td></tr>
+<tr class="separator:a49119848079418ff312bbe04e39a7f14"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d7870dbcbd93c880a06ef7429bdd747"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a2d7870dbcbd93c880a06ef7429bdd747">update_ctrl_flag</a> ()</td></tr>
 <tr class="memdesc:a2d7870dbcbd93c880a06ef7429bdd747"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update control flag.  <a href="classautd_1_1Controller.html#a2d7870dbcbd93c880a06ef7429bdd747">More...</a><br /></td></tr>
 <tr class="separator:a2d7870dbcbd93c880a06ef7429bdd747"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -131,30 +149,30 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ab9bf24983d0c662baafdda9fb1b75401"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#ab9bf24983d0c662baafdda9fb1b75401">stop</a> ()</td></tr>
 <tr class="memdesc:ab9bf24983d0c662baafdda9fb1b75401"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stop outputting.  <a href="classautd_1_1Controller.html#ab9bf24983d0c662baafdda9fb1b75401">More...</a><br /></td></tr>
 <tr class="separator:ab9bf24983d0c662baafdda9fb1b75401"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3745ec9a4d74981a5f1a4a74d5f8c65b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a3745ec9a4d74981a5f1a4a74d5f8c65b">pause</a> () const</td></tr>
-<tr class="memdesc:a3745ec9a4d74981a5f1a4a74d5f8c65b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pause outputting.  <a href="classautd_1_1Controller.html#a3745ec9a4d74981a5f1a4a74d5f8c65b">More...</a><br /></td></tr>
-<tr class="separator:a3745ec9a4d74981a5f1a4a74d5f8c65b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae6c328bcfcf2e32188bd07746d3db096"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#ae6c328bcfcf2e32188bd07746d3db096">resume</a> () const</td></tr>
-<tr class="memdesc:ae6c328bcfcf2e32188bd07746d3db096"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resume outputting.  <a href="classautd_1_1Controller.html#ae6c328bcfcf2e32188bd07746d3db096">More...</a><br /></td></tr>
-<tr class="separator:ae6c328bcfcf2e32188bd07746d3db096"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0c39e224919209c64d8471673e63d879"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a0c39e224919209c64d8471673e63d879">send</a> (const <a class="el" href="namespaceautd_1_1core.html#ac094edc69364df81df793c8b732474d4">core::GainPtr</a> &amp;gain, bool wait_for_msg_processed=true)</td></tr>
-<tr class="memdesc:a0c39e224919209c64d8471673e63d879"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send gain to the device.  <a href="classautd_1_1Controller.html#a0c39e224919209c64d8471673e63d879">More...</a><br /></td></tr>
-<tr class="separator:a0c39e224919209c64d8471673e63d879"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e3d1348f0b555bc70e75099413f5c42"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a9e3d1348f0b555bc70e75099413f5c42">pause</a> ()</td></tr>
+<tr class="memdesc:a9e3d1348f0b555bc70e75099413f5c42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pause outputting.  <a href="classautd_1_1Controller.html#a9e3d1348f0b555bc70e75099413f5c42">More...</a><br /></td></tr>
+<tr class="separator:a9e3d1348f0b555bc70e75099413f5c42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefab5eb2a3ad96e630044949fa502a26"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#aefab5eb2a3ad96e630044949fa502a26">resume</a> ()</td></tr>
+<tr class="memdesc:aefab5eb2a3ad96e630044949fa502a26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resume outputting.  <a href="classautd_1_1Controller.html#aefab5eb2a3ad96e630044949fa502a26">More...</a><br /></td></tr>
+<tr class="separator:aefab5eb2a3ad96e630044949fa502a26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affcd2dab1fe3f16df92dd6c11fa57270"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#affcd2dab1fe3f16df92dd6c11fa57270">send</a> (const <a class="el" href="namespaceautd_1_1core.html#ac094edc69364df81df793c8b732474d4">core::GainPtr</a> &amp;gain)</td></tr>
+<tr class="memdesc:affcd2dab1fe3f16df92dd6c11fa57270"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send gain to the device.  <a href="classautd_1_1Controller.html#affcd2dab1fe3f16df92dd6c11fa57270">More...</a><br /></td></tr>
+<tr class="separator:affcd2dab1fe3f16df92dd6c11fa57270"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f39ebf1d306490032ccb1bf29559cfb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a3f39ebf1d306490032ccb1bf29559cfb">send</a> (const <a class="el" href="namespaceautd_1_1core.html#aa9fb70cafbef0bcbc7726f109558efef">core::ModulationPtr</a> &amp;mod)</td></tr>
 <tr class="memdesc:a3f39ebf1d306490032ccb1bf29559cfb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send modulation to the device.  <a href="classautd_1_1Controller.html#a3f39ebf1d306490032ccb1bf29559cfb">More...</a><br /></td></tr>
 <tr class="separator:a3f39ebf1d306490032ccb1bf29559cfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9ef83e17c8042e78378d90a0a603e825"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a9ef83e17c8042e78378d90a0a603e825">send</a> (const <a class="el" href="namespaceautd_1_1core.html#ac094edc69364df81df793c8b732474d4">core::GainPtr</a> &amp;gain, const <a class="el" href="namespaceautd_1_1core.html#aa9fb70cafbef0bcbc7726f109558efef">core::ModulationPtr</a> &amp;mod, bool wait_for_msg_processed=true)</td></tr>
-<tr class="memdesc:a9ef83e17c8042e78378d90a0a603e825"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send gain and modulation to the device.  <a href="classautd_1_1Controller.html#a9ef83e17c8042e78378d90a0a603e825">More...</a><br /></td></tr>
-<tr class="separator:a9ef83e17c8042e78378d90a0a603e825"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f9397ace4c2d0b5025600df6e39b066"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a9f9397ace4c2d0b5025600df6e39b066">send</a> (const <a class="el" href="namespaceautd_1_1core.html#ac094edc69364df81df793c8b732474d4">core::GainPtr</a> &amp;gain, const <a class="el" href="namespaceautd_1_1core.html#aa9fb70cafbef0bcbc7726f109558efef">core::ModulationPtr</a> &amp;mod)</td></tr>
+<tr class="memdesc:a9f9397ace4c2d0b5025600df6e39b066"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send gain and modulation to the device.  <a href="classautd_1_1Controller.html#a9f9397ace4c2d0b5025600df6e39b066">More...</a><br /></td></tr>
+<tr class="separator:a9f9397ace4c2d0b5025600df6e39b066"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4e3b0797bac60d4c97040c5bbb46c100"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a4e3b0797bac60d4c97040c5bbb46c100">send</a> (const <a class="el" href="namespaceautd_1_1core.html#ae7ffc0e1fffe52bbd7e1f96524747e0d">core::PointSequencePtr</a> &amp;seq)</td></tr>
 <tr class="memdesc:a4e3b0797bac60d4c97040c5bbb46c100"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send sequence to the device.  <a href="classautd_1_1Controller.html#a4e3b0797bac60d4c97040c5bbb46c100">More...</a><br /></td></tr>
 <tr class="separator:a4e3b0797bac60d4c97040c5bbb46c100"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a02c942006573a7ae174a6053ed482685"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a02c942006573a7ae174a6053ed482685">send</a> (const <a class="el" href="namespaceautd_1_1core.html#a18faea5946e8c4194fea8cdac091524b">core::GainSequencePtr</a> &amp;seq)</td></tr>
 <tr class="memdesc:a02c942006573a7ae174a6053ed482685"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send sequence to the device.  <a href="classautd_1_1Controller.html#a02c942006573a7ae174a6053ed482685">More...</a><br /></td></tr>
 <tr class="separator:a02c942006573a7ae174a6053ed482685"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aac60841e00a98fbf26847ce7482753b7"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classautd_1_1FirmwareInfo.html">FirmwareInfo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#aac60841e00a98fbf26847ce7482753b7">firmware_info_list</a> () const</td></tr>
-<tr class="memdesc:aac60841e00a98fbf26847ce7482753b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerate firmware information.  <a href="classautd_1_1Controller.html#aac60841e00a98fbf26847ce7482753b7">More...</a><br /></td></tr>
-<tr class="separator:aac60841e00a98fbf26847ce7482753b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a849e7f81ca333c2ab447209b2f6022c4"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classautd_1_1FirmwareInfo.html">FirmwareInfo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a849e7f81ca333c2ab447209b2f6022c4">firmware_info_list</a> ()</td></tr>
+<tr class="memdesc:a849e7f81ca333c2ab447209b2f6022c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerate firmware information.  <a href="classautd_1_1Controller.html#a849e7f81ca333c2ab447209b2f6022c4">More...</a><br /></td></tr>
+<tr class="separator:a849e7f81ca333c2ab447209b2f6022c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8a771307b1397f913ae5115955951ef2"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classautd_1_1Controller_1_1STMController.html">STMController</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a8a771307b1397f913ae5115955951ef2">stm</a> ()</td></tr>
 <tr class="memdesc:a8a771307b1397f913ae5115955951ef2"><td class="mdescLeft">&#160;</td><td class="mdescRight">return pointer to software spatio-temporal modulation controller.  <a href="classautd_1_1Controller.html#a8a771307b1397f913ae5115955951ef2">More...</a><br /></td></tr>
 <tr class="separator:a8a771307b1397f913ae5115955951ef2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -168,7 +186,139 @@ Static Public Member Functions</h2></td></tr>
 <div class="textblock"><p>AUTD <a class="el" href="classautd_1_1Controller.html" title="AUTD Controller.">Controller</a>. </p>
 
 <p class="definition">Definition at line <a class="el" href="controller_8hpp_source.html#l00035">35</a> of file <a class="el" href="controller_8hpp_source.html">controller.hpp</a>.</p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a42d72cfd944d41a4dc78f3d014d1fb12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42d72cfd944d41a4dc78f3d014d1fb12">&#9670;&nbsp;</a></span>Controller() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">autd::Controller::Controller </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="controller_8hpp_source.html#l00072">72</a> of file <a class="el" href="controller_8hpp_source.html">controller.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a37755fd21de989d67ea7ba7e6eefb80f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37755fd21de989d67ea7ba7e6eefb80f">&#9670;&nbsp;</a></span>~Controller()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">autd::Controller::~Controller </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7f982253a46d8948b11125b92bf38364"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f982253a46d8948b11125b92bf38364">&#9670;&nbsp;</a></span>Controller() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">autd::Controller::Controller </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classautd_1_1Controller.html">Controller</a> &amp;&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae2befe907950b80175ae7b2528b5d13a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2befe907950b80175ae7b2528b5d13a">&#9670;&nbsp;</a></span>Controller() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">autd::Controller::Controller </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classautd_1_1Controller.html">Controller</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>obj</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="aaf9049fe702156625e584edef47c1f8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf9049fe702156625e584edef47c1f8f">&#9670;&nbsp;</a></span>check_ack()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool&amp; autd::Controller::check_ack </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>If true, this controller check ack from devices. </p>
+
+</div>
+</div>
 <a id="a8a90ce7f1cdb6a18b2ac9fcf55dbb977"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8a90ce7f1cdb6a18b2ac9fcf55dbb977">&#9670;&nbsp;</a></span>clear()</h2>
 
@@ -185,7 +335,7 @@ Static Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Clear all data in hardware. </p>
-<dl class="section return"><dt>Returns</dt><dd>if true, It guarantees that the devices have processed the data </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true. </dd></dl>
 
 </div>
 </div>
@@ -205,7 +355,7 @@ Static Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Close the controller. </p>
-<dl class="section return"><dt>Returns</dt><dd>if true, It guarantees that the devices have processed the data </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true. </dd></dl>
 
 </div>
 </div>
@@ -234,8 +384,8 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aac60841e00a98fbf26847ce7482753b7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aac60841e00a98fbf26847ce7482753b7">&#9670;&nbsp;</a></span>firmware_info_list()</h2>
+<a id="a849e7f81ca333c2ab447209b2f6022c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a849e7f81ca333c2ab447209b2f6022c4">&#9670;&nbsp;</a></span>firmware_info_list()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -244,7 +394,7 @@ Static Public Member Functions</h2></td></tr>
           <td class="memname">std::vector&lt;<a class="el" href="classautd_1_1FirmwareInfo.html">FirmwareInfo</a>&gt; autd::Controller::firmware_info_list </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td> const</td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -281,14 +431,14 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a72e9b2f67c1a90c61122f77771f74063"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a72e9b2f67c1a90c61122f77771f74063">&#9670;&nbsp;</a></span>fpga_info()</h2>
+<a id="a49119848079418ff312bbe04e39a7f14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49119848079418ff312bbe04e39a7f14">&#9670;&nbsp;</a></span>fpga_info()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;uint8_t&gt; autd::Controller::fpga_info </td>
+          <td class="memname">const std::vector&lt;uint8_t&gt;&amp; autd::Controller::fpga_info </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -374,8 +524,87 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a3745ec9a4d74981a5f1a4a74d5f8c65b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3745ec9a4d74981a5f1a4a74d5f8c65b">&#9670;&nbsp;</a></span>pause()</h2>
+<a id="acb2165bbf9873bc93017170d2e486556"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb2165bbf9873bc93017170d2e486556">&#9670;&nbsp;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classautd_1_1Controller.html">Controller</a>&amp; autd::Controller::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classautd_1_1Controller.html">Controller</a> &amp;&#160;</td>
+          <td class="paramname"><em>obj</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1a7fcf5ba083e6cb4190b52887b1778e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a7fcf5ba083e6cb4190b52887b1778e">&#9670;&nbsp;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classautd_1_1Controller.html">Controller</a>&amp; autd::Controller::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classautd_1_1Controller.html">Controller</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>obj</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a945c8eefee3da12c6bd9299b532f35b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a945c8eefee3da12c6bd9299b532f35b3">&#9670;&nbsp;</a></span>output_balance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool&amp; autd::Controller::output_balance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>If true, the applied voltage to transducers is dropped to GND while transducers are not being outputting. </p>
+
+</div>
+</div>
+<a id="a9e3d1348f0b555bc70e75099413f5c42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e3d1348f0b555bc70e75099413f5c42">&#9670;&nbsp;</a></span>pause()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -384,13 +613,13 @@ Static Public Member Functions</h2></td></tr>
           <td class="memname">bool autd::Controller::pause </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td> const</td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Pause outputting. </p>
-<dl class="section return"><dt>Returns</dt><dd>if true, It guarantees that the devices have processed the data </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true. </dd></dl>
 
 </div>
 </div>
@@ -417,12 +646,12 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>If true, the devices return FPGA info in all frames. The FPGA info can be read by <a class="el" href="classautd_1_1Controller.html#a72e9b2f67c1a90c61122f77771f74063" title="FPGA info.">fpga_info()</a>. </p>
+<p>If true, the devices return FPGA info in all frames. The FPGA info can be read by <a class="el" href="classautd_1_1Controller.html#a49119848079418ff312bbe04e39a7f14" title="FPGA info.">fpga_info()</a>. </p>
 
 </div>
 </div>
-<a id="ae6c328bcfcf2e32188bd07746d3db096"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae6c328bcfcf2e32188bd07746d3db096">&#9670;&nbsp;</a></span>resume()</h2>
+<a id="aefab5eb2a3ad96e630044949fa502a26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aefab5eb2a3ad96e630044949fa502a26">&#9670;&nbsp;</a></span>resume()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -431,18 +660,18 @@ Static Public Member Functions</h2></td></tr>
           <td class="memname">bool autd::Controller::resume </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td> const</td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Resume outputting. </p>
-<dl class="section return"><dt>Returns</dt><dd>if true, It guarantees that the devices have processed the data </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true. </dd></dl>
 
 </div>
 </div>
-<a id="a0c39e224919209c64d8471673e63d879"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0c39e224919209c64d8471673e63d879">&#9670;&nbsp;</a></span>send() <span class="overload">[1/5]</span></h2>
+<a id="affcd2dab1fe3f16df92dd6c11fa57270"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affcd2dab1fe3f16df92dd6c11fa57270">&#9670;&nbsp;</a></span>send() <span class="overload">[1/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -451,18 +680,8 @@ Static Public Member Functions</h2></td></tr>
           <td class="memname">bool autd::Controller::send </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespaceautd_1_1core.html#ac094edc69364df81df793c8b732474d4">core::GainPtr</a> &amp;&#160;</td>
-          <td class="paramname"><em>gain</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"><em>gain</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>wait_for_msg_processed</em> = <code>true</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -471,16 +690,15 @@ Static Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">gain</td><td>Gain to display </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">wait_for_msg_processed</td><td>if true, this function waits until the data is processed in the devices </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>if true, it guarantees that the devices have processed the data </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true. </dd></dl>
 
 </div>
 </div>
-<a id="a9ef83e17c8042e78378d90a0a603e825"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9ef83e17c8042e78378d90a0a603e825">&#9670;&nbsp;</a></span>send() <span class="overload">[2/5]</span></h2>
+<a id="a9f9397ace4c2d0b5025600df6e39b066"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f9397ace4c2d0b5025600df6e39b066">&#9670;&nbsp;</a></span>send() <span class="overload">[2/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -495,13 +713,7 @@ Static Public Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="namespaceautd_1_1core.html#aa9fb70cafbef0bcbc7726f109558efef">core::ModulationPtr</a> &amp;&#160;</td>
-          <td class="paramname"><em>mod</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>wait_for_msg_processed</em> = <code>true</code>&#160;</td>
+          <td class="paramname"><em>mod</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -516,11 +728,10 @@ Static Public Member Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">gain</td><td>Gain to display </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">mod</td><td>Amplitude modulation to display </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">wait_for_msg_processed</td><td>see details</td></tr>
   </table>
   </dd>
 </dl>
-<p>if wait_for_msg_processed is true OR mod is not nullptr, this function waits until the data is processed in the devices </p><dl class="section return"><dt>Returns</dt><dd>if true, it guarantees that the devices have processed the data </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true. </dd></dl>
 
 </div>
 </div>
@@ -547,7 +758,7 @@ Static Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>if true, it guarantees that the devices have processed the data </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true. </dd></dl>
 
 </div>
 </div>
@@ -574,7 +785,7 @@ Static Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>if true, it guarantees that the devices have processed the data </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true. </dd></dl>
 
 </div>
 </div>
@@ -601,7 +812,7 @@ Static Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>if true, it guarantees that the devices have processed the data </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true. </dd></dl>
 
 </div>
 </div>
@@ -639,7 +850,7 @@ Static Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>if true, It guarantees that the devices have processed the data </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true. </dd></dl>
 
 </div>
 </div>
@@ -666,7 +877,7 @@ Static Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>if true, It guarantees that the devices have processed the data </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true. </dd></dl>
 
 </div>
 </div>
@@ -693,7 +904,7 @@ Static Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>if true, It guarantees that the devices have processed the data </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true. </dd></dl>
 
 </div>
 </div>
@@ -760,7 +971,7 @@ Static Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Stop outputting. </p>
-<dl class="section return"><dt>Returns</dt><dd>if true, It guarantees that the devices have processed the data </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true. </dd></dl>
 
 </div>
 </div>
@@ -780,6 +991,7 @@ Static Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Update control flag. </p>
+<dl class="section return"><dt>Returns</dt><dd>if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true. </dd></dl>
 
 </div>
 </div>

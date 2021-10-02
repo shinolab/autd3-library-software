@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">1.7.2</span>
+   &#160;<span id="projectnumber">1.8.0</span>
    </div>
   </td>
  </tr>
@@ -124,8 +124,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a856175ab80903a2077180ae16f08abe8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1link_1_1SOEM.html#a856175ab80903a2077180ae16f08abe8">read</a> (uint8_t *rx, size_t buffer_len) override=0</td></tr>
 <tr class="memdesc:a856175ab80903a2077180ae16f08abe8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read data from devices.  <a href="classautd_1_1link_1_1SOEM.html#a856175ab80903a2077180ae16f08abe8">More...</a><br /></td></tr>
 <tr class="separator:a856175ab80903a2077180ae16f08abe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae156024ccf5a18dc0146cfffd21cac0b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1link_1_1SOEM.html#ae156024ccf5a18dc0146cfffd21cac0b">set_lost_handler</a> (std::function&lt; void(std::string)&gt; handler)=0</td></tr>
-<tr class="separator:ae156024ccf5a18dc0146cfffd21cac0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe8971627703d8432ee88d79499f3489"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1link_1_1SOEM.html#abe8971627703d8432ee88d79499f3489">on_lost</a> (std::function&lt; void(std::string)&gt; callback)=0</td></tr>
+<tr class="separator:abe8971627703d8432ee88d79499f3489"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8994910af86a8e32b5584e598653e182"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1link_1_1SOEM.html#a8994910af86a8e32b5584e598653e182">is_open</a> () override=0</td></tr>
 <tr class="separator:a8994910af86a8e32b5584e598653e182"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classautd_1_1core_1_1Link"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classautd_1_1core_1_1Link')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classautd_1_1core_1_1Link.html">autd::core::Link</a></td></tr>
@@ -395,6 +395,32 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="abe8971627703d8432ee88d79499f3489"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe8971627703d8432ee88d79499f3489">&#9670;&nbsp;</a></span>on_lost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void autd::link::SOEM::on_lost </td>
+          <td>(</td>
+          <td class="paramtype">std::function&lt; void(std::string)&gt;&#160;</td>
+          <td class="paramname"><em>callback</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="acf3bf4220ae9b4bdc170cc04c43ea694"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#acf3bf4220ae9b4bdc170cc04c43ea694">&#9670;&nbsp;</a></span>open()</h2>
 
@@ -553,32 +579,6 @@ Static Public Member Functions</h2></td></tr>
 <p>Send data to devices. </p>
 
 <p>Implements <a class="el" href="classautd_1_1core_1_1Link.html#abab4352b8f6e32951e495b6c8bd90beb">autd::core::Link</a>.</p>
-
-</div>
-</div>
-<a id="ae156024ccf5a18dc0146cfffd21cac0b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae156024ccf5a18dc0146cfffd21cac0b">&#9670;&nbsp;</a></span>set_lost_handler()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual void autd::link::SOEM::set_lost_handler </td>
-          <td>(</td>
-          <td class="paramtype">std::function&lt; void(std::string)&gt;&#160;</td>
-          <td class="paramname"><em>handler</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
 
 </div>
 </div>

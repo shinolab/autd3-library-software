@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['seq_5fbase_5ffreq_567',['SEQ_BASE_FREQ',['../namespaceautd_1_1core.html#af94e2a700efb3a0b2cbe841e56ab7714',1,'autd::core']]]
+  ['trans_5fspacing_5fmm_584',['TRANS_SPACING_MM',['../namespaceautd_1_1core.html#a08f6b896f9cf899e8b7ede7f3c0507c0',1,'autd::core']]]
 ];

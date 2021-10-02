@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['name_560',['name',['../structautd_1_1link_1_1EtherCATAdapter.html#ab65020d7f48053284644a33be3ca2a1a',1,'autd::link::EtherCATAdapter']]],
-  ['num_5ftrans_5fin_5funit_561',['NUM_TRANS_IN_UNIT',['../namespaceautd_1_1core.html#aa82844cbfc211b283de1e79193783b7c',1,'autd::core']]],
-  ['num_5ftrans_5fx_562',['NUM_TRANS_X',['../namespaceautd_1_1core.html#af55fc05aaf92e27c974a8c90b1447803',1,'autd::core']]],
-  ['num_5ftrans_5fy_563',['NUM_TRANS_Y',['../namespaceautd_1_1core.html#a02f1690237ff8f7cf5c0a5f8f6e0dbb1',1,'autd::core']]]
+  ['one_576',['ONE',['../namespaceautd_1_1gain_1_1holo.html#a4706f4615216bdc26656990f92ec1f76',1,'autd::gain::holo']]],
+  ['op_5fmode_5fnormal_577',['OP_MODE_NORMAL',['../namespaceautd_1_1core.html#a6c7880b1164a016f9c26526e6bef2107',1,'autd::core']]],
+  ['op_5fmode_5fseq_578',['OP_MODE_SEQ',['../namespaceautd_1_1core.html#a849535ee24e81deb30e3a01c0b3af744',1,'autd::core']]]
 ];

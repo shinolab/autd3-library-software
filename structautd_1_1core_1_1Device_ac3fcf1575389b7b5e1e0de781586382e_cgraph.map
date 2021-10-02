@@ -1,4 +1,4 @@
-<map id="autd::core::Device::create" name="autd::core::Device::create">
+<map id="autd::core::Device::Device" name="autd::core::Device::Device">
 <area shape="rect" id="node1" title=" " alt="" coords="5,5,129,47"/>
 <area shape="rect" id="node2" href="$namespaceautd_1_1core.html#ab6ab1adeb29b6730a92561f0fa2b33b4" title=" " alt="" coords="177,5,324,47"/>
 </map>

@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">1.7.2</span>
+   &#160;<span id="projectnumber">1.8.0</span>
    </div>
   </td>
  </tr>
@@ -122,8 +122,8 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structautd_1_1core_1_1RxGlobalHeader.html">autd::core::RxGlobalHeader</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data header common to all devices.  <a href="structautd_1_1core_1_1RxGlobalHeader.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structautd_1_1core_1_1GlobalHeader.html">autd::core::GlobalHeader</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data header common to all devices.  <a href="structautd_1_1core_1_1GlobalHeader.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structautd_1_1core_1_1SeqFocus.html">autd::core::SeqFocus</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Focus struct used in sequence mode.  <a href="structautd_1_1core_1_1SeqFocus.html#details">More...</a><br /></td></tr>
@@ -143,19 +143,17 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:a0532bdbe30c6a230dc89440b509d284c"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core.html#a0532bdbe30c6a230dc89440b509d284c">autd::core::RX_GLOBAL_CONTROL_FLAGS</a> { <br />
-&#160;&#160;<a class="el" href="namespaceautd_1_1core.html#a0532bdbe30c6a230dc89440b509d284caff94cf6529f862e566fb778d08b21dd3">autd::core::MOD_BEGIN</a> = 1 &lt;&lt; 0, 
-<a class="el" href="namespaceautd_1_1core.html#a0532bdbe30c6a230dc89440b509d284caededd59796465025c732c2214319668f">autd::core::MOD_END</a> = 1 &lt;&lt; 1, 
-<a class="el" href="namespaceautd_1_1core.html#a0532bdbe30c6a230dc89440b509d284caf4aacf46bc63522de129fe902873b467">autd::core::READ_FPGA_INFO</a> = 1 &lt;&lt; 2, 
-<a class="el" href="namespaceautd_1_1core.html#a0532bdbe30c6a230dc89440b509d284cafcc5e91b084a9a9e9b6d56670f3b5207">autd::core::SILENT</a> = 1 &lt;&lt; 3, 
+<tr class="memitem:ad80e2dde80c2141fb11382a28c8849d4"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core.html#ad80e2dde80c2141fb11382a28c8849d4">autd::core::FPGA_CONTROL_FLAGS</a> { <br />
+&#160;&#160;<a class="el" href="namespaceautd_1_1core.html#ad80e2dde80c2141fb11382a28c8849d4a9e49c571743388e84d01ddbcfbd2aef1">autd::core::OUTPUT_ENABLE</a> = 1 &lt;&lt; 0, 
+<a class="el" href="namespaceautd_1_1core.html#ad80e2dde80c2141fb11382a28c8849d4a343f97663eeb81be5787a93a4269abf3">autd::core::OUTPUT_BALANCE</a> = 1 &lt;&lt; 1, 
+<a class="el" href="namespaceautd_1_1core.html#ad80e2dde80c2141fb11382a28c8849d4afcc5e91b084a9a9e9b6d56670f3b5207">autd::core::SILENT</a> = 1 &lt;&lt; 3, 
+<a class="el" href="namespaceautd_1_1core.html#ad80e2dde80c2141fb11382a28c8849d4a917cb6ee4839bf4d1023c5b32206a460">autd::core::FORCE_FAN</a> = 1 &lt;&lt; 4, 
 <br />
-&#160;&#160;<a class="el" href="namespaceautd_1_1core.html#a0532bdbe30c6a230dc89440b509d284ca917cb6ee4839bf4d1023c5b32206a460">autd::core::FORCE_FAN</a> = 1 &lt;&lt; 4, 
-<a class="el" href="namespaceautd_1_1core.html#a0532bdbe30c6a230dc89440b509d284caa9f097a7c7c66ec46878205bed324314">autd::core::SEQ_MODE</a> = 1 &lt;&lt; 5, 
-<a class="el" href="namespaceautd_1_1core.html#a0532bdbe30c6a230dc89440b509d284ca981ce87ab651fb3ad99802ab4e84ef16">autd::core::SEQ_BEGIN</a> = 1 &lt;&lt; 6, 
-<a class="el" href="namespaceautd_1_1core.html#a0532bdbe30c6a230dc89440b509d284ca0d9c03ee863287942006c481a9c73d4c">autd::core::SEQ_END</a> = 1 &lt;&lt; 7
+&#160;&#160;<a class="el" href="namespaceautd_1_1core.html#ad80e2dde80c2141fb11382a28c8849d4a703b4708965ba1d3313d5b4f6e13ec2e">autd::core::OP_MODE</a> = 1 &lt;&lt; 5, 
+<a class="el" href="namespaceautd_1_1core.html#ad80e2dde80c2141fb11382a28c8849d4aa9f097a7c7c66ec46878205bed324314">autd::core::SEQ_MODE</a> = 1 &lt;&lt; 6
 <br />
  }</td></tr>
-<tr class="separator:a0532bdbe30c6a230dc89440b509d284c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:ad80e2dde80c2141fb11382a28c8849d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a57e07b80de9e728f5ece2a54a62ffddb"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core.html#a57e07b80de9e728f5ece2a54a62ffddb">autd::core::COMMAND</a> : uint8_t { <br />
 &#160;&#160;<a class="el" href="namespaceautd_1_1core.html#a57e07b80de9e728f5ece2a54a62ffddba7457cdd15d09bfc6c4dbb5d2b6f87390">autd::core::COMMAND::OP</a> = 0x00, 
 <a class="el" href="namespaceautd_1_1core.html#a57e07b80de9e728f5ece2a54a62ffddba31e0b943dfeb20f44a93c8f53c51d70e">autd::core::COMMAND::READ_CPU_VER_LSB</a> = 0x02, 
@@ -167,13 +165,21 @@ Enumerations</h2></td></tr>
 <a class="el" href="namespaceautd_1_1core.html#a57e07b80de9e728f5ece2a54a62ffddba813461e0c58e7ad59a2fd83ca2237fec">autd::core::COMMAND::CLEAR</a> = 0x09, 
 <a class="el" href="namespaceautd_1_1core.html#a57e07b80de9e728f5ece2a54a62ffddba4578b648ec8acdf9d4daca7c47c404c8">autd::core::COMMAND::SET_DELAY_OFFSET</a> = 0x0A, 
 <br />
-&#160;&#160;<a class="el" href="namespaceautd_1_1core.html#a57e07b80de9e728f5ece2a54a62ffddba291554596c183e837f0a6bec3767c891">autd::core::COMMAND::PAUSE</a> = 0x0B, 
-<a class="el" href="namespaceautd_1_1core.html#a57e07b80de9e728f5ece2a54a62ffddbabac2aec3ee8d7d495123dbe5ca2fdac9">autd::core::COMMAND::RESUME</a> = 0x0C, 
-<a class="el" href="namespaceautd_1_1core.html#a57e07b80de9e728f5ece2a54a62ffddba89c03f4d05aee2d96a0e3f5de909f525">autd::core::COMMAND::SEQ_GAIN_MODE</a> = 0x0D, 
+&#160;&#160;<a class="el" href="namespaceautd_1_1core.html#a57e07b80de9e728f5ece2a54a62ffddba89c03f4d05aee2d96a0e3f5de909f525">autd::core::COMMAND::SEQ_GAIN_MODE</a> = 0x0D, 
 <a class="el" href="namespaceautd_1_1core.html#a57e07b80de9e728f5ece2a54a62ffddba64b7ccf88211b4bf643f27539b49e64d">autd::core::COMMAND::EMULATOR_SET_GEOMETRY</a> = 0xFF
 <br />
  }</td></tr>
 <tr class="separator:a57e07b80de9e728f5ece2a54a62ffddb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c14a3320231e0f788f368dbb7288e20"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core.html#a4c14a3320231e0f788f368dbb7288e20">autd::core::CPU_CONTROL_FLAGS</a> : uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceautd_1_1core.html#a4c14a3320231e0f788f368dbb7288e20aff94cf6529f862e566fb778d08b21dd3">autd::core::MOD_BEGIN</a> = 1 &lt;&lt; 0, 
+<a class="el" href="namespaceautd_1_1core.html#a4c14a3320231e0f788f368dbb7288e20aededd59796465025c732c2214319668f">autd::core::MOD_END</a> = 1 &lt;&lt; 1, 
+<a class="el" href="namespaceautd_1_1core.html#a4c14a3320231e0f788f368dbb7288e20a981ce87ab651fb3ad99802ab4e84ef16">autd::core::SEQ_BEGIN</a> = 1 &lt;&lt; 2, 
+<a class="el" href="namespaceautd_1_1core.html#a4c14a3320231e0f788f368dbb7288e20a0d9c03ee863287942006c481a9c73d4c">autd::core::SEQ_END</a> = 1 &lt;&lt; 3, 
+<br />
+&#160;&#160;<a class="el" href="namespaceautd_1_1core.html#a4c14a3320231e0f788f368dbb7288e20a89eb500a63277ebf6c9bacb258589116">autd::core::READS_FPGA_INFO</a> = 1 &lt;&lt; 4
+<br />
+ }</td></tr>
+<tr class="separator:a4c14a3320231e0f788f368dbb7288e20"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4cfbd6df4238bc30ba4b6230fcd70140"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core.html#a4cfbd6df4238bc30ba4b6230fcd70140">autd::core::GAIN_MODE</a> : uint16_t { <a class="el" href="namespaceautd_1_1core.html#a4cfbd6df4238bc30ba4b6230fcd70140a604ec64db94f0a864a332c9198b9f3d6">autd::core::GAIN_MODE::DUTY_PHASE_FULL</a> = 0x0001, 
 <a class="el" href="namespaceautd_1_1core.html#a4cfbd6df4238bc30ba4b6230fcd70140a107f7c346eb545e1c3f670b4403fe14d">autd::core::GAIN_MODE::PHASE_FULL</a> = 0x0002, 
 <a class="el" href="namespaceautd_1_1core.html#a4cfbd6df4238bc30ba4b6230fcd70140a4402017e7affbf721a2162f9ba7dc457">autd::core::GAIN_MODE::PHASE_HALF</a> = 0x0004
@@ -204,15 +210,15 @@ Variables</h2></td></tr>
 <tr class="separator:a37e661c09e5d4fefdb064dae78c04c68"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac58d8c1c4b3e46d991a68beee99339a8"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core.html#ac58d8c1c4b3e46d991a68beee99339a8">autd::core::ULTRASOUND_FREQUENCY</a> = 40000</td></tr>
 <tr class="separator:ac58d8c1c4b3e46d991a68beee99339a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8c76774262950ef34b753f4d687cf124"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core.html#a8c76774262950ef34b753f4d687cf124">autd::core::MOD_BUF_SIZE_MAX</a> = 65535</td></tr>
+<tr class="memitem:a8c76774262950ef34b753f4d687cf124"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core.html#a8c76774262950ef34b753f4d687cf124">autd::core::MOD_BUF_SIZE_MAX</a> = 65536</td></tr>
 <tr class="separator:a8c76774262950ef34b753f4d687cf124"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a32a7b1a96dae87d0fa73cb8ce84a41e8"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core.html#a32a7b1a96dae87d0fa73cb8ce84a41e8">autd::core::MOD_SAMPLING_FREQ_BASE</a> = 40000</td></tr>
 <tr class="separator:a32a7b1a96dae87d0fa73cb8ce84a41e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4d2a3e598ac0545428f5476cbd8be500"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core.html#a4d2a3e598ac0545428f5476cbd8be500">autd::core::MOD_SAMPLING_FREQ_DIV_MAX</a> = 65535</td></tr>
 <tr class="separator:a4d2a3e598ac0545428f5476cbd8be500"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae9de75d02d659e75b8596f4deaf5e90f"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core.html#ae9de75d02d659e75b8596f4deaf5e90f">autd::core::MOD_FRAME_SIZE</a> = 124</td></tr>
+<tr class="memitem:ae9de75d02d659e75b8596f4deaf5e90f"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core.html#ae9de75d02d659e75b8596f4deaf5e90f">autd::core::MOD_FRAME_SIZE</a> = 123</td></tr>
 <tr class="separator:ae9de75d02d659e75b8596f4deaf5e90f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f1cc5b75435e397f4c485e897da600c"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core.html#a0f1cc5b75435e397f4c485e897da600c">autd::core::POINT_SEQ_BUFFER_SIZE_MAX</a> = 65535</td></tr>
+<tr class="memitem:a0f1cc5b75435e397f4c485e897da600c"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core.html#a0f1cc5b75435e397f4c485e897da600c">autd::core::POINT_SEQ_BUFFER_SIZE_MAX</a> = 65536</td></tr>
 <tr class="separator:a0f1cc5b75435e397f4c485e897da600c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5e9cd8298e698c91e3d8fb64302dc8fc"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core.html#a5e9cd8298e698c91e3d8fb64302dc8fc">autd::core::GAIN_SEQ_BUFFER_SIZE_MAX</a> = 2048</td></tr>
 <tr class="separator:a5e9cd8298e698c91e3d8fb64302dc8fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -220,6 +226,14 @@ Variables</h2></td></tr>
 <tr class="separator:af94e2a700efb3a0b2cbe841e56ab7714"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a53062f1a71daa5d090b17522d38fa167"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core.html#a53062f1a71daa5d090b17522d38fa167">autd::core::PHASE_INVERTED</a> = true</td></tr>
 <tr class="separator:a53062f1a71daa5d090b17522d38fa167"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c7880b1164a016f9c26526e6bef2107"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core.html#a6c7880b1164a016f9c26526e6bef2107">autd::core::OP_MODE_NORMAL</a> = false</td></tr>
+<tr class="separator:a6c7880b1164a016f9c26526e6bef2107"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a849535ee24e81deb30e3a01c0b3af744"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core.html#a849535ee24e81deb30e3a01c0b3af744">autd::core::OP_MODE_SEQ</a> = true</td></tr>
+<tr class="separator:a849535ee24e81deb30e3a01c0b3af744"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a56d078ca78ee3b4031b7279723e6d5"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core.html#a0a56d078ca78ee3b4031b7279723e6d5">autd::core::SEQ_MODE_POINT</a> = false</td></tr>
+<tr class="separator:a0a56d078ca78ee3b4031b7279723e6d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1aff7b5a01e73e9b4d165d5a74cc268"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core.html#ab1aff7b5a01e73e9b4d165d5a74cc268">autd::core::SEQ_MODE_GAIN</a> = true</td></tr>
+<tr class="separator:ab1aff7b5a01e73e9b4d165d5a74cc268"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">1.7.2</span>
+   &#160;<span id="projectnumber">1.8.0</span>
    </div>
   </td>
  </tr>
@@ -92,6 +92,9 @@ $(function() {
 , <a class="el" href="classautd_1_1modulation_1_1Square.html#a222b6ce81fdc414d6829f398e7e8167c">autd::modulation::Square</a>
 , <a class="el" href="classautd_1_1modulation_1_1Wav.html#a66e24351754c41aecc1582b333bc298e">autd::modulation::Wav</a>
 </li>
+<li>check_ack()
+: <a class="el" href="classautd_1_1Controller.html#aaf9049fe702156625e584edef47c1f8f">autd::Controller</a>
+</li>
 <li>clear()
 : <a class="el" href="classautd_1_1Controller.html#a8a90ce7f1cdb6a18b2ac9fcf55dbb977">autd::Controller</a>
 </li>
@@ -107,10 +110,13 @@ $(function() {
 , <a class="el" href="classautd_1_1link_1_1TwinCAT.html#ad0eae6554a155e3d413a505d0ce98cf2">autd::link::TwinCAT</a>
 </li>
 <li>command
-: <a class="el" href="structautd_1_1core_1_1RxGlobalHeader.html#aab85e2dcf60472309a9ec0bc7b227c4c">autd::core::RxGlobalHeader</a>
+: <a class="el" href="structautd_1_1core_1_1GlobalHeader.html#a4c3e7fe9a6432ad09cea1a1812451d00">autd::core::GlobalHeader</a>
+</li>
+<li>command_flags
+: <a class="el" href="structautd_1_1core_1_1GlobalHeader.html#a08ecfc99edc0fbe0241f7d29317c7461">autd::core::GlobalHeader</a>
 </li>
 <li>control_flags
-: <a class="el" href="structautd_1_1core_1_1RxGlobalHeader.html#a4e58ab1377043d6be8603044b2f5b434">autd::core::RxGlobalHeader</a>
+: <a class="el" href="structautd_1_1core_1_1GlobalHeader.html#a3306c43fb6b9087c0e3d5942cdc57ddd">autd::core::GlobalHeader</a>
 </li>
 <li>control_point()
 : <a class="el" href="classautd_1_1core_1_1PointSequence.html#a58ec0c5b26140f8fd24c8d1c2bf18532">autd::core::PointSequence</a>
@@ -118,20 +124,20 @@ $(function() {
 <li>control_points()
 : <a class="el" href="classautd_1_1core_1_1PointSequence.html#a65d78a08d9d377c29e8afb3f0b48facb">autd::core::PointSequence</a>
 </li>
-<li>Controller
-: <a class="el" href="classautd_1_1Controller_1_1STMController.html#ac3456fd331a58b288082abca310c7a99">autd::Controller::STMController</a>
+<li>Controller()
+: <a class="el" href="classautd_1_1Controller.html#a42d72cfd944d41a4dc78f3d014d1fb12">autd::Controller</a>
+, <a class="el" href="classautd_1_1Controller_1_1STMController.html#ac3456fd331a58b288082abca310c7a99">autd::Controller::STMController</a>
 </li>
 <li>cpu_version()
 : <a class="el" href="classautd_1_1FirmwareInfo.html#ae3b64ff82307f0dd6cd8d788395fe949">autd::FirmwareInfo</a>
 </li>
 <li>create()
 : <a class="el" href="classautd_1_1Controller.html#a3edb3b4435bc9ae195f6f104253231dd">autd::Controller</a>
-, <a class="el" href="structautd_1_1core_1_1Device.html#a7d1af850f02f2fc155cff6291e64e0f6">autd::core::Device</a>
 , <a class="el" href="classautd_1_1core_1_1Gain.html#a5ad47205871962ee6dc088b3a0bd2807">autd::core::Gain</a>
 , <a class="el" href="classautd_1_1core_1_1GainSequence.html#a4dcbe3f17df4fdad9acdc33241e6009b">autd::core::GainSequence</a>
 , <a class="el" href="classautd_1_1core_1_1Modulation.html#a0953388ca0411ea8afe86f98b6101c11">autd::core::Modulation</a>
 , <a class="el" href="classautd_1_1core_1_1PointSequence.html#a56be0996a9d1021032d177560c3dd5e3">autd::core::PointSequence</a>
-, <a class="el" href="classautd_1_1gain_1_1BesselBeam.html#ad535965deea0fd365f054689462fc703">autd::gain::BesselBeam</a>
+, <a class="el" href="classautd_1_1gain_1_1BesselBeam.html#a105ca66bb500fc1a4a235a30a8a4468d">autd::gain::BesselBeam</a>
 , <a class="el" href="classautd_1_1gain_1_1Custom.html#a8ef0101a19459536de89bfdb2527854a">autd::gain::Custom</a>
 , <a class="el" href="classautd_1_1gain_1_1FocalPoint.html#a9e17598fc6e19a91b6fbca2fafc02945">autd::gain::FocalPoint</a>
 , <a class="el" href="classautd_1_1gain_1_1Grouped.html#a34792f9026a9b164dc90c817c61960e2">autd::gain::Grouped</a>
@@ -160,15 +166,15 @@ $(function() {
 , <a class="el" href="classautd_1_1modulation_1_1Sine.html#aa5d5fc86945a407239801e8001151dc5">autd::modulation::Sine</a>
 , <a class="el" href="classautd_1_1modulation_1_1SineLegacy.html#aba7b20de4deab312820b35f1ff6d4c05">autd::modulation::SineLegacy</a>
 , <a class="el" href="classautd_1_1modulation_1_1SinePressure.html#aa0a711fc0b14c7704eef990fa88ad2bc">autd::modulation::SinePressure</a>
-, <a class="el" href="classautd_1_1modulation_1_1Square.html#a72959213fd8491c50ecafff5123f8858">autd::modulation::Square</a>
+, <a class="el" href="classautd_1_1modulation_1_1Square.html#a44630be70545c59fdab1bf5749f14b5e">autd::modulation::Square</a>
 , <a class="el" href="classautd_1_1modulation_1_1Wav.html#a2ff8fa67dc332387e2003e9893bdb42d">autd::modulation::Wav</a>
 , <a class="el" href="classautd_1_1sequence_1_1Circumference.html#ab1d803a6f082c08267d773703df35a9a">autd::sequence::Circumference</a>
 </li>
 <li>CUDABackend()
-: <a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a569bffaa9a4413d69ba20a115935fab4">autd::gain::holo::CUDABackend</a>
+: <a class="el" href="classautd_1_1gain_1_1holo_1_1CUDABackend.html#a3fd7c779b50c9e76577c6f68425add92">autd::gain::holo::CUDABackend</a>
 </li>
 <li>Custom()
-: <a class="el" href="classautd_1_1gain_1_1Custom.html#abecc0dd43140a4c0bcd7798230a3f2c1">autd::gain::Custom</a>
+: <a class="el" href="classautd_1_1gain_1_1Custom.html#aeca941250f7a642256ef106aca722eba">autd::gain::Custom</a>
 , <a class="el" href="classautd_1_1modulation_1_1Custom.html#a4edae8ebb511248f671a005e2464f333">autd::modulation::Custom</a>
 </li>
 </ul>

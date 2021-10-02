@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['gain_5fmode_594',['GAIN_MODE',['../namespaceautd_1_1core.html#a4cfbd6df4238bc30ba4b6230fcd70140',1,'autd::core']]]
+  ['fpga_5fcontrol_5fflags_611',['FPGA_CONTROL_FLAGS',['../namespaceautd_1_1core.html#ad80e2dde80c2141fb11382a28c8849d4',1,'autd::core']]]
 ];

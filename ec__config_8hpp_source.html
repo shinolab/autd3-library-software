@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">1.7.2</span>
+   &#160;<span id="projectnumber">1.8.0</span>
    </div>
   </td>
  </tr>
@@ -75,7 +75,7 @@ $(function() {
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">// Created Date: 05/11/2020</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">// Author: Shun Suzuki</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">// -----</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">// Last Modified: 03/09/2021</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">// Last Modified: 22/09/2021</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment">// -----</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">// Copyright (c) 2021 Hapis Lab. All rights reserved.</span></div>
@@ -98,7 +98,7 @@ $(function() {
 <div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="namespaceautd_1_1core.html#a3e9f7ca4c1ad1002e71b8b5f24ff42dc">   26</a></span>&#160;constexpr uint32_t <a class="code" href="namespaceautd_1_1core.html#a3e9f7ca4c1ad1002e71b8b5f24ff42dc">EC_SYNC0_CYCLE_TIME_NANO_SEC</a> = <a class="code" href="namespaceautd_1_1core.html#adf126a5cca163f52333f78f84faa71e0">EC_SYNC0_CYCLE_TIME_MICRO_SEC</a> * 1000;</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
 <div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="namespaceautd_1_1core.html#ab0c7905a7d36fa1bad0436c7c8bbd36f">   28</a></span>&#160;constexpr <span class="keywordtype">size_t</span> <a class="code" href="namespaceautd_1_1core.html#ab0c7905a7d36fa1bad0436c7c8bbd36f">EC_DEVICE_PER_FRAME</a> = 2;</div>
-<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="namespaceautd_1_1core.html#ae03482be5505d6a046908fda8f7f3fbe">   29</a></span>&#160;constexpr <span class="keywordtype">size_t</span> <a class="code" href="namespaceautd_1_1core.html#ae03482be5505d6a046908fda8f7f3fbe">EC_FRAME_LENGTH</a> = 14 + 2 + (10 + <a class="code" href="namespaceautd_1_1core.html#a7d2c24f414c832e467955d3029156a6c">EC_OUTPUT_FRAME_SIZE</a> + <a class="code" href="namespaceautd_1_1core.html#a1b846958496e59926ab6d6df5ca299e0">EC_INPUT_FRAME_SIZE</a> + 2) * <a class="code" href="namespaceautd_1_1core.html#ab0c7905a7d36fa1bad0436c7c8bbd36f">EC_DEVICE_PER_FRAME</a> + 10;</div>
+<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="namespaceautd_1_1core.html#ae03482be5505d6a046908fda8f7f3fbe">   29</a></span>&#160;constexpr <span class="keywordtype">size_t</span> <a class="code" href="namespaceautd_1_1core.html#ae03482be5505d6a046908fda8f7f3fbe">EC_FRAME_LENGTH</a> = 14 + 2 + (10 + <a class="code" href="namespaceautd_1_1core.html#a7d2c24f414c832e467955d3029156a6c">EC_OUTPUT_FRAME_SIZE</a> + <a class="code" href="namespaceautd_1_1core.html#a1b846958496e59926ab6d6df5ca299e0">EC_INPUT_FRAME_SIZE</a> + 2) * <a class="code" href="namespaceautd_1_1core.html#ab0c7905a7d36fa1bad0436c7c8bbd36f">EC_DEVICE_PER_FRAME</a> + 4;</div>
 <div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="namespaceautd_1_1core.html#af6db78bc24dd8348383d508e56d624fa">   30</a></span>&#160;constexpr <span class="keywordtype">double</span> <a class="code" href="namespaceautd_1_1core.html#af6db78bc24dd8348383d508e56d624fa">EC_SPEED_BPS</a> = 100.0 * 1000 * 1000;</div>
 <div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="namespaceautd_1_1core.html#a240e5949a6aead7145e94834d490a164">   31</a></span>&#160;constexpr <span class="keywordtype">double</span> <a class="code" href="namespaceautd_1_1core.html#a240e5949a6aead7145e94834d490a164">EC_TRAFFIC_DELAY</a> = <a class="code" href="namespaceautd_1_1core.html#ae03482be5505d6a046908fda8f7f3fbe">EC_FRAME_LENGTH</a> * 8 / <a class="code" href="namespaceautd_1_1core.html#af6db78bc24dd8348383d508e56d624fa">EC_SPEED_BPS</a>;</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;}  <span class="comment">// namespace autd::core</span></div>

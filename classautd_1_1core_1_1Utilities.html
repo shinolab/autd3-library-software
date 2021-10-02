@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">1.7.2</span>
+   &#160;<span id="projectnumber">1.8.0</span>
    </div>
   </td>
  </tr>
@@ -82,7 +82,7 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memdesc:a1ef6bc20ad601ef68baf6e30410cdf60"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert ultrasound amplitude to duty ratio.  <a href="classautd_1_1core_1_1Utilities.html#a1ef6bc20ad601ef68baf6e30410cdf60">More...</a><br /></td></tr>
 <tr class="separator:a1ef6bc20ad601ef68baf6e30410cdf60"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb4c390e91bbd6c0ecb3800021b643c5"><td class="memItemLeft" align="right" valign="top">static uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Utilities.html#afb4c390e91bbd6c0ecb3800021b643c5">to_phase</a> (const double phase) noexcept</td></tr>
-<tr class="memdesc:afb4c390e91bbd6c0ecb3800021b643c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert normalized phase to descrete phase.  <a href="classautd_1_1core_1_1Utilities.html#afb4c390e91bbd6c0ecb3800021b643c5">More...</a><br /></td></tr>
+<tr class="memdesc:afb4c390e91bbd6c0ecb3800021b643c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert phase in radian to descrete phase used in device.  <a href="classautd_1_1core_1_1Utilities.html#afb4c390e91bbd6c0ecb3800021b643c5">More...</a><br /></td></tr>
 <tr class="separator:afb4c390e91bbd6c0ecb3800021b643c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2f7a683a00497c2be5325923e9b22a45"><td class="memItemLeft" align="right" valign="top">static uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Utilities.html#a2f7a683a00497c2be5325923e9b22a45">pack_to_u16</a> (const uint8_t high, const uint8_t low) noexcept</td></tr>
 <tr class="memdesc:a2f7a683a00497c2be5325923e9b22a45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack two uint8_t value to uint16_t.  <a href="classautd_1_1core_1_1Utilities.html#a2f7a683a00497c2be5325923e9b22a45">More...</a><br /></td></tr>
@@ -138,7 +138,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="core_2utils_8hpp_source.html#l00049">49</a> of file <a class="el" href="core_2utils_8hpp_source.html">utils.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="logic_8hpp_source.html#l00221">autd::core::Logic::pack_delay_offset_body()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="logic_8hpp_source.html#l00233">autd::core::Logic::pack_delay_offset_body()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -223,10 +223,10 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Convert normalized phase to descrete phase. </p>
+<p>Convert phase in radian to descrete phase used in device. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">phase</td><td>nomalized phase </td></tr>
+    <tr><td class="paramname">phase</td><td>phase in radian </td></tr>
   </table>
   </dd>
 </dl>

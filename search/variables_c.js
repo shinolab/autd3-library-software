@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['trans_5fspacing_5fmm_568',['TRANS_SPACING_MM',['../namespaceautd_1_1core.html#a08f6b896f9cf899e8b7ede7f3c0507c0',1,'autd::core']]]
+  ['ultrasound_5ffrequency_585',['ULTRASOUND_FREQUENCY',['../namespaceautd_1_1core.html#ac58d8c1c4b3e46d991a68beee99339a8',1,'autd::core']]]
 ];

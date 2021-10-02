@@ -1,3 +1,7 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classautd_1_1core_1_1Logic.html" title="Hardware logic." alt="" coords="5,5,121,32"/>
+<area shape="rect" id="node1" href="$classautd_1_1core_1_1Link.html" title="Link is the interface to the AUTD device." alt="" coords="5,81,115,108"/>
+<area shape="rect" id="node2" href="$classautd_1_1link_1_1Emulator.html" title="Emulator link for AUTD&#45;emulator" alt="" coords="187,5,317,32"/>
+<area shape="rect" id="node3" href="$classautd_1_1link_1_1RemoteTwinCAT.html" title="Link using TwinCAT via Beckhoff ADS." alt="" coords="163,56,341,83"/>
+<area shape="rect" id="node4" href="$classautd_1_1link_1_1SOEM.html" title="Link using SOEM" alt="" coords="193,107,311,133"/>
+<area shape="rect" id="node5" href="$classautd_1_1link_1_1TwinCAT.html" title="Link using TwinCAT." alt="" coords="185,157,319,184"/>
 </map>

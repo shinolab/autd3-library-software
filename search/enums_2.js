@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['rx_5fglobal_5fcontrol_5fflags_595',['RX_GLOBAL_CONTROL_FLAGS',['../namespaceautd_1_1core.html#a0532bdbe30c6a230dc89440b509d284c',1,'autd::core']]]
+  ['gain_5fmode_612',['GAIN_MODE',['../namespaceautd_1_1core.html#a4cfbd6df4238bc30ba4b6230fcd70140',1,'autd::core']]]
 ];
