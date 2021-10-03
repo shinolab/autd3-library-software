@@ -39,6 +39,8 @@ option(BUILD_TEST "BUILD_TEST" OFF)
 option(BUILD_SHARED_LIBS "BUILD_SHARED_LIBS" OFF)
 option(BUILD_WITH_STATIC_CRT "BUILD_WITH_STATIC_CRT" OFF)
 
+option(USE_SYSTEM_EIGEN "USE_SYSTEM_EIGEN" OFF)
+
 if(BUILD_SHARED_LIBS)
   if(WIN32)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
@@ -122,11 +124,13 @@ if(POLICY CMP0079)
   cmake_policy(SET CMP0079 NEW)
 endif()
 
-if(Git_FOUND)
-  execute_process(COMMAND git -C ${PROJECT_SOURCE_DIR} submodule update --init --recursive -- ${PROJECT_SOURCE_DIR}/deps/Eigen3)
+if(NOT USE_SYSTEM_EIGEN)
+  if(Git_FOUND)
+    execute_process(COMMAND git -C ${PROJECT_SOURCE_DIR} submodule update --init --recursive -- ${PROJECT_SOURCE_DIR}/deps/Eigen3)
+    set(EIGEN_PATH ${PROJECT_SOURCE_DIR}/deps/Eigen3)
+  endif()
 endif()
 add_compile_definitions(EIGEN_MPL2_ONLY)
-set(EIGEN_PATH ${PROJECT_SOURCE_DIR}/deps/Eigen3)
 
 add_subdirectory(lib)
 
