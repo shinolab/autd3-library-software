@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 29/09/2021
+// Last Modified: 03/10/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -133,9 +133,10 @@ void SOEMController::open(const char* ifname, const size_t dev_num, const ECConf
     while (this->_is_open) {
       {
         std::unique_lock lock(this->_send_mtx);
-        this->_send_cond.wait(lock, [this] { return !this->_is_open || this->_send_buf_size != 0; });
+        if (this->_send_buf_size == 0) this->_send_cond.wait(lock, [this] { return !this->_is_open || this->_send_buf_size != 0; });
         if (!this->_is_open) return;
-        const auto idx = (this->_send_buf_cursor - this->_send_buf_size) % SEND_BUF_SIZE;
+        const auto idx = this->_send_buf_cursor >= this->_send_buf_size ? this->_send_buf_cursor - this->_send_buf_size
+                                                                        : this->_send_buf_cursor + SEND_BUF_SIZE - this->_send_buf_size;
         std::memcpy(this->_io_map.get(), this->_send_buf[idx].get(), this->_output_size);
         this->_send_buf_size--;
       }
