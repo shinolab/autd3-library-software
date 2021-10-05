@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/10/2021
+// Last Modified: 05/10/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -47,9 +47,8 @@ void SOEMController::send(const uint8_t* buf, const size_t size) {
     std::lock_guard lock(_send_mtx);
     const auto body_size = this->_config.body_size;
     const auto header_size = this->_config.header_size;
-    if (size > header_size)
-      for (size_t i = 0; i < _dev_num; i++)
-        std::memcpy(&_send_buf[_send_buf_cursor][(header_size + body_size) * i], &buf[header_size + body_size * i], body_size);
+    for (size_t i = 0; i < _dev_num; i++)
+      std::memcpy(&_send_buf[_send_buf_cursor][(header_size + body_size) * i], &buf[header_size + body_size * i], body_size);
     for (size_t i = 0; i < _dev_num; i++) std::memcpy(&_send_buf[_send_buf_cursor][(header_size + body_size) * i + body_size], &buf[0], header_size);
     _send_buf_size++;
     _send_buf_cursor = (_send_buf_cursor + 1) % SEND_BUF_SIZE;

@@ -1,3 +1,6 @@
+# 1.8.1
+* Fix link::SOEM
+
 # 1.8
 * Fix minor bugs
 * Add duty ratio to `Modulation::Square`
