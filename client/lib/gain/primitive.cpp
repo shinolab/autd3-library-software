@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/09/2021
+// Last Modified: 06/10/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -96,7 +96,7 @@ GainPtr Custom::create(const uint16_t* data, const size_t data_length) {
   std::vector<DataArray> raw_data(dev_num);
   for (size_t i = 0; i < dev_num; i++) {
     const auto rem = std::clamp(data_length - i * NUM_TRANS_IN_UNIT, size_t{0}, NUM_TRANS_IN_UNIT);
-    std::memcpy(&raw_data[i][0], data + i * NUM_TRANS_IN_UNIT, rem);
+    std::memcpy(&raw_data[i][0], data + i * NUM_TRANS_IN_UNIT, rem * sizeof(uint16_t));
   }
   return create(raw_data);
 }
