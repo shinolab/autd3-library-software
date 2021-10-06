@@ -1,5 +1,6 @@
 # 1.8.1
 * Fix link::SOEM
+* Fix gain::Custom
 
 # 1.8
 * Fix minor bugs
