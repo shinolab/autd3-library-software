@@ -1,3 +1,6 @@
+# 1.8.2
+* Improve link::SOEM performance
+
 # 1.8.1
 * Fix link::SOEM
 * Fix gain::Custom
