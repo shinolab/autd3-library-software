@@ -47,5 +47,6 @@ void AUTDLinkSOEM(void** out, const char* ifname, const int32_t device_num, cons
 
 void AUTDSetSOEMOnLost(void* link, OnLostCallback callback) {
   const auto* link_ = static_cast<LinkWrapper*>(link);
-  if (auto* soem_link = dynamic_cast<autd::link::SOEM*>(link_->ptr.get()); soem_link != nullptr) soem_link->on_lost([callback](const std::string& msg) { callback(msg.c_str()); });
+  if (auto* soem_link = dynamic_cast<autd::link::SOEM*>(link_->ptr.get()); soem_link != nullptr)
+    soem_link->on_lost([callback](const std::string& msg) { callback(msg.c_str()); });
 }
