@@ -1,5 +1,7 @@
 # 1.8.2
 * Improve link::SOEM performance
+* Remove fifth argument (OnLostCallback callback) `AUTDLinkSOEM` function in capi
+    * Instead, add `AUTDSetSOEMOnLost` function in capi
 
 # 1.8.1
 * Fix link::SOEM
