@@ -334,7 +334,7 @@ void AUTDModulationStatic(void** mod, const uint8_t duty) {
   auto* m = ModulationCreate(autd::modulation::Modulation::create(duty));
   *mod = m;
 }
-void AUTDModulationCustom(void** mod, const uint8_t* const buf, const uint32_t size, uint32_t freq_div) {
+void AUTDModulationCustom(void** mod, const uint8_t* const buf, const uint32_t size, const uint32_t freq_div) {
   std::vector<uint8_t> buffer;
   for (uint32_t i = 0; i < size; i++) buffer.emplace_back(buf[i]);
   auto* m = ModulationCreate(autd::modulation::Custom::create(buffer, static_cast<size_t>(freq_div)));
