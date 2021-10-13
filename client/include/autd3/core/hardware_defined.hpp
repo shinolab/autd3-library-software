@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 28/09/2021
+// Last Modified: 13/10/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -33,8 +33,7 @@ constexpr size_t ULTRASOUND_FREQUENCY = 40000;
 
 constexpr size_t MOD_BUF_SIZE_MAX = 65536;
 constexpr size_t MOD_SAMPLING_FREQ_BASE = 40000;
-constexpr size_t MOD_SAMPLING_FREQ_DIV_MAX = 65535;
-constexpr size_t MOD_FRAME_SIZE = 123;
+constexpr size_t MOD_FRAME_SIZE = 124;
 
 constexpr size_t POINT_SEQ_BUFFER_SIZE_MAX = 65536;
 constexpr size_t GAIN_SEQ_BUFFER_SIZE_MAX = 2048;
@@ -44,25 +43,19 @@ constexpr bool PHASE_INVERTED = true;
 
 using DataArray = std::array<uint16_t, NUM_TRANS_IN_UNIT>;
 
-enum FPGA_CONTROL_FLAGS { OUTPUT_ENABLE = 1 << 0, OUTPUT_BALANCE = 1 << 1, SILENT = 1 << 3, FORCE_FAN = 1 << 4, OP_MODE = 1 << 5, SEQ_MODE = 1 << 6 };
+enum FPGA_CONTROL_FLAGS {
+  OUTPUT_ENABLE = 1 << 0,
+  OUTPUT_BALANCE = 1 << 1,
+  SILENT = 1 << 3,
+  FORCE_FAN = 1 << 4,
+  OP_MODE = 1 << 5,
+  SEQ_MODE = 1 << 6,
+};
 
 constexpr bool OP_MODE_NORMAL = false;
 constexpr bool OP_MODE_SEQ = true;
 constexpr bool SEQ_MODE_POINT = false;
 constexpr bool SEQ_MODE_GAIN = true;
-
-enum class COMMAND : uint8_t {
-  OP = 0x00,
-  READ_CPU_VER_LSB = 0x02,
-  READ_CPU_VER_MSB = 0x03,
-  READ_FPGA_VER_LSB = 0x04,
-  READ_FPGA_VER_MSB = 0x05,
-  SEQ_FOCI_MODE = 0x06,
-  CLEAR = 0x09,
-  SET_DELAY_OFFSET = 0x0A,
-  SEQ_GAIN_MODE = 0x0D,
-  EMULATOR_SET_GEOMETRY = 0xFF
-};
 
 enum CPU_CONTROL_FLAGS : uint8_t {
   MOD_BEGIN = 1 << 0,
@@ -70,16 +63,24 @@ enum CPU_CONTROL_FLAGS : uint8_t {
   SEQ_BEGIN = 1 << 2,
   SEQ_END = 1 << 3,
   READS_FPGA_INFO = 1 << 4,
+  DELAY_OFFSET = 1 << 5,
 };
+
+constexpr uint8_t MSG_CLEAR = 0x00;
+constexpr uint8_t MSG_RD_CPU_V_LSB = 0x01;
+constexpr uint8_t MSG_RD_CPU_V_MSB = 0x02;
+constexpr uint8_t MSG_RD_FPGA_V_LSB = 0x03;
+constexpr uint8_t MSG_RD_FPGA_V_MSB = 0x04;
+constexpr uint8_t MSG_EMU_GEOMETRY_SET = 0x05;
+constexpr uint8_t MSG_NORMAL_BASE = 0x06;
 
 /**
  * \brief Data header common to all devices
  */
 struct GlobalHeader {
   uint8_t msg_id;
-  uint8_t control_flags;
-  COMMAND command;
-  uint8_t command_flags;
+  uint8_t fpga_ctrl_flags;
+  uint8_t cpu_ctrl_flags;
   uint8_t mod_size;
   uint8_t mod[MOD_FRAME_SIZE];
 };

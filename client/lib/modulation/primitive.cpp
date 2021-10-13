@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 24/09/2021
+// Last Modified: 13/10/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -64,8 +64,7 @@ ModulationPtr SineLegacy::create(const double freq, const double amp, const doub
 
 void SineLegacy::calc() {
   const auto f_s = sampling_freq();
-  const auto f =
-      std::clamp(this->_freq, static_cast<double>(core::MOD_SAMPLING_FREQ_BASE) / static_cast<double>(core::MOD_SAMPLING_FREQ_DIV_MAX), f_s / 2.0);
+  const auto f = std::clamp(this->_freq, f_s / static_cast<double>(core::MOD_BUF_SIZE_MAX), f_s / 2.0);
 
   const auto t = static_cast<size_t>(std::round(f_s / f));
   this->_buffer.resize(t, 0);

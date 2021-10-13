@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/09/2021
+// Last Modified: 13/10/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -29,8 +29,8 @@ using ModulationPtr = std::shared_ptr<Modulation>;
  */
 class Modulation {
  public:
-  Modulation() noexcept : Modulation(10) {}
-  explicit Modulation(const uint16_t freq_div) noexcept : _built(false), _freq_div(freq_div), _sent(0) {}
+  Modulation() noexcept : Modulation(9) {}
+  explicit Modulation(const uint16_t freq_div) noexcept : _built(false), _freq_div_ratio(freq_div), _sent(0) {}
   virtual ~Modulation() = default;
   Modulation(const Modulation& v) noexcept = default;
   Modulation& operator=(const Modulation& obj) = default;
@@ -79,18 +79,21 @@ class Modulation {
   const std::vector<uint8_t>& buffer() const { return _buffer; }
 
   /**
-   * \brief modulation sampling frequency division
+   * \brief sampling frequency division ratio
+   * \details sampling frequency will be MOD_SAMPLING_FREQ_BASE/(sampling frequency division ratio)
    */
-  [[nodiscard]] uint16_t sampling_frequency_division() const noexcept { return _freq_div; }
+  [[nodiscard]] size_t sampling_freq_div_ratio() const noexcept { return static_cast<size_t>(_freq_div_ratio) + 1; }
 
   /**
    * \brief modulation sampling frequency
    */
-  [[nodiscard]] double sampling_freq() const noexcept { return static_cast<double>(MOD_SAMPLING_FREQ_BASE) / static_cast<double>(this->_freq_div); }
+  [[nodiscard]] double sampling_freq() const noexcept {
+    return static_cast<double>(MOD_SAMPLING_FREQ_BASE) / static_cast<double>(this->sampling_freq_div_ratio());
+  }
 
  protected:
   bool _built;
-  uint16_t _freq_div;
+  uint16_t _freq_div_ratio;
   size_t _sent;
   std::vector<uint8_t> _buffer;
 };
