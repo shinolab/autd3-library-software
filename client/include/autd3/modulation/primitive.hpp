@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 24/09/2021
+// Last Modified: 14/10/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -101,9 +101,9 @@ class Custom final : public Modulation {
    * @brief Generate function
    * @param[in] buffer data of modulation
    */
-  static ModulationPtr create(const std::vector<uint8_t>& buffer);
+  static ModulationPtr create(const std::vector<uint8_t>& buffer, size_t freq_div_ratio = 10);
   void calc() override;
-  explicit Custom(const std::vector<uint8_t>& buffer) { this->_buffer = buffer; }
+  explicit Custom(const std::vector<uint8_t>& buffer, const size_t freq_div_ratio) : Modulation(freq_div_ratio) { this->_buffer = buffer; }
 };
 
 /**

@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/10/2021
+// Last Modified: 14/10/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -99,7 +99,9 @@ void Square::calc() {
   }
 }
 
-ModulationPtr Custom::create(const std::vector<uint8_t>& buffer) { return std::make_shared<Custom>(buffer); }
+ModulationPtr Custom::create(const std::vector<uint8_t>& buffer, const size_t freq_div_ratio) {
+  return std::make_shared<Custom>(buffer, freq_div_ratio);
+}
 
 void Custom::calc() {}
 }  // namespace autd::modulation
