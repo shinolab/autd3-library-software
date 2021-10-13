@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/10/2021
+// Last Modified: 14/10/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -313,7 +313,7 @@ class Controller {
 
   [[nodiscard]] bool send_header(uint8_t msg_id) const;
   void init_delay_offset();
-  [[nodiscard]] bool send_delay_offset();
+  [[nodiscard]] bool send_delay_offset() const;
   [[nodiscard]] bool wait_msg_processed(uint8_t msg_id, size_t max_trial = 50) const;
 
   core::LinkPtr _link;

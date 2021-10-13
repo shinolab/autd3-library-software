@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/10/2021
+// Last Modified: 14/10/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -207,9 +207,7 @@ bool Controller::send(const core::GainSequencePtr& seq) {
 bool Controller::set_output_delay(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& delay) {
   if (delay.size() != this->_geometry->num_devices()) throw core::exception::SetOutputConfigError("The number of devices is wrong");
 
-  for (size_t dev = 0; dev < this->_geometry->num_devices(); dev++)
-    for (size_t i = 0; i < core::NUM_TRANS_IN_UNIT; i++) this->_delay[dev][i] |= delay[dev][i] & 0x7f;
-
+  for (size_t dev = 0; dev < this->_geometry->num_devices(); dev++) std::memcpy(&this->_delay[dev][0], &delay[dev][0], core::NUM_TRANS_IN_UNIT);
   return this->send_delay_offset();
 }
 
@@ -226,14 +224,15 @@ bool Controller::set_delay_offset(const std::vector<std::array<uint8_t, core::NU
   if (delay.size() != this->_geometry->num_devices() || offset.size() != this->_geometry->num_devices())
     throw core::exception::SetOutputConfigError("The number of devices is wrong");
 
-  for (size_t dev = 0; dev < this->_geometry->num_devices(); dev++) std::memcpy(&this->_offset[dev][0], &offset[dev][0], core::NUM_TRANS_IN_UNIT);
-  for (size_t dev = 0; dev < this->_geometry->num_devices(); dev++)
-    for (size_t i = 0; i < core::NUM_TRANS_IN_UNIT; i++) this->_delay[dev][i] |= delay[dev][i] & 0x7f;
+  for (size_t dev = 0; dev < this->_geometry->num_devices(); dev++) {
+    std::memcpy(&this->_delay[dev][0], &delay[dev][0], core::NUM_TRANS_IN_UNIT);
+    std::memcpy(&this->_offset[dev][0], &offset[dev][0], core::NUM_TRANS_IN_UNIT);
+  }
 
   return this->send_delay_offset();
 }
 
-bool Controller::send_delay_offset() {
+bool Controller::send_delay_offset() const {
   const uint8_t msg_id = core::Logic::get_id();
   core::Logic::pack_header(msg_id, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag() | core::DELAY_OFFSET, &this->_tx_buf[0]);
   const auto size = core::Logic::pack_delay_offset_body(this->_delay, this->_offset, &this->_tx_buf[0]);
