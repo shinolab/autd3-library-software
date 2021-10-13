@@ -37,9 +37,7 @@ class Sequence {
   /**
    * @brief Set frequency of the sequence
    * @param[in] freq Frequency of the sequence
-   * @details The Point Sequence Mode has two constraints, which determine the actual frequency of the sequence.
-   * 1. The maximum number of control points is 65536.
-   * 2. The sampling interval of control points is an integer multiple of 25us and less than or euqal to 25us x 65536.
+   * @details Sequence mode has some constraints, which determine the actual frequency of the sequence.
    * @return double Actual frequency of sequence
    */
   double set_frequency(const double freq) {
@@ -59,7 +57,8 @@ class Sequence {
   [[nodiscard]] size_t period_us() const { return this->sampling_period_us() * this->size(); }
 
   /**
-   * The sampling period is limited to an integer multiple of 25us. Therefore, the sampling frequency must be 40kHz/N, where N=1,2,...,65536.
+   * The sampling period is limited to an integer multiple of 25us. Therefore, the sampling frequency must be 40kHz/N, where N=1, 2, ...,
+   * autd::core::SEQ_SAMPLING_FREQ_DIV_MAX.
    * @return double Sampling frequency of sequence
    */
   [[nodiscard]] double sampling_freq() const { return static_cast<double>(SEQ_BASE_FREQ) / static_cast<double>(this->_freq_div_ratio); }
@@ -70,9 +69,9 @@ class Sequence {
   [[nodiscard]] size_t sampling_period_us() const noexcept { return _freq_div_ratio * 1000000 / SEQ_BASE_FREQ; }
 
   /**
-   * The sampling frequency division ratio means the SEQ_BASE_FREQ/(sampling frequency) = (sampling period)/25us.
+   * The sampling frequency division ratio means the autd::core::SEQ_BASE_FREQ/(sampling frequency) = (sampling period)/25us.
    * @return size_t Sampling frequency division ratio
-   * \details  The value must be in 1, 2, ..., SEQ_SAMPLING_FREQ_DIV_MAX.
+   * \details  The value must be in 1, 2, ..., autd::core::SEQ_SAMPLING_FREQ_DIV_MAX.
    */
   size_t& sampling_freq_div_ratio() noexcept { return this->_freq_div_ratio; }
 
@@ -90,8 +89,8 @@ class Sequence {
  * @brief PointSequence provides a function to display the focus sequentially and periodically.
  * @details PointSequence uses a timer on the FPGA to ensure that the focus is precisely timed.
  * PointSequence currently has the following three limitations.
- * 1. The maximum number of control points is 65536.
- * 2. The sampling interval of control points is an integer multiple of 25us and less than 25us x 65536.
+ * 1. The maximum number of control points is autd::core::POINT_SEQ_BUFFER_SIZE_MAX.
+ * 2. The sampling interval of control points is an integer multiple of 25us and less than or equal to 25us x autd::core::SEQ_SAMPLING_FREQ_DIV_MAX.
  * 3. Only a single focus can be displayed at a certain moment.
  */
 class PointSequence : virtual public Sequence {
@@ -169,8 +168,8 @@ class PointSequence : virtual public Sequence {
  * @brief GainSequence provides a function to display Gain sequentially and periodically.
  * @details GainSequence uses a timer on the FPGA to ensure that Gain is precisely timed.
  * GainSequence currently has the following three limitations.
- * 1. The maximum number of gains is 1024.
- * 2. The sampling interval of gains is an integer multiple of 25us and less than 25us x 65536.
+ * 1. The maximum number of gains is autd::core::GAIN_SEQ_BUFFER_SIZE_MAX.
+ * 2. The sampling interval of gains is an integer multiple of 25us and less than 25us x autd::core::SEQ_SAMPLING_FREQ_DIV_MAX.
  */
 class GainSequence : virtual public Sequence {
  public:
