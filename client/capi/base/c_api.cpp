@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 28/09/2021
+// Last Modified: 13/10/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -95,6 +95,10 @@ bool AUTDIsOpen(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   return wrapper->ptr->is_open();
 }
+bool AUTDIsOutputEnable(const void* handle) {
+  const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
+  return wrapper->ptr->output_enable();
+}
 bool AUTDIsSilentMode(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   return wrapper->ptr->silent_mode();
@@ -114,6 +118,10 @@ bool AUTDIsOutputBalance(const void* const handle) {
 bool AUTDIsCheckAck(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   return wrapper->ptr->check_ack();
+}
+void AUTDSetOutputEnable(const void* handle, const bool enable) {
+  const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
+  wrapper->ptr->output_enable() = enable;
 }
 void AUTDSetSilentMode(const void* const handle, const bool mode) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
@@ -348,7 +356,14 @@ void AUTDModulationSineLegacy(void** mod, const double freq, const double amp, c
   auto* m = ModulationCreate(autd::modulation::SineLegacy::create(freq, amp, offset));
   *mod = m;
 }
-
+uint32_t AUTDModulationSamplingFreqDiv(const void* const mod) {
+  const auto* m = static_cast<const ModulationWrapper*>(mod);
+  return static_cast<uint32_t>(m->ptr->sampling_freq_div_ratio());
+}
+double AUTDModulationSamplingFreq(const void* const mod) {
+  const auto* m = static_cast<const ModulationWrapper*>(mod);
+  return m->ptr->sampling_freq();
+}
 void AUTDDeleteModulation(const void* const mod) {
   const auto* m = static_cast<const ModulationWrapper*>(mod);
   ModulationDelete(m);
@@ -408,11 +423,11 @@ uint32_t AUTDSequenceSamplingPeriod(const void* seq) {
 }
 double AUTDSequenceSamplingFreq(const void* const seq) {
   const auto* seq_w = static_cast<const SequenceWrapper*>(seq);
-  return seq_w->ptr->sampling_frequency();
+  return seq_w->ptr->sampling_freq();
 }
-uint16_t AUTDSequenceSamplingFreqDiv(const void* const seq) {
+uint32_t AUTDSequenceSamplingFreqDiv(const void* const seq) {
   const auto* seq_w = static_cast<const SequenceWrapper*>(seq);
-  return seq_w->ptr->sampling_frequency_division();
+  return static_cast<uint32_t>(seq_w->ptr->sampling_freq_div_ratio());
 }
 void AUTDDeleteSequence(const void* const seq) {
   const auto* seq_w = static_cast<const SequenceWrapper*>(seq);

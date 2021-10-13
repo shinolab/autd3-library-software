@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/10/2021
+// Last Modified: 13/10/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -53,8 +53,8 @@ class Controller {
     ControllerProps& operator=(ControllerProps&& obj) = default;
 
    private:
-    [[nodiscard]] uint8_t ctrl_flag() const;
-    [[nodiscard]] uint8_t cmd_flag() const;
+    [[nodiscard]] uint8_t fpga_ctrl_flag() const;
+    [[nodiscard]] uint8_t cpu_ctrl_flag() const;
 
     bool _output_enable;
     bool _output_balance;
@@ -93,6 +93,11 @@ class Controller {
    * @brief Geometry of the devices
    */
   [[nodiscard]] core::GeometryPtr& geometry() noexcept;
+
+  /**
+   * @brief Output enable
+   */
+  bool& output_enable() noexcept;
 
   /**
    * @brief Silent mode
@@ -134,7 +139,7 @@ class Controller {
 
   /**
    * \brief Set output delay
-   * \param[in] delay delay for each transducer in units of ultrasound period (i.e. 25us).
+   * \param[in] delay delay for each transducer in units of ultrasound period (i.e. 25us) in 7bit.
    * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
    */
   bool set_output_delay(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& delay);
@@ -148,8 +153,8 @@ class Controller {
 
   /**
    * \brief Set delay and duty offset
-   * \param[in] delay delay
-   * \param[in] offset duty offset
+   * \param[in] delay delay for each transducer in units of ultrasound period (i.e. 25us) in 7bit.
+   * \param[in] offset duty offset for each transducers (only the lowest 1 bit will be used)
    * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
    */
   bool set_delay_offset(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& delay,
@@ -306,9 +311,9 @@ class Controller {
     std::atomic<bool> _lock;
   };
 
-  [[nodiscard]] bool send_header(core::COMMAND cmd) const;
+  [[nodiscard]] bool send_header(uint8_t msg_id) const;
   void init_delay_offset();
-  [[nodiscard]] bool send_delay_offset() const;
+  [[nodiscard]] bool send_delay_offset();
   [[nodiscard]] bool wait_msg_processed(uint8_t msg_id, size_t max_trial = 50) const;
 
   core::LinkPtr _link;
