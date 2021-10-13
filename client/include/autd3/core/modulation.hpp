@@ -90,8 +90,8 @@ class Modulation {
 
   /**
    * \brief sampling frequency division ratio
-   * \details sampling frequency will be MOD_SAMPLING_FREQ_BASE/(sampling frequency division ratio). The value must be in 1, 2, ...,
-   * MOD_SAMPLING_FREQ_DIV_MAX.
+   * \details sampling frequency will be autd::core::MOD_SAMPLING_FREQ_BASE /(sampling frequency division ratio). The value must be in 1, 2, ...,
+   * autd::core::MOD_SAMPLING_FREQ_DIV_MAX.
    */
   size_t& sampling_freq_div_ratio() noexcept { return _freq_div_ratio; }
 
