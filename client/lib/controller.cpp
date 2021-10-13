@@ -101,15 +101,6 @@ bool Controller::send_header(const uint8_t msg_id) const {
   return wait_msg_processed(msg_id);
 }
 
-bool Controller::send_delay_offset() {
-  const uint8_t msg_id = core::Logic::get_id();
-  core::Logic::pack_header(msg_id, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag() | core::DELAY_OFFSET, &this->_tx_buf[0]);
-  size_t size = 0;
-  core::Logic::pack_delay_offset_body(this->_delay, this->_offset, &this->_tx_buf[0], &size);
-  this->_link->send(&this->_tx_buf[0], size);
-  return wait_msg_processed(msg_id);
-}
-
 bool Controller::wait_msg_processed(const uint8_t msg_id, const size_t max_trial) const {
   if (!this->_check_ack) return true;
   const auto num_devices = this->_geometry->num_devices();
@@ -167,16 +158,15 @@ bool Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod)
     gain->build(this->_geometry);
   }
 
-  size_t size = 0;
-  core::Logic::pack_body(gain, &this->_tx_buf[0], &size);
-
   auto mod_finished = [](const core::ModulationPtr& m) { return m == nullptr || m->sent() == m->buffer().size(); };
+  bool first = true;
   while (true) {
     const auto msg_id = core::Logic::pack_header(mod, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag(), &this->_tx_buf[0]);
+    const auto size = first ? core::Logic::pack_body(gain, &this->_tx_buf[0]) : core::Logic::pack_body(nullptr, &this->_tx_buf[0]);
+    first = false;
     this->_link->send(&this->_tx_buf[0], size);
     if (!wait_msg_processed(msg_id)) return false;
     if (mod_finished(mod)) return true;
-    size = sizeof(core::GlobalHeader);
   }
 }
 
@@ -189,8 +179,7 @@ bool Controller::send(const core::PointSequencePtr& seq) {
 
   while (true) {
     const auto msg_id = core::Logic::pack_header(nullptr, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag(), &this->_tx_buf[0]);
-    size_t size;
-    core::Logic::pack_body(seq, this->_geometry, &this->_tx_buf[0], &size);
+    const auto size = core::Logic::pack_body(seq, this->_geometry, &this->_tx_buf[0]);
     this->_link->send(&this->_tx_buf[0], size);
     if (!wait_msg_processed(msg_id)) return false;
     if (seq_finished(seq)) return true;
@@ -208,8 +197,7 @@ bool Controller::send(const core::GainSequencePtr& seq) {
 
   while (true) {
     const auto msg_id = core::Logic::pack_header(nullptr, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag(), &this->_tx_buf[0]);
-    size_t size;
-    core::Logic::pack_body(seq, this->_geometry, &this->_tx_buf[0], &size);
+    const auto size = core::Logic::pack_body(seq, this->_geometry, &this->_tx_buf[0]);
     this->_link->send(&this->_tx_buf[0], size);
     if (!wait_msg_processed(msg_id)) return false;
     if (seq_finished(seq)) return true;
@@ -243,6 +231,14 @@ bool Controller::set_delay_offset(const std::vector<std::array<uint8_t, core::NU
     for (size_t i = 0; i < core::NUM_TRANS_IN_UNIT; i++) this->_delay[dev][i] |= delay[dev][i] & 0x7f;
 
   return this->send_delay_offset();
+}
+
+bool Controller::send_delay_offset() {
+  const uint8_t msg_id = core::Logic::get_id();
+  core::Logic::pack_header(msg_id, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag() | core::DELAY_OFFSET, &this->_tx_buf[0]);
+  const auto size = core::Logic::pack_delay_offset_body(this->_delay, this->_offset, &this->_tx_buf[0]);
+  this->_link->send(&this->_tx_buf[0], size);
+  return wait_msg_processed(msg_id);
 }
 
 std::vector<FirmwareInfo> Controller::firmware_info_list() {
@@ -284,8 +280,7 @@ void Controller::STMController::add_gain(const core::GainPtr& gain) const {
 
   auto build_buf = std::make_unique<uint8_t[]>(this->_p_cnt->_geometry->num_devices() * core::EC_OUTPUT_FRAME_SIZE);
   core::Logic::pack_header(nullptr, this->_p_cnt->_props.fpga_ctrl_flag(), this->_p_cnt->_props.cpu_ctrl_flag(), &build_buf[0]);
-  size_t size = 0;
-  core::Logic::pack_body(gain, &build_buf[0], &size);
+  const auto size = core::Logic::pack_body(gain, &build_buf[0]);
 
   this->_handler->add(std::move(build_buf), size);
 }

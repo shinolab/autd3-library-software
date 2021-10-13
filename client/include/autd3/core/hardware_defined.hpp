@@ -64,6 +64,7 @@ enum CPU_CONTROL_FLAGS : uint8_t {
   SEQ_END = 1 << 3,
   READS_FPGA_INFO = 1 << 4,
   DELAY_OFFSET = 1 << 5,
+  WRITE_BODY = 1 << 6,
 };
 
 constexpr uint8_t MSG_CLEAR = 0x00;
