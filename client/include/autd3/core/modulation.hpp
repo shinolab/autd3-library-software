@@ -30,7 +30,7 @@ using ModulationPtr = std::shared_ptr<Modulation>;
 class Modulation {
  public:
   Modulation() noexcept : Modulation(10) {}
-  explicit Modulation(const uint16_t freq_div) noexcept : _built(false), _freq_div_ratio(freq_div), _sent(0) {}
+  explicit Modulation(const size_t freq_div) noexcept : _built(false), _freq_div_ratio(freq_div), _sent(0) {}
   virtual ~Modulation() = default;
   Modulation(const Modulation& v) noexcept = default;
   Modulation& operator=(const Modulation& obj) = default;

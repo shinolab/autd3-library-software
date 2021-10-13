@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/10/2021
+// Last Modified: 14/10/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -334,10 +334,10 @@ void AUTDModulationStatic(void** mod, const uint8_t duty) {
   auto* m = ModulationCreate(autd::modulation::Modulation::create(duty));
   *mod = m;
 }
-void AUTDModulationCustom(void** mod, const uint8_t* const buf, const uint32_t size) {
+void AUTDModulationCustom(void** mod, const uint8_t* const buf, const uint32_t size, uint32_t freq_div) {
   std::vector<uint8_t> buffer;
   for (uint32_t i = 0; i < size; i++) buffer.emplace_back(buf[i]);
-  auto* m = ModulationCreate(autd::modulation::Custom::create(buffer));
+  auto* m = ModulationCreate(autd::modulation::Custom::create(buffer, static_cast<size_t>(freq_div)));
   *mod = m;
 }
 void AUTDModulationSquare(void** mod, const int32_t freq, const uint8_t low, const uint8_t high, const double duty) {
@@ -359,6 +359,10 @@ void AUTDModulationSineLegacy(void** mod, const double freq, const double amp, c
 uint32_t AUTDModulationSamplingFreqDiv(const void* const mod) {
   const auto* m = static_cast<const ModulationWrapper*>(mod);
   return static_cast<uint32_t>(m->ptr->sampling_freq_div_ratio());
+}
+void AUTDModulationSetSamplingFreqDiv(const void* const mod, const uint32_t freq_div) {
+  const auto* m = static_cast<const ModulationWrapper*>(mod);
+  m->ptr->sampling_freq_div_ratio() = static_cast<size_t>(freq_div);
 }
 double AUTDModulationSamplingFreq(const void* const mod) {
   const auto* m = static_cast<const ModulationWrapper*>(mod);
@@ -428,6 +432,10 @@ double AUTDSequenceSamplingFreq(const void* const seq) {
 uint32_t AUTDSequenceSamplingFreqDiv(const void* const seq) {
   const auto* seq_w = static_cast<const SequenceWrapper*>(seq);
   return static_cast<uint32_t>(seq_w->ptr->sampling_freq_div_ratio());
+}
+void AUTDSequenceSetSamplingFreqDiv(const void* const seq, const uint32_t freq_div) {
+  const auto* seq_w = static_cast<const SequenceWrapper*>(seq);
+  seq_w->ptr->sampling_freq_div_ratio() = static_cast<size_t>(freq_div);
 }
 void AUTDDeleteSequence(const void* const seq) {
   const auto* seq_w = static_cast<const SequenceWrapper*>(seq);

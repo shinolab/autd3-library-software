@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/10/2021
+// Last Modified: 14/10/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -64,7 +64,7 @@ EXPORT_AUTD void AUTDGainGroupedAdd(const void* grouped_gain, int32_t id, const 
 EXPORT_AUTD void AUTDGainFocalPoint(void** gain, double x, double y, double z, uint8_t duty);
 EXPORT_AUTD void AUTDGainBesselBeam(void** gain, double x, double y, double z, double n_x, double n_y, double n_z, double theta_z, uint8_t duty);
 EXPORT_AUTD void AUTDGainPlaneWave(void** gain, double n_x, double n_y, double n_z, uint8_t duty);
-EXPORT_AUTD void AUTDGainCustom(void** gain, const uint16_t* data, int32_t data_length);
+EXPORT_AUTD void AUTDGainCustom(void** gain, const uint16_t* data, int32_t data_length, uint32_t freq_div);
 EXPORT_AUTD void AUTDGainTransducerTest(void** gain, int32_t idx, uint8_t duty, uint8_t phase);
 EXPORT_AUTD void AUTDDeleteGain(const void* gain);
 EXPORT_AUTD void AUTDModulationStatic(void** mod, uint8_t duty);
@@ -74,6 +74,7 @@ EXPORT_AUTD void AUTDModulationSinePressure(void** mod, int32_t freq, double amp
 EXPORT_AUTD void AUTDModulationSineLegacy(void** mod, double freq, double amp, double offset);
 EXPORT_AUTD void AUTDModulationSquare(void** mod, int32_t freq, uint8_t low, uint8_t high, double duty);
 EXPORT_AUTD uint32_t AUTDModulationSamplingFreqDiv(const void* mod);
+EXPORT_AUTD void AUTDModulationSetSamplingFreqDiv(const void* mod, uint32_t freq_div);
 EXPORT_AUTD double AUTDModulationSamplingFreq(const void* mod);
 EXPORT_AUTD void AUTDDeleteModulation(const void* mod);
 EXPORT_AUTD void AUTDSequence(void** out);
@@ -87,6 +88,7 @@ EXPORT_AUTD uint32_t AUTDSequencePeriod(const void* seq);
 EXPORT_AUTD uint32_t AUTDSequenceSamplingPeriod(const void* seq);
 EXPORT_AUTD double AUTDSequenceSamplingFreq(const void* seq);
 EXPORT_AUTD uint32_t AUTDSequenceSamplingFreqDiv(const void* seq);
+EXPORT_AUTD void AUTDSequenceSetSamplingFreqDiv(const void* seq, uint32_t freq_div);
 EXPORT_AUTD void AUTDCircumSequence(void** out, double x, double y, double z, double nx, double ny, double nz, double radius, uint64_t n);
 EXPORT_AUTD void AUTDDeleteSequence(const void* seq);
 EXPORT_AUTD int32_t AUTDStop(const void* handle);
