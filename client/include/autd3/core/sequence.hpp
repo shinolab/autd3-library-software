@@ -3,7 +3,7 @@
 // Created Date: 14/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/10/2021
+// Last Modified: 14/10/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -29,7 +29,7 @@ using GainSequencePtr = std::shared_ptr<GainSequence>;
 
 class Sequence {
  public:
-  Sequence() : _freq_div_ratio(0), _sent(0) {}
+  Sequence() : _freq_div_ratio(1), _sent(0) {}
   virtual ~Sequence() = default;
 
   virtual size_t size() const = 0;
@@ -44,7 +44,7 @@ class Sequence {
    */
   double set_frequency(const double freq) {
     const auto sample_freq = static_cast<double>(this->size()) * freq;
-    this->_freq_div_ratio = static_cast<uint16_t>(std::clamp(static_cast<int32_t>(static_cast<double>(SEQ_BASE_FREQ) / sample_freq) - 1, 0, 65535));
+    this->_freq_div_ratio = static_cast<size_t>(std::clamp(static_cast<int32_t>(static_cast<double>(SEQ_BASE_FREQ) / sample_freq), 1, 65536));
     return this->frequency();
   }
 
@@ -62,18 +62,19 @@ class Sequence {
    * The sampling period is limited to an integer multiple of 25us. Therefore, the sampling frequency must be 40kHz/N, where N=1,2,...,65536.
    * @return double Sampling frequency of sequence
    */
-  [[nodiscard]] double sampling_freq() const { return static_cast<double>(SEQ_BASE_FREQ) / static_cast<double>(this->sampling_freq_div_ratio()); }
+  [[nodiscard]] double sampling_freq() const { return static_cast<double>(SEQ_BASE_FREQ) / static_cast<double>(this->_freq_div_ratio); }
 
   /**
    * @return sampling period of sequence in micro seconds
    */
-  [[nodiscard]] size_t sampling_period_us() const { return this->sampling_freq_div_ratio() * 1000000 / SEQ_BASE_FREQ; }
+  [[nodiscard]] size_t sampling_period_us() const noexcept { return _freq_div_ratio * 1000000 / SEQ_BASE_FREQ; }
 
   /**
    * The sampling frequency division ratio means the SEQ_BASE_FREQ/(sampling frequency) = (sampling period)/25us.
-   * @return size_t Sampling frequency division
+   * @return size_t Sampling frequency division ratio
+   * \details  The value must be in 1, 2, ..., SEQ_SAMPLING_FREQ_DIV_MAX.
    */
-  [[nodiscard]] size_t sampling_freq_div_ratio() const { return static_cast<size_t>(this->_freq_div_ratio) + 1; }
+  size_t& sampling_freq_div_ratio() noexcept { return this->_freq_div_ratio; }
 
   /**
    * \brief sent means data length already sent to devices.
@@ -81,7 +82,7 @@ class Sequence {
   size_t& sent() { return _sent; }
 
  private:
-  uint16_t _freq_div_ratio;
+  size_t _freq_div_ratio;
   size_t _sent;
 };
 
