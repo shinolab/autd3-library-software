@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/10/2021
+// Last Modified: 14/10/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -231,16 +231,13 @@ class Logic {
    * \return size_t size to send
    * \details This function must be called after pack_header
    */
-  static size_t pack_delay_offset_body(std::vector<std::array<uint8_t, NUM_TRANS_IN_UNIT>>& delay,
+  static size_t pack_delay_offset_body(const std::vector<std::array<uint8_t, NUM_TRANS_IN_UNIT>>& delay,
                                        const std::vector<std::array<uint8_t, NUM_TRANS_IN_UNIT>>& offset, uint8_t* data) {
     auto* header = reinterpret_cast<GlobalHeader*>(data);
     header->cpu_ctrl_flags |= WRITE_BODY;
     auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(GlobalHeader));
     for (size_t dev = 0; dev < delay.size(); dev++)
-      for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
-        delay[dev][i] ^= 0x80;  // reset
-        *cursor++ = Utilities::pack_to_u16(offset[dev][i], delay[dev][i]);
-      }
+      for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) *cursor++ = Utilities::pack_to_u16(offset[dev][i], delay[dev][i]);
     return sizeof(GlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * delay.size();
   }
 };
