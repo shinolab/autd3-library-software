@@ -64,11 +64,11 @@ EXPORT_AUTD void AUTDGainGroupedAdd(const void* grouped_gain, int32_t id, const 
 EXPORT_AUTD void AUTDGainFocalPoint(void** gain, double x, double y, double z, uint8_t duty);
 EXPORT_AUTD void AUTDGainBesselBeam(void** gain, double x, double y, double z, double n_x, double n_y, double n_z, double theta_z, uint8_t duty);
 EXPORT_AUTD void AUTDGainPlaneWave(void** gain, double n_x, double n_y, double n_z, uint8_t duty);
-EXPORT_AUTD void AUTDGainCustom(void** gain, const uint16_t* data, int32_t data_length, uint32_t freq_div);
+EXPORT_AUTD void AUTDGainCustom(void** gain, const uint16_t* data, int32_t data_length);
 EXPORT_AUTD void AUTDGainTransducerTest(void** gain, int32_t idx, uint8_t duty, uint8_t phase);
 EXPORT_AUTD void AUTDDeleteGain(const void* gain);
 EXPORT_AUTD void AUTDModulationStatic(void** mod, uint8_t duty);
-EXPORT_AUTD void AUTDModulationCustom(void** mod, const uint8_t* buf, uint32_t size);
+EXPORT_AUTD void AUTDModulationCustom(void** mod, const uint8_t* buf, uint32_t size, uint32_t freq_div);
 EXPORT_AUTD void AUTDModulationSine(void** mod, int32_t freq, double amp, double offset);
 EXPORT_AUTD void AUTDModulationSinePressure(void** mod, int32_t freq, double amp, double offset);
 EXPORT_AUTD void AUTDModulationSineLegacy(void** mod, double freq, double amp, double offset);
