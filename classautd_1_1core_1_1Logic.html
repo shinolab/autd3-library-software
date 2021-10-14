@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">1.8.1</span>
+   &#160;<span id="projectnumber">1.9.0</span>
    </div>
   </td>
  </tr>
@@ -74,40 +74,86 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Hardware logic.  
+<p>Firmware logic.  
  <a href="classautd_1_1core_1_1Logic.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="logic_8hpp_source.html">logic.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a1933958020d6ec2b107f977bf84e41b1"><td class="memItemLeft" align="right" valign="top">static uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Logic.html#a1933958020d6ec2b107f977bf84e41b1">get_id</a> ()</td></tr>
+<tr class="memdesc:a1933958020d6ec2b107f977bf84e41b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get unique message id.  <a href="classautd_1_1core_1_1Logic.html#a1933958020d6ec2b107f977bf84e41b1">More...</a><br /></td></tr>
+<tr class="separator:a1933958020d6ec2b107f977bf84e41b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeddd6abc8f6f5dc1d9b47e1932c1992d"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Logic.html#aeddd6abc8f6f5dc1d9b47e1932c1992d">is_msg_processed</a> (const size_t num_devices, const uint8_t msg_id, const uint8_t *const rx)</td></tr>
 <tr class="memdesc:aeddd6abc8f6f5dc1d9b47e1932c1992d"><td class="mdescLeft">&#160;</td><td class="mdescRight">check if the data which have msg_id have been processed in the devices.  <a href="classautd_1_1core_1_1Logic.html#aeddd6abc8f6f5dc1d9b47e1932c1992d">More...</a><br /></td></tr>
 <tr class="separator:aeddd6abc8f6f5dc1d9b47e1932c1992d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acf79f96f73c6dc6e691359ba93b720c8"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Logic.html#acf79f96f73c6dc6e691359ba93b720c8">pack_header</a> (const <a class="el" href="namespaceautd_1_1core.html#a57e07b80de9e728f5ece2a54a62ffddb">COMMAND</a> cmd, const uint8_t ctrl_flag, const uint8_t cmd_flag, uint8_t *data, uint8_t *const msg_id)</td></tr>
-<tr class="memdesc:acf79f96f73c6dc6e691359ba93b720c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack header with COMMAND.  <a href="classautd_1_1core_1_1Logic.html#acf79f96f73c6dc6e691359ba93b720c8">More...</a><br /></td></tr>
-<tr class="separator:acf79f96f73c6dc6e691359ba93b720c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ace0f68d6858ad9b7bbe13fb391fa88e0"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Logic.html#ace0f68d6858ad9b7bbe13fb391fa88e0">pack_header</a> (const <a class="el" href="namespaceautd_1_1core.html#aa9fb70cafbef0bcbc7726f109558efef">ModulationPtr</a> &amp;mod, const uint8_t ctrl_flag, const uint8_t cmd_flag, uint8_t *data, uint8_t *const msg_id)</td></tr>
-<tr class="memdesc:ace0f68d6858ad9b7bbe13fb391fa88e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack header with modulation data.  <a href="classautd_1_1core_1_1Logic.html#ace0f68d6858ad9b7bbe13fb391fa88e0">More...</a><br /></td></tr>
-<tr class="separator:ace0f68d6858ad9b7bbe13fb391fa88e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a33cc8d54d42740c360a3943c238c9320"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Logic.html#a33cc8d54d42740c360a3943c238c9320">pack_body</a> (const <a class="el" href="namespaceautd_1_1core.html#ac094edc69364df81df793c8b732474d4">GainPtr</a> &amp;gain, uint8_t *data, size_t *size)</td></tr>
-<tr class="memdesc:a33cc8d54d42740c360a3943c238c9320"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack data body which contain phase and duty data of each transducer.  <a href="classautd_1_1core_1_1Logic.html#a33cc8d54d42740c360a3943c238c9320">More...</a><br /></td></tr>
-<tr class="separator:a33cc8d54d42740c360a3943c238c9320"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8eed87dc06f3b71a481971700650bfcb"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Logic.html#a8eed87dc06f3b71a481971700650bfcb">pack_body</a> (const <a class="el" href="namespaceautd_1_1core.html#ae7ffc0e1fffe52bbd7e1f96524747e0d">PointSequencePtr</a> &amp;seq, const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">GeometryPtr</a> &amp;geometry, uint8_t *data, size_t *const size)</td></tr>
-<tr class="memdesc:a8eed87dc06f3b71a481971700650bfcb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack data body with sequence data.  <a href="classautd_1_1core_1_1Logic.html#a8eed87dc06f3b71a481971700650bfcb">More...</a><br /></td></tr>
-<tr class="separator:a8eed87dc06f3b71a481971700650bfcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2e2d9417ee2dc053420f2af9ba0b5ea6"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Logic.html#a2e2d9417ee2dc053420f2af9ba0b5ea6">pack_body</a> (const <a class="el" href="namespaceautd_1_1core.html#a18faea5946e8c4194fea8cdac091524b">GainSequencePtr</a> &amp;seq, const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">GeometryPtr</a> &amp;geometry, uint8_t *data, size_t *const size)</td></tr>
-<tr class="memdesc:a2e2d9417ee2dc053420f2af9ba0b5ea6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack data body with sequence data.  <a href="classautd_1_1core_1_1Logic.html#a2e2d9417ee2dc053420f2af9ba0b5ea6">More...</a><br /></td></tr>
-<tr class="separator:a2e2d9417ee2dc053420f2af9ba0b5ea6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a55614a86bac0f69004cc8fac065dc0f2"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Logic.html#a55614a86bac0f69004cc8fac065dc0f2">pack_delay_offset_body</a> (const std::vector&lt; std::array&lt; uint8_t, <a class="el" href="namespaceautd_1_1core.html#aa82844cbfc211b283de1e79193783b7c">NUM_TRANS_IN_UNIT</a> &gt;&gt; &amp;delay, const std::vector&lt; std::array&lt; uint8_t, <a class="el" href="namespaceautd_1_1core.html#aa82844cbfc211b283de1e79193783b7c">NUM_TRANS_IN_UNIT</a> &gt;&gt; &amp;offset, uint8_t *data, size_t *const size)</td></tr>
-<tr class="memdesc:a55614a86bac0f69004cc8fac065dc0f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack data body to set output delay and enable.  <a href="classautd_1_1core_1_1Logic.html#a55614a86bac0f69004cc8fac065dc0f2">More...</a><br /></td></tr>
-<tr class="separator:a55614a86bac0f69004cc8fac065dc0f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcdbb316e51c94211079738c3b74f395"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Logic.html#adcdbb316e51c94211079738c3b74f395">pack_header</a> (const uint8_t msg_id, const uint8_t fpga_ctrl_flag, const uint8_t cpu_ctrl_flag, uint8_t *const data)</td></tr>
+<tr class="memdesc:adcdbb316e51c94211079738c3b74f395"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack header with message id.  <a href="classautd_1_1core_1_1Logic.html#adcdbb316e51c94211079738c3b74f395">More...</a><br /></td></tr>
+<tr class="separator:adcdbb316e51c94211079738c3b74f395"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e65240fde4600ca4fdd45ee74603bfe"><td class="memItemLeft" align="right" valign="top">static uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Logic.html#a4e65240fde4600ca4fdd45ee74603bfe">pack_header</a> (const <a class="el" href="namespaceautd_1_1core.html#aa9fb70cafbef0bcbc7726f109558efef">ModulationPtr</a> &amp;mod, const uint8_t fpga_ctrl_flag, const uint8_t cpu_ctrl_flag, uint8_t *const data)</td></tr>
+<tr class="memdesc:a4e65240fde4600ca4fdd45ee74603bfe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack header with modulation data.  <a href="classautd_1_1core_1_1Logic.html#a4e65240fde4600ca4fdd45ee74603bfe">More...</a><br /></td></tr>
+<tr class="separator:a4e65240fde4600ca4fdd45ee74603bfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa10c79f71a18cd997e35a8aa31176fa5"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Logic.html#aa10c79f71a18cd997e35a8aa31176fa5">pack_body</a> (const <a class="el" href="namespaceautd_1_1core.html#ac094edc69364df81df793c8b732474d4">GainPtr</a> &amp;gain, uint8_t *data)</td></tr>
+<tr class="memdesc:aa10c79f71a18cd997e35a8aa31176fa5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack data body which contain phase and duty data of each transducer.  <a href="classautd_1_1core_1_1Logic.html#aa10c79f71a18cd997e35a8aa31176fa5">More...</a><br /></td></tr>
+<tr class="separator:aa10c79f71a18cd997e35a8aa31176fa5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83dc3dfc4af0857515409d379d61a30a"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Logic.html#a83dc3dfc4af0857515409d379d61a30a">pack_body</a> (const <a class="el" href="namespaceautd_1_1core.html#ae7ffc0e1fffe52bbd7e1f96524747e0d">PointSequencePtr</a> &amp;seq, const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">GeometryPtr</a> &amp;geometry, uint8_t *data)</td></tr>
+<tr class="memdesc:a83dc3dfc4af0857515409d379d61a30a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack data body with sequence data.  <a href="classautd_1_1core_1_1Logic.html#a83dc3dfc4af0857515409d379d61a30a">More...</a><br /></td></tr>
+<tr class="separator:a83dc3dfc4af0857515409d379d61a30a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77e87e5336f0ce3c7375400dd6e2fcc1"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Logic.html#a77e87e5336f0ce3c7375400dd6e2fcc1">pack_body</a> (const <a class="el" href="namespaceautd_1_1core.html#a18faea5946e8c4194fea8cdac091524b">GainSequencePtr</a> &amp;seq, const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">GeometryPtr</a> &amp;geometry, uint8_t *data)</td></tr>
+<tr class="memdesc:a77e87e5336f0ce3c7375400dd6e2fcc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack data body with sequence data.  <a href="classautd_1_1core_1_1Logic.html#a77e87e5336f0ce3c7375400dd6e2fcc1">More...</a><br /></td></tr>
+<tr class="separator:a77e87e5336f0ce3c7375400dd6e2fcc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24661cc52f90517bf0a204ae7d0725ee"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Logic.html#a24661cc52f90517bf0a204ae7d0725ee">pack_delay_offset_body</a> (const std::vector&lt; std::array&lt; uint8_t, <a class="el" href="namespaceautd_1_1core.html#aa82844cbfc211b283de1e79193783b7c">NUM_TRANS_IN_UNIT</a> &gt;&gt; &amp;delay, const std::vector&lt; std::array&lt; uint8_t, <a class="el" href="namespaceautd_1_1core.html#aa82844cbfc211b283de1e79193783b7c">NUM_TRANS_IN_UNIT</a> &gt;&gt; &amp;offset, uint8_t *data)</td></tr>
+<tr class="memdesc:a24661cc52f90517bf0a204ae7d0725ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack data body to set output delay and enable.  <a href="classautd_1_1core_1_1Logic.html#a24661cc52f90517bf0a204ae7d0725ee">More...</a><br /></td></tr>
+<tr class="separator:a24661cc52f90517bf0a204ae7d0725ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Hardware logic. </p>
+<div class="textblock"><p>Firmware logic. </p>
 
 <p class="definition">Definition at line <a class="el" href="logic_8hpp_source.html#l00028">28</a> of file <a class="el" href="logic_8hpp_source.html">logic.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a1933958020d6ec2b107f977bf84e41b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1933958020d6ec2b107f977bf84e41b1">&#9670;&nbsp;</a></span>get_id()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static uint8_t autd::core::Logic::get_id </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get unique message id. </p>
+<dl class="section return"><dt>Returns</dt><dd>message id </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="logic_8hpp_source.html#l00034">34</a> of file <a class="el" href="logic_8hpp_source.html">logic.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="hardware__defined_8hpp_source.html#l00078">autd::core::MSG_NORMAL_BASE</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="logic_8hpp_source.html#l00080">pack_header()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classautd_1_1core_1_1Logic_a1933958020d6ec2b107f977bf84e41b1_icgraph.png" border="0" usemap="#classautd_1_1core_1_1Logic_a1933958020d6ec2b107f977bf84e41b1_icgraph" alt=""/></div>
+<map name="classautd_1_1core_1_1Logic_a1933958020d6ec2b107f977bf84e41b1_icgraph" id="classautd_1_1core_1_1Logic_a1933958020d6ec2b107f977bf84e41b1_icgraph">
+<area shape="rect" title="Get unique message id." alt="" coords="176,5,299,47"/>
+<area shape="rect" href="classautd_1_1core_1_1Logic.html#a4e65240fde4600ca4fdd45ee74603bfe" title="Pack header with modulation data." alt="" coords="5,5,128,47"/>
+</map>
+</div>
+
+</div>
+</div>
 <a id="aeddd6abc8f6f5dc1d9b47e1932c1992d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aeddd6abc8f6f5dc1d9b47e1932c1992d">&#9670;&nbsp;</a></span>is_msg_processed()</h2>
 
@@ -159,12 +205,12 @@ Static Public Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>whether the data have been processed </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="logic_8hpp_source.html#l00047">47</a> of file <a class="el" href="logic_8hpp_source.html">logic.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="logic_8hpp_source.html#l00050">50</a> of file <a class="el" href="logic_8hpp_source.html">logic.hpp</a>.</p>
 
 </div>
 </div>
-<a id="a33cc8d54d42740c360a3943c238c9320"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a33cc8d54d42740c360a3943c238c9320">&#9670;&nbsp;</a></span>pack_body() <span class="overload">[1/3]</span></h2>
+<a id="aa10c79f71a18cd997e35a8aa31176fa5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa10c79f71a18cd997e35a8aa31176fa5">&#9670;&nbsp;</a></span>pack_body() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -173,7 +219,7 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void autd::core::Logic::pack_body </td>
+          <td class="memname">static size_t autd::core::Logic::pack_body </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespaceautd_1_1core.html#ac094edc69364df81df793c8b732474d4">GainPtr</a> &amp;&#160;</td>
           <td class="paramname"><em>gain</em>, </td>
@@ -182,13 +228,7 @@ Static Public Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint8_t *&#160;</td>
-          <td class="paramname"><em>data</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t *&#160;</td>
-          <td class="paramname"><em>size</em>&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -208,19 +248,20 @@ Static Public Member Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramdir"></td><td class="paramname">gain</td><td><a class="el" href="classautd_1_1core_1_1Gain.html" title="Gain controls the duty ratio and phase of each transducer in AUTD devices.">Gain</a> </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">data</td><td>pointer to transmission data </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">size</td><td>size to send </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>size_t size to send</dd></dl>
+<p>This function must be called after pack_header </p>
 
-<p class="definition">Definition at line <a class="el" href="logic_8hpp_source.html#l00105">105</a> of file <a class="el" href="logic_8hpp_source.html">logic.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="logic_8hpp_source.html#l00111">111</a> of file <a class="el" href="logic_8hpp_source.html">logic.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="hardware__defined_8hpp_source.html#l00080">autd::core::GlobalHeader::control_flags</a>, <a class="el" href="hardware__defined_8hpp_source.html#l00019">autd::core::NUM_TRANS_IN_UNIT</a>, and <a class="el" href="hardware__defined_8hpp_source.html#l00047">autd::core::OUTPUT_ENABLE</a>.</p>
+<p class="reference">References <a class="el" href="hardware__defined_8hpp_source.html#l00086">autd::core::GlobalHeader::cpu_ctrl_flags</a>, <a class="el" href="hardware__defined_8hpp_source.html#l00019">autd::core::NUM_TRANS_IN_UNIT</a>, and <a class="el" href="hardware__defined_8hpp_source.html#l00069">autd::core::WRITE_BODY</a>.</p>
 
 </div>
 </div>
-<a id="a2e2d9417ee2dc053420f2af9ba0b5ea6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2e2d9417ee2dc053420f2af9ba0b5ea6">&#9670;&nbsp;</a></span>pack_body() <span class="overload">[2/3]</span></h2>
+<a id="a77e87e5336f0ce3c7375400dd6e2fcc1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77e87e5336f0ce3c7375400dd6e2fcc1">&#9670;&nbsp;</a></span>pack_body() <span class="overload">[2/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -229,7 +270,7 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void autd::core::Logic::pack_body </td>
+          <td class="memname">static size_t autd::core::Logic::pack_body </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespaceautd_1_1core.html#a18faea5946e8c4194fea8cdac091524b">GainSequencePtr</a> &amp;&#160;</td>
           <td class="paramname"><em>seq</em>, </td>
@@ -244,13 +285,7 @@ Static Public Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint8_t *&#160;</td>
-          <td class="paramname"><em>data</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t *const&#160;</td>
-          <td class="paramname"><em>size</em>&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -271,19 +306,20 @@ Static Public Member Functions</h2></td></tr>
     <tr><td class="paramdir"></td><td class="paramname">seq</td><td><a class="el" href="classautd_1_1core_1_1Sequence.html">Sequence</a> </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">geometry</td><td><a class="el" href="classautd_1_1core_1_1Geometry.html" title="Geometry of all devices.">Geometry</a> </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">data</td><td>pointer to transmission data </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">size</td><td>size to send </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>size_t size to send</dd></dl>
+<p>This function must be called after pack_header </p>
 
-<p class="definition">Definition at line <a class="el" href="logic_8hpp_source.html#l00169">169</a> of file <a class="el" href="logic_8hpp_source.html">logic.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="logic_8hpp_source.html#l00173">173</a> of file <a class="el" href="logic_8hpp_source.html">logic.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="hardware__defined_8hpp_source.html#l00082">autd::core::GlobalHeader::command_flags</a>, <a class="el" href="namespaceautd_1_1core.html#a4cfbd6df4238bc30ba4b6230fcd70140a604ec64db94f0a864a332c9198b9f3d6">autd::core::DUTY_PHASE_FULL</a>, <a class="el" href="hardware__defined_8hpp_source.html#l00019">autd::core::NUM_TRANS_IN_UNIT</a>, <a class="el" href="hardware__defined_8hpp_source.html#l00047">autd::core::OUTPUT_ENABLE</a>, <a class="el" href="namespaceautd_1_1core.html#a4cfbd6df4238bc30ba4b6230fcd70140a107f7c346eb545e1c3f670b4403fe14d">autd::core::PHASE_FULL</a>, <a class="el" href="namespaceautd_1_1core.html#a4cfbd6df4238bc30ba4b6230fcd70140a4402017e7affbf721a2162f9ba7dc457">autd::core::PHASE_HALF</a>, <a class="el" href="hardware__defined_8hpp_source.html#l00070">autd::core::SEQ_BEGIN</a>, and <a class="el" href="hardware__defined_8hpp_source.html#l00071">autd::core::SEQ_END</a>.</p>
+<p class="reference">References <a class="el" href="hardware__defined_8hpp_source.html#l00086">autd::core::GlobalHeader::cpu_ctrl_flags</a>, <a class="el" href="namespaceautd_1_1core.html#a4cfbd6df4238bc30ba4b6230fcd70140a604ec64db94f0a864a332c9198b9f3d6">autd::core::DUTY_PHASE_FULL</a>, <a class="el" href="hardware__defined_8hpp_source.html#l00019">autd::core::NUM_TRANS_IN_UNIT</a>, <a class="el" href="namespaceautd_1_1core.html#a4cfbd6df4238bc30ba4b6230fcd70140a107f7c346eb545e1c3f670b4403fe14d">autd::core::PHASE_FULL</a>, <a class="el" href="namespaceautd_1_1core.html#a4cfbd6df4238bc30ba4b6230fcd70140a4402017e7affbf721a2162f9ba7dc457">autd::core::PHASE_HALF</a>, <a class="el" href="hardware__defined_8hpp_source.html#l00065">autd::core::SEQ_BEGIN</a>, <a class="el" href="hardware__defined_8hpp_source.html#l00066">autd::core::SEQ_END</a>, and <a class="el" href="hardware__defined_8hpp_source.html#l00069">autd::core::WRITE_BODY</a>.</p>
 
 </div>
 </div>
-<a id="a8eed87dc06f3b71a481971700650bfcb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8eed87dc06f3b71a481971700650bfcb">&#9670;&nbsp;</a></span>pack_body() <span class="overload">[3/3]</span></h2>
+<a id="a83dc3dfc4af0857515409d379d61a30a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83dc3dfc4af0857515409d379d61a30a">&#9670;&nbsp;</a></span>pack_body() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -292,7 +328,7 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void autd::core::Logic::pack_body </td>
+          <td class="memname">static size_t autd::core::Logic::pack_body </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespaceautd_1_1core.html#ae7ffc0e1fffe52bbd7e1f96524747e0d">PointSequencePtr</a> &amp;&#160;</td>
           <td class="paramname"><em>seq</em>, </td>
@@ -307,13 +343,7 @@ Static Public Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint8_t *&#160;</td>
-          <td class="paramname"><em>data</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t *const&#160;</td>
-          <td class="paramname"><em>size</em>&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -334,19 +364,20 @@ Static Public Member Functions</h2></td></tr>
     <tr><td class="paramdir"></td><td class="paramname">seq</td><td><a class="el" href="classautd_1_1core_1_1Sequence.html">Sequence</a> </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">geometry</td><td><a class="el" href="classautd_1_1core_1_1Geometry.html" title="Geometry of all devices.">Geometry</a> </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">data</td><td>pointer to transmission data </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">size</td><td>size to send </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>size_t size to send</dd></dl>
+<p>This function must be called after pack_header </p>
 
-<p class="definition">Definition at line <a class="el" href="logic_8hpp_source.html#l00126">126</a> of file <a class="el" href="logic_8hpp_source.html">logic.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="logic_8hpp_source.html#l00132">132</a> of file <a class="el" href="logic_8hpp_source.html">logic.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="hardware__defined_8hpp_source.html#l00082">autd::core::GlobalHeader::command_flags</a>, <a class="el" href="hardware__defined_8hpp_source.html#l00019">autd::core::NUM_TRANS_IN_UNIT</a>, <a class="el" href="hardware__defined_8hpp_source.html#l00047">autd::core::OUTPUT_ENABLE</a>, <a class="el" href="hardware__defined_8hpp_source.html#l00070">autd::core::SEQ_BEGIN</a>, <a class="el" href="hardware__defined_8hpp_source.html#l00071">autd::core::SEQ_END</a>, and <a class="el" href="hardware__defined_8hpp_source.html#l00093">autd::core::SeqFocus::set()</a>.</p>
+<p class="reference">References <a class="el" href="hardware__defined_8hpp_source.html#l00086">autd::core::GlobalHeader::cpu_ctrl_flags</a>, <a class="el" href="hardware__defined_8hpp_source.html#l00019">autd::core::NUM_TRANS_IN_UNIT</a>, <a class="el" href="hardware__defined_8hpp_source.html#l00065">autd::core::SEQ_BEGIN</a>, <a class="el" href="hardware__defined_8hpp_source.html#l00066">autd::core::SEQ_END</a>, <a class="el" href="hardware__defined_8hpp_source.html#l00097">autd::core::SeqFocus::set()</a>, and <a class="el" href="hardware__defined_8hpp_source.html#l00069">autd::core::WRITE_BODY</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classautd_1_1core_1_1Logic_a8eed87dc06f3b71a481971700650bfcb_cgraph.png" border="0" usemap="#classautd_1_1core_1_1Logic_a8eed87dc06f3b71a481971700650bfcb_cgraph" alt=""/></div>
-<map name="classautd_1_1core_1_1Logic_a8eed87dc06f3b71a481971700650bfcb_cgraph" id="classautd_1_1core_1_1Logic_a8eed87dc06f3b71a481971700650bfcb_cgraph">
+<div class="center"><img src="classautd_1_1core_1_1Logic_a83dc3dfc4af0857515409d379d61a30a_cgraph.png" border="0" usemap="#classautd_1_1core_1_1Logic_a83dc3dfc4af0857515409d379d61a30a_cgraph" alt=""/></div>
+<map name="classautd_1_1core_1_1Logic_a83dc3dfc4af0857515409d379d61a30a_cgraph" id="classautd_1_1core_1_1Logic_a83dc3dfc4af0857515409d379d61a30a_cgraph">
 <area shape="rect" title="Pack data body with sequence data." alt="" coords="5,5,128,47"/>
 <area shape="rect" href="structautd_1_1core_1_1SeqFocus.html#a4a01b9a7b1571c4a5e849bdef861764c" title=" " alt="" coords="176,13,343,39"/>
 </map>
@@ -354,8 +385,8 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="a55614a86bac0f69004cc8fac065dc0f2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a55614a86bac0f69004cc8fac065dc0f2">&#9670;&nbsp;</a></span>pack_delay_offset_body()</h2>
+<a id="a24661cc52f90517bf0a204ae7d0725ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24661cc52f90517bf0a204ae7d0725ee">&#9670;&nbsp;</a></span>pack_delay_offset_body()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -364,7 +395,7 @@ Here is the call graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void autd::core::Logic::pack_delay_offset_body </td>
+          <td class="memname">static size_t autd::core::Logic::pack_delay_offset_body </td>
           <td>(</td>
           <td class="paramtype">const std::vector&lt; std::array&lt; uint8_t, <a class="el" href="namespaceautd_1_1core.html#aa82844cbfc211b283de1e79193783b7c">NUM_TRANS_IN_UNIT</a> &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>delay</em>, </td>
@@ -379,13 +410,7 @@ Here is the call graph for this function:</div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint8_t *&#160;</td>
-          <td class="paramname"><em>data</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t *const&#160;</td>
-          <td class="paramname"><em>size</em>&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -406,19 +431,20 @@ Here is the call graph for this function:</div>
     <tr><td class="paramdir"></td><td class="paramname">delay</td><td>delay data of each transducer </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">offset</td><td>duty offset data of each transducer </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">data</td><td>pointer to transmission data </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">size</td><td>size to send </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>size_t size to send</dd></dl>
+<p>This function must be called after pack_header </p>
 
-<p class="definition">Definition at line <a class="el" href="logic_8hpp_source.html#l00233">233</a> of file <a class="el" href="logic_8hpp_source.html">logic.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="logic_8hpp_source.html#l00234">234</a> of file <a class="el" href="logic_8hpp_source.html">logic.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="hardware__defined_8hpp_source.html#l00019">autd::core::NUM_TRANS_IN_UNIT</a>, and <a class="el" href="core_2utils_8hpp_source.html#l00049">autd::core::Utilities::pack_to_u16()</a>.</p>
+<p class="reference">References <a class="el" href="hardware__defined_8hpp_source.html#l00086">autd::core::GlobalHeader::cpu_ctrl_flags</a>, <a class="el" href="hardware__defined_8hpp_source.html#l00019">autd::core::NUM_TRANS_IN_UNIT</a>, <a class="el" href="core_2utils_8hpp_source.html#l00049">autd::core::Utilities::pack_to_u16()</a>, and <a class="el" href="hardware__defined_8hpp_source.html#l00069">autd::core::WRITE_BODY</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classautd_1_1core_1_1Logic_a55614a86bac0f69004cc8fac065dc0f2_cgraph.png" border="0" usemap="#classautd_1_1core_1_1Logic_a55614a86bac0f69004cc8fac065dc0f2_cgraph" alt=""/></div>
-<map name="classautd_1_1core_1_1Logic_a55614a86bac0f69004cc8fac065dc0f2_cgraph" id="classautd_1_1core_1_1Logic_a55614a86bac0f69004cc8fac065dc0f2_cgraph">
+<div class="center"><img src="classautd_1_1core_1_1Logic_a24661cc52f90517bf0a204ae7d0725ee_cgraph.png" border="0" usemap="#classautd_1_1core_1_1Logic_a24661cc52f90517bf0a204ae7d0725ee_cgraph" alt=""/></div>
+<map name="classautd_1_1core_1_1Logic_a24661cc52f90517bf0a204ae7d0725ee_cgraph" id="classautd_1_1core_1_1Logic_a24661cc52f90517bf0a204ae7d0725ee_cgraph">
 <area shape="rect" title="Pack data body to set output delay and enable." alt="" coords="5,5,165,47"/>
 <area shape="rect" href="classautd_1_1core_1_1Utilities.html#a2f7a683a00497c2be5325923e9b22a45" title="Pack two uint8_t value to uint16_t." alt="" coords="213,5,341,47"/>
 </map>
@@ -426,8 +452,8 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="acf79f96f73c6dc6e691359ba93b720c8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acf79f96f73c6dc6e691359ba93b720c8">&#9670;&nbsp;</a></span>pack_header() <span class="overload">[1/2]</span></h2>
+<a id="a4e65240fde4600ca4fdd45ee74603bfe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e65240fde4600ca4fdd45ee74603bfe">&#9670;&nbsp;</a></span>pack_header() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -436,86 +462,7 @@ Here is the call graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void autd::core::Logic::pack_header </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespaceautd_1_1core.html#a57e07b80de9e728f5ece2a54a62ffddb">COMMAND</a>&#160;</td>
-          <td class="paramname"><em>cmd</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const uint8_t&#160;</td>
-          <td class="paramname"><em>ctrl_flag</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const uint8_t&#160;</td>
-          <td class="paramname"><em>cmd_flag</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint8_t *&#160;</td>
-          <td class="paramname"><em>data</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint8_t *const&#160;</td>
-          <td class="paramname"><em>msg_id</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Pack header with COMMAND. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">cmd</td><td>command </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">ctrl_flag</td><td>control flag </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">cmd_flag</td><td>command flag </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">data</td><td>pointer to transmission data </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">msg_id</td><td>message id </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">Definition at line <a class="el" href="logic_8hpp_source.html#l00062">62</a> of file <a class="el" href="logic_8hpp_source.html">logic.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="logic_8hpp_source.html#l00080">pack_header()</a>.</p>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="classautd_1_1core_1_1Logic_acf79f96f73c6dc6e691359ba93b720c8_icgraph.png" border="0" usemap="#classautd_1_1core_1_1Logic_acf79f96f73c6dc6e691359ba93b720c8_icgraph" alt=""/></div>
-<map name="classautd_1_1core_1_1Logic_acf79f96f73c6dc6e691359ba93b720c8_icgraph" id="classautd_1_1core_1_1Logic_acf79f96f73c6dc6e691359ba93b720c8_icgraph">
-<area shape="rect" title="Pack header with COMMAND." alt="" coords="176,5,299,47"/>
-<area shape="rect" href="classautd_1_1core_1_1Logic.html#ace0f68d6858ad9b7bbe13fb391fa88e0" title="Pack header with modulation data." alt="" coords="5,5,128,47"/>
-</map>
-</div>
-
-</div>
-</div>
-<a id="ace0f68d6858ad9b7bbe13fb391fa88e0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ace0f68d6858ad9b7bbe13fb391fa88e0">&#9670;&nbsp;</a></span>pack_header() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static void autd::core::Logic::pack_header </td>
+          <td class="memname">static uint8_t autd::core::Logic::pack_header </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespaceautd_1_1core.html#aa9fb70cafbef0bcbc7726f109558efef">ModulationPtr</a> &amp;&#160;</td>
           <td class="paramname"><em>mod</em>, </td>
@@ -524,25 +471,19 @@ Here is the caller graph for this function:</div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const uint8_t&#160;</td>
-          <td class="paramname"><em>ctrl_flag</em>, </td>
+          <td class="paramname"><em>fpga_ctrl_flag</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const uint8_t&#160;</td>
-          <td class="paramname"><em>cmd_flag</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint8_t *&#160;</td>
-          <td class="paramname"><em>data</em>, </td>
+          <td class="paramname"><em>cpu_ctrl_flag</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint8_t *const&#160;</td>
-          <td class="paramname"><em>msg_id</em>&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -561,24 +502,99 @@ Here is the caller graph for this function:</div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir"></td><td class="paramname">mod</td><td><a class="el" href="classautd_1_1core_1_1Modulation.html" title="Modulation controls the amplitude modulation.">Modulation</a> </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">ctrl_flag</td><td>control flag </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">cmd_flag</td><td>command flag </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">fpga_ctrl_flag</td><td>fpga control flag </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">cpu_ctrl_flag</td><td>cpu control flag </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">data</td><td>pointer to transmission data </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">msg_id</td><td>message id </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>message id </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="logic_8hpp_source.html#l00080">80</a> of file <a class="el" href="logic_8hpp_source.html">logic.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="hardware__defined_8hpp_source.html#l00086">autd::core::GlobalHeader::cpu_ctrl_flags</a>, <a class="el" href="logic_8hpp_source.html#l00034">get_id()</a>, <a class="el" href="hardware__defined_8hpp_source.html#l00063">autd::core::MOD_BEGIN</a>, <a class="el" href="hardware__defined_8hpp_source.html#l00064">autd::core::MOD_END</a>, <a class="el" href="hardware__defined_8hpp_source.html#l00037">autd::core::MOD_FRAME_SIZE</a>, and <a class="el" href="logic_8hpp_source.html#l00064">pack_header()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classautd_1_1core_1_1Logic_a4e65240fde4600ca4fdd45ee74603bfe_cgraph.png" border="0" usemap="#classautd_1_1core_1_1Logic_a4e65240fde4600ca4fdd45ee74603bfe_cgraph" alt=""/></div>
+<map name="classautd_1_1core_1_1Logic_a4e65240fde4600ca4fdd45ee74603bfe_cgraph" id="classautd_1_1core_1_1Logic_a4e65240fde4600ca4fdd45ee74603bfe_cgraph">
+<area shape="rect" title="Pack header with modulation data." alt="" coords="5,39,128,80"/>
+<area shape="rect" href="classautd_1_1core_1_1Logic.html#a1933958020d6ec2b107f977bf84e41b1" title="Get unique message id." alt="" coords="176,5,299,47"/>
+<area shape="rect" href="classautd_1_1core_1_1Logic.html#adcdbb316e51c94211079738c3b74f395" title="Pack header with message id." alt="" coords="176,71,299,112"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="adcdbb316e51c94211079738c3b74f395"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adcdbb316e51c94211079738c3b74f395">&#9670;&nbsp;</a></span>pack_header() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void autd::core::Logic::pack_header </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>msg_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>fpga_ctrl_flag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>cpu_ctrl_flag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *const&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Pack header with message id. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">msg_id</td><td>message id </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">fpga_ctrl_flag</td><td>fpga control flag </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">cpu_ctrl_flag</td><td>cpu control flag </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">data</td><td>pointer to transmission data </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="logic_8hpp_source.html#l00080">80</a> of file <a class="el" href="logic_8hpp_source.html">logic.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="logic_8hpp_source.html#l00064">64</a> of file <a class="el" href="logic_8hpp_source.html">logic.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="hardware__defined_8hpp_source.html#l00082">autd::core::GlobalHeader::command_flags</a>, <a class="el" href="hardware__defined_8hpp_source.html#l00068">autd::core::MOD_BEGIN</a>, <a class="el" href="hardware__defined_8hpp_source.html#l00069">autd::core::MOD_END</a>, <a class="el" href="hardware__defined_8hpp_source.html#l00037">autd::core::MOD_FRAME_SIZE</a>, <a class="el" href="namespaceautd_1_1core.html#a57e07b80de9e728f5ece2a54a62ffddba7457cdd15d09bfc6c4dbb5d2b6f87390">autd::core::OP</a>, and <a class="el" href="logic_8hpp_source.html#l00062">pack_header()</a>.</p>
+<p class="reference">References <a class="el" href="hardware__defined_8hpp_source.html#l00084">autd::core::GlobalHeader::msg_id</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="logic_8hpp_source.html#l00080">pack_header()</a>.</p>
 <div class="dynheader">
-Here is the call graph for this function:</div>
+Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classautd_1_1core_1_1Logic_ace0f68d6858ad9b7bbe13fb391fa88e0_cgraph.png" border="0" usemap="#classautd_1_1core_1_1Logic_ace0f68d6858ad9b7bbe13fb391fa88e0_cgraph" alt=""/></div>
-<map name="classautd_1_1core_1_1Logic_ace0f68d6858ad9b7bbe13fb391fa88e0_cgraph" id="classautd_1_1core_1_1Logic_ace0f68d6858ad9b7bbe13fb391fa88e0_cgraph">
-<area shape="rect" title="Pack header with modulation data." alt="" coords="5,5,128,47"/>
-<area shape="rect" href="classautd_1_1core_1_1Logic.html#acf79f96f73c6dc6e691359ba93b720c8" title="Pack header with COMMAND." alt="" coords="176,5,299,47"/>
+<div class="center"><img src="classautd_1_1core_1_1Logic_adcdbb316e51c94211079738c3b74f395_icgraph.png" border="0" usemap="#classautd_1_1core_1_1Logic_adcdbb316e51c94211079738c3b74f395_icgraph" alt=""/></div>
+<map name="classautd_1_1core_1_1Logic_adcdbb316e51c94211079738c3b74f395_icgraph" id="classautd_1_1core_1_1Logic_adcdbb316e51c94211079738c3b74f395_icgraph">
+<area shape="rect" title="Pack header with message id." alt="" coords="176,5,299,47"/>
+<area shape="rect" href="classautd_1_1core_1_1Logic.html#a4e65240fde4600ca4fdd45ee74603bfe" title="Pack header with modulation data." alt="" coords="5,5,128,47"/>
 </map>
 </div>
 

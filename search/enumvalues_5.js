@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['no_5ftrans_621',['NO_TRANS',['../namespaceautd_1_1gain_1_1holo.html#a1e64d32be5947b46b7c11888905946efaee0ebbf742916862c31d955eb5fcd3fb',1,'autd::gain::holo']]]
+  ['op_5fmode_629',['OP_MODE',['../namespaceautd_1_1core.html#ad80e2dde80c2141fb11382a28c8849d4a703b4708965ba1d3313d5b4f6e13ec2e',1,'autd::core']]],
+  ['output_5fbalance_630',['OUTPUT_BALANCE',['../namespaceautd_1_1core.html#ad80e2dde80c2141fb11382a28c8849d4a343f97663eeb81be5787a93a4269abf3',1,'autd::core']]],
+  ['output_5fenable_631',['OUTPUT_ENABLE',['../namespaceautd_1_1core.html#ad80e2dde80c2141fb11382a28c8849d4a9e49c571743388e84d01ddbcfbd2aef1',1,'autd::core']]]
 ];

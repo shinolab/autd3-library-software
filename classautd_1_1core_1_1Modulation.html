@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">1.8.1</span>
+   &#160;<span id="projectnumber">1.9.0</span>
    </div>
   </td>
  </tr>
@@ -99,8 +99,8 @@ Inheritance diagram for autd::core::Modulation:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a78b03dff5b47290ee12527580d1d80aa"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Modulation.html#a78b03dff5b47290ee12527580d1d80aa">Modulation</a> () noexcept</td></tr>
 <tr class="separator:a78b03dff5b47290ee12527580d1d80aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a91f411bf310ab9ccb7efb2faeec20285"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Modulation.html#a91f411bf310ab9ccb7efb2faeec20285">Modulation</a> (const uint16_t freq_div) noexcept</td></tr>
-<tr class="separator:a91f411bf310ab9ccb7efb2faeec20285"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59bc964ffb10658f725d4a94f6378c6e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Modulation.html#a59bc964ffb10658f725d4a94f6378c6e">Modulation</a> (const size_t freq_div) noexcept</td></tr>
+<tr class="separator:a59bc964ffb10658f725d4a94f6378c6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a15a8691792b931d4530766cc7cf2e7cf"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Modulation.html#a15a8691792b931d4530766cc7cf2e7cf">~Modulation</a> ()=default</td></tr>
 <tr class="separator:a15a8691792b931d4530766cc7cf2e7cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a98e8c20a118dc81a48507b0d86008014"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Modulation.html#a98e8c20a118dc81a48507b0d86008014">Modulation</a> (const <a class="el" href="classautd_1_1core_1_1Modulation.html">Modulation</a> &amp;v) noexcept=default</td></tr>
@@ -117,15 +117,18 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5e26e5b26ea620bb259664c822dee679"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Modulation.html#a5e26e5b26ea620bb259664c822dee679">build</a> ()</td></tr>
 <tr class="memdesc:a5e26e5b26ea620bb259664c822dee679"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build modulation data.  <a href="classautd_1_1core_1_1Modulation.html#a5e26e5b26ea620bb259664c822dee679">More...</a><br /></td></tr>
 <tr class="separator:a5e26e5b26ea620bb259664c822dee679"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e657bd2ec8a9a8c089ac78d03f6b6cb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Modulation.html#a4e657bd2ec8a9a8c089ac78d03f6b6cb">rebuild</a> ()</td></tr>
+<tr class="memdesc:a4e657bd2ec8a9a8c089ac78d03f6b6cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Re-build modulation data.  <a href="classautd_1_1core_1_1Modulation.html#a4e657bd2ec8a9a8c089ac78d03f6b6cb">More...</a><br /></td></tr>
+<tr class="separator:a4e657bd2ec8a9a8c089ac78d03f6b6cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af6fc22e618324260f6da681853bc8828"><td class="memItemLeft" align="right" valign="top">size_t &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Modulation.html#af6fc22e618324260f6da681853bc8828">sent</a> ()</td></tr>
 <tr class="memdesc:af6fc22e618324260f6da681853bc8828"><td class="mdescLeft">&#160;</td><td class="mdescRight">sent means data length already sent to devices.  <a href="classautd_1_1core_1_1Modulation.html#af6fc22e618324260f6da681853bc8828">More...</a><br /></td></tr>
 <tr class="separator:af6fc22e618324260f6da681853bc8828"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a979150478635d22eaa2f3ed120bab123"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; uint8_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Modulation.html#a979150478635d22eaa2f3ed120bab123">buffer</a> () const</td></tr>
 <tr class="memdesc:a979150478635d22eaa2f3ed120bab123"><td class="mdescLeft">&#160;</td><td class="mdescRight">modulation data  <a href="classautd_1_1core_1_1Modulation.html#a979150478635d22eaa2f3ed120bab123">More...</a><br /></td></tr>
 <tr class="separator:a979150478635d22eaa2f3ed120bab123"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac1ea165c34cc0e43527a8404b2084b0e"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Modulation.html#ac1ea165c34cc0e43527a8404b2084b0e">sampling_frequency_division</a> () const noexcept</td></tr>
-<tr class="memdesc:ac1ea165c34cc0e43527a8404b2084b0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">modulation sampling frequency division  <a href="classautd_1_1core_1_1Modulation.html#ac1ea165c34cc0e43527a8404b2084b0e">More...</a><br /></td></tr>
-<tr class="separator:ac1ea165c34cc0e43527a8404b2084b0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0729af48e6740d188423a485d0990de"><td class="memItemLeft" align="right" valign="top">size_t &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Modulation.html#ae0729af48e6740d188423a485d0990de">sampling_freq_div_ratio</a> () noexcept</td></tr>
+<tr class="memdesc:ae0729af48e6740d188423a485d0990de"><td class="mdescLeft">&#160;</td><td class="mdescRight">sampling frequency division ratio  <a href="classautd_1_1core_1_1Modulation.html#ae0729af48e6740d188423a485d0990de">More...</a><br /></td></tr>
+<tr class="separator:ae0729af48e6740d188423a485d0990de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad787e6f85e5cea5eb74a50bc53e7276d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Modulation.html#ad787e6f85e5cea5eb74a50bc53e7276d">sampling_freq</a> () const noexcept</td></tr>
 <tr class="memdesc:ad787e6f85e5cea5eb74a50bc53e7276d"><td class="mdescLeft">&#160;</td><td class="mdescRight">modulation sampling frequency  <a href="classautd_1_1core_1_1Modulation.html#ad787e6f85e5cea5eb74a50bc53e7276d">More...</a><br /></td></tr>
 <tr class="separator:ad787e6f85e5cea5eb74a50bc53e7276d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -171,8 +174,8 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a91f411bf310ab9ccb7efb2faeec20285"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a91f411bf310ab9ccb7efb2faeec20285">&#9670;&nbsp;</a></span>Modulation() <span class="overload">[2/4]</span></h2>
+<a id="a59bc964ffb10658f725d4a94f6378c6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59bc964ffb10658f725d4a94f6378c6e">&#9670;&nbsp;</a></span>Modulation() <span class="overload">[2/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -183,7 +186,7 @@ Static Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">autd::core::Modulation::Modulation </td>
           <td>(</td>
-          <td class="paramtype">const uint16_t&#160;</td>
+          <td class="paramtype">const size_t&#160;</td>
           <td class="paramname"><em>freq_div</em></td><td>)</td>
           <td></td>
         </tr>
@@ -302,7 +305,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>modulation data </p>
 
-<p class="definition">Definition at line <a class="el" href="modulation_8hpp_source.html#l00079">79</a> of file <a class="el" href="modulation_8hpp_source.html">modulation.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="modulation_8hpp_source.html#l00089">89</a> of file <a class="el" href="modulation_8hpp_source.html">modulation.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="modulation_2primitive_8hpp_source.html#l00106">autd::modulation::Custom::Custom()</a>.</p>
 <div class="dynheader">
@@ -311,7 +314,7 @@ Here is the caller graph for this function:</div>
 <div class="center"><img src="classautd_1_1core_1_1Modulation_a979150478635d22eaa2f3ed120bab123_icgraph.png" border="0" usemap="#classautd_1_1core_1_1Modulation_a979150478635d22eaa2f3ed120bab123_icgraph" alt=""/></div>
 <map name="classautd_1_1core_1_1Modulation_a979150478635d22eaa2f3ed120bab123_icgraph" id="classautd_1_1core_1_1Modulation_a979150478635d22eaa2f3ed120bab123_icgraph">
 <area shape="rect" title="modulation data" alt="" coords="220,5,367,47"/>
-<area shape="rect" href="classautd_1_1modulation_1_1Custom.html#a4edae8ebb511248f671a005e2464f333" title=" " alt="" coords="5,5,172,47"/>
+<area shape="rect" href="classautd_1_1modulation_1_1Custom.html#a4ae2d21713e7066dc61912ed69b48cf3" title=" " alt="" coords="5,5,172,47"/>
 </map>
 </div>
 
@@ -344,7 +347,9 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="modulation_8hpp_source.html#l00064">64</a> of file <a class="el" href="modulation_8hpp_source.html">modulation.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="modulation_8hpp_source.html#l00059">calc()</a>, and <a class="el" href="hardware__defined_8hpp_source.html#l00034">autd::core::MOD_BUF_SIZE_MAX</a>.</p>
+<p class="reference">References <a class="el" href="modulation_8hpp_source.html#l00059">calc()</a>, <a class="el" href="hardware__defined_8hpp_source.html#l00034">autd::core::MOD_BUF_SIZE_MAX</a>, and <a class="el" href="hardware__defined_8hpp_source.html#l00036">autd::core::MOD_SAMPLING_FREQ_DIV_MAX</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="modulation_8hpp_source.html#l00076">rebuild()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -352,6 +357,15 @@ Here is the call graph for this function:</div>
 <map name="classautd_1_1core_1_1Modulation_a5e26e5b26ea620bb259664c822dee679_cgraph" id="classautd_1_1core_1_1Modulation_a5e26e5b26ea620bb259664c822dee679_cgraph">
 <area shape="rect" title="Build modulation data." alt="" coords="5,5,152,47"/>
 <area shape="rect" href="classautd_1_1core_1_1Modulation.html#aa6cb7acf08a55e01598dd45ec844fd5e" title="Calculate modulation data." alt="" coords="200,5,347,47"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classautd_1_1core_1_1Modulation_a5e26e5b26ea620bb259664c822dee679_icgraph.png" border="0" usemap="#classautd_1_1core_1_1Modulation_a5e26e5b26ea620bb259664c822dee679_icgraph" alt=""/></div>
+<map name="classautd_1_1core_1_1Modulation_a5e26e5b26ea620bb259664c822dee679_icgraph" id="classautd_1_1core_1_1Modulation_a5e26e5b26ea620bb259664c822dee679_icgraph">
+<area shape="rect" title="Build modulation data." alt="" coords="200,5,347,47"/>
+<area shape="rect" href="classautd_1_1core_1_1Modulation.html#a4e657bd2ec8a9a8c089ac78d03f6b6cb" title="Re&#45;build modulation data." alt="" coords="5,5,152,47"/>
 </map>
 </div>
 
@@ -392,8 +406,9 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="classautd_1_1core_1_1Modulation_aa6cb7acf08a55e01598dd45ec844fd5e_icgraph.png" border="0" usemap="#classautd_1_1core_1_1Modulation_aa6cb7acf08a55e01598dd45ec844fd5e_icgraph" alt=""/></div>
 <map name="classautd_1_1core_1_1Modulation_aa6cb7acf08a55e01598dd45ec844fd5e_icgraph" id="classautd_1_1core_1_1Modulation_aa6cb7acf08a55e01598dd45ec844fd5e_icgraph">
-<area shape="rect" title="Calculate modulation data." alt="" coords="200,5,347,47"/>
-<area shape="rect" href="classautd_1_1core_1_1Modulation.html#a5e26e5b26ea620bb259664c822dee679" title="Build modulation data." alt="" coords="5,5,152,47"/>
+<area shape="rect" title="Calculate modulation data." alt="" coords="395,5,541,47"/>
+<area shape="rect" href="classautd_1_1core_1_1Modulation.html#a5e26e5b26ea620bb259664c822dee679" title="Build modulation data." alt="" coords="200,5,347,47"/>
+<area shape="rect" href="classautd_1_1core_1_1Modulation.html#a4e657bd2ec8a9a8c089ac78d03f6b6cb" title="Re&#45;build modulation data." alt="" coords="5,5,152,47"/>
 </map>
 </div>
 
@@ -544,6 +559,47 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
+<a id="a4e657bd2ec8a9a8c089ac78d03f6b6cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e657bd2ec8a9a8c089ac78d03f6b6cb">&#9670;&nbsp;</a></span>rebuild()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void autd::core::Modulation::rebuild </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Re-build modulation data. </p>
+
+<p class="definition">Definition at line <a class="el" href="modulation_8hpp_source.html#l00076">76</a> of file <a class="el" href="modulation_8hpp_source.html">modulation.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="modulation_8hpp_source.html#l00064">build()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classautd_1_1core_1_1Modulation_a4e657bd2ec8a9a8c089ac78d03f6b6cb_cgraph.png" border="0" usemap="#classautd_1_1core_1_1Modulation_a4e657bd2ec8a9a8c089ac78d03f6b6cb_cgraph" alt=""/></div>
+<map name="classautd_1_1core_1_1Modulation_a4e657bd2ec8a9a8c089ac78d03f6b6cb_cgraph" id="classautd_1_1core_1_1Modulation_a4e657bd2ec8a9a8c089ac78d03f6b6cb_cgraph">
+<area shape="rect" title="Re&#45;build modulation data." alt="" coords="5,5,152,47"/>
+<area shape="rect" href="classautd_1_1core_1_1Modulation.html#a5e26e5b26ea620bb259664c822dee679" title="Build modulation data." alt="" coords="200,5,347,47"/>
+<area shape="rect" href="classautd_1_1core_1_1Modulation.html#aa6cb7acf08a55e01598dd45ec844fd5e" title="Calculate modulation data." alt="" coords="395,5,541,47"/>
+</map>
+</div>
+
+</div>
+</div>
 <a id="ad787e6f85e5cea5eb74a50bc53e7276d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad787e6f85e5cea5eb74a50bc53e7276d">&#9670;&nbsp;</a></span>sampling_freq()</h2>
 
@@ -569,14 +625,14 @@ Here is the caller graph for this function:</div>
 
 <p>modulation sampling frequency </p>
 
-<p class="definition">Definition at line <a class="el" href="modulation_8hpp_source.html#l00089">89</a> of file <a class="el" href="modulation_8hpp_source.html">modulation.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="modulation_8hpp_source.html#l00101">101</a> of file <a class="el" href="modulation_8hpp_source.html">modulation.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="hardware__defined_8hpp_source.html#l00035">autd::core::MOD_SAMPLING_FREQ_BASE</a>.</p>
 
 </div>
 </div>
-<a id="ac1ea165c34cc0e43527a8404b2084b0e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac1ea165c34cc0e43527a8404b2084b0e">&#9670;&nbsp;</a></span>sampling_frequency_division()</h2>
+<a id="ae0729af48e6740d188423a485d0990de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0729af48e6740d188423a485d0990de">&#9670;&nbsp;</a></span>sampling_freq_div_ratio()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -585,10 +641,10 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint16_t autd::core::Modulation::sampling_frequency_division </td>
+          <td class="memname">size_t&amp; autd::core::Modulation::sampling_freq_div_ratio </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td> const</td>
+          <td></td>
         </tr>
       </table>
   </td>
@@ -598,9 +654,10 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>modulation sampling frequency division </p>
+<p>sampling frequency division ratio </p>
+<p>sampling frequency will be <a class="el" href="namespaceautd_1_1core.html#a32a7b1a96dae87d0fa73cb8ce84a41e8">autd::core::MOD_SAMPLING_FREQ_BASE</a> /(sampling frequency division ratio). The value must be in 1, 2, ..., <a class="el" href="namespaceautd_1_1core.html#a4d2a3e598ac0545428f5476cbd8be500">autd::core::MOD_SAMPLING_FREQ_DIV_MAX</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="modulation_8hpp_source.html#l00084">84</a> of file <a class="el" href="modulation_8hpp_source.html">modulation.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="modulation_8hpp_source.html#l00096">96</a> of file <a class="el" href="modulation_8hpp_source.html">modulation.hpp</a>.</p>
 
 </div>
 </div>
@@ -629,7 +686,7 @@ Here is the caller graph for this function:</div>
 
 <p>sent means data length already sent to devices. </p>
 
-<p class="definition">Definition at line <a class="el" href="modulation_8hpp_source.html#l00074">74</a> of file <a class="el" href="modulation_8hpp_source.html">modulation.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="modulation_8hpp_source.html#l00084">84</a> of file <a class="el" href="modulation_8hpp_source.html">modulation.hpp</a>.</p>
 
 </div>
 </div>

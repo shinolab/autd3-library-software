@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['trans_640',['TRANS',['../namespaceautd_1_1gain_1_1holo.html#a1e64d32be5947b46b7c11888905946efad48c2c30968608d3e45c9beb0433a062',1,'autd::gain::holo']]]
+  ['write_5fbody_640',['WRITE_BODY',['../namespaceautd_1_1core.html#a4c14a3320231e0f788f368dbb7288e20aaf66ee6554bc55df681bed28f6765b89',1,'autd::core']]]
 ];

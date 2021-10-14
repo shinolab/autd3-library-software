@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['force_5ffan_618',['FORCE_FAN',['../namespaceautd_1_1core.html#ad80e2dde80c2141fb11382a28c8849d4a917cb6ee4839bf4d1023c5b32206a460',1,'autd::core']]]
+  ['mod_5fbegin_626',['MOD_BEGIN',['../namespaceautd_1_1core.html#a4c14a3320231e0f788f368dbb7288e20aff94cf6529f862e566fb778d08b21dd3',1,'autd::core']]],
+  ['mod_5fend_627',['MOD_END',['../namespaceautd_1_1core.html#a4c14a3320231e0f788f368dbb7288e20aededd59796465025c732c2214319668f',1,'autd::core']]]
 ];

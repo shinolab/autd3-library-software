@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['phase_5ffull_626',['PHASE_FULL',['../namespaceautd_1_1core.html#a4cfbd6df4238bc30ba4b6230fcd70140a107f7c346eb545e1c3f670b4403fe14d',1,'autd::core']]],
-  ['phase_5fhalf_627',['PHASE_HALF',['../namespaceautd_1_1core.html#a4cfbd6df4238bc30ba4b6230fcd70140a4402017e7affbf721a2162f9ba7dc457',1,'autd::core']]]
+  ['reads_5ffpga_5finfo_634',['READS_FPGA_INFO',['../namespaceautd_1_1core.html#a4c14a3320231e0f788f368dbb7288e20a89eb500a63277ebf6c9bacb258589116',1,'autd::core']]]
 ];
