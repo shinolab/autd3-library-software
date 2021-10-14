@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 28/09/2021
+// Last Modified: 14/10/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -23,20 +23,23 @@
 
 namespace autd::core {
 /**
- * \brief Hardware logic
+ * \brief Firmware logic
  */
 class Logic {
+ public:
+  /**
+   * \brief Get unique message id
+   * \return message id
+   */
   static uint8_t get_id() {
-    static std::atomic<uint8_t> id{0};
+    static std::atomic<uint8_t> id{MSG_NORMAL_BASE};
 
-    id.fetch_add(0x01);
     uint8_t expected = 0xff;
-    id.compare_exchange_weak(expected, 1);
+    if (!id.compare_exchange_weak(expected, MSG_NORMAL_BASE)) id.fetch_add(0x01);
 
     return id.load();
   }
 
- public:
   /**
    * \brief check if the data which have msg_id have been processed in the devices.
    * \param num_devices number of devices
@@ -52,68 +55,70 @@ class Logic {
   }
 
   /**
-   * \brief Pack header with COMMAND
-   * \param cmd command
-   * \param ctrl_flag control flag
-   * \param cmd_flag command flag
+   * \brief Pack header with message id
+   * \param msg_id message id
+   * \param fpga_ctrl_flag fpga control flag
+   * \param cpu_ctrl_flag cpu control flag
    * \param[out] data pointer to transmission data
-   * \param[out] msg_id message id
    */
-  static void pack_header(const COMMAND cmd, const uint8_t ctrl_flag, const uint8_t cmd_flag, uint8_t* data, uint8_t* const msg_id) {
+  static void pack_header(const uint8_t msg_id, const uint8_t fpga_ctrl_flag, const uint8_t cpu_ctrl_flag, uint8_t* const data) {
     auto* header = reinterpret_cast<GlobalHeader*>(data);
-    *msg_id = get_id();
-    header->msg_id = *msg_id;
-    header->control_flags = ctrl_flag;
-    header->command = cmd;
-    header->command_flags = cmd_flag;
+    header->msg_id = msg_id;
+    header->fpga_ctrl_flags = fpga_ctrl_flag;
+    header->cpu_ctrl_flags = cpu_ctrl_flag;
     header->mod_size = 0;
   }
 
   /**
    * \brief Pack header with modulation data
    * \param mod Modulation
-   * \param ctrl_flag control flag
-   * \param cmd_flag command flag
+   * \param fpga_ctrl_flag fpga control flag
+   * \param cpu_ctrl_flag cpu control flag
    * \param[out] data pointer to transmission data
-   * \param[out] msg_id message id
+   * \return message id
    */
-  static void pack_header(const ModulationPtr& mod, const uint8_t ctrl_flag, const uint8_t cmd_flag, uint8_t* data, uint8_t* const msg_id) {
-    pack_header(COMMAND::OP, ctrl_flag, cmd_flag, data, msg_id);
-    if (mod == nullptr) return;
+  static uint8_t pack_header(const ModulationPtr& mod, const uint8_t fpga_ctrl_flag, const uint8_t cpu_ctrl_flag, uint8_t* const data) {
+    uint8_t msg_id = get_id();
+    pack_header(msg_id, fpga_ctrl_flag, cpu_ctrl_flag, data);
+    if (mod == nullptr || mod->sent() >= mod->buffer().size()) return msg_id;
+
     auto* header = reinterpret_cast<GlobalHeader*>(data);
     size_t offset = 0;
     if (mod->sent() == 0) {
-      header->command_flags |= MOD_BEGIN;
-      header->mod[0] = static_cast<uint8_t>(mod->sampling_frequency_division() & 0xFF);
-      header->mod[1] = static_cast<uint8_t>(mod->sampling_frequency_division() >> 8 & 0xFF);
+      header->cpu_ctrl_flags |= MOD_BEGIN;
+      const auto div = static_cast<uint16_t>(mod->sampling_freq_div_ratio() - 1);
+      header->mod[0] = static_cast<uint8_t>(div & 0xFF);
+      header->mod[1] = static_cast<uint8_t>(div >> 8 & 0xFF);
       offset += 2;
     }
     const auto mod_size = static_cast<uint8_t>(std::clamp(mod->buffer().size() - mod->sent(), size_t{0}, MOD_FRAME_SIZE - offset));
-    if (mod->sent() + mod_size >= mod->buffer().size()) header->command_flags |= MOD_END;
+    if (mod->sent() + mod_size >= mod->buffer().size()) header->cpu_ctrl_flags |= MOD_END;
     header->mod_size = mod_size;
 
     std::memcpy(&header->mod[offset], &mod->buffer()[mod->sent()], mod_size);
     mod->sent() += mod_size;
+
+    return msg_id;
   }
 
   /**
    * \brief Pack data body which contain phase and duty data of each transducer.
    * \param gain Gain
    * \param[out] data pointer to transmission data
-   * \param[out] size size to send
+   * \return size_t size to send
+   * \details This function must be called after pack_header
    */
-  static void pack_body(const GainPtr& gain, uint8_t* data, size_t* size) {
-    const auto num_devices = gain != nullptr ? gain->data().size() : 0;
-
-    *size = sizeof(GlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;
-    if (gain == nullptr) return;
+  static size_t pack_body(const GainPtr& gain, uint8_t* data) {
+    if (gain == nullptr) return sizeof(GlobalHeader);
 
     auto* header = reinterpret_cast<GlobalHeader*>(data);
-    header->control_flags |= OUTPUT_ENABLE;
+    header->cpu_ctrl_flags |= WRITE_BODY;
 
-    auto* cursor = data + sizeof(GlobalHeader);
-    const auto byte_size = NUM_TRANS_IN_UNIT * sizeof(uint16_t);
-    for (size_t i = 0; i < num_devices; i++, cursor += byte_size) std::memcpy(cursor, &gain->data()[i].at(0), byte_size);
+    const auto num_devices = gain->data().size();
+    auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(GlobalHeader));
+    for (size_t i = 0; i < num_devices; i++, cursor += NUM_TRANS_IN_UNIT)
+      std::memcpy(cursor, gain->data()[i].data(), NUM_TRANS_IN_UNIT * sizeof(uint16_t));
+    return sizeof(GlobalHeader) + num_devices * NUM_TRANS_IN_UNIT * sizeof(uint16_t);
   }
 
   /**
@@ -121,35 +126,32 @@ class Logic {
    * \param seq Sequence
    * \param geometry Geometry
    * \param[out] data pointer to transmission data
-   * \param[out] size size to send
+   * \return size_t size to send
+   * \details This function must be called after pack_header
    */
-  static void pack_body(const PointSequencePtr& seq, const GeometryPtr& geometry, uint8_t* data, size_t* const size) {
-    const auto num_devices = seq != nullptr ? geometry->num_devices() : 0;
+  static size_t pack_body(const PointSequencePtr& seq, const GeometryPtr& geometry, uint8_t* data) {
+    if (seq == nullptr || seq->sent() == seq->control_points().size()) return sizeof(GlobalHeader);
 
-    *size = sizeof(GlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;
-    if (seq == nullptr) return;
-
+    const auto num_devices = geometry->num_devices();
     auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(GlobalHeader));
     size_t offset = 1;
     auto* header = reinterpret_cast<GlobalHeader*>(data);
+    header->cpu_ctrl_flags |= WRITE_BODY;
     if (seq->sent() == 0) {
-      header->command_flags |= SEQ_BEGIN;
+      header->cpu_ctrl_flags |= SEQ_BEGIN;
       for (size_t device = 0; device < num_devices; device++) {
-        cursor[device * NUM_TRANS_IN_UNIT + 1] = seq->sampling_frequency_division();
+        cursor[device * NUM_TRANS_IN_UNIT + 1] = static_cast<uint16_t>(seq->sampling_freq_div_ratio() - 1);
         cursor[device * NUM_TRANS_IN_UNIT + 2] = static_cast<uint16_t>(geometry->wavelength() * 1000);
       }
       offset += 4;
     }
-    const auto send_size = static_cast<uint16_t>(
-        std::clamp(seq->control_points().size() - seq->sent(), size_t{0}, sizeof(uint16_t) * (NUM_TRANS_IN_UNIT - offset) / sizeof(SeqFocus)));
-    if (seq->sent() + send_size >= seq->control_points().size()) {
-      header->control_flags |= OUTPUT_ENABLE;
-      header->command_flags |= SEQ_END;
-    }
+    const auto send_size =
+        std::clamp(seq->control_points().size() - seq->sent(), size_t{0}, sizeof(uint16_t) * (NUM_TRANS_IN_UNIT - offset) / sizeof(SeqFocus));
+    if (seq->sent() + send_size >= seq->control_points().size()) header->cpu_ctrl_flags |= SEQ_END;
 
     const auto fixed_num_unit = 256.0 / geometry->wavelength();
     for (size_t device = 0; device < num_devices; device++, cursor += NUM_TRANS_IN_UNIT) {
-      cursor[0] = send_size;
+      cursor[0] = static_cast<uint16_t>(send_size);
       auto* focus_cursor = reinterpret_cast<SeqFocus*>(&cursor[offset]);
       for (size_t i = seq->sent(); i < seq->sent() + send_size; i++, focus_cursor++) {
         const auto v = (geometry->to_local_position(device, seq->control_point(i)) * fixed_num_unit).cast<int32_t>();
@@ -157,6 +159,7 @@ class Logic {
       }
     }
     seq->sent() += send_size;
+    return sizeof(GlobalHeader) + num_devices * NUM_TRANS_IN_UNIT * sizeof(uint16_t);
   }
 
   /**
@@ -164,40 +167,36 @@ class Logic {
    * \param seq Sequence
    * \param geometry Geometry
    * \param[out] data pointer to transmission data
-   * \param[out] size size to send
+   * \return size_t size to send
+   * \details This function must be called after pack_header
    */
-  static void pack_body(const GainSequencePtr& seq, const GeometryPtr& geometry, uint8_t* data, size_t* const size) {
-    const auto num_devices = seq != nullptr ? geometry->num_devices() : 0;
+  static size_t pack_body(const GainSequencePtr& seq, const GeometryPtr& geometry, uint8_t* data) {
+    if (seq == nullptr || seq->sent() >= seq->gains().size() + 1) return sizeof(GlobalHeader);
 
-    *size = sizeof(GlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * num_devices;
-    if (seq == nullptr) return;
-
+    const auto num_devices = geometry->num_devices();
     auto* header = reinterpret_cast<GlobalHeader*>(data);
+    header->cpu_ctrl_flags |= WRITE_BODY;
     const auto seq_sent = static_cast<size_t>(seq->gain_mode());
     if (seq->sent() == 0) {
-      header->command_flags |= SEQ_BEGIN;
+      header->cpu_ctrl_flags |= SEQ_BEGIN;
       auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(GlobalHeader));
       for (size_t device = 0; device < num_devices; device++) {
         cursor[device * NUM_TRANS_IN_UNIT] = static_cast<uint16_t>(seq_sent);
-        cursor[device * NUM_TRANS_IN_UNIT + 1] = seq->sampling_frequency_division();
+        cursor[device * NUM_TRANS_IN_UNIT + 1] = static_cast<uint16_t>(seq->sampling_freq_div_ratio() - 1);
         cursor[device * NUM_TRANS_IN_UNIT + 2] = static_cast<uint16_t>(seq->size());
       }
       seq->sent()++;
-      return;
+      return sizeof(GlobalHeader) + num_devices * NUM_TRANS_IN_UNIT * sizeof(uint16_t);
     }
 
-    if (seq->sent() + seq_sent > seq->gains().size()) {
-      header->control_flags |= OUTPUT_ENABLE;
-      header->command_flags |= SEQ_END;
-    }
+    if (seq->sent() + seq_sent > seq->gains().size()) header->cpu_ctrl_flags |= SEQ_END;
 
-    auto* cursor = data + sizeof(GlobalHeader);
-    const auto byte_size = NUM_TRANS_IN_UNIT * sizeof(uint16_t);
+    auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(GlobalHeader));
     const auto gain_idx = seq->sent() - 1;
-    for (size_t device = 0; device < num_devices; device++, cursor += byte_size) {
+    for (size_t device = 0; device < num_devices; device++, cursor += NUM_TRANS_IN_UNIT) {
       switch (seq->gain_mode()) {
         case GAIN_MODE::DUTY_PHASE_FULL:
-          std::memcpy(cursor, &seq->gains()[gain_idx]->data()[device].at(0), byte_size);
+          std::memcpy(cursor, seq->gains()[gain_idx]->data()[device].data(), NUM_TRANS_IN_UNIT * sizeof(uint16_t));
           break;
         case GAIN_MODE::PHASE_FULL:
           for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
@@ -221,6 +220,7 @@ class Logic {
       }
     }
     seq->sent() += seq_sent;
+    return sizeof(GlobalHeader) + num_devices * NUM_TRANS_IN_UNIT * sizeof(uint16_t);
   }
 
   /**
@@ -228,14 +228,17 @@ class Logic {
    * \param delay delay data of each transducer
    * \param offset duty offset data of each transducer
    * \param[out] data pointer to transmission data
-   * \param[out] size size to send
+   * \return size_t size to send
+   * \details This function must be called after pack_header
    */
-  static void pack_delay_offset_body(const std::vector<std::array<uint8_t, NUM_TRANS_IN_UNIT>>& delay,
-                                     const std::vector<std::array<uint8_t, NUM_TRANS_IN_UNIT>>& offset, uint8_t* data, size_t* const size) {
-    *size = sizeof(GlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * delay.size();
+  static size_t pack_delay_offset_body(const std::vector<std::array<uint8_t, NUM_TRANS_IN_UNIT>>& delay,
+                                       const std::vector<std::array<uint8_t, NUM_TRANS_IN_UNIT>>& offset, uint8_t* data) {
+    auto* header = reinterpret_cast<GlobalHeader*>(data);
+    header->cpu_ctrl_flags |= WRITE_BODY;
     auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(GlobalHeader));
     for (size_t dev = 0; dev < delay.size(); dev++)
       for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) *cursor++ = Utilities::pack_to_u16(offset[dev][i], delay[dev][i]);
+    return sizeof(GlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * delay.size();
   }
 };
 }  // namespace autd::core

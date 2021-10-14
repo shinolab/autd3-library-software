@@ -1,3 +1,12 @@
+# 1.9
+* Fix output delay
+* Improve link::SOEM performance
+* Remove fifth argument (OnLostCallback callback) `AUTDLinkSOEM` function in capi
+    * Instead, add `AUTDSetSOEMOnLost` function in capi
+* Update maxmum Modulation/Sequence sampling frequency division ratio from 65535 to 65536
+* Add setter/getter of Modulation/Sequence sampling frequency division ratio
+* Update firmware version to 1.9
+
 # 1.8.1
 * Fix link::SOEM
 * Fix gain::Custom

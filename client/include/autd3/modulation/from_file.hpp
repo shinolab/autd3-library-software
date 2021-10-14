@@ -3,7 +3,7 @@
 // Created Date: 17/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/07/2021
+// Last Modified: 13/10/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -33,7 +33,7 @@ class RawPCM final : public core::Modulation {
    * If samplingFreq is less than the Nyquist frequency, the data will be upsampled.
    * The maximum modulation buffer size is shown in autd::MOD_BUF_SIZE. Only the data up to MOD_BUF_SIZE/MOD_SAMPLING_FREQ seconds can be output.
    */
-  static core::ModulationPtr create(const std::string& filename, double sampling_freq = 0.0, uint16_t mod_sampling_freq_div = 10);
+  static core::ModulationPtr create(const std::string& filename, double sampling_freq = 0.0, uint16_t mod_sampling_freq_div = 9);
   void calc() override;
   explicit RawPCM(const double sampling_freq, const uint16_t mod_sampling_freq_div, std::vector<uint8_t> buf)
       : Modulation(mod_sampling_freq_div), _sampling_freq(sampling_freq), _buf(std::move(buf)) {}
@@ -57,7 +57,7 @@ class Wav final : public core::Modulation {
    * If samplingFreq is less than the Nyquist frequency, the data will be upsampled.
    * The maximum modulation buffer size is shown in autd::MOD_BUF_SIZE. Only the data up to MOD_BUF_SIZE/MOD_SAMPLING_FREQ seconds can be output.
    */
-  static core::ModulationPtr create(const std::string& filename, uint16_t mod_sampling_freq_div = 10);
+  static core::ModulationPtr create(const std::string& filename, uint16_t mod_sampling_freq_div = 9);
   void calc() override;
   explicit Wav(const uint32_t sampling_freq, const uint16_t mod_sampling_freq_div, std::vector<uint8_t> buf)
       : Modulation(mod_sampling_freq_div), _sampling_freq(sampling_freq), _buf(std::move(buf)) {}

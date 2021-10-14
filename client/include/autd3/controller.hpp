@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 30/09/2021
+// Last Modified: 14/10/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -53,8 +53,8 @@ class Controller {
     ControllerProps& operator=(ControllerProps&& obj) = default;
 
    private:
-    [[nodiscard]] uint8_t ctrl_flag() const;
-    [[nodiscard]] uint8_t cmd_flag() const;
+    [[nodiscard]] uint8_t fpga_ctrl_flag() const;
+    [[nodiscard]] uint8_t cpu_ctrl_flag() const;
 
     bool _output_enable;
     bool _output_balance;
@@ -95,6 +95,11 @@ class Controller {
   [[nodiscard]] core::GeometryPtr& geometry() noexcept;
 
   /**
+   * @brief Output enable
+   */
+  bool& output_enable() noexcept;
+
+  /**
    * @brief Silent mode
    */
   bool& silent_mode() noexcept;
@@ -128,29 +133,29 @@ class Controller {
 
   /**
    * @brief Update control flag
-   * \return if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true.
+   * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
    */
   bool update_ctrl_flag();
 
   /**
    * \brief Set output delay
-   * \param[in] delay delay for each transducer in units of ultrasound period (i.e. 25us).
-   * \return if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true.
+   * \param[in] delay delay for each transducer in units of ultrasound period (i.e. 25us) in 7bit.
+   * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
    */
   bool set_output_delay(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& delay);
 
   /**
    * \brief Set duty offset
    * \param[in] offset duty offset for each transducers (only the lowest 1 bit will be used)
-   * \return if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true.
+   * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
    */
   bool set_duty_offset(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& offset);
 
   /**
    * \brief Set delay and duty offset
-   * \param[in] delay delay
-   * \param[in] offset duty offset
-   * \return if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true.
+   * \param[in] delay delay for each transducer in units of ultrasound period (i.e. 25us) in 7bit.
+   * \param[in] offset duty offset for each transducers (only the lowest 1 bit will be used)
+   * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
    */
   bool set_delay_offset(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& delay,
                         const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& offset);
@@ -163,45 +168,45 @@ class Controller {
 
   /**
    * @brief Clear all data in hardware
-   * \return if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true.
+   * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
    */
   bool clear();
 
   /**
    * @brief Close the controller
-   * \return if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true.
+   * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
    */
   bool close();
 
   /**
    * @brief Stop outputting
-   * \return if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true.
+   * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
    */
   bool stop();
 
   /**
    * @brief Pause outputting
-   * \return if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true.
+   * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
    */
   bool pause();
 
   /**
    * @brief Resume outputting
-   * \return if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true.
+   * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
    */
   bool resume();
 
   /**
    * @brief Send gain to the device
    * @param[in] gain Gain to display
-   * \return if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true.
+   * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
    */
   bool send(const core::GainPtr& gain);
 
   /**
    * @brief Send modulation to the device
    * @param[in] mod Amplitude modulation to display
-   * \return if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true.
+   * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
    */
   bool send(const core::ModulationPtr& mod);
 
@@ -209,23 +214,25 @@ class Controller {
    * @brief Send gain and modulation to the device
    * @param[in] gain Gain to display
    * @param[in] mod Amplitude modulation to display
-   * \return if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true.
+   * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
    */
   bool send(const core::GainPtr& gain, const core::ModulationPtr& mod);
 
   /**
    * @brief Send sequence to the device
    * @param[in] seq Sequence to display
-   * \return if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true.
+   * @param[in] mod Amplitude modulation to display
+   * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
    */
-  bool send(const core::PointSequencePtr& seq);
+  bool send(const core::PointSequencePtr& seq, const core::ModulationPtr& mod = nullptr);
 
   /**
    * @brief Send sequence to the device
    * @param[in] seq Sequence to display
-   * \return if true, it guarantees that the devices have processed the data, when check_ack is true. When check_ack is false, always true.
+   * @param[in] mod Amplitude modulation to display
+   * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
    */
-  bool send(const core::GainSequencePtr& seq);
+  bool send(const core::GainSequencePtr& seq, const core::ModulationPtr& mod = nullptr);
 
   /**
    * @brief Enumerate firmware information
@@ -306,7 +313,7 @@ class Controller {
     std::atomic<bool> _lock;
   };
 
-  [[nodiscard]] bool send_header(core::COMMAND cmd) const;
+  [[nodiscard]] bool send_header(uint8_t msg_id) const;
   void init_delay_offset();
   [[nodiscard]] bool send_delay_offset() const;
   [[nodiscard]] bool wait_msg_processed(uint8_t msg_id, size_t max_trial = 50) const;

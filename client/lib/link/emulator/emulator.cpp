@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 28/09/2021
+// Last Modified: 13/10/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -52,7 +52,6 @@ class EmulatorImpl final : public Emulator {
 #endif
   sockaddr_in _addr = {};
 
-  core::COMMAND _last_command = core::COMMAND::OP;
   uint8_t _last_msg_id = 0;
   std::vector<uint8_t> _geometry_buf;
 
@@ -63,9 +62,9 @@ class EmulatorImpl final : public Emulator {
     buf.resize(size);
 
     auto* const uh = reinterpret_cast<core::GlobalHeader*>(&buf[0]);
-    uh->msg_id = 0x00;
-    uh->control_flags = 0x00;
-    uh->command = core::COMMAND::EMULATOR_SET_GEOMETRY;
+    uh->msg_id = core::MSG_EMU_GEOMETRY_SET;
+    uh->fpga_ctrl_flags = 0x00;
+    uh->cpu_ctrl_flags = 0x00;
     uh->mod_size = 0x00;
 
     auto* const cursor = reinterpret_cast<float*>(&buf[sizeof(core::GlobalHeader)]);
@@ -100,7 +99,6 @@ EmulatorImpl::EmulatorImpl(const uint16_t port, const core::GeometryPtr& geometr
 void EmulatorImpl::send(const uint8_t* buf, const size_t size) {
   const auto* header = reinterpret_cast<const core::GlobalHeader*>(buf);
   _last_msg_id = header->msg_id;
-  _last_command = header->command;
   if (sendto(_socket, reinterpret_cast<const char*>(buf), static_cast<int>(size), 0, reinterpret_cast<sockaddr*>(&_addr), sizeof _addr) == -1)
     throw core::exception::LinkError("failed to send data");
 }
@@ -155,20 +153,16 @@ void EmulatorImpl::read(uint8_t* rx, size_t buffer_len) {
     for (size_t i = 0; i < buffer_len; i += 2) rx[i] = value;
   };
 
-  switch (this->_last_command) {
-    case core::COMMAND::OP:
+  switch (this->_last_msg_id) {
+    case core::MSG_CLEAR:
       break;
-    case core::COMMAND::READ_CPU_VER_LSB:
-    case core::COMMAND::READ_CPU_VER_MSB:
-    case core::COMMAND::READ_FPGA_VER_LSB:
-    case core::COMMAND::READ_FPGA_VER_MSB:
+    case core::MSG_RD_CPU_V_LSB:
+    case core::MSG_RD_CPU_V_MSB:
+    case core::MSG_RD_FPGA_V_LSB:
+    case core::MSG_RD_FPGA_V_MSB:
       set(0xFF);
       break;
-    case core::COMMAND::SEQ_FOCI_MODE:
-    case core::COMMAND::CLEAR:
-    case core::COMMAND::SET_DELAY_OFFSET:
-    case core::COMMAND::SEQ_GAIN_MODE:
-    case core::COMMAND::EMULATOR_SET_GEOMETRY:
+    default:
       break;
   }
 }
