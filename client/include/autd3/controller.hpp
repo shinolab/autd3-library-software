@@ -221,16 +221,18 @@ class Controller {
   /**
    * @brief Send sequence to the device
    * @param[in] seq Sequence to display
+   * @param[in] mod Amplitude modulation to display
    * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
    */
-  bool send(const core::PointSequencePtr& seq);
+  bool send(const core::PointSequencePtr& seq, const core::ModulationPtr& mod = nullptr);
 
   /**
    * @brief Send sequence to the device
    * @param[in] seq Sequence to display
+   * @param[in] mod Amplitude modulation to display
    * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
    */
-  bool send(const core::GainSequencePtr& seq);
+  bool send(const core::GainSequencePtr& seq, const core::ModulationPtr& mod = nullptr);
 
   /**
    * @brief Enumerate firmware information

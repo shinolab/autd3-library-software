@@ -65,7 +65,10 @@ const std::vector<uint8_t>& Controller::fpga_info() {
   return _fpga_infos;
 }
 
-bool Controller::update_ctrl_flag() { return this->send(nullptr, nullptr); }
+bool Controller::update_ctrl_flag() {
+  const core::GainPtr gain = nullptr;
+  return this->send(gain, nullptr);
+}
 
 void Controller::open(core::LinkPtr link) {
   this->close();
@@ -148,7 +151,10 @@ bool Controller::resume() {
 
 bool Controller::send(const core::GainPtr& gain) { return this->send(gain, nullptr); }
 
-bool Controller::send(const core::ModulationPtr& mod) { return this->send(nullptr, mod); }
+bool Controller::send(const core::ModulationPtr& mod) {
+  const core::GainPtr gain = nullptr;
+  return this->send(gain, mod);
+}
 
 bool Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod) {
   if (mod != nullptr) mod->build();
@@ -170,24 +176,30 @@ bool Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod)
   }
 }
 
-bool Controller::send(const core::PointSequencePtr& seq) {
+bool Controller::send(const core::PointSequencePtr& seq, const core::ModulationPtr& mod) {
+  if (mod != nullptr) mod->build();
+
   auto seq_finished = [](const core::PointSequencePtr& s) { return s == nullptr || s->sent() == s->control_points().size(); };
+  auto mod_finished = [](const core::ModulationPtr& m) { return m == nullptr || m->sent() == m->buffer().size(); };
 
   this->_props._output_enable = true;
   this->_props._op_mode = core::OP_MODE_SEQ;
   this->_props._seq_mode = core::SEQ_MODE_POINT;
 
   while (true) {
-    const auto msg_id = core::Logic::pack_header(nullptr, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag(), &this->_tx_buf[0]);
+    const auto msg_id = core::Logic::pack_header(mod, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag(), &this->_tx_buf[0]);
     const auto size = core::Logic::pack_body(seq, this->_geometry, &this->_tx_buf[0]);
     this->_link->send(&this->_tx_buf[0], size);
     if (!wait_msg_processed(msg_id)) return false;
-    if (seq_finished(seq)) return true;
+    if (seq_finished(seq) && mod_finished(mod)) return true;
   }
 }
 
-bool Controller::send(const core::GainSequencePtr& seq) {
+bool Controller::send(const core::GainSequencePtr& seq, const core::ModulationPtr& mod) {
+  if (mod != nullptr) mod->build();
+
   auto seq_finished = [](const core::GainSequencePtr& s) { return s == nullptr || s->sent() >= s->gains().size() + 1; };
+  auto mod_finished = [](const core::ModulationPtr& m) { return m == nullptr || m->sent() == m->buffer().size(); };
 
   for (auto&& g : seq->gains()) g->build(this->_geometry);
 
@@ -196,11 +208,11 @@ bool Controller::send(const core::GainSequencePtr& seq) {
   this->_props._seq_mode = core::SEQ_MODE_GAIN;
 
   while (true) {
-    const auto msg_id = core::Logic::pack_header(nullptr, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag(), &this->_tx_buf[0]);
+    const auto msg_id = core::Logic::pack_header(mod, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag(), &this->_tx_buf[0]);
     const auto size = core::Logic::pack_body(seq, this->_geometry, &this->_tx_buf[0]);
     this->_link->send(&this->_tx_buf[0], size);
     if (!wait_msg_processed(msg_id)) return false;
-    if (seq_finished(seq)) return true;
+    if (seq_finished(seq) && mod_finished(mod)) return true;
   }
 }
 

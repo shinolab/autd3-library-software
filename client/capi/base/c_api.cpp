@@ -475,15 +475,17 @@ int32_t AUTDSendGainModulation(const void* const handle, const void* const gain,
   const auto m = mod == nullptr ? nullptr : static_cast<const ModulationWrapper*>(mod)->ptr;
   AUTD3_CAPI_TRY(return wrapper->ptr->send(g, m) ? 1 : 0)
 }
-int32_t AUTDSendSequence(const void* const handle, const void* const seq) {
+int32_t AUTDSendSequenceModulation(const void* const handle, const void* const seq, const void* const mod) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   const auto s = seq == nullptr ? nullptr : static_cast<const SequenceWrapper*>(seq)->ptr;
-  AUTD3_CAPI_TRY(return wrapper->ptr->send(std::dynamic_pointer_cast<autd::core::PointSequence>(s)) ? 1 : 0)
+  const auto m = mod == nullptr ? nullptr : static_cast<const ModulationWrapper*>(mod)->ptr;
+  AUTD3_CAPI_TRY(return wrapper->ptr->send(std::dynamic_pointer_cast<autd::core::PointSequence>(s), m) ? 1 : 0)
 }
-int32_t AUTDSendGainSequence(const void* const handle, const void* const seq) {
+int32_t AUTDSendGainSequenceModulation(const void* const handle, const void* const seq, const void* const mod) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   const auto s = seq == nullptr ? nullptr : static_cast<const SequenceWrapper*>(seq)->ptr;
-  AUTD3_CAPI_TRY(return wrapper->ptr->send(std::dynamic_pointer_cast<autd::core::GainSequence>(s)) ? 1 : 0)
+  const auto m = mod == nullptr ? nullptr : static_cast<const ModulationWrapper*>(mod)->ptr;
+  AUTD3_CAPI_TRY(return wrapper->ptr->send(std::dynamic_pointer_cast<autd::core::GainSequence>(s), m) ? 1 : 0)
 }
 
 void AUTDSTMController(void** out, const void* handle) {

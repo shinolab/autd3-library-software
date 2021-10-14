@@ -42,7 +42,8 @@ class Sequence {
    */
   double set_frequency(const double freq) {
     const auto sample_freq = static_cast<double>(this->size()) * freq;
-    this->_freq_div_ratio = static_cast<size_t>(std::clamp(static_cast<int32_t>(static_cast<double>(SEQ_BASE_FREQ) / sample_freq), 1, 65536));
+    this->_freq_div_ratio =
+        std::clamp<size_t>(static_cast<size_t>(std::round(static_cast<double>(SEQ_BASE_FREQ) / sample_freq)), 1, SEQ_SAMPLING_FREQ_DIV_MAX);
     return this->frequency();
   }
 

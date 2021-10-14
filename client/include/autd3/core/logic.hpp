@@ -80,7 +80,7 @@ class Logic {
   static uint8_t pack_header(const ModulationPtr& mod, const uint8_t fpga_ctrl_flag, const uint8_t cpu_ctrl_flag, uint8_t* const data) {
     uint8_t msg_id = get_id();
     pack_header(msg_id, fpga_ctrl_flag, cpu_ctrl_flag, data);
-    if (mod == nullptr) return msg_id;
+    if (mod == nullptr || mod->sent() >= mod->buffer().size()) return msg_id;
 
     auto* header = reinterpret_cast<GlobalHeader*>(data);
     size_t offset = 0;
@@ -130,7 +130,7 @@ class Logic {
    * \details This function must be called after pack_header
    */
   static size_t pack_body(const PointSequencePtr& seq, const GeometryPtr& geometry, uint8_t* data) {
-    if (seq == nullptr) return sizeof(GlobalHeader);
+    if (seq == nullptr || seq->sent() == seq->control_points().size()) return sizeof(GlobalHeader);
 
     const auto num_devices = geometry->num_devices();
     auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(GlobalHeader));
@@ -171,7 +171,7 @@ class Logic {
    * \details This function must be called after pack_header
    */
   static size_t pack_body(const GainSequencePtr& seq, const GeometryPtr& geometry, uint8_t* data) {
-    if (seq == nullptr) return sizeof(GlobalHeader);
+    if (seq == nullptr || seq->sent() >= seq->gains().size() + 1) return sizeof(GlobalHeader);
 
     const auto num_devices = geometry->num_devices();
     auto* header = reinterpret_cast<GlobalHeader*>(data);
