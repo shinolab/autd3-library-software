@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/10/2021
+// Last Modified: 14/10/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -154,6 +154,7 @@ void SOEMController::on_lost(std::function<void(std::string)> callback) { _on_lo
 void SOEMController::close() {
   if (!is_open()) return;
 
+  this->_send_cond.notify_one();
   while (_send_buf_size > 0) std::this_thread::sleep_for(std::chrono::milliseconds(this->_config.ec_sm3_cycle_time_ns / 1000 / 1000));
 
   this->_is_open = false;
