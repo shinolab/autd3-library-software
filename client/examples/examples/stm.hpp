@@ -19,7 +19,7 @@ inline void stm_test(const autd::ControllerPtr& autd) {
   autd->silent_mode() = true;
 
   const auto m = autd::modulation::Static::create();
-  autd->send(nullptr, m);
+  autd->send(m);
 
   const auto stm = autd->stm();
 

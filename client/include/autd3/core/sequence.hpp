@@ -3,7 +3,7 @@
 // Created Date: 14/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/09/2021
+// Last Modified: 14/10/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -29,7 +29,7 @@ using GainSequencePtr = std::shared_ptr<GainSequence>;
 
 class Sequence {
  public:
-  Sequence() : _sampling_freq_div(1), _sent(0) {}
+  Sequence() : _freq_div_ratio(1), _sent(0) {}
   virtual ~Sequence() = default;
 
   virtual size_t size() const = 0;
@@ -37,43 +37,44 @@ class Sequence {
   /**
    * @brief Set frequency of the sequence
    * @param[in] freq Frequency of the sequence
-   * @details The Point Sequence Mode has two constraints, which determine the actual frequency of the sequence.
-   * 1. The maximum number of control points is 65536.
-   * 2. The sampling interval of control points is an integer multiple of 25us and less than 25us x 65536.
+   * @details Sequence mode has some constraints, which determine the actual frequency of the sequence.
    * @return double Actual frequency of sequence
    */
   double set_frequency(const double freq) {
-    const auto sample_freq = std::clamp(static_cast<double>(this->size()) * freq, 0.0, static_cast<double>(SEQ_BASE_FREQ));
-    this->_sampling_freq_div = static_cast<uint16_t>(static_cast<double>(SEQ_BASE_FREQ) / sample_freq);
+    const auto sample_freq = static_cast<double>(this->size()) * freq;
+    this->_freq_div_ratio =
+        std::clamp<size_t>(static_cast<size_t>(std::round(static_cast<double>(SEQ_BASE_FREQ) / sample_freq)), 1, SEQ_SAMPLING_FREQ_DIV_MAX);
     return this->frequency();
   }
 
   /**
    * @return frequency of sequence
    */
-  [[nodiscard]] double frequency() const { return this->sampling_frequency() / static_cast<double>(this->size()); }
+  [[nodiscard]] double frequency() const { return this->sampling_freq() / static_cast<double>(this->size()); }
 
   /**
-   * @return period of sequence
+   * @return period of sequence in micro seconds
    */
   [[nodiscard]] size_t period_us() const { return this->sampling_period_us() * this->size(); }
 
   /**
-   * The sampling period is limited to an integer multiple of 25us. Therefore, the sampling frequency must be 40kHz/N.
+   * The sampling period is limited to an integer multiple of 25us. Therefore, the sampling frequency must be 40kHz/N, where N=1, 2, ...,
+   * autd::core::SEQ_SAMPLING_FREQ_DIV_MAX.
    * @return double Sampling frequency of sequence
    */
-  [[nodiscard]] double sampling_frequency() const { return static_cast<double>(SEQ_BASE_FREQ) / static_cast<double>(this->_sampling_freq_div); }
+  [[nodiscard]] double sampling_freq() const { return static_cast<double>(SEQ_BASE_FREQ) / static_cast<double>(this->_freq_div_ratio); }
 
   /**
    * @return sampling period of sequence in micro seconds
    */
-  [[nodiscard]] size_t sampling_period_us() const { return static_cast<size_t>(this->_sampling_freq_div) * 1000000 / SEQ_BASE_FREQ; }
+  [[nodiscard]] size_t sampling_period_us() const noexcept { return _freq_div_ratio * 1000000 / SEQ_BASE_FREQ; }
 
   /**
-   * The sampling frequency division means the (sampling period)/25us.
-   * @return double Sampling frequency division
+   * The sampling frequency division ratio means the autd::core::SEQ_BASE_FREQ/(sampling frequency) = (sampling period)/25us.
+   * @return size_t Sampling frequency division ratio
+   * \details  The value must be in 1, 2, ..., autd::core::SEQ_SAMPLING_FREQ_DIV_MAX.
    */
-  [[nodiscard]] uint16_t sampling_frequency_division() const { return this->_sampling_freq_div; }
+  size_t& sampling_freq_div_ratio() noexcept { return this->_freq_div_ratio; }
 
   /**
    * \brief sent means data length already sent to devices.
@@ -81,7 +82,7 @@ class Sequence {
   size_t& sent() { return _sent; }
 
  private:
-  uint16_t _sampling_freq_div;
+  size_t _freq_div_ratio;
   size_t _sent;
 };
 
@@ -89,8 +90,8 @@ class Sequence {
  * @brief PointSequence provides a function to display the focus sequentially and periodically.
  * @details PointSequence uses a timer on the FPGA to ensure that the focus is precisely timed.
  * PointSequence currently has the following three limitations.
- * 1. The maximum number of control points is 65536.
- * 2. The sampling interval of control points is an integer multiple of 25us and less than 25us x 65536.
+ * 1. The maximum number of control points is autd::core::POINT_SEQ_BUFFER_SIZE_MAX.
+ * 2. The sampling interval of control points is an integer multiple of 25us and less than or equal to 25us x autd::core::SEQ_SAMPLING_FREQ_DIV_MAX.
  * 3. Only a single focus can be displayed at a certain moment.
  */
 class PointSequence : virtual public Sequence {
@@ -168,8 +169,8 @@ class PointSequence : virtual public Sequence {
  * @brief GainSequence provides a function to display Gain sequentially and periodically.
  * @details GainSequence uses a timer on the FPGA to ensure that Gain is precisely timed.
  * GainSequence currently has the following three limitations.
- * 1. The maximum number of gains is 1024.
- * 2. The sampling interval of gains is an integer multiple of 25us and less than 25us x 65536.
+ * 1. The maximum number of gains is autd::core::GAIN_SEQ_BUFFER_SIZE_MAX.
+ * 2. The sampling interval of gains is an integer multiple of 25us and less than 25us x autd::core::SEQ_SAMPLING_FREQ_DIV_MAX.
  */
 class GainSequence : virtual public Sequence {
  public:

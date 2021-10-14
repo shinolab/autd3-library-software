@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/10/2021
+// Last Modified: 14/10/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -45,11 +45,8 @@ void SOEMController::send(const uint8_t* buf, const size_t size) {
   while (_send_buf_size == SEND_BUF_SIZE) std::this_thread::sleep_for(std::chrono::milliseconds(this->_config.ec_sm3_cycle_time_ns / 1000 / 1000));
   {
     std::lock_guard lock(_send_mtx);
-    const auto body_size = this->_config.body_size;
-    const auto header_size = this->_config.header_size;
-    for (size_t i = 0; i < _dev_num; i++)
-      std::memcpy(&_send_buf[_send_buf_cursor][(header_size + body_size) * i], &buf[header_size + body_size * i], body_size);
-    for (size_t i = 0; i < _dev_num; i++) std::memcpy(&_send_buf[_send_buf_cursor][(header_size + body_size) * i + body_size], &buf[0], header_size);
+    std::memcpy(_send_buf[_send_buf_cursor].first.get(), buf, size);
+    _send_buf[_send_buf_cursor].second = size;
     _send_buf_size++;
     _send_buf_cursor = (_send_buf_cursor + 1) % SEND_BUF_SIZE;
   }
@@ -75,8 +72,8 @@ void SOEMController::open(const char* ifname, const size_t dev_num, const ECConf
   const auto output_size = (header_size + body_size) * _dev_num;
   _output_size = output_size;
 
-  this->_send_buf = std::make_unique<std::unique_ptr<uint8_t[]>[]>(SEND_BUF_SIZE);
-  for (size_t i = 0; i < SEND_BUF_SIZE; i++) this->_send_buf[i] = std::make_unique<uint8_t[]>(output_size);
+  this->_send_buf = std::make_unique<std::pair<std::unique_ptr<uint8_t[]>, size_t>[]>(SEND_BUF_SIZE);
+  for (size_t i = 0; i < SEND_BUF_SIZE; i++) this->_send_buf[i] = std::make_pair(std::make_unique<uint8_t[]>(output_size), 0);
 
   if (const auto size = _output_size + config.input_frame_size * _dev_num; size != _io_map_size) {
     _io_map_size = size;
@@ -128,7 +125,7 @@ void SOEMController::open(const char* ifname, const size_t dev_num, const ECConf
                                                   interval_us);
 
   _is_open = true;
-  this->_send_thread = std::thread([this]() {
+  this->_send_thread = std::thread([this, body_size, header_size]() {
     while (this->_is_open) {
       {
         std::unique_lock lock(this->_send_mtx);
@@ -136,7 +133,13 @@ void SOEMController::open(const char* ifname, const size_t dev_num, const ECConf
         if (!this->_is_open) return;
         const auto idx = this->_send_buf_cursor >= this->_send_buf_size ? this->_send_buf_cursor - this->_send_buf_size
                                                                         : this->_send_buf_cursor + SEND_BUF_SIZE - this->_send_buf_size;
-        std::memcpy(this->_io_map.get(), this->_send_buf[idx].get(), this->_output_size);
+        auto& [buf, size] = this->_send_buf[idx];
+
+        if (size > header_size)
+          for (size_t i = 0; i < _dev_num; i++) std::memcpy(&_io_map[(header_size + body_size) * i], &buf[header_size + body_size * i], body_size);
+        if (size > 0)
+          for (size_t i = 0; i < _dev_num; i++) std::memcpy(&_io_map[(header_size + body_size) * i + body_size], &buf[0], header_size);
+
         this->_send_buf_size--;
       }
       this->_sent.store(false, std::memory_order_release);
@@ -151,6 +154,7 @@ void SOEMController::on_lost(std::function<void(std::string)> callback) { _on_lo
 void SOEMController::close() {
   if (!is_open()) return;
 
+  this->_send_cond.notify_one();
   while (_send_buf_size > 0) std::this_thread::sleep_for(std::chrono::milliseconds(this->_config.ec_sm3_cycle_time_ns / 1000 / 1000));
 
   this->_is_open = false;
