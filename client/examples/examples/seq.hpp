@@ -3,7 +3,7 @@
 // Created Date: 14/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/08/2021
+// Last Modified: 14/10/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -19,7 +19,6 @@ inline void seq_test(const autd::ControllerPtr& autd) {
   autd->silent_mode() = false;
 
   const auto m = autd::modulation::Static::create();
-  autd->send(m);
 
   const auto seq = autd::sequence::PointSequence::create();
 
@@ -34,5 +33,5 @@ inline void seq_test(const autd::ControllerPtr& autd) {
 
   const auto actual_freq = seq->set_frequency(1);
   std::cout << "Actual frequency is " << actual_freq << " Hz\n";
-  autd->send(seq);
+  autd->send(seq, m);
 }
