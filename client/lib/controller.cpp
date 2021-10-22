@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/10/2021
+// Last Modified: 22/10/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -290,7 +290,7 @@ void Controller::STMController::add_gain(const core::GainPtr& gain) const {
   gain->build(this->_p_cnt->_geometry);
 
   auto build_buf = std::make_unique<uint8_t[]>(this->_p_cnt->_geometry->num_devices() * core::EC_OUTPUT_FRAME_SIZE);
-  core::Logic::pack_header(nullptr, this->_p_cnt->_props.fpga_ctrl_flag(), this->_p_cnt->_props.cpu_ctrl_flag(), &build_buf[0]);
+  core::Logic::pack_header(nullptr, this->_p_cnt->_props.fpga_ctrl_flag() | core::OUTPUT_ENABLE, this->_p_cnt->_props.cpu_ctrl_flag(), &build_buf[0]);
   const auto size = core::Logic::pack_body(gain, &build_buf[0]);
 
   this->_handler->add(std::move(build_buf), size);
