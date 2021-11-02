@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 24/09/2021
+// Last Modified: 02/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -23,7 +23,7 @@ namespace autd::gain {
 
 using core::Gain;
 using core::GainPtr;
-using NullGain = Gain;
+using Null = Gain;
 
 using core::DataArray;
 using core::Vector3;

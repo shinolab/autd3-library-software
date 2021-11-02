@@ -1,5 +1,6 @@
 # 1.9.1
 * Fix #9
+* Rename 'gain::NullGain' to 'gain::Null'
 
 # 1.9
 * Fix output delay
