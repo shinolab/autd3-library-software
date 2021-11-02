@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/10/2021
+// Last Modified: 02/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -134,7 +134,7 @@ bool Controller::stop() {
   // To suppress shutdown noise
   const auto silent = this->silent_mode();
   this->silent_mode() = true;
-  const auto res = this->send(gain::NullGain::create());
+  const auto res = this->send(gain::Null::create());
   this->silent_mode() = silent;
   return res;
 }

@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/10/2021
+// Last Modified: 02/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -289,7 +289,7 @@ int32_t AUTDGetLastError(char* error) {
 }
 
 void AUTDGainNull(void** gain) {
-  auto* g = GainCreate(autd::gain::NullGain::create());
+  auto* g = GainCreate(autd::gain::Null::create());
   *gain = g;
 }
 void AUTDGainGrouped(void** gain) {
