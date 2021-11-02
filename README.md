@@ -5,7 +5,9 @@
 
 Version: 1.9.1
 
-## :blue_book: **[Wiki for beginners](https://github.com/shinolab/autd3-library-software/wiki)**
+## :blue_book: Document
+
+[日本語/Japanese](https://shinolab.github.io/autd3-docs/html/Software/index.html)
 
 ## :books: [API document](https://shinolab.github.io/autd3-library-software/index.html)
 
