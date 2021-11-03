@@ -1,6 +1,7 @@
 # 1.9.1
 * Fix #9
-* Rename 'gain::NullGain' to 'gain::Null'
+* Rename `gain::NullGain` to `gain::Null`
+* Delete `gain::Custom` and `modulation::Custom`
 
 # 1.9
 * Fix output delay
