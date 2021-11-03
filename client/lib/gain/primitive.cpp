@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/10/2021
+// Last Modified: 03/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -90,20 +90,6 @@ void BesselBeam::calc(const core::GeometryPtr& geometry) {
       this->_data[dev][i] = core::Utilities::pack_to_u16(this->_duty, phase);
     }
 }
-
-GainPtr Custom::create(const uint16_t* data, const size_t data_length) {
-  const auto dev_num = (data_length + NUM_TRANS_IN_UNIT - 1) / NUM_TRANS_IN_UNIT;
-  std::vector<DataArray> raw_data(dev_num);
-  for (size_t i = 0; i < dev_num; i++) {
-    const auto rem = std::clamp(data_length - i * NUM_TRANS_IN_UNIT, size_t{0}, NUM_TRANS_IN_UNIT);
-    std::memcpy(&raw_data[i][0], data + i * NUM_TRANS_IN_UNIT, rem * sizeof(uint16_t));
-  }
-  return create(raw_data);
-}
-
-GainPtr Custom::create(const std::vector<DataArray>& data) { return std::make_shared<Custom>(data); }
-
-void Custom::calc(const core::GeometryPtr&) { this->_data = std::move(this->_raw_data); }
 
 GainPtr TransducerTest::create(const size_t transducer_index, const uint8_t duty, const uint8_t phase) {
   return std::make_shared<TransducerTest>(transducer_index, duty, phase);
