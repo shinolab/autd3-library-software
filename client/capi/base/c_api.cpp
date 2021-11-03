@@ -96,27 +96,27 @@ bool AUTDIsOpen(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   return wrapper->ptr->is_open();
 }
-bool AUTDIsOutputEnable(const void* handle) {
+bool AUTDGetOutputEnable(const void* handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   return wrapper->ptr->output_enable();
 }
-bool AUTDIsSilentMode(const void* const handle) {
+bool AUTDGetSilentMode(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   return wrapper->ptr->silent_mode();
 }
-bool AUTDIsForceFan(const void* const handle) {
+bool AUTDGetForceFan(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   return wrapper->ptr->force_fan();
 }
-bool AUTDIsReadsFPGAInfo(const void* const handle) {
+bool AUTDGetReadsFPGAInfo(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   return wrapper->ptr->reads_fpga_info();
 }
-bool AUTDIsOutputBalance(const void* const handle) {
+bool AUTDGetOutputBalance(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   return wrapper->ptr->output_balance();
 }
-bool AUTDIsCheckAck(const void* const handle) {
+bool AUTDGetCheckAck(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   return wrapper->ptr->check_ack();
 }

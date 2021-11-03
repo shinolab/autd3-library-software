@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/10/2021
+// Last Modified: 03/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -25,12 +25,12 @@ EXPORT_AUTD int32_t AUTDCloseController(const void* handle);
 EXPORT_AUTD int32_t AUTDClear(const void* handle);
 EXPORT_AUTD void AUTDFreeController(const void* handle);
 EXPORT_AUTD bool AUTDIsOpen(const void* handle);
-EXPORT_AUTD bool AUTDIsOutputEnable(const void* handle);
-EXPORT_AUTD bool AUTDIsSilentMode(const void* handle);
-EXPORT_AUTD bool AUTDIsForceFan(const void* handle);
-EXPORT_AUTD bool AUTDIsReadsFPGAInfo(const void* handle);
-EXPORT_AUTD bool AUTDIsOutputBalance(const void* handle);
-EXPORT_AUTD bool AUTDIsCheckAck(const void* handle);
+EXPORT_AUTD bool AUTDGetOutputEnable(const void* handle);
+EXPORT_AUTD bool AUTDGetSilentMode(const void* handle);
+EXPORT_AUTD bool AUTDGetForceFan(const void* handle);
+EXPORT_AUTD bool AUTDGetReadsFPGAInfo(const void* handle);
+EXPORT_AUTD bool AUTDGetOutputBalance(const void* handle);
+EXPORT_AUTD bool AUTDGetCheckAck(const void* handle);
 EXPORT_AUTD void AUTDSetOutputEnable(const void* handle, bool enable);
 EXPORT_AUTD void AUTDSetSilentMode(const void* handle, bool mode);
 EXPORT_AUTD void AUTDSetReadsFPGAInfo(const void* handle, bool reads_fpga_info);
