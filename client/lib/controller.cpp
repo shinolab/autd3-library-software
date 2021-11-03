@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 02/11/2021
+// Last Modified: 03/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -164,7 +164,6 @@ bool Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod)
     gain->build(this->_geometry);
   }
 
-  auto mod_finished = [](const core::ModulationPtr& m) { return m == nullptr || m->sent() == m->buffer().size(); };
   bool first = true;
   while (true) {
     const auto msg_id = core::Logic::pack_header(mod, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag(), &this->_tx_buf[0]);
@@ -172,15 +171,12 @@ bool Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod)
     first = false;
     this->_link->send(&this->_tx_buf[0], size);
     if (!wait_msg_processed(msg_id)) return false;
-    if (mod_finished(mod)) return true;
+    if (mod == nullptr || mod->is_finished()) return true;
   }
 }
 
 bool Controller::send(const core::PointSequencePtr& seq, const core::ModulationPtr& mod) {
   if (mod != nullptr) mod->build();
-
-  auto seq_finished = [](const core::PointSequencePtr& s) { return s == nullptr || s->sent() == s->control_points().size(); };
-  auto mod_finished = [](const core::ModulationPtr& m) { return m == nullptr || m->sent() == m->buffer().size(); };
 
   this->_props._output_enable = true;
   this->_props._op_mode = core::OP_MODE_SEQ;
@@ -191,15 +187,12 @@ bool Controller::send(const core::PointSequencePtr& seq, const core::ModulationP
     const auto size = core::Logic::pack_body(seq, this->_geometry, &this->_tx_buf[0]);
     this->_link->send(&this->_tx_buf[0], size);
     if (!wait_msg_processed(msg_id)) return false;
-    if (seq_finished(seq) && mod_finished(mod)) return true;
+    if ((seq == nullptr || seq->is_finished()) && (mod == nullptr || mod->is_finished())) return true;
   }
 }
 
 bool Controller::send(const core::GainSequencePtr& seq, const core::ModulationPtr& mod) {
   if (mod != nullptr) mod->build();
-
-  auto seq_finished = [](const core::GainSequencePtr& s) { return s == nullptr || s->sent() >= s->gains().size() + 1; };
-  auto mod_finished = [](const core::ModulationPtr& m) { return m == nullptr || m->sent() == m->buffer().size(); };
 
   for (auto&& g : seq->gains()) g->build(this->_geometry);
 
@@ -212,7 +205,7 @@ bool Controller::send(const core::GainSequencePtr& seq, const core::ModulationPt
     const auto size = core::Logic::pack_body(seq, this->_geometry, &this->_tx_buf[0]);
     this->_link->send(&this->_tx_buf[0], size);
     if (!wait_msg_processed(msg_id)) return false;
-    if (seq_finished(seq) && mod_finished(mod)) return true;
+    if ((seq == nullptr || seq->is_finished()) && (mod == nullptr || mod->is_finished())) return true;
   }
 }
 
