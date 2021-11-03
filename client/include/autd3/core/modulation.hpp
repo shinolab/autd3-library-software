@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/10/2021
+// Last Modified: 03/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -99,6 +99,11 @@ class Modulation {
    * \brief modulation sampling frequency
    */
   [[nodiscard]] double sampling_freq() const noexcept { return static_cast<double>(MOD_SAMPLING_FREQ_BASE) / static_cast<double>(_freq_div_ratio); }
+
+  /**
+   * \brief return true if all of this modulation data is sent
+   */
+  [[nodiscard]] bool is_finished() const noexcept { return this->_sent == this->_buffer.size(); }
 
  protected:
   bool _built;

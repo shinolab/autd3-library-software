@@ -3,7 +3,7 @@
 // Created Date: 14/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/10/2021
+// Last Modified: 03/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -81,7 +81,7 @@ class Sequence {
    */
   size_t& sent() { return _sent; }
 
- private:
+ protected:
   size_t _freq_div_ratio;
   size_t _sent;
 };
@@ -160,6 +160,11 @@ class PointSequence : virtual public Sequence {
    */
   [[nodiscard]] const std::vector<uint8_t>& duties() { return this->_duties; }
 
+  /**
+   * \brief return true if all of this sequence data is sent
+   */
+  [[nodiscard]] bool is_finished() const noexcept { return this->_sent == this->_control_points.size(); }
+
  private:
   std::vector<Vector3> _control_points;
   std::vector<uint8_t> _duties;
@@ -226,6 +231,11 @@ class GainSequence : virtual public Sequence {
    * @return GAIN_MODE
    */
   GAIN_MODE& gain_mode() { return this->_gain_mode; }
+
+  /**
+   * \brief return true if all of this sequence data is sent
+   */
+  [[nodiscard]] bool is_finished() const noexcept { return this->_sent == this->_gains.size() + 1; }
 
  private:
   std::vector<GainPtr> _gains;
