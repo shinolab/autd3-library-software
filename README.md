@@ -5,7 +5,7 @@
 
 Version: 1.9.1
 
-## :blue_books: Document
+## :books: Document
 
 * [日本語/Japanese](https://shinolab.github.io/autd3-library-software/book/)
 
