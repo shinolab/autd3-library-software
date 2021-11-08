@@ -3,7 +3,7 @@
 // Created Date: 03/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/10/2021
+// Last Modified: 08/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -58,8 +58,6 @@ inline int run(autd::ControllerPtr autd) {
   autd->clear();
 
   const auto firmware_info_list = autd->firmware_info_list();
-  if (firmware_info_list.empty())
-    std::cerr << "Failed to read firmware information of some devices. You probably use firmware v1.8 or earlier." << std::endl;
   for (auto&& firm_info : firmware_info_list) std::cout << firm_info << std::endl;
 
   while (true) {

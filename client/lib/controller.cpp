@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/11/2021
+// Last Modified: 08/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -248,26 +248,48 @@ bool Controller::send_delay_offset() const {
 std::vector<FirmwareInfo> Controller::firmware_info_list() {
   auto concat_byte = [](const uint8_t high, const uint16_t low) { return static_cast<uint16_t>(static_cast<uint16_t>(high) << 8 | low); };
 
-  std::vector<FirmwareInfo> infos;
-
   const auto num_devices = this->_geometry->num_devices();
   const auto check_ack = this->_check_ack;
   this->_check_ack = true;
 
+  // For backward compatibility before 1.9
+  constexpr uint8_t READ_CPU_VER_LSB = 0x02;
+  constexpr uint8_t READ_CPU_VER_MSB = 0x03;
+  constexpr uint8_t READ_FPGA_VER_LSB = 0x04;
+  constexpr uint8_t READ_FPGA_VER_MSB = 0x05;
+  auto send_command = [&](const uint8_t msg_id, const uint8_t cmd) {
+    constexpr auto send_size = sizeof(core::GlobalHeader);
+    core::Logic::pack_header(msg_id, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag(), &_tx_buf[0]);
+    _tx_buf[2] = cmd;
+    _link->send(&_tx_buf[0], send_size);
+    return wait_msg_processed(msg_id);
+  };
+
   std::vector<uint16_t> cpu_versions(num_devices);
-  if (const auto res = send_header(core::MSG_RD_CPU_V_LSB); !res) return infos;
-  for (size_t i = 0; i < num_devices; i++) cpu_versions[i] = this->_rx_buf[2 * i];
-  if (const auto res = send_header(core::MSG_RD_CPU_V_MSB); !res) return infos;
-  for (size_t i = 0; i < num_devices; i++) cpu_versions[i] = concat_byte(this->_rx_buf[2 * i], cpu_versions[i]);
+  if (send_command(core::MSG_RD_CPU_V_LSB, READ_CPU_VER_LSB))
+    for (size_t i = 0; i < num_devices; i++) cpu_versions[i] = this->_rx_buf[2 * i];
+  else
+    for (size_t i = 0; i < num_devices; i++) cpu_versions[i] = 0x1;
+
+  if (send_command(core::MSG_RD_CPU_V_MSB, READ_CPU_VER_MSB))
+    for (size_t i = 0; i < num_devices; i++) cpu_versions[i] = concat_byte(this->_rx_buf[2 * i], cpu_versions[i]);
+  else
+    for (size_t i = 0; i < num_devices; i++) cpu_versions[i] = concat_byte(0x1, cpu_versions[i]);
 
   std::vector<uint16_t> fpga_versions(num_devices);
-  if (const auto res = send_header(core::MSG_RD_FPGA_V_LSB); !res) return infos;
-  for (size_t i = 0; i < num_devices; i++) fpga_versions[i] = this->_rx_buf[2 * i];
-  if (const auto res = send_header(core::MSG_RD_FPGA_V_MSB); !res) return infos;
-  for (size_t i = 0; i < num_devices; i++) fpga_versions[i] = concat_byte(this->_rx_buf[2 * i], fpga_versions[i]);
+  if (send_command(core::MSG_RD_FPGA_V_LSB, READ_FPGA_VER_LSB))
+    for (size_t i = 0; i < num_devices; i++) fpga_versions[i] = this->_rx_buf[2 * i];
+  else
+    for (size_t i = 0; i < num_devices; i++) fpga_versions[i] = 0x1;
+
+  if (send_command(core::MSG_RD_FPGA_V_MSB, READ_FPGA_VER_MSB))
+    for (size_t i = 0; i < num_devices; i++) fpga_versions[i] = concat_byte(this->_rx_buf[2 * i], fpga_versions[i]);
+  else
+    for (size_t i = 0; i < num_devices; i++) fpga_versions[i] = concat_byte(0x1, fpga_versions[i]);
 
   this->_check_ack = check_ack;
 
+  std::vector<FirmwareInfo> infos;
   for (size_t i = 0; i < num_devices; i++) infos.emplace_back(FirmwareInfo(static_cast<uint16_t>(i), cpu_versions[i], fpga_versions[i]));
   return infos;
 }
