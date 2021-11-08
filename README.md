@@ -5,11 +5,11 @@
 
 Version: 1.9.1
 
-## :blue_book: Document
+## :blue_books: Document
 
-[日本語/Japanese](https://shinolab.github.io/autd3-docs/html/Software/index.html)
+* [日本語/Japanese](https://shinolab.github.io/autd3-library-software/book/)
 
-## :books: [API document](https://shinolab.github.io/autd3-library-software/index.html)
+* [API References](https://shinolab.github.io/autd3-library-software/api/)
 
 ## :fire: CAUTION
 
