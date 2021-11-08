@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/10/2021
+// Last Modified: 08/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -51,7 +51,7 @@ class Modulation {
    * @brief Generate empty modulation, which produce static pressure
    * \param amp relative amplitude (0 to 1)
    */
-  static ModulationPtr create(const double amp) { return create(Utilities::to_duty(amp)); }
+  static ModulationPtr create(const double amp) { return create(core::utils::to_duty(amp)); }
 
   /**
    * \brief Calculate modulation data
@@ -86,7 +86,7 @@ class Modulation {
   /**
    * \brief modulation data
    */
-  const std::vector<uint8_t>& buffer() const { return _buffer; }
+  std::vector<uint8_t>& buffer() { return _buffer; }
 
   /**
    * \brief sampling frequency division ratio
@@ -100,11 +100,29 @@ class Modulation {
    */
   [[nodiscard]] double sampling_freq() const noexcept { return static_cast<double>(MOD_SAMPLING_FREQ_BASE) / static_cast<double>(_freq_div_ratio); }
 
+  /**
+   * \brief return true if all of this modulation data is sent
+   */
+  [[nodiscard]] bool is_finished() const noexcept { return this->_sent == this->_buffer.size(); }
+
  protected:
   bool _built;
   size_t _freq_div_ratio;
   size_t _sent;
   std::vector<uint8_t> _buffer;
+};
+
+/**
+ * Software filter for Modulation
+ */
+class Filter {
+ public:
+  virtual ~Filter() = default;
+
+  /**
+   * \brief apply filter to Modulation
+   */
+  virtual void apply(const ModulationPtr& mod) const = 0;
 };
 
 }  // namespace autd::core

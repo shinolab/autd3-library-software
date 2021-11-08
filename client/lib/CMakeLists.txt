@@ -6,6 +6,7 @@ set(SOURCE_LIST
   controller.cpp
   gain/primitive.cpp
   modulation/primitive.cpp
+  modulation/filter/fir.cpp
   sequence/primitive.cpp
   ${include_files}
 )
@@ -24,6 +25,10 @@ if(WIN32)
   source_group("modulation" FILES
     modulation/primitive.cpp
     ${PROJECT_SOURCE_DIR}/include/autd3/modulation/primitive.hpp
+  )
+  source_group("modulation/filter" FILES
+    modulation/filter/fir.cpp
+    ${PROJECT_SOURCE_DIR}/include/autd3/modulation/filter/fir.hpp
   )
   source_group("sequence" FILES
     sequence/primitive.cpp

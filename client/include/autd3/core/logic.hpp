@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/10/2021
+// Last Modified: 08/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -237,7 +237,7 @@ class Logic {
     header->cpu_ctrl_flags |= WRITE_BODY;
     auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(GlobalHeader));
     for (size_t dev = 0; dev < delay.size(); dev++)
-      for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) *cursor++ = Utilities::pack_to_u16(offset[dev][i], delay[dev][i]);
+      for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) *cursor++ = core::utils::pack_to_u16(offset[dev][i], delay[dev][i]);
     return sizeof(GlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * delay.size();
   }
 };
