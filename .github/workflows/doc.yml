@@ -18,7 +18,7 @@ jobs:
     - name: mv doxygen doc
       run: |
         mkdir -p doc
-        mv ./client/build/doc/html doc/api
+        sudo mv ./client/build/doc/html ./doc/api
 
     - name: Setup mdBook
       uses: peaceiris/actions-mdbook@v1
@@ -32,7 +32,7 @@ jobs:
         cd book
         mdbook build
     - name: mv mdbook doc
-      run: mv ./book/book/html doc/book
+      run: sudo mv ./book/book/html ./doc/book
 
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3
