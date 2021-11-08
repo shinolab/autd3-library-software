@@ -3,7 +3,7 @@
 // Created Date: 06/07/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 29/09/2021
+// Last Modified: 08/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -231,9 +231,9 @@ inline void EigenMatrix<complex>::set_from_complex_drive(std::vector<core::DataA
   size_t trans_idx = 0;
   for (Eigen::Index j = 0; j < n; j++) {
     const auto f_amp = normalize ? 1.0 : std::abs(data(j, 0)) / max_coefficient;
-    const auto phase = core::Utilities::to_phase(std::arg(data(j, 0)));
-    const auto duty = core::Utilities::to_duty(f_amp);
-    dst[dev_idx][trans_idx++] = core::Utilities::pack_to_u16(duty, phase);
+    const auto phase = core::utils::to_phase(std::arg(data(j, 0)));
+    const auto duty = core::utils::to_duty(f_amp);
+    dst[dev_idx][trans_idx++] = core::utils::pack_to_u16(duty, phase);
     if (trans_idx == core::NUM_TRANS_IN_UNIT) {
       dev_idx++;
       trans_idx = 0;
@@ -247,8 +247,8 @@ inline void EigenMatrix<double>::set_from_arg(std::vector<core::DataArray>& dst,
   size_t trans_idx = 0;
   for (Eigen::Index j = 0; j < static_cast<Eigen::Index>(n); j++) {
     constexpr uint8_t duty = 0xFF;
-    const auto phase = core::Utilities::to_phase(data(j, 0));
-    dst[dev_idx][trans_idx++] = core::Utilities::pack_to_u16(duty, phase);
+    const auto phase = core::utils::to_phase(data(j, 0));
+    dst[dev_idx][trans_idx++] = core::utils::pack_to_u16(duty, phase);
     if (trans_idx == core::NUM_TRANS_IN_UNIT) {
       dev_idx++;
       trans_idx = 0;

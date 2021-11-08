@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/11/2021
+// Last Modified: 08/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,7 +11,6 @@
 
 #include "autd3/gain/primitive.hpp"
 
-#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -36,7 +35,7 @@ void Grouped::calc(const core::GeometryPtr& geometry) {
   }
 }
 
-GainPtr PlaneWave::create(const Vector3& direction, const double amp) { return create(direction, core::Utilities::to_duty(amp)); }
+GainPtr PlaneWave::create(const Vector3& direction, const double amp) { return create(direction, core::utils::to_duty(amp)); }
 
 GainPtr PlaneWave::create(const Vector3& direction, uint8_t duty) { return std::make_shared<PlaneWave>(direction, duty); }
 
@@ -47,12 +46,12 @@ void PlaneWave::calc(const core::GeometryPtr& geometry) {
   for (size_t dev = 0; dev < geometry->num_devices(); dev++)
     for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
       const auto dist = geometry->position(dev, i).dot(dir);
-      const auto phase = core::Utilities::to_phase(dist * wavenum);
-      this->_data[dev][i] = core::Utilities::pack_to_u16(this->_duty, phase);
+      const auto phase = core::utils::to_phase(dist * wavenum);
+      this->_data[dev][i] = core::utils::pack_to_u16(this->_duty, phase);
     }
 }
 
-GainPtr FocalPoint::create(const Vector3& point, const double amp) { return create(point, core::Utilities::to_duty(amp)); }
+GainPtr FocalPoint::create(const Vector3& point, const double amp) { return create(point, core::utils::to_duty(amp)); }
 GainPtr FocalPoint::create(const Vector3& point, uint8_t duty) { return std::make_shared<FocalPoint>(point, duty); }
 
 void FocalPoint::calc(const core::GeometryPtr& geometry) {
@@ -60,13 +59,13 @@ void FocalPoint::calc(const core::GeometryPtr& geometry) {
   for (size_t dev = 0; dev < geometry->num_devices(); dev++)
     for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
       const auto dist = (geometry->position(dev, i) - this->_point).norm();
-      const auto phase = core::Utilities::to_phase(dist * wavenum);
-      this->_data[dev][i] = core::Utilities::pack_to_u16(this->_duty, phase);
+      const auto phase = core::utils::to_phase(dist * wavenum);
+      this->_data[dev][i] = core::utils::pack_to_u16(this->_duty, phase);
     }
 }
 
 GainPtr BesselBeam::create(const Vector3& apex, const Vector3& vec_n, const double theta_z, const double amp) {
-  return create(apex, vec_n, theta_z, core::Utilities::to_duty(amp));
+  return create(apex, vec_n, theta_z, core::utils::to_duty(amp));
 }
 
 GainPtr BesselBeam::create(const Vector3& apex, const Vector3& vec_n, double theta_z, uint8_t duty) {
@@ -86,8 +85,8 @@ void BesselBeam::calc(const core::GeometryPtr& geometry) {
       const auto r = geometry->position(dev, i) - this->_apex;
       const auto rr = rot * r;
       const auto d = std::sin(_theta_z) * std::sqrt(rr.x() * rr.x() + rr.y() * rr.y()) - std::cos(_theta_z) * rr.z();
-      const auto phase = core::Utilities::to_phase(d * wavenum);
-      this->_data[dev][i] = core::Utilities::pack_to_u16(this->_duty, phase);
+      const auto phase = core::utils::to_phase(d * wavenum);
+      this->_data[dev][i] = core::utils::pack_to_u16(this->_duty, phase);
     }
 }
 
@@ -97,6 +96,6 @@ GainPtr TransducerTest::create(const size_t transducer_index, const uint8_t duty
 
 void TransducerTest::calc(const core::GeometryPtr& geometry) {
   this->_data[geometry->device_idx_for_trans_idx(_transducer_idx)][_transducer_idx % NUM_TRANS_IN_UNIT] =
-      core::Utilities::pack_to_u16(this->_duty, this->_phase);
+      core::utils::pack_to_u16(this->_duty, this->_phase);
 }
 }  // namespace autd::gain
