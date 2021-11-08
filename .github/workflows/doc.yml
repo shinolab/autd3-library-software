@@ -2,7 +2,7 @@ name: Doxygen
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, doc ]
   
 jobs:
   build:
@@ -15,8 +15,27 @@ jobs:
       uses: ./.github/actions/cmake-doxygen-actions
       with:
         cmake-proj-path: 'client'
+    - name: mv doxygen doc
+      run: |
+        mkdir -p doc
+        sudo mv ./client/build/doc/html ./doc/api
+
+    - name: Setup mdBook
+      uses: peaceiris/actions-mdbook@v1
+      with:
+        mdbook-version: 'latest'
+    - name: Setup mdbook-katex
+      uses: magicgh/mdbook-katex-action@v1
+      with:
+        version: 'latest'
+    - run: |
+        cd book
+        mdbook build
+    - name: mv mdbook doc
+      run: sudo mv ./book/book/html ./doc/book
+
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./client/build/doc/html
+        publish_dir: ./doc
