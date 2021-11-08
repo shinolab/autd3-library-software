@@ -1,4 +1,0 @@
-<map id="autd::core::Logic::pack_delay_offset_body" name="autd::core::Logic::pack_delay_offset_body">
-<area shape="rect" id="node1" title="Pack data body to set output delay and enable." alt="" coords="5,5,165,47"/>
-<area shape="rect" id="node2" href="$classautd_1_1core_1_1Utilities.html#a2f7a683a00497c2be5325923e9b22a45" title="Pack two uint8_t value to uint16_t." alt="" coords="213,5,341,47"/>
-</map>

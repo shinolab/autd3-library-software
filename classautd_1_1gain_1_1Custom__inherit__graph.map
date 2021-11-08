@@ -1,4 +1,0 @@
-<map id="autd::gain::Custom" name="autd::gain::Custom">
-<area shape="rect" id="node1" title="Gain that can set the phase and duty ratio freely." alt="" coords="5,80,133,107"/>
-<area shape="rect" id="node2" href="$classautd_1_1core_1_1Gain.html" title="Gain controls the duty ratio and phase of each transducer in AUTD devices." alt="" coords="14,5,125,32"/>
-</map>

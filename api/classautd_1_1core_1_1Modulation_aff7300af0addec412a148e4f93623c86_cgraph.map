@@ -1,0 +1,4 @@
+<map id="autd::core::Modulation::create" name="autd::core::Modulation::create">
+<area shape="rect" id="node1" title="Generate empty modulation, which produce static pressure." alt="" coords="5,29,152,71"/>
+<area shape="rect" id="node2" href="$namespaceautd_1_1core_1_1utils.html#a69e9baa6ad1677e5fd1d65d45d9eba0b" title="Convert ultrasound amplitude to duty ratio." alt="" coords="200,29,315,71"/>
+</map>
