@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/11/2021
+// Last Modified: 08/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -35,7 +35,7 @@ void Sine::calc() {
   this->_buffer.resize(n, 0);
   for (size_t i = 0; i < n; i++) {
     const auto amp = this->_amp / 2.0 * std::sin(2.0 * M_PI * static_cast<double>(d * i) / static_cast<double>(n)) + this->_offset;
-    this->_buffer[i] = core::Utilities::to_duty(amp);
+    this->_buffer[i] = core::utils::to_duty(amp);
   }
 }
 
@@ -56,7 +56,7 @@ void SinePressure::calc() {
   this->_buffer.resize(n, 0);
   for (size_t i = 0; i < n; i++) {
     const auto amp = std::sqrt(this->_amp / 2.0 * std::sin(2.0 * M_PI * static_cast<double>(d * i) / static_cast<double>(n)) + this->_offset);
-    this->_buffer[i] = core::Utilities::to_duty(amp);
+    this->_buffer[i] = core::utils::to_duty(amp);
   }
 }
 
@@ -78,7 +78,7 @@ ModulationPtr Square::create(const int freq, const uint8_t low, const uint8_t hi
   return std::make_shared<Square>(freq, low, high, duty);
 }
 ModulationPtr Square::create(const int freq, const double low, const double high, const double duty) {
-  return create(freq, core::Utilities::to_duty(low), core::Utilities::to_duty(high), duty);
+  return create(freq, core::utils::to_duty(low), core::utils::to_duty(high), duty);
 }
 
 void Square::calc() {

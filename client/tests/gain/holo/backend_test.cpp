@@ -3,7 +3,7 @@
 // Created Date: 13/08/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/09/2021
+// Last Modified: 08/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -670,9 +670,9 @@ TYPED_TEST(BackendTest, set_from_complex_drive) {
   for (size_t d = 0; d < dev; d++)
     for (size_t i = 0; i < autd::core::NUM_TRANS_IN_UNIT; i++, k++) {
       const auto f_amp = normalize ? 1.0 : std::abs(drive[k]) / max_coef;
-      const auto phase = autd::core::Utilities::to_phase(std::arg(drive[k]));
-      const auto duty = autd::core::Utilities::to_duty(f_amp);
-      const auto p = autd::core::Utilities::pack_to_u16(duty, phase);
+      const auto phase = autd::core::utils::to_phase(std::arg(drive[k]));
+      const auto duty = autd::core::utils::to_duty(f_amp);
+      const auto p = autd::core::utils::pack_to_u16(duty, phase);
       ASSERT_EQ(data[d][i], p);
     }
 }
@@ -689,8 +689,8 @@ TYPED_TEST(BackendTest, set_from_arg) {
   a->set_from_arg(data, n);
 
   for (auto i = 0; i < n; i++) {
-    const auto phase = autd::core::Utilities::to_phase(args[i]);
-    const auto p = autd::core::Utilities::pack_to_u16(0xFF, phase);
+    const auto phase = autd::core::utils::to_phase(args[i]);
+    const auto p = autd::core::utils::pack_to_u16(0xFF, phase);
     ASSERT_EQ(data[0][i], p);
   }
 }
