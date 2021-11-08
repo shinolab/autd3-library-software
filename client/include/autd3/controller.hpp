@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/10/2021
+// Last Modified: 08/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -236,7 +236,7 @@ class Controller {
 
   /**
    * @brief Enumerate firmware information
-   * \return firmware information list. If failed, the vector is empty.
+   * \return firmware information list
    */
   [[nodiscard]] std::vector<FirmwareInfo> firmware_info_list();
 
