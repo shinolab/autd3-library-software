@@ -7,6 +7,7 @@ LinkはDeviceとのインターフェースである.
 
 TwinCATはPCでEherCATを使用する際の唯一の公式の方法である.
 TwinCATはWindowsのみをサポートする非常に特殊なソフトウェアであり, Windowsを半ば強引にリアルタイム化する.
+
 また, 特定のネットワークコントローラが必要になるため,
 [対応するネットワークコントローラの一覧](https://infosys.beckhoff.com/english.php?content=../content/1033/tc3_overview/9309844363.html&id=)を確認すること.
 
@@ -53,7 +54,7 @@ TwinCAT XAE Shell上部メニューからTwinCAT→Show Realtime Ethernet Compat
 
 #### License
 
-また, 初回はライセンス関係のエラーが出るので, XAE ShellでSolution Exploler→SYSTEM→Licenseを開き, "7 Days Trial License ..."をクリックし, 画面に表示される文字を入力する.
+また, 初回はライセンス関係のエラーが出るので, XAE ShellでSolution Explorer→SYSTEM→Licenseを開き, "7 Days Trial License ..."をクリックし, 画面に表示される文字を入力する.
 なお. ライセンスは7日間限定のトライアルライセンスだが, 切れたら再び同じ作業を行うことで再発行できる.
 ライセンスを発行し終わったら, XAE Shellを閉じて, 再び"AUTDServer.exe"を実行する.
 

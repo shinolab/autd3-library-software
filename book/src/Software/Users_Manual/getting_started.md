@@ -233,8 +233,6 @@ SDKを使用するには, `autd3.hpp`ヘッダーをインクルードする.
   auto firm_info_list = autd->firmware_info_list();
   for (auto&& firm_info : firm_info_list) cout << firm_info << endl;
 ```
-なお, firmware情報の取得に失敗した場合は`firm_info_list`は空になる.
-可能性として, version 1.8以下のfirmwareを使用していることが考えられる.
 
 次に, silentモードを指定する.
 ```cpp
