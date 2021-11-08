@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/10/2021
+// Last Modified: 03/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -17,6 +17,7 @@
 #include "autd3/gain/primitive.hpp"
 #include "autd3/modulation/primitive.hpp"
 #include "autd3/sequence/primitive.hpp"
+#include "custom.hpp"
 #include "wrapper.hpp"
 #include "wrapper_link.hpp"
 #include "wrapper_modulation.hpp"
@@ -95,27 +96,27 @@ bool AUTDIsOpen(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   return wrapper->ptr->is_open();
 }
-bool AUTDIsOutputEnable(const void* handle) {
+bool AUTDGetOutputEnable(const void* handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   return wrapper->ptr->output_enable();
 }
-bool AUTDIsSilentMode(const void* const handle) {
+bool AUTDGetSilentMode(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   return wrapper->ptr->silent_mode();
 }
-bool AUTDIsForceFan(const void* const handle) {
+bool AUTDGetForceFan(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   return wrapper->ptr->force_fan();
 }
-bool AUTDIsReadsFPGAInfo(const void* const handle) {
+bool AUTDGetReadsFPGAInfo(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   return wrapper->ptr->reads_fpga_info();
 }
-bool AUTDIsOutputBalance(const void* const handle) {
+bool AUTDGetOutputBalance(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   return wrapper->ptr->output_balance();
 }
-bool AUTDIsCheckAck(const void* const handle) {
+bool AUTDGetCheckAck(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   return wrapper->ptr->check_ack();
 }
@@ -289,7 +290,7 @@ int32_t AUTDGetLastError(char* error) {
 }
 
 void AUTDGainNull(void** gain) {
-  auto* g = GainCreate(autd::gain::NullGain::create());
+  auto* g = GainCreate(autd::gain::Null::create());
   *gain = g;
 }
 void AUTDGainGrouped(void** gain) {
@@ -318,7 +319,7 @@ void AUTDGainPlaneWave(void** gain, const double n_x, const double n_y, const do
   *gain = g;
 }
 void AUTDGainCustom(void** gain, const uint16_t* const data, const int32_t data_length) {
-  auto* g = GainCreate(autd::gain::Custom::create(data, data_length));
+  auto* g = GainCreate(CustomGain::create(data, data_length));
   *gain = g;
 }
 void AUTDGainTransducerTest(void** gain, const int32_t idx, const uint8_t duty, const uint8_t phase) {
@@ -337,7 +338,7 @@ void AUTDModulationStatic(void** mod, const uint8_t duty) {
 void AUTDModulationCustom(void** mod, const uint8_t* const buf, const uint32_t size, const uint32_t freq_div) {
   std::vector<uint8_t> buffer;
   for (uint32_t i = 0; i < size; i++) buffer.emplace_back(buf[i]);
-  auto* m = ModulationCreate(autd::modulation::Custom::create(buffer, static_cast<size_t>(freq_div)));
+  auto* m = ModulationCreate(CustomModulation::create(buffer, static_cast<size_t>(freq_div)));
   *mod = m;
 }
 void AUTDModulationSquare(void** mod, const int32_t freq, const uint8_t low, const uint8_t high, const double duty) {

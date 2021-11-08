@@ -1,3 +1,11 @@
+# 1.9.1
+* Fix #9
+* Rename `gain::NullGain` to `gain::Null`
+* Delete `gain::Custom` and `modulation::Custom`
+* Rename getter functions of control flags `IsXXXX` to `GetXXXX` 
+* Add software low-pass filter for `Modulation`
+* `Controller::firmware_info_list()` is now compatible with version before 1.9
+
 # 1.9
 * Fix output delay
 * Improve link::SOEM performance

@@ -3,7 +3,7 @@
 // Created Date: 10/09/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/09/2021
+// Last Modified: 08/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -657,8 +657,8 @@ void greedy_impl(P&, const core::GeometryPtr& geometry, const std::vector<core::
       for (size_t j = 0; j < m; j++) cache[j] += tmp[min_idx][j];
 
       constexpr uint8_t duty = 0xFF;
-      const auto phase = core::Utilities::to_phase(std::arg(phases[min_idx]));
-      dst[dev][i] = core::Utilities::pack_to_u16(duty, phase);
+      const auto phase = core::utils::to_phase(std::arg(phases[min_idx]));
+      dst[dev][i] = core::utils::pack_to_u16(duty, phase);
     }
   }
 }
