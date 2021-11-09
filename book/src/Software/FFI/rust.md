@@ -23,6 +23,11 @@ autd3-emulator-link = "1.9.0"
 autd3-holo-gain = "1.9.0"
 ```
 
+さらに, 適当な非同期ランタイムが必要になる. 以下の例ではtokioを用いる.
+```
+[dependencies]
+tokio = { version = "1.6.1", features = ["rt", "time", "rt-multi-thread"]}
+```
 
 ## Usage
 
@@ -72,10 +77,10 @@ async fn main_task() {
 
     let mut autd = Controller::open(geometry, link).expect("Failed to open");
 
-    autd.clear().await?;
+    autd.clear().await.unwrap();
 
     println!("***** Firmware information *****");
-    let firm_list = autd.firmware_infos().await?;
+    let firm_list = autd.firmware_infos().await.unwrap();
     for firm_info in firm_list {
         println!("{}", firm_info);
     }
@@ -90,12 +95,12 @@ async fn main_task() {
     );
     let mut g = Focus::new(center);
     let mut m = Sine::new(150);
-    autd.send(&mut g, &mut m).await?;
+    autd.send(&mut g, &mut m).await.unwrap();
 
     let mut _s = String::new();
-    io::stdin().read_line(&mut _s)?;
-    
-    autd.close().await?;
+    io::stdin().read_line(&mut _s).unwrap();
+
+    autd.close().await.unwrap();
 }
 
 fn main() {

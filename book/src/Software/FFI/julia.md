@@ -64,7 +64,10 @@ function main()
 
     set_silent_mode(autd, true)
 
-    g = focal_point_gain(SVector(90., 80., 150.))
+    x = TRANS_SPACING_MM * ((NUM_TRANS_X - 1) / 2.0)
+    y = TRANS_SPACING_MM * ((NUM_TRANS_Y - 1) / 2.0)
+    z = 150.0
+    g = focal_point_gain(SVector(x, y, z))
     freq::Int32 = 150
     m = sine_modulation(freq)
 
