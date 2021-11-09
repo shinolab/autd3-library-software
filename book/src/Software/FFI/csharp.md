@@ -22,8 +22,6 @@ Unityから使う場合は, [GitHub Release](https://github.com/shinolab/autd3sh
 
 ```csharp
 using AUTD3Sharp;
-using System;
-using System.Linq;
 using AUTD3Sharp.Utils;
 
 namespace example
@@ -35,7 +33,7 @@ namespace example
             var adapters = AUTD.EnumerateAdapters();
             var etherCATAdapters = adapters as EtherCATAdapter[] ?? adapters.ToArray();
             foreach (var (adapter, index) in etherCATAdapters.Select((adapter, index) => (adapter, index)))
-                Console.WriteLine("[{index}]: {adapter}");
+                Console.WriteLine(\$"[{index}]: {adapter}");
 
             Console.Write("Choose number: ");
             int i;
@@ -60,7 +58,7 @@ namespace example
 
             var firmList = autd.FirmwareInfoList().ToArray();
             foreach (var (firm, index) in firmList.Select((firm, i) => (firm, i)))
-                Console.WriteLine("AUTD {index}: {firm}");
+                Console.WriteLine(\$"AUTD {index}: {firm}");
 
             autd.SilentMode = false;
 
