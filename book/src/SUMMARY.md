@@ -1,6 +1,7 @@
 # Summary
 
 - [Software](Software/README.md)
+    - [About AUTD3](./Software/about_AUTD3.md)
     - [C++ User's Manual](./Software/Users_Manual/README.md)
         - [Concept](./Software/Users_Manual/concept.md)
         - [Getting Started](./Software/Users_Manual/getting_started.md)
@@ -8,12 +9,16 @@
         - [Link](./Software/Users_Manual/link.md)
         - [Gain](./Software/Users_Manual/gain.md)
         - [Modulation](./Software/Users_Manual/modulation.md)
+           - [Filter](./Software/Users_Manual/filter.md)
         - [Spatio-Temporal Modulation](./Software/Users_Manual/stm.md)
         - [Controller](./Software/Users_Manual/controller.md)
     - [FFI](./Software/FFI/README.md)
         - [C#](./Software/FFI/csharp.md)
         - [python](./Software/FFI/python.md)
-        - [julia](./Software/FFI/julia.md)
+        - [Julia](./Software/FFI/julia.md)
+        - [Rust](./Software/FFI/rust.md)
         - [API Reference](./Software/FFI/reference.md)
     - [Emulator](./Software/Emulator/README.md)
     - [GUI](./Software/GUI/README.md)
+
+- [Citation](Citation/README.md)

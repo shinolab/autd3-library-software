@@ -114,7 +114,7 @@ $D_\text{offset}$ ([Create Custom Gain Tutorial](gain.md#create-custom-gain-tuto
 
 デバイス内のフラグや`Gain`/`Modulation`データ等をクリアする.
 
-## Firmware infomation
+## Firmware information
 
 `firmware_info_list`関数でFirmwareのバージョン情報を取得できる.
 
@@ -122,12 +122,10 @@ $D_\text{offset}$ ([Create Custom Gain Tutorial](gain.md#create-custom-gain-tuto
  for (auto&& firm_info : autd->firmware_info_list()) std::cout << firm_info << std::endl;
 ```
 
-なお, 取得に失敗すると返り値は空の`vector`になる.
-
 ## Send functions
 
 Send functionsとは, 実際にデバイスにデータを送信する関数の総称である.
-これらの関数を呼び出すことで, `output enable`, `slinet mode`, `force fan`, `reads FPGA info`, `output balance`のフラグが更新される.
+これらの関数を呼び出すことで, `output enable`, `silent mode`, `force fan`, `reads FPGA info`, `output balance`のフラグが更新される.
 また, これらの関数は`check_ack`フラグによって挙動が変わる.
 `check_ack`が`true`の場合, これらの関数はデバイスが実際にデータを処理するまで待機する.
 特に, `Modulation`/`Sequence`を送信する際は1フレーム毎に確認が入るので, 処理時間が大きく増加する可能性がある.
