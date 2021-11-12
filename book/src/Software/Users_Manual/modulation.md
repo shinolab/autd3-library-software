@@ -85,7 +85,7 @@ class Burst final : public autd::core::Modulation {
 ```
 
 `Modulation`も`Gain`と同じく, `Controller::send`内部で`Modulation::calc`メソッドが呼ばれる.
-この`calc`の中で, `buffer`の中身を書き換えれば良い[^fn_mod_ctor].
+この`calc`の中で, `buffer`の中身を書き換えれば良い.
 `Modulation`サンプリング周波数$\SI{40}{kHz}/N$を決定する$N$は`Modulation`のコンストラクタの第1引数で指定する.
 この例だと, デフォルトで$N=10$なので, サンプリング周波数は$\SI{4}{kHz}$になる.
 さらに, 例えば, $\text{buf\_size}=4000$とすると, AMは$0$が$3999$回サンプリングされた後, $255$が一回サンプリングされる.
@@ -108,5 +108,3 @@ class Burst final : public autd::core::Modulation {
 `sampling_freq`でサンプリング周波数を取得する.
 
 [^fn_burst]: SDKにはない.
-
-[^fn_mod_ctor]: 別にコンストラクタの中でやっても良い.

@@ -31,8 +31,8 @@ sudo pip install pyautd3
 たとえば, [Getting Started](../Users_Manual/getting_started.md)と等価なコードは以下のようになる.
 
 ```python
+from pyautd3 import AUTD, Link, Gain, Modulation, TRANS_SPACING_MM, NUM_TRANS_X, NUM_TRANS_Y
 
-from pyautd3 import AUTD, Link, Gain, Modulation
 
 def get_adapter_name():
     adapters = Link.enumerate_adapters()
@@ -41,6 +41,7 @@ def get_adapter_name():
 
     index = int(input('choose number: '))
     return adapters[index][0]
+
 
 if __name__ == '__main__':
     autd = AUTD()
@@ -61,7 +62,10 @@ if __name__ == '__main__':
 
     autd.silent_mode = True
 
-    g = Gain.focal_point([90, 70, 150])
+    x = TRANS_SPACING_MM * ((NUM_TRANS_X - 1) / 2.0)
+    y = TRANS_SPACING_MM * ((NUM_TRANS_Y - 1) / 2.0)
+    z = 150.0
+    g = Gain.focal_point([x, y, z])
     m = Modulation.sine(150)
     autd.send(g, m)
 
