@@ -141,64 +141,62 @@
                     <main>
                         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <h1 id="getting-started"><a class="header" href="#getting-started">Getting Started</a></h1>
-<p>ここでは, 実際にAUTD3を動かす手順について述べる.
-なお, 本章ではOSとしてWindows 10 64bitを使用する.
-他のOSの場合は適宜読み替えられたい.</p>
+<p>This section will describe how to use AUTD3 in practice.
+In the following instructions, Windows 10 64bit will be used, and please modify the instructions appropriately if you use other OS.</p>
 <h2 id="install"><a class="header" href="#install">Install</a></h2>
-<p>まず, 必要なツールをインストールする.
-本節で使用するツールとversionは以下の通りである.
-各々公式の手順に従ってインストールすること.
-Visual Studio Community 2019は「C++によるデスクトップ開発」にチェックを入れてインストールすれば良い.
-なお, Linuxの場合はgccが, macOSの場合はclangが使えれば良い.
-また, 以下はターミナルから操作するため, PATHを通しておくことを推奨する.</p>
+<p>First, install build tools.
+The tools and versions used in this section are as follows.
+Please follow the official instructions to install each of them.
+For Visual Studio Community, install “Desktop Development with C++”.
+If you are using Linux, you can use gcc. If you are using macOS, you can use clang.
+In addition, since the following instruction will be operated from a terminal, you should set PATH appropriately.</p>
 <ul>
-<li>Visual Studio Community 2019 16.11.4</li>
+<li>Visual Studio Community 2022 17.0.0</li>
 <li>CMake 3.21.3</li>
-<li>git 2.33.0.windows.2<sup class="footnote-reference"><a href="#fn_git">1</a></sup></li>
-<li>npcap 1.55<sup class="footnote-reference"><a href="#fn_npcap">2</a></sup></li>
+<li>git 2.33.1.windows.1</li>
+<li>npcap 1.55</li>
 </ul>
 <h2 id="setup-device"><a class="header" href="#setup-device">Setup Device</a></h2>
-<p>次にデバイスをセットアップする.
-ここでは一台のAUTD3のみを使うこととする.
-PCのイーサネットポートとAUTD3デバイスのEtherCAT In (<a href="concept.html">Concept</a>参照) をイーサネットケーブルで接続する.
-次に, <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="mord">4</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm" style="margin-right:0.01389em;">V</span></span></span></span></span></span>電源を接続する.</p>
+<p>Next, let’s set up the devices.
+Here we will use only one AUTD3 device.
+Please connect the ethernet port of the PC to the <code>EtherCAT In</code> of the AUTD3 device (see <a href="concept.html">Concept</a>) with an ethernet cable.
+Next, connect the <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="mord">4</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm" style="margin-right:0.01389em;">V</span></span></span></span></span></span> power supply.</p>
 <h3 id="firmware-update"><a class="header" href="#firmware-update">Firmware update</a></h3>
-<p>なお, firmwareが古い場合, 動作は保証されない.
-本文章におけるfirmwareのversionは1.9が想定される.</p>
-<p>firmwareのupdateには<a href="https://www.xilinx.com/products/design-tools/vivado.html">Vivado Design Suite</a>, 及び, <a href="https://www.segger.com/downloads/jlink/">J-Link Software</a>をインストールしたWindows 10 64bit PCが必要である<sup class="footnote-reference"><a href="#fn_vivado">3</a></sup>.</p>
-<p>まず, AUTD3デバイスとPCを<a href="https://www.xilinx.com/products/boards-and-kits/hw-usb-ii-g.html">XILINX Platform Cable</a>, 及び, <a href="https://www.segger-pocjapan.com/j-link-9-pin-cortex-m-adapter">J-Link 9-Pin Cortex-M Adapter</a>付きの<a href="https://www.segger.com/products/debug-probes/j-link/models/j-link-plus/">J-Link Plus</a>で接続し, AUTD3の電源を入れる.
-次に, <a href="https://github.com/shinolab/autd3-library-software">SDK</a>内の<code>dist/firmware/autd_firmware_writer.ps1</code>, または, <a href="https://github.com/shinolab/autd3-library-software/releases">GitHub Release</a>で配布されているパッケージ内の<code>firmware/autd_firmware_writer.ps1</code>をpowershellから実行し, 指示に従えばよい.
-updateには数分の時間を要する.</p>
+<p>If the firmware is old, the operation is not guaranteed.
+The version of firmware in this document is assumed to be 1.9.</p>
+<p>To update the firmware, you need a Windows 10 64bit PC with <a href="https://www.xilinx.com/products/design-tools/vivado.html">Vivado Design Suite</a> and <a href="https://www.segger.com/downloads/jlink/">J-Link Software</a> installed.</p>
+<p>First, connect the AUTD3 device and the PC via <a href="https://www.xilinx.com/products/boards-and-kits/hw-usb-ii-g.html">XILINX Platform Cable</a> and <a href="https://www.segger.com/products/debug-probes/j-link/models/j-link-plus/">J-Link Plus</a> with <a href="https://www.segger-pocjapan.com/j-link-9-pin-cortex-m-adapter">J-Link 9-Pin Cortex-M Adapter</a>, and turn on the AUTD3.
+Then, run <code>dist/firmware/autd_firmware_writer.ps1</code> in <a href="https://github.com/shinolab/autd3-library-software">SDK</a>.
+The update will take a few minutes.</p>
 <h2 id="building-first-program"><a class="header" href="#building-first-program">Building first program</a></h2>
-<p>まず, ターミナルを開き, 適当なディレクトリを用意する.</p>
+<p>First, open a terminal and prepare an directory.</p>
 <pre><code>  mkdir autd3_sample
   cd autd3_sample
 </code></pre>
-<p>次に, <code>CMakeLists.txt</code>, <code>main.cpp</code>ファイルを作成する.</p>
+<p>Next, make <code>CMakeLists.txt</code> and <code>main.cpp</code> files.</p>
 <pre><code>└─autd3_sample
         CMakeLists.txt
         main.cpp
 </code></pre>
-<p>次に, SDKの最新のバイナリをダウンロードしてくる.
-バイナリは<a href="https://github.com/shinolab/autd3-library-software/releases">GitHub Release</a>にて公開されている.
-ダウンロードしたものを解凍して, <code>include</code>フォルダと<code>lib</code>フォルダを<code>autd3_sample</code>フォルダにコピーする.</p>
+<p>Next, download the latest binary version of the SDK.
+The binaries are available at <a href="https://github.com/shinolab/autd3-library-software/releases">GitHub Release</a>.
+Unzip the downloaded binary, and copy the <code>include</code> and <code>lib</code> folders to the <code>autd3_sample</code> folder.</p>
 <pre><code>└─autd3_sample
     │  CMakeLists.txt
     │  main.cpp
     ├─include
     └─lib
 </code></pre>
-<p>次に, Eigen3をダウンロードしてくる.
-Eigen3は行列計算用のヘッダーオンリーライブラリである.
-ここでは, カレントディレクトリを<code>autd3_sample</code>に変更し, gitのサブモジュールとして追加する.</p>
+<p>Next, download Eigen3, which is a header-only library for matrix computation.
+Here, we change the current directory to <code>autd3_sample</code> and add Eigen3 as git submodule.</p>
 <pre><code>  git init
   git submodule add https://gitlab.com/libeigen/eigen.git eigen
   cd eigen
   git checkout 3.4.0
   cd ..
 </code></pre>
-<p>あるいは, 直接<a href="https://gitlab.com/libeigen/eigen">Eigen3</a>をダウンロードしてきて, <code>autd3_sample</code>フォルダ以下に置いても良い. SDKで使用しているversionは3.4.0である.</p>
-<p>この時点で, ディレクトリ構成は以下のようになっている.</p>
+<p>Alternatively, you can directly download <a href="https://gitlab.com/libeigen/eigen">Eigen3</a> and put it under the <code>autd3_sample</code> folder. The Eigen3 version used in the SDK is 3.4.0.</p>
+<p>At this time, the directory structure is as follows.</p>
 <pre><code>└─autd3_sample
     │  CMakeLists.txt
     │  main.cpp
@@ -211,7 +209,7 @@ Eigen3は行列計算用のヘッダーオンリーライブラリである.
         ├─cmake
         ...
 </code></pre>
-<p>次に, <code>CMakeLists.txt</code>を以下のようにする.</p>
+<p>Next, write <code>CMakeLists.txt</code> as follows.</p>
 <pre><code>cmake_minimum_required(VERSION 3.16)
 
 project(autd3_sample)
@@ -236,8 +234,8 @@ if(WIN32)
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT main)
 endif()
 </code></pre>
-<p>また, <code>main.cpp</code>を以下のようにする.
-これは単一焦点に<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord"><span class="mord">1</span><span class="mord">5</span><span class="mord">0</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">H</span><span class="mord mathrm">z</span></span></span></span></span></span>のAM変調をかける場合のソースコードである.</p>
+<p>And, write <code>main.cpp</code> as follows.
+This source code will apply <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord"><span class="mord">1</span><span class="mord">5</span><span class="mord">0</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">H</span><span class="mord mathrm">z</span></span></span></span></span></span> AM modulation to a single focus at <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord"><span class="mord">1</span><span class="mord">5</span><span class="mord">0</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">m</span><span class="mord mathrm">m</span></span></span></span></span></span> above of center of the array.</p>
 <pre><code class="language-cpp">#include &lt;iostream&gt;
 
 #include &quot;autd3.hpp&quot;
@@ -291,77 +289,66 @@ int main() try {
   cerr &lt;&lt; ex.what() &lt;&lt; endl;
 }
 </code></pre>
-<p>次に, CMakeでbuildする.</p>
+<p>Then, build with CMake.</p>
 <pre><code>  mkdir build
   cd build
-  cmake .. -G &quot;Visual Studio 16 2019&quot; -A x64
+  cmake .. -G &quot;Visual Studio 17 2022&quot; -A x64
 </code></pre>
-<p>これで, buildディレクトリ以下に<code>autd3_sample.sln</code>が生成されているはずなので, これを開き, mainプロジェクトを実行する.
-なお, 実行に際して, Visual StudioのConfigurationをDebugからReleaseに変更すること.
-また, Linux/macOSの場合は, 実行時にroot権限が必要な場合がある.</p>
+<p><code>autd3_sample.sln</code> should be generated under the <em>build</em> directory, so open it and run the <em>main</em> project.
+<strong>Note that you should change the build configuration of Visual Studio from Debug to Release</strong>.
+In case of Linux/macOS, you may need to run the program as root user.</p>
 <h2 id="explanation"><a class="header" href="#explanation">Explanation</a></h2>
-<p>特に解説は不要と思われるが, 念の為上記コードの解説をしておく.</p>
-<p>SDKを使用するには, <code>autd3.hpp</code>ヘッダーをインクルードする.
-また, <code>link::SOEM</code>を使用するために<code>autd3/link/soem.hpp</code>ヘッダーも必要となる.</p>
+<p>Here, we will explain the above codes.</p>
+<p>To use the SDK, include the <code>autd3.hpp</code> header.
+You also need <code>autd3/link/soem.hpp</code> to use <code>link::SOEM</code>.</p>
 <pre><code class="language-cpp">#include &quot;autd3.hpp&quot;
 #include &quot;autd3/link/soem.hpp&quot;
 </code></pre>
-<p>次に, <code>Controller</code>の作成をする.</p>
+<p>Then, create <code>Controller</code> instance.</p>
 <pre><code class="language-cpp">  auto autd = autd::Controller::create();
 </code></pre>
-<p>その後, デバイスの配置を指定する.</p>
+<p>After that, we specify the geometry of the device in the real world.</p>
 <pre><code class="language-cpp">  autd-&gt;geometry()-&gt;add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
 </code></pre>
-<p><code>add_device</code>の第一引数は位置, 第2引数は回転を表す.
-位置は自分の設定したグローバル座標系におけるデバイスの原点を指定する.
-また, 回転はZYZのオイラー角, または, クオータニオンで指定する.
-ここでは, 回転も移動も行わないものとする.</p>
-<p>次に, <code>Link</code>を作成し, デバイスと接続する.</p>
+<p>The first argument of <code>add_device</code> is the position, the second argument is the rotation.
+The position is 0-th transducer position in the global coordinate system you set.
+The rotation is specified by ZYZ euler angles or quaternions.
+Here, we assume that the device is placed at global origin without rotation.</p>
+<p>Next, create <code>Link</code>, and connect to the device.</p>
 <pre><code class="language-cpp">  const auto ifname = get_adapter_name();
   auto link = link::SOEM::create(ifname, autd-&gt;geometry()-&gt;num_devices());
   autd-&gt;open(std::move(link));
 </code></pre>
-<p><code>link::SOEM::create()</code>の第一引数はインターフェース名で, 第2引数は接続しているAUTD3デバイスの数である. 
-インターフェース名は, Windowsの場合は, <code>\Device\NPF_{XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}</code>のような文字列となり, 確認するのはひと手間かかるので, ユーティリティ関数<code>get_adapter_name</code>を用意した. 実行時に適当なものを選択されたい.
-(macやLinuxの場合は<code>ifconfig</code>等で確認することもできる.)
-また, linkの型は<code>unique_ptr</code>であるため, <code>Controller</code>に渡す際は<code>move</code>する必要がある.</p>
-<p>次に, AUTDデバイスの初期化を行う.
-電源投入時に初期化されるので<code>clear()</code>は呼ばなくても良いかもしれない.</p>
+<p>The first argument of <code>link::SOEM::create()</code> is the ethernet interface name where the AUTD3 device is connected, and the second argument is the number of AUTD3 devices connected. 
+We prepared a utility function <code>get_adapter_name</code> to get the interface name list, so please select the appropriate one at runtime.
+(On macOS or Linux, you can also use <code>ifconfig</code> to check it.)</p>
+<p>Then, initialize the AUTD devices.
+You may not need to call <code>clear()</code> since it is initialized at power-on.</p>
 <pre><code class="language-cpp">  autd-&gt;clear();
 </code></pre>
-<p>次に, firmwareのバージョンを確認している.
-これは必須ではない.</p>
+<p>Next, we check the version of the firmware.
+This operation is not required to run AUTD3.</p>
 <pre><code class="language-cpp">  auto firm_info_list = autd-&gt;firmware_info_list();
   for (auto&amp;&amp; firm_info : firm_info_list) cout &lt;&lt; firm_info &lt;&lt; endl;
 </code></pre>
-<p>次に, silentモードを指定する.</p>
+<p>Next, we set <em>silent mode</em> on.</p>
 <pre><code class="language-cpp">  autd-&gt;silent_mode() = true;
 </code></pre>
-<p>デフォルトではONになっているので, これも実際には呼ぶ必要はない.
-OFFにしたい場合は<code>false</code>を与える.
-silentモードでは, 振動子に与える位相/振幅パラメータをLow-pass filterに通すことで, 静音化を行う.</p>
-<p>その後, 単一焦点を表す<code>Gain</code>と<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord"><span class="mord">1</span><span class="mord">5</span><span class="mord">0</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">H</span><span class="mord mathrm">z</span></span></span></span></span></span>のSin波変調をかける<code>Modulation</code>を作成デバイスに送信する.</p>
+<p>Since it is on by default, you don’t need to call it in fact.
+If you want to turn it off, please give <code>false</code>.
+In <em>silent mode</em>, the phase/amplitude parameters given to the transducer are passed through a low-pass filter to reduce noise.</p>
+<p>After that, send the <code>Modulation</code> which applies <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord"><span class="mord">1</span><span class="mord">5</span><span class="mord">0</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">H</span><span class="mord mathrm">z</span></span></span></span></span></span> Sin wave amplitude modulation and the <code>Gain</code> which represents the single focus.</p>
 <pre><code class="language-cpp">  const auto point = autd::Vector3(autd::TRANS_SPACING_MM * ((autd::NUM_TRANS_X - 1) / 2.0), autd::TRANS_SPACING_MM * ((autd::NUM_TRANS_Y - 1) / 2.0), 150.0);
   const auto g = autd::gain::FocalPoint::create(point);
   const auto m = autd::modulation::Sine::create(150);
   autd-&gt;send(g, m);
 </code></pre>
-<p><code>point</code>が若干ややこしいが, <code>TRANS_SPACING_MM</code>が振動子の配置間隔を, <code>NUM_TRANS_X</code>, <code>NUM_TRANS_Y</code>がそれぞれ, <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">x</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span></span></span></span>軸方向の振動子の数を表している.
-そのため, <code>pointは</code>振動子アレイの中心から直上<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord"><span class="mord">1</span><span class="mord">5</span><span class="mord">0</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">m</span><span class="mord mathrm">m</span></span></span></span></span></span>を表す.</p>
-<p>最後に, デバイスとの接続を切ってお終いである.</p>
+<p>The <code>point</code> is a bit complicated; <code>TRANS_SPACING_MM</code> represents the spacing of the transducers, and <code>NUM_TRANS_X</code> and <code>NUM_TRANS_Y</code> represent the number of transducers in the <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">x</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span></span></span></span>-axis, respectively.
+Therefore, <code>point</code> represents the point <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord"><span class="mord">1</span><span class="mord">5</span><span class="mord">0</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">m</span><span class="mord mathrm">m</span></span></span></span></span></span> right above the center of the transducers array.</p>
+<p>Finally, you should disconnect the device.</p>
 <pre><code class="language-cpp">  autd-&gt;close();
 </code></pre>
-<p>次頁では基本的な関数について解説していく.
-なお, <a href="https://shinolab.github.io/autd3-library-software/index.html">オンラインのAPIドキュメント</a>もあるのでそちらも参考にする事.</p>
-<div class="footnote-definition" id="fn_git"><sup class="footnote-definition-label">1</sup>
-<p>動かすのに必須ではないが, 作業の単純化のため使用</p>
-</div>
-<div class="footnote-definition" id="fn_npcap"><sup class="footnote-definition-label">2</sup>
-<p>SOEM linkを使用するのに使う. TwinCAT linkの場合は必要ない.</p>
-</div>
-<div class="footnote-definition" id="fn_vivado"><sup class="footnote-definition-label">3</sup>
-<p>Vivadoは最小構成でも数十GBの容量を食うので, 適当なPCを用意しておくことをおすすめする.</p>
-</div>
+<p>In the next section, we will describe the basic functions.</p>
 
                     </main>
 
