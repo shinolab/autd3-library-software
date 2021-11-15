@@ -142,10 +142,9 @@
                     <main>
                         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <h1 id="software"><a class="header" href="#software">Software</a></h1>
-<p>本文章は<a href="https://github.com/shinolab/autd3-library-software.git">autd3のライブラリ</a> (以下, SDKと呼ぶ) の使用方法について述べたものである.
-なお, プログラミング言語としてはC++を使用する.
-他言語向けのライブラリも用意されており, それらの使用方法については<a href="Software/./FFI/index.html">FFI</a>を参照されたい.
-さらに, <a href="Software/./Emulator/index.html">Emulator</a>やGUIコントローラなどのtoolsの詳説も行う.</p>
+<p>This document describes how to use the <a href="https://github.com/shinolab/autd3-library-software.git">autd3 library</a> (hereinafter we called it as <em>SDK</em>).
+This SDK is written in C++.
+But libraries for other languages are also available, and their usage is described in <a href="Software/./FFI/index.html">FFI</a>.</p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <h1 id="about-autd3"><a class="header" href="#about-autd3">About AUTD3</a></h1>
 <p>An ultrasound phased array is an ultrasound transducers array, typically arranged in a grid.
@@ -169,53 +168,53 @@ Since then, some universities and companies from various countries have entered,
 </div>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <h1 id="users-manual"><a class="header" href="#users-manual">User’s Manual</a></h1>
-<p>以下では, ライブラリの基本的な使用方法について述べる.</p>
-<p>オンラインの<a href="https://shinolab.github.io/autd3-library-software/index.html">API Reference</a>も合わせて参照すること.</p>
+<p>In this section, the basic usage of the library is described.</p>
+<p>Please also refer to the online <a href="https://shinolab.github.io/autd3-library-software/index.html">API Reference</a>.</p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <h1 id="concept"><a class="header" href="#concept">Concept</a></h1>
-<p>SDKを構成する主なクラスは以下の通りである.</p>
+<p>The primary classes that make up the SDK are as follows,</p>
 <ul>
-<li><code>Controller</code> - コントローラクラス. すべての操作はこのクラスを介して行う.</li>
-<li><code>Geometry</code> - 現実世界におけるデバイスの配置を管理する</li>
-<li><code>Link</code> - Deviceとのインターフェース</li>
-<li><code>Gain</code> - 各振動子の位相/振幅を管理するクラス</li>
-<li><code>Modulation</code> - AM変調を管理するクラス</li>
-<li><code>Sequence</code> - Hardware上のSpatio-Temporal Modulation (STM) 機能を管理するクラス</li>
+<li><code>Controller</code> - All operations for AUTD3 are performed via this class</li>
+<li><code>Geometry</code> - Manage the geometry of devices in the real world</li>
+<li><code>Link</code> - Interface to the devices</li>
+<li><code>Gain</code> - Class to manage the phase/amplitude of each transducer</li>
+<li><code>Modulation</code> - Class to manage Amplitude Modulation (AM)</li>
+<li><code>Sequence</code> - Class to manage Spatio-Temporal Modulation (STM) functions on Hardware</li>
 </ul>
-<p>SDK使用の流れは次のようになる.</p>
+<p>The flow of using SDK is as follows,</p>
 <ul>
-<li><code>Controller</code>の作成</li>
-<li>接続されているデバイスの位置と姿勢の設定</li>
-<li><code>Link</code>の作成, 及び, 接続</li>
-<li>(デバイスの初期化)</li>
-<li><code>Gain</code>/<code>Sequence</code>, 及び, <code>Modulation</code>の作成, 及び, 送信</li>
+<li>Create a <code>Controller</code></li>
+<li>Setting the position and orientation of connected devices</li>
+<li>Create <code>Link</code>, and connect to devices </li>
+<li>Create and send <code>Gain</code>/<code>Sequence</code>, and/or <code>Modulation</code></li>
 </ul>
-<p>以下にAUTD3を上から見た写真を載せる.</p>
+<p>Here is a picture of the AUTD3 from the top.</p>
 <figure>
   <img src="https://raw.githubusercontent.com/shinolab/autd3-library-software/master/book/src/fig/Users_Manual/autd_trans_idx.jpg"/>
   <figcaption>AUTD front</figcaption>
 </figure>
-<p>また, 以下にAUTD3の背面の画像を載せる. 24V電源のコネクタはMolex社5566-02Aを使用している.</p>
+<p>The image of the back of AUTD3 is shown below. 
+The connector for the 24V power supply is <em>Molex 5566-02A</em>.</p>
 <figure>
   <img src="https://raw.githubusercontent.com/shinolab/autd3-library-software/master/book/src/fig/Users_Manual/autd_back.jpg"/>
   <figcaption>AUTD back</figcaption>
 </figure>
-<p>AUTD3には一台あたり249個<sup class="footnote-reference"><a href="#fn_asm">1</a></sup>の振動子から構成されており, それぞれ図のようにindex番号が振られている.
-SDKからはこの全ての振動子の位相/振幅をそれぞれ個別に<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord"><span class="mord">8</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span></span></span></span></span></span>で指定できるようになっている.</p>
-<p>AUTD3の座標系は右手座標系を採用しており, 0番目の振動子の中心が原点になる.
-<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">x</span></span></span></span>軸は長軸方向, すなわち, 0→17の方向であり, <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span></span></span></span>軸は0→18の方向である.
-また, 単位系として, 距離は<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord"><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">m</span><span class="mord mathrm">m</span></span></span></span></span></span>, 角度は<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord"><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">r</span><span class="mord mathrm">a</span><span class="mord mathrm">d</span></span></span></span></span></span>, 周波数は<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord"><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">H</span><span class="mord mathrm">z</span></span></span></span></span></span>を採用している.
-振動子は<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord"><span class="mord">1</span><span class="mord">0</span><span class="mord">.</span><span class="mord">1</span><span class="mord">6</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">m</span><span class="mord mathrm">m</span></span></span></span></span></span>の間隔で配置されており, 基板を含めたサイズは<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">1</span><span class="mord">9</span><span class="mord">2</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">m</span><span class="mord mathrm">m</span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord"><span class="mord">1</span><span class="mord">5</span><span class="mord">1</span><span class="mord">.</span><span class="mord">4</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">m</span><span class="mord mathrm">m</span></span></span></span></span></span>となっている.
-以下に, 振動子アレイの外形図を載せる.</p>
+<p>Each unit of AUTD3 consists of 249 transduces<sup class="footnote-reference"><a href="#fn_asm">1</a></sup>, each of which is assigned an index number as shown in the above figure.
+From SDK, the phase/amplitude of all these transducers can be controlled individually in <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord"><span class="mord">8</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span></span></span></span></span></span> resolutions.</p>
+<p>The coordinate system of AUTD3 is a right-handed, where the center of the 0-th transducer is the origin.
+The <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">x</span></span></span></span>-axis is in the direction of the major axis, i.e., 0→17, and the <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span></span></span></span>-axis is in the direction 0→18.
+The unit system in SDK is <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord"><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">m</span><span class="mord mathrm">m</span></span></span></span></span></span> for distance, <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord"><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">r</span><span class="mord mathrm">a</span><span class="mord mathrm">d</span></span></span></span></span></span> for angle, and <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord"><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">H</span><span class="mord mathrm">z</span></span></span></span></span></span> for frequency.
+The transducers are arranged at intervals of <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord"><span class="mord">1</span><span class="mord">0</span><span class="mord">.</span><span class="mord">1</span><span class="mord">6</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">m</span><span class="mord mathrm">m</span></span></span></span></span></span>, and the total size including the substrate is <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">1</span><span class="mord">9</span><span class="mord">2</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">m</span><span class="mord mathrm">m</span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord"><span class="mord">1</span><span class="mord">5</span><span class="mord">1</span><span class="mord">.</span><span class="mord">4</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">m</span><span class="mord mathrm">m</span></span></span></span></span></span>.
+The outline drawing of the transducers array is shown below.</p>
 <figure>
   <img src="https://raw.githubusercontent.com/shinolab/autd3-library-software/master/book/src/fig/Users_Manual/transducers_array.jpg"/>
   <figcaption>Design drawing of transducer array</figcaption>
 </figure>
-<p>さらに, AUTD3は復数のデバイスをデイジーチェーンで接続し拡張できるようになっている.
-PCと1台目のEherCAT Inをイーサネットケーブルを繋ぎ, <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathnormal">i</span></span></span></span>台目のEherCAT Outと<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.74285em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span>台目のEherCAT Inを繋ぐことで拡張アレイを構成できる.
-使用するイーサネットケーブルはCAT 5e以上のものが使用できる.</p>
+<p>In addition, multiple AUTD3 units can be connected and extended by daisy-chaining.
+An extended array can be configured by connecting a PC to the first <code>EherCAT In</code> via an ethernet cable and connecting the <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathnormal">i</span></span></span></span>-th <code>EherCAT Out</code> to the <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.74285em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span>-th <code>EherCAT In</code>.
+The ethernet cable used must be CAT 5e or higher category.</p>
 <div class="footnote-definition" id="fn_asm"><sup class="footnote-definition-label">1</sup>
-<p><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">1</span><span class="mord">8</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord">4</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">2</span><span class="mord">5</span><span class="mord">2</span></span></span></span>から都合3つの振動子が抜けている. 態々この位置にネジ穴を持ってきたのは, 複数台並べたときの隙間を可能な限り小さくしようとしたため.</p>
+<p>Three transducers are missing from <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">1</span><span class="mord">8</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord">4</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">2</span><span class="mord">5</span><span class="mord">2</span></span></span></span>. The reason why the screw holes are placed at their positions is to minimize the gaps when multiple units are placed densely.</p>
 </div>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <h1 id="getting-started"><a class="header" href="#getting-started">Getting Started</a></h1>
