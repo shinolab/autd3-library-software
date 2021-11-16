@@ -29,7 +29,7 @@ run `build.ps1` or run CMake, then open `autd3.sln` in `BUILD_DIR` (default `./b
 [] is a default.
 
 * -BUILD_DIR = [./build]
-* -VS_VERSION = 2017, [2019], 2022
+* -VS_VERSION = 2017, 2019, [2022]
 * -ARCH = [x64]
 
 ## Linux/macOS
@@ -55,14 +55,14 @@ cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_BLAS_BACKEND=ON -DBLAS_LIB_DIR=<your BLAS 
 ## OpenBLAS install example in Windows
 
 * Following is an example to install [OpenBLAS](https://github.com/xianyi/OpenBLAS). See also [official instruction](https://github.com/xianyi/OpenBLAS/wiki/How-to-use-OpenBLAS-in-Microsoft-Visual-Studio).
-    * Install Visual Studio 2019 and Anaconda (or miniconda), then open Anaconda Prompt.
+    * Install Visual Studio 2022 and Anaconda (or miniconda), then open Anaconda Prompt.
         ```
         git clone https://github.com/xianyi/OpenBLAS
         cd OpenBLAS
         conda update -n base conda
         conda config --add channels conda-forge
         conda install -y cmake flang clangdev perl libflang ninja
-        "c:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvars64.bat"
+        "c:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/vcvars64.bat"
         set "LIB=%CONDA_PREFIX%\Library\lib;%LIB%"
         set "CPATH=%CONDA_PREFIX%\Library\include;%CPATH%"
         mkdir build
