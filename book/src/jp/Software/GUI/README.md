@@ -1,7 +1,7 @@
 # GUI
 
 <figure>
-  <img src="../../fig/Users_Manual/GUI.jpg"/>
+  <img src="https://raw.githubusercontent.com/shinolab/autd3-library-software/master/book/src/fig/Users_Manual/GUI.jpg"/>
   <figcaption>GUI controller</figcaption>
 </figure>
 

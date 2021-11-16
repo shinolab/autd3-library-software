@@ -1,9 +1,11 @@
 [book]
 authors = ["shun suzuki"]
-language = "jp"
-multilingual = false
-src = "src"
+language = "en"
+multilingual = true
 title = "AUTD3 Developers Manual v1.9.1"
+
+src = "src"
+destination = "book"
 
 [preprocessor.index]
 
@@ -20,3 +22,11 @@ curly-quotes = true
 
 [preprocessor.katex]
 macros = "katex_macro.txt"
+
+[language-en]
+src = "src/en"
+destination = "book/en"
+
+[language-jp]
+src = "src/jp"
+destination = "book/jp"

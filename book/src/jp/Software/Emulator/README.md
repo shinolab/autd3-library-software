@@ -16,7 +16,7 @@ cargo run --release
 ## How to
 
 <figure>
-  <img src="../../fig/Users_Manual/emu-home.jpg"/>
+  <img src="https://raw.githubusercontent.com/shinolab/autd3-library-software/master/book/src/fig/Users_Manual/emu-home.jpg"/>
   <figcaption>Emulator</figcaption>
 </figure>
 
@@ -47,7 +47,7 @@ Color scaleはこの色空間の音圧の最大値を表す.
 
 ### Camera tab
 
-Sliceタブではカメラの位置, 回転, Field of Viewの角度, Near clip, Far clipの設定を変えられる.
+Cameraタブではカメラの位置, 回転, Field of Viewの角度, Near clip, Far clipの設定を変えられる.
 回転はXYZのオイラー角で指定する.
 
 ### Config tab

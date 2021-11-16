@@ -30,9 +30,13 @@ jobs:
         version: 'latest'
     - run: |
         cd book
-        mdbook build
+        MDBOOK_BOOK__src=src/en mdbook build --dest-dir book/en
+        MDBOOK_BOOK__src=src/jp mdbook build --dest-dir book/jp
     - name: mv mdbook doc
-      run: sudo mv ./book/book/html ./doc/book
+      run: |
+        mkdir -p doc/book
+        sudo mv ./book/book/en/html ./doc/book/en
+        sudo mv ./book/book/jp/html ./doc/book/jp
 
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3
