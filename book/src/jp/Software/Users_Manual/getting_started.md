@@ -242,7 +242,7 @@ SDKを使用するには, `autd3.hpp`ヘッダーをインクルードする.
 OFFにしたい場合は`false`を与える.
 silentモードでは, 振動子に与える位相/振幅パラメータをLow-pass filterに通すことで, 静音化を行う.
 
-その後, 単一焦点を表す`Gain`と$\SI{150}{Hz}$のSin波変調をかける`Modulation`を作成デバイスに送信する.
+その後, 単一焦点を表す`Gain`と$\SI{150}{Hz}$のSin波変調をかける`Modulation`を作成し, デバイスに送信する.
 ```cpp
   const auto point = autd::Vector3(autd::TRANS_SPACING_MM * ((autd::NUM_TRANS_X - 1) / 2.0), autd::TRANS_SPACING_MM * ((autd::NUM_TRANS_Y - 1) / 2.0), 150.0);
   const auto g = autd::gain::FocalPoint::create(point);

@@ -10,7 +10,7 @@ GeometryはAUTD3デバイスが現実世界でどのように配置されてい�
 AUTD3のデバイスは複数台をデイジーチェーンで接続できるようになっている.
 SDKは複数台を接続したとしても, 透過的に使用できるように設計されている.
 
-復数のデバイスを接続する場合は,
+複数のデバイスを接続する場合は,
 PCと1台目のEtherCAT Inをケーブルでつなぎ, $i$台目のEtherCAT Outと$i+1$台目のEtherCAT Inをケーブルで接続する ([Concept](concept.md)参照).
 なお, 電源もデイジーチェーンで接続でき, 電源コネクタは3つの内で好きなところを使って良い.
 
@@ -19,7 +19,7 @@ SDKで複数台のデバイスを使用する場合は`add_device`関数を接�
 回転はZYZのオイラー角, または, Quaternionで指定する.
 
 <figure>
-  <img src="../../fig/Users_Manual/autd_hori.jpg"/>
+  <img src="https://raw.githubusercontent.com/shinolab/autd3-library-software/master/book/src/fig/Users_Manual/autd_hori.jpg"/>
   <figcaption>Horizontal alignment</figcaption>
 </figure>
 
@@ -41,7 +41,7 @@ SDKで複数台のデバイスを使用する場合は`add_device`関数を接�
 とすれば良い.
 
 <figure>
-  <img src="../../fig/Users_Manual/autd_vert.jpg"/>
+  <img src="https://raw.githubusercontent.com/shinolab/autd3-library-software/master/book/src/fig/Users_Manual/autd_vert.jpg"/>
   <figcaption>Vertical alignment</figcaption>
 </figure>
 

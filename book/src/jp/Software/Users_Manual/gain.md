@@ -36,7 +36,7 @@ $$
 第4引数として, 振幅をDuty比 (`uint8_t`), または, 0-1の規格化された音圧振幅 (`double`) で指定できる.
 
 <figure>
-  <img src="../../fig/Users_Manual/1.4985159.figures.online.f1.jpg"/>
+  <img src="https://raw.githubusercontent.com/shinolab/autd3-library-software/master/book/src/fig/Users_Manual/1.4985159.figures.online.f1.jpg"/>
   <figcaption>Bessel beam ([hasegawa2017]より引用)</figcaption>
 </figure>
 
@@ -88,7 +88,7 @@ SDKには以下の`Backend`が用意されている
 * `CUDABackend` - CUDAを使用, GPUで実行
 * `ArrayFireBackend` - [ArrayFire](https://arrayfire.com/)を使用
 
-`Holo`を使用するには`autd3/gain/eigen_backend.hpp`と各`Backend`のヘッダーを`include`する.
+`Holo`を使用するには`autd3/gain/holo.hpp`と各`Backend`のヘッダーを`include`する.
 ```cpp
 #include "autd3/gain/eigen_backend.hpp"
 #include "autd3/gain/holo.hpp"
@@ -120,7 +120,7 @@ cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_BLAS_BACKEND=ON -DBLAS_LIB_DIR=<your BLAS 
 ここではWindows向けに, BLAS実装の一つである[OpenBLAS](https://github.com/xianyi/OpenBLAS)のインストール例を載せておく.
 [Officialの説明](https://github.com/xianyi/OpenBLAS/wiki/How-to-use-OpenBLAS-in-Microsoft-Visual-Studio)もあるのでこちらも参考にすること.
 
-まず, Visual Studio 2019とAnaconda (または, miniconda)をインストールし, Anaconda Promptを開く.
+まず, Visual Studio 2022とAnaconda (または, miniconda)をインストールし, Anaconda Promptを開く.
 Anaconda Prompt上で以下のコマンドを順に打っていく.
 なお, ここでは`D:/lib/openblas`にOpenBLASをインストールすることにしている.
 これは, 各自好きな場所に設定されたい.
@@ -130,7 +130,7 @@ cd OpenBLAS
 conda update -n base conda
 conda config --add channels conda-forge
 conda install -y cmake flang clangdev perl libflang ninja
-"c:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvars64.bat"
+"c:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/vcvars64.bat"
 set "LIB=%CONDA_PREFIX%\Library\lib;%LIB%"
 set "CPATH=%CONDA_PREFIX%\Library\include;%CPATH%"
 mkdir build
@@ -271,7 +271,7 @@ SDKでは, 波長は`Geometry::wavelength()`, 振動子の位置は`Geometry::po
 
 [^fn_af]: `%AF_PATH%/lib`をPATHに追加する必要があるかもしれない, ここで`%AF_PATH%`はArrayFire のインストールディレクトリである.
 
-[^fn_duty]: $D_\text{offset}=1$の場合, $D=0$でも振幅が0にならないように思われるが, お城で確認した限り振動子への入力信号は消えるので事実上問題ない.
+[^fn_duty]: $D_\text{offset}=1$の場合, $D=0$でも振幅が0にならないように思われるが, オシロで確認した限り振動子への入力信号は消えるので事実上問題ない.
 
 [^fn_phase]: $+0.5$しているのは, `std::arg`などの返り値が$[-\pi, \pi]$だからである. 符号ありの`int`にしているので実際には不要だと思うが.
 

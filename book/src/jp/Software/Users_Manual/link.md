@@ -74,7 +74,7 @@ Sync0Cycletime=1000000
 ```
 
 <figure>
-  <img src="../../fig/Users_Manual/tcerror.jpg"/>
+  <img src="https://raw.githubusercontent.com/shinolab/autd3-library-software/master/book/src/fig/Users_Manual/tcerror.jpg"/>
   <figcaption>TwinCAT error when using 9 devices</figcaption>
 </figure>
 
@@ -101,8 +101,8 @@ RemoteTwinCATを使用する場合はPCを2台用意する必要がある.
 以下の図のように, System→Routesを開き, Current RouteタブのAmsNetId及び, NetId ManagementタブのLocal NetIdを確認する.
 
 <figure>
-  <img src="../../fig/Users_Manual/Current_Route.jpg"/>
-  <img src="../../fig/Users_Manual/NetId_Management.jpg"/>
+  <img src="https://raw.githubusercontent.com/shinolab/autd3-library-software/master/book/src/fig/Users_Manual/Current_Route.jpg"/>
+  <img src="https://raw.githubusercontent.com/shinolab/autd3-library-software/master/book/src/fig/Users_Manual/NetId_Management.jpg"/>
   <figcaption>AmsNetId/Local NetId</figcaption>
 </figure>
 

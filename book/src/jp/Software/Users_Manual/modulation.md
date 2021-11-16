@@ -45,7 +45,7 @@ $$
 ## SineLegacy
 
 古いversionにあった`Sine Modulation`と互換.
-周波数として, `double`の値を取れるが, 厳密の指定周波数になるのではなく, 出力可能な周波数の内, 最も近い周波数が選ばれる.
+周波数として, `double`の値を取れるが, 厳密に指定周波数になるのではなく, 出力可能な周波数の内, 最も近い周波数が選ばれる.
 また, 音圧ではなくDuty比がSin波状になる.
 
 ## Square
@@ -95,7 +95,7 @@ class Burst final : public autd::core::Modulation {
 
 ### sampling_freq_div_ratio
 
-`sampling_freq_div_ratio`でサンプリング周波数の分周比$N$の確認, 設定する.
+`sampling_freq_div_ratio`でサンプリング周波数の分周比$N$の確認, 設定ができる.
 サンプリング周波数の基本周波数は$\SI{40}{kHz}$である.
 `sampling_freq_div_ratio`は1以上65536以下の整数が指定できる.
 

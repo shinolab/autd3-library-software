@@ -7,9 +7,9 @@ Version: 1.9.1
 
 ## :books: Document
 
-* [日本語/Japanese](https://shinolab.github.io/autd3-library-software/book/)
-
-* [API References](https://shinolab.github.io/autd3-library-software/api/)
+* [日本語/Japanese](https://shinolab.github.io/autd3-library-software/book/jp)
+* [English](https://shinolab.github.io/autd3-library-software/book/en)
+    * [API References](https://shinolab.github.io/autd3-library-software/api/)
 
 ## :fire: CAUTION
 

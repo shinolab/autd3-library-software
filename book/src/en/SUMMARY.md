@@ -17,7 +17,7 @@
         - [python](./Software/FFI/python.md)
         - [Julia](./Software/FFI/julia.md)
         - [Rust](./Software/FFI/rust.md)
-        - [API Reference](./Software/FFI/reference.md)
+        - [C API Reference](./Software/FFI/reference.md)
     - [Emulator](./Software/Emulator/README.md)
     - [GUI](./Software/GUI/README.md)
 

@@ -39,12 +39,12 @@ Hardware設計の都合により, AUTD3は振動子の出力を印加してい�
 基本的に, 使わないときはそもそも電源を落としておくことをおすすめする.
 
 <figure>
-  <img src="../../fig/Users_Manual/no_balance.jpg"/>
+  <img src="https://raw.githubusercontent.com/shinolab/autd3-library-software/master/book/src/fig/Users_Manual/no_balance.jpg"/>
   <figcaption>Without balancing</figcaption>
 </figure>
 
 <figure>
-  <img src="../../fig/Users_Manual/balance.jpg"/>
+  <img src="https://raw.githubusercontent.com/shinolab/autd3-library-software/master/book/src/fig/Users_Manual/balance.jpg"/>
   <figcaption>With balancing</figcaption>
 </figure>
 
