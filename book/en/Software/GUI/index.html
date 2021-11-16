@@ -145,32 +145,32 @@
   <img src="https://raw.githubusercontent.com/shinolab/autd3-library-software/master/book/src/fig/Users_Manual/GUI.jpg"/>
   <figcaption>GUI controller</figcaption>
 </figure>
-<p>AUTDをGUIで操作して操作するためプログラムが<a href="https://github.com/shinolab/AUTD3-GUI-Controller">AUTD3 GUI Controller</a>である.
-C#とWPFを使用して作られており, 現在はWindowsのみで動作する.</p>
+<p><a href="https://github.com/shinolab/AUTD3-GUI-Controller">AUTD3 GUI Controller</a> is a program to operate AUTD with GUI.
+It is made by using C# and WPF, and currently, it works only on Windows.</p>
 <h2 id="install"><a class="header" href="#install">Install</a></h2>
-<p>GitHubにコンパイル済みのバイナリがあるのでこれをダウンロードすれば良い.</p>
+<p>There is a pre-compiled binary on GitHub, so please download it.</p>
 <h2 id="how-to"><a class="header" href="#how-to">How to</a></h2>
-<p>AUTD3 GUI Controllerの起動後は上図のようなHome画面が表示される.
-左側のタブから各種設定ができる.</p>
+<p>After starting the AUTD3 GUI Controller, the Home screen will be displayed as shown above.
+You can configure various settings from the tabs on the left.</p>
 <h3 id="geometry"><a class="header" href="#geometry">Geometry</a></h3>
-<p>GeometryタブではGeometryを定義する.
-+ボタンでデバイスを追加し位置と回転を指定する.
-ただし, クォータニオンによる指定はサポートしない.
-また, Grouped Gainもサポートされていないので, Group IDの指定もない.
-なお, ドラッグ&amp;ドロップで順番を入れ替えられる.</p>
+<p>In Geometry tab, you can define Geometry.
+Click “+” button to add a device and specify its position and rotation.
+Currently, specifying rotation by quaternions is not supported.
+Grouped Gain is not also supported, so you can’t specify the group ID.
+The order can be changed by drag &amp; drop.</p>
 <h3 id="link"><a class="header" href="#link">Link</a></h3>
-<p>Geometryを定義した後はLinkタブでLinkを選択し, Openボタンで接続する.</p>
+<p>After defining the Geometry, select Link in the Link tab and click the Open button to connect.</p>
 <h3 id="gain--modulation"><a class="header" href="#gain--modulation">Gain &amp; Modulation</a></h3>
-<p>Linkを接続後はGain/ModulationタブでGain/Modulationを選択して, 右下の+ボタンでデバイスに送信する.</p>
-<p>Grouped Gainはサポートされない.</p>
+<p>After connecting the Link, select Gain/Modulation in the Gain/Modulation tab, and send it to the device with the “+” button at the bottom right.</p>
+<p>Grouped Gain is not supported.</p>
 <h3 id="sequence"><a class="header" href="#sequence">Sequence</a></h3>
-<p>Gain Sequenceはサポートされておらず, PointSequenceのみ使用可能になっている.</p>
+<p>Gain Sequence is not supported, and only PointSequence can be used.</p>
 <h3 id="others"><a class="header" href="#others">Others</a></h3>
-<p>画面上部のファイルボタンで現在の設定を保存する.
-その右のフォルダボタンで保存した設定を呼び出せる.
-また, その右の緑色の三角のボタンでresume, その右の赤いポーズボタンでpauseができる.</p>
-<p>終了するには右上のボタンを押す.
-なお, 終了時に現在の設定が自動保存され, 次回起動時に復元される.</p>
+<p>The File button at the top of the screen saves the current settings.
+You can recall the saved settings by clicking the folder button on the right.
+You can also use the green triangle button on the right to resume, and the red pause button on the right to pause.</p>
+<p>To exit, press the upper right button.
+When you exit, the current settings will be automatically saved and loaded at the next startup.</p>
 
                     </main>
 

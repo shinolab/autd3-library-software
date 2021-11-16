@@ -2585,10 +2585,10 @@ If it returns false, you can get the error message with <code>AUTDGetLastError</
 </tbody></table>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <h1 id="emulator-1"><a class="header" href="#emulator-1">Emulator</a></h1>
-<p><a href="https://github.com/shinolab/autd-emulator">autd-emulator</a>はその名の通り, クロスプラットフォームで動作するAUTD3のエミュレータである.</p>
+<p><a href="https://github.com/shinolab/autd-emulator">autd-emulator</a> is a cross-platform emulator of AUTD3.</p>
 <h2 id="install-1"><a class="header" href="#install-1">Install</a></h2>
-<p>Windows 10 64bit版のみコンパイル済みのバイナリが<a href="https://github.com/shinolab/autd-emulator/releases">GitHubで配布されている</a>のでこれをダウンロードして実行すれば良い.</p>
-<p>その他の場合はRustのコンパイラをインストールして, 各自コンパイルすること.</p>
+<p>You can download the pre-compiled binary distributed on GitHub (https://github.com/shinolab/autd-emulator/releases) only for Windows 10 64bit.</p>
+<p>For other OS, you have to install the rust compiler and compile it by yourself.</p>
 <pre><code>git clone https://github.com/shinolab/autd-emulator.git
 cd autd-emulator
 cargo run --release
@@ -2598,53 +2598,52 @@ cargo run --release
   <img src="https://raw.githubusercontent.com/shinolab/autd3-library-software/master/book/src/fig/Users_Manual/emu-home.jpg"/>
   <figcaption>Emulator</figcaption>
 </figure>
-<p>autd-emulatorを実行すると上図のような画面になる.
-この状態で, Emulator linkを使用したクライアントプログラムを実行すると, クライアントプログラムの内容に合わせた音場が表示される.
-図の中央の黒いパネルをSliceと呼び, このSliceを使って任意の位置の音場を可視化できる.
-また, 振動子の位相が色相で, 振幅が色強度で表される.</p>
-<p>なお, エミュレータで表示される音場はシンプルな球面波の重ね合わせであり, 指向性や非線形効果などは考慮されない.</p>
-<p>画面左に表示されるGUIでSliceやカメラの操作が行える.
-なお, GUIには<a href="https://github.com/ocornut/imgui">Dear ImGui</a>を用いており, マウスによる操作のほか, “Ctrl+クリック”で数値入力モードになる.</p>
-<p>また, GUI以外の場面の”ドラッグ”でカメラの移動, “Shift+ドラッグ”でカメラの回転が行える.</p>
+<p>When you launch autd-emulator, you will see the screen as shown above figure.
+In this state, when you execute a client program using the Emulator link, the sound field corresponding to the content of the client program is displayed.
+The black panel in the center of the figure is called “Slice”, and you can visualize the sound field at any position by using this Slice.
+The phase of the transducer is represented by the <em>hue</em> and the amplitude by the <em>intensity</em>.</p>
+<p>The sound field displayed by the emulator is a simple superposition of spherical waves, and it does not take into account the directivitiy and nonlinear effects.</p>
+<p>The GUI on the left side of the screen can be used to control the slice and the camera.
+The GUI is based on <a href="https://github.com/ocornut/imgui">Dear ImGui</a>, which can be operated by mouse or by “Ctrl+click” to enter values by a keyboard.</p>
+<p>You can also move the camera by “dragging” and rotate the camera by “Shift+dragging”.</p>
 <h3 id="slice-tab"><a class="header" href="#slice-tab">Slice tab</a></h3>
-<p>SliceタブではSliceの大きさと位置, 回転を変えられる.
-回転はXYZのオイラー角で指定する.
-なお, “xy”, “yz”, “zx”ボタンを押すと, Sliceを各平面に平行な状態に回転させる.</p>
-<p>Sliceでは音圧の強さを色で表現する.
-Color scaleはこの色空間の音圧の最大値を表す.
-大量のデバイスを使用すると色が飽和する場合があるので, その時はColor scaleの値を大きくすれば良い.
-また, Sliceそのもののアルファ値をSlice alphaで指定できる.</p>
-<p>さらに, <code>offscreen_renderer feature</code>をenableにした状態でコンパイルすると, Sliceに表示されている音場の保存及び録画ができるようになる<sup class="footnote-reference"><a href="#1">1</a></sup>.</p>
+<p>In the Slice tab, you can change the size, position, and rotation of the slice.
+Rotation is specified by XYZ euler angles.
+Clicking “xy”, “yz”, or “zx” button rotates the slice to the parallel state to each plane.</p>
+<p>The intensity of the sound pressure is represented by color in Slice.
+“Color scale” represents the maximum value of sound pressure in this color space.
+If you use a large number of devices, the color may be saturated, in which case you should increase the value of “Color scale”.
+You can also specify the alpha value of Slice itself by `Slice alpha’.</p>
+<p>Moreover, if you compile with <code>offscreen_renderer</code> feature enabled, you can save and record the sound field displayed on Slice<sup class="footnote-reference"><a href="#1">1</a></sup>.</p>
 <h3 id="camera-tab"><a class="header" href="#camera-tab">Camera tab</a></h3>
-<p>Sliceタブではカメラの位置, 回転, Field of Viewの角度, Near clip, Far clipの設定を変えられる.
-回転はXYZのオイラー角で指定する.</p>
+<p>In Camera tab, you can change camera position, rotation, field of view angle, near clip and far clip settings.
+Rotation is specified by XYZ euler angle.</p>
 <h3 id="config-tab"><a class="header" href="#config-tab">Config tab</a></h3>
-<p>Configタブでは波長と振動子のアルファ値, 及び, 背景色の設定ができる.</p>
-<p>また, Emulator linkと接続した後は, 各デバイスごとの表示/イネーブルを切り替えられる.
-表示をOffにした場合は, 表示されないだけで音場に寄与する.
-イネーブルをOffにすると音場に寄与しなくなる.
-さらに, デバイス毎の軸の表示もできる.</p>
+<p>In the Config tab, you can set the wavelength, the alpha value of the transducers, and the background color.</p>
+<p>In addition, after connecting to the Emulator link, you can switch the display/enable for each device.
+When the display is turned off, the device is not displayed but contributes to the sound field.
+If you turn off the enable, it does not contribute to the sound field.
+In addition, the axis of each device can be displayed.</p>
 <h3 id="info-tab"><a class="header" href="#info-tab">Info tab</a></h3>
-<p>InfoタブではModulationやSequenceの情報が確認できる.</p>
-<p>ModulationはSlice上には反映されない.
-代わりに, 音圧がどのように変調されるかがこのタブで表示される.
-また, rawモードではDuty比がどのように変調されるかが表示される.</p>
-<p>Sequenceを送信した場合は, Sequenceの情報が表示される.
-Sequenceは自動的に切り替わったりしない, 代わりにSequence idxで何番目のデータを表示するかを指定する.</p>
-<p>flagの項ではControl flagが表示される.
-Silent modeとForce fan以外は内部で使われるものなので無視する.
-なお, Silent modeをOnにしてもSlice上の表示には変化はない.</p>
-<p>また, Output delayとDuty offsetも無視される.</p>
+<p>In the Info tab, you can check the information of Modulation and Sequence.</p>
+<p>Modulation is not displayed on the Slice.
+Instead, how the sound pressure is modulated is shown in this tab.
+In raw mode, you can see how the duty ratio is modulated.</p>
+<p>When a Sequence is sent, the information of the Sequence is displayed.
+Sequence does not switch automatically, instead, you can use the “sequence index” to display the corresponding Sequence.</p>
+<p>In the flag section, the Control flag is displayed.
+Even if Silent mode is turned on, there is no change in the display on Slice.
+Also, Output delay and Duty offset are ignored.</p>
 <h3 id="log-tab"><a class="header" href="#log-tab">Log tab</a></h3>
-<p>Logタブではデバッグ用のログが表示される.</p>
+<p>In the Log tab, you can see the log for debugging.</p>
 <h3 id="other-settings"><a class="header" href="#other-settings">Other settings</a></h3>
-<p>すべての設定は<code>settings.json</code>に保存される.
-幾つかの設定は<code>settings.json</code>からのみ編集できる.
-この中で重要なものとして, portとvsyncがある.</p>
-<p>portはSDKのEmulator linkとの間で使うポート番号である.
-また, vsyncをtrueにすると垂直同期が有効になる.</p>
+<p>All settings are stored in <code>settings.json</code>.
+Some settings can be edited only from <code>settings.json</code>.
+The most important ones are “port” and “vsync”.
+“port” is the port number used to connect to the SDK’s Emulator link.
+If you set “vsync” to true, vertical synchronization is enabled.</p>
 <div class="footnote-definition" id="1"><sup class="footnote-definition-label">1</sup>
-<p>Windows 10 64bit向けのコンパイル済みのバイナリではONになっている. なお, この機能は Vulkanのラッパーである<a href="https://github.com/vulkano-rs/vulkano">Vulkano</a>を使用している, コンパイルの際はVulkanoのコンパイル方法も確認すること.</p>
+<p>In the pre-built binary for Windows 10 64bit, it is turned on. Note that this function uses <a href="https://github.com/vulkano-rs/vulkano">Vulkano</a>, which is a wrapper for Vulkan, and you should check how to compile Vulkano when you compile it.</p>
 </div>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <h1 id="gui"><a class="header" href="#gui">GUI</a></h1>
@@ -2652,32 +2651,32 @@ Silent modeとForce fan以外は内部で使われるものなので無視する
   <img src="https://raw.githubusercontent.com/shinolab/autd3-library-software/master/book/src/fig/Users_Manual/GUI.jpg"/>
   <figcaption>GUI controller</figcaption>
 </figure>
-<p>AUTDをGUIで操作して操作するためプログラムが<a href="https://github.com/shinolab/AUTD3-GUI-Controller">AUTD3 GUI Controller</a>である.
-C#とWPFを使用して作られており, 現在はWindowsのみで動作する.</p>
+<p><a href="https://github.com/shinolab/AUTD3-GUI-Controller">AUTD3 GUI Controller</a> is a program to operate AUTD with GUI.
+It is made by using C# and WPF, and currently, it works only on Windows.</p>
 <h2 id="install-2"><a class="header" href="#install-2">Install</a></h2>
-<p>GitHubにコンパイル済みのバイナリがあるのでこれをダウンロードすれば良い.</p>
+<p>There is a pre-compiled binary on GitHub, so please download it.</p>
 <h2 id="how-to-1"><a class="header" href="#how-to-1">How to</a></h2>
-<p>AUTD3 GUI Controllerの起動後は上図のようなHome画面が表示される.
-左側のタブから各種設定ができる.</p>
+<p>After starting the AUTD3 GUI Controller, the Home screen will be displayed as shown above.
+You can configure various settings from the tabs on the left.</p>
 <h3 id="geometry-1"><a class="header" href="#geometry-1">Geometry</a></h3>
-<p>GeometryタブではGeometryを定義する.
-+ボタンでデバイスを追加し位置と回転を指定する.
-ただし, クォータニオンによる指定はサポートしない.
-また, Grouped Gainもサポートされていないので, Group IDの指定もない.
-なお, ドラッグ&amp;ドロップで順番を入れ替えられる.</p>
+<p>In Geometry tab, you can define Geometry.
+Click “+” button to add a device and specify its position and rotation.
+Currently, specifying rotation by quaternions is not supported.
+Grouped Gain is not also supported, so you can’t specify the group ID.
+The order can be changed by drag &amp; drop.</p>
 <h3 id="link-1"><a class="header" href="#link-1">Link</a></h3>
-<p>Geometryを定義した後はLinkタブでLinkを選択し, Openボタンで接続する.</p>
+<p>After defining the Geometry, select Link in the Link tab and click the Open button to connect.</p>
 <h3 id="gain--modulation"><a class="header" href="#gain--modulation">Gain &amp; Modulation</a></h3>
-<p>Linkを接続後はGain/ModulationタブでGain/Modulationを選択して, 右下の+ボタンでデバイスに送信する.</p>
-<p>Grouped Gainはサポートされない.</p>
+<p>After connecting the Link, select Gain/Modulation in the Gain/Modulation tab, and send it to the device with the “+” button at the bottom right.</p>
+<p>Grouped Gain is not supported.</p>
 <h3 id="sequence-2"><a class="header" href="#sequence-2">Sequence</a></h3>
-<p>Gain Sequenceはサポートされておらず, PointSequenceのみ使用可能になっている.</p>
+<p>Gain Sequence is not supported, and only PointSequence can be used.</p>
 <h3 id="others"><a class="header" href="#others">Others</a></h3>
-<p>画面上部のファイルボタンで現在の設定を保存する.
-その右のフォルダボタンで保存した設定を呼び出せる.
-また, その右の緑色の三角のボタンでresume, その右の赤いポーズボタンでpauseができる.</p>
-<p>終了するには右上のボタンを押す.
-なお, 終了時に現在の設定が自動保存され, 次回起動時に復元される.</p>
+<p>The File button at the top of the screen saves the current settings.
+You can recall the saved settings by clicking the folder button on the right.
+You can also use the green triangle button on the right to resume, and the red pause button on the right to pause.</p>
+<p>To exit, press the upper right button.
+When you exit, the current settings will be automatically saved and loaded at the next startup.</p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <h1 id="citation"><a class="header" href="#citation">Citation</a></h1>
 <p>If you use this SDK in your research please consider to include the following citation in your publications:</p>
