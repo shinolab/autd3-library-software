@@ -141,45 +141,38 @@
                     <main>
                         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <h1 id="geometry"><a class="header" href="#geometry">Geometry</a></h1>
-<p>この章ではGeometryについて解説する.
-GeometryはAUTD3デバイスが現実世界でどのように配置されているかを管理している.</p>
-<p>なお, AUTD3デバイスには249個の振動子が配置されており, 以下の図のようにindexが割り振られている.</p>
+<p>In this section, we describe Geometry, which manages how AUTD3 devices are placed in the real world.</p>
 <h2 id="multiple-devices"><a class="header" href="#multiple-devices">Multiple devices</a></h2>
-<p>AUTD3のデバイスは複数台をデイジーチェーンで接続できるようになっている.
-SDKは複数台を接続したとしても, 透過的に使用できるように設計されている.</p>
-<p>復数のデバイスを接続する場合は,
-PCと1台目のEtherCAT Inをケーブルでつなぎ, <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathnormal">i</span></span></span></span>台目のEtherCAT Outと<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.74285em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span>台目のEtherCAT Inをケーブルで接続する (<a href="concept.html">Concept</a>参照).
-なお, 電源もデイジーチェーンで接続でき, 電源コネクタは3つの内で好きなところを使って良い.</p>
-<p>SDKで複数台のデバイスを使用する場合は<code>add_device</code>関数を接続しているデバイスの分だけ呼び出せば良い.
-<code>add_device</code>関数の第1引数は位置であり, 第2引数は回転を表す.
-回転はZYZのオイラー角, または, Quaternionで指定する.</p>
+<p>AUTD3 devices can be daisy-chained to each other.
+To connect multiple devices, connect the PC to the first <code>EtherCAT In </code> with a ethernet cable, and connect the <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathnormal">i</span></span></span></span>-th <code>EtherCAT Out</code> to the <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.74285em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span>-th <code>EtherCAT In</code> with a ethernet cables (see <a href="concept.html">Concept</a>).
+The power supply can also be daisy-chained, and you can use any of the three power supply connectors.</p>
+<p>If you want to use multiple devices in the SDK, call the <code>add_device</code> function for each connected device.
+The first argument of the <code>add_device</code> function is the position and the second argument is the rotation.
+The rotation is specified by ZYZ euler angles or Quaternion.</p>
 <figure>
   <img src="https://raw.githubusercontent.com/shinolab/autd3-library-software/master/book/src/fig/Users_Manual/autd_hori.jpg"/>
   <figcaption>Horizontal alignment</figcaption>
 </figure>
-<p>例えば, 上図のように配置・接続しており, 図左側のデバイスが1台目, 右側のデバイスが2台目だとする.
-さらに, グローバル座標を1台目のローカル座標と同じだとすると,</p>
+<p>For example, suppose that the devices are arranged and connected as shown in the figure above, and the device on the left is the first device that is connected to the PC and the device on the right is the second device.
+Assuming that the first device is placed at the global origin, you should call <code>add_device</code> as follows,</p>
 <pre><code class="language-cpp">  autd-&gt;geometry()-&gt;add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
   autd-&gt;geometry()-&gt;add_device(autd::Vector3(autd::DEVICE_WIDTH, 0, 0), autd::Vector3(0, 0, 0));
 </code></pre>
-<p>とすれば良い.
-ここで, <code>autd::DEVICE_WIDTH</code>はデバイスの (基板外形を含めた) 横幅である.
-回転はしないので, 第2引数は<code>(0, 0, 0)</code>で良い.</p>
-<p>また, 例えば, グローバル座標を2台目のローカル座標と同じだとすると,</p>
+<p>Here, <code>autd::DEVICE_WIDTH</code> is the width of the device (including the circuit board outline).
+Since there is no rotation, the second argument should be <code>(0, 0, 0)</code>.</p>
+<p>Or, for example, if you place the second device at the global origin, you should,</p>
 <pre><code class="language-cpp">  autd-&gt;geometry()-&gt;add_device(autd::Vector3(-autd::DEVICE_WIDTH, 0, 0), autd::Vector3(0, 0, 0));
   autd-&gt;geometry()-&gt;add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
 </code></pre>
-<p>とすれば良い.</p>
 <figure>
   <img src="https://raw.githubusercontent.com/shinolab/autd3-library-software/master/book/src/fig/Users_Manual/autd_vert.jpg"/>
   <figcaption>Vertical alignment</figcaption>
 </figure>
-<p>さらに, 例えば, 上図のように配置されており, 下が1台目, 左が2台目で, グローバル座標を1台目のローカル座標と同じだとすると,</p>
+<p>For another example, if two devices are placed as shown in the figure above, with the first one on the bottom and the second one on the left, and the first device is placed at the global origin, you should specify the rotation as follows,</p>
 <pre><code class="language-cpp">  autd-&gt;geometry()-&gt;add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
   autd-&gt;geometry()-&gt;add_device(autd::Vector3(0, 0, autd::DEVICE_WIDTH), autd::Vector3(0, M_PI / 2.0, 0));
 </code></pre>
-<p>のように指定する.</p>
-<p>SDKにおけるAPIでは, すべてグローバル座標を用いるため, 接続するデバイスの数に依存せず透過的に使用できる.</p>
+<p>The global coordinate system is used in all SDK APIs, so you can use APIs transparently even when multiple devices are connected.</p>
 
                     </main>
 

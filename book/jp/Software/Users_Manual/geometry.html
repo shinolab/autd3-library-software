@@ -147,7 +147,7 @@ GeometryはAUTD3デバイスが現実世界でどのように配置されてい�
 <h2 id="multiple-devices"><a class="header" href="#multiple-devices">Multiple devices</a></h2>
 <p>AUTD3のデバイスは複数台をデイジーチェーンで接続できるようになっている.
 SDKは複数台を接続したとしても, 透過的に使用できるように設計されている.</p>
-<p>復数のデバイスを接続する場合は,
+<p>複数のデバイスを接続する場合は,
 PCと1台目のEtherCAT Inをケーブルでつなぎ, <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathnormal">i</span></span></span></span>台目のEtherCAT Outと<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.74285em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span>台目のEtherCAT Inをケーブルで接続する (<a href="concept.html">Concept</a>参照).
 なお, 電源もデイジーチェーンで接続でき, 電源コネクタは3つの内で好きなところを使って良い.</p>
 <p>SDKで複数台のデバイスを使用する場合は<code>add_device</code>関数を接続しているデバイスの分だけ呼び出せば良い.

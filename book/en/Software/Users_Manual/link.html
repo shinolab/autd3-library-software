@@ -141,55 +141,53 @@
                     <main>
                         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <h1 id="link"><a class="header" href="#link">Link</a></h1>
-<p>LinkはDeviceとのインターフェースである.
-以下の中から一つを選択する必要がある.</p>
+<p><em>Link</em> is the interface to the AUTD3 device.
+You need to choose one of the following.</p>
 <h2 id="twincat"><a class="header" href="#twincat">TwinCAT</a></h2>
-<p>TwinCATはPCでEherCATを使用する際の唯一の公式の方法である.
-TwinCATはWindowsのみをサポートする非常に特殊なソフトウェアであり, Windowsを半ば強引にリアルタイム化する.</p>
-<p>また, 特定のネットワークコントローラが必要になるため,
-<a href="https://infosys.beckhoff.com/english.php?content=../content/1033/tc3_overview/9309844363.html&amp;id=">対応するネットワークコントローラの一覧</a>を確認すること.</p>
+<p>TwinCAT is the only official way to use EherCAT on a PC.
+TwinCAT is a very special software which only supports Windows and makes Windows real-time.</p>
+<p>TwinCAT requires a specific network controller, please check <a href="https://infosys.beckhoff.com/english.php?content=../content/1033/tc3_overview/9309844363.html&amp;id=">supported network controllers list</a>.</p>
 <blockquote>
-<p>Note: 或いは, TwinCATのインストール後に, <code>C:/TwinCAT/3.1/Driver/System/TcI8254x.inf</code>に対応するデバイスのVendor IDとDevice IDが書かれているので, デバイスマネージャー→イーサネットアダプタ→プロパティ→詳細→ハードウェアIDと照らし合わせることでも確認できる.</p>
+<p>Note: Alternatively, after installing TwinCAT, you can find the <em>Vendor ID</em> and <em>Device ID</em> of the supported network controller in <code>C:/TwinCAT/3.1/Driver/System/TcI8254x.inf</code>.</p>
 </blockquote>
 <h3 id="how-to-install-twincat"><a class="header" href="#how-to-install-twincat">How to install TwinCAT</a></h3>
-<p>前提として, TwinCATはHyper-VやVirtual Machine Platformと共存できない.
-そのため, これらのfeatureを無効にする必要がある.
-これには, 例えば, PowerShellを管理者権限で起動し,</p>
+<p>TwinCAT cannot coexist with Hyper-V and Virtual Machine Platform.
+Therefore, you need to disable these features.
+To do this, for example, run PowerShell with administrative privileges, and enter following commands,</p>
 <pre><code>Disable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V-Hypervisor
 Disable-WindowsOptionalFeature -online -featurename VirtualMachinePlatform
 </code></pre>
-<p>と打ち込めば良い.</p>
-<p>まず, TwinCAT XAEを<a href="https://www.beckhoff.com/en-en/">公式サイト</a>からダウンロードする.
-ダウンロードには登録 (無料) が必要になる.</p>
-<p>ダウンロードしたインストーラを起動し, 指示に従う.
-<strong>この時, TwinCAT XAE Shell installにチェックを入れ, Visual Studio Integrationのチェックを外すこと.</strong></p>
-<p>インストール後に再起動し, <code>C:/TwinCAT/3.1/System/win8settick.bat</code>を管理者権限で実行し, 再び再起動する.</p>
-<p>最後に, SDK内の<code>AUTDServer/AUTD.xml</code>を<code>C:/TwinCAT/3.1/Config/Io/EtherCAT</code>にコピーする.</p>
+<p>First, download <em>TwinCAT XAE</em> from the <a href="https://www.beckhoff.com/en-en/">official website</a>.
+Registration (free) is required to download the software.</p>
+<p>Then, launch the installer and follow the instructions.
+<strong>At this time, check “TwinCAT XAE Shell install” and uncheck “Visual Studio Integration”.</strong></p>
+<p>After the installation, reboot and then run <code>C:/TwinCAT/3.1/System/win8settick.bat</code> with administrator privileges and reboot again.</p>
+<p>Finally, copy the file <code>AUTDServer/AUTD.xml</code> in the SDK to <code>C:/TwinCAT/3.1/Config/Io/EtherCAT</code>.</p>
 <h3 id="autdserver"><a class="header" href="#autdserver">AUTDServer</a></h3>
-<p>TwinCATのLinkを使うには, まず, <code>AUTDServer/AUTDServer.exe</code>を実行する.
-AUTDServer実行後に, IPアドレスの入力を求められるがここは空欄のままEnterすればよい.
-すると, Visual StudioライクなTwinCAT XAE Shellが起動する.
-最後に, Shellを閉じるか聞かれるが, 以下の設定がまだなら<code>No</code>を入力し, 設定を続ける.
-以下の設定が済んでいるなら, 閉じてしまってかまわない.</p>
+<p>To use TwinCAT Link, run <code>AUTDServer/AUTDServer.exe</code> in advance.
+After executing AUTDServer, you will be prompted to enter your IP address, but please leave it empty.
+Then, a TwinCAT XAE Shell will be launched.
+Finally, you will be asked to close the shell.
+If you use AUTDServer at the first time, please enter <code>No</code> and follow the instructions below to setup </p>
 <blockquote>
-<p>Note: もし閉じてしまった場合は, <code>%Temp%/TwinCATAUTDServer/TwinCATAUTDServer.sln</code>をTcXaeShell Applicationとして開けば良い. <code>%Temp%</code>は環境変数で, 普通は<code>C:/Users/(user name)/AppData/Local/Temp</code>である.</p>
+<p>Note: If you close it, you can open AUTDServer shell by launching <code>%Temp%/TwinCATAUTDServer/TwinCATAUTDServer.sln</code> as TcXaeShell Application, where <code>%Temp%</code> is an environment variable, usually <code>C:/Users/(user name)/AppData/Local/Temp</code>.</p>
 </blockquote>
-<p>なお, AUTDServer (というはTwinCAT) はPCの電源を切る, スリープモードに入る等でLinkが途切れるので, その都度実行し直すこと.</p>
+<p>Note that AUTDServer (i.e. TwinCAT) will break the link when you turn off your PC, enter the sleep mode, etc., so you should re-run AUTDServer each time.</p>
 <h4 id="install-driver"><a class="header" href="#install-driver">Install Driver</a></h4>
-<p>初回はEherCAT用のドライバのインストールが必要になる.
-TwinCAT XAE Shell上部メニューからTwinCAT→Show Realtime Ethernet Compatible Devicesを開きCompatible devicesの中の対応デバイスを選択肢Installをクリックする.
-なお, Compatible devicesに何も表示されていない場合はそのPCのイーサネットデバイスはTwinCATに対応していない.</p>
-<h4 id="license"><a class="header" href="#license">License</a></h4>
-<p>また, 初回はライセンス関係のエラーが出るので, XAE ShellでSolution Explorer→SYSTEM→Licenseを開き, “7 Days Trial License ...”をクリックし, 画面に表示される文字を入力する.
-なお. ライセンスは7日間限定のトライアルライセンスだが, 切れたら再び同じ作業を行うことで再発行できる.
-ライセンスを発行し終わったら, XAE Shellを閉じて, 再び”AUTDServer.exe”を実行する.</p>
+<p>For the first time, you need to install a driver for EtherCAT.
+From the top menu of the TwinCAT XAE Shell, go to “TwinCAT” -&gt; “Show Realtime Ethernet Compatible Devices” and select a compatible device from the list of compatible devices and click on Install.
+If nothing is shown in the compatible devices, the network controllers of the PC are not compatible with TwinCAT.</p>
+<h4 id="licensing"><a class="header" href="#licensing">Licensing</a></h4>
+<p>The first time you run the program, you will get an error related to the license, so open “Solution Explorer” -&gt; “SYSTEM” -&gt; “License” in XAE Shell, and click “7 Days Trial License ...”. and enter the text displayed on the screen.
+Note that the license is a 7-day trial license, but can be reissued when it expires by performing the same procedure again.
+After the license is issued, close the XAE Shell and run “AUTDServer.exe” again.</p>
 <h3 id="trouble-shooting"><a class="header" href="#trouble-shooting">Trouble shooting</a></h3>
-<p>大量のDeviceを使用しようとすると, 下の図のようなエラーが発生することがある.
-このときは, <code>settings.ini</code>内の<code>TaskCycleTime</code>と<code>Sync0Cycletime</code>の値を整数倍し, AUTDServerを再び実行する.
-大雑把に言えば, <code>TaskCycleTime</code>がデータ更新間隔を, <code>Sync0Cycletime</code>が同期信号の発火間隔を意味する.
-そのため, 可能な限り小さな値を選ぶべきである.
-何倍にすべきは, 接続している台数に依存する.
-例えば, 9台の場合は2倍しておけば動作するはずである.</p>
+<p>If you try to use a large number of devices, you may get an error like the figure below.
+In this case, multiply the values of <code>TaskCycleTime</code> and <code>Sync0Cycletime</code> in <code>settings.ini</code> by an integer, and run AUTDServer again.
+Roughly speaking, <code>TaskCycleTime</code> means the interval of data update, and <code>Sync0Cycletime</code> means the interval of synchronization signal firing.
+Therefore, you should choose as small values as possible.
+How many times the value depends on the number of connected devices.
+For example, when you have 9 devices, it should work if you multiply the number by 2.</p>
 <pre><code>TaskCycleTime=20000
 CPUbaseTime=10000
 Sync0Cycletime=1000000
@@ -199,30 +197,30 @@ Sync0Cycletime=1000000
   <figcaption>TwinCAT error when using 9 devices</figcaption>
 </figure>
 <h2 id="remotetwincat"><a class="header" href="#remotetwincat">RemoteTwinCAT</a></h2>
-<p>前述の通り, AUTD3とTwinCATを使う場合はWindows OSと特定のネットワークアダプタが必要になる.
-しかし, Windows以外のPCで開発したい需要も多い (後述のSOEMもマルチプラットフォームで動作する).
-その場合は, RemoteTwinCAT linkを用いて遠隔からTwinCATを操作することができる.</p>
-<p>RemoteTwinCATを使用する場合はPCを2台用意する必要がある.
-この時, 片方のPCは上記のTwinCAT linkが使えるである必要がある.
-このPCをここでは”サーバ”と呼ぶ.
-一方, 開発側のPC, 即ちSDKを使用する側は特に制約はなく, サーバと同じLANに繋がっていれば良い, こちらをここでは”クライアント”と呼ぶ.</p>
-<p>まず, サーバとAUTDデバイスを接続する.
-この時使うLANのアダプタはTwinCAT linkと同じく, TwinCAT対応のアダプタである必要がある.
-また, サーバとクライアントを別のLANで繋ぐ.
-こちらのLANアダプタはTwinCAT対応である必要はない<sup class="footnote-reference"><a href="#fn_remote_twin">1</a></sup>.
-そして, サーバとクライアント間のLANのIPを確認しておく.
-ここでは例えば, サーバ側が”169.254.205.219”, クライアント側が”169.254.175.45”だったとする.
-次に, サーバでAUTDServerを起動する.
-起動後にIPの入力を求められるが, ここでクライアント側のIP (この例だと<code>169.254.175.45</code>) を入力する.
-また, 最後に”No”を入力し, TwinCATAUTDServerを開いたままにしておく.
-以下の図のように, System→Routesを開き, Current RouteタブのAmsNetId及び, NetId ManagementタブのLocal NetIdを確認する.</p>
+<p>As mentioned above, TwinCAT requires a Windows OS and a specific network adapter.
+If you want to use develop client applications on non-Windows PCs, you can use RemoteTwinCAT link to control TwinCAT remotely.
+(SOEM link described below also works on cross-platform).</p>
+<p>To use RemoteTwinCAT, you need to prepare two PCs.
+One of the PCs must be able to use TwinCAT link described above.
+Herein, we call this PC a “server”.
+On the other hand, the PC on the development side, i.e., the one that uses the SDK, has no restriction, but is required to be connected to the same LAN as the server, which we call the “client”.</p>
+<p>First, please connect the “server” to the AUTD device.
+In this case, the LAN adapter used must be TwinCAT compatible, as in the TwinCAT link.
+Also, connect the server and the client with another LAN.
+This LAN adapter does not need to be TwinCAT compatible <sup class="footnote-reference"><a href="#fn_remote_twin">1</a></sup>.
+Then, check the IP of the LAN between the server and the client.
+For example, let’s assume that the server IP is “169.254.205.219” and the client IP is “169.254.175.45”.
+Next, start AUTDServer on the “server”.
+After starting, you will be asked to enter the IP, where you should enter the IP of the client side (<code>169.254.175.45</code> in this example).
+Then, enter “No” at the end to leave TwinCATAUTDServer open.
+As shown in the following figure, open “SYSTEM”→”Routes” and check <em>AmsNetId</em> in Current Route tab and <em>Local NetId</em> in NetId Management tab.</p>
 <figure>
   <img src="https://raw.githubusercontent.com/shinolab/autd3-library-software/master/book/src/fig/Users_Manual/Current_Route.jpg"/>
   <img src="https://raw.githubusercontent.com/shinolab/autd3-library-software/master/book/src/fig/Users_Manual/NetId_Management.jpg"/>
   <figcaption>AmsNetId/Local NetId</figcaption>
 </figure>
-<p>ここでは, それぞれ”169.254.175.45.1.1”, “172.16.99.194.1.1”だったとする.
-この時, クライアント側は<code>autd3/link/remote_twincat.hpp</code>ヘッダーをincludeして,</p>
+<p>Let’s assume that <em>AmsNetId</em> and <em>Local NetId</em> are “169.254.175.45.1.1” and “172.16.99.194.1.1”, respectively.
+In this case, the client side should include the <code>autd3/link/remote_twincat.hpp</code> header, and use RemoteTwinCAT link as,</p>
 <pre><code class="language-cpp">#include &quot;autd3/link/remote_twincat.hpp&quot;
 
 ...
@@ -231,42 +229,41 @@ Sync0Cycletime=1000000
   const std::string local_ams_net_id = &quot;169.254.175.45.1.1&quot;;
   auto link = autd::link::RemoteTwinCAT::create(remote_ipv4_addr, remote_ams_net_id, local_ams_net_id);
 </code></pre>
-<p>のようにすれば良い.</p>
-<p>なお, TCP関係のエラーが出る場合は, ファイアウォールでADSプロトコルがブロックされている可能性がある.
-その場合は, ファイアウォールの設定でTCP/UDPの48898番ポートの接続を許可する.</p>
+<p>If you get TCP-related errors, there is a possibility that the ADS protocol is blocked by firewall.
+If so, configure your firewall to allow connections on port 48898 of TCP/UDP.</p>
 <h2 id="soem"><a class="header" href="#soem">SOEM</a></h2>
-<p><a href="https://github.com/OpenEtherCATsociety/SOEM">SOEM</a>は有志が開発しているOpen-sourceなEherCAT Masterライブラリである.
-あくまで, 有志開発であり動作は保証されず, TwinCATとは異なり通常のWindows上で動作するためリアルタイム性も保証されない.
-そのため, 基本的にTwinCATを使用することを推奨する.
-SOEMを使用するのはやむを得ない理由があるか, 開発時のみに限定するべきである.
-一方, SOEMはクロスプラットフォームで動作し, インストールも単純という利点がある.</p>
-<p>Windowsの場合は, <a href="https://nmap.org/npcap/">npcap</a>, または, <a href="https://www.winpcap.org/">WinPcap</a>を予めインストールしておくこと.
-npcapはWinPcapの後継であり, こちらの利用を推奨する.
-<strong>なお, npcapをインストールする場合は”WinPcap API compatible mode”でインストールすること.</strong>
-Linux/macの場合は, 特に準備は必要ない.</p>
-<p>SOEMのLinkを使用する際は<code>autd3/link/soem.hpp</code>ヘッダーをインクルードする.</p>
+<p><a href="https://github.com/OpenEtherCATsociety/SOEM">SOEM</a> is an open-source EherCAT Master library.
+Unlike TwinCAT, SOEM runs on ordinary Windows, so its real-time performance is not guaranteed.
+Therefore, it is recommended to use TwinCAT in principle.
+SOEM should be used only when there is a compelling reason to use it, or only during development.
+On the other hand, SOEM has the advantage of cross-platform operation and simple installation.</p>
+<p>For Windows, you should install <a href="https://nmap.org/npcap/">npcap</a> or <a href="https://www.winpcap.org/">WinPcap</a> in advance.
+npcap is the successor of WinPcap, and we recommend you to use it.
+<strong>Note that npcap should be installed with “WinPcap API compatible mode”.</strong>
+For Linux/macOS, no special preparation is required.</p>
+<p>Please include <code>autd3/link/soem.hpp</code> to use SOEM link.</p>
 <pre><code class="language-cpp">#include &quot;autd3/link/soem.hpp&quot;
 
 ...
 
   auto link = autd::link::SOEM::create(ifname, autd-&gt;geometry()-&gt;num_devices());
 </code></pre>
-<p><code>SOEM::create</code>の第1引数はインターフェース名で, 第2引数はデバイスの数である.
-インターフェース名はAUTD3デバイスに接続しているehernetインターフェース名である.
-これの一覧は, <code>SOEM::enumerate_adapters</code>関数によって取得できる.</p>
+<p>The first argument of <code>SOEM::create</code> is the interface name and the second argument is the number of devices.
+The interface name is the name of the ethernet interface connected to the AUTD3 device.
+The interface list can be retrieved by the <code>SOEM::enumerate_adapters</code> function.</p>
 <pre><code class="language-cpp">  const auto adapters = autd::link::SOEM::enumerate_adapters();
   for (auto&amp;&amp; [desc, name] : adapters) std::cout &lt;&lt; desc &lt;&lt; &quot;, &quot; &lt;&lt; name &lt;&lt; std::endl;
 </code></pre>
-<p>なお, SOEMも大量のDeviceを使用すると挙動が不安定になる時がある<sup class="footnote-reference"><a href="#fn_soem">2</a></sup>.
-このときは, <code>create</code>の第3引数 (<code>cycle_ticks</code>) の値を増やす (defaultは1).</p>
+<p>Note that SOEM sometimes becomes unstable when a large number of devices are used.
+In this case, increase the value of the third argument of <code>create</code> (<code>cycle_ticks</code>) (default is 1).</p>
 <pre><code class="language-cpp">  const uint32_t cycle_ticks = 2;
   auto link = autd::link::SOEM::create(ifname, autd-&gt;geometry()-&gt;num_devices(), cycle_ticks);
 </code></pre>
-<p><code>cycle_ticks</code>は, データ更新間隔と同期信号の発火周期を制御している.
-データ更新間隔と同期信号の発火周期のデフォルトはそれぞれ<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord">1</span><span class="mord">0</span><span class="mord">0</span><span class="mord">0</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal">μ</span><span class="mord mathrm">s</span></span></span></span></span></span>と<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord">5</span><span class="mord">0</span><span class="mord">0</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal">μ</span><span class="mord mathrm">s</span></span></span></span></span></span>であり, これに<code>cycle_ticks</code>の値が掛け合わされる.
-そのため, 可能な限り小さな値を選ぶことを推奨する.</p>
-<p>また, SOEM Linkは回復不能なエラー (例えば, ケーブルが抜けるなど) が発生したときのコールバックを設定することができる<sup class="footnote-reference"><a href="#fn_soem_err">3</a></sup>.
-callbackはエラーメッセージを引数に取る.</p>
+<p>The <code>cycle_ticks</code> controls the data update interval and the firing period of the synchronization signal.
+The default values of the data update interval and the firing period of the synchronization signal are <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord">1</span><span class="mord">0</span><span class="mord">0</span><span class="mord">0</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal">μ</span><span class="mord mathrm">s</span></span></span></span></span></span> and <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord">5</span><span class="mord">0</span><span class="mord">0</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal">μ</span><span class="mord mathrm">s</span></span></span></span></span></span>, respectively, which are multiplied by the value of <code>cycle_ticks</code>.
+Therefore, it is recommended to choose the smallest possible value.</p>
+<p>SOEM Link can also be configured with a callback when an unrecoverable error occurs (e.g., a cable is disconnected)<sup class="footnote-reference"><a href="#fn_soem_err">2</a></sup>.
+The callback takes an error message as an argument.</p>
 <pre><code class="language-cpp">  link-&gt;on_lost([](const std::string&amp; msg) {
     std::cerr &lt;&lt; &quot;Link is lost\n&quot;;
     std::cerr &lt;&lt; msg;
@@ -274,24 +271,21 @@ callbackはエラーメッセージを引数に取る.</p>
   });
 </code></pre>
 <h2 id="emulator"><a class="header" href="#emulator">Emulator</a></h2>
-<p>Emulator linkは<a href="https://github.com/shinolab/autd-emulator">AUTD Emulator</a> (後述) を使用する際に使うLinkである.</p>
-<p>使用の前に, AUTD Emulatorを実行しておく必要がある.</p>
-<p>EmulatorのLinkを使用する際は<code>autd3/link/emulator.hpp</code>ヘッダーをインクルードする.</p>
+<p>Emulator link is a link to use <a href="https://github.com/shinolab/autd-emulator">AUTD Emulator</a> (which will be described after).</p>
+<p>Before using it, you need to run the AUTD Emulator.</p>
+<p>To use Emulator link, include the <code>autd3/link/emulator.hpp</code> .</p>
 <pre><code class="language-cpp">#include &quot;autd3/link/emulator.hpp&quot;
 
 ...
 
   auto link = autd::link::Emulator::create(50632, autd-&gt;geometry());
 </code></pre>
-<p><code>Emulator::create</code>の第1引数はポート番号 (デフォルトは50632) であり, 第2引数はGeometryである.</p>
+<p>The first argument of <code>Emulator::create</code> is a port number (default is 50632), and the second argument is Geometry.</p>
 <div class="footnote-definition" id="fn_remote_twin"><sup class="footnote-definition-label">1</sup>
-<p>無線LANでも可</p>
+<p>Wireless LAN also can be used.</p>
 </div>
-<div class="footnote-definition" id="fn_soem"><sup class="footnote-definition-label">2</sup>
-<p>TwinCATよりは緩く, 普通に動くこともある.</p>
-</div>
-<div class="footnote-definition" id="fn_soem_err"><sup class="footnote-definition-label">3</sup>
-<p>なお, 回復不能なので直ちに終了するくらいしかできることはない.</p>
+<div class="footnote-definition" id="fn_soem_err"><sup class="footnote-definition-label">2</sup>
+<p>Since it is not recoverable, the only thing you can do is terminate the program immediately.</p>
 </div>
 
                     </main>

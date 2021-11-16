@@ -418,7 +418,7 @@ int main() try {
 <p>デフォルトではONになっているので, これも実際には呼ぶ必要はない.
 OFFにしたい場合は<code>false</code>を与える.
 silentモードでは, 振動子に与える位相/振幅パラメータをLow-pass filterに通すことで, 静音化を行う.</p>
-<p>その後, 単一焦点を表す<code>Gain</code>と<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord"><span class="mord">1</span><span class="mord">5</span><span class="mord">0</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">H</span><span class="mord mathrm">z</span></span></span></span></span></span>のSin波変調をかける<code>Modulation</code>を作成デバイスに送信する.</p>
+<p>その後, 単一焦点を表す<code>Gain</code>と<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord"><span class="mord">1</span><span class="mord">5</span><span class="mord">0</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">H</span><span class="mord mathrm">z</span></span></span></span></span></span>のSin波変調をかける<code>Modulation</code>を作成し, デバイスに送信する.</p>
 <pre><code class="language-cpp">  const auto point = autd::Vector3(autd::TRANS_SPACING_MM * ((autd::NUM_TRANS_X - 1) / 2.0), autd::TRANS_SPACING_MM * ((autd::NUM_TRANS_Y - 1) / 2.0), 150.0);
   const auto g = autd::gain::FocalPoint::create(point);
   const auto m = autd::modulation::Sine::create(150);
@@ -448,7 +448,7 @@ GeometryはAUTD3デバイスが現実世界でどのように配置されてい�
 <h2 id="multiple-devices"><a class="header" href="#multiple-devices">Multiple devices</a></h2>
 <p>AUTD3のデバイスは複数台をデイジーチェーンで接続できるようになっている.
 SDKは複数台を接続したとしても, 透過的に使用できるように設計されている.</p>
-<p>復数のデバイスを接続する場合は,
+<p>複数のデバイスを接続する場合は,
 PCと1台目のEtherCAT Inをケーブルでつなぎ, <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathnormal">i</span></span></span></span>台目のEtherCAT Outと<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.74285em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span>台目のEtherCAT Inをケーブルで接続する (<a href="Software/Users_Manual/concept.html">Concept</a>参照).
 なお, 電源もデイジーチェーンで接続でき, 電源コネクタは3つの内で好きなところを使って良い.</p>
 <p>SDKで複数台のデバイスを使用する場合は<code>add_device</code>関数を接続しているデバイスの分だけ呼び出せば良い.
@@ -703,7 +703,7 @@ SDKには以下の<code>Backend</code>が用意されている</p>
 <li><code>CUDABackend</code> - CUDAを使用, GPUで実行</li>
 <li><code>ArrayFireBackend</code> - <a href="https://arrayfire.com/">ArrayFire</a>を使用</li>
 </ul>
-<p><code>Holo</code>を使用するには<code>autd3/gain/eigen_backend.hpp</code>と各<code>Backend</code>のヘッダーを<code>include</code>する.</p>
+<p><code>Holo</code>を使用するには<code>autd3/gain/holo.hpp</code>と各<code>Backend</code>のヘッダーを<code>include</code>する.</p>
 <pre><code class="language-cpp">#include &quot;autd3/gain/eigen_backend.hpp&quot;
 #include &quot;autd3/gain/holo.hpp&quot;
 
@@ -726,7 +726,7 @@ SDKには以下の<code>Backend</code>が用意されている</p>
 <h4 id="openblas-install-example-for-windows"><a class="header" href="#openblas-install-example-for-windows">OpenBLAS install example for Windows</a></h4>
 <p>ここではWindows向けに, BLAS実装の一つである<a href="https://github.com/xianyi/OpenBLAS">OpenBLAS</a>のインストール例を載せておく.
 <a href="https://github.com/xianyi/OpenBLAS/wiki/How-to-use-OpenBLAS-in-Microsoft-Visual-Studio">Officialの説明</a>もあるのでこちらも参考にすること.</p>
-<p>まず, Visual Studio 2019とAnaconda (または, miniconda)をインストールし, Anaconda Promptを開く.
+<p>まず, Visual Studio 2022とAnaconda (または, miniconda)をインストールし, Anaconda Promptを開く.
 Anaconda Prompt上で以下のコマンドを順に打っていく.
 なお, ここでは<code>D:/lib/openblas</code>にOpenBLASをインストールすることにしている.
 これは, 各自好きな場所に設定されたい.</p>
@@ -735,7 +735,7 @@ cd OpenBLAS
 conda update -n base conda
 conda config --add channels conda-forge
 conda install -y cmake flang clangdev perl libflang ninja
-&quot;c:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvars64.bat&quot;
+&quot;c:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/vcvars64.bat&quot;
 set &quot;LIB=%CONDA_PREFIX%\Library\lib;%LIB%&quot;
 set &quot;CPATH=%CONDA_PREFIX%\Library\include;%CPATH%&quot;
 mkdir build
@@ -846,7 +846,7 @@ class Focus final : public autd::core::Gain {
 <p><code>%AF_PATH%/lib</code>をPATHに追加する必要があるかもしれない, ここで<code>%AF_PATH%</code>はArrayFire のインストールディレクトリである.</p>
 </div>
 <div class="footnote-definition" id="fn_duty"><sup class="footnote-definition-label">3</sup>
-<p><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:-0.02778em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord text mtight"><span class="mord mtight">offset</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span>の場合, <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>でも振幅が0にならないように思われるが, お城で確認した限り振動子への入力信号は消えるので事実上問題ない.</p>
+<p><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:-0.02778em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord text mtight"><span class="mord mtight">offset</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span>の場合, <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>でも振幅が0にならないように思われるが, オシロで確認した限り振動子への入力信号は消えるので事実上問題ない.</p>
 </div>
 <div class="footnote-definition" id="fn_phase"><sup class="footnote-definition-label">4</sup>
 <p><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">+</span><span class="mord">0</span><span class="mord">.</span><span class="mord">5</span></span></span></span>しているのは, <code>std::arg</code>などの返り値が<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord">−</span><span class="mord mathnormal" style="margin-right:0.03588em;">π</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">π</span><span class="mclose">]</span></span></span></span>だからである. 符号ありの<code>int</code>にしているので実際には不要だと思うが.</p>
