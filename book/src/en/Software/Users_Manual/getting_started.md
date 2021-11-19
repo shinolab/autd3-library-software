@@ -12,9 +12,9 @@ For Visual Studio Community, install "Desktop Development with C++".
 If you are using Linux, you can use gcc. If you are using macOS, you can use clang.
 In addition, since the following instruction will be operated from a terminal, you should set PATH appropriately.
 
-* Visual Studio Community 2022 17.0.0
-* CMake 3.21.3
-* git 2.33.1.windows.1
+* Visual Studio Community 2022 17.0.1
+* CMake 3.22.0
+* git 2.34.0.windows.1
 * npcap 1.55
 
 ## Setup Device
@@ -30,6 +30,7 @@ If the firmware is old, the operation is not guaranteed.
 The version of firmware in this document is assumed to be 1.9.
 
 To update the firmware, you need a Windows 10 64bit PC with [Vivado Design Suite](https://www.xilinx.com/products/design-tools/vivado.html) and [J-Link Software](https://www.segger.com/downloads/jlink/) installed.
+We have confirmed that the update script works with Vivado 2021.1 and J-Link Software v7.58b (x64).
 
 First, connect the AUTD3 device and the PC via [XILINX Platform Cable](https://www.xilinx.com/products/boards-and-kits/hw-usb-ii-g.html) and [J-Link Plus](https://www.segger.com/products/debug-probes/j-link/models/j-link-plus/) with [J-Link 9-Pin Cortex-M Adapter](https://www.segger-pocjapan.com/j-link-9-pin-cortex-m-adapter), and turn on the AUTD3.
 Then, run `dist/firmware/autd_firmware_writer.ps1` in [SDK](https://github.com/shinolab/autd3-library-software).

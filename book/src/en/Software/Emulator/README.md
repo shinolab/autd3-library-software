@@ -4,7 +4,7 @@
 
 ## Install
 
-You can download the pre-compiled binary distributed on GitHub (https://github.com/shinolab/autd-emulator/releases) only for Windows 10 64bit.
+You can download the pre-compiled binary distributed on [GitHub](https://github.com/shinolab/autd-emulator/releases) only for Windows 10 64bit.
 
 For other OS, you have to install the rust compiler and compile it by yourself.
 ```
