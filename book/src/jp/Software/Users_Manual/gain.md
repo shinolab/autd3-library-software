@@ -119,12 +119,13 @@ cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_BLAS_BACKEND=ON -DBLAS_LIB_DIR=<your BLAS 
 
 ここではWindows向けに, BLAS実装の一つである[OpenBLAS](https://github.com/xianyi/OpenBLAS)のインストール例を載せておく.
 [Officialの説明](https://github.com/xianyi/OpenBLAS/wiki/How-to-use-OpenBLAS-in-Microsoft-Visual-Studio)もあるのでこちらも参考にすること.
+なお, OpenBLASのversion 0.3.18での動作を確認している.
 
 まず, Visual Studio 2022とAnaconda (または, miniconda)をインストールし, Anaconda Promptを開く.
 Anaconda Prompt上で以下のコマンドを順に打っていく.
 なお, ここでは`D:/lib/openblas`にOpenBLASをインストールすることにしている.
 これは, 各自好きな場所に設定されたい.
-```cpp
+```
 git clone https://github.com/xianyi/OpenBLAS
 cd OpenBLAS
 conda update -n base conda
@@ -156,7 +157,7 @@ cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_BLAS_BACKEND=ON -DBUILD_BLAS_BACKEND=ON -D
 ### CUDA Backend
 
 CUDAバックエンドをビルドする場合, [CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit)をインストールし, CMakeで`BUILD_CUDA_BACKEND`フラグをOnにすれば良い.
-```cpp
+```
   cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_CUDA_BACKEND=ON
 ```
 なお,  CUDA Toolkit version 11.4.100で動作を確認している.
@@ -164,7 +165,7 @@ CUDAバックエンドをビルドする場合, [CUDA Toolkit](https://developer
 ### ArrayFire Backend
 
 ArrayFireバックエンドをビルドする場合, [ArrayFire](https://arrayfire.com/)をインストールし[^fn_af], CMakeで`BUILD_ARRAYFIRE_BACKEND`フラグをOnにすれば良い.
-```cpp
+```
   cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_ARRAYFIRE_BACKEND=ON
 ```
 なお, ArrayFire version 3.8.0で動作を確認している.

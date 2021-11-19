@@ -13,9 +13,9 @@ Visual Studio Community 2019は「C++によるデスクトップ開発」にチ�
 なお, Linuxの場合はgccが, macOSの場合はclangが使えれば良い.
 また, 以下はターミナルから操作するため, PATHを通しておくことを推奨する.
 
-* Visual Studio Community 2019 16.11.4
-* CMake 3.21.3
-* git 2.33.0.windows.2[^fn_git]
+* Visual Studio Community 2022 17.0.1
+* CMake 3.22.0
+* git 2.34.0.windows.1[^fn_git]
 * npcap 1.55[^fn_npcap]
 
 
@@ -32,6 +32,7 @@ PCのイーサネットポートとAUTD3デバイスのEtherCAT In ([Concept](co
 本文章におけるfirmwareのversionは1.9が想定される.
 
 firmwareのupdateには[Vivado Design Suite](https://www.xilinx.com/products/design-tools/vivado.html), 及び, [J-Link Software](https://www.segger.com/downloads/jlink/)をインストールしたWindows 10 64bit PCが必要である[^fn_vivado].
+なお, Vivado 2021.1, 及び, J-Link Software v7.58b (x64)での動作を確認している.
 
 まず, AUTD3デバイスとPCを[XILINX Platform Cable](https://www.xilinx.com/products/boards-and-kits/hw-usb-ii-g.html), 及び, [J-Link 9-Pin Cortex-M Adapter](https://www.segger-pocjapan.com/j-link-9-pin-cortex-m-adapter)付きの[J-Link Plus](https://www.segger.com/products/debug-probes/j-link/models/j-link-plus/)で接続し, AUTD3の電源を入れる.
 次に, [SDK](https://github.com/shinolab/autd3-library-software)内の`dist/firmware/autd_firmware_writer.ps1`, または, [GitHub Release](https://github.com/shinolab/autd3-library-software/releases)で配布されているパッケージ内の`firmware/autd_firmware_writer.ps1`をpowershellから実行し, 指示に従えばよい.
@@ -179,7 +180,7 @@ int main() try {
 ```
   mkdir build
   cd build
-  cmake .. -G "Visual Studio 16 2019" -A x64
+  cmake .. -G "Visual Studio 17 2022" -A x64
 ```
 これで, buildディレクトリ以下に`autd3_sample.sln`が生成されているはずなので, これを開き, mainプロジェクトを実行する.
 なお, 実行に際して, Visual StudioのConfigurationをDebugからReleaseに変更すること.
