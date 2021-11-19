@@ -118,6 +118,7 @@ cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_BLAS_BACKEND=ON -DBLAS_LIB_DIR=<your BLAS 
 
 Here is an installation example for Windows of [OpenBLAS](https://github.com/xianyi/OpenBLAS), one of the BLAS implementations.
 Please also refer to the [Official explanation](https://github.com/xianyi/OpenBLAS/wiki/How-to-use-OpenBLAS-in-Microsoft-Visual-Studio).
+We have confirmed that it works with OpenBLAS version 0.3.18.
 
 First, install Visual Studio 2022 and Anaconda (or miniconda), and open _Anaconda Prompt_.
 On the Anaconda Prompt, type the following commands in order.

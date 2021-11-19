@@ -81,6 +81,7 @@ cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_BLAS_BACKEND=ON -DBLAS_LIB_DIR=<your BLAS 
 
     * If you get `flangxxx.lib` link error, add `-DBLAS_DEPEND_LIB_DIR=<your conda path>/Library/lib` option
 
+* Tested OpenBLAS version is 0.3.18
 
 # Build CUDA backend for HoloGain
 
