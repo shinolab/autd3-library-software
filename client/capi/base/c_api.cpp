@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/11/2021
+// Last Modified: 19/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -43,8 +43,8 @@ std::string& LastError() {
   static std::string msg("");
   return msg;
 }
-autd::Vector3 ToVec3(const double x, const double y, const double z) { return autd::Vector3(x, y, z); }
-autd::Quaternion ToQuaternion(const double w, const double x, const double y, const double z) { return autd::Quaternion(w, x, y, z); }
+autd::Vector3 ToVec3(const double x, const double y, const double z) { return {x, y, z}; }
+autd::Quaternion ToQuaternion(const double w, const double x, const double y, const double z) { return {w, x, y, z}; }
 }  // namespace
 
 void AUTDCreateController(void** out) { *out = ControllerCreate(autd::Controller::create()); }
@@ -59,26 +59,16 @@ bool AUTDOpenController(const void* const handle, void* const p_link) {
   })
 }
 
-int32_t AUTDAddDevice(const void* const handle, const double x, const double y, const double z, const double rz1, const double ry, const double rz2,
-                      const int32_t gid) {
+int32_t AUTDAddDevice(const void* const handle, const double x, const double y, const double z, const double rz1, const double ry, const double rz2) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto res = wrapper->ptr->geometry()->add_device(ToVec3(x, y, z), ToVec3(rz1, ry, rz2), gid);
+  const auto res = wrapper->ptr->geometry()->add_device(ToVec3(x, y, z), ToVec3(rz1, ry, rz2));
   return static_cast<int32_t>(res);
 }
 int32_t AUTDAddDeviceQuaternion(const void* const handle, const double x, const double y, const double z, const double qw, const double qx,
-                                const double qy, const double qz, const int32_t gid) {
+                                const double qy, const double qz) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto res = wrapper->ptr->geometry()->add_device(ToVec3(x, y, z), ToQuaternion(qw, qx, qy, qz), gid);
+  const auto res = wrapper->ptr->geometry()->add_device(ToVec3(x, y, z), ToQuaternion(qw, qx, qy, qz));
   return static_cast<int32_t>(res);
-}
-int32_t AUTDDeleteDevice(const void* const handle, const int32_t idx) {
-  const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto res = wrapper->ptr->geometry()->del_device(static_cast<size_t>(idx));
-  return static_cast<int32_t>(res);
-}
-void AUTDClearDevices(const void* const handle) {
-  const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  wrapper->ptr->geometry()->clear_devices();
 }
 int32_t AUTDCloseController(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
