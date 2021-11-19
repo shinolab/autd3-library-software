@@ -11,4 +11,6 @@ Then, run `autd_firmware_writer.ps1` from powershell (this script can only run w
 Please install following softwares.
 
 * Vivado Design Suite (https://www.xilinx.com/products/design-tools/vivado.html)
+    * Tested with Vivado 2021.1
 * J-Link Software (https://www.segger.com/downloads/jlink/)
+    * Tested with J-Link Software v7.58b (x64)

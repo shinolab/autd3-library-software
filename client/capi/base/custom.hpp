@@ -3,7 +3,7 @@
 // Created Date: 03/11/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/11/2021
+// Last Modified: 19/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -40,7 +40,7 @@ class CustomGain final : public autd::core::Gain {
     return std::make_shared<CustomGain>(raw_data);
   }
   void calc(const autd::core::GeometryPtr& geometry) override { this->_data = std::move(this->_raw_data); }
-  explicit CustomGain(const std::vector<autd::DataArray>& data) : autd::core::Gain() { this->_raw_data = data; }
+  explicit CustomGain(std::vector<autd::DataArray> data) : autd::core::Gain(), _raw_data(std::move(data)) {}
   ~CustomGain() override = default;
   CustomGain(const CustomGain& v) noexcept = default;
   CustomGain& operator=(const CustomGain& obj) = default;

@@ -157,7 +157,7 @@ To build a CUDA backend, install [CUDA Toolkit](https://developer.nvidia.com/cud
 ```cpp
   cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_CUDA_BACKEND=ON
 ```
-We have confirmed that it works with CUDA Toolkit version 11.4.100.
+We have confirmed that it works with CUDA Toolkit version 11.5.50.
 
 ### ArrayFire Backend
 
@@ -171,15 +171,7 @@ We have confirmed that it works with CUDA Toolkit version 3.8.0.
 
 `Grouped` Gain is a `Gain` that allows you to use different `Gain`s for each device when using multiple devices.
 
-In order to use `Grouped` Gain, you should group devices with the third argument of `add_device` in advance.
-```cpp
-autd->geometry()->add_device(pos1, rot1, 0);
-autd->geometry()->add_device(pos2, rot2, 0);
-autd->geometry()->add_device(pos3, rot3, 1);
-```
-In the example above, the first and second devices are in group 0, and the third device is in group 1.
-
-In `Grouped`, you can associate an arbitrary `Gain` to this group number.
+In `Grouped`, you can associate an arbitrary `Gain` to device id.
 ```cpp
 #include "autd3/gain/eigen_backend.hpp"
 #include "autd3/gain/holo.hpp"
@@ -193,7 +185,7 @@ In `Grouped`, you can associate an arbitrary `Gain` to this group number.
   g->add(0, g0);
   g->add(1, g1);
 ```
-In the above case, group 0 uses `Gain g0` and group 1 uses `Gain g1`.
+In the above case, device 0 uses `Gain g0` and device 1 uses `Gain g1`.
 
 ## Create Custom Gain Tutorial
 

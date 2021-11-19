@@ -72,29 +72,6 @@ This function returns the ID of the added device.
 | gid                          | int32_t    | in     | group Id                                                     |
 | return                       | int32_t    | -      | Device Id                                                    |
 
-##  AUTDDeleteDevice (autd3capi)
-
-Deletes a device at the specified index from the Controller.
-The `handle` is the controller created by `AUTDCreateController`.
-
-This function returns the ID of the deleted device.
-
-| Argument name / return       | type             | in/out | description                                                   |
-|------------------------------|------------------|--------|--------------------------------------------------------------|
-| handle                       | void*      | in     | ControllerPtr                                                |
-| idx                          | int32_t    | in     | Device index                                                 |
-| return                       | int32_t    | -      | Deleted device Id                                            |
-
-##  AUTDClearDevices (autd3capi)
-
-Deletes all device from the Controller.
-The `handle` is the controller created by `AUTDCreateController`.
-
-| Argument name / return       | type             | in/out | description                                                   |
-|------------------------------|------------------|--------|--------------------------------------------------------------|
-| handle                       | void*      | in     | ControllerPtr                                                |
-| return                       | void       | -      | nothing                                                      |
-
 ##  AUTDCloseController (autd3capi)
 
 Close Controller.
@@ -446,11 +423,9 @@ The `handle` is the controller created by `AUTDCreateController`.
 ##  AUTDDeviceIdxForTransIdx (autd3capi)
 
 Convert global transducer index to device index. 
-The `handle` is the controller created by `AUTDCreateController`.
 
 | Argument name / return       | type             | in/out | description                                                                              |
 |------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
-| handle                       | void*      | in     | ControllerPtr                                                                           |
 | global_trans_idx       | int32_t    | in     | global transducer index                                                                 |
 | return                       | int32_t    | -      | device index                                                                            |
 
@@ -592,12 +567,11 @@ You must delete the created Gain with `AUTDDeleteGain` at the end.
 
 Add a Gain to Gain::Grouped.
 `grouped_gain` is the Gain created by `AUTDGainGrouped`. 
-`id` is specified by `AUTDAddDevice` or `AUTDAddDeviceQuaternion`.
 
 | Argument name / return       | type             | in/out | description                                                                              |
 |------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
 | grouped_gain           | void*      | in     | pointer to Grouped Gain                                                                 |
-| id                           | int32_t    | in     | Groupe Id                                                                               |
+| device_id                           | int32_t    | in     | Device Id                                                                               |
 | gain                   | void*      | in     | GainPtr                                                                                 |
 | return                       | void       | -      | nothing                                                                                 |
 
