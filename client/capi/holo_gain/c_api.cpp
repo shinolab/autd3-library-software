@@ -3,7 +3,7 @@
 // Created Date: 17/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/09/2021
+// Last Modified: 19/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -20,7 +20,7 @@ namespace {
 std::vector<autd::core::Vector3> PackFoci(const double* const points, const int32_t size) {
   std::vector<autd::core::Vector3> holo;
   holo.reserve(size);
-  for (auto i = 0; i < size; i++) {
+  for (size_t i = 0; i < static_cast<size_t>(size); i++) {
     const auto x = points[3 * i];
     const auto y = points[3 * i + 1];
     const auto z = points[3 * i + 2];

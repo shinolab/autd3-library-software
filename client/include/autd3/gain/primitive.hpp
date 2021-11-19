@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/11/2021
+// Last Modified: 19/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -39,12 +39,11 @@ class Grouped final : public Gain {
   static std::shared_ptr<Grouped> create();
 
   /**
-   * \brief Decide which group outputs which Gain
-   * \param id group id
+   * \brief Decide which device outputs which Gain
+   * \param device_id device id
    * \param gain gain
-   * \details group ID must be specified in Geometry::AddDevice() in advance
    */
-  void add(size_t id, const GainPtr& gain);
+  void add(size_t device_id, const GainPtr& gain);
 
   void calc(const core::GeometryPtr& geometry) override;
   Grouped() : Gain() {}

@@ -86,7 +86,7 @@ cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_BLAS_BACKEND=ON -DBLAS_LIB_DIR=<your BLAS 
 # Build CUDA backend for HoloGain
 
 * Install CUDA Toolkit, and set `BUILD_CUDA_BACKEND` ON
-  * Tested CUDA Toolkit version is 11.4.100
+  * Tested CUDA Toolkit version is 11.5.50
 
 ```
 cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_CUDA_BACKEND=ON

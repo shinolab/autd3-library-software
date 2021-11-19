@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.16)
 
 set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} --expt-relaxed-constexpr -Xcudafe "--diag_suppress=esa_on_defaulted_function_ignored")
+if(WIN32 AND (MSVC_TOOLSET_VERSION VERSION_EQUAL 143))
+  set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} -allow-unsupported-compiler)
+endif()
 
 if(BUILD_SHARED_LIBS)
   set(CUDA_LINK_LIBRARIES_KEYWORD PRIVATE)

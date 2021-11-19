@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/11/2021
+// Last Modified: 19/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -24,15 +24,11 @@ using core::Vector3;
 
 std::shared_ptr<Grouped> Grouped::create() { return std::make_shared<Grouped>(); }
 
-void Grouped::add(const size_t id, const GainPtr& gain) { this->_gain_map[id] = gain; }
+void Grouped::add(const size_t device_id, const GainPtr& gain) { this->_gain_map[device_id] = gain; }
 
 void Grouped::calc(const core::GeometryPtr& geometry) {
   for (const auto& [_, g] : this->_gain_map) g->build(geometry);
-
-  for (size_t i = 0; i < geometry->num_devices(); i++) {
-    auto group_id = geometry->group_id_for_device_idx(i);
-    this->_data[i] = _gain_map.count(group_id) ? _gain_map[group_id]->data()[i] : DataArray{0x0000};
-  }
+  for (size_t i = 0; i < geometry->num_devices(); i++) this->_data[i] = _gain_map.count(i) > 0 ? _gain_map[i]->data()[i] : DataArray{0x0000};
 }
 
 GainPtr PlaneWave::create(const Vector3& direction, const double amp) { return create(direction, core::utils::to_duty(amp)); }
@@ -95,7 +91,7 @@ GainPtr TransducerTest::create(const size_t transducer_index, const uint8_t duty
 }
 
 void TransducerTest::calc(const core::GeometryPtr& geometry) {
-  this->_data[geometry->device_idx_for_trans_idx(_transducer_idx)][_transducer_idx % NUM_TRANS_IN_UNIT] =
+  this->_data[core::Geometry::device_idx_for_trans_idx(_transducer_idx)][_transducer_idx % NUM_TRANS_IN_UNIT] =
       core::utils::pack_to_u16(this->_duty, this->_phase);
 }
 }  // namespace autd::gain

@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/11/2021
+// Last Modified: 19/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -16,11 +16,8 @@
 extern "C" {
 EXPORT_AUTD void AUTDCreateController(void** out);
 EXPORT_AUTD bool AUTDOpenController(const void* handle, void* p_link);
-EXPORT_AUTD int32_t AUTDAddDevice(const void* handle, double x, double y, double z, double rz1, double ry, double rz2, int32_t gid);
-EXPORT_AUTD int32_t AUTDAddDeviceQuaternion(const void* handle, double x, double y, double z, double qw, double qx, double qy, double qz,
-                                            int32_t gid);
-EXPORT_AUTD int32_t AUTDDeleteDevice(const void* handle, int32_t idx);
-EXPORT_AUTD void AUTDClearDevices(const void* handle);
+EXPORT_AUTD int32_t AUTDAddDevice(const void* handle, double x, double y, double z, double rz1, double ry, double rz2);
+EXPORT_AUTD int32_t AUTDAddDeviceQuaternion(const void* handle, double x, double y, double z, double qw, double qx, double qy, double qz);
 EXPORT_AUTD int32_t AUTDCloseController(const void* handle);
 EXPORT_AUTD int32_t AUTDClear(const void* handle);
 EXPORT_AUTD void AUTDFreeController(const void* handle);
@@ -49,7 +46,7 @@ EXPORT_AUTD int32_t AUTDSetDelayOffset(const void* handle, const uint8_t* delay,
 EXPORT_AUTD int32_t AUTDGetLastError(char* error);
 EXPORT_AUTD int32_t AUTDNumDevices(const void* handle);
 EXPORT_AUTD int32_t AUTDNumTransducers(const void* handle);
-EXPORT_AUTD int32_t AUTDDeviceIdxForTransIdx(const void* handle, int32_t global_trans_idx);
+EXPORT_AUTD int32_t AUTDDeviceIdxForTransIdx(int32_t global_trans_idx);
 EXPORT_AUTD void AUTDTransPositionByGlobal(const void* handle, int32_t global_trans_idx, double* x, double* y, double* z);
 EXPORT_AUTD void AUTDTransPositionByLocal(const void* handle, int32_t device_idx, int32_t local_trans_idx, double* x, double* y, double* z);
 EXPORT_AUTD void AUTDDeviceXDirection(const void* handle, int32_t device_idx, double* x, double* y, double* z);
@@ -60,7 +57,7 @@ EXPORT_AUTD void AUTDGetFirmwareInfo(const void* p_firm_info_list, int32_t index
 EXPORT_AUTD void AUTDFreeFirmwareInfoListPointer(const void* p_firm_info_list);
 EXPORT_AUTD void AUTDGainNull(void** gain);
 EXPORT_AUTD void AUTDGainGrouped(void** gain);
-EXPORT_AUTD void AUTDGainGroupedAdd(const void* grouped_gain, int32_t id, const void* gain);
+EXPORT_AUTD void AUTDGainGroupedAdd(const void* grouped_gain, int32_t device_id, const void* gain);
 EXPORT_AUTD void AUTDGainFocalPoint(void** gain, double x, double y, double z, uint8_t duty);
 EXPORT_AUTD void AUTDGainBesselBeam(void** gain, double x, double y, double z, double n_x, double n_y, double n_z, double theta_z, uint8_t duty);
 EXPORT_AUTD void AUTDGainPlaneWave(void** gain, double n_x, double n_y, double n_z, uint8_t duty);
