@@ -3,7 +3,7 @@
 // Created Date: 10/09/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/11/2021
+// Last Modified: 19/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -34,7 +34,7 @@ void generate_transfer_matrix(const std::vector<autd::core::Vector3>& foci, cons
   directions.reserve(geometry->num_devices());
   for (size_t i = 0; i < geometry->num_devices(); i++) {
     positions.emplace_back(geometry->position(i, 0).data());
-    directions.emplace_back(geometry->direction(i).data());
+    directions.emplace_back(geometry->z_direction(i).data());
   }
   g->transfer_matrix(reinterpret_cast<const double*>(foci.data()), foci.size(), positions, directions, geometry->wavelength(),
                      geometry->attenuation_coefficient());
@@ -642,7 +642,7 @@ void greedy_impl(P&, const core::GeometryPtr& geometry, const std::vector<core::
   for (size_t dev = 0; dev < geometry->num_devices(); dev++) {
     for (size_t i = 0; i < core::NUM_TRANS_IN_UNIT; i++) {
       const auto& trans_pos = geometry->position(dev, i);
-      const auto& trans_dir = geometry->direction(dev);
+      const auto& trans_dir = geometry->z_direction(dev);
       size_t min_idx = 0;
       auto min_v = std::numeric_limits<double>::infinity();
       for (size_t p = 0; p < phases.size(); p++) {

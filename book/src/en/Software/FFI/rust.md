@@ -11,7 +11,7 @@ rust-autd is available at [crate.io](https://crates.io/crates/autd3).
 
 ```
 [dependencies]
-autd3 = "1.9.1"
+autd3 = "1.9.2"
 ```
 
 links, gains, etc. are published as separate crates, so please add them to dependencies if necessary.

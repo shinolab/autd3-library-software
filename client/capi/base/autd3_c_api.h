@@ -46,7 +46,7 @@ EXPORT_AUTD int32_t AUTDSetDelayOffset(const void* handle, const uint8_t* delay,
 EXPORT_AUTD int32_t AUTDGetLastError(char* error);
 EXPORT_AUTD int32_t AUTDNumDevices(const void* handle);
 EXPORT_AUTD int32_t AUTDNumTransducers(const void* handle);
-EXPORT_AUTD int32_t AUTDDeviceIdxForTransIdx(const void* handle, int32_t global_trans_idx);
+EXPORT_AUTD int32_t AUTDDeviceIdxForTransIdx(int32_t global_trans_idx);
 EXPORT_AUTD void AUTDTransPositionByGlobal(const void* handle, int32_t global_trans_idx, double* x, double* y, double* z);
 EXPORT_AUTD void AUTDTransPositionByLocal(const void* handle, int32_t device_idx, int32_t local_trans_idx, double* x, double* y, double* z);
 EXPORT_AUTD void AUTDDeviceXDirection(const void* handle, int32_t device_idx, double* x, double* y, double* z);
@@ -57,7 +57,7 @@ EXPORT_AUTD void AUTDGetFirmwareInfo(const void* p_firm_info_list, int32_t index
 EXPORT_AUTD void AUTDFreeFirmwareInfoListPointer(const void* p_firm_info_list);
 EXPORT_AUTD void AUTDGainNull(void** gain);
 EXPORT_AUTD void AUTDGainGrouped(void** gain);
-EXPORT_AUTD void AUTDGainGroupedAdd(const void* grouped_gain, int32_t id, const void* gain);
+EXPORT_AUTD void AUTDGainGroupedAdd(const void* grouped_gain, int32_t device_id, const void* gain);
 EXPORT_AUTD void AUTDGainFocalPoint(void** gain, double x, double y, double z, uint8_t duty);
 EXPORT_AUTD void AUTDGainBesselBeam(void** gain, double x, double y, double z, double n_x, double n_y, double n_z, double theta_z, uint8_t duty);
 EXPORT_AUTD void AUTDGainPlaneWave(void** gain, double n_x, double n_y, double n_z, uint8_t duty);

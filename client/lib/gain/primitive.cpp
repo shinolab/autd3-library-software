@@ -91,7 +91,7 @@ GainPtr TransducerTest::create(const size_t transducer_index, const uint8_t duty
 }
 
 void TransducerTest::calc(const core::GeometryPtr& geometry) {
-  this->_data[geometry->device_idx_for_trans_idx(_transducer_idx)][_transducer_idx % NUM_TRANS_IN_UNIT] =
+  this->_data[core::Geometry::device_idx_for_trans_idx(_transducer_idx)][_transducer_idx % NUM_TRANS_IN_UNIT] =
       core::utils::pack_to_u16(this->_duty, this->_phase);
 }
 }  // namespace autd::gain

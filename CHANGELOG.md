@@ -1,3 +1,9 @@
+# 1.9.2
+* Fix #10
+* Delete `Geometry::del_device`, `Geometry::clear_devices`, `Geometry::direction`, and `Geometry::group_id_for_device_idx`
+* Delete group id argument from `Geometry::add_device`
+* Change first argument of `gain::Grouped::add` from `group_id` to `device_id`
+
 # 1.9.1
 * Fix #9
 * Rename `gain::NullGain` to `gain::Null`

@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/10/2021
+// Last Modified: 19/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -96,10 +96,7 @@ class SOEMController {
 };
 
 struct EtherCATAdapterInfo final {
-  EtherCATAdapterInfo(const std::string& desc, const std::string& name) {
-    this->desc = desc;
-    this->name = name;
-  }
+  EtherCATAdapterInfo(std::string desc, std::string name) : desc(std::move(desc)), name(std::move(name)) {}
   static std::vector<EtherCATAdapterInfo> enumerate_adapters();
 
   std::string desc;

@@ -175,15 +175,7 @@ ArrayFireバックエンドをビルドする場合, [ArrayFire](https://arrayfi
 `Grouped`は複数のデバイスを使用する際に,
 各デバイスで別々の`Gain`を使用するための`Gain`である.
 
-`Grouped`を使用するためには, 予め`add_device`の第3引数でデバイスをグルーピングしておく必要がある.
-```cpp
-autd->geometry()->add_device(pos1, rot1, 0);
-autd->geometry()->add_device(pos2, rot2, 0);
-autd->geometry()->add_device(pos3, rot3, 1);
-```
-上の例だと, 1,2番目のデバイスはグループ0, 3番めのデバイスはグループ1になる.
-
-`Grouped`では, このグループ番号と任意の`Gain`を紐付けて使用する.
+`Grouped`では, デバイスIDと任意の`Gain`を紐付けて使用する.
 ```cpp
 #include "autd3/gain/eigen_backend.hpp"
 #include "autd3/gain/holo.hpp"
@@ -197,7 +189,7 @@ autd->geometry()->add_device(pos3, rot3, 1);
   g->add(0, g0);
   g->add(1, g1);
 ```
-上の場合は, グループ0が`Gain g0`, グループ1が`Gain g1`を使用する.
+上の場合は, デバイス0が`Gain g0`, デバイス1が`Gain g1`を使用する.
 
 ## Create Custom Gain Tutorial
 
