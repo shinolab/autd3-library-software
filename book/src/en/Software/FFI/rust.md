@@ -17,10 +17,10 @@ autd3 = "1.9.2"
 links, gains, etc. are published as separate crates, so please add them to dependencies if necessary.
 ```
 [dependencies]
-autd3-soem-link = "1.9.0"
-autd3-twincat-link = "1.9.0"
-autd3-emulator-link = "1.9.0"
-autd3-holo-gain = "1.9.0"
+autd3-soem-link = "1.9.2"
+autd3-twincat-link = "1.9.2"
+autd3-emulator-link = "1.9.2"
+autd3-holo-gain = "1.9.2"
 ```
 
 In addition, an asynchronous runtime is required. 
