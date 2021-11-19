@@ -157,7 +157,7 @@ To build a CUDA backend, install [CUDA Toolkit](https://developer.nvidia.com/cud
 ```cpp
   cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_CUDA_BACKEND=ON
 ```
-We have confirmed that it works with CUDA Toolkit version 11.4.100.
+We have confirmed that it works with CUDA Toolkit version 11.5.50.
 
 ### ArrayFire Backend
 
