@@ -229,12 +229,13 @@ SDKには以下の<code>Backend</code>が用意されている</p>
 </code></pre>
 <h4 id="openblas-install-example-for-windows"><a class="header" href="#openblas-install-example-for-windows">OpenBLAS install example for Windows</a></h4>
 <p>ここではWindows向けに, BLAS実装の一つである<a href="https://github.com/xianyi/OpenBLAS">OpenBLAS</a>のインストール例を載せておく.
-<a href="https://github.com/xianyi/OpenBLAS/wiki/How-to-use-OpenBLAS-in-Microsoft-Visual-Studio">Officialの説明</a>もあるのでこちらも参考にすること.</p>
+<a href="https://github.com/xianyi/OpenBLAS/wiki/How-to-use-OpenBLAS-in-Microsoft-Visual-Studio">Officialの説明</a>もあるのでこちらも参考にすること.
+なお, OpenBLASのversion 0.3.18での動作を確認している.</p>
 <p>まず, Visual Studio 2022とAnaconda (または, miniconda)をインストールし, Anaconda Promptを開く.
 Anaconda Prompt上で以下のコマンドを順に打っていく.
 なお, ここでは<code>D:/lib/openblas</code>にOpenBLASをインストールすることにしている.
 これは, 各自好きな場所に設定されたい.</p>
-<pre><code class="language-cpp">git clone https://github.com/xianyi/OpenBLAS
+<pre><code>git clone https://github.com/xianyi/OpenBLAS
 cd OpenBLAS
 conda update -n base conda
 conda config --add channels conda-forge
@@ -259,12 +260,12 @@ cmake --install . --prefix D:\lib\openblas -v
 </code></pre>
 <h3 id="cuda-backend"><a class="header" href="#cuda-backend">CUDA Backend</a></h3>
 <p>CUDAバックエンドをビルドする場合, <a href="https://developer.nvidia.com/cuda-toolkit">CUDA Toolkit</a>をインストールし, CMakeで<code>BUILD_CUDA_BACKEND</code>フラグをOnにすれば良い.</p>
-<pre><code class="language-cpp">  cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_CUDA_BACKEND=ON
+<pre><code>  cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_CUDA_BACKEND=ON
 </code></pre>
 <p>なお,  CUDA Toolkit version 11.4.100で動作を確認している.</p>
 <h3 id="arrayfire-backend"><a class="header" href="#arrayfire-backend">ArrayFire Backend</a></h3>
 <p>ArrayFireバックエンドをビルドする場合, <a href="https://arrayfire.com/">ArrayFire</a>をインストールし<sup class="footnote-reference"><a href="#fn_af">2</a></sup>, CMakeで<code>BUILD_ARRAYFIRE_BACKEND</code>フラグをOnにすれば良い.</p>
-<pre><code class="language-cpp">  cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_ARRAYFIRE_BACKEND=ON
+<pre><code>  cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_ARRAYFIRE_BACKEND=ON
 </code></pre>
 <p>なお, ArrayFire version 3.8.0で動作を確認している.</p>
 <h2 id="grouped"><a class="header" href="#grouped">Grouped</a></h2>

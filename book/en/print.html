@@ -228,9 +228,9 @@ For Visual Studio Community, install “Desktop Development with C++”.
 If you are using Linux, you can use gcc. If you are using macOS, you can use clang.
 In addition, since the following instruction will be operated from a terminal, you should set PATH appropriately.</p>
 <ul>
-<li>Visual Studio Community 2022 17.0.0</li>
-<li>CMake 3.21.3</li>
-<li>git 2.33.1.windows.1</li>
+<li>Visual Studio Community 2022 17.0.1</li>
+<li>CMake 3.22.0</li>
+<li>git 2.34.0.windows.1</li>
 <li>npcap 1.55</li>
 </ul>
 <h2 id="setup-device"><a class="header" href="#setup-device">Setup Device</a></h2>
@@ -241,7 +241,8 @@ Next, connect the <span class="katex"><span class="katex-html" aria-hidden="true
 <h3 id="firmware-update"><a class="header" href="#firmware-update">Firmware update</a></h3>
 <p>If the firmware is old, the operation is not guaranteed.
 The version of firmware in this document is assumed to be 1.9.</p>
-<p>To update the firmware, you need a Windows 10 64bit PC with <a href="https://www.xilinx.com/products/design-tools/vivado.html">Vivado Design Suite</a> and <a href="https://www.segger.com/downloads/jlink/">J-Link Software</a> installed.</p>
+<p>To update the firmware, you need a Windows 10 64bit PC with <a href="https://www.xilinx.com/products/design-tools/vivado.html">Vivado Design Suite</a> and <a href="https://www.segger.com/downloads/jlink/">J-Link Software</a> installed.
+We have confirmed that the update script works with Vivado 2021.1 and J-Link Software v7.58b (x64).</p>
 <p>First, connect the AUTD3 device and the PC via <a href="https://www.xilinx.com/products/boards-and-kits/hw-usb-ii-g.html">XILINX Platform Cable</a> and <a href="https://www.segger.com/products/debug-probes/j-link/models/j-link-plus/">J-Link Plus</a> with <a href="https://www.segger-pocjapan.com/j-link-9-pin-cortex-m-adapter">J-Link 9-Pin Cortex-M Adapter</a>, and turn on the AUTD3.
 Then, run <code>dist/firmware/autd_firmware_writer.ps1</code> in <a href="https://github.com/shinolab/autd3-library-software">SDK</a>.
 The update will take a few minutes.</p>
@@ -697,7 +698,8 @@ For details of each parameter, please refer to the respective papers.</p>
 </code></pre>
 <h4 id="openblas-install-example-for-windows"><a class="header" href="#openblas-install-example-for-windows">OpenBLAS install example for Windows</a></h4>
 <p>Here is an installation example for Windows of <a href="https://github.com/xianyi/OpenBLAS">OpenBLAS</a>, one of the BLAS implementations.
-Please also refer to the <a href="https://github.com/xianyi/OpenBLAS/wiki/How-to-use-OpenBLAS-in-Microsoft-Visual-Studio">Official explanation</a>.</p>
+Please also refer to the <a href="https://github.com/xianyi/OpenBLAS/wiki/How-to-use-OpenBLAS-in-Microsoft-Visual-Studio">Official explanation</a>.
+We have confirmed that it works with OpenBLAS version 0.3.18.</p>
 <p>First, install Visual Studio 2022 and Anaconda (or miniconda), and open <em>Anaconda Prompt</em>.
 On the Anaconda Prompt, type the following commands in order.
 Note that we install OpenBLAS in <code>D:/lib/openblas</code>.

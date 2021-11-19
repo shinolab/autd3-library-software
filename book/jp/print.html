@@ -230,9 +230,9 @@ Visual Studio Community 2019は「C++によるデスクトップ開発」にチ�
 なお, Linuxの場合はgccが, macOSの場合はclangが使えれば良い.
 また, 以下はターミナルから操作するため, PATHを通しておくことを推奨する.</p>
 <ul>
-<li>Visual Studio Community 2019 16.11.4</li>
-<li>CMake 3.21.3</li>
-<li>git 2.33.0.windows.2<sup class="footnote-reference"><a href="#fn_git">1</a></sup></li>
+<li>Visual Studio Community 2022 17.0.1</li>
+<li>CMake 3.22.0</li>
+<li>git 2.34.0.windows.1<sup class="footnote-reference"><a href="#fn_git">1</a></sup></li>
 <li>npcap 1.55<sup class="footnote-reference"><a href="#fn_npcap">2</a></sup></li>
 </ul>
 <h2 id="setup-device"><a class="header" href="#setup-device">Setup Device</a></h2>
@@ -243,7 +243,8 @@ PCのイーサネットポートとAUTD3デバイスのEtherCAT In (<a href="Sof
 <h3 id="firmware-update"><a class="header" href="#firmware-update">Firmware update</a></h3>
 <p>なお, firmwareが古い場合, 動作は保証されない.
 本文章におけるfirmwareのversionは1.9が想定される.</p>
-<p>firmwareのupdateには<a href="https://www.xilinx.com/products/design-tools/vivado.html">Vivado Design Suite</a>, 及び, <a href="https://www.segger.com/downloads/jlink/">J-Link Software</a>をインストールしたWindows 10 64bit PCが必要である<sup class="footnote-reference"><a href="#fn_vivado">3</a></sup>.</p>
+<p>firmwareのupdateには<a href="https://www.xilinx.com/products/design-tools/vivado.html">Vivado Design Suite</a>, 及び, <a href="https://www.segger.com/downloads/jlink/">J-Link Software</a>をインストールしたWindows 10 64bit PCが必要である<sup class="footnote-reference"><a href="#fn_vivado">3</a></sup>.
+なお, Vivado 2021.1, 及び, J-Link Software v7.58b (x64)での動作を確認している.</p>
 <p>まず, AUTD3デバイスとPCを<a href="https://www.xilinx.com/products/boards-and-kits/hw-usb-ii-g.html">XILINX Platform Cable</a>, 及び, <a href="https://www.segger-pocjapan.com/j-link-9-pin-cortex-m-adapter">J-Link 9-Pin Cortex-M Adapter</a>付きの<a href="https://www.segger.com/products/debug-probes/j-link/models/j-link-plus/">J-Link Plus</a>で接続し, AUTD3の電源を入れる.
 次に, <a href="https://github.com/shinolab/autd3-library-software">SDK</a>内の<code>dist/firmware/autd_firmware_writer.ps1</code>, または, <a href="https://github.com/shinolab/autd3-library-software/releases">GitHub Release</a>で配布されているパッケージ内の<code>firmware/autd_firmware_writer.ps1</code>をpowershellから実行し, 指示に従えばよい.
 updateには数分の時間を要する.</p>
@@ -372,7 +373,7 @@ int main() try {
 <p>次に, CMakeでbuildする.</p>
 <pre><code>  mkdir build
   cd build
-  cmake .. -G &quot;Visual Studio 16 2019&quot; -A x64
+  cmake .. -G &quot;Visual Studio 17 2022&quot; -A x64
 </code></pre>
 <p>これで, buildディレクトリ以下に<code>autd3_sample.sln</code>が生成されているはずなので, これを開き, mainプロジェクトを実行する.
 なお, 実行に際して, Visual StudioのConfigurationをDebugからReleaseに変更すること.
@@ -725,12 +726,13 @@ SDKには以下の<code>Backend</code>が用意されている</p>
 </code></pre>
 <h4 id="openblas-install-example-for-windows"><a class="header" href="#openblas-install-example-for-windows">OpenBLAS install example for Windows</a></h4>
 <p>ここではWindows向けに, BLAS実装の一つである<a href="https://github.com/xianyi/OpenBLAS">OpenBLAS</a>のインストール例を載せておく.
-<a href="https://github.com/xianyi/OpenBLAS/wiki/How-to-use-OpenBLAS-in-Microsoft-Visual-Studio">Officialの説明</a>もあるのでこちらも参考にすること.</p>
+<a href="https://github.com/xianyi/OpenBLAS/wiki/How-to-use-OpenBLAS-in-Microsoft-Visual-Studio">Officialの説明</a>もあるのでこちらも参考にすること.
+なお, OpenBLASのversion 0.3.18での動作を確認している.</p>
 <p>まず, Visual Studio 2022とAnaconda (または, miniconda)をインストールし, Anaconda Promptを開く.
 Anaconda Prompt上で以下のコマンドを順に打っていく.
 なお, ここでは<code>D:/lib/openblas</code>にOpenBLASをインストールすることにしている.
 これは, 各自好きな場所に設定されたい.</p>
-<pre><code class="language-cpp">git clone https://github.com/xianyi/OpenBLAS
+<pre><code>git clone https://github.com/xianyi/OpenBLAS
 cd OpenBLAS
 conda update -n base conda
 conda config --add channels conda-forge
@@ -755,12 +757,12 @@ cmake --install . --prefix D:\lib\openblas -v
 </code></pre>
 <h3 id="cuda-backend"><a class="header" href="#cuda-backend">CUDA Backend</a></h3>
 <p>CUDAバックエンドをビルドする場合, <a href="https://developer.nvidia.com/cuda-toolkit">CUDA Toolkit</a>をインストールし, CMakeで<code>BUILD_CUDA_BACKEND</code>フラグをOnにすれば良い.</p>
-<pre><code class="language-cpp">  cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_CUDA_BACKEND=ON
+<pre><code>  cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_CUDA_BACKEND=ON
 </code></pre>
 <p>なお,  CUDA Toolkit version 11.4.100で動作を確認している.</p>
 <h3 id="arrayfire-backend"><a class="header" href="#arrayfire-backend">ArrayFire Backend</a></h3>
 <p>ArrayFireバックエンドをビルドする場合, <a href="https://arrayfire.com/">ArrayFire</a>をインストールし<sup class="footnote-reference"><a href="#fn_af">2</a></sup>, CMakeで<code>BUILD_ARRAYFIRE_BACKEND</code>フラグをOnにすれば良い.</p>
-<pre><code class="language-cpp">  cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_ARRAYFIRE_BACKEND=ON
+<pre><code>  cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_ARRAYFIRE_BACKEND=ON
 </code></pre>
 <p>なお, ArrayFire version 3.8.0で動作を確認している.</p>
 <h2 id="grouped"><a class="header" href="#grouped">Grouped</a></h2>
