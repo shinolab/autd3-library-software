@@ -3,7 +3,7 @@
 // Created Date: 08/09/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/11/2021
+// Last Modified: 19/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -42,7 +42,7 @@ struct AFMatrix {
   AFMatrix& operator=(AFMatrix&& obj) = delete;
 
   static double cast(const double v) { return v; }
-  static af::cdouble cast(const complex v) { return af::cdouble(v.real(), v.imag()); }
+  static af::cdouble cast(const complex v) { return {v.real(), v.imag()}; }
 
   void make_complex(const std::shared_ptr<const AFMatrix<double>>& r, const std::shared_ptr<const AFMatrix<double>>& i) {
     af_array = af::complex(r->af_array, i->af_array);

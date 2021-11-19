@@ -71,29 +71,6 @@ x, y, zは位置で, qw, qx, qy, qzは回転を表すクオータニオンであ
 | gid                          | int32_t    | in     | group Id                                                     |
 | return                       | int32_t    | -      | Device Id                                                    |
 
-##  AUTDDeleteDevice (autd3capi)
-
-Controllerから指定されたインデックスのDeviceを削除する.
-handleは`AUTDCreateController`で作成したものを使う.
-
-この関数は削除されたDeviceのIdを返す.
-
-| Argument name / return       | type             | in/out | description                                                   |
-|------------------------------|------------------|--------|--------------------------------------------------------------|
-| handle                       | void*      | in     | ControllerPtr                                                |
-| idx                          | int32_t    | in     | Device index                                                 |
-| return                       | int32_t    | -      | Deleted device Id                                            |
-
-##  AUTDClearDevices (autd3capi)
-
-Controllerから全てのDeviceを削除する.
-handleは`AUTDCreateController`で作成したものを使う.
-
-| Argument name / return       | type             | in/out | description                                                   |
-|------------------------------|------------------|--------|--------------------------------------------------------------|
-| handle                       | void*      | in     | ControllerPtr                                                |
-| return                       | void       | -      | nothing                                                      |
-
 ##  AUTDCloseController (autd3capi)
 
 ControllerをCloseする. handleは`AUTDCreateController`で作成したものを使う.
@@ -441,11 +418,9 @@ handleは`AUTDCreateController`で作成したものを使う.
 ##  AUTDDeviceIdxForTransIdx (autd3capi)
 
 グローバルな振動子のインデックスをDeviceのインデックスに変換する.
-handleは`AUTDCreateController`で作成したものを使う.
 
 | Argument name / return       | type             | in/out | description                                                                              |
 |------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
-| handle                       | void*      | in     | ControllerPtr                                                                           |
 | global_trans_idx       | int32_t    | in     | global transducer index                                                                 |
 | return                       | int32_t    | -      | device index                                                                            |
 
@@ -590,13 +565,11 @@ Gain::Groupedを作成する.
 
 Gain::GroupedにGainを追加する.
 `grouped_gain`は`AUTDGainGrouped`で作成したものを使う. 
-また, idには`AUTDAddDevice`, または, `AUTDAddDeviceQuaternion`で指定したGroup
-Idを使用する.
 
 | Argument name / return       | type             | in/out | description                                                                              |
 |------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
 | grouped_gain           | void*      | in     | pointer to Grouped Gain                                                                 |
-| id                           | int32_t    | in     | Groupe Id                                                                               |
+| device_id                           | int32_t    | in     | Device Id                                                                               |
 | gain                   | void*      | in     | GainPtr                                                                                 |
 | return                       | void       | -      | nothing                                                                                 |
 

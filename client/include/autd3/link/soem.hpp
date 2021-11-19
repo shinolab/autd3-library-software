@@ -3,7 +3,7 @@
 // Created Date: 10/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 27/09/2021
+// Last Modified: 19/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -14,6 +14,7 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "autd3/core/link.hpp"
@@ -24,10 +25,7 @@ namespace autd::link {
  * \brief EtherCAT adapter information to SOEM
  */
 struct EtherCATAdapter final {
-  EtherCATAdapter(const std::string& desc, const std::string& name) {
-    this->desc = desc;
-    this->name = name;
-  }
+  EtherCATAdapter(std::string desc, std::string name) : desc(std::move(desc)), name(std::move(name)) {}
 
   std::string desc;
   std::string name;

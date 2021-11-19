@@ -203,9 +203,8 @@ int32_t AUTDNumTransducers(const void* const handle) {
   const auto res = wrapper->ptr->geometry()->num_transducers();
   return static_cast<int32_t>(res);
 }
-int32_t AUTDDeviceIdxForTransIdx(const void* const handle, const int32_t global_trans_idx) {
-  const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto res = wrapper->ptr->geometry()->device_idx_for_trans_idx(global_trans_idx);
+int32_t AUTDDeviceIdxForTransIdx(const int32_t global_trans_idx) {
+  const auto res = autd::core::Geometry::device_idx_for_trans_idx(global_trans_idx);
   return static_cast<int32_t>(res);
 }
 void AUTDTransPositionByGlobal(const void* const handle, const int32_t global_trans_idx, double* x, double* y, double* z) {
@@ -283,16 +282,17 @@ void AUTDGainNull(void** gain) {
   auto* g = GainCreate(autd::gain::Null::create());
   *gain = g;
 }
+
 void AUTDGainGrouped(void** gain) {
   auto* g = GainCreate(autd::gain::Grouped::create());
   *gain = g;
 }
 
-void AUTDGainGroupedAdd(const void* grouped_gain, const int32_t id, const void* gain) {
+void AUTDGainGroupedAdd(const void* grouped_gain, const int32_t device_id, const void* gain) {
   const auto* gg = static_cast<const GainWrapper*>(grouped_gain);
-  const auto* ing = static_cast<const GainWrapper*>(gain);
+  const auto* g = static_cast<const GainWrapper*>(gain);
   auto* pgg = dynamic_cast<autd::gain::Grouped*>(gg->ptr.get());
-  pgg->add(id, ing->ptr);
+  pgg->add(device_id, g->ptr);
 }
 
 void AUTDGainFocalPoint(void** gain, const double x, const double y, const double z, const uint8_t duty) {
