@@ -160,7 +160,7 @@ CUDAバックエンドをビルドする場合, [CUDA Toolkit](https://developer
 ```
   cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_CUDA_BACKEND=ON
 ```
-なお,  CUDA Toolkit version 11.4.100で動作を確認している.
+なお,  CUDA Toolkit version 11.5.50で動作を確認している.
 
 ### ArrayFire Backend
 
