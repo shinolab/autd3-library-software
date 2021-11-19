@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Gain - AUTD3 Developers Manual v1.9.1</title>
+        <title>Gain - AUTD3 Developers Manual v1.9.2</title>
         <!-- Custom HTML head -->
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
@@ -106,7 +106,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">AUTD3 Developers Manual v1.9.1</h1>
+                    <h1 class="menu-title">AUTD3 Developers Manual v1.9.2</h1>
 
                     <div class="right-buttons">
                         <a href="../../print.html" title="Print this book" aria-label="Print this book">
@@ -259,7 +259,7 @@ cmake --install . --prefix D:\lib\openblas -v
 <p>To build a CUDA backend, install <a href="https://developer.nvidia.com/cuda-toolkit">CUDA Toolkit</a> and set <code>BUILD_CUDA_BACKEND</code> flag in CMake.</p>
 <pre><code class="language-cpp">  cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_CUDA_BACKEND=ON
 </code></pre>
-<p>We have confirmed that it works with CUDA Toolkit version 11.4.100.</p>
+<p>We have confirmed that it works with CUDA Toolkit version 11.5.50.</p>
 <h3 id="arrayfire-backend"><a class="header" href="#arrayfire-backend">ArrayFire Backend</a></h3>
 <p>To build a ArrayFire backend, install [ArrayFire]https://arrayfire.com) and set <code>BUILD_ARRAYFIRE_BACKEND</code> flag in CMake.</p>
 <pre><code class="language-cpp">  cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_ARRAYFIRE_BACKEND=ON
@@ -267,13 +267,7 @@ cmake --install . --prefix D:\lib\openblas -v
 <p>We have confirmed that it works with CUDA Toolkit version 3.8.0.</p>
 <h2 id="grouped"><a class="header" href="#grouped">Grouped</a></h2>
 <p><code>Grouped</code> Gain is a <code>Gain</code> that allows you to use different <code>Gain</code>s for each device when using multiple devices.</p>
-<p>In order to use <code>Grouped</code> Gain, you should group devices with the third argument of <code>add_device</code> in advance.</p>
-<pre><code class="language-cpp">autd-&gt;geometry()-&gt;add_device(pos1, rot1, 0);
-autd-&gt;geometry()-&gt;add_device(pos2, rot2, 0);
-autd-&gt;geometry()-&gt;add_device(pos3, rot3, 1);
-</code></pre>
-<p>In the example above, the first and second devices are in group 0, and the third device is in group 1.</p>
-<p>In <code>Grouped</code>, you can associate an arbitrary <code>Gain</code> to this group number.</p>
+<p>In <code>Grouped</code>, you can associate an arbitrary <code>Gain</code> to device id.</p>
 <pre><code class="language-cpp">#include &quot;autd3/gain/eigen_backend.hpp&quot;
 #include &quot;autd3/gain/holo.hpp&quot;
 
@@ -286,7 +280,7 @@ autd-&gt;geometry()-&gt;add_device(pos3, rot3, 1);
   g-&gt;add(0, g0);
   g-&gt;add(1, g1);
 </code></pre>
-<p>In the above case, group 0 uses <code>Gain g0</code> and group 1 uses <code>Gain g1</code>.</p>
+<p>In the above case, device 0 uses <code>Gain g0</code> and device 1 uses <code>Gain g1</code>.</p>
 <h2 id="create-custom-gain-tutorial"><a class="header" href="#create-custom-gain-tutorial">Create Custom Gain Tutorial</a></h2>
 <p>By inheriting from the <code>Gain</code> class, you can create your own <code>Gain</code>.
 In this section, we will define <code>Focus</code> which generates a single focus.</p>

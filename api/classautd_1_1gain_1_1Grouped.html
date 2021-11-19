@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">1.9.1</span>
+   &#160;<span id="projectnumber">1.9.2</span>
    </div>
   </td>
  </tr>
@@ -100,9 +100,9 @@ Collaboration diagram for autd::gain::Grouped:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a2752d3e4469f13a844f3892244a99643"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1Grouped.html#a2752d3e4469f13a844f3892244a99643">add</a> (size_t id, const GainPtr &amp;gain)</td></tr>
-<tr class="memdesc:a2752d3e4469f13a844f3892244a99643"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decide which group outputs which Gain.  <a href="classautd_1_1gain_1_1Grouped.html#a2752d3e4469f13a844f3892244a99643">More...</a><br /></td></tr>
-<tr class="separator:a2752d3e4469f13a844f3892244a99643"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae35715b368e16986a7ce151a81a81481"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1Grouped.html#ae35715b368e16986a7ce151a81a81481">add</a> (size_t device_id, const GainPtr &amp;gain)</td></tr>
+<tr class="memdesc:ae35715b368e16986a7ce151a81a81481"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decide which device outputs which Gain.  <a href="classautd_1_1gain_1_1Grouped.html#ae35715b368e16986a7ce151a81a81481">More...</a><br /></td></tr>
+<tr class="separator:ae35715b368e16986a7ce151a81a81481"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a80892d427663ae5ac771bc94bad851c3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1Grouped.html#a80892d427663ae5ac771bc94bad851c3">calc</a> (const <a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;geometry) override</td></tr>
 <tr class="memdesc:a80892d427663ae5ac771bc94bad851c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate duty ratio and phase of each transducer.  <a href="classautd_1_1gain_1_1Grouped.html#a80892d427663ae5ac771bc94bad851c3">More...</a><br /></td></tr>
 <tr class="separator:a80892d427663ae5ac771bc94bad851c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -179,7 +179,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="gain_2primitive_8hpp_source.html#l00050">50</a> of file <a class="el" href="gain_2primitive_8hpp_source.html">primitive.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="gain_2primitive_8hpp_source.html#l00049">49</a> of file <a class="el" href="gain_2primitive_8hpp_source.html">primitive.hpp</a>.</p>
 
 </div>
 </div>
@@ -261,8 +261,8 @@ Static Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a2752d3e4469f13a844f3892244a99643"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2752d3e4469f13a844f3892244a99643">&#9670;&nbsp;</a></span>add()</h2>
+<a id="ae35715b368e16986a7ce151a81a81481"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae35715b368e16986a7ce151a81a81481">&#9670;&nbsp;</a></span>add()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -271,7 +271,7 @@ Static Public Member Functions</h2></td></tr>
           <td class="memname">void autd::gain::Grouped::add </td>
           <td>(</td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>id</em>, </td>
+          <td class="paramname"><em>device_id</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -287,15 +287,14 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Decide which group outputs which Gain. </p>
+<p>Decide which device outputs which Gain. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">id</td><td>group id </td></tr>
-    <tr><td class="paramname">gain</td><td>gain</td></tr>
+    <tr><td class="paramname">device_id</td><td>device id </td></tr>
+    <tr><td class="paramname">gain</td><td>gain </td></tr>
   </table>
   </dd>
 </dl>
-<p>group ID must be specified in Geometry::AddDevice() in advance </p>
 
 </div>
 </div>

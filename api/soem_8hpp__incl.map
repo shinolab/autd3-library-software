@@ -1,8 +1,9 @@
 <map id="include/autd3/link/soem.hpp" name="include/autd3/link/soem.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="126,5,249,47"/>
+<area shape="rect" id="node1" title=" " alt="" coords="165,5,287,47"/>
 <area shape="rect" id="node2" title=" " alt="" coords="5,95,84,121"/>
-<area shape="rect" id="node3" title=" " alt="" coords="220,169,288,196"/>
+<area shape="rect" id="node3" title=" " alt="" coords="259,169,327,196"/>
 <area shape="rect" id="node4" title=" " alt="" coords="160,95,215,121"/>
-<area shape="rect" id="node5" title=" " alt="" coords="239,95,298,121"/>
-<area shape="rect" id="node6" href="$link_8hpp.html" title=" " alt="" coords="322,95,453,121"/>
+<area shape="rect" id="node5" title=" " alt="" coords="239,95,291,121"/>
+<area shape="rect" id="node6" title=" " alt="" coords="315,95,374,121"/>
+<area shape="rect" id="node7" href="$link_8hpp.html" title=" " alt="" coords="398,95,529,121"/>
 </map>

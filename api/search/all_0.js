@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['add_0',['add',['../classautd_1_1gain_1_1Grouped.html#a2752d3e4469f13a844f3892244a99643',1,'autd::gain::Grouped']]],
-  ['add_5fdevice_1',['add_device',['../classautd_1_1core_1_1Geometry.html#a3d74911ca7416550a7ea09dfc110acfd',1,'autd::core::Geometry::add_device(const Vector3 &amp;position, const Vector3 &amp;euler_angles, const size_t group=0)'],['../classautd_1_1core_1_1Geometry.html#a0b127b1087f41b026a0b95af852ef5fe',1,'autd::core::Geometry::add_device(const Vector3 &amp;position, const Quaternion &amp;quaternion, const size_t group=0)']]],
+  ['add_0',['add',['../classautd_1_1gain_1_1Grouped.html#ae35715b368e16986a7ce151a81a81481',1,'autd::gain::Grouped']]],
+  ['add_5fdevice_1',['add_device',['../classautd_1_1core_1_1Geometry.html#af6d7b6e4d16449ee2768526cf7597bca',1,'autd::core::Geometry::add_device(const Vector3 &amp;position, const Vector3 &amp;euler_angles)'],['../classautd_1_1core_1_1Geometry.html#a84d081cbb1583e075fcd10a63e8dbc3d',1,'autd::core::Geometry::add_device(const Vector3 &amp;position, const Quaternion &amp;quaternion)']]],
   ['add_5fgain_2',['add_gain',['../classautd_1_1Controller_1_1STMController.html#a7b1402356b08dcbbd8e237faebe2ccc7',1,'autd::Controller::STMController::add_gain()'],['../classautd_1_1core_1_1GainSequence.html#a0f7825ba1af13b25e5a77b00746a41dd',1,'autd::core::GainSequence::add_gain()']]],
   ['add_5fpoint_3',['add_point',['../classautd_1_1core_1_1PointSequence.html#aab882b35b1f4bbf562690b6101eb5e7a',1,'autd::core::PointSequence']]],
   ['add_5fpoints_4',['add_points',['../classautd_1_1core_1_1PointSequence.html#a96f45150910c23b6de0a787ed8215ddd',1,'autd::core::PointSequence::add_points()'],['../classautd_1_1core_1_1GainSequence.html#a67fabfb054c4a860cb991efe3106e048',1,'autd::core::GainSequence::add_points()']]],

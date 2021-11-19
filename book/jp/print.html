@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>AUTD3 Developers Manual v1.9.1</title>
+        <title>AUTD3 Developers Manual v1.9.2</title>
         <meta name="robots" content="noindex" />
         <!-- Custom HTML head -->
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
@@ -107,7 +107,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">AUTD3 Developers Manual v1.9.1</h1>
+                    <h1 class="menu-title">AUTD3 Developers Manual v1.9.2</h1>
 
                     <div class="right-buttons">
                         <a href="print.html" title="Print this book" aria-label="Print this book">
@@ -759,7 +759,7 @@ cmake --install . --prefix D:\lib\openblas -v
 <p>CUDAバックエンドをビルドする場合, <a href="https://developer.nvidia.com/cuda-toolkit">CUDA Toolkit</a>をインストールし, CMakeで<code>BUILD_CUDA_BACKEND</code>フラグをOnにすれば良い.</p>
 <pre><code>  cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_CUDA_BACKEND=ON
 </code></pre>
-<p>なお,  CUDA Toolkit version 11.4.100で動作を確認している.</p>
+<p>なお,  CUDA Toolkit version 11.5.50で動作を確認している.</p>
 <h3 id="arrayfire-backend"><a class="header" href="#arrayfire-backend">ArrayFire Backend</a></h3>
 <p>ArrayFireバックエンドをビルドする場合, <a href="https://arrayfire.com/">ArrayFire</a>をインストールし<sup class="footnote-reference"><a href="#fn_af">2</a></sup>, CMakeで<code>BUILD_ARRAYFIRE_BACKEND</code>フラグをOnにすれば良い.</p>
 <pre><code>  cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_ARRAYFIRE_BACKEND=ON
@@ -768,13 +768,7 @@ cmake --install . --prefix D:\lib\openblas -v
 <h2 id="grouped"><a class="header" href="#grouped">Grouped</a></h2>
 <p><code>Grouped</code>は複数のデバイスを使用する際に,
 各デバイスで別々の<code>Gain</code>を使用するための<code>Gain</code>である.</p>
-<p><code>Grouped</code>を使用するためには, 予め<code>add_device</code>の第3引数でデバイスをグルーピングしておく必要がある.</p>
-<pre><code class="language-cpp">autd-&gt;geometry()-&gt;add_device(pos1, rot1, 0);
-autd-&gt;geometry()-&gt;add_device(pos2, rot2, 0);
-autd-&gt;geometry()-&gt;add_device(pos3, rot3, 1);
-</code></pre>
-<p>上の例だと, 1,2番目のデバイスはグループ0, 3番めのデバイスはグループ1になる.</p>
-<p><code>Grouped</code>では, このグループ番号と任意の<code>Gain</code>を紐付けて使用する.</p>
+<p><code>Grouped</code>では, デバイスIDと任意の<code>Gain</code>を紐付けて使用する.</p>
 <pre><code class="language-cpp">#include &quot;autd3/gain/eigen_backend.hpp&quot;
 #include &quot;autd3/gain/holo.hpp&quot;
 
@@ -787,7 +781,7 @@ autd-&gt;geometry()-&gt;add_device(pos3, rot3, 1);
   g-&gt;add(0, g0);
   g-&gt;add(1, g1);
 </code></pre>
-<p>上の場合は, グループ0が<code>Gain g0</code>, グループ1が<code>Gain g1</code>を使用する.</p>
+<p>上の場合は, デバイス0が<code>Gain g0</code>, デバイス1が<code>Gain g1</code>を使用する.</p>
 <h2 id="create-custom-gain-tutorial"><a class="header" href="#create-custom-gain-tutorial">Create Custom Gain Tutorial</a></h2>
 <p><code>Gain</code>クラスを継承することで独自の<code>Gain</code>を作成することができる.
 ここでは, <code>FocalPoint</code>と同じように単一焦点を生成する<code>Focus</code>を実際に定義してみることにする.</p>
@@ -1430,14 +1424,14 @@ main()
 <h2 id="installation-3"><a class="header" href="#installation-3">Installation</a></h2>
 <p><a href="https://crates.io/crates/autd3">crate.io</a>で公開しているので, <code>cargo.toml</code>にて以下のようにすれば良い.</p>
 <pre><code>[dependencies]
-autd3 = &quot;1.9.1&quot;
+autd3 = &quot;1.9.2&quot;
 </code></pre>
 <p>また, 各種Link, Gain等は別crateとして公開しているので必要に応じてdependenciesに追加すること.</p>
 <pre><code>[dependencies]
-autd3-soem-link = &quot;1.9.0&quot;
-autd3-twincat-link = &quot;1.9.0&quot;
-autd3-emulator-link = &quot;1.9.0&quot;
-autd3-holo-gain = &quot;1.9.0&quot;
+autd3-soem-link = &quot;1.9.2&quot;
+autd3-twincat-link = &quot;1.9.2&quot;
+autd3-emulator-link = &quot;1.9.2&quot;
+autd3-holo-gain = &quot;1.9.2&quot;
 </code></pre>
 <p>さらに, 適当な非同期ランタイムが必要になる. 以下の例ではtokioを用いる.</p>
 <pre><code>[dependencies]
@@ -1577,22 +1571,6 @@ x, y, zは位置で, qw, qx, qy, qzは回転を表すクオータニオンであ
 <tr><td>qz</td><td>double</td><td>in</td><td>quaternion of rotation</td></tr>
 <tr><td>gid</td><td>int32_t</td><td>in</td><td>group Id</td></tr>
 <tr><td>return</td><td>int32_t</td><td>-</td><td>Device Id</td></tr>
-</tbody></table>
-<h2 id="autddeletedevice-autd3capi"><a class="header" href="#autddeletedevice-autd3capi">AUTDDeleteDevice (autd3capi)</a></h2>
-<p>Controllerから指定されたインデックスのDeviceを削除する.
-handleは<code>AUTDCreateController</code>で作成したものを使う.</p>
-<p>この関数は削除されたDeviceのIdを返す.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>idx</td><td>int32_t</td><td>in</td><td>Device index</td></tr>
-<tr><td>return</td><td>int32_t</td><td>-</td><td>Deleted device Id</td></tr>
-</tbody></table>
-<h2 id="autdcleardevices-autd3capi"><a class="header" href="#autdcleardevices-autd3capi">AUTDClearDevices (autd3capi)</a></h2>
-<p>Controllerから全てのDeviceを削除する.
-handleは<code>AUTDCreateController</code>で作成したものを使う.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>return</td><td>void</td><td>-</td><td>nothing</td></tr>
 </tbody></table>
 <h2 id="autdclosecontroller-autd3capi"><a class="header" href="#autdclosecontroller-autd3capi">AUTDCloseController (autd3capi)</a></h2>
 <p>ControllerをCloseする. handleは<code>AUTDCreateController</code>で作成したものを使う.</p>
@@ -1840,10 +1818,8 @@ handleは<code>AUTDCreateController</code>で作成したものを使う.</p>
 <tr><td>return</td><td>int32_t</td><td>-</td><td>number of transducers</td></tr>
 </tbody></table>
 <h2 id="autddeviceidxfortransidx-autd3capi"><a class="header" href="#autddeviceidxfortransidx-autd3capi">AUTDDeviceIdxForTransIdx (autd3capi)</a></h2>
-<p>グローバルな振動子のインデックスをDeviceのインデックスに変換する.
-handleは<code>AUTDCreateController</code>で作成したものを使う.</p>
+<p>グローバルな振動子のインデックスをDeviceのインデックスに変換する.</p>
 <table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
 <tr><td>global_trans_idx</td><td>int32_t</td><td>in</td><td>global transducer index</td></tr>
 <tr><td>return</td><td>int32_t</td><td>-</td><td>device index</td></tr>
 </tbody></table>
@@ -1950,12 +1926,10 @@ listを開放する.</p>
 </tbody></table>
 <h2 id="autdgaingroupedadd-autd3capi"><a class="header" href="#autdgaingroupedadd-autd3capi">AUTDGainGroupedAdd (autd3capi)</a></h2>
 <p>Gain::GroupedにGainを追加する.
-<code>grouped_gain</code>は<code>AUTDGainGrouped</code>で作成したものを使う. 
-また, idには<code>AUTDAddDevice</code>, または, <code>AUTDAddDeviceQuaternion</code>で指定したGroup
-Idを使用する.</p>
+<code>grouped_gain</code>は<code>AUTDGainGrouped</code>で作成したものを使う. </p>
 <table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
 <tr><td>grouped_gain</td><td>void*</td><td>in</td><td>pointer to Grouped Gain</td></tr>
-<tr><td>id</td><td>int32_t</td><td>in</td><td>Groupe Id</td></tr>
+<tr><td>device_id</td><td>int32_t</td><td>in</td><td>Device Id</td></tr>
 <tr><td>gain</td><td>void*</td><td>in</td><td>GainPtr</td></tr>
 <tr><td>return</td><td>void</td><td>-</td><td>nothing</td></tr>
 </tbody></table>

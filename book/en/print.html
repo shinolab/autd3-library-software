@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>AUTD3 Developers Manual v1.9.1</title>
+        <title>AUTD3 Developers Manual v1.9.2</title>
         <meta name="robots" content="noindex" />
         <!-- Custom HTML head -->
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
@@ -107,7 +107,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">AUTD3 Developers Manual v1.9.1</h1>
+                    <h1 class="menu-title">AUTD3 Developers Manual v1.9.2</h1>
 
                     <div class="right-buttons">
                         <a href="print.html" title="Print this book" aria-label="Print this book">
@@ -729,7 +729,7 @@ cmake --install . --prefix D:\lib\openblas -v
 <p>To build a CUDA backend, install <a href="https://developer.nvidia.com/cuda-toolkit">CUDA Toolkit</a> and set <code>BUILD_CUDA_BACKEND</code> flag in CMake.</p>
 <pre><code class="language-cpp">  cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_CUDA_BACKEND=ON
 </code></pre>
-<p>We have confirmed that it works with CUDA Toolkit version 11.4.100.</p>
+<p>We have confirmed that it works with CUDA Toolkit version 11.5.50.</p>
 <h3 id="arrayfire-backend"><a class="header" href="#arrayfire-backend">ArrayFire Backend</a></h3>
 <p>To build a ArrayFire backend, install [ArrayFire]https://arrayfire.com) and set <code>BUILD_ARRAYFIRE_BACKEND</code> flag in CMake.</p>
 <pre><code class="language-cpp">  cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_ARRAYFIRE_BACKEND=ON
@@ -737,13 +737,7 @@ cmake --install . --prefix D:\lib\openblas -v
 <p>We have confirmed that it works with CUDA Toolkit version 3.8.0.</p>
 <h2 id="grouped"><a class="header" href="#grouped">Grouped</a></h2>
 <p><code>Grouped</code> Gain is a <code>Gain</code> that allows you to use different <code>Gain</code>s for each device when using multiple devices.</p>
-<p>In order to use <code>Grouped</code> Gain, you should group devices with the third argument of <code>add_device</code> in advance.</p>
-<pre><code class="language-cpp">autd-&gt;geometry()-&gt;add_device(pos1, rot1, 0);
-autd-&gt;geometry()-&gt;add_device(pos2, rot2, 0);
-autd-&gt;geometry()-&gt;add_device(pos3, rot3, 1);
-</code></pre>
-<p>In the example above, the first and second devices are in group 0, and the third device is in group 1.</p>
-<p>In <code>Grouped</code>, you can associate an arbitrary <code>Gain</code> to this group number.</p>
+<p>In <code>Grouped</code>, you can associate an arbitrary <code>Gain</code> to device id.</p>
 <pre><code class="language-cpp">#include &quot;autd3/gain/eigen_backend.hpp&quot;
 #include &quot;autd3/gain/holo.hpp&quot;
 
@@ -756,7 +750,7 @@ autd-&gt;geometry()-&gt;add_device(pos3, rot3, 1);
   g-&gt;add(0, g0);
   g-&gt;add(1, g1);
 </code></pre>
-<p>In the above case, group 0 uses <code>Gain g0</code> and group 1 uses <code>Gain g1</code>.</p>
+<p>In the above case, device 0 uses <code>Gain g0</code> and device 1 uses <code>Gain g1</code>.</p>
 <h2 id="create-custom-gain-tutorial"><a class="header" href="#create-custom-gain-tutorial">Create Custom Gain Tutorial</a></h2>
 <p>By inheriting from the <code>Gain</code> class, you can create your own <code>Gain</code>.
 In this section, we will define <code>Focus</code> which generates a single focus.</p>
@@ -1374,14 +1368,14 @@ Therefore, some functions may be different from C++ SDK.</p>
 <h2 id="installation-3"><a class="header" href="#installation-3">Installation</a></h2>
 <p>rust-autd is available at <a href="https://crates.io/crates/autd3">crate.io</a>.</p>
 <pre><code>[dependencies]
-autd3 = &quot;1.9.1&quot;
+autd3 = &quot;1.9.2&quot;
 </code></pre>
 <p>links, gains, etc. are published as separate crates, so please add them to dependencies if necessary.</p>
 <pre><code>[dependencies]
-autd3-soem-link = &quot;1.9.0&quot;
-autd3-twincat-link = &quot;1.9.0&quot;
-autd3-emulator-link = &quot;1.9.0&quot;
-autd3-holo-gain = &quot;1.9.0&quot;
+autd3-soem-link = &quot;1.9.2&quot;
+autd3-twincat-link = &quot;1.9.2&quot;
+autd3-emulator-link = &quot;1.9.2&quot;
+autd3-holo-gain = &quot;1.9.2&quot;
 </code></pre>
 <p>In addition, an asynchronous runtime is required. 
 In the following example, we use tokio.</p>
@@ -1523,22 +1517,6 @@ The <code>handle</code> is the controller created by <code>AUTDCreateController<
 <tr><td>qz</td><td>double</td><td>in</td><td>quaternion of rotation</td></tr>
 <tr><td>gid</td><td>int32_t</td><td>in</td><td>group Id</td></tr>
 <tr><td>return</td><td>int32_t</td><td>-</td><td>Device Id</td></tr>
-</tbody></table>
-<h2 id="autddeletedevice-autd3capi"><a class="header" href="#autddeletedevice-autd3capi">AUTDDeleteDevice (autd3capi)</a></h2>
-<p>Deletes a device at the specified index from the Controller.
-The <code>handle</code> is the controller created by <code>AUTDCreateController</code>.</p>
-<p>This function returns the ID of the deleted device.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>idx</td><td>int32_t</td><td>in</td><td>Device index</td></tr>
-<tr><td>return</td><td>int32_t</td><td>-</td><td>Deleted device Id</td></tr>
-</tbody></table>
-<h2 id="autdcleardevices-autd3capi"><a class="header" href="#autdcleardevices-autd3capi">AUTDClearDevices (autd3capi)</a></h2>
-<p>Deletes all device from the Controller.
-The <code>handle</code> is the controller created by <code>AUTDCreateController</code>.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>return</td><td>void</td><td>-</td><td>nothing</td></tr>
 </tbody></table>
 <h2 id="autdclosecontroller-autd3capi"><a class="header" href="#autdclosecontroller-autd3capi">AUTDCloseController (autd3capi)</a></h2>
 <p>Close Controller.
@@ -1790,10 +1768,8 @@ The <code>handle</code> is the controller created by <code>AUTDCreateController<
 <tr><td>return</td><td>int32_t</td><td>-</td><td>number of transducers</td></tr>
 </tbody></table>
 <h2 id="autddeviceidxfortransidx-autd3capi"><a class="header" href="#autddeviceidxfortransidx-autd3capi">AUTDDeviceIdxForTransIdx (autd3capi)</a></h2>
-<p>Convert global transducer index to device index. 
-The <code>handle</code> is the controller created by <code>AUTDCreateController</code>.</p>
+<p>Convert global transducer index to device index. </p>
 <table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
 <tr><td>global_trans_idx</td><td>int32_t</td><td>in</td><td>global transducer index</td></tr>
 <tr><td>return</td><td>int32_t</td><td>-</td><td>device index</td></tr>
 </tbody></table>
@@ -1897,11 +1873,10 @@ Use <code>p_firm_info_list</code> created by <code>AUTDGetFirmwareInfoListPointe
 </tbody></table>
 <h2 id="autdgaingroupedadd-autd3capi"><a class="header" href="#autdgaingroupedadd-autd3capi">AUTDGainGroupedAdd (autd3capi)</a></h2>
 <p>Add a Gain to Gain::Grouped.
-<code>grouped_gain</code> is the Gain created by <code>AUTDGainGrouped</code>. 
-<code>id</code> is specified by <code>AUTDAddDevice</code> or <code>AUTDAddDeviceQuaternion</code>.</p>
+<code>grouped_gain</code> is the Gain created by <code>AUTDGainGrouped</code>. </p>
 <table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
 <tr><td>grouped_gain</td><td>void*</td><td>in</td><td>pointer to Grouped Gain</td></tr>
-<tr><td>id</td><td>int32_t</td><td>in</td><td>Groupe Id</td></tr>
+<tr><td>device_id</td><td>int32_t</td><td>in</td><td>Device Id</td></tr>
 <tr><td>gain</td><td>void*</td><td>in</td><td>GainPtr</td></tr>
 <tr><td>return</td><td>void</td><td>-</td><td>nothing</td></tr>
 </tbody></table>

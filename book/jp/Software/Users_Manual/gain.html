@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Gain - AUTD3 Developers Manual v1.9.1</title>
+        <title>Gain - AUTD3 Developers Manual v1.9.2</title>
         <!-- Custom HTML head -->
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
@@ -106,7 +106,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">AUTD3 Developers Manual v1.9.1</h1>
+                    <h1 class="menu-title">AUTD3 Developers Manual v1.9.2</h1>
 
                     <div class="right-buttons">
                         <a href="../../print.html" title="Print this book" aria-label="Print this book">
@@ -262,7 +262,7 @@ cmake --install . --prefix D:\lib\openblas -v
 <p>CUDAバックエンドをビルドする場合, <a href="https://developer.nvidia.com/cuda-toolkit">CUDA Toolkit</a>をインストールし, CMakeで<code>BUILD_CUDA_BACKEND</code>フラグをOnにすれば良い.</p>
 <pre><code>  cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_CUDA_BACKEND=ON
 </code></pre>
-<p>なお,  CUDA Toolkit version 11.4.100で動作を確認している.</p>
+<p>なお,  CUDA Toolkit version 11.5.50で動作を確認している.</p>
 <h3 id="arrayfire-backend"><a class="header" href="#arrayfire-backend">ArrayFire Backend</a></h3>
 <p>ArrayFireバックエンドをビルドする場合, <a href="https://arrayfire.com/">ArrayFire</a>をインストールし<sup class="footnote-reference"><a href="#fn_af">2</a></sup>, CMakeで<code>BUILD_ARRAYFIRE_BACKEND</code>フラグをOnにすれば良い.</p>
 <pre><code>  cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_ARRAYFIRE_BACKEND=ON
@@ -271,13 +271,7 @@ cmake --install . --prefix D:\lib\openblas -v
 <h2 id="grouped"><a class="header" href="#grouped">Grouped</a></h2>
 <p><code>Grouped</code>は複数のデバイスを使用する際に,
 各デバイスで別々の<code>Gain</code>を使用するための<code>Gain</code>である.</p>
-<p><code>Grouped</code>を使用するためには, 予め<code>add_device</code>の第3引数でデバイスをグルーピングしておく必要がある.</p>
-<pre><code class="language-cpp">autd-&gt;geometry()-&gt;add_device(pos1, rot1, 0);
-autd-&gt;geometry()-&gt;add_device(pos2, rot2, 0);
-autd-&gt;geometry()-&gt;add_device(pos3, rot3, 1);
-</code></pre>
-<p>上の例だと, 1,2番目のデバイスはグループ0, 3番めのデバイスはグループ1になる.</p>
-<p><code>Grouped</code>では, このグループ番号と任意の<code>Gain</code>を紐付けて使用する.</p>
+<p><code>Grouped</code>では, デバイスIDと任意の<code>Gain</code>を紐付けて使用する.</p>
 <pre><code class="language-cpp">#include &quot;autd3/gain/eigen_backend.hpp&quot;
 #include &quot;autd3/gain/holo.hpp&quot;
 
@@ -290,7 +284,7 @@ autd-&gt;geometry()-&gt;add_device(pos3, rot3, 1);
   g-&gt;add(0, g0);
   g-&gt;add(1, g1);
 </code></pre>
-<p>上の場合は, グループ0が<code>Gain g0</code>, グループ1が<code>Gain g1</code>を使用する.</p>
+<p>上の場合は, デバイス0が<code>Gain g0</code>, デバイス1が<code>Gain g1</code>を使用する.</p>
 <h2 id="create-custom-gain-tutorial"><a class="header" href="#create-custom-gain-tutorial">Create Custom Gain Tutorial</a></h2>
 <p><code>Gain</code>クラスを継承することで独自の<code>Gain</code>を作成することができる.
 ここでは, <code>FocalPoint</code>と同じように単一焦点を生成する<code>Focus</code>を実際に定義してみることにする.</p>
