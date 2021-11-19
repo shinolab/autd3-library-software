@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/09/2021
+// Last Modified: 19/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -94,13 +94,11 @@ class Geometry {
    * @param position Position of transducer #0, which is the one at the lower-left corner.
    * (The lower-left corner is the one with the two missing transducers.)
    * @param euler_angles ZYZ convention euler angle of the device
-   * @param group Grouping ID of the device
    * @return an id of added device
    */
-  size_t add_device(const Vector3& position, const Vector3& euler_angles, const size_t group = 0) {
+  size_t add_device(const Vector3& position, const Vector3& euler_angles) {
     const auto device_id = this->_devices.size();
     this->_devices.emplace_back(position, euler_angles);
-    this->_group_map[device_id] = group;
     return device_id;
   }
 
@@ -108,30 +106,13 @@ class Geometry {
    * @brief Same as add_device(const Vector3&, const Vector3&, const size_t), but using quaternion rather than zyz euler angles.
    * @param position Position of transducer #0, which is the one at the lower-left corner.
    * @param quaternion rotation quaternion of the device.
-   * @param group Grouping ID
    * @return an id of added device
    */
-  size_t add_device(const Vector3& position, const Quaternion& quaternion, const size_t group = 0) {
+  size_t add_device(const Vector3& position, const Quaternion& quaternion) {
     const auto device_id = this->_devices.size();
     this->_devices.emplace_back(position, quaternion);
-    this->_group_map[device_id] = group;
     return device_id;
   }
-
-  /**
-   * @brief Delete device
-   * @param idx Index of the device to delete
-   * @return an index of deleted device
-   */
-  size_t del_device(const size_t idx) {
-    this->_devices.erase(this->_devices.begin() + idx);
-    return idx;
-  }
-
-  /**
-   * @brief Clear all devices
-   */
-  void clear_devices() { std::vector<Device>().swap(this->_devices); }
 
   /**
    * @brief ultrasound wavelength
@@ -152,11 +133,6 @@ class Geometry {
    * @brief Number of transducers
    */
   [[nodiscard]] size_t num_transducers() const noexcept { return this->num_devices() * NUM_TRANS_IN_UNIT; }
-
-  /**
-   * @brief Convert device ID into group ID
-   */
-  [[nodiscard]] size_t group_id_for_device_idx(const size_t device_idx) const { return this->_group_map.at(device_idx); }
 
   /**
    * @brief Position of a transducer specified by id
@@ -183,11 +159,6 @@ class Geometry {
   }
 
   /**
-   * @brief Normalized direction of a device
-   */
-  [[nodiscard]] const Vector3& direction(const size_t device_idx) const { return this->_devices[device_idx].z_direction; }
-
-  /**
    * @brief Normalized long-axis direction of a device
    */
   [[nodiscard]] const Vector3& x_direction(const size_t device_idx) const { return this->_devices[device_idx].x_direction; }
@@ -209,7 +180,6 @@ class Geometry {
 
  private:
   std::vector<Device> _devices;
-  std::map<size_t, size_t> _group_map;
   double _wavelength;
   double _attenuation;
 };
