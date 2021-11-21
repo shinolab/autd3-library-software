@@ -3,7 +3,7 @@
 // Created Date: 03/11/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/11/2021
+// Last Modified: 21/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -40,7 +40,7 @@ class CustomGain final : public autd::core::Gain {
     return std::make_shared<CustomGain>(raw_data);
   }
   void calc(const autd::core::GeometryPtr& geometry) override { this->_data = std::move(this->_raw_data); }
-  explicit CustomGain(std::vector<autd::DataArray> data) : autd::core::Gain(), _raw_data(std::move(data)) {}
+  explicit CustomGain(std::vector<autd::DataArray> data) : Gain(), _raw_data(std::move(data)) {}
   ~CustomGain() override = default;
   CustomGain(const CustomGain& v) noexcept = default;
   CustomGain& operator=(const CustomGain& obj) = default;
@@ -65,7 +65,5 @@ class CustomModulation final : public autd::modulation::Modulation {
     return std::make_shared<CustomModulation>(buffer, freq_div_ratio);
   }
   void calc() override {}
-  explicit CustomModulation(const std::vector<uint8_t>& buffer, const size_t freq_div_ratio) : autd::core::Modulation(freq_div_ratio) {
-    this->_buffer = buffer;
-  }
+  explicit CustomModulation(const std::vector<uint8_t>& buffer, const size_t freq_div_ratio) : Modulation(freq_div_ratio) { this->_buffer = buffer; }
 };
