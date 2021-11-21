@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/09/2021
+// Last Modified: 21/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -64,7 +64,7 @@ class RemoteTwinCATImpl final : public RemoteTwinCAT {
   void open() override;
   void close() override;
   void send(const uint8_t* buf, size_t size) override;
-  void read(uint8_t* rx, size_t buffer_len) override;
+  void receive(uint8_t* rx, size_t buffer_len) override;
   bool is_open() override;
 
  private:
@@ -125,14 +125,15 @@ void RemoteTwinCATImpl::send(const uint8_t* buf, const size_t size) {
   throw core::exception::LinkError(ss.str());
 }
 
-void RemoteTwinCATImpl::read(uint8_t* rx, const size_t buffer_len) {
+void RemoteTwinCATImpl::receive(uint8_t* rx, const size_t buffer_len) {
   const AmsAddr p_addr = {this->_net_id, PORT};
-  uint32_t read_bytes;
-  const auto ret = AdsSyncReadReqEx2(this->_port, &p_addr, INDEX_GROUP, INDEX_OFFSET_BASE_READ, static_cast<uint32_t>(buffer_len), rx, &read_bytes);
+  uint32_t receive_bytes;
+  const auto ret =
+      AdsSyncReadReqEx2(this->_port, &p_addr, INDEX_GROUP, INDEX_OFFSET_BASE_READ, static_cast<uint32_t>(buffer_len), rx, &receive_bytes);
   if (ret == 0) return;
 
   std::stringstream ss;
-  ss << "Error on reading data: " << std::hex << ret;
+  ss << "Error on receiving data: " << std::hex << ret;
   throw core::exception::LinkError(ss.str());
 }
 

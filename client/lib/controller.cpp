@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/11/2021
+// Last Modified: 21/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -60,7 +60,7 @@ bool& Controller::check_ack() noexcept { return this->_check_ack; }
 
 const std::vector<uint8_t>& Controller::fpga_info() {
   const auto num_devices = this->_geometry->num_devices();
-  this->_link->read(&_rx_buf[0], num_devices * core::EC_INPUT_FRAME_SIZE);
+  this->_link->receive(&_rx_buf[0], num_devices * core::EC_INPUT_FRAME_SIZE);
   for (size_t i = 0; i < num_devices; i++) this->_fpga_infos[i] = _rx_buf[2 * i];
   return _fpga_infos;
 }
@@ -109,7 +109,7 @@ bool Controller::wait_msg_processed(const uint8_t msg_id, const size_t max_trial
   const auto num_devices = this->_geometry->num_devices();
   const auto buffer_len = num_devices * core::EC_INPUT_FRAME_SIZE;
   for (size_t i = 0; i < max_trial; i++) {
-    this->_link->read(&_rx_buf[0], buffer_len);
+    this->_link->receive(&_rx_buf[0], buffer_len);
     if (core::Logic::is_msg_processed(num_devices, msg_id, &_rx_buf[0])) return true;
     auto wait = static_cast<size_t>(std::ceil(core::EC_TRAFFIC_DELAY * 1000.0 / core::EC_DEVICE_PER_FRAME * static_cast<double>(num_devices)));
     std::this_thread::sleep_for(std::chrono::milliseconds(wait));

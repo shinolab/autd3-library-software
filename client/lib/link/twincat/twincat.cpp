@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/09/2021
+// Last Modified: 21/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -43,7 +43,7 @@ class TwinCATImpl final : public TwinCAT {
   void open() override;
   void close() override;
   void send(const uint8_t* buf, size_t size) override;
-  void read(uint8_t* rx, size_t buffer_len) override;
+  void receive(uint8_t* rx, size_t buffer_len) override;
   bool is_open() override;
 
  private:
@@ -137,7 +137,7 @@ void TwinCATImpl::send(const uint8_t* buf, const size_t size) {
   throw core::exception::LinkError(ss.str());
 }
 
-void TwinCATImpl::read(uint8_t* rx, const size_t buffer_len) {
+void TwinCATImpl::receive(uint8_t* rx, const size_t buffer_len) {
   if (!this->is_open()) throw core::exception::LinkError("Link is closed");
 
   AmsAddr addr = {this->_net_id, PORT};
@@ -149,7 +149,7 @@ void TwinCATImpl::read(uint8_t* rx, const size_t buffer_len) {
   if (ret == 0) return;
 
   std::stringstream ss;
-  ss << "Error on reading data: " << std::hex << ret;
+  ss << "Error on receiving data: " << std::hex << ret;
   throw core::exception::LinkError(ss.str());
 }
 
@@ -159,7 +159,7 @@ void TwinCATImpl::open() {
 }
 void TwinCATImpl::close() { return; }
 void TwinCATImpl::send(const uint8_t*, size_t) { return; }
-void TwinCATImpl::read(uint8_t*, size_t) { return; }
+void TwinCATImpl::receive(uint8_t*, size_t) { return; }
 #endif  // TC_ADS
 
 }  // namespace autd::link

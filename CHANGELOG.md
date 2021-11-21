@@ -1,6 +1,7 @@
 # 1.9.3
 * Delete `Geometry::device_idx_for_trans_idx`, use `Geometry::global_to_local_idx` instead
     * Delete `AUTDDeviceIdxForTransIdx` from capi
+* Rename `link::read` to `receive`
 
 # 1.9.2
 * Fix #10
