@@ -3,7 +3,7 @@
 // Created Date: 13/08/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/11/2021
+// Last Modified: 21/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -44,7 +44,6 @@ template <typename P>
 class BackendTest : public testing::Test {
  protected:
   BackendTest() : _pool() {}
-  ~BackendTest() override {}
 
   P _pool;
 };
@@ -84,7 +83,7 @@ BackendTest<autd::gain::holo::MatrixBufferPool<autd::gain::holo::CuMatrix<double
 
 typedef Types<Eigen3BackendType BLASBackendType CUDABackendType ArrayFireBackendType> Implementations;
 
-TYPED_TEST_SUITE(BackendTest, Implementations);
+TYPED_TEST_SUITE(BackendTest, Implementations, );
 
 template <typename T>
 std::vector<double> random_vector(T n, const double minimum = -1.0, const double maximum = 1.0) {
@@ -738,9 +737,9 @@ TYPED_TEST(BackendTest, sigma_regularization) {
   auto tmp_t = random_vector_complex(m * n);
   auto tmp_a = random_vector_complex(m);
   std::vector<complex> expected;
-  for (auto j = 0; j < n; j++) {
+  for (size_t j = 0; j < n; j++) {
     double tmp = 0;
-    for (auto i = 0; i < m; i++) tmp += std::abs(tmp_t[i + j * m] * tmp_a[i]);
+    for (size_t i = 0; i < m; i++) tmp += std::abs(tmp_t[i + j * m] * tmp_a[i]);
     expected.emplace_back(std::pow(std::sqrt(tmp / static_cast<double>(m)), gamma), 0.0);
   }
 

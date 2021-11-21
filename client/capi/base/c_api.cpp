@@ -40,7 +40,7 @@
 
 namespace {
 std::string& LastError() {
-  static std::string msg("");
+  static std::string msg("");  // NOLINT
   return msg;
 }
 autd::Vector3 ToVec3(const double x, const double y, const double z) { return {x, y, z}; }
@@ -325,7 +325,7 @@ void AUTDModulationStatic(void** mod, const uint8_t duty) {
 void AUTDModulationCustom(void** mod, const uint8_t* const buf, const uint32_t size, const uint32_t freq_div) {
   std::vector<uint8_t> buffer;
   for (uint32_t i = 0; i < size; i++) buffer.emplace_back(buf[i]);
-  auto* m = ModulationCreate(CustomModulation::create(buffer, static_cast<size_t>(freq_div)));
+  auto* m = ModulationCreate(CustomModulation::create(buffer, freq_div));
   *mod = m;
 }
 void AUTDModulationSquare(void** mod, const int32_t freq, const uint8_t low, const uint8_t high, const double duty) {
