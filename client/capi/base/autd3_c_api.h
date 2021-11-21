@@ -90,8 +90,6 @@ EXPORT_AUTD void AUTDDeleteSequence(const void* seq);
 EXPORT_AUTD int32_t AUTDStop(const void* handle);
 EXPORT_AUTD int32_t AUTDPause(const void* handle);
 EXPORT_AUTD int32_t AUTDResume(const void* handle);
-EXPORT_AUTD int32_t AUTDSendGain(const void* handle, const void* gain);
-EXPORT_AUTD int32_t AUTDSendModulation(const void* handle, const void* mod);
 EXPORT_AUTD int32_t AUTDSendGainModulation(const void* handle, const void* gain, const void* mod);
 EXPORT_AUTD int32_t AUTDSendSequenceModulation(const void* handle, const void* seq, const void* mod);
 EXPORT_AUTD int32_t AUTDSendGainSequenceModulation(const void* handle, const void* seq, const void* mod);

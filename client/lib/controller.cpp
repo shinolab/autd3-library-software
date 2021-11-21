@@ -157,26 +157,33 @@ bool Controller::send(const core::ModulationPtr& mod) {
 }
 
 bool Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod) {
-  if (mod != nullptr) mod->build();
-  if (gain != nullptr) {
+  core::GainPtr g = gain;
+
+  if (mod != nullptr) {
+    mod->sent() = 0;
+    mod->build();
+  }
+  if (g != nullptr) {
     this->_props._output_enable = true;
     this->_props._op_mode = core::OP_MODE_NORMAL;
-    gain->build(this->_geometry);
+    g->build(this->_geometry);
   }
 
-  bool first = true;
   while (true) {
     const auto msg_id = core::Logic::pack_header(mod, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag(), &this->_tx_buf[0]);
-    const auto size = first ? core::Logic::pack_body(gain, &this->_tx_buf[0]) : core::Logic::pack_body(nullptr, &this->_tx_buf[0]);
-    first = false;
+    const auto size = core::Logic::pack_body(g, &this->_tx_buf[0]);
     this->_link->send(&this->_tx_buf[0], size);
     if (!wait_msg_processed(msg_id)) return false;
     if (mod == nullptr || mod->is_finished()) return true;
+    g = nullptr;
   }
 }
 
 bool Controller::send(const core::PointSequencePtr& seq, const core::ModulationPtr& mod) {
-  if (mod != nullptr) mod->build();
+  if (mod != nullptr) {
+    mod->sent() = 0;
+    mod->build();
+  }
 
   this->_props._output_enable = true;
   this->_props._op_mode = core::OP_MODE_SEQ;
@@ -192,7 +199,10 @@ bool Controller::send(const core::PointSequencePtr& seq, const core::ModulationP
 }
 
 bool Controller::send(const core::GainSequencePtr& seq, const core::ModulationPtr& mod) {
-  if (mod != nullptr) mod->build();
+  if (mod != nullptr) {
+    mod->sent() = 0;
+    mod->build();
+  }
 
   for (auto&& g : seq->gains()) g->build(this->_geometry);
 

@@ -51,7 +51,7 @@ void AUTDCreateController(void** out) { *out = ControllerCreate(autd::Controller
 bool AUTDOpenController(const void* const handle, void* const p_link) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   auto* link = static_cast<LinkWrapper*>(p_link);
-  auto link_ = std::move(link->ptr);
+  autd::LinkPtr link_ = std::move(link->ptr);
   LinkDelete(link);
   AUTD3_CAPI_TRY({
     wrapper->ptr->open(std::move(link_));
@@ -153,7 +153,7 @@ void AUTDSetAttenuation(const void* const handle, const double attenuation) {
 bool AUTDGetFPGAInfo(const void* handle, uint8_t* out) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   AUTD3_CAPI_TRY({
-    const auto res = wrapper->ptr->fpga_info();
+    const auto& res = wrapper->ptr->fpga_info();
     std::memcpy(out, &res[0], res.size());
     return true;
   })
@@ -391,7 +391,7 @@ bool AUTDSequenceAddPoints(const void* const seq, const double* const points, co
 }
 bool AUTDSequenceAddGain(const void* const seq, const void* const gain) {
   const auto* seq_w = static_cast<const SequenceWrapper*>(seq);
-  const auto g = gain == nullptr ? nullptr : static_cast<const GainWrapper*>(gain)->ptr;
+  const autd::GainPtr g = gain == nullptr ? nullptr : static_cast<const GainWrapper*>(gain)->ptr;
   AUTD3_CAPI_TRY({
     std::dynamic_pointer_cast<autd::core::GainSequence>(seq_w->ptr)->add_gain(g);
     return true;
@@ -447,33 +447,25 @@ int32_t AUTDResume(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   AUTD3_CAPI_TRY2(return wrapper->ptr->resume() ? 1 : 0)
 }
-int32_t AUTDSendGain(const void* const handle, const void* const gain) {
-  const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto g = gain == nullptr ? nullptr : static_cast<const GainWrapper*>(gain)->ptr;
-  AUTD3_CAPI_TRY(return wrapper->ptr->send(g) ? 1 : 0)
-}
-int32_t AUTDSendModulation(const void* const handle, const void* const mod) {
-  const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto m = mod == nullptr ? nullptr : static_cast<const ModulationWrapper*>(mod)->ptr;
-  AUTD3_CAPI_TRY(return wrapper->ptr->send(m) ? 1 : 0)
-}
 int32_t AUTDSendGainModulation(const void* const handle, const void* const gain, const void* const mod) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto g = gain == nullptr ? nullptr : static_cast<const GainWrapper*>(gain)->ptr;
-  const auto m = mod == nullptr ? nullptr : static_cast<const ModulationWrapper*>(mod)->ptr;
+  const autd::GainPtr g = gain == nullptr ? nullptr : static_cast<const GainWrapper*>(gain)->ptr;
+  const autd::ModulationPtr m = mod == nullptr ? nullptr : static_cast<const ModulationWrapper*>(mod)->ptr;
   AUTD3_CAPI_TRY(return wrapper->ptr->send(g, m) ? 1 : 0)
 }
 int32_t AUTDSendSequenceModulation(const void* const handle, const void* const seq, const void* const mod) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto s = seq == nullptr ? nullptr : static_cast<const SequenceWrapper*>(seq)->ptr;
-  const auto m = mod == nullptr ? nullptr : static_cast<const ModulationWrapper*>(mod)->ptr;
-  AUTD3_CAPI_TRY(return wrapper->ptr->send(std::dynamic_pointer_cast<autd::core::PointSequence>(s), m) ? 1 : 0)
+  const autd::PointSequencePtr s =
+      seq == nullptr ? nullptr : std::dynamic_pointer_cast<autd::core::PointSequence>(static_cast<const SequenceWrapper*>(seq)->ptr);
+  const autd::ModulationPtr m = mod == nullptr ? nullptr : static_cast<const ModulationWrapper*>(mod)->ptr;
+  AUTD3_CAPI_TRY(return wrapper->ptr->send(s, m) ? 1 : 0)
 }
 int32_t AUTDSendGainSequenceModulation(const void* const handle, const void* const seq, const void* const mod) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto s = seq == nullptr ? nullptr : static_cast<const SequenceWrapper*>(seq)->ptr;
-  const auto m = mod == nullptr ? nullptr : static_cast<const ModulationWrapper*>(mod)->ptr;
-  AUTD3_CAPI_TRY(return wrapper->ptr->send(std::dynamic_pointer_cast<autd::core::GainSequence>(s), m) ? 1 : 0)
+  const autd::GainSequencePtr s =
+      seq == nullptr ? nullptr : std::dynamic_pointer_cast<autd::core::GainSequence>(static_cast<const SequenceWrapper*>(seq)->ptr);
+  const autd::ModulationPtr m = mod == nullptr ? nullptr : static_cast<const ModulationWrapper*>(mod)->ptr;
+  AUTD3_CAPI_TRY(return wrapper->ptr->send(s, m) ? 1 : 0)
 }
 
 void AUTDSTMController(void** out, const void* handle) {
