@@ -48,7 +48,7 @@ ControllerPtr Controller::create() { return std::make_unique<Controller>(); }
 
 bool Controller::is_open() const { return this->_link != nullptr && this->_link->is_open(); }
 
-core::GeometryPtr& Controller::geometry() noexcept { return this->_geometry; }
+core::Geometry& Controller::geometry() noexcept { return this->_geometry; }
 
 bool& Controller::output_enable() noexcept { return this->_props._output_enable; }
 bool& Controller::silent_mode() noexcept { return this->_props._silent_mode; }
@@ -59,7 +59,7 @@ bool& Controller::output_balance() noexcept { return this->_props._output_balanc
 bool& Controller::check_ack() noexcept { return this->_check_ack; }
 
 const std::vector<uint8_t>& Controller::fpga_info() {
-  const auto num_devices = this->_geometry->num_devices();
+  const auto num_devices = this->_geometry.num_devices();
   this->_link->receive(&_rx_buf[0], num_devices * core::EC_INPUT_FRAME_SIZE);
   for (size_t i = 0; i < num_devices; i++) this->_fpga_infos[i] = _rx_buf[2 * i];
   return _fpga_infos;
@@ -73,12 +73,12 @@ bool Controller::update_ctrl_flag() {
 void Controller::open(core::LinkPtr link) {
   this->close();
 
-  this->_tx_buf = std::make_unique<uint8_t[]>(this->_geometry->num_devices() * core::EC_OUTPUT_FRAME_SIZE);
-  this->_rx_buf = std::make_unique<uint8_t[]>(this->_geometry->num_devices() * core::EC_INPUT_FRAME_SIZE);
+  this->_tx_buf = std::make_unique<uint8_t[]>(this->_geometry.num_devices() * core::EC_OUTPUT_FRAME_SIZE);
+  this->_rx_buf = std::make_unique<uint8_t[]>(this->_geometry.num_devices() * core::EC_INPUT_FRAME_SIZE);
 
-  this->_fpga_infos.resize(this->_geometry->num_devices());
-  this->_delay.resize(this->_geometry->num_devices());
-  this->_offset.resize(this->_geometry->num_devices());
+  this->_fpga_infos.resize(this->_geometry.num_devices());
+  this->_delay.resize(this->_geometry.num_devices());
+  this->_offset.resize(this->_geometry.num_devices());
   init_delay_offset();
 
   link->open();
@@ -86,7 +86,7 @@ void Controller::open(core::LinkPtr link) {
 }
 
 void Controller::init_delay_offset() {
-  for (size_t dev = 0; dev < this->_geometry->num_devices(); dev++) {
+  for (size_t dev = 0; dev < this->_geometry.num_devices(); dev++) {
     std::memset(&this->_delay[dev][0], 0x00, core::NUM_TRANS_IN_UNIT);
     std::memset(&this->_offset[dev][0], 0xFF, core::NUM_TRANS_IN_UNIT);
   }
@@ -106,7 +106,7 @@ bool Controller::send_header(const uint8_t msg_id) const {
 
 bool Controller::wait_msg_processed(const uint8_t msg_id, const size_t max_trial) const {
   if (!this->_check_ack) return true;
-  const auto num_devices = this->_geometry->num_devices();
+  const auto num_devices = this->_geometry.num_devices();
   const auto buffer_len = num_devices * core::EC_INPUT_FRAME_SIZE;
   for (size_t i = 0; i < max_trial; i++) {
     this->_link->receive(&_rx_buf[0], buffer_len);
@@ -220,26 +220,26 @@ bool Controller::send(const core::GainSequencePtr& seq, const core::ModulationPt
 }
 
 bool Controller::set_output_delay(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& delay) {
-  if (delay.size() != this->_geometry->num_devices()) throw core::exception::SetOutputConfigError("The number of devices is wrong");
+  if (delay.size() != this->_geometry.num_devices()) throw core::exception::SetOutputConfigError("The number of devices is wrong");
 
-  for (size_t dev = 0; dev < this->_geometry->num_devices(); dev++) std::memcpy(&this->_delay[dev][0], &delay[dev][0], core::NUM_TRANS_IN_UNIT);
+  for (size_t dev = 0; dev < this->_geometry.num_devices(); dev++) std::memcpy(&this->_delay[dev][0], &delay[dev][0], core::NUM_TRANS_IN_UNIT);
   return this->send_delay_offset();
 }
 
 bool Controller::set_duty_offset(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& offset) {
-  if (offset.size() != this->_geometry->num_devices()) throw core::exception::SetOutputConfigError("The number of devices is wrong");
+  if (offset.size() != this->_geometry.num_devices()) throw core::exception::SetOutputConfigError("The number of devices is wrong");
 
-  for (size_t dev = 0; dev < this->_geometry->num_devices(); dev++) std::memcpy(&this->_offset[dev][0], &offset[dev][0], core::NUM_TRANS_IN_UNIT);
+  for (size_t dev = 0; dev < this->_geometry.num_devices(); dev++) std::memcpy(&this->_offset[dev][0], &offset[dev][0], core::NUM_TRANS_IN_UNIT);
 
   return this->send_delay_offset();
 }
 
 bool Controller::set_delay_offset(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& delay,
                                   const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& offset) {
-  if (delay.size() != this->_geometry->num_devices() || offset.size() != this->_geometry->num_devices())
+  if (delay.size() != this->_geometry.num_devices() || offset.size() != this->_geometry.num_devices())
     throw core::exception::SetOutputConfigError("The number of devices is wrong");
 
-  for (size_t dev = 0; dev < this->_geometry->num_devices(); dev++) {
+  for (size_t dev = 0; dev < this->_geometry.num_devices(); dev++) {
     std::memcpy(&this->_delay[dev][0], &delay[dev][0], core::NUM_TRANS_IN_UNIT);
     std::memcpy(&this->_offset[dev][0], &offset[dev][0], core::NUM_TRANS_IN_UNIT);
   }
@@ -258,7 +258,7 @@ bool Controller::send_delay_offset() const {
 std::vector<FirmwareInfo> Controller::firmware_info_list() {
   auto concat_byte = [](const uint8_t high, const uint16_t low) { return static_cast<uint16_t>(static_cast<uint16_t>(high) << 8 | low); };
 
-  const auto num_devices = this->_geometry->num_devices();
+  const auto num_devices = this->_geometry.num_devices();
   const auto check_ack = this->_check_ack;
   this->_check_ack = true;
 
@@ -314,7 +314,7 @@ std::unique_ptr<Controller::STMController> Controller::stm() {
 void Controller::STMController::add_gain(const core::GainPtr& gain) const {
   gain->build(this->_p_cnt->_geometry);
 
-  auto build_buf = std::make_unique<uint8_t[]>(this->_p_cnt->_geometry->num_devices() * core::EC_OUTPUT_FRAME_SIZE);
+  auto build_buf = std::make_unique<uint8_t[]>(this->_p_cnt->_geometry.num_devices() * core::EC_OUTPUT_FRAME_SIZE);
   core::Logic::pack_header(nullptr, this->_p_cnt->_props.fpga_ctrl_flag() | core::OUTPUT_ENABLE, this->_p_cnt->_props.cpu_ctrl_flag(), &build_buf[0]);
   const auto size = core::Logic::pack_body(gain, &build_buf[0]);
 

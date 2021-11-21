@@ -129,10 +129,10 @@ class Logic {
    * \return size_t size to send
    * \details This function must be called after pack_header
    */
-  static size_t pack_body(const PointSequencePtr& seq, const GeometryPtr& geometry, uint8_t* data) {
+  static size_t pack_body(const PointSequencePtr& seq, const Geometry& geometry, uint8_t* data) {
     if (seq == nullptr || seq->sent() == seq->control_points().size()) return sizeof(GlobalHeader);
 
-    const auto num_devices = geometry->num_devices();
+    const auto num_devices = geometry.num_devices();
     auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(GlobalHeader));
     size_t offset = 1;
     auto* header = reinterpret_cast<GlobalHeader*>(data);
@@ -141,7 +141,7 @@ class Logic {
       header->cpu_ctrl_flags |= SEQ_BEGIN;
       for (size_t device = 0; device < num_devices; device++) {
         cursor[device * NUM_TRANS_IN_UNIT + 1] = static_cast<uint16_t>(seq->sampling_freq_div_ratio() - 1);
-        cursor[device * NUM_TRANS_IN_UNIT + 2] = static_cast<uint16_t>(geometry->wavelength() * 1000);
+        cursor[device * NUM_TRANS_IN_UNIT + 2] = static_cast<uint16_t>(geometry.wavelength() * 1000);
       }
       offset += 4;
     }
@@ -149,14 +149,15 @@ class Logic {
         std::clamp(seq->control_points().size() - seq->sent(), size_t{0}, sizeof(uint16_t) * (NUM_TRANS_IN_UNIT - offset) / sizeof(SeqFocus));
     if (seq->sent() + send_size >= seq->control_points().size()) header->cpu_ctrl_flags |= SEQ_END;
 
-    const auto fixed_num_unit = 256.0 / geometry->wavelength();
-    for (size_t device = 0; device < num_devices; device++, cursor += NUM_TRANS_IN_UNIT) {
+    const auto fixed_num_unit = 256.0 / geometry.wavelength();
+    for (const auto& device : geometry) {
       cursor[0] = static_cast<uint16_t>(send_size);
       auto* focus_cursor = reinterpret_cast<SeqFocus*>(&cursor[offset]);
       for (size_t i = seq->sent(); i < seq->sent() + send_size; i++, focus_cursor++) {
-        const auto v = (geometry->to_local_position(device, seq->control_point(i)) * fixed_num_unit).cast<int32_t>();
+        const auto v = (device.to_local_position(seq->control_point(i)) * fixed_num_unit).cast<int32_t>();
         focus_cursor->set(v.x(), v.y(), v.z(), seq->duty(i));
       }
+      cursor += NUM_TRANS_IN_UNIT;
     }
     seq->sent() += send_size;
     return sizeof(GlobalHeader) + num_devices * NUM_TRANS_IN_UNIT * sizeof(uint16_t);
@@ -170,10 +171,10 @@ class Logic {
    * \return size_t size to send
    * \details This function must be called after pack_header
    */
-  static size_t pack_body(const GainSequencePtr& seq, const GeometryPtr& geometry, uint8_t* data) {
+  static size_t pack_body(const GainSequencePtr& seq, const Geometry& geometry, uint8_t* data) {
     if (seq == nullptr || seq->sent() >= seq->gains().size() + 1) return sizeof(GlobalHeader);
 
-    const auto num_devices = geometry->num_devices();
+    const auto num_devices = geometry.num_devices();
     auto* header = reinterpret_cast<GlobalHeader*>(data);
     header->cpu_ctrl_flags |= WRITE_BODY;
     const auto seq_sent = static_cast<size_t>(seq->gain_mode());

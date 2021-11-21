@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/11/2021
+// Last Modified: 21/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -69,13 +69,7 @@ class Controller {
   class STMController;
   class STMTimer;
 
-  Controller() noexcept
-      : _link(nullptr),
-        _geometry(std::make_unique<core::Geometry>()),
-        _props(ControllerProps()),
-        _check_ack(false),
-        _tx_buf(nullptr),
-        _rx_buf(nullptr) {}
+  Controller() noexcept : _link(nullptr), _props(ControllerProps()), _check_ack(false), _tx_buf(nullptr), _rx_buf(nullptr) {}
   ~Controller() noexcept;
   Controller(const Controller& v) noexcept = delete;
   Controller& operator=(const Controller& obj) = delete;
@@ -92,7 +86,7 @@ class Controller {
   /**
    * @brief Geometry of the devices
    */
-  [[nodiscard]] core::GeometryPtr& geometry() noexcept;
+  [[nodiscard]] core::Geometry& geometry() noexcept;
 
   /**
    * @brief Output enable
@@ -319,7 +313,7 @@ class Controller {
   [[nodiscard]] bool wait_msg_processed(uint8_t msg_id, size_t max_trial = 50) const;
 
   core::LinkPtr _link;
-  core::GeometryPtr _geometry;
+  core::Geometry _geometry;
   ControllerProps _props;
   bool _check_ack;
   std::unique_ptr<uint8_t[]> _tx_buf;

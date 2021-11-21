@@ -45,9 +45,7 @@ EXPORT_AUTD int32_t AUTDSetDutyOffset(const void* handle, const uint8_t* offset)
 EXPORT_AUTD int32_t AUTDSetDelayOffset(const void* handle, const uint8_t* delay, const uint8_t* offset);
 EXPORT_AUTD int32_t AUTDGetLastError(char* error);
 EXPORT_AUTD int32_t AUTDNumDevices(const void* handle);
-EXPORT_AUTD int32_t AUTDNumTransducers(const void* handle);
-EXPORT_AUTD void AUTDTransPositionByGlobal(const void* handle, int32_t global_trans_idx, double* x, double* y, double* z);
-EXPORT_AUTD void AUTDTransPositionByLocal(const void* handle, int32_t device_idx, int32_t local_trans_idx, double* x, double* y, double* z);
+EXPORT_AUTD void AUTDTransPosition(const void* handle, int32_t device_idx, int32_t local_trans_idx, double* x, double* y, double* z);
 EXPORT_AUTD void AUTDDeviceXDirection(const void* handle, int32_t device_idx, double* x, double* y, double* z);
 EXPORT_AUTD void AUTDDeviceYDirection(const void* handle, int32_t device_idx, double* x, double* y, double* z);
 EXPORT_AUTD void AUTDDeviceZDirection(const void* handle, int32_t device_idx, double* x, double* y, double* z);

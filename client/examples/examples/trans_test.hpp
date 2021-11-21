@@ -3,7 +3,7 @@
 // Created Date: 05/07/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/08/2021
+// Last Modified: 21/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -23,7 +23,7 @@ inline void trans_test_test(const autd::ControllerPtr& autd) {
   // Duty ratio in FPGA is (duty + duty_offset)/512 %
   // The default duty_offset is set to 1, so you should set the offset to 0 for transducers you don't want to drive
   std::vector<std::array<uint8_t, autd::NUM_TRANS_IN_UNIT>> duty_offset;
-  duty_offset.resize(autd->geometry()->num_devices());
+  duty_offset.resize(autd->geometry().num_devices());
   duty_offset[0][0] = 1;  // 0-th transducer of 0-th device offset is 1, and the others are 0
   autd->set_duty_offset(duty_offset);
 

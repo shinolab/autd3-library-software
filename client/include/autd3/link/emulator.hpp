@@ -28,7 +28,7 @@ class Emulator : virtual public core::Link {
    * @param port port
    * @param geometry geometry
    */
-  static core::LinkPtr create(uint16_t port, const core::GeometryPtr& geometry);
+  static core::LinkPtr create(uint16_t port, const core::Geometry& geometry);
 
   Emulator() = default;
   ~Emulator() override = default;

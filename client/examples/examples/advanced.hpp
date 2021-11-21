@@ -35,8 +35,8 @@ class BurstModulation final : public autd::core::Modulation {
 class UniformGain final : public autd::core::Gain {
  public:
   static autd::GainPtr create() { return std::make_shared<UniformGain>(); }
-  void calc(const autd::GeometryPtr& geometry) override {
-    for (size_t dev = 0; dev < geometry->num_devices(); dev++)
+  void calc(const autd::Geometry& geometry) override {
+    for (size_t dev = 0; dev < geometry.num_devices(); dev++)
       for (size_t i = 0; i < autd::NUM_TRANS_IN_UNIT; i++) this->_data[dev][i] = 0xFF80;
   }
 };
@@ -45,7 +45,7 @@ inline void advanced_test(const autd::ControllerPtr& autd) {
   autd->silent_mode() = false;
 
   std::vector<std::array<uint8_t, autd::NUM_TRANS_IN_UNIT>> delays;
-  delays.resize(autd->geometry()->num_devices());
+  delays.resize(autd->geometry().num_devices());
   delays[0][0] = 4;  // 4 cycle = 100 us delay in 0-th transducer
   autd->set_output_delay(delays);
 

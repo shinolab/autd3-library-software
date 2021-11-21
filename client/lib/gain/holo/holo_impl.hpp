@@ -3,7 +3,7 @@
 // Created Date: 10/09/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/11/2021
+// Last Modified: 21/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -28,23 +28,24 @@ namespace gain {
 namespace holo {
 
 template <typename M>
-void generate_transfer_matrix(const std::vector<autd::core::Vector3>& foci, const autd::core::GeometryPtr& geometry, const std::shared_ptr<M> g) {
-  std::vector<const double*> positions, directions;
-  positions.reserve(geometry->num_devices());
-  directions.reserve(geometry->num_devices());
-  for (size_t i = 0; i < geometry->num_devices(); i++) {
-    positions.emplace_back(geometry->position(i, 0).data());
-    directions.emplace_back(geometry->z_direction(i).data());
+void generate_transfer_matrix(const std::vector<autd::core::Vector3>& foci, const autd::core::Geometry& geometry, const std::shared_ptr<M> g) {
+  std::vector<const autd::core::Transducer*> transducers;
+  std::vector<const double*> directions;
+  transducers.reserve(geometry.num_devices());
+  directions.reserve(geometry.num_devices());
+  for (const auto& dev : geometry) {
+    transducers.emplace_back(&(*dev.begin()));
+    directions.emplace_back(dev.z_direction().data());
   }
-  g->transfer_matrix(reinterpret_cast<const double*>(foci.data()), foci.size(), positions, directions, geometry->wavelength(),
-                     geometry->attenuation_coefficient());
+  g->transfer_matrix(reinterpret_cast<const double*>(foci.data()), foci.size(), transducers, directions, geometry.wavelength(),
+                     geometry.attenuation_coefficient());
 }
 
 template <typename P>
-void sdp_impl(P& pool, const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps_, double alpha,
+void sdp_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps_, double alpha,
               double lambda, size_t repeat, bool normalize, std::vector<core::DataArray>& dst) {
   const auto m = (foci.size());
-  const auto n = (geometry->num_transducers());
+  const auto n = (geometry.num_transducers());
 
   const auto amps = pool.rent_c("amps", m, 1);
   amps->copy_from(amps_);
@@ -111,10 +112,10 @@ void sdp_impl(P& pool, const core::GeometryPtr& geometry, const std::vector<core
 }
 
 template <typename P>
-void evd_impl(P& pool, const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps_, double gamma,
+void evd_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps_, double gamma,
               bool normalize, std::vector<core::DataArray>& dst) {
   const auto m = (foci.size());
-  const auto n = (geometry->num_transducers());
+  const auto n = (geometry.num_transducers());
 
   const auto g = pool.rent_c("g", m, n);
   generate_transfer_matrix(foci, geometry, g);
@@ -156,10 +157,10 @@ void evd_impl(P& pool, const core::GeometryPtr& geometry, const std::vector<core
 }
 
 template <typename P>
-void naive_impl(P& pool, const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps,
+void naive_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps,
                 std::vector<core::DataArray>& dst) {
   const auto m = (foci.size());
-  const auto n = (geometry->num_transducers());
+  const auto n = (geometry.num_transducers());
 
   const auto g = pool.rent_c("g", m, n);
   generate_transfer_matrix(foci, geometry, g);
@@ -174,10 +175,10 @@ void naive_impl(P& pool, const core::GeometryPtr& geometry, const std::vector<co
 }
 
 template <typename P>
-void gs_impl(P& pool, const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps_, size_t repeat,
+void gs_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps_, size_t repeat,
              std::vector<core::DataArray>& dst) {
   const auto m = (foci.size());
-  const auto n = (geometry->num_transducers());
+  const auto n = (geometry.num_transducers());
 
   const auto g = pool.rent_c("g", m, n);
   generate_transfer_matrix(foci, geometry, g);
@@ -207,10 +208,10 @@ void gs_impl(P& pool, const core::GeometryPtr& geometry, const std::vector<core:
 }
 
 template <typename P>
-void gspat_impl(P& pool, const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps_, size_t repeat,
+void gspat_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps_, size_t repeat,
                 std::vector<core::DataArray>& dst) {
   const auto m = (foci.size());
-  const auto n = (geometry->num_transducers());
+  const auto n = (geometry.num_transducers());
 
   const auto g = pool.rent_c("g", m, n);
   generate_transfer_matrix(foci, geometry, g);
@@ -250,9 +251,9 @@ void gspat_impl(P& pool, const core::GeometryPtr& geometry, const std::vector<co
 }
 
 template <typename P>
-void make_bhb(P& pool, const std::vector<core::Vector3>& foci, const core::GeometryPtr& geo) {
-  const auto m = (foci.size());
-  const auto n = (geo->num_transducers());
+void make_bhb(P& pool, const std::vector<core::Vector3>& foci, const core::Geometry& geo) {
+  const auto m = foci.size();
+  const auto n = geo.num_transducers();
   const auto n_param = n + m;
 
   const auto amps = pool.rent_c("amps", m, 1);
@@ -319,10 +320,10 @@ double calc_fx(P& pool, const std::string& param_name, const size_t n_param) {
 }
 
 template <typename P>
-void lm_impl(P& pool, const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps_, double eps_1,
+void lm_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps_, double eps_1,
              double eps_2, double tau, size_t k_max, const std::vector<double>& initial, std::vector<core::DataArray>& dst) {
   const auto m = (foci.size());
-  const auto n = (geometry->num_transducers());
+  const auto n = (geometry.num_transducers());
   const size_t n_param = n + m;
 
   const auto amps = pool.rent_c("amps", m, 1);
@@ -405,10 +406,10 @@ void lm_impl(P& pool, const core::GeometryPtr& geometry, const std::vector<core:
 }
 
 template <typename P>
-void gauss_newton_impl(P& pool, const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps_,
+void gauss_newton_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps_,
                        double eps_1, double eps_2, size_t k_max, const std::vector<double>& initial, std::vector<core::DataArray>& dst) {
   const auto m = (foci.size());
-  const auto n = (geometry->num_transducers());
+  const auto n = (geometry.num_transducers());
   const size_t n_param = n + m;
 
   const auto amps = pool.rent_c("amps", m, 1);
@@ -458,10 +459,10 @@ void gauss_newton_impl(P& pool, const core::GeometryPtr& geometry, const std::ve
 }
 
 template <typename P>
-void gradient_descent_impl(P& pool, const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps_,
+void gradient_descent_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps_,
                            double eps, double step, size_t k_max, const std::vector<double>& initial, std::vector<core::DataArray>& dst) {
   const auto m = (foci.size());
-  const auto n = (geometry->num_transducers());
+  const auto n = (geometry.num_transducers());
   const size_t n_param = n + m;
 
   const auto amps = pool.rent_c("amps", m, 1);
@@ -491,7 +492,7 @@ void gradient_descent_impl(P& pool, const core::GeometryPtr& geometry, const std
 }
 
 template <typename P>
-void apo_impl(P& pool, const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, double eps,
+void apo_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, double eps,
               double lambda, const size_t line_search_max, size_t k_max, std::vector<core::DataArray>& dst) {
   auto make_ri = [](P& pool, const size_t m, const size_t n, const size_t i) {
     const auto g = pool.rent_c("g", m, n);
@@ -552,7 +553,7 @@ void apo_impl(P& pool, const core::GeometryPtr& geometry, const std::vector<core
   };
 
   const auto m = (foci.size());
-  const auto n = (geometry->num_transducers());
+  const auto n = (geometry.num_transducers());
 
   const auto g = pool.rent_c("g", m, n);
   generate_transfer_matrix(foci, geometry, g);
@@ -616,8 +617,8 @@ void apo_impl(P& pool, const core::GeometryPtr& geometry, const std::vector<core
 }
 
 template <typename P>
-void greedy_impl(P&, const core::GeometryPtr& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps,
-                 const size_t phase_div, std::vector<core::DataArray>& dst) {
+void greedy_impl(P&, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, const size_t phase_div,
+                 std::vector<core::DataArray>& dst) {
   const auto m = foci.size();
 
   std::vector<complex> phases;
@@ -625,8 +626,8 @@ void greedy_impl(P&, const core::GeometryPtr& geometry, const std::vector<core::
   for (size_t i = 0; i < phase_div; i++)
     phases.emplace_back(std::exp(complex(0., 2.0 * M_PI * static_cast<double>(i) / static_cast<double>(phase_div))));
 
-  const auto wave_num = 2.0 * M_PI / geometry->wavelength();
-  const auto attenuation = geometry->attenuation_coefficient();
+  const auto wave_num = 2.0 * M_PI / geometry.wavelength();
+  const auto attenuation = geometry.attenuation_coefficient();
 
   std::vector<std::unique_ptr<complex[]>> tmp;
   tmp.reserve(phases.size());
@@ -639,10 +640,10 @@ void greedy_impl(P&, const core::GeometryPtr& geometry, const std::vector<core::
     for (size_t i = 0; i < foci.size(); i++) res[i] = utils::transfer(trans_pos, trans_dir, foci[i], wave_num, attenuation) * phase;
   };
 
-  for (size_t dev = 0; dev < geometry->num_devices(); dev++) {
-    for (size_t i = 0; i < core::NUM_TRANS_IN_UNIT; i++) {
-      const auto& trans_pos = geometry->position(dev, i);
-      const auto& trans_dir = geometry->z_direction(dev);
+  for (const auto& dev : geometry) {
+    const auto& trans_dir = dev.z_direction();
+    for (const auto& transducer : dev) {
+      const auto& trans_pos = transducer.position();
       size_t min_idx = 0;
       auto min_v = std::numeric_limits<double>::infinity();
       for (size_t p = 0; p < phases.size(); p++) {
@@ -658,7 +659,7 @@ void greedy_impl(P&, const core::GeometryPtr& geometry, const std::vector<core::
 
       constexpr uint8_t duty = 0xFF;
       const auto phase = core::utils::to_phase(std::arg(phases[min_idx]));
-      dst[dev][i] = core::utils::pack_to_u16(duty, phase);
+      dst[dev.id()][transducer.index()] = core::utils::pack_to_u16(duty, phase);
     }
   }
 }

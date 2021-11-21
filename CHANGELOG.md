@@ -1,9 +1,11 @@
 # 1.9.3
 * fix minor bugs
+* Change transducers' geometry accessor
 * Delete `Geometry::device_idx_for_trans_idx`, use `Geometry::global_to_local_idx` instead
     * Delete `AUTDDeviceIdxForTransIdx` from capi
+* Delete `AUTDNumTransducers`, `AUTDTransPositionByGlobal`, `AUTDSendGain`, and `AUTDSendModulation` from capi
+* Rename `AUTDTransPositionByLocal` to `AUTDTransPosition` in capi
 * Rename `link::read` to `receive`
-* Delete `AUTDSendGain` and `AUTDSendModulation` from capi
 
 # 1.9.2
 * Fix #10
