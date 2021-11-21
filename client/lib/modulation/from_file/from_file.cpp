@@ -3,7 +3,7 @@
 // Created Date: 17/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 24/09/2021
+// Last Modified: 21/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -53,8 +53,8 @@ void RawPCM::calc() {
   sample_buf.resize(this->_buf.size() * static_cast<size_t>(freq_ratio));
   for (size_t i = 0; i < sample_buf.size(); i++) {
     const auto v = static_cast<double>(i) / freq_ratio;
-    const auto tmp = std::fmod(v, double{1}) < 1 / freq_ratio ? this->_buf.at(static_cast<int>(v)) : 0;
-    sample_buf.at(i) = tmp;
+    const auto tmp = std::fmod(v, double{1}) < 1 / freq_ratio ? this->_buf[static_cast<int>(v)] : 0;
+    sample_buf[i] = tmp;
   }
 
   // LPF
@@ -63,7 +63,7 @@ void RawPCM::calc() {
   std::vector<double> lpf(num_tap);
   for (auto i = 0; i < num_tap; i++) {
     const auto t = i - num_tap / 2;
-    lpf.at(i) = sinc(static_cast<double>(t) * cutoff * 2);
+    lpf[i] = sinc(static_cast<double>(t) * cutoff * 2);
   }
 
   auto max_v = std::numeric_limits<double>::min();
@@ -71,18 +71,14 @@ void RawPCM::calc() {
   std::vector<double> lpf_buf;
   lpf_buf.resize(sample_buf.size(), 0);
   for (size_t i = 0; i < lpf_buf.size(); i++) {
-    for (auto j = 0; j < num_tap; j++) {
-      lpf_buf.at(i) += static_cast<double>(sample_buf.at((i - j + sample_buf.size()) % sample_buf.size())) * lpf.at(j);
-    }
-    max_v = std::max<double>(lpf_buf.at(i), max_v);
-    min_v = std::min<double>(lpf_buf.at(i), min_v);
+    for (auto j = 0; j < num_tap; j++) lpf_buf[i] += static_cast<double>(sample_buf[(i - j + sample_buf.size()) % sample_buf.size()]) * lpf[j];
+    max_v = std::max<double>(lpf_buf[i], max_v);
+    min_v = std::min<double>(lpf_buf[i], min_v);
   }
 
   if (max_v - min_v < std::numeric_limits<double>::epsilon()) max_v = min_v + 1;
   this->_buffer.resize(lpf_buf.size(), 0);
-  for (size_t i = 0; i < lpf_buf.size(); i++) {
-    this->_buffer[i] = static_cast<uint8_t>(round(255 * ((lpf_buf.at(i) - min_v) / (max_v - min_v))));
-  }
+  for (size_t i = 0; i < lpf_buf.size(); i++) this->_buffer[i] = static_cast<uint8_t>(round(255 * ((lpf_buf[i] - min_v) / (max_v - min_v))));
 }
 
 namespace {
@@ -161,7 +157,7 @@ void Wav::calc() {
   sample_buf.resize(buffer_size);
   for (size_t i = 0; i < sample_buf.size(); i++) {
     const auto idx = static_cast<size_t>(static_cast<double>(i) / freq_ratio);
-    sample_buf.at(i) = _buf.at(idx);
+    sample_buf[i] = _buf[idx];
   }
 
   this->_buffer = std::move(sample_buf);

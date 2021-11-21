@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/11/2021
+// Last Modified: 21/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -200,19 +200,16 @@ class Logic {
           break;
         case GAIN_MODE::PHASE_FULL:
           for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
-            cursor[2 * i] = static_cast<uint8_t>(seq->gains()[gain_idx]->data()[device].at(i) & 0xFF);
-            cursor[2 * i + 1] = static_cast<uint8_t>(gain_idx + 1 >= seq->size() ? 0x00 : seq->gains()[gain_idx + 1]->data()[device].at(i) & 0xFF);
+            cursor[2 * i] = static_cast<uint8_t>(seq->gains()[gain_idx]->data()[device][i] & 0xFF);
+            cursor[2 * i + 1] = static_cast<uint8_t>(gain_idx + 1 >= seq->size() ? 0x00 : seq->gains()[gain_idx + 1]->data()[device][i] & 0xFF);
           }
           break;
         case GAIN_MODE::PHASE_HALF:
           for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
-            const auto phase1 = static_cast<uint8_t>((seq->gains()[gain_idx]->data()[device].at(i) >> 4) & 0xF);
-            const auto phase2 =
-                static_cast<uint8_t>(gain_idx + 1 >= seq->size() ? 0x00 : (seq->gains()[gain_idx + 1]->data()[device].at(i) >> 4) & 0xF);
-            const auto phase3 =
-                static_cast<uint8_t>(gain_idx + 2 >= seq->size() ? 0x00 : (seq->gains()[gain_idx + 2]->data()[device].at(i) >> 4) & 0xF);
-            const auto phase4 =
-                static_cast<uint8_t>(gain_idx + 3 >= seq->size() ? 0x00 : (seq->gains()[gain_idx + 3]->data()[device].at(i) >> 4) & 0xF);
+            const auto phase1 = static_cast<uint8_t>((seq->gains()[gain_idx]->data()[device][i] >> 4) & 0xF);
+            const auto phase2 = static_cast<uint8_t>(gain_idx + 1 >= seq->size() ? 0x00 : (seq->gains()[gain_idx + 1]->data()[device][i] >> 4) & 0xF);
+            const auto phase3 = static_cast<uint8_t>(gain_idx + 2 >= seq->size() ? 0x00 : (seq->gains()[gain_idx + 2]->data()[device][i] >> 4) & 0xF);
+            const auto phase4 = static_cast<uint8_t>(gain_idx + 3 >= seq->size() ? 0x00 : (seq->gains()[gain_idx + 3]->data()[device][i] >> 4) & 0xF);
             cursor[2 * i] = (phase2 << 4) | phase1;
             cursor[2 * i + 1] = (phase4 << 4) | phase3;
           }
