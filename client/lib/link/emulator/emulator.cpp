@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/10/2021
+// Last Modified: 21/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -39,7 +39,7 @@ class EmulatorImpl final : public Emulator {
   void open() override;
   void close() override;
   void send(const uint8_t* buf, size_t size) override;
-  void read(uint8_t* rx, size_t buffer_len) override;
+  void receive(uint8_t* rx, size_t buffer_len) override;
   bool is_open() override;
 
  private:
@@ -146,7 +146,7 @@ void EmulatorImpl::close() {
   _is_open = false;
 }
 
-void EmulatorImpl::read(uint8_t* rx, size_t buffer_len) {
+void EmulatorImpl::receive(uint8_t* rx, size_t buffer_len) {
   for (size_t i = 0; i < buffer_len; i += 2) rx[i + 1] = this->_last_msg_id;
 
   const auto set = [rx, buffer_len](const uint8_t value) {

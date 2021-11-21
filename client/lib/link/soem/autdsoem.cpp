@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/10/2021
+// Last Modified: 21/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -54,7 +54,7 @@ void SOEMController::send(const uint8_t* buf, const size_t size) {
   _send_cond.notify_one();
 }
 
-void SOEMController::read(uint8_t* rx) const {
+void SOEMController::receive(uint8_t* rx) const {
   if (!_is_open) throw core::exception::LinkError("link is closed");
   std::memcpy(rx, &_io_map[this->_output_size], this->_dev_num * this->_config.input_frame_size);
 }
@@ -121,11 +121,11 @@ void SOEMController::open(const char* ifname, const size_t dev_num, const ECConf
   const auto expected_wkc = ec_group[0].outputsWKC * 2 + ec_group[0].inputsWKC;
   const auto interval_us = config.ec_sm3_cycle_time_ns / 1000;
   this->_timer = core::Timer<SOEMCallback>::start(std::make_unique<SOEMCallback>(
-                                                      expected_wkc, [this]() { return this->error_handle(); }, &this->_sent),
+                                                      expected_wkc, [this] { return this->error_handle(); }, &this->_sent),
                                                   interval_us);
 
   _is_open = true;
-  this->_send_thread = std::thread([this, body_size, header_size]() {
+  this->_send_thread = std::thread([this, body_size, header_size] {
     while (this->_is_open) {
       {
         std::unique_lock lock(this->_send_mtx);
