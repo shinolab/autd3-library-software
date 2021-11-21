@@ -3,7 +3,7 @@
 
 # [AUTD3](https://hapislab.org/airborne-ultrasound-tactile-display?lang=en)
 
-Version: 1.9.2
+Version: 1.9.3
 
 ## :books: Document
 
