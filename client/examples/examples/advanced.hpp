@@ -3,7 +3,7 @@
 // Created Date: 19/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/09/2021
+// Last Modified: 21/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -36,8 +36,8 @@ class UniformGain final : public autd::core::Gain {
  public:
   static autd::GainPtr create() { return std::make_shared<UniformGain>(); }
   void calc(const autd::GeometryPtr& geometry) override {
-    for (size_t i = 0; i < geometry->num_transducers(); i++)
-      this->_data[geometry->device_idx_for_trans_idx(i)].at(i % autd::NUM_TRANS_IN_UNIT) = 0xFF80;
+    for (size_t dev = 0; dev < geometry->num_devices(); dev++)
+      for (size_t i = 0; i < autd::NUM_TRANS_IN_UNIT; i++) this->_data[dev][i] = 0xFF80;
   }
 };
 

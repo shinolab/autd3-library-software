@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/11/2021
+// Last Modified: 21/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -91,7 +91,8 @@ GainPtr TransducerTest::create(const size_t transducer_index, const uint8_t duty
 }
 
 void TransducerTest::calc(const core::GeometryPtr& geometry) {
-  this->_data[core::Geometry::device_idx_for_trans_idx(_transducer_idx)][_transducer_idx % NUM_TRANS_IN_UNIT] =
-      core::utils::pack_to_u16(this->_duty, this->_phase);
+  size_t device_idx, local_trans_idx;
+  core::Geometry::global_to_local_idx(_transducer_idx, &device_idx, &local_trans_idx);
+  this->_data[device_idx][local_trans_idx] = core::utils::pack_to_u16(this->_duty, this->_phase);
 }
 }  // namespace autd::gain

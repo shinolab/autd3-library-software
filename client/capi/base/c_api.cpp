@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/11/2021
+// Last Modified: 21/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -203,10 +203,7 @@ int32_t AUTDNumTransducers(const void* const handle) {
   const auto res = wrapper->ptr->geometry()->num_transducers();
   return static_cast<int32_t>(res);
 }
-int32_t AUTDDeviceIdxForTransIdx(const int32_t global_trans_idx) {
-  const auto res = autd::core::Geometry::device_idx_for_trans_idx(global_trans_idx);
-  return static_cast<int32_t>(res);
-}
+
 void AUTDTransPositionByGlobal(const void* const handle, const int32_t global_trans_idx, double* x, double* y, double* z) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   const auto& pos = wrapper->ptr->geometry()->position(global_trans_idx);

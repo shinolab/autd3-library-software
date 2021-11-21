@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/11/2021
+// Last Modified: 21/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -138,8 +138,9 @@ class Geometry {
    * @brief Position of a transducer specified by id
    */
   [[nodiscard]] const Vector3& position(const size_t global_transducer_idx) const {
-    const auto local_trans_id = global_transducer_idx % NUM_TRANS_IN_UNIT;
-    return position(device_idx_for_trans_idx(global_transducer_idx), local_trans_id);
+    size_t device_idx, local_trans_idx;
+    global_to_local_idx(global_transducer_idx, &device_idx, &local_trans_idx);
+    return position(device_idx, local_trans_idx);
   }
 
   /**
@@ -174,9 +175,12 @@ class Geometry {
   [[nodiscard]] const Vector3& z_direction(const size_t device_idx) const { return this->_devices[device_idx].z_direction; }
 
   /**
-   * @brief Convert transducer index into device index
+   * @brief Convert global transducer index into local index
    */
-  [[nodiscard]] static size_t device_idx_for_trans_idx(const size_t transducer_idx) { return transducer_idx / NUM_TRANS_IN_UNIT; }
+  static void global_to_local_idx(const size_t global_trans_idx, size_t* const device_idx, size_t* const local_trans_idx) {
+    *device_idx = global_trans_idx / NUM_TRANS_IN_UNIT;
+    *local_trans_idx = global_trans_idx % NUM_TRANS_IN_UNIT;
+  }
 
  private:
   std::vector<Device> _devices;
