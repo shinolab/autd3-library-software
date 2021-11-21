@@ -61,13 +61,13 @@ bool AUTDOpenController(const void* const handle, void* const p_link) {
 
 int32_t AUTDAddDevice(const void* const handle, const double x, const double y, const double z, const double rz1, const double ry, const double rz2) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto res = wrapper->ptr->geometry()->add_device(ToVec3(x, y, z), ToVec3(rz1, ry, rz2));
+  const auto res = wrapper->ptr->geometry().add_device(ToVec3(x, y, z), ToVec3(rz1, ry, rz2));
   return static_cast<int32_t>(res);
 }
 int32_t AUTDAddDeviceQuaternion(const void* const handle, const double x, const double y, const double z, const double qw, const double qx,
                                 const double qy, const double qz) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto res = wrapper->ptr->geometry()->add_device(ToVec3(x, y, z), ToQuaternion(qw, qx, qy, qz));
+  const auto res = wrapper->ptr->geometry().add_device(ToVec3(x, y, z), ToQuaternion(qw, qx, qy, qz));
   return static_cast<int32_t>(res);
 }
 int32_t AUTDCloseController(const void* const handle) {
@@ -136,19 +136,19 @@ void AUTDSetCheckAck(const void* const handle, const bool check_ack) {
 }
 double AUTDGetWavelength(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  return wrapper->ptr->geometry()->wavelength();
+  return wrapper->ptr->geometry().wavelength();
 }
 double AUTDGetAttenuation(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  return wrapper->ptr->geometry()->attenuation_coefficient();
+  return wrapper->ptr->geometry().attenuation_coefficient();
 }
 void AUTDSetWavelength(const void* const handle, const double wavelength) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  wrapper->ptr->geometry()->wavelength() = wavelength;
+  wrapper->ptr->geometry().wavelength() = wavelength;
 }
 void AUTDSetAttenuation(const void* const handle, const double attenuation) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  wrapper->ptr->geometry()->attenuation_coefficient() = attenuation;
+  wrapper->ptr->geometry().attenuation_coefficient() = attenuation;
 }
 bool AUTDGetFPGAInfo(const void* handle, uint8_t* out) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
@@ -165,7 +165,7 @@ int32_t AUTDUpdateCtrlFlags(const void* handle) {
 
 int32_t AUTDSetOutputDelay(const void* handle, const uint8_t* const delay) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto num_devices = wrapper->ptr->geometry()->num_devices();
+  const auto num_devices = wrapper->ptr->geometry().num_devices();
   std::vector<std::array<uint8_t, autd::core::NUM_TRANS_IN_UNIT>> delay_;
   delay_.resize(num_devices);
   for (size_t i = 0; i < num_devices; i++) std::memcpy(&delay_[i][0], &delay[i * autd::core::NUM_TRANS_IN_UNIT], autd::core::NUM_TRANS_IN_UNIT);
@@ -173,7 +173,7 @@ int32_t AUTDSetOutputDelay(const void* handle, const uint8_t* const delay) {
 }
 int32_t AUTDSetDutyOffset(const void* handle, const uint8_t* const offset) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto num_devices = wrapper->ptr->geometry()->num_devices();
+  const auto num_devices = wrapper->ptr->geometry().num_devices();
   std::vector<std::array<uint8_t, autd::core::NUM_TRANS_IN_UNIT>> offset_;
   offset_.resize(num_devices);
   for (size_t i = 0; i < num_devices; i++) std::memcpy(&offset_[i][0], &offset[i * autd::core::NUM_TRANS_IN_UNIT], autd::core::NUM_TRANS_IN_UNIT);
@@ -181,7 +181,7 @@ int32_t AUTDSetDutyOffset(const void* handle, const uint8_t* const offset) {
 }
 int32_t AUTDSetDelayOffset(const void* handle, const uint8_t* const delay, const uint8_t* const offset) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto num_devices = wrapper->ptr->geometry()->num_devices();
+  const auto num_devices = wrapper->ptr->geometry().num_devices();
   std::vector<std::array<uint8_t, autd::core::NUM_TRANS_IN_UNIT>> delay_;
   std::vector<std::array<uint8_t, autd::core::NUM_TRANS_IN_UNIT>> offset_;
   delay_.resize(num_devices);
@@ -195,25 +195,13 @@ int32_t AUTDSetDelayOffset(const void* handle, const uint8_t* const delay, const
 
 int32_t AUTDNumDevices(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto res = wrapper->ptr->geometry()->num_devices();
-  return static_cast<int32_t>(res);
-}
-int32_t AUTDNumTransducers(const void* const handle) {
-  const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto res = wrapper->ptr->geometry()->num_transducers();
+  const auto res = wrapper->ptr->geometry().num_devices();
   return static_cast<int32_t>(res);
 }
 
-void AUTDTransPositionByGlobal(const void* const handle, const int32_t global_trans_idx, double* x, double* y, double* z) {
+void AUTDTransPosition(const void* const handle, const int32_t device_idx, const int32_t local_trans_idx, double* x, double* y, double* z) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto& pos = wrapper->ptr->geometry()->position(global_trans_idx);
-  *x = pos.x();
-  *y = pos.y();
-  *z = pos.z();
-}
-void AUTDTransPositionByLocal(const void* const handle, const int32_t device_idx, const int32_t local_trans_idx, double* x, double* y, double* z) {
-  const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto& pos = wrapper->ptr->geometry()->position(device_idx, local_trans_idx);
+  const auto& pos = wrapper->ptr->geometry()[device_idx][local_trans_idx].position();
   *x = pos.x();
   *y = pos.y();
   *z = pos.z();
@@ -221,21 +209,21 @@ void AUTDTransPositionByLocal(const void* const handle, const int32_t device_idx
 
 void AUTDDeviceXDirection(const void* const handle, const int32_t device_idx, double* x, double* y, double* z) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto& dir = wrapper->ptr->geometry()->x_direction(device_idx);
+  const auto& dir = wrapper->ptr->geometry()[device_idx].x_direction();
   *x = dir.x();
   *y = dir.y();
   *z = dir.z();
 }
 void AUTDDeviceYDirection(const void* const handle, const int32_t device_idx, double* x, double* y, double* z) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto& dir = wrapper->ptr->geometry()->y_direction(device_idx);
+  const auto& dir = wrapper->ptr->geometry()[device_idx].y_direction();
   *x = dir.x();
   *y = dir.y();
   *z = dir.z();
 }
 void AUTDDeviceZDirection(const void* const handle, const int32_t device_idx, double* x, double* y, double* z) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto& dir = wrapper->ptr->geometry()->z_direction(device_idx);
+  const auto& dir = wrapper->ptr->geometry()[device_idx].z_direction();
   *x = dir.x();
   *y = dir.y();
   *z = dir.z();
@@ -243,7 +231,7 @@ void AUTDDeviceZDirection(const void* const handle, const int32_t device_idx, do
 
 int32_t AUTDGetFirmwareInfoListPointer(const void* const handle, void** out) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto size = static_cast<int32_t>(wrapper->ptr->geometry()->num_devices());
+  const auto size = static_cast<int32_t>(wrapper->ptr->geometry().num_devices());
   AUTD3_CAPI_TRY2({
     const auto res = wrapper->ptr->firmware_info_list();
     if (res.empty()) {

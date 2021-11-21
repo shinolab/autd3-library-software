@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/09/2021
+// Last Modified: 21/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -37,18 +37,18 @@ class Gain {
    * \brief Calculate duty ratio and phase of each transducer
    * \param geometry Geometry
    */
-  virtual void calc(const GeometryPtr& geometry) {
-    for (size_t i = 0; i < geometry->num_devices(); i++) this->_data[i].fill(0x0000);
+  virtual void calc(const Geometry& geometry) {
+    for (size_t i = 0; i < geometry.num_devices(); i++) this->_data[i].fill(0x0000);
   }
 
   /**
    * \brief Initialize data and call calc().
    * \param geometry Geometry
    */
-  void build(const GeometryPtr& geometry) {
+  void build(const Geometry& geometry) {
     if (this->_built) return;
 
-    const auto num_device = geometry->num_devices();
+    const auto num_device = geometry.num_devices();
 
     this->_data.clear();
     this->_data.resize(num_device);
@@ -61,7 +61,7 @@ class Gain {
    * \brief Re-calculate duty ratio and phase of each transducer
    * \param geometry Geometry
    */
-  void rebuild(const GeometryPtr& geometry) {
+  void rebuild(const Geometry& geometry) {
     this->_built = false;
     this->build(geometry);
   }

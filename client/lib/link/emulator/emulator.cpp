@@ -29,7 +29,7 @@ namespace autd::link {
 
 class EmulatorImpl final : public Emulator {
  public:
-  explicit EmulatorImpl(uint16_t port, const core::GeometryPtr& geometry);
+  explicit EmulatorImpl(uint16_t port, const core::Geometry& geometry);
   ~EmulatorImpl() override = default;
   EmulatorImpl(const EmulatorImpl& v) noexcept = delete;
   EmulatorImpl& operator=(const EmulatorImpl& obj) = delete;
@@ -55,9 +55,9 @@ class EmulatorImpl final : public Emulator {
   uint8_t _last_msg_id = 0;
   std::vector<uint8_t> _geometry_buf;
 
-  static std::vector<uint8_t> init_geometry_buf(const core::GeometryPtr& geometry) {
+  static std::vector<uint8_t> init_geometry_buf(const core::Geometry& geometry) {
     constexpr auto vec_size = 9 * sizeof(float);
-    const auto size = sizeof(core::GlobalHeader) + geometry->num_devices() * vec_size;
+    const auto size = sizeof(core::GlobalHeader) + geometry.num_devices() * vec_size;
     std::vector<uint8_t> buf;
     buf.resize(size);
 
@@ -68,11 +68,11 @@ class EmulatorImpl final : public Emulator {
     uh->mod_size = 0x00;
 
     auto* const cursor = reinterpret_cast<float*>(&buf[sizeof(core::GlobalHeader)]);
-    for (size_t i = 0; i < geometry->num_devices(); i++) {
-      const auto trans_id = i * core::NUM_TRANS_IN_UNIT;
-      auto origin = geometry->position(trans_id).cast<float>();
-      auto right = geometry->x_direction(i).cast<float>();
-      auto up = geometry->y_direction(i).cast<float>();
+    for (const auto& device : geometry) {
+      const auto i = device.id();
+      auto origin = device.begin()->position().cast<float>();
+      auto right = device.x_direction().cast<float>();
+      auto up = device.y_direction().cast<float>();
       cursor[9 * i] = origin.x();
       cursor[9 * i + 1] = origin.y();
       cursor[9 * i + 2] = origin.z();
@@ -88,12 +88,12 @@ class EmulatorImpl final : public Emulator {
   }
 };
 
-core::LinkPtr Emulator::create(const uint16_t port, const core::GeometryPtr& geometry) {
+core::LinkPtr Emulator::create(const uint16_t port, const core::Geometry& geometry) {
   core::LinkPtr link = std::make_unique<EmulatorImpl>(port, geometry);
   return link;
 }
 
-EmulatorImpl::EmulatorImpl(const uint16_t port, const core::GeometryPtr& geometry)
+EmulatorImpl::EmulatorImpl(const uint16_t port, const core::Geometry& geometry)
     : _is_open(false), _port(port), _geometry_buf(init_geometry_buf(geometry)) {}
 
 void EmulatorImpl::send(const uint8_t* buf, const size_t size) {

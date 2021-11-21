@@ -39,7 +39,7 @@ class CustomGain final : public autd::core::Gain {
     }
     return std::make_shared<CustomGain>(raw_data);
   }
-  void calc(const autd::core::GeometryPtr& geometry) override { this->_data = std::move(this->_raw_data); }
+  void calc(const autd::core::Geometry& geometry) override { this->_data = std::move(this->_raw_data); }
   explicit CustomGain(std::vector<autd::DataArray> data) : Gain(), _raw_data(std::move(data)) {}
   ~CustomGain() override = default;
   CustomGain(const CustomGain& v) noexcept = default;
