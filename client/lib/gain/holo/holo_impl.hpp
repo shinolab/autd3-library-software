@@ -34,7 +34,7 @@ void generate_transfer_matrix(const std::vector<core::Vector3>& foci, const core
   transducers.reserve(geometry.num_devices());
   directions.reserve(geometry.num_devices());
   for (const auto& dev : geometry) {
-    transducers.emplace_back(&(*dev.begin()));
+    transducers.emplace_back(&*dev.begin());
     directions.emplace_back(dev.z_direction().data());
   }
   g->transfer_matrix(reinterpret_cast<const double*>(foci.data()), foci.size(), transducers, directions, geometry.wavelength(),
