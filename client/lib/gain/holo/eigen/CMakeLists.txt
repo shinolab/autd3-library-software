@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.16)
 add_library(eigen_backend
     eigen_backend.cpp
     eigen_matrix.hpp
+    ${PROJECT_SOURCE_DIR}/lib/gain/holo/holo_impl.hpp
+    ${PROJECT_SOURCE_DIR}/lib/gain/holo/matrix_pool.hpp
     ${PROJECT_SOURCE_DIR}/include/autd3/gain/backend.hpp
     ${PROJECT_SOURCE_DIR}/include/autd3/gain/eigen_backend.hpp
 )

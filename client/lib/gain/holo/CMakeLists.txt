@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 add_library(holo_gain INTERFACE)
-target_include_directories(holo_gain INTERFACE ${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
+target_include_directories(holo_gain INTERFACE ${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH} )
 
 add_subdirectory(eigen)
 target_link_libraries(holo_gain INTERFACE eigen_backend)

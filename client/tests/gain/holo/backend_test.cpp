@@ -665,8 +665,8 @@ TYPED_TEST(BackendTest, set_from_complex_drive) {
   std::vector drive = random_vector_complex(n, 0.0, 1.0);
   a->copy_from(drive);
 
-  std::vector<autd::core::DataArray> data;
-  for (size_t d = 0; d < dev; d++) data.emplace_back(autd::core::DataArray{});
+  std::vector<autd::core::GainData> data;
+  for (size_t d = 0; d < dev; d++) data.emplace_back(autd::core::GainData{});
 
   auto max_coef = a->max_element();
   a->set_from_complex_drive(data, normalize, max_coef);
@@ -675,10 +675,8 @@ TYPED_TEST(BackendTest, set_from_complex_drive) {
   for (size_t d = 0; d < dev; d++)
     for (size_t i = 0; i < autd::core::NUM_TRANS_IN_UNIT; i++, k++) {
       const auto f_amp = normalize ? 1.0 : std::abs(drive[k]) / max_coef;
-      const auto phase = autd::core::utils::to_phase(std::arg(drive[k]));
-      const auto duty = autd::core::utils::to_duty(f_amp);
-      const auto p = autd::core::utils::pack_to_u16(duty, phase);
-      ASSERT_EQ(data[d][i], p);
+      ASSERT_EQ(data[d][i].duty, autd::core::utils::to_duty(f_amp));
+      ASSERT_EQ(data[d][i].phase, autd::core::utils::to_phase(std::arg(drive[k])));
     }
 }
 
@@ -688,15 +686,14 @@ TYPED_TEST(BackendTest, set_from_arg) {
   std::vector args = {0.0, M_PI, 2.0 * M_PI};
   a->copy_from(args);
 
-  std::vector<autd::core::DataArray> data;
-  data.emplace_back(autd::core::DataArray{});
+  std::vector<autd::core::GainData> data;
+  data.emplace_back(autd::core::GainData{});
 
   a->set_from_arg(data, n);
 
   for (auto i = 0; i < n; i++) {
-    const auto phase = autd::core::utils::to_phase(args[i]);
-    const auto p = autd::core::utils::pack_to_u16(0xFF, phase);
-    ASSERT_EQ(data[0][i], p);
+    ASSERT_EQ(data[0][i].duty, 0xFF);
+    ASSERT_EQ(data[0][i].phase, autd::core::utils::to_phase(args[i]));
   }
 }
 

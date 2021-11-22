@@ -200,16 +200,17 @@ class Logic {
           break;
         case GAIN_MODE::PHASE_FULL:
           for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
-            cursor[2 * i] = static_cast<uint8_t>(seq->gains()[gain_idx]->data()[device][i] & 0xFF);
-            cursor[2 * i + 1] = static_cast<uint8_t>(gain_idx + 1 >= seq->size() ? 0x00 : seq->gains()[gain_idx + 1]->data()[device][i] & 0xFF);
+            cursor[2 * i] = static_cast<uint8_t>(seq->gains()[gain_idx]->data()[device][i].phase);
+            cursor[2 * i + 1] = static_cast<uint8_t>(gain_idx + 1 >= seq->size() ? 0x00 : seq->gains()[gain_idx + 1]->data()[device][i].phase);
           }
           break;
         case GAIN_MODE::PHASE_HALF:
           for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
-            const auto phase1 = static_cast<uint8_t>(seq->gains()[gain_idx]->data()[device][i] >> 4 & 0x0F);
-            const auto phase2 = static_cast<uint8_t>(gain_idx + 1 >= seq->size() ? 0x00 : seq->gains()[gain_idx + 1]->data()[device][i] & 0xF0);
-            const auto phase3 = static_cast<uint8_t>(gain_idx + 2 >= seq->size() ? 0x00 : seq->gains()[gain_idx + 2]->data()[device][i] >> 4 & 0x0F);
-            const auto phase4 = static_cast<uint8_t>(gain_idx + 3 >= seq->size() ? 0x00 : seq->gains()[gain_idx + 3]->data()[device][i] & 0xF0);
+            const auto phase1 = static_cast<uint8_t>(seq->gains()[gain_idx]->data()[device][i].phase >> 4 & 0x0F);
+            const auto phase2 = static_cast<uint8_t>(gain_idx + 1 >= seq->size() ? 0x00 : seq->gains()[gain_idx + 1]->data()[device][i].phase & 0xF0);
+            const auto phase3 =
+                static_cast<uint8_t>(gain_idx + 2 >= seq->size() ? 0x00 : seq->gains()[gain_idx + 2]->data()[device][i].phase >> 4 & 0x0F);
+            const auto phase4 = static_cast<uint8_t>(gain_idx + 3 >= seq->size() ? 0x00 : seq->gains()[gain_idx + 3]->data()[device][i].phase & 0xF0);
             cursor[2 * i] = utils::pack_to_u16(phase2, phase1);
             cursor[2 * i + 1] = utils::pack_to_u16(phase4, phase3);
           }

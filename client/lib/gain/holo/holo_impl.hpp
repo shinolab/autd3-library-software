@@ -18,8 +18,8 @@
 #include <utility>
 #include <vector>
 
-#include "autd3/core/exception.hpp"
 #include "autd3/core/gain.hpp"
+#include "autd3/core/utils.hpp"
 #include "autd3/gain/matrix.hpp"
 #include "autd3/utils.hpp"
 
@@ -42,7 +42,7 @@ void generate_transfer_matrix(const std::vector<autd::core::Vector3>& foci, cons
 
 template <typename P>
 void sdp_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps_, double alpha,
-              double lambda, size_t repeat, bool normalize, std::vector<core::DataArray>& dst) {
+              double lambda, size_t repeat, bool normalize, std::vector<core::GainData>& dst) {
   const auto m = (foci.size());
   const auto n = (geometry.num_transducers());
 
@@ -112,7 +112,7 @@ void sdp_impl(P& pool, const core::Geometry& geometry, const std::vector<core::V
 
 template <typename P>
 void evd_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps_, double gamma,
-              bool normalize, std::vector<core::DataArray>& dst) {
+              bool normalize, std::vector<core::GainData>& dst) {
   const auto m = (foci.size());
   const auto n = (geometry.num_transducers());
 
@@ -157,7 +157,7 @@ void evd_impl(P& pool, const core::Geometry& geometry, const std::vector<core::V
 
 template <typename P>
 void naive_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps,
-                std::vector<core::DataArray>& dst) {
+                std::vector<core::GainData>& dst) {
   const auto m = (foci.size());
   const auto n = (geometry.num_transducers());
 
@@ -175,7 +175,7 @@ void naive_impl(P& pool, const core::Geometry& geometry, const std::vector<core:
 
 template <typename P>
 void gs_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps_, size_t repeat,
-             std::vector<core::DataArray>& dst) {
+             std::vector<core::GainData>& dst) {
   const auto m = (foci.size());
   const auto n = (geometry.num_transducers());
 
@@ -208,7 +208,7 @@ void gs_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Ve
 
 template <typename P>
 void gspat_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps_, size_t repeat,
-                std::vector<core::DataArray>& dst) {
+                std::vector<core::GainData>& dst) {
   const auto m = (foci.size());
   const auto n = (geometry.num_transducers());
 
@@ -320,7 +320,7 @@ double calc_fx(P& pool, const std::string& param_name, const size_t n_param) {
 
 template <typename P>
 void lm_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps_, double eps_1,
-             double eps_2, double tau, size_t k_max, const std::vector<double>& initial, std::vector<core::DataArray>& dst) {
+             double eps_2, double tau, size_t k_max, const std::vector<double>& initial, std::vector<core::GainData>& dst) {
   const auto m = (foci.size());
   const auto n = (geometry.num_transducers());
   const size_t n_param = n + m;
@@ -406,7 +406,7 @@ void lm_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Ve
 
 template <typename P>
 void gauss_newton_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps_,
-                       double eps_1, double eps_2, size_t k_max, const std::vector<double>& initial, std::vector<core::DataArray>& dst) {
+                       double eps_1, double eps_2, size_t k_max, const std::vector<double>& initial, std::vector<core::GainData>& dst) {
   const auto m = (foci.size());
   const auto n = (geometry.num_transducers());
   const size_t n_param = n + m;
@@ -459,7 +459,7 @@ void gauss_newton_impl(P& pool, const core::Geometry& geometry, const std::vecto
 
 template <typename P>
 void gradient_descent_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps_,
-                           double eps, double step, size_t k_max, const std::vector<double>& initial, std::vector<core::DataArray>& dst) {
+                           double eps, double step, size_t k_max, const std::vector<double>& initial, std::vector<core::GainData>& dst) {
   const auto m = (foci.size());
   const auto n = (geometry.num_transducers());
   const size_t n_param = n + m;
@@ -492,7 +492,7 @@ void gradient_descent_impl(P& pool, const core::Geometry& geometry, const std::v
 
 template <typename P>
 void apo_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, double eps,
-              double lambda, const size_t line_search_max, size_t k_max, std::vector<core::DataArray>& dst) {
+              double lambda, const size_t line_search_max, size_t k_max, std::vector<core::GainData>& dst) {
   auto make_ri = [](P& pool, const size_t m, const size_t n, const size_t i) {
     const auto g = pool.rent_c("g", m, n);
 
@@ -617,7 +617,7 @@ void apo_impl(P& pool, const core::Geometry& geometry, const std::vector<core::V
 
 template <typename P>
 void greedy_impl(P&, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, const size_t phase_div,
-                 std::vector<core::DataArray>& dst) {
+                 std::vector<core::GainData>& dst) {
   const auto m = foci.size();
 
   std::vector<complex> phases;
@@ -656,9 +656,10 @@ void greedy_impl(P&, const core::Geometry& geometry, const std::vector<core::Vec
       }
       for (size_t j = 0; j < m; j++) cache[j] += tmp[min_idx][j];
 
-      constexpr uint8_t duty = 0xFF;
-      const auto phase = core::utils::to_phase(std::arg(phases[min_idx]));
-      dst[dev.id()][i++] = core::utils::pack_to_u16(duty, phase);
+      dst[dev.id()][i].duty = 0xFF;
+      dst[dev.id()][i].phase = core::utils::to_phase(std::arg(phases[min_idx]));
+      ;
+      i++;
     }
   }
 }

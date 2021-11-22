@@ -32,6 +32,7 @@
 #pragma GCC diagnostic pop
 #endif
 
+#include "autd3/core/gain.hpp"
 #include "autd3/core/hardware_defined.hpp"
 #include "autd3/core/utils.hpp"
 #include "autd3/gain/matrix.hpp"
@@ -154,8 +155,8 @@ struct EigenMatrix {
   void transfer_matrix(const double* foci, size_t foci_num, const std::vector<const double*>& positions, const std::vector<const double*>& directions,
                        double wavelength, double attenuation);
   void set_bcd_result(const std::shared_ptr<const EigenMatrix<T>>& vec, size_t index);
-  void set_from_complex_drive(std::vector<core::DataArray>& dst, bool normalize, double max_coefficient);
-  void set_from_arg(std::vector<core::DataArray>& dst, size_t n);
+  void set_from_complex_drive(std::vector<core::GainData>& dst, bool normalize, double max_coefficient);
+  void set_from_arg(std::vector<core::GainData>& dst, size_t n);
   void back_prop(const std::shared_ptr<const EigenMatrix<T>>& transfer, const std::shared_ptr<const EigenMatrix<T>>& amps);
   void sigma_regularization(const std::shared_ptr<const EigenMatrix<T>>& transfer, const std::shared_ptr<const EigenMatrix<T>>& amps, double gamma);
   void col_sum_imag(const std::shared_ptr<EigenMatrix<complex>>& src);
@@ -225,16 +226,15 @@ inline void EigenMatrix<complex>::set_bcd_result(const std::shared_ptr<const Eig
 }
 
 template <>
-inline void EigenMatrix<complex>::set_from_complex_drive(std::vector<core::DataArray>& dst, const bool normalize, const double max_coefficient) {
+inline void EigenMatrix<complex>::set_from_complex_drive(std::vector<core::GainData>& dst, const bool normalize, const double max_coefficient) {
   const Eigen::Index n = data.size();
   size_t dev_idx = 0;
   size_t trans_idx = 0;
   for (Eigen::Index j = 0; j < n; j++) {
     const auto f_amp = normalize ? 1.0 : std::abs(data(j, 0)) / max_coefficient;
-    const auto phase = core::utils::to_phase(std::arg(data(j, 0)));
-    const auto duty = core::utils::to_duty(f_amp);
-    dst[dev_idx][trans_idx++] = core::utils::pack_to_u16(duty, phase);
-    if (trans_idx == core::NUM_TRANS_IN_UNIT) {
+    dst[dev_idx][trans_idx].duty = core::utils::to_duty(f_amp);
+    dst[dev_idx][trans_idx].phase = core::utils::to_phase(std::arg(data(j, 0)));
+    if (++trans_idx == core::NUM_TRANS_IN_UNIT) {
       dev_idx++;
       trans_idx = 0;
     }
@@ -242,14 +242,13 @@ inline void EigenMatrix<complex>::set_from_complex_drive(std::vector<core::DataA
 }
 
 template <>
-inline void EigenMatrix<double>::set_from_arg(std::vector<core::DataArray>& dst, const size_t n) {
+inline void EigenMatrix<double>::set_from_arg(std::vector<core::GainData>& dst, const size_t n) {
   size_t dev_idx = 0;
   size_t trans_idx = 0;
   for (Eigen::Index j = 0; j < static_cast<Eigen::Index>(n); j++) {
-    constexpr uint8_t duty = 0xFF;
-    const auto phase = core::utils::to_phase(data(j, 0));
-    dst[dev_idx][trans_idx++] = core::utils::pack_to_u16(duty, phase);
-    if (trans_idx == core::NUM_TRANS_IN_UNIT) {
+    dst[dev_idx][trans_idx].duty = 0xFF;
+    dst[dev_idx][trans_idx].phase = core::utils::to_phase(data(j, 0));
+    if (++trans_idx == core::NUM_TRANS_IN_UNIT) {
       dev_idx++;
       trans_idx = 0;
     }
