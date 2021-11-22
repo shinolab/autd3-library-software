@@ -13,7 +13,7 @@
 
 #if _MSC_VER
 #pragma warning(push)
-#pragma warning(disable : 6031 6255 6294 26450 26451 26454 26495 26812)
+#pragma warning(disable : 4068 6031 6255 6294 26450 26451 26454 26495 26812)
 #endif
 #if defined(__GNUC__) && !defined(__llvm__)
 #pragma GCC diagnostic push
