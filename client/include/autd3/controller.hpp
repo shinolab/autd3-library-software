@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/11/2021
+// Last Modified: 22/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -132,27 +132,16 @@ class Controller {
   bool update_ctrl_flag();
 
   /**
-   * \brief Set output delay
-   * \param[in] delay delay for each transducer in units of ultrasound period (i.e. 25us) in 7bit.
-   * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
+   * \brief Setter/Getter for delay and duty offset
+   * \detais You must call set_delay_offset function to apply the change.
    */
-  bool set_output_delay(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& delay);
+  std::vector<core::DelayOffset>& delay_offset();
 
   /**
-   * \brief Set duty offset
-   * \param[in] offset duty offset for each transducers (only the lowest 1 bit will be used)
+   * \brief Set delay and duty offset data
    * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
    */
-  bool set_duty_offset(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& offset);
-
-  /**
-   * \brief Set delay and duty offset
-   * \param[in] delay delay for each transducer in units of ultrasound period (i.e. 25us) in 7bit.
-   * \param[in] offset duty offset for each transducers (only the lowest 1 bit will be used)
-   * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
-   */
-  bool set_delay_offset(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& delay,
-                        const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& offset);
+  bool set_delay_offset();
 
   /**
    * @brief Open device with a link.
@@ -320,7 +309,6 @@ class Controller {
   std::unique_ptr<uint8_t[]> _rx_buf;
 
   std::vector<uint8_t> _fpga_infos;
-  std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>> _delay;
-  std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>> _offset;
+  std::vector<core::DelayOffset> _delay_offset;
 };
 }  // namespace autd

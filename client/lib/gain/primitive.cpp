@@ -18,7 +18,6 @@
 
 namespace autd::gain {
 
-using core::DataArray;
 using core::Vector3;
 
 std::shared_ptr<Grouped> Grouped::create() { return std::make_shared<Grouped>(); }

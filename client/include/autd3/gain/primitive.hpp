@@ -24,7 +24,6 @@ using core::Gain;
 using core::GainPtr;
 using Null = Gain;
 
-using core::DataArray;
 using core::Vector3;
 
 /**

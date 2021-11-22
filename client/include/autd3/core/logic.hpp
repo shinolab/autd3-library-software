@@ -223,20 +223,17 @@ class Logic {
 
   /**
    * \brief Pack data body to set output delay and enable
-   * \param delay delay data of each transducer
-   * \param offset duty offset data of each transducer
+   * \param delay_offset delay and offset data
    * \param[out] data pointer to transmission data
    * \return size_t size to send
    * \details This function must be called after pack_header
    */
-  static size_t pack_delay_offset_body(const std::vector<std::array<uint8_t, NUM_TRANS_IN_UNIT>>& delay,
-                                       const std::vector<std::array<uint8_t, NUM_TRANS_IN_UNIT>>& offset, uint8_t* data) {
+  static size_t pack_delay_offset_body(const std::vector<DelayOffset>& delay_offset, uint8_t* data) {
     auto* header = reinterpret_cast<GlobalHeader*>(data);
     header->cpu_ctrl_flags |= WRITE_BODY;
     auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(GlobalHeader));
-    for (size_t dev = 0; dev < delay.size(); dev++)
-      for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) *cursor++ = utils::pack_to_u16(offset[dev][i], delay[dev][i]);
-    return sizeof(GlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * delay.size();
+    std::memcpy(cursor, delay_offset.data(), delay_offset.size() * sizeof(uint16_t));
+    return sizeof(GlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * delay_offset.size();
   }
 };
 }  // namespace autd::core

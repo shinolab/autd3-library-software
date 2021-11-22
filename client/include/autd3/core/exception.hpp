@@ -46,12 +46,6 @@ class TimerError final : public std::runtime_error {
   explicit TimerError(char const* message) : std::runtime_error(message) {}
 };
 
-class SetOutputConfigError final : public std::runtime_error {
- public:
-  explicit SetOutputConfigError(std::string const& message) : std::runtime_error(message) {}
-  explicit SetOutputConfigError(char const* message) : std::runtime_error(message) {}
-};
-
 class LinkError final : public std::runtime_error {
  public:
   explicit LinkError(std::string const& message) : std::runtime_error(message) {}

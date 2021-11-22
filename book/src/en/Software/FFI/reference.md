@@ -335,44 +335,12 @@ Also, if the check ack flag is on and the return value is greater than 0, it gua
 | handle                       | void*      | in     | ControllerPtr                                                                           |
 | return                       | int32_t    | -      | if $>0$, it guarantees devices have processed data. if $<0$, error ocurred.             |
 
-##  AUTDSetOutputDelay (autd3capi)
-
-Set output delays. One of the send functions.
-The `handle` is the controller created by `AUTDCreateController`.
-The `delay` must be a pointer to data of length (number of devices) $\times 249$.
-
-This function returns a value less than 0 if an error occurred.
-If an error occurs, you can get the error message with `AUTDGetLastError`.
-Also, if the check ack flag is on and the return value is greater than 0, it guarantees that the data has been processed by the device.
-
-| Argument name / return       | type             | in/out | description                                                                              |
-|------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
-| handle                       | void*      | in     | ControllerPtr                                                                           |
-| delay                        | uint8_t *  | in     | pointer to delay data                                                                   |
-| return                       | int32_t    | -      | if $>0$, it guarantees devices have processed data. if $<0$, error ocurred.             |
-
-##  AUTDSetDutyOffset (autd3capi)
-
-Set duty offset. One of the send functions.
-The `handle` is the controller created by `AUTDCreateController`.
-The `offset` must be a pointer to data of length (number of devices) $\times 249$.
-
-This function returns a value less than 0 if an error occurred.
-If an error occurs, you can get the error message with `AUTDGetLastError`.
-Also, if the check ack flag is on and the return value is greater than 0, it guarantees that the data has been processed by the device.
-
-| Argument name / return       | type             | in/out | description                                                                              |
-|------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
-| handle                       | void*      | in     | ControllerPtr                                                                           |
-| offset                       | uint8_t *  | in     | pointer to duty offset data                                                             |
-| return                       | int32_t    | -      | if $>0$, it guarantees devices have processed data. if $<0$, error ocurred.             |
-
 ##  AUTDSetDelayOffset (autd3capi)
 
 Set output delays and duty offsets. 
 One of the send functions.
 The `handle` is the controller created by `AUTDCreateController`. delay,
-The `delay` and `offset` must be a pointer to data of length (number of devices) $\times 249$.
+The `delay` and `offset` must be a pointer to data of length (number of devices) $\times 249$ or nullptr.
 
 This function returns a value less than 0 if an error occurred.
 If an error occurs, you can get the error message with `AUTDGetLastError`.

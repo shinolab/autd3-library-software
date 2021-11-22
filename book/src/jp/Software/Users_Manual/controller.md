@@ -88,17 +88,25 @@ FPGAの状態は`fpga_info`関数で取得できる.
 
 ## Duty offset
 
-$D_\text{offset}$ ([Create Custom Gain Tutorial](gain.md#create-custom-gain-tutorial)参照) を変更するには`set_duty_offset`関数を使う.
-`set_duty_offset`の引数は`vector<array<uint8_t, 249>>`であり, 各振動子ごとに設定する.
+$D_\text{offset}$ ([Create Custom Gain Tutorial](gain.md#create-custom-gain-tutorial)参照) を変更するには`duty_offset`関数を使う.
 なお, 下位$\SI{1}{bit}$のみが用いられる.
 したがって, $D_\text{offset}=0,1$のみ使用できる.
 
-## Output delay
+```cpp
+  autd->delay_offset()[0][0].offset = 0; // duty offset is 0 for 0-th transducer 
+  autd->set_delay_offset();              // apply change
+```
+ 
+## Output delay 
 
 各振動子の出力を$\SI{25}{μs}$単位で相対的に遅らせることができる.
-これには, `set_output_delay`関数を使う.
-引数は`vector<array<uint8_t, 249>>`である.
+これには, `duty_offset`関数を使う.
 ただし, Delay値は下位$\SI{7}{bit}$のみ使用され, 遅延は最大で$127=\SI{3.175}{ms}$である.
+
+```cpp
+  autd->delay_offset()[0][0].delay = 4;  // 4 cycle = 100 us delay in 0-th transducer
+  autd->set_delay_offset();              // apply change
+```
 
 ## pause/resume/stop
 

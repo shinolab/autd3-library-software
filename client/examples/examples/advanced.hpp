@@ -47,10 +47,8 @@ class UniformGain final : public autd::core::Gain {
 inline void advanced_test(const autd::ControllerPtr& autd) {
   autd->silent_mode() = false;
 
-  std::vector<std::array<uint8_t, autd::NUM_TRANS_IN_UNIT>> delays;
-  delays.resize(autd->geometry().num_devices());
-  delays[0][0] = 4;  // 4 cycle = 100 us delay in 0-th transducer
-  autd->set_output_delay(delays);
+  autd->delay_offset()[0].delay = 4;  // 4 cycle = 100 us delay in 0-th transducer
+  autd->set_delay_offset();           // apply change
 
   const auto g = UniformGain::create();
   const auto m = BurstModulation::create();

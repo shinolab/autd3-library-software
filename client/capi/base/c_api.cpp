@@ -163,34 +163,19 @@ int32_t AUTDUpdateCtrlFlags(const void* handle) {
   AUTD3_CAPI_TRY2(return wrapper->ptr->update_ctrl_flag() ? 1 : 0)
 }
 
-int32_t AUTDSetOutputDelay(const void* handle, const uint8_t* const delay) {
-  const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto num_devices = wrapper->ptr->geometry().num_devices();
-  std::vector<std::array<uint8_t, autd::core::NUM_TRANS_IN_UNIT>> delay_;
-  delay_.resize(num_devices);
-  for (size_t i = 0; i < num_devices; i++) std::memcpy(&delay_[i][0], &delay[i * autd::core::NUM_TRANS_IN_UNIT], autd::core::NUM_TRANS_IN_UNIT);
-  AUTD3_CAPI_TRY2(return wrapper->ptr->set_output_delay(delay_) ? 1 : 0)
-}
-int32_t AUTDSetDutyOffset(const void* handle, const uint8_t* const offset) {
-  const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto num_devices = wrapper->ptr->geometry().num_devices();
-  std::vector<std::array<uint8_t, autd::core::NUM_TRANS_IN_UNIT>> offset_;
-  offset_.resize(num_devices);
-  for (size_t i = 0; i < num_devices; i++) std::memcpy(&offset_[i][0], &offset[i * autd::core::NUM_TRANS_IN_UNIT], autd::core::NUM_TRANS_IN_UNIT);
-  AUTD3_CAPI_TRY2(return wrapper->ptr->set_duty_offset(offset_) ? 1 : 0)
-}
 int32_t AUTDSetDelayOffset(const void* handle, const uint8_t* const delay, const uint8_t* const offset) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto num_devices = wrapper->ptr->geometry().num_devices();
-  std::vector<std::array<uint8_t, autd::core::NUM_TRANS_IN_UNIT>> delay_;
-  std::vector<std::array<uint8_t, autd::core::NUM_TRANS_IN_UNIT>> offset_;
-  delay_.resize(num_devices);
-  offset_.resize(num_devices);
-  for (size_t i = 0; i < num_devices; i++) {
-    std::memcpy(&delay_[i][0], &delay[i * autd::core::NUM_TRANS_IN_UNIT], autd::core::NUM_TRANS_IN_UNIT);
-    std::memcpy(&offset_[i][0], &offset[i * autd::core::NUM_TRANS_IN_UNIT], autd::core::NUM_TRANS_IN_UNIT);
+
+  if (delay != nullptr) {
+    for (const auto& device : wrapper->ptr->geometry())
+      for (const auto& transducer : device) wrapper->ptr->delay_offset()[transducer.id()].delay = delay[transducer.id()];
   }
-  AUTD3_CAPI_TRY2(return wrapper->ptr->set_delay_offset(delay_, offset_) ? 1 : 0)
+  if (offset != nullptr) {
+    for (const auto& device : wrapper->ptr->geometry())
+      for (const auto& transducer : device) wrapper->ptr->delay_offset()[transducer.id()].offset = offset[transducer.id()];
+  }
+
+  AUTD3_CAPI_TRY2(return wrapper->ptr->set_delay_offset() ? 1 : 0)
 }
 
 int32_t AUTDNumDevices(const void* const handle) {
