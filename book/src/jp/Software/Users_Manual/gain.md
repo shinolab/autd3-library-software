@@ -196,7 +196,7 @@ ArrayFireバックエンドをビルドする場合, [ArrayFire](https://arrayfi
 `Gain`クラスを継承することで独自の`Gain`を作成することができる.
 ここでは, `FocalPoint`と同じように単一焦点を生成する`Focus`を実際に定義してみることにする.
 
-`Gain`の実態は`vector<array<Drive, 249>> _data`であり, 位相/振幅データを格納する`Drive`構造体の振動子数分の配列のデバイス数分の`vector`になっている.
+`Gain`の実態は`vector<Drive> _data`であり, 位相/振幅データを格納する`Drive`構造体の振動子数分の`vector`になっている.
 下が, 単一焦点を生成する`Gain`のサンプルである.
 
 ```cpp
@@ -214,10 +214,10 @@ class Focus final : public autd::core::Gain {
     for (const auto& device : geometry)
       for (const auto& transducer : device) {
         const auto dist = (transducer.position() - this->_point).norm();
-        this->_data[device.id()][transducer.id()].duty = 0xFF;
-        this->_data[device.id()][transducer.id()].phase = autd::core::utils::to_phase(dist * wavenum);
+        this->_data[transducer.id()].duty = 0xFF;
+        this->_data[transducer.id()].phase = autd::core::utils::to_phase(dist * wavenum);
       }
-  }
+  } 
 
  private:
   autd::Vector3 _point;

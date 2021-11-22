@@ -192,7 +192,7 @@ In the above case, device 0 uses `Gain g0` and device 1 uses `Gain g1`.
 By inheriting from the `Gain` class, you can create your own `Gain`.
 In this section, we will define `Focus` which generates a single focus.
 
-The essence of `Gain` is `vector<array<Drive, 249>> _data`, where `Drive` class contains phase and duty ratio of transducer.
+The essence of `Gain` is `vector<Drive> _data`, where `Drive` class contains phase and duty ratio of transducer.
 Below is a sample of the `Gain` that generates a single focus.
 
 ```cpp
@@ -210,8 +210,8 @@ class Focus final : public autd::core::Gain {
     for (const auto& device : geometry)
       for (const auto& transducer : device) {
         const auto dist = (transducer.position() - this->_point).norm();
-        this->_data[device.id()][transducer.id()].duty = 0xFF;
-        this->_data[device.id()][transducer.id()].phase = autd::core::utils::to_phase(dist * wavenum);
+        this->_data[transducer.id()].duty = 0xFF;
+        this->_data[transducer.id()].phase = autd::core::utils::to_phase(dist * wavenum);
       }
   }
 
