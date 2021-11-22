@@ -202,8 +202,8 @@ struct CuMatrix<double>::Impl {
 
   void set_from_arg(std::vector<core::Drive>& data, const size_t n) {
     uint16_t* d_data = nullptr;
-    cudaMalloc((void**)&d_data, data.size() * core::NUM_TRANS_IN_UNIT * sizeof(uint16_t));
-    cudaMemset(d_data, 0, data.size() * core::NUM_TRANS_IN_UNIT * sizeof(uint16_t));
+    cudaMalloc((void**)&d_data, data.size() * sizeof(uint16_t));
+    cudaMemset(d_data, 0, data.size() * sizeof(uint16_t));
 
     cu_set_from_arg(ptr(), (uint32_t)n, d_data);
     cudaMemcpy(data.data(), d_data, data.size() * sizeof(uint16_t), cudaMemcpyDeviceToHost);
@@ -417,9 +417,9 @@ struct CuMatrix<complex>::Impl {
 
   void set_from_complex_drive(std::vector<core::Drive>& data, const bool normalize, const double max_coefficient) {
     uint16_t* d_data = nullptr;
-    cudaMalloc((void**)&d_data, data.size() * core::NUM_TRANS_IN_UNIT * sizeof(uint16_t));
+    cudaMalloc((void**)&d_data, data.size() * sizeof(uint16_t));
 
-    cu_set_from_complex_drive((const cuDoubleComplex*)ptr(), (uint32_t)(data.size() * core::NUM_TRANS_IN_UNIT), normalize, max_coefficient, d_data);
+    cu_set_from_complex_drive((const cuDoubleComplex*)ptr(), (uint32_t)data.size(), normalize, max_coefficient, d_data);
     cudaMemcpy(data.data(), d_data, data.size() * sizeof(uint16_t), cudaMemcpyDeviceToHost);
   }
 
