@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/11/2021
+// Last Modified: 22/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -16,7 +16,6 @@
 
 #include "geometry.hpp"
 #include "hardware_defined.hpp"
-#include "utils.hpp"
 
 namespace autd::core {
 
@@ -70,7 +69,7 @@ class Gain {
    * @brief Getter function for the data of duty ratio and phase of each transducers
    * @details Each data is 16 bit unsigned integer, where high 8bits represents duty ratio and low 8bits represents phase
    */
-  const std::vector<DataArray>& data() const { return _data; }
+  [[nodiscard]] const std::vector<DataArray>& data() const { return _data; }
 
   Gain() noexcept : _built(false) {}
   virtual ~Gain() = default;

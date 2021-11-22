@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/11/2021
+// Last Modified: 22/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -32,10 +32,9 @@ class Logic {
    * \return message id
    */
   static uint8_t get_id() {
-    static std::atomic<uint8_t> id{MSG_NORMAL_BASE};
+    static std::atomic id{MSG_NORMAL_BASE};
 
-    uint8_t expected = 0xff;
-    if (!id.compare_exchange_weak(expected, MSG_NORMAL_BASE)) id.fetch_add(0x01);
+    if (uint8_t expected = 0xff; !id.compare_exchange_weak(expected, MSG_NORMAL_BASE)) id.fetch_add(0x01);
 
     return id.load();
   }
@@ -78,7 +77,7 @@ class Logic {
    * \return message id
    */
   static uint8_t pack_header(const ModulationPtr& mod, const uint8_t fpga_ctrl_flag, const uint8_t cpu_ctrl_flag, uint8_t* const data) {
-    uint8_t msg_id = get_id();
+    const uint8_t msg_id = get_id();
     pack_header(msg_id, fpga_ctrl_flag, cpu_ctrl_flag, data);
     if (mod == nullptr || mod->sent() >= mod->buffer().size()) return msg_id;
 
@@ -207,12 +206,12 @@ class Logic {
           break;
         case GAIN_MODE::PHASE_HALF:
           for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
-            const auto phase1 = static_cast<uint8_t>((seq->gains()[gain_idx]->data()[device][i] >> 4) & 0xF);
-            const auto phase2 = static_cast<uint8_t>(gain_idx + 1 >= seq->size() ? 0x00 : (seq->gains()[gain_idx + 1]->data()[device][i] >> 4) & 0xF);
-            const auto phase3 = static_cast<uint8_t>(gain_idx + 2 >= seq->size() ? 0x00 : (seq->gains()[gain_idx + 2]->data()[device][i] >> 4) & 0xF);
-            const auto phase4 = static_cast<uint8_t>(gain_idx + 3 >= seq->size() ? 0x00 : (seq->gains()[gain_idx + 3]->data()[device][i] >> 4) & 0xF);
-            cursor[2 * i] = (phase2 << 4) | phase1;
-            cursor[2 * i + 1] = (phase4 << 4) | phase3;
+            const auto phase1 = static_cast<uint8_t>(seq->gains()[gain_idx]->data()[device][i] >> 4 & 0x0F);
+            const auto phase2 = static_cast<uint8_t>(gain_idx + 1 >= seq->size() ? 0x00 : seq->gains()[gain_idx + 1]->data()[device][i] & 0xF0);
+            const auto phase3 = static_cast<uint8_t>(gain_idx + 2 >= seq->size() ? 0x00 : seq->gains()[gain_idx + 2]->data()[device][i] >> 4 & 0x0F);
+            const auto phase4 = static_cast<uint8_t>(gain_idx + 3 >= seq->size() ? 0x00 : seq->gains()[gain_idx + 3]->data()[device][i] & 0xF0);
+            cursor[2 * i] = utils::pack_to_u16(phase2, phase1);
+            cursor[2 * i + 1] = utils::pack_to_u16(phase4, phase3);
           }
           break;
       }
@@ -235,7 +234,7 @@ class Logic {
     header->cpu_ctrl_flags |= WRITE_BODY;
     auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(GlobalHeader));
     for (size_t dev = 0; dev < delay.size(); dev++)
-      for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) *cursor++ = core::utils::pack_to_u16(offset[dev][i], delay[dev][i]);
+      for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) *cursor++ = utils::pack_to_u16(offset[dev][i], delay[dev][i]);
     return sizeof(GlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * delay.size();
   }
 };

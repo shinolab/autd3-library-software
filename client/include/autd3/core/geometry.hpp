@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/11/2021
+// Last Modified: 22/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -27,9 +27,6 @@
 #pragma GCC diagnostic pop
 #endif
 
-#include <map>
-#include <memory>
-#include <utility>
 #include <vector>
 
 #include "hardware_defined.hpp"
@@ -42,17 +39,6 @@ using Vector4 = Eigen::Matrix<double, 4, 1>;
 using Matrix4X4 = Eigen::Matrix<double, 4, 4>;
 using Quaternion = Eigen::Quaternion<double>;
 
-struct Transducer {
-  Transducer(const size_t index, const double x, const double y, const double z) : _index(index), _position(x, y, z) {}
-
-  size_t index() const noexcept { return _index; }
-  const Vector3& position() const noexcept { return _position; }
-
- private:
-  size_t _index;
-  Vector3 _position;
-};
-
 /**
  * \brief Device contains an AUTD device geometry.
  */
@@ -63,48 +49,47 @@ struct Device {
         _y_direction(quaternion * Vector3(0, 1, 0)),
         _z_direction(quaternion * Vector3(0, 0, 1)) {
     const Eigen::Transform<double, 3, Eigen::Affine> transform_matrix = Eigen::Translation<double, 3>(position) * quaternion;
-    size_t index = 0;
     for (size_t y = 0; y < NUM_TRANS_Y; y++)
       for (size_t x = 0; x < NUM_TRANS_X; x++) {
         if (is_missing_transducer(x, y)) continue;
-        const Vector4 local_pos = Vector4(static_cast<double>(x) * TRANS_SPACING_MM, static_cast<double>(y) * TRANS_SPACING_MM, 0, 1);
+        const auto local_pos = Vector4(static_cast<double>(x) * TRANS_SPACING_MM, static_cast<double>(y) * TRANS_SPACING_MM, 0, 1);
         const Vector4 global_pos = transform_matrix * local_pos;
-        _transducers.emplace_back(index++, global_pos[0], global_pos[1], global_pos[2]);
+        _transducers.emplace_back(global_pos[0], global_pos[1], global_pos[2]);
       }
-    _g2l = transform_matrix.inverse();
+    _global_to_local = transform_matrix.inverse();
   }
 
   Device(const size_t id, const Vector3& position, const Vector3& euler_angles)
       : Device(id, position,
-               Eigen::AngleAxis<double>(euler_angles.x(), Vector3::UnitZ()) * Eigen::AngleAxis<double>(euler_angles.y(), Vector3::UnitY()) *
-                   Eigen::AngleAxis<double>(euler_angles.z(), Vector3::UnitZ())) {}
+               Eigen::AngleAxis(euler_angles.x(), Vector3::UnitZ()) * Eigen::AngleAxis(euler_angles.y(), Vector3::UnitY()) *
+                   Eigen::AngleAxis(euler_angles.z(), Vector3::UnitZ())) {}
 
-  size_t id() const noexcept { return _id; }
-  const Vector3& x_direction() const noexcept { return _x_direction; }
-  const Vector3& y_direction() const noexcept { return _y_direction; }
-  const Vector3& z_direction() const noexcept { return _z_direction; }
+  [[nodiscard]] size_t id() const noexcept { return _id; }
+  [[nodiscard]] const Vector3& x_direction() const noexcept { return _x_direction; }
+  [[nodiscard]] const Vector3& y_direction() const noexcept { return _y_direction; }
+  [[nodiscard]] const Vector3& z_direction() const noexcept { return _z_direction; }
 
   /**
    * @brief Convert a global position to a local position
    */
   [[nodiscard]] Vector3 to_local_position(const Vector3& global_position) const {
-    const Vector4 homo = Vector4(global_position[0], global_position[1], global_position[2], 1);
-    const Vector4 local_position = _g2l * homo;
-    return Vector3(local_position[0], local_position[1], local_position[2]);
+    const auto homo = Vector4(global_position[0], global_position[1], global_position[2], 1);
+    const Vector4 local_position = _global_to_local * homo;
+    return {local_position[0], local_position[1], local_position[2]};
   }
 
-  std::vector<Transducer>::const_iterator begin() const { return _transducers.begin(); }
-  std::vector<Transducer>::const_iterator end() const { return _transducers.end(); }
+  [[nodiscard]] std::vector<Vector3>::const_iterator begin() const { return _transducers.begin(); }
+  [[nodiscard]] std::vector<Vector3>::const_iterator end() const { return _transducers.end(); }
 
-  const Transducer& operator[](size_t i) const { return _transducers[i]; }
+  const Vector3& operator[](const size_t i) const { return _transducers[i]; }
 
  private:
   size_t _id;
   Vector3 _x_direction;
   Vector3 _y_direction;
   Vector3 _z_direction;
-  std::vector<Transducer> _transducers;
-  Eigen::Transform<double, 3, Eigen::Affine> _g2l;
+  std::vector<Vector3> _transducers;
+  Eigen::Transform<double, 3, Eigen::Affine> _global_to_local;
 };
 
 /**
@@ -152,7 +137,7 @@ class Geometry {
   /**
    * @brief ultrasound wavelength
    */
-  double wavelength() const noexcept { return this->_wavelength; }
+  [[nodiscard]] double wavelength() const noexcept { return this->_wavelength; }
 
   /**
    * @brief attenuation coefficient
@@ -162,7 +147,7 @@ class Geometry {
   /**
    * @brief attenuation coefficient
    */
-  double attenuation_coefficient() const noexcept { return this->_attenuation; }
+  [[nodiscard]] double attenuation_coefficient() const noexcept { return this->_attenuation; }
 
   /**
    * @brief Number of devices
@@ -182,10 +167,10 @@ class Geometry {
     *local_trans_idx = global_trans_idx % NUM_TRANS_IN_UNIT;
   }
 
-  std::vector<Device>::const_iterator begin() const { return _devices.begin(); }
-  std::vector<Device>::const_iterator end() const { return _devices.end(); }
+  [[nodiscard]] std::vector<Device>::const_iterator begin() const { return _devices.begin(); }
+  [[nodiscard]] std::vector<Device>::const_iterator end() const { return _devices.end(); }
 
-  const Device& operator[](size_t i) const { return _devices[i]; }
+  const Device& operator[](const size_t i) const { return _devices[i]; }
 
  private:
   std::vector<Device> _devices;

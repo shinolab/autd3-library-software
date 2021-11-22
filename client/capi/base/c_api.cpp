@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/11/2021
+// Last Modified: 22/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -201,7 +201,7 @@ int32_t AUTDNumDevices(const void* const handle) {
 
 void AUTDTransPosition(const void* const handle, const int32_t device_idx, const int32_t local_trans_idx, double* x, double* y, double* z) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto& pos = wrapper->ptr->geometry()[device_idx][local_trans_idx].position();
+  const auto& pos = wrapper->ptr->geometry()[device_idx][local_trans_idx];
   *x = pos.x();
   *y = pos.y();
   *z = pos.z();
