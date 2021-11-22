@@ -152,8 +152,8 @@ struct EigenMatrix {
   virtual void copy_from(const T* v) { std::memcpy(this->data.data(), v, sizeof(T) * this->data.size()); }
 
   // FIXME: following functions are too specialized
-  void transfer_matrix(const double* foci, size_t foci_num, const std::vector<const double*>& positions, const std::vector<const double*>& directions,
-                       double wavelength, double attenuation);
+  void transfer_matrix(const double* foci, size_t foci_num, const std::vector<const core::Transducer*>& transducers,
+                       const std::vector<const double*>& directions, double wavelength, double attenuation);
   void set_bcd_result(const std::shared_ptr<const EigenMatrix<T>>& vec, size_t index);
   void set_from_complex_drive(std::vector<core::GainData>& dst, bool normalize, double max_coefficient);
   void set_from_arg(std::vector<core::GainData>& dst, size_t n);
@@ -196,7 +196,7 @@ inline void EigenMatrix<complex>::max_eigen_vector(const std::shared_ptr<EigenMa
 }
 
 template <>
-inline void EigenMatrix<complex>::transfer_matrix(const double* foci, const size_t foci_num, const std::vector<const double*>& positions,
+inline void EigenMatrix<complex>::transfer_matrix(const double* foci, const size_t foci_num, const std::vector<const core::Transducer*>& transducers,
                                                   const std::vector<const double*>& directions, const double wavelength, const double attenuation) {
   const auto m = static_cast<Eigen::Index>(foci_num);
 
@@ -204,13 +204,10 @@ inline void EigenMatrix<complex>::transfer_matrix(const double* foci, const size
   for (Eigen::Index i = 0; i < m; i++) {
     const auto tp = core::Vector3(foci[3 * i], foci[3 * i + 1], foci[3 * i + 2]);
     Eigen::Index k = 0;
-    for (size_t dev = 0; dev < positions.size(); dev++) {
-      const auto* p = reinterpret_cast<const core::Vector3*>(positions[dev]);
+    for (size_t dev = 0; dev < transducers.size(); dev++) {
       const auto dir = core::Vector3(directions[dev][0], directions[dev][1], directions[dev][2]);
-      for (Eigen::Index j = 0; j < static_cast<Eigen::Index>(core::NUM_TRANS_IN_UNIT); j++, k++) {
-        const auto& pos = p[j];
-        data(i, k) = utils::transfer(pos, dir, tp, wave_number, attenuation);
-      }
+      for (Eigen::Index j = 0; j < static_cast<Eigen::Index>(core::NUM_TRANS_IN_UNIT); j++, k++)
+        data(i, k) = utils::transfer(transducers[dev][j], dir, tp, wave_number, attenuation);
     }
   }
 }

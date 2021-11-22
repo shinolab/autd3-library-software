@@ -29,14 +29,15 @@ namespace holo {
 
 template <typename M>
 void generate_transfer_matrix(const std::vector<core::Vector3>& foci, const core::Geometry& geometry, const std::shared_ptr<M> g) {
-  std::vector<const double*> positions, directions;
-  positions.reserve(geometry.num_devices());
+  std::vector<const core::Transducer*> transducers;
+  std::vector<const double*> directions;
+  transducers.reserve(geometry.num_devices());
   directions.reserve(geometry.num_devices());
   for (const auto& dev : geometry) {
-    positions.emplace_back(dev.begin()->data());
+    transducers.emplace_back(&(*dev.begin()));
     directions.emplace_back(dev.z_direction().data());
   }
-  g->transfer_matrix(reinterpret_cast<const double*>(foci.data()), foci.size(), positions, directions, geometry.wavelength(),
+  g->transfer_matrix(reinterpret_cast<const double*>(foci.data()), foci.size(), transducers, directions, geometry.wavelength(),
                      geometry.attenuation_coefficient());
 }
 
@@ -634,19 +635,19 @@ void greedy_impl(P&, const core::Geometry& geometry, const std::vector<core::Vec
 
   const auto cache = std::make_unique<complex[]>(m);
 
-  auto transfer_foci = [wave_num, attenuation](const core::Vector3& trans_pos, const core::Vector3& trans_dir, const complex phase,
+  auto transfer_foci = [wave_num, attenuation](const core::Transducer& transducer, const core::Vector3& trans_dir, const complex phase,
                                                const std::vector<core::Vector3>& foci_, complex* res) {
-    for (size_t i = 0; i < foci_.size(); i++) res[i] = utils::transfer(trans_pos, trans_dir, foci_[i], wave_num, attenuation) * phase;
+    for (size_t i = 0; i < foci_.size(); i++) res[i] = utils::transfer(transducer, trans_dir, foci_[i], wave_num, attenuation) * phase;
   };
 
   for (const auto& dev : geometry) {
     const auto& trans_dir = dev.z_direction();
     size_t i = 0;
-    for (const auto& trans_pos : dev) {
+    for (const auto& transducer : dev) {
       size_t min_idx = 0;
       auto min_v = std::numeric_limits<double>::infinity();
       for (size_t p = 0; p < phases.size(); p++) {
-        transfer_foci(trans_pos, trans_dir, phases[p], foci, &tmp[p][0]);
+        transfer_foci(transducer, trans_dir, phases[p], foci, &tmp[p][0]);
         auto v = 0.0;
         for (size_t j = 0; j < m; j++) v += std::abs(amps[j] - std::abs(tmp[p][j] + cache[j]));
         if (v < min_v) {

@@ -87,8 +87,8 @@ struct CuMatrix {
   void copy_from(const T* v) { copy_from(v, _row * _col); }
   void copy_from(const T* v, size_t n);
 
-  void transfer_matrix(const double* foci, size_t foci_num, const std::vector<const double*>& positions, const std::vector<const double*>& directions,
-                       double wavelength, double attenuation);
+  void transfer_matrix(const double* foci, size_t foci_num, const std::vector<const core::Transducer*>& transducers,
+                       const std::vector<const double*>& directions, double wavelength, double attenuation);
   void set_bcd_result(const std::shared_ptr<const CuMatrix<T>>& vec, size_t index);
   void set_from_complex_drive(std::vector<core::GainData>& dst, bool normalize, double max_coefficient);
   void set_from_arg(std::vector<core::GainData>& dst, size_t n);
