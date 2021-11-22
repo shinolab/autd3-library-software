@@ -1,6 +1,7 @@
 # 1.9.3
 * fix minor bugs
 * Change transducers' geometry accessor
+    * Introduce `Transducer` struct which contains id and position of transducer 
 * Introduce `Drive` struct which contains explicit phase and duty parameter for transducer
 * Delete `Geometry::device_idx_for_trans_idx`, use `Geometry::global_to_local_idx` instead
     * Delete `AUTDDeviceIdxForTransIdx` from capi

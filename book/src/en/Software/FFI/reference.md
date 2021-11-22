@@ -410,41 +410,7 @@ The `handle` is the controller created by `AUTDCreateController`.
 | handle                       | void*      | in     | ControllerPtr                                                                           |
 | return                       | int32_t    | -      | number of devices                                                                       |
 
-##  AUTDNumTransducers (autd3capi)
-
-Get the total number of transducers.
-The `handle` is the controller created by `AUTDCreateController`.
-
-| Argument name / return       | type             | in/out | description                                                                              |
-|------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
-| handle                       | void*      | in     | ControllerPtr                                                                           |
-| return                       | int32_t    | -      | number of transducers                                                                   |
-
-##  AUTDDeviceIdxForTransIdx (autd3capi)
-
-Convert global transducer index to device index. 
-
-| Argument name / return       | type             | in/out | description                                                                              |
-|------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
-| global_trans_idx       | int32_t    | in     | global transducer index                                                                 |
-| return                       | int32_t    | -      | device index                                                                            |
-
-##  AUTDTransPositionByGlobal (autd3capi)
-
-Get the position of transducer specified by the global transducer index.
-The `handle` is the controller created by `AUTDCreateController`.
-
-| Argument name / return       | type             | in/out | description                                                                              |
-|------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
-| handle                       | void*      | in     | ControllerPtr                                                                           |
-| global_trans_idx       | int32_t    | in     | global transducer index                                                                 |
-| x                            | double*          | out    | x coordinate of transducer position                                                     |
-| y                            | double*          | out    | y coordinate of transducer position                                                     |
-| z                            | double*          | out    | z coordinate of transducer position                                                     |
-| return                       | void       | -      | nothing                                                                                 |
-
-
-##  AUTDTransPositionByLocal (autd3capi)
+##  AUTDTransPosition (autd3capi)
 
 Get the position of transducer specified by the device index and local transducer index.
 The `handle` is the controller created by `AUTDCreateController`.
@@ -1017,44 +983,6 @@ Also, if the check ack flag is on and the return value is greater than 0, it gua
 | Argument name / return       | type             | in/out | description                                                                              |
 |------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
 | handle                 | void*      | in     | ControllerPtr                                                                           |
-| return                       | int32_t    | -      | if $>0$, it guarantees devices have processed data. if $<0$, error ocurred.             |
-
-##  AUTDSendGain (autd3capi)
-
-Send Gain.
-One of the send functions.
-
-The `handle` is the controller created by `AUTDCreateController`.
-
-If `check_ack` is true, the function waits until the data is processed by the device.
-
-This function returns a value less than 0 if an error occurred.
-If an error occurs, you can get the error message with `AUTDGetLastError`.
-Also, if the check ack flag is on and the return value is greater than 0, it guarantees that the data has been processed by the device.
-
-| Argument name / return       | type             | in/out | description                                                                              |
-|------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
-| handle                 | void*      | in     | ControllerPtr                                                                           |
-| gain                   | void*      | in     | GainPtr                                                                                 |
-| return                       | int32_t    | -      | if $>0$, it guarantees devices have processed data. if $<0$, error ocurred.             |
-
-##  AUTDSendModulation (autd3capi)
-
-Send Modulation. 
-One of the send functions.
-
-The `handle` is the controller created by `AUTDCreateController`.
-
-If `check_ack` is true, the function waits until the data is processed by the device.
-
-This function returns a value less than 0 if an error occurred.
-If an error occurs, you can get the error message with `AUTDGetLastError`.
-Also, if the check ack flag is on and the return value is greater than 0, it guarantees that the data has been processed by the device.
-
-| Argument name / return       | type             | in/out | description                                                                              |
-|------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
-| handle                 | void*      | in     | ControllerPtr                                                                           |
-| mod                    | void*      | in     | ModulationPtr                                                                           |
 | return                       | int32_t    | -      | if $>0$, it guarantees devices have processed data. if $<0$, error ocurred.             |
 
 ##  AUTDSendGainModulation (autd3capi)

@@ -405,42 +405,7 @@ handleは`AUTDCreateController`で作成したものを使う.
 | handle                       | void*      | in     | ControllerPtr                                                                           |
 | return                       | int32_t    | -      | number of devices                                                                       |
 
-##  AUTDNumTransducers (autd3capi)
-
-振動子の総数を取得する.
-handleは`AUTDCreateController`で作成したものを使う.
-
-| Argument name / return       | type             | in/out | description                                                                              |
-|------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
-| handle                       | void*      | in     | ControllerPtr                                                                           |
-| return                       | int32_t    | -      | number of transducers                                                                   |
-
-##  AUTDDeviceIdxForTransIdx (autd3capi)
-
-グローバルな振動子のインデックスをDeviceのインデックスに変換する.
-
-| Argument name / return       | type             | in/out | description                                                                              |
-|------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
-| global_trans_idx       | int32_t    | in     | global transducer index                                                                 |
-| return                       | int32_t    | -      | device index                                                                            |
-
-##  AUTDTransPositionByGlobal (autd3capi)
-
-指定した振動子の位置を取得する.
-振動子の指定はグローバルなインデックスでおこなう.
-handleは`AUTDCreateController`で作成したものを使う.
-
-| Argument name / return       | type             | in/out | description                                                                              |
-|------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
-| handle                       | void*      | in     | ControllerPtr                                                                           |
-| global_trans_idx       | int32_t    | in     | global transducer index                                                                 |
-| x                            | double*          | out    | x coordinate of transducer position                                                     |
-| y                            | double*          | out    | y coordinate of transducer position                                                     |
-| z                            | double*          | out    | z coordinate of transducer position                                                     |
-| return                       | void       | -      | nothing                                                                                 |
-
-
-##  AUTDTransPositionByLocal (autd3capi)
+##  AUTDTransPosition (autd3capi)
 
 指定した振動子の位置を取得する.
 振動子の指定はデバイスのインデックスとローカルの振動子インデックスでおこなう.
@@ -1015,46 +980,6 @@ AUTDPauseで一時停止した出力を再開する.send functionの一つ.
 | Argument name / return       | type             | in/out | description                                                                              |
 |------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
 | handle                 | void*      | in     | ControllerPtr                                                                           |
-| return                       | int32_t    | -      | if $>0$, it guarantees devices have processed data. if $<0$, error ocurred.             |
-
-##  AUTDSendGain (autd3capi)
-
-Gainを送信する.send functionの一つ.
-
-`handle`には`AUTDCreateController`で作成したControllerを使用する.
-
-`check_ack`がtrueの場合は,
-この関数はデータが実際のデバイスで処理されるまで待機する.
-
-この関数はエラーが発生した場合に0未満の値を返す.
-エラーが生じた場合には`AUTDGetLastError`でエラーメッセージを取得できる.
-また,check ackフラグがOn, かつ, 返り値が0より大きい場合は,
-データが実際のデバイスで処理されたことを保証する.
-
-| Argument name / return       | type             | in/out | description                                                                              |
-|------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
-| handle                 | void*      | in     | ControllerPtr                                                                           |
-| gain                   | void*      | in     | GainPtr                                                                                 |
-| return                       | int32_t    | -      | if $>0$, it guarantees devices have processed data. if $<0$, error ocurred.             |
-
-##  AUTDSendModulation (autd3capi)
-
-Modulationを送信する. send functionの一つ.
-
-`handle`には`AUTDCreateController`で作成したControllerを使用する.
-
-`check_ack`がtrueの場合は,
-この関数はデータが実際のデバイスで処理されるまで待機する.
-
-この関数はエラーが発生した場合に0未満の値を返す.
-エラーが生じた場合には`AUTDGetLastError`でエラーメッセージを取得できる.
-また,check ackフラグがOn, かつ, 返り値が0より大きい場合は,
-データが実際のデバイスで処理されたことを保証する.
-
-| Argument name / return       | type             | in/out | description                                                                              |
-|------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
-| handle                 | void*      | in     | ControllerPtr                                                                           |
-| mod                    | void*      | in     | ModulationPtr                                                                           |
 | return                       | int32_t    | -      | if $>0$, it guarantees devices have processed data. if $<0$, error ocurred.             |
 
 ##  AUTDSendGainModulation (autd3capi)

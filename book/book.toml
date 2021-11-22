@@ -2,7 +2,7 @@
 authors = ["shun suzuki"]
 language = "en"
 multilingual = true
-title = "AUTD3 Developers Manual v1.9.2"
+title = "AUTD3 Developers Manual v1.9.3"
 
 src = "src"
 destination = "book"
@@ -15,7 +15,7 @@ destination = "book"
 mathjax-support = true
 default-theme = "navy"
 preferred-dark-theme = "navy"
-git-repository-url = "https://github.com/shinolab/autd3-docs"
+git-repository-url = "https://github.com/shinolab/autd3-library-software"
 curly-quotes = true
 
 [output.katex]
