@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/11/2021
+// Last Modified: 22/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -70,7 +70,7 @@ class EmulatorImpl final : public Emulator {
     auto* const cursor = reinterpret_cast<float*>(&buf[sizeof(core::GlobalHeader)]);
     for (const auto& device : geometry) {
       const auto i = device.id();
-      auto origin = device.begin()->position().cast<float>();
+      auto origin = device.begin()->cast<float>();
       auto right = device.x_direction().cast<float>();
       auto up = device.y_direction().cast<float>();
       cursor[9 * i] = origin.x();

@@ -3,7 +3,7 @@
 // Created Date: 10/09/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/11/2021
+// Last Modified: 22/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -29,15 +29,14 @@ namespace holo {
 
 template <typename M>
 void generate_transfer_matrix(const std::vector<autd::core::Vector3>& foci, const autd::core::Geometry& geometry, const std::shared_ptr<M> g) {
-  std::vector<const autd::core::Transducer*> transducers;
-  std::vector<const double*> directions;
-  transducers.reserve(geometry.num_devices());
+  std::vector<const double*> positions, directions;
+  positions.reserve(geometry.num_devices());
   directions.reserve(geometry.num_devices());
   for (const auto& dev : geometry) {
-    transducers.emplace_back(&(*dev.begin()));
+    positions.emplace_back(dev.begin()->data());
     directions.emplace_back(dev.z_direction().data());
   }
-  g->transfer_matrix(reinterpret_cast<const double*>(foci.data()), foci.size(), transducers, directions, geometry.wavelength(),
+  g->transfer_matrix(reinterpret_cast<const double*>(foci.data()), foci.size(), positions, directions, geometry.wavelength(),
                      geometry.attenuation_coefficient());
 }
 
@@ -642,8 +641,8 @@ void greedy_impl(P&, const core::Geometry& geometry, const std::vector<core::Vec
 
   for (const auto& dev : geometry) {
     const auto& trans_dir = dev.z_direction();
-    for (const auto& transducer : dev) {
-      const auto& trans_pos = transducer.position();
+    size_t i = 0;
+    for (const auto& trans_pos : dev) {
       size_t min_idx = 0;
       auto min_v = std::numeric_limits<double>::infinity();
       for (size_t p = 0; p < phases.size(); p++) {
@@ -659,7 +658,7 @@ void greedy_impl(P&, const core::Geometry& geometry, const std::vector<core::Vec
 
       constexpr uint8_t duty = 0xFF;
       const auto phase = core::utils::to_phase(std::arg(phases[min_idx]));
-      dst[dev.id()][transducer.index()] = core::utils::pack_to_u16(duty, phase);
+      dst[dev.id()][i++] = core::utils::pack_to_u16(duty, phase);
     }
   }
 }

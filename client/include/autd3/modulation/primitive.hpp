@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/11/2021
+// Last Modified: 22/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -116,7 +116,7 @@ class Square final : public Modulation {
   static ModulationPtr create(int freq, double low, double high, double duty);
 
   void calc() override;
-  Square(const int freq, const uint8_t low, const uint8_t high, double duty) : Modulation(), _freq(freq), _low(low), _high(high), _duty(duty) {}
+  Square(const int freq, const uint8_t low, const uint8_t high, const double duty) : Modulation(), _freq(freq), _low(low), _high(high), _duty(duty) {}
 
  private:
   int _freq;

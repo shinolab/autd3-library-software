@@ -3,7 +3,7 @@
 // Created Date: 14/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/09/2021
+// Last Modified: 22/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -24,7 +24,7 @@ using GAIN_MODE = core::GAIN_MODE;
 /**
  * @brief Utility to generate PointSequence on a circumference.
  */
-class Circumference : PointSequence {
+class Circumference final : PointSequence {
  public:
   /**
    * @brief Generate PointSequence with control points on a circumference.

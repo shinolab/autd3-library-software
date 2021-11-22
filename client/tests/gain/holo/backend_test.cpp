@@ -3,7 +3,7 @@
 // Created Date: 13/08/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/11/2021
+// Last Modified: 22/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -42,9 +42,15 @@ using autd::gain::holo::ZERO;
 
 template <typename P>
 class BackendTest : public testing::Test {
- protected:
+ public:
   BackendTest() : _pool() {}
+  ~BackendTest() override {}
+  BackendTest(const BackendTest& v) noexcept = default;
+  BackendTest& operator=(const BackendTest& obj) = default;
+  BackendTest(BackendTest&& obj) = default;
+  BackendTest& operator=(BackendTest&& obj) = default;
 
+ protected:
   P _pool;
 };
 

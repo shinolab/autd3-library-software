@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/11/2021
+// Last Modified: 22/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -12,7 +12,6 @@
 #pragma once
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "exception.hpp"
@@ -51,12 +50,12 @@ class Modulation {
    * @brief Generate empty modulation, which produce static pressure
    * \param amp relative amplitude (0 to 1)
    */
-  static ModulationPtr create(const double amp) { return create(core::utils::to_duty(amp)); }
+  static ModulationPtr create(const double amp) { return create(utils::to_duty(amp)); }
 
   /**
    * \brief Calculate modulation data
    */
-  virtual void calc() { return; }
+  virtual void calc() {}
 
   /**
    * \brief Build modulation data
@@ -64,9 +63,9 @@ class Modulation {
   void build() {
     if (this->_built) return;
     if (_freq_div_ratio > MOD_SAMPLING_FREQ_DIV_MAX)
-      throw core::exception::ModulationBuildError("Modulation sampling frequency division ratio is out of range");
+      throw exception::ModulationBuildError("Modulation sampling frequency division ratio is out of range");
     this->calc();
-    if (this->_buffer.size() > MOD_BUF_SIZE_MAX) throw core::exception::ModulationBuildError("Modulation buffer overflow");
+    if (this->_buffer.size() > MOD_BUF_SIZE_MAX) throw exception::ModulationBuildError("Modulation buffer overflow");
     this->_built = true;
   }
 
@@ -117,7 +116,12 @@ class Modulation {
  */
 class Filter {
  public:
+  Filter() = default;
   virtual ~Filter() = default;
+  Filter(const Filter& v) noexcept = default;
+  Filter& operator=(const Filter& obj) = default;
+  Filter(Filter&& obj) = default;
+  Filter& operator=(Filter&& obj) = default;
 
   /**
    * \brief apply filter to Modulation
