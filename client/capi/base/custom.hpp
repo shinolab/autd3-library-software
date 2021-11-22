@@ -31,16 +31,12 @@ class CustomGain final : public autd::core::Gain {
    * represents duty ratio and low 8bits represents phase
    */
   static autd::GainPtr create(const uint16_t* data, const size_t data_length) {
-    const auto dev_num = (data_length + autd::NUM_TRANS_IN_UNIT - 1) / autd::NUM_TRANS_IN_UNIT;
-    std::vector<autd::core::GainData> raw_data(dev_num);
-    for (size_t i = 0; i < dev_num; i++) {
-      const auto rem = std::clamp(data_length - i * autd::NUM_TRANS_IN_UNIT, size_t{0}, autd::NUM_TRANS_IN_UNIT);
-      std::memcpy(&raw_data[i][0], data + i * autd::NUM_TRANS_IN_UNIT, rem * sizeof(uint16_t));
-    }
+    std::vector<autd::core::Drive> raw_data(data_length);
+    std::memcpy(&raw_data[0], data, data_length * sizeof(uint16_t));
     return std::make_shared<CustomGain>(raw_data);
   }
   void calc(const autd::core::Geometry& geometry) override { this->_data = std::move(this->_raw_data); }
-  explicit CustomGain(std::vector<autd::core::GainData> data) : Gain(), _raw_data(std::move(data)) {}
+  explicit CustomGain(std::vector<autd::core::Drive> data) : Gain(), _raw_data(std::move(data)) {}
   ~CustomGain() override = default;
   CustomGain(const CustomGain& v) noexcept = default;
   CustomGain& operator=(const CustomGain& obj) = default;
@@ -48,7 +44,7 @@ class CustomGain final : public autd::core::Gain {
   CustomGain& operator=(CustomGain&& obj) = default;
 
  private:
-  std::vector<autd::core::GainData> _raw_data;
+  std::vector<autd::core::Drive> _raw_data;
 };
 
 /**

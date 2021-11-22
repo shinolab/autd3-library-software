@@ -26,8 +26,12 @@ void Grouped::add(const size_t device_id, const GainPtr& gain) { this->_gain_map
 
 void Grouped::calc(const core::Geometry& geometry) {
   for (const auto& [_, g] : this->_gain_map) g->build(geometry);
-  for (size_t i = 0; i < geometry.num_devices(); i++)
-    this->_data[i] = _gain_map.count(i) > 0 ? _gain_map[i]->data()[i] : core::GainData{core::Drive(0x00, 0x00)};
+  for (const auto& dev : geometry)
+    if (_gain_map.count(dev.id()) > 0)
+      std::memcpy(&this->_data[dev.id() * core::NUM_TRANS_IN_UNIT], &_gain_map[dev.id()]->data()[dev.id() * core::NUM_TRANS_IN_UNIT],
+                  core::NUM_TRANS_IN_UNIT * sizeof(uint16_t));
+    else
+      std::memset(&this->_data[dev.id() * core::NUM_TRANS_IN_UNIT], 0, core::NUM_TRANS_IN_UNIT * sizeof(uint16_t));
 }
 
 GainPtr PlaneWave::create(const Vector3& direction, const double amp) { return create(direction, core::utils::to_duty(amp)); }
@@ -41,8 +45,8 @@ void PlaneWave::calc(const core::Geometry& geometry) {
   for (const auto& dev : geometry)
     for (const auto& transducer : dev) {
       const auto dist = transducer.position().dot(dir);
-      this->_data[dev.id()][transducer.id()].phase = core::utils::to_phase(dist * wavenum);
-      this->_data[dev.id()][transducer.id()].duty = this->_duty;
+      this->_data[transducer.id()].phase = core::utils::to_phase(dist * wavenum);
+      this->_data[transducer.id()].duty = this->_duty;
     }
 }
 
@@ -54,8 +58,8 @@ void FocalPoint::calc(const core::Geometry& geometry) {
   for (const auto& dev : geometry)
     for (const auto& transducer : dev) {
       const auto dist = (transducer.position() - this->_point).norm();
-      this->_data[dev.id()][transducer.id()].duty = this->_duty;
-      this->_data[dev.id()][transducer.id()].phase = core::utils::to_phase(dist * wavenum);
+      this->_data[transducer.id()].duty = this->_duty;
+      this->_data[transducer.id()].phase = core::utils::to_phase(dist * wavenum);
     }
 }
 
@@ -80,8 +84,8 @@ void BesselBeam::calc(const core::Geometry& geometry) {
       const auto r = transducer.position() - this->_apex;
       const auto rr = rot * r;
       const auto d = std::sin(_theta_z) * std::sqrt(rr.x() * rr.x() + rr.y() * rr.y()) - std::cos(_theta_z) * rr.z();
-      this->_data[dev.id()][transducer.id()].duty = this->_duty;
-      this->_data[dev.id()][transducer.id()].phase = core::utils::to_phase(d * wavenum);
+      this->_data[transducer.id()].duty = this->_duty;
+      this->_data[transducer.id()].phase = core::utils::to_phase(d * wavenum);
     }
 }
 
@@ -90,9 +94,7 @@ GainPtr TransducerTest::create(const size_t transducer_index, const uint8_t duty
 }
 
 void TransducerTest::calc(const core::Geometry& geometry) {
-  size_t device_idx, local_trans_idx;
-  core::Geometry::global_to_local_idx(_transducer_idx, &device_idx, &local_trans_idx);
-  this->_data[device_idx][local_trans_idx].duty = this->_duty;
-  this->_data[device_idx][local_trans_idx].phase = this->_phase;
+  this->_data[_transducer_idx].duty = this->_duty;
+  this->_data[_transducer_idx].phase = this->_phase;
 }
 }  // namespace autd::gain

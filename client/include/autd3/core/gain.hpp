@@ -31,8 +31,6 @@ struct Drive final {
   uint8_t duty;
 };
 
-using GainData = std::array<Drive, NUM_TRANS_IN_UNIT>;
-
 /**
  * @brief Gain controls the duty ratio and phase of each transducer in AUTD devices.
  */
@@ -48,7 +46,8 @@ class Gain {
    * \param geometry Geometry
    */
   virtual void calc(const Geometry& geometry) {
-    for (size_t i = 0; i < geometry.num_devices(); i++) this->_data[i].fill(Drive(0x00, 0x00));
+    for (const auto& device : geometry)
+      for (const auto& transducer : device) this->_data[transducer.id()] = Drive(0x00, 0x00);
   }
 
   /**
@@ -58,10 +57,8 @@ class Gain {
   void build(const Geometry& geometry) {
     if (this->_built) return;
 
-    const auto num_device = geometry.num_devices();
-
     this->_data.clear();
-    this->_data.resize(num_device);
+    this->_data.resize(geometry.num_transducers());
 
     this->calc(geometry);
     this->_built = true;
@@ -79,7 +76,7 @@ class Gain {
   /**
    * @brief Getter function for the data of duty ratio and phase of each transducers
    */
-  [[nodiscard]] const std::vector<GainData>& data() const { return _data; }
+  [[nodiscard]] const std::vector<Drive>& data() const { return _data; }
 
   Gain() noexcept : _built(false) {}
   virtual ~Gain() = default;
@@ -90,7 +87,7 @@ class Gain {
 
  protected:
   bool _built;
-  std::vector<GainData> _data;
+  std::vector<Drive> _data;
 };
 }  // namespace core
 }  // namespace autd

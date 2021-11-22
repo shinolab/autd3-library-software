@@ -43,7 +43,7 @@ void generate_transfer_matrix(const std::vector<core::Vector3>& foci, const core
 
 template <typename P>
 void sdp_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps_, double alpha,
-              const double lambda, const size_t repeat, bool normalize, std::vector<core::GainData>& dst) {
+              const double lambda, const size_t repeat, bool normalize, std::vector<core::Drive>& dst) {
   const auto m = foci.size();
   const auto n = geometry.num_transducers();
 
@@ -113,7 +113,7 @@ void sdp_impl(P& pool, const core::Geometry& geometry, const std::vector<core::V
 
 template <typename P>
 void evd_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps_, double gamma,
-              bool normalize, std::vector<core::GainData>& dst) {
+              bool normalize, std::vector<core::Drive>& dst) {
   const auto m = foci.size();
   const auto n = geometry.num_transducers();
 
@@ -158,7 +158,7 @@ void evd_impl(P& pool, const core::Geometry& geometry, const std::vector<core::V
 
 template <typename P>
 void naive_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps,
-                std::vector<core::GainData>& dst) {
+                std::vector<core::Drive>& dst) {
   const auto m = foci.size();
   const auto n = geometry.num_transducers();
 
@@ -176,7 +176,7 @@ void naive_impl(P& pool, const core::Geometry& geometry, const std::vector<core:
 
 template <typename P>
 void gs_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps_, const size_t repeat,
-             std::vector<core::GainData>& dst) {
+             std::vector<core::Drive>& dst) {
   const auto m = foci.size();
   const auto n = geometry.num_transducers();
 
@@ -209,7 +209,7 @@ void gs_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Ve
 
 template <typename P>
 void gspat_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps_,
-                const size_t repeat, std::vector<core::GainData>& dst) {
+                const size_t repeat, std::vector<core::Drive>& dst) {
   const auto m = foci.size();
   const auto n = geometry.num_transducers();
 
@@ -321,7 +321,7 @@ double calc_fx(P& pool, const std::string& param_name, const size_t n_param) {
 
 template <typename P>
 void lm_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps_, double eps_1,
-             double eps_2, const double tau, const size_t k_max, const std::vector<double>& initial, std::vector<core::GainData>& dst) {
+             double eps_2, const double tau, const size_t k_max, const std::vector<double>& initial, std::vector<core::Drive>& dst) {
   const auto m = foci.size();
   const auto n = geometry.num_transducers();
   const size_t n_param = n + m;
@@ -407,7 +407,7 @@ void lm_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Ve
 
 template <typename P>
 void gauss_newton_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps_,
-                       double eps_1, double eps_2, const size_t k_max, const std::vector<double>& initial, std::vector<core::GainData>& dst) {
+                       double eps_1, double eps_2, const size_t k_max, const std::vector<double>& initial, std::vector<core::Drive>& dst) {
   const auto m = foci.size();
   const auto n = geometry.num_transducers();
   const size_t n_param = n + m;
@@ -460,7 +460,7 @@ void gauss_newton_impl(P& pool, const core::Geometry& geometry, const std::vecto
 
 template <typename P>
 void gradient_descent_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps_,
-                           double eps, const double step, const size_t k_max, const std::vector<double>& initial, std::vector<core::GainData>& dst) {
+                           double eps, const double step, const size_t k_max, const std::vector<double>& initial, std::vector<core::Drive>& dst) {
   const auto m = foci.size();
   const auto n = geometry.num_transducers();
   const size_t n_param = n + m;
@@ -493,7 +493,7 @@ void gradient_descent_impl(P& pool, const core::Geometry& geometry, const std::v
 
 template <typename P>
 void apo_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, double eps,
-              double lambda, const size_t line_search_max, const size_t k_max, std::vector<core::GainData>& dst) {
+              double lambda, const size_t line_search_max, const size_t k_max, std::vector<core::Drive>& dst) {
   auto make_ri = [](P& pool_, const size_t m, const size_t n, const size_t i) {
     const auto g = pool_.rent_c("g", m, n);
 
@@ -618,7 +618,7 @@ void apo_impl(P& pool, const core::Geometry& geometry, const std::vector<core::V
 
 template <typename P>
 void greedy_impl(P&, const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, const size_t phase_div,
-                 std::vector<core::GainData>& dst) {
+                 std::vector<core::Drive>& dst) {
   const auto m = foci.size();
 
   std::vector<complex> phases;
@@ -642,7 +642,6 @@ void greedy_impl(P&, const core::Geometry& geometry, const std::vector<core::Vec
 
   for (const auto& dev : geometry) {
     const auto& trans_dir = dev.z_direction();
-    size_t i = 0;
     for (const auto& transducer : dev) {
       size_t min_idx = 0;
       auto min_v = std::numeric_limits<double>::infinity();
@@ -657,9 +656,8 @@ void greedy_impl(P&, const core::Geometry& geometry, const std::vector<core::Vec
       }
       for (size_t j = 0; j < m; j++) cache[j] += tmp[min_idx][j];
 
-      dst[dev.id()][i].duty = 0xFF;
-      dst[dev.id()][i].phase = core::utils::to_phase(std::arg(phases[min_idx]));
-      i++;
+      dst[transducer.id()].duty = 0xFF;
+      dst[transducer.id()].phase = core::utils::to_phase(std::arg(phases[min_idx]));
     }
   }
 }

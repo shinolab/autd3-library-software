@@ -155,8 +155,8 @@ struct EigenMatrix {
   void transfer_matrix(const double* foci, size_t foci_num, const std::vector<const core::Transducer*>& transducers,
                        const std::vector<const double*>& directions, double wavelength, double attenuation);
   void set_bcd_result(const std::shared_ptr<const EigenMatrix<T>>& vec, size_t index);
-  void set_from_complex_drive(std::vector<core::GainData>& dst, bool normalize, double max_coefficient);
-  void set_from_arg(std::vector<core::GainData>& dst, size_t n);
+  void set_from_complex_drive(std::vector<core::Drive>& dst, bool normalize, double max_coefficient);
+  void set_from_arg(std::vector<core::Drive>& dst, size_t n);
   void back_prop(const std::shared_ptr<const EigenMatrix<T>>& transfer, const std::shared_ptr<const EigenMatrix<T>>& amps);
   void sigma_regularization(const std::shared_ptr<const EigenMatrix<T>>& transfer, const std::shared_ptr<const EigenMatrix<T>>& amps, double gamma);
   void col_sum_imag(const std::shared_ptr<EigenMatrix<complex>>& src);
@@ -223,32 +223,20 @@ inline void EigenMatrix<complex>::set_bcd_result(const std::shared_ptr<const Eig
 }
 
 template <>
-inline void EigenMatrix<complex>::set_from_complex_drive(std::vector<core::GainData>& dst, const bool normalize, const double max_coefficient) {
+inline void EigenMatrix<complex>::set_from_complex_drive(std::vector<core::Drive>& dst, const bool normalize, const double max_coefficient) {
   const Eigen::Index n = data.size();
-  size_t dev_idx = 0;
-  size_t trans_idx = 0;
   for (Eigen::Index j = 0; j < n; j++) {
     const auto f_amp = normalize ? 1.0 : std::abs(data(j, 0)) / max_coefficient;
-    dst[dev_idx][trans_idx].duty = core::utils::to_duty(f_amp);
-    dst[dev_idx][trans_idx].phase = core::utils::to_phase(std::arg(data(j, 0)));
-    if (++trans_idx == core::NUM_TRANS_IN_UNIT) {
-      dev_idx++;
-      trans_idx = 0;
-    }
+    dst[j].duty = core::utils::to_duty(f_amp);
+    dst[j].phase = core::utils::to_phase(std::arg(data(j, 0)));
   }
 }
 
 template <>
-inline void EigenMatrix<double>::set_from_arg(std::vector<core::GainData>& dst, const size_t n) {
-  size_t dev_idx = 0;
-  size_t trans_idx = 0;
+inline void EigenMatrix<double>::set_from_arg(std::vector<core::Drive>& dst, const size_t n) {
   for (Eigen::Index j = 0; j < static_cast<Eigen::Index>(n); j++) {
-    dst[dev_idx][trans_idx].duty = 0xFF;
-    dst[dev_idx][trans_idx].phase = core::utils::to_phase(data(j, 0));
-    if (++trans_idx == core::NUM_TRANS_IN_UNIT) {
-      dev_idx++;
-      trans_idx = 0;
-    }
+    dst[j].duty = 0xFF;
+    dst[j].phase = core::utils::to_phase(data(j, 0));
   }
 }
 

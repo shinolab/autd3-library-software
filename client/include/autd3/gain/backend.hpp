@@ -35,25 +35,25 @@ class Backend {
   Backend& operator=(Backend&& obj) = default;
 
   virtual void sdp(const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, double alpha,
-                   double lambda, size_t repeat, bool normalize, std::vector<core::GainData>& dst) = 0;
+                   double lambda, size_t repeat, bool normalize, std::vector<core::Drive>& dst) = 0;
   virtual void evd(const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, double gamma,
-                   bool normalize, std::vector<core::GainData>& dst) = 0;
+                   bool normalize, std::vector<core::Drive>& dst) = 0;
   virtual void naive(const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps,
-                     std::vector<core::GainData>& dst) = 0;
+                     std::vector<core::Drive>& dst) = 0;
   virtual void gs(const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, size_t repeat,
-                  std::vector<core::GainData>& dst) = 0;
+                  std::vector<core::Drive>& dst) = 0;
   virtual void gspat(const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, size_t repeat,
-                     std::vector<core::GainData>& dst) = 0;
+                     std::vector<core::Drive>& dst) = 0;
   virtual void lm(const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, double eps_1,
-                  double eps_2, double tau, size_t k_max, const std::vector<double>& initial, std::vector<core::GainData>& dst) = 0;
+                  double eps_2, double tau, size_t k_max, const std::vector<double>& initial, std::vector<core::Drive>& dst) = 0;
   virtual void gauss_newton(const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, double eps_1,
-                            double eps_2, size_t k_max, const std::vector<double>& initial, std::vector<core::GainData>& dst) = 0;
+                            double eps_2, size_t k_max, const std::vector<double>& initial, std::vector<core::Drive>& dst) = 0;
   virtual void gradient_descent(const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, double eps,
-                                double step, size_t k_max, const std::vector<double>& initial, std::vector<core::GainData>& dst) = 0;
+                                double step, size_t k_max, const std::vector<double>& initial, std::vector<core::Drive>& dst) = 0;
   virtual void apo(const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, double eps,
-                   double lambda, size_t k_max, std::vector<core::GainData>& dst) = 0;
+                   double lambda, size_t k_max, std::vector<core::Drive>& dst) = 0;
   virtual void greedy(const core::Geometry& geometry, const std::vector<core::Vector3>& foci, const std::vector<complex>& amps, size_t phase_div,
-                      std::vector<core::GainData>& dst) = 0;
+                      std::vector<core::Drive>& dst) = 0;
 };
 
 using BackendPtr = std::shared_ptr<Backend>;

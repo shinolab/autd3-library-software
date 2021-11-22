@@ -90,8 +90,8 @@ struct CuMatrix {
   void transfer_matrix(const double* foci, size_t foci_num, const std::vector<const core::Transducer*>& transducers,
                        const std::vector<const double*>& directions, double wavelength, double attenuation);
   void set_bcd_result(const std::shared_ptr<const CuMatrix<T>>& vec, size_t index);
-  void set_from_complex_drive(std::vector<core::GainData>& dst, bool normalize, double max_coefficient);
-  void set_from_arg(std::vector<core::GainData>& dst, size_t n);
+  void set_from_complex_drive(std::vector<core::Drive>& dst, bool normalize, double max_coefficient);
+  void set_from_arg(std::vector<core::Drive>& dst, size_t n);
   void back_prop(const std::shared_ptr<const CuMatrix<T>>& transfer, const std::shared_ptr<const CuMatrix<T>>& amps);
   void sigma_regularization(const std::shared_ptr<const CuMatrix<T>>& transfer, const std::shared_ptr<const CuMatrix<T>>& amps, double gamma);
   void col_sum_imag(const std::shared_ptr<CuMatrix<complex>>& src);

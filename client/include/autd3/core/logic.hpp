@@ -113,11 +113,9 @@ class Logic {
     auto* header = reinterpret_cast<GlobalHeader*>(data);
     header->cpu_ctrl_flags |= WRITE_BODY;
 
-    const auto num_devices = gain->data().size();
     auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(GlobalHeader));
-    for (size_t i = 0; i < num_devices; i++, cursor += NUM_TRANS_IN_UNIT)
-      std::memcpy(cursor, gain->data()[i].data(), NUM_TRANS_IN_UNIT * sizeof(uint16_t));
-    return sizeof(GlobalHeader) + num_devices * NUM_TRANS_IN_UNIT * sizeof(uint16_t);
+    std::memcpy(cursor, gain->data().data(), gain->data().size() * sizeof(uint16_t));
+    return sizeof(GlobalHeader) + gain->data().size() * sizeof(uint16_t);
   }
 
   /**
@@ -131,16 +129,15 @@ class Logic {
   static size_t pack_body(const PointSequencePtr& seq, const Geometry& geometry, uint8_t* data) {
     if (seq == nullptr || seq->sent() == seq->control_points().size()) return sizeof(GlobalHeader);
 
-    const auto num_devices = geometry.num_devices();
     auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(GlobalHeader));
     size_t offset = 1;
     auto* header = reinterpret_cast<GlobalHeader*>(data);
     header->cpu_ctrl_flags |= WRITE_BODY;
     if (seq->sent() == 0) {
       header->cpu_ctrl_flags |= SEQ_BEGIN;
-      for (size_t device = 0; device < num_devices; device++) {
-        cursor[device * NUM_TRANS_IN_UNIT + 1] = static_cast<uint16_t>(seq->sampling_freq_div_ratio() - 1);
-        cursor[device * NUM_TRANS_IN_UNIT + 2] = static_cast<uint16_t>(geometry.wavelength() * 1000);
+      for (const auto& device : geometry) {
+        cursor[device.id() * NUM_TRANS_IN_UNIT + 1] = static_cast<uint16_t>(seq->sampling_freq_div_ratio() - 1);
+        cursor[device.id() * NUM_TRANS_IN_UNIT + 2] = static_cast<uint16_t>(geometry.wavelength() * 1000);
       }
       offset += 4;
     }
@@ -159,7 +156,7 @@ class Logic {
       cursor += NUM_TRANS_IN_UNIT;
     }
     seq->sent() += send_size;
-    return sizeof(GlobalHeader) + num_devices * NUM_TRANS_IN_UNIT * sizeof(uint16_t);
+    return sizeof(GlobalHeader) + geometry.num_transducers() * sizeof(uint16_t);
   }
 
   /**
@@ -173,52 +170,54 @@ class Logic {
   static size_t pack_body(const GainSequencePtr& seq, const Geometry& geometry, uint8_t* data) {
     if (seq == nullptr || seq->sent() >= seq->gains().size() + 1) return sizeof(GlobalHeader);
 
-    const auto num_devices = geometry.num_devices();
     auto* header = reinterpret_cast<GlobalHeader*>(data);
     header->cpu_ctrl_flags |= WRITE_BODY;
     const auto seq_sent = static_cast<size_t>(seq->gain_mode());
     if (seq->sent() == 0) {
       header->cpu_ctrl_flags |= SEQ_BEGIN;
       auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(GlobalHeader));
-      for (size_t device = 0; device < num_devices; device++) {
-        cursor[device * NUM_TRANS_IN_UNIT] = static_cast<uint16_t>(seq_sent);
-        cursor[device * NUM_TRANS_IN_UNIT + 1] = static_cast<uint16_t>(seq->sampling_freq_div_ratio() - 1);
-        cursor[device * NUM_TRANS_IN_UNIT + 2] = static_cast<uint16_t>(seq->size());
+      for (const auto& device : geometry) {
+        cursor[device.id() * NUM_TRANS_IN_UNIT] = static_cast<uint16_t>(seq_sent);
+        cursor[device.id() * NUM_TRANS_IN_UNIT + 1] = static_cast<uint16_t>(seq->sampling_freq_div_ratio() - 1);
+        cursor[device.id() * NUM_TRANS_IN_UNIT + 2] = static_cast<uint16_t>(seq->size());
       }
       seq->sent()++;
-      return sizeof(GlobalHeader) + num_devices * NUM_TRANS_IN_UNIT * sizeof(uint16_t);
+      return sizeof(GlobalHeader) + geometry.num_transducers() * sizeof(uint16_t);
     }
 
     if (seq->sent() + seq_sent > seq->gains().size()) header->cpu_ctrl_flags |= SEQ_END;
 
     auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(GlobalHeader));
     const auto gain_idx = seq->sent() - 1;
-    for (size_t device = 0; device < num_devices; device++, cursor += NUM_TRANS_IN_UNIT) {
-      switch (seq->gain_mode()) {
-        case GAIN_MODE::DUTY_PHASE_FULL:
-          std::memcpy(cursor, seq->gains()[gain_idx]->data()[device].data(), NUM_TRANS_IN_UNIT * sizeof(uint16_t));
-          break;
-        case GAIN_MODE::PHASE_FULL:
-          for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
-            cursor[2 * i] = static_cast<uint8_t>(seq->gains()[gain_idx]->data()[device][i].phase);
-            cursor[2 * i + 1] = static_cast<uint8_t>(gain_idx + 1 >= seq->size() ? 0x00 : seq->gains()[gain_idx + 1]->data()[device][i].phase);
+    switch (seq->gain_mode()) {
+      case GAIN_MODE::DUTY_PHASE_FULL:
+        std::memcpy(cursor, seq->gains()[gain_idx]->data().data(), seq->gains()[gain_idx]->data().size() * sizeof(uint16_t));
+        break;
+      case GAIN_MODE::PHASE_FULL:
+        for (const auto& dev : geometry)
+          for (const auto& trans : dev) {
+            cursor[2 * trans.id()] = static_cast<uint8_t>(seq->gains()[gain_idx]->data()[trans.id()].phase);
+            cursor[2 * trans.id() + 1] =
+                static_cast<uint8_t>(gain_idx + 1 >= seq->size() ? 0x00 : seq->gains()[gain_idx + 1]->data()[trans.id()].phase);
           }
-          break;
-        case GAIN_MODE::PHASE_HALF:
-          for (size_t i = 0; i < NUM_TRANS_IN_UNIT; i++) {
-            const auto phase1 = static_cast<uint8_t>(seq->gains()[gain_idx]->data()[device][i].phase >> 4 & 0x0F);
-            const auto phase2 = static_cast<uint8_t>(gain_idx + 1 >= seq->size() ? 0x00 : seq->gains()[gain_idx + 1]->data()[device][i].phase & 0xF0);
+        break;
+      case GAIN_MODE::PHASE_HALF:
+        for (const auto& dev : geometry)
+          for (const auto& trans : dev) {
+            const auto phase1 = static_cast<uint8_t>(seq->gains()[gain_idx]->data()[trans.id()].phase >> 4 & 0x0F);
+            const auto phase2 =
+                static_cast<uint8_t>(gain_idx + 1 >= seq->size() ? 0x00 : seq->gains()[gain_idx + 1]->data()[trans.id()].phase & 0xF0);
             const auto phase3 =
-                static_cast<uint8_t>(gain_idx + 2 >= seq->size() ? 0x00 : seq->gains()[gain_idx + 2]->data()[device][i].phase >> 4 & 0x0F);
-            const auto phase4 = static_cast<uint8_t>(gain_idx + 3 >= seq->size() ? 0x00 : seq->gains()[gain_idx + 3]->data()[device][i].phase & 0xF0);
-            cursor[2 * i] = utils::pack_to_u16(phase2, phase1);
-            cursor[2 * i + 1] = utils::pack_to_u16(phase4, phase3);
+                static_cast<uint8_t>(gain_idx + 2 >= seq->size() ? 0x00 : seq->gains()[gain_idx + 2]->data()[trans.id()].phase >> 4 & 0x0F);
+            const auto phase4 =
+                static_cast<uint8_t>(gain_idx + 3 >= seq->size() ? 0x00 : seq->gains()[gain_idx + 3]->data()[trans.id()].phase & 0xF0);
+            cursor[2 * trans.id()] = utils::pack_to_u16(phase2, phase1);
+            cursor[2 * trans.id() + 1] = utils::pack_to_u16(phase4, phase3);
           }
-          break;
-      }
+        break;
     }
     seq->sent() += seq_sent;
-    return sizeof(GlobalHeader) + num_devices * NUM_TRANS_IN_UNIT * sizeof(uint16_t);
+    return sizeof(GlobalHeader) + geometry.num_transducers() * sizeof(uint16_t);
   }
 
   /**
@@ -231,9 +230,8 @@ class Logic {
   static size_t pack_delay_offset_body(const std::vector<DelayOffset>& delay_offset, uint8_t* data) {
     auto* header = reinterpret_cast<GlobalHeader*>(data);
     header->cpu_ctrl_flags |= WRITE_BODY;
-    auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(GlobalHeader));
-    std::memcpy(cursor, delay_offset.data(), delay_offset.size() * sizeof(uint16_t));
-    return sizeof(GlobalHeader) + sizeof(uint16_t) * NUM_TRANS_IN_UNIT * delay_offset.size();
+    std::memcpy(data + sizeof(GlobalHeader), delay_offset.data(), delay_offset.size() * sizeof(uint16_t));
+    return sizeof(GlobalHeader) + delay_offset.size() * sizeof(uint16_t);
   }
 };
 }  // namespace autd::core

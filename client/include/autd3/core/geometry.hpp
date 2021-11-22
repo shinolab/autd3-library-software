@@ -60,7 +60,7 @@ struct Device {
         _y_direction(quaternion * Vector3(0, 1, 0)),
         _z_direction(quaternion * Vector3(0, 0, 1)) {
     const Eigen::Transform<double, 3, Eigen::Affine> transform_matrix = Eigen::Translation<double, 3>(position) * quaternion;
-    size_t i = 0;
+    size_t i = id * NUM_TRANS_IN_UNIT;
     for (size_t y = 0; y < NUM_TRANS_Y; y++)
       for (size_t x = 0; x < NUM_TRANS_X; x++) {
         if (is_missing_transducer(x, y)) continue;
@@ -170,14 +170,6 @@ class Geometry {
    * @brief Number of transducers
    */
   [[nodiscard]] size_t num_transducers() const noexcept { return this->num_devices() * NUM_TRANS_IN_UNIT; }
-
-  /**
-   * @brief Convert global transducer index into local index
-   */
-  static void global_to_local_idx(const size_t global_trans_idx, size_t* const device_idx, size_t* const local_trans_idx) {
-    *device_idx = global_trans_idx / NUM_TRANS_IN_UNIT;
-    *local_trans_idx = global_trans_idx % NUM_TRANS_IN_UNIT;
-  }
 
   [[nodiscard]] std::vector<Device>::const_iterator begin() const { return _devices.begin(); }
   [[nodiscard]] std::vector<Device>::const_iterator end() const { return _devices.end(); }
