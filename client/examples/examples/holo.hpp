@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/11/2021
+// Last Modified: 22/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -48,7 +48,7 @@ inline autd::GainPtr select_opt(const std::vector<autd::Vector3>& foci, const st
   std::stringstream s(in);
   if (const auto empty = in == "\n"; !(s >> idx) || idx >= opts.size() || empty) idx = 0;
 
-  const auto [_name, opt] = opts[idx];
+  const auto& [_name, opt] = opts[idx];
   return opt;
 }
 

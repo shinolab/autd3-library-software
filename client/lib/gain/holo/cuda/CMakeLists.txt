@@ -4,6 +4,12 @@ set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} --expt-relaxed-constexpr -Xcudafe "--diag
 if(WIN32 AND (MSVC_TOOLSET_VERSION VERSION_EQUAL 143))
   set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} -allow-unsupported-compiler)
 endif()
+if(WIN32)
+  foreach(flag_var
+        CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE)
+    string(REGEX REPLACE "/GR " "/GR- " ${flag_var} "${${flag_var}}")
+  endforeach(flag_var)
+endif()
 
 if(BUILD_SHARED_LIBS)
   set(CUDA_LINK_LIBRARIES_KEYWORD PRIVATE)

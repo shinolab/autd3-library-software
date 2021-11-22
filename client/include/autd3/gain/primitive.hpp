@@ -16,7 +16,6 @@
 #include <utility>
 
 #include "autd3/core/gain.hpp"
-#include "autd3/core/hardware_defined.hpp"
 
 namespace autd::gain {
 

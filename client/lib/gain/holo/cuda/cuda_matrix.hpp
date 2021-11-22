@@ -24,7 +24,14 @@
 #include <memory>
 #include <vector>
 
+#ifdef __NVCC_DIAG_PRAGMA_SUPPORT__
+#pragma nv_diag_suppress 20014
+#define diag_suppress nv_diag_suppress
+#endif
 #include "autd3/core/gain.hpp"
+#ifdef __NVCC_DIAG_PRAGMA_SUPPORT__
+#undef diag_suppress
+#endif
 #include "autd3/gain/matrix.hpp"
 #include "matrix_pool.hpp"
 
