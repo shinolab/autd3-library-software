@@ -61,8 +61,8 @@ struct Device {
 
   Device(const size_t id, const Vector3& position, const Vector3& euler_angles)
       : Device(id, position,
-               Eigen::AngleAxis(euler_angles.x(), Vector3::UnitZ()) * Eigen::AngleAxis(euler_angles.y(), Vector3::UnitY()) *
-                   Eigen::AngleAxis(euler_angles.z(), Vector3::UnitZ())) {}
+               Eigen::AngleAxis<double>(euler_angles.x(), Vector3::UnitZ()) * Eigen::AngleAxis<double>(euler_angles.y(), Vector3::UnitY()) *
+                   Eigen::AngleAxis<double>(euler_angles.z(), Vector3::UnitZ())) {}
 
   [[nodiscard]] size_t id() const noexcept { return _id; }
   [[nodiscard]] const Vector3& x_direction() const noexcept { return _x_direction; }
