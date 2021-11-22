@@ -39,6 +39,17 @@ using Vector4 = Eigen::Matrix<double, 4, 1>;
 using Matrix4X4 = Eigen::Matrix<double, 4, 4>;
 using Quaternion = Eigen::Quaternion<double>;
 
+struct Transducer final {
+  explicit Transducer(const size_t id, const double x, const double y, const double z) : _id(id), _position(x, y, z) {}
+
+  [[nodiscard]] size_t id() const { return _id; }
+  [[nodiscard]] const Vector3& position() const { return _position; }
+
+ private:
+  size_t _id;
+  Vector3 _position;
+};
+
 /**
  * \brief Device contains an AUTD device geometry.
  */
@@ -49,12 +60,13 @@ struct Device {
         _y_direction(quaternion * Vector3(0, 1, 0)),
         _z_direction(quaternion * Vector3(0, 0, 1)) {
     const Eigen::Transform<double, 3, Eigen::Affine> transform_matrix = Eigen::Translation<double, 3>(position) * quaternion;
+    size_t i = 0;
     for (size_t y = 0; y < NUM_TRANS_Y; y++)
       for (size_t x = 0; x < NUM_TRANS_X; x++) {
         if (is_missing_transducer(x, y)) continue;
         const auto local_pos = Vector4(static_cast<double>(x) * TRANS_SPACING_MM, static_cast<double>(y) * TRANS_SPACING_MM, 0, 1);
         const Vector4 global_pos = transform_matrix * local_pos;
-        _transducers.emplace_back(global_pos[0], global_pos[1], global_pos[2]);
+        _transducers.emplace_back(i++, global_pos[0], global_pos[1], global_pos[2]);
       }
     _global_to_local = transform_matrix.inverse();
   }
@@ -78,17 +90,17 @@ struct Device {
     return {local_position[0], local_position[1], local_position[2]};
   }
 
-  [[nodiscard]] std::vector<Vector3>::const_iterator begin() const { return _transducers.begin(); }
-  [[nodiscard]] std::vector<Vector3>::const_iterator end() const { return _transducers.end(); }
+  [[nodiscard]] std::vector<Transducer>::const_iterator begin() const { return _transducers.begin(); }
+  [[nodiscard]] std::vector<Transducer>::const_iterator end() const { return _transducers.end(); }
 
-  const Vector3& operator[](const size_t i) const { return _transducers[i]; }
+  const Transducer& operator[](const size_t i) const { return _transducers[i]; }
 
  private:
   size_t _id;
   Vector3 _x_direction;
   Vector3 _y_direction;
   Vector3 _z_direction;
-  std::vector<Vector3> _transducers;
+  std::vector<Transducer> _transducers;
   Eigen::Transform<double, 3, Eigen::Affine> _global_to_local;
 };
 

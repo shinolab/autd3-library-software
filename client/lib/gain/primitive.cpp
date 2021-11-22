@@ -39,15 +39,12 @@ void PlaneWave::calc(const core::Geometry& geometry) {
   const auto dir = this->_direction.normalized();
 
   const auto wavenum = 2.0 * M_PI / geometry.wavelength();
-  for (const auto& dev : geometry) {
-    size_t i = 0;
-    for (const auto& trans_pos : dev) {
-      const auto dist = trans_pos.dot(dir);
-      this->_data[dev.id()][i].phase = core::utils::to_phase(dist * wavenum);
-      this->_data[dev.id()][i].duty = this->_duty;
-      i++;
+  for (const auto& dev : geometry)
+    for (const auto& transducer : dev) {
+      const auto dist = transducer.position().dot(dir);
+      this->_data[dev.id()][transducer.id()].phase = core::utils::to_phase(dist * wavenum);
+      this->_data[dev.id()][transducer.id()].duty = this->_duty;
     }
-  }
 }
 
 GainPtr FocalPoint::create(const Vector3& point, const double amp) { return create(point, core::utils::to_duty(amp)); }
@@ -55,15 +52,12 @@ GainPtr FocalPoint::create(const Vector3& point, uint8_t duty) { return std::mak
 
 void FocalPoint::calc(const core::Geometry& geometry) {
   const auto wavenum = 2.0 * M_PI / geometry.wavelength();
-  for (const auto& dev : geometry) {
-    size_t i = 0;
-    for (const auto& trans_pos : dev) {
-      const auto dist = (trans_pos - this->_point).norm();
-      this->_data[dev.id()][i].duty = this->_duty;
-      this->_data[dev.id()][i].phase = core::utils::to_phase(dist * wavenum);
-      i++;
+  for (const auto& dev : geometry)
+    for (const auto& transducer : dev) {
+      const auto dist = (transducer.position() - this->_point).norm();
+      this->_data[dev.id()][transducer.id()].duty = this->_duty;
+      this->_data[dev.id()][transducer.id()].phase = core::utils::to_phase(dist * wavenum);
     }
-  }
 }
 
 GainPtr BesselBeam::create(const Vector3& apex, const Vector3& vec_n, const double theta_z, const double amp) {
@@ -82,17 +76,14 @@ void BesselBeam::calc(const core::Geometry& geometry) {
   const Eigen::AngleAxisd rot(-theta_v, v);
 
   const auto wavenum = 2.0 * M_PI / geometry.wavelength();
-  for (const auto& dev : geometry) {
-    size_t i = 0;
-    for (const auto& trans_pos : dev) {
-      const auto r = trans_pos - this->_apex;
+  for (const auto& dev : geometry)
+    for (const auto& transducer : dev) {
+      const auto r = transducer.position() - this->_apex;
       const auto rr = rot * r;
       const auto d = std::sin(_theta_z) * std::sqrt(rr.x() * rr.x() + rr.y() * rr.y()) - std::cos(_theta_z) * rr.z();
-      this->_data[dev.id()][i].duty = this->_duty;
-      this->_data[dev.id()][i].phase = core::utils::to_phase(d * wavenum);
-      i++;
+      this->_data[dev.id()][transducer.id()].duty = this->_duty;
+      this->_data[dev.id()][transducer.id()].phase = core::utils::to_phase(d * wavenum);
     }
-  }
 }
 
 GainPtr TransducerTest::create(const size_t transducer_index, const uint8_t duty, const uint8_t phase) {

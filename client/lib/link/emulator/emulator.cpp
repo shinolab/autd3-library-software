@@ -70,7 +70,7 @@ class EmulatorImpl final : public Emulator {
     auto* const cursor = reinterpret_cast<float*>(&buf[sizeof(core::GlobalHeader)]);
     for (const auto& device : geometry) {
       const auto i = device.id();
-      auto origin = device.begin()->cast<float>();
+      auto origin = device.begin()->position().cast<float>();
       auto right = device.x_direction().cast<float>();
       auto up = device.y_direction().cast<float>();
       cursor[9 * i] = origin.x();

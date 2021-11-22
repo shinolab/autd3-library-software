@@ -145,8 +145,8 @@ struct AFMatrix {
     af_array.write(reinterpret_cast<const void*>(v), n * sizeof(T));
   }
 
-  void transfer_matrix(const double* foci, size_t foci_num, const std::vector<const double*>& positions, const std::vector<const double*>& directions,
-                       double wavelength, double attenuation);
+  void transfer_matrix(const double* foci, size_t foci_num, const std::vector<const core::Transducer*>& transducers,
+                       const std::vector<const double*>& directions, double wavelength, double attenuation);
   void set_bcd_result(const std::shared_ptr<const AFMatrix<T>>& vec, size_t index);
   void set_from_complex_drive(std::vector<core::GainData>& dst, bool normalize, double max_coefficient);
   void set_from_arg(std::vector<core::GainData>& dst, size_t n);
@@ -206,28 +206,27 @@ inline void AFMatrix<complex>::max_eigen_vector(const std::shared_ptr<AFMatrix<c
   ev->copy_from(max_ev.data());
 }
 
-inline void AFMatrix<double>::transfer_matrix(const double*, size_t, const std::vector<const double*>&, const std::vector<const double*>&, double,
-                                              double) {}
-inline void AFMatrix<complex>::transfer_matrix(const double* foci, const size_t foci_num, const std::vector<const double*>& positions,
+inline void AFMatrix<double>::transfer_matrix(const double*, size_t, const std::vector<const core::Transducer*>&, const std::vector<const double*>&,
+                                              double, double) {}
+inline void AFMatrix<complex>::transfer_matrix(const double* foci, const size_t foci_num, const std::vector<const core::Transducer*>& transducers,
                                                const std::vector<const double*>& directions, double const wavelength, double const attenuation) {
   // FIXME: implement with ArrayFire
-  const auto data = std::make_unique<complex[]>(foci_num * positions.size() * core::NUM_TRANS_IN_UNIT);
+  const auto data = std::make_unique<complex[]>(foci_num * transducers.size() * core::NUM_TRANS_IN_UNIT);
 
   const auto wave_number = 2.0 * M_PI / wavelength;
   size_t k = 0;
-  for (size_t dev = 0; dev < positions.size(); dev++) {
-    const double* p = positions[dev];
+  for (size_t dev = 0; dev < transducers.size(); dev++) {
     const auto dir = core::Vector3(directions[dev][0], directions[dev][1], directions[dev][2]);
     for (Eigen::Index j = 0; j < static_cast<Eigen::Index>(core::NUM_TRANS_IN_UNIT); j++) {
-      const auto pos = core::Vector3(p[3 * j], p[3 * j + 1], p[3 * j + 2]);
+      const auto& transducer = transducers[dev][j];
       for (size_t i = 0; i < foci_num; i++, k++) {
         const auto tp = core::Vector3(foci[3 * i], foci[3 * i + 1], foci[3 * i + 2]);
-        data[k] = utils::transfer(pos, dir, tp, wave_number, attenuation);
+        data[k] = utils::transfer(transducer, dir, tp, wave_number, attenuation);
       }
     }
   }
 
-  af_array = af::array(static_cast<dim_t>(foci_num), static_cast<dim_t>(positions.size() * core::NUM_TRANS_IN_UNIT),
+  af_array = af::array(static_cast<dim_t>(foci_num), static_cast<dim_t>(transducers.size() * core::NUM_TRANS_IN_UNIT),
                        reinterpret_cast<const af::cdouble*>(data.get()));
 }
 
