@@ -21,7 +21,6 @@ cuda_add_library(cuda_backend
     ${PROJECT_SOURCE_DIR}/include/autd3/gain/backend.hpp
     ${PROJECT_SOURCE_DIR}/include/autd3/gain/cuda_backend.hpp
 )
-set_target_properties(cuda_backend PROPERTIES CUDA_SEPERABLE_COMPILATION ON)
 
 cuda_add_cublas_to_target(cuda_backend)
 target_include_directories(cuda_backend PRIVATE ${PROJECT_SOURCE_DIR}/lib/gain/holo ${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
