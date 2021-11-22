@@ -36,10 +36,10 @@ class UniformGain final : public autd::core::Gain {
  public:
   static autd::GainPtr create() { return std::make_shared<UniformGain>(); }
   void calc(const autd::Geometry& geometry) override {
-    for (size_t dev = 0; dev < geometry.num_devices(); dev++)
-      for (size_t i = 0; i < autd::NUM_TRANS_IN_UNIT; i++) {
-        this->_data[dev][i].duty = 0xFF;
-        this->_data[dev][i].phase = 0x80;
+    for (const auto& dev : geometry)
+      for (const auto& trans : dev) {
+        this->_data[trans.id()].duty = 0xFF;
+        this->_data[trans.id()].phase = 0x80;
       }
   }
 };

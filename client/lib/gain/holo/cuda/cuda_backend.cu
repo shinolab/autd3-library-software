@@ -200,14 +200,13 @@ struct CuMatrix<double>::Impl {
   }
   void copy_from(const double* v, const size_t n) { cudaMemcpy(_d_vec.data().get(), v, n * sizeof(double), cudaMemcpyHostToDevice); }
 
-  void set_from_arg(std::vector<core::GainData>& data, const size_t n) {
+  void set_from_arg(std::vector<core::Drive>& data, const size_t n) {
     uint16_t* d_data = nullptr;
     cudaMalloc((void**)&d_data, data.size() * core::NUM_TRANS_IN_UNIT * sizeof(uint16_t));
     cudaMemset(d_data, 0, data.size() * core::NUM_TRANS_IN_UNIT * sizeof(uint16_t));
 
     cu_set_from_arg(ptr(), (uint32_t)n, d_data);
-    for (size_t i = 0; i < data.size(); i++)
-      cudaMemcpy(data[i].data(), d_data + i * core::NUM_TRANS_IN_UNIT, core::NUM_TRANS_IN_UNIT * sizeof(uint16_t), cudaMemcpyDeviceToHost);
+    cudaMemcpy(data.data(), d_data, data.size() * sizeof(uint16_t), cudaMemcpyDeviceToHost);
   }
   void col_sum_imag(const std::shared_ptr<const CuMatrix<complex>> mat) {
     const auto m = mat->rows();
@@ -416,13 +415,12 @@ struct CuMatrix<complex>::Impl {
   }
   void copy_from(const complex* v, const size_t n) { cudaMemcpy(_d_vec.data().get(), v, n * sizeof(complex), cudaMemcpyHostToDevice); }
 
-  void set_from_complex_drive(std::vector<core::GainData>& data, const bool normalize, const double max_coefficient) {
+  void set_from_complex_drive(std::vector<core::Drive>& data, const bool normalize, const double max_coefficient) {
     uint16_t* d_data = nullptr;
     cudaMalloc((void**)&d_data, data.size() * core::NUM_TRANS_IN_UNIT * sizeof(uint16_t));
 
     cu_set_from_complex_drive((const cuDoubleComplex*)ptr(), (uint32_t)(data.size() * core::NUM_TRANS_IN_UNIT), normalize, max_coefficient, d_data);
-    for (size_t i = 0; i < data.size(); i++)
-      cudaMemcpy(data[i].data(), d_data + i * core::NUM_TRANS_IN_UNIT, core::NUM_TRANS_IN_UNIT * sizeof(uint16_t), cudaMemcpyDeviceToHost);
+    cudaMemcpy(data.data(), d_data, data.size() * sizeof(uint16_t), cudaMemcpyDeviceToHost);
   }
 
   void transfer_matrix(const double* foci, size_t foci_num, const std::vector<const core::Transducer*>& transducers,
@@ -595,12 +593,12 @@ void CuMatrix<complex>::transfer_matrix(const double* foci, size_t foci_num, con
 }
 void CuMatrix<double>::set_bcd_result(const std::shared_ptr<const CuMatrix<double>>& vec, size_t index) {}
 void CuMatrix<complex>::set_bcd_result(const std::shared_ptr<const CuMatrix<complex>>& vec, size_t index) { _pimpl->set_bcd_result(vec, index); }
-void CuMatrix<double>::set_from_complex_drive(std::vector<core::GainData>& dst, bool normalize, double max_coefficient) {}
-void CuMatrix<complex>::set_from_complex_drive(std::vector<core::GainData>& dst, bool normalize, double max_coefficient) {
+void CuMatrix<double>::set_from_complex_drive(std::vector<core::Drive>& dst, bool normalize, double max_coefficient) {}
+void CuMatrix<complex>::set_from_complex_drive(std::vector<core::Drive>& dst, bool normalize, double max_coefficient) {
   _pimpl->set_from_complex_drive(dst, normalize, max_coefficient);
 }
-void CuMatrix<double>::set_from_arg(std::vector<core::GainData>& dst, size_t n) { _pimpl->set_from_arg(dst, n); }
-void CuMatrix<complex>::set_from_arg(std::vector<core::GainData>& dst, size_t n) {}
+void CuMatrix<double>::set_from_arg(std::vector<core::Drive>& dst, size_t n) { _pimpl->set_from_arg(dst, n); }
+void CuMatrix<complex>::set_from_arg(std::vector<core::Drive>& dst, size_t n) {}
 void CuMatrix<double>::back_prop(const std::shared_ptr<const CuMatrix<double>>& transfer, const std::shared_ptr<const CuMatrix<double>>& amps) {}
 void CuMatrix<complex>::back_prop(const std::shared_ptr<const CuMatrix<complex>>& transfer, const std::shared_ptr<const CuMatrix<complex>>& amps) {
   _pimpl->back_prop(transfer, amps);

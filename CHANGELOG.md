@@ -5,7 +5,7 @@
 * Introduce `Drive` struct which contains explicit phase and duty parameter for transducer
 * Change delay and duty offset api
     * Delete `AUTDSetDutyOffset` and `AUTDSetOutputDelay` from capi
-* Delete `Geometry::device_idx_for_trans_idx`, use `Geometry::global_to_local_idx` instead
+* Delete `Geometry::device_idx_for_trans_idx`
     * Delete `AUTDDeviceIdxForTransIdx` from capi
 * Delete `AUTDNumTransducers`, `AUTDTransPositionByGlobal`, `AUTDSendGain`, and `AUTDSendModulation` from capi
 * Rename `AUTDTransPositionByLocal` to `AUTDTransPosition` in capi
