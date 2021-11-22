@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/10/2021
+// Last Modified: 22/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,7 +11,6 @@
 
 #pragma once
 
-#include <array>
 #include <cstdint>
 
 namespace autd {
@@ -42,8 +41,6 @@ constexpr size_t SEQ_BASE_FREQ = 40000;
 constexpr size_t SEQ_SAMPLING_FREQ_DIV_MAX = 65536;
 
 constexpr bool PHASE_INVERTED = true;
-
-using DataArray = std::array<uint16_t, NUM_TRANS_IN_UNIT>;
 
 enum FPGA_CONTROL_FLAGS {
   OUTPUT_ENABLE = 1 << 0,
@@ -86,6 +83,14 @@ struct GlobalHeader {
   uint8_t cpu_ctrl_flags;
   uint8_t mod_size;
   uint8_t mod[MOD_FRAME_SIZE];
+};
+
+struct DelayOffset {
+  DelayOffset() : DelayOffset(0x00, 0x00) {}
+  explicit DelayOffset(const uint8_t delay, const uint8_t offset) : delay(delay), offset(offset) {}
+
+  uint8_t delay;
+  uint8_t offset;
 };
 
 /**

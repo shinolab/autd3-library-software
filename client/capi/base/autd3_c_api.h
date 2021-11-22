@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/11/2021
+// Last Modified: 22/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -40,8 +40,6 @@ EXPORT_AUTD void AUTDSetWavelength(const void* handle, double wavelength);
 EXPORT_AUTD void AUTDSetAttenuation(const void* handle, double attenuation);
 EXPORT_AUTD bool AUTDGetFPGAInfo(const void* handle, uint8_t* out);
 EXPORT_AUTD int32_t AUTDUpdateCtrlFlags(const void* handle);
-EXPORT_AUTD int32_t AUTDSetOutputDelay(const void* handle, const uint8_t* delay);
-EXPORT_AUTD int32_t AUTDSetDutyOffset(const void* handle, const uint8_t* offset);
 EXPORT_AUTD int32_t AUTDSetDelayOffset(const void* handle, const uint8_t* delay, const uint8_t* offset);
 EXPORT_AUTD int32_t AUTDGetLastError(char* error);
 EXPORT_AUTD int32_t AUTDNumDevices(const void* handle);

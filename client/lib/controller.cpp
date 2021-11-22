@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/11/2021
+// Last Modified: 22/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -76,9 +76,8 @@ void Controller::open(core::LinkPtr link) {
   this->_tx_buf = std::make_unique<uint8_t[]>(this->_geometry.num_devices() * core::EC_OUTPUT_FRAME_SIZE);
   this->_rx_buf = std::make_unique<uint8_t[]>(this->_geometry.num_devices() * core::EC_INPUT_FRAME_SIZE);
 
-  this->_fpga_infos.resize(this->_geometry.num_devices());
-  this->_delay.resize(this->_geometry.num_devices());
-  this->_offset.resize(this->_geometry.num_devices());
+  this->_fpga_infos.resize(this->_geometry.num_transducers());
+  this->_delay_offset.resize(this->_geometry.num_transducers());
   init_delay_offset();
 
   link->open();
@@ -86,10 +85,11 @@ void Controller::open(core::LinkPtr link) {
 }
 
 void Controller::init_delay_offset() {
-  for (size_t dev = 0; dev < this->_geometry.num_devices(); dev++) {
-    std::memset(&this->_delay[dev][0], 0x00, core::NUM_TRANS_IN_UNIT);
-    std::memset(&this->_offset[dev][0], 0xFF, core::NUM_TRANS_IN_UNIT);
-  }
+  for (const auto& device : this->_geometry)
+    for (const auto& transducer : device) {
+      this->_delay_offset[transducer.id()].delay = 0x00;
+      this->_delay_offset[transducer.id()].offset = 0x01;
+    }
 }
 
 bool Controller::clear() {
@@ -219,38 +219,14 @@ bool Controller::send(const core::GainSequencePtr& seq, const core::ModulationPt
   }
 }
 
-bool Controller::set_output_delay(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& delay) {
-  if (delay.size() != this->_geometry.num_devices()) throw core::exception::SetOutputConfigError("The number of devices is wrong");
+std::vector<core::DelayOffset>& Controller::delay_offset() { return this->_delay_offset; }
 
-  for (size_t dev = 0; dev < this->_geometry.num_devices(); dev++) std::memcpy(&this->_delay[dev][0], &delay[dev][0], core::NUM_TRANS_IN_UNIT);
-  return this->send_delay_offset();
-}
-
-bool Controller::set_duty_offset(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& offset) {
-  if (offset.size() != this->_geometry.num_devices()) throw core::exception::SetOutputConfigError("The number of devices is wrong");
-
-  for (size_t dev = 0; dev < this->_geometry.num_devices(); dev++) std::memcpy(&this->_offset[dev][0], &offset[dev][0], core::NUM_TRANS_IN_UNIT);
-
-  return this->send_delay_offset();
-}
-
-bool Controller::set_delay_offset(const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& delay,
-                                  const std::vector<std::array<uint8_t, core::NUM_TRANS_IN_UNIT>>& offset) {
-  if (delay.size() != this->_geometry.num_devices() || offset.size() != this->_geometry.num_devices())
-    throw core::exception::SetOutputConfigError("The number of devices is wrong");
-
-  for (size_t dev = 0; dev < this->_geometry.num_devices(); dev++) {
-    std::memcpy(&this->_delay[dev][0], &delay[dev][0], core::NUM_TRANS_IN_UNIT);
-    std::memcpy(&this->_offset[dev][0], &offset[dev][0], core::NUM_TRANS_IN_UNIT);
-  }
-
-  return this->send_delay_offset();
-}
+bool Controller::set_delay_offset() { return this->send_delay_offset(); }
 
 bool Controller::send_delay_offset() const {
   const uint8_t msg_id = core::Logic::get_id();
   core::Logic::pack_header(msg_id, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag() | core::DELAY_OFFSET, &this->_tx_buf[0]);
-  const auto size = core::Logic::pack_delay_offset_body(this->_delay, this->_offset, &this->_tx_buf[0]);
+  const auto size = core::Logic::pack_delay_offset_body(this->_delay_offset, &this->_tx_buf[0]);
   this->_link->send(&this->_tx_buf[0], size);
   return wait_msg_processed(msg_id);
 }

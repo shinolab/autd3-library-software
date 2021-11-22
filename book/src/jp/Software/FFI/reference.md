@@ -326,45 +326,12 @@ handleは`AUTDCreateController`で作成したものを使う.
 | handle                       | void*      | in     | ControllerPtr                                                                           |
 | return                       | int32_t    | -      | if $>0$, it guarantees devices have processed data. if $<0$, error ocurred.             |
 
-##  AUTDSetOutputDelay (autd3capi)
-
-Output delayを設定する. send functionの.
-handleは`AUTDCreateController`で作成したものを使う.
-delayは(Deviceの台数)$\times 249$の長さのデータへのポインタである必要がある.
-
-この関数はエラーが発生した場合に0未満の値を返す.
-エラーが生じた場合には`AUTDGetLastError`でエラーメッセージを取得できる.
-また, check ackフラグがOn, かつ, 返り値が0より大きい場合は,
-データが実際のデバイスで処理されたことを保証する.
-
-| Argument name / return       | type             | in/out | description                                                                              |
-|------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
-| handle                       | void*      | in     | ControllerPtr                                                                           |
-| delay                        | uint8_t *  | in     | pointer to delay data                                                                   |
-| return                       | int32_t    | -      | if $>0$, it guarantees devices have processed data. if $<0$, error ocurred.             |
-
-##  AUTDSetDutyOffset (autd3capi)
-
-Duty offsetを設定する. send functionの一つ.
-handleは`AUTDCreateController`で作成したものを使う.
-offsetは(Deviceの台数)$\times 249$の長さのデータへのポインタである必要がある.
-
-この関数はエラーが発生した場合に0未満の値を返す.
-エラーが生じた場合には`AUTDGetLastError`でエラーメッセージを取得できる.
-また,check ackフラグがOn, かつ, 返り値が0より大きい場合は,
-データが実際のデバイスで処理されたことを保証する.
-
-| Argument name / return       | type             | in/out | description                                                                              |
-|------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
-| handle                       | void*      | in     | ControllerPtr                                                                           |
-| offset                       | uint8_t *  | in     | pointer to duty offset data                                                             |
-| return                       | int32_t    | -      | if $>0$, it guarantees devices have processed data. if $<0$, error ocurred.             |
 
 ##  AUTDSetDelayOffset (autd3capi)
 
 Output delayとDuty offsetを設定する. send functionの一つ..
 handleは`AUTDCreateController`で作成したものを使う. delay,
-offsetは(Deviceの台数)$\times 249$の長さのデータへのポインタである必要がある.
+offsetは(Deviceの台数)$\times 249$の長さのデータへのポインタまたはnullptrである必要がある.
 
 この関数はエラーが発生した場合に0未満の値を返す.
 エラーが生じた場合には`AUTDGetLastError`でエラーメッセージを取得できる.
