@@ -3,7 +3,7 @@
 // Created Date: 14/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/11/2021
+// Last Modified: 24/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -29,7 +29,7 @@ using GainSequencePtr = std::shared_ptr<GainSequence>;
 
 class Sequence {
  public:
-  Sequence() : _freq_div_ratio(1), _sent(0) {}
+  Sequence() : _freq_div_ratio(1) {}
   virtual ~Sequence() = default;
   Sequence(const Sequence& v) noexcept = default;
   Sequence& operator=(const Sequence& obj) = default;
@@ -80,14 +80,8 @@ class Sequence {
    */
   size_t& sampling_freq_div_ratio() noexcept { return this->_freq_div_ratio; }
 
-  /**
-   * \brief sent means data length already sent to devices.
-   */
-  size_t& sent() { return _sent; }
-
  protected:
   size_t _freq_div_ratio;
-  size_t _sent;
 };
 
 /**
@@ -164,11 +158,6 @@ class PointSequence : virtual public Sequence {
    */
   [[nodiscard]] const std::vector<uint8_t>& duties() { return this->_duties; }
 
-  /**
-   * \brief return true if all of this sequence data is sent
-   */
-  [[nodiscard]] bool is_finished() const noexcept { return this->_sent == this->_control_points.size(); }
-
  private:
   std::vector<Vector3> _control_points;
   std::vector<uint8_t> _duties;
@@ -236,11 +225,6 @@ class GainSequence final : public Sequence {
    * @return GAIN_MODE
    */
   GAIN_MODE& gain_mode() { return this->_gain_mode; }
-
-  /**
-   * \brief return true if all of this sequence data is sent
-   */
-  [[nodiscard]] bool is_finished() const noexcept { return this->_sent == this->_gains.size() + 1; }
 
  private:
   std::vector<GainPtr> _gains;
