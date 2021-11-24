@@ -180,6 +180,7 @@ bool Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod)
 
 bool Controller::send(const core::PointSequencePtr& seq, const core::ModulationPtr& mod) {
   size_t mod_sent = 0;
+  size_t seq_sent = 0;
   if (mod != nullptr) mod->build();
 
   this->_props._output_enable = true;
@@ -188,15 +189,16 @@ bool Controller::send(const core::PointSequencePtr& seq, const core::ModulationP
 
   while (true) {
     const auto msg_id = core::Logic::pack_header(mod, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag(), &this->_tx_buf[0], &mod_sent);
-    const auto size = core::Logic::pack_body(seq, this->_geometry, &this->_tx_buf[0]);
+    const auto size = core::Logic::pack_body(seq, this->_geometry, &this->_tx_buf[0], &seq_sent);
     this->_link->send(&this->_tx_buf[0], size);
     if (!wait_msg_processed(msg_id)) return false;
-    if ((seq == nullptr || seq->is_finished()) && (mod == nullptr || mod_sent >= mod->buffer().size())) return true;
+    if ((seq == nullptr || seq_sent == seq->control_points().size()) && (mod == nullptr || mod_sent == mod->buffer().size())) return true;
   }
 }
 
 bool Controller::send(const core::GainSequencePtr& seq, const core::ModulationPtr& mod) {
   size_t mod_sent = 0;
+  size_t seq_sent = 0;
   if (mod != nullptr) mod->build();
 
   for (auto&& g : seq->gains()) g->build(this->_geometry);
@@ -207,10 +209,10 @@ bool Controller::send(const core::GainSequencePtr& seq, const core::ModulationPt
 
   while (true) {
     const auto msg_id = core::Logic::pack_header(mod, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag(), &this->_tx_buf[0], &mod_sent);
-    const auto size = core::Logic::pack_body(seq, this->_geometry, &this->_tx_buf[0]);
+    const auto size = core::Logic::pack_body(seq, this->_geometry, &this->_tx_buf[0], &seq_sent);
     this->_link->send(&this->_tx_buf[0], size);
     if (!wait_msg_processed(msg_id)) return false;
-    if ((seq == nullptr || seq->is_finished()) && (mod == nullptr || mod_sent >= mod->buffer().size())) return true;
+    if ((seq == nullptr || seq_sent == seq->gains().size() + 1) && (mod == nullptr || mod_sent == mod->buffer().size())) return true;
   }
 }
 
