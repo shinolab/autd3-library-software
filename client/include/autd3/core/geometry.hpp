@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/11/2021
+// Last Modified: 22/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -13,7 +13,7 @@
 
 #if _MSC_VER
 #pragma warning(push)
-#pragma warning(disable : 6031 6255 6294 26450 26451 26454 26495 26812)
+#pragma warning(disable : 4068 6031 6255 6294 26450 26451 26454 26495 26812)
 #endif
 #if defined(__GNUC__) && !defined(__llvm__)
 #pragma GCC diagnostic push
@@ -27,9 +27,6 @@
 #pragma GCC diagnostic pop
 #endif
 
-#include <map>
-#include <memory>
-#include <utility>
 #include <vector>
 
 #include "hardware_defined.hpp"
@@ -37,44 +34,74 @@
 namespace autd {
 namespace core {
 
-class Geometry;
-using GeometryPtr = std::unique_ptr<Geometry>;
-
 using Vector3 = Eigen::Matrix<double, 3, 1>;
 using Vector4 = Eigen::Matrix<double, 4, 1>;
 using Matrix4X4 = Eigen::Matrix<double, 4, 4>;
 using Quaternion = Eigen::Quaternion<double>;
 
+struct Transducer final {
+  explicit Transducer(const size_t id, const double x, const double y, const double z) : _id(id), _position(x, y, z) {}
+
+  [[nodiscard]] size_t id() const { return _id; }
+  [[nodiscard]] const Vector3& position() const { return _position; }
+
+ private:
+  size_t _id;
+  Vector3 _position;
+};
+
 /**
  * \brief Device contains an AUTD device geometry.
  */
 struct Device {
-  Device(const Vector3& position, const Quaternion& quaternion)
-      : x_direction(quaternion * Vector3(1, 0, 0)),
-        y_direction(quaternion * Vector3(0, 1, 0)),
-        z_direction(quaternion * Vector3(0, 0, 1)),
-        global_trans_positions(std::make_unique<Vector3[]>(NUM_TRANS_IN_UNIT)) {
+  Device(const size_t id, const Vector3& position, const Quaternion& quaternion)
+      : _id(id),
+        _x_direction(quaternion * Vector3(1, 0, 0)),
+        _y_direction(quaternion * Vector3(0, 1, 0)),
+        _z_direction(quaternion * Vector3(0, 0, 1)) {
     const Eigen::Transform<double, 3, Eigen::Affine> transform_matrix = Eigen::Translation<double, 3>(position) * quaternion;
-    auto index = 0;
+    size_t i = id * NUM_TRANS_IN_UNIT;
     for (size_t y = 0; y < NUM_TRANS_Y; y++)
       for (size_t x = 0; x < NUM_TRANS_X; x++) {
         if (is_missing_transducer(x, y)) continue;
-        const Vector4 local_pos = Vector4(static_cast<double>(x) * TRANS_SPACING_MM, static_cast<double>(y) * TRANS_SPACING_MM, 0, 1);
+        const auto local_pos = Vector4(static_cast<double>(x) * TRANS_SPACING_MM, static_cast<double>(y) * TRANS_SPACING_MM, 0, 1);
         const Vector4 global_pos = transform_matrix * local_pos;
-        global_trans_positions[index++] = Vector3(global_pos[0], global_pos[1], global_pos[2]);
+        _transducers.emplace_back(i++, global_pos[0], global_pos[1], global_pos[2]);
       }
-    g2l = transform_matrix.inverse();
+    _global_to_local = transform_matrix.inverse();
   }
 
-  Device(const Vector3& position, const Vector3& euler_angles)
-      : Device(position, Eigen::AngleAxis<double>(euler_angles.x(), Vector3::UnitZ()) * Eigen::AngleAxis<double>(euler_angles.y(), Vector3::UnitY()) *
-                             Eigen::AngleAxis<double>(euler_angles.z(), Vector3::UnitZ())) {}
+  Device(const size_t id, const Vector3& position, const Vector3& euler_angles)
+      : Device(id, position,
+               Eigen::AngleAxis<double>(euler_angles.x(), Vector3::UnitZ()) * Eigen::AngleAxis<double>(euler_angles.y(), Vector3::UnitY()) *
+                   Eigen::AngleAxis<double>(euler_angles.z(), Vector3::UnitZ())) {}
 
-  Vector3 x_direction;
-  Vector3 y_direction;
-  Vector3 z_direction;
-  std::unique_ptr<Vector3[]> global_trans_positions;
-  Eigen::Transform<double, 3, Eigen::Affine> g2l;
+  [[nodiscard]] size_t id() const noexcept { return _id; }
+  [[nodiscard]] const Vector3& x_direction() const noexcept { return _x_direction; }
+  [[nodiscard]] const Vector3& y_direction() const noexcept { return _y_direction; }
+  [[nodiscard]] const Vector3& z_direction() const noexcept { return _z_direction; }
+
+  /**
+   * @brief Convert a global position to a local position
+   */
+  [[nodiscard]] Vector3 to_local_position(const Vector3& global_position) const {
+    const auto homo = Vector4(global_position[0], global_position[1], global_position[2], 1);
+    const Vector4 local_position = _global_to_local * homo;
+    return {local_position[0], local_position[1], local_position[2]};
+  }
+
+  [[nodiscard]] std::vector<Transducer>::const_iterator begin() const { return _transducers.begin(); }
+  [[nodiscard]] std::vector<Transducer>::const_iterator end() const { return _transducers.end(); }
+
+  const Transducer& operator[](const size_t i) const { return _transducers[i]; }
+
+ private:
+  size_t _id;
+  Vector3 _x_direction;
+  Vector3 _y_direction;
+  Vector3 _z_direction;
+  std::vector<Transducer> _transducers;
+  Eigen::Transform<double, 3, Eigen::Affine> _global_to_local;
 };
 
 /**
@@ -84,8 +111,8 @@ class Geometry {
  public:
   Geometry() : _wavelength(8.5), _attenuation(0) {}
   ~Geometry() = default;
-  Geometry(const Geometry& v) noexcept = default;
-  Geometry& operator=(const Geometry& obj) = default;
+  Geometry(const Geometry& v) noexcept = delete;
+  Geometry& operator=(const Geometry& obj) = delete;
   Geometry(Geometry&& obj) = default;
   Geometry& operator=(Geometry&& obj) = default;
 
@@ -98,7 +125,7 @@ class Geometry {
    */
   size_t add_device(const Vector3& position, const Vector3& euler_angles) {
     const auto device_id = this->_devices.size();
-    this->_devices.emplace_back(position, euler_angles);
+    this->_devices.emplace_back(device_id, position, euler_angles);
     return device_id;
   }
 
@@ -110,7 +137,7 @@ class Geometry {
    */
   size_t add_device(const Vector3& position, const Quaternion& quaternion) {
     const auto device_id = this->_devices.size();
-    this->_devices.emplace_back(position, quaternion);
+    this->_devices.emplace_back(device_id, position, quaternion);
     return device_id;
   }
 
@@ -120,9 +147,19 @@ class Geometry {
   double& wavelength() noexcept { return this->_wavelength; }
 
   /**
+   * @brief ultrasound wavelength
+   */
+  [[nodiscard]] double wavelength() const noexcept { return this->_wavelength; }
+
+  /**
    * @brief attenuation coefficient
    */
   double& attenuation_coefficient() noexcept { return this->_attenuation; }
+
+  /**
+   * @brief attenuation coefficient
+   */
+  [[nodiscard]] double attenuation_coefficient() const noexcept { return this->_attenuation; }
 
   /**
    * @brief Number of devices
@@ -134,54 +171,16 @@ class Geometry {
    */
   [[nodiscard]] size_t num_transducers() const noexcept { return this->num_devices() * NUM_TRANS_IN_UNIT; }
 
-  /**
-   * @brief Position of a transducer specified by id
-   */
-  [[nodiscard]] const Vector3& position(const size_t global_transducer_idx) const {
-    const auto local_trans_id = global_transducer_idx % NUM_TRANS_IN_UNIT;
-    return position(device_idx_for_trans_idx(global_transducer_idx), local_trans_id);
-  }
+  [[nodiscard]] std::vector<Device>::const_iterator begin() const { return _devices.begin(); }
+  [[nodiscard]] std::vector<Device>::const_iterator end() const { return _devices.end(); }
 
-  /**
-   * @brief Position of a transducer specified by id
-   */
-  [[nodiscard]] const Vector3& position(const size_t device_idx, const size_t local_transducer_idx) const {
-    return this->_devices[device_idx].global_trans_positions[local_transducer_idx];
-  }
-
-  /**
-   * @brief Convert a global position to a local position
-   */
-  [[nodiscard]] Vector3 to_local_position(const size_t device_idx, const Vector3& global_position) const {
-    const Vector4 homo = Vector4(global_position[0], global_position[1], global_position[2], 1);
-    const Vector4 local_position = this->_devices[device_idx].g2l * homo;
-    return Vector3(local_position[0], local_position[1], local_position[2]);
-  }
-
-  /**
-   * @brief Normalized long-axis direction of a device
-   */
-  [[nodiscard]] const Vector3& x_direction(const size_t device_idx) const { return this->_devices[device_idx].x_direction; }
-
-  /**
-   * @brief Normalized short-axis direction of a device
-   */
-  [[nodiscard]] const Vector3& y_direction(const size_t device_idx) const { return this->_devices[device_idx].y_direction; }
-
-  /**
-   * @brief Same as the direction()
-   */
-  [[nodiscard]] const Vector3& z_direction(const size_t device_idx) const { return this->_devices[device_idx].z_direction; }
-
-  /**
-   * @brief Convert transducer index into device index
-   */
-  [[nodiscard]] static size_t device_idx_for_trans_idx(const size_t transducer_idx) { return transducer_idx / NUM_TRANS_IN_UNIT; }
+  const Device& operator[](const size_t i) const { return _devices[i]; }
 
  private:
   std::vector<Device> _devices;
   double _wavelength;
   double _attenuation;
 };
+
 }  // namespace core
 }  // namespace autd

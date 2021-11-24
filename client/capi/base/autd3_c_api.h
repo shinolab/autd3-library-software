@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/11/2021
+// Last Modified: 22/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -40,15 +40,10 @@ EXPORT_AUTD void AUTDSetWavelength(const void* handle, double wavelength);
 EXPORT_AUTD void AUTDSetAttenuation(const void* handle, double attenuation);
 EXPORT_AUTD bool AUTDGetFPGAInfo(const void* handle, uint8_t* out);
 EXPORT_AUTD int32_t AUTDUpdateCtrlFlags(const void* handle);
-EXPORT_AUTD int32_t AUTDSetOutputDelay(const void* handle, const uint8_t* delay);
-EXPORT_AUTD int32_t AUTDSetDutyOffset(const void* handle, const uint8_t* offset);
 EXPORT_AUTD int32_t AUTDSetDelayOffset(const void* handle, const uint8_t* delay, const uint8_t* offset);
 EXPORT_AUTD int32_t AUTDGetLastError(char* error);
 EXPORT_AUTD int32_t AUTDNumDevices(const void* handle);
-EXPORT_AUTD int32_t AUTDNumTransducers(const void* handle);
-EXPORT_AUTD int32_t AUTDDeviceIdxForTransIdx(int32_t global_trans_idx);
-EXPORT_AUTD void AUTDTransPositionByGlobal(const void* handle, int32_t global_trans_idx, double* x, double* y, double* z);
-EXPORT_AUTD void AUTDTransPositionByLocal(const void* handle, int32_t device_idx, int32_t local_trans_idx, double* x, double* y, double* z);
+EXPORT_AUTD void AUTDTransPosition(const void* handle, int32_t device_idx, int32_t local_trans_idx, double* x, double* y, double* z);
 EXPORT_AUTD void AUTDDeviceXDirection(const void* handle, int32_t device_idx, double* x, double* y, double* z);
 EXPORT_AUTD void AUTDDeviceYDirection(const void* handle, int32_t device_idx, double* x, double* y, double* z);
 EXPORT_AUTD void AUTDDeviceZDirection(const void* handle, int32_t device_idx, double* x, double* y, double* z);
@@ -91,8 +86,6 @@ EXPORT_AUTD void AUTDDeleteSequence(const void* seq);
 EXPORT_AUTD int32_t AUTDStop(const void* handle);
 EXPORT_AUTD int32_t AUTDPause(const void* handle);
 EXPORT_AUTD int32_t AUTDResume(const void* handle);
-EXPORT_AUTD int32_t AUTDSendGain(const void* handle, const void* gain);
-EXPORT_AUTD int32_t AUTDSendModulation(const void* handle, const void* mod);
 EXPORT_AUTD int32_t AUTDSendGainModulation(const void* handle, const void* gain, const void* mod);
 EXPORT_AUTD int32_t AUTDSendSequenceModulation(const void* handle, const void* seq, const void* mod);
 EXPORT_AUTD int32_t AUTDSendGainSequenceModulation(const void* handle, const void* seq, const void* mod);

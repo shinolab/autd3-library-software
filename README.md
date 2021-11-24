@@ -3,7 +3,7 @@
 
 # [AUTD3](https://hapislab.org/airborne-ultrasound-tactile-display?lang=en)
 
-Version: 1.9.2
+Version: 1.9.3
 
 ## :books: Document
 
@@ -20,7 +20,7 @@ Version: 1.9.2
 * If you use `link::SOEM` on Windows, install [Npcap](https://nmap.org/npcap/) with WinPcap API-compatible mode (recommended) or [WinPcap](https://www.winpcap.org/).
     * This works on Windows 11
 
-* If you use `link::TwinCAT` or `link::RemoteTwinCAT`, please see [how to install AUTDServer](https://shinolab.github.io/autd3-library-software/book/Software/Users_Manual/link.html#how-to-install-twincat).
+* If you use `link::TwinCAT` or `link::RemoteTwinCAT`, please see [how to install AUTDServer](https://shinolab.github.io/autd3-library-software/book/en/Software/Users_Manual/link.html#how-to-install-twincat).
     * Windows 11 might not be supported by TwinCAT
 
 ## :hammer_and_wrench: Build

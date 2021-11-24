@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/11/2021
+// Last Modified: 22/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -40,7 +40,7 @@
 
 namespace {
 std::string& LastError() {
-  static std::string msg("");
+  static std::string msg("");  // NOLINT
   return msg;
 }
 autd::Vector3 ToVec3(const double x, const double y, const double z) { return {x, y, z}; }
@@ -51,7 +51,7 @@ void AUTDCreateController(void** out) { *out = ControllerCreate(autd::Controller
 bool AUTDOpenController(const void* const handle, void* const p_link) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   auto* link = static_cast<LinkWrapper*>(p_link);
-  auto link_ = std::move(link->ptr);
+  autd::LinkPtr link_ = std::move(link->ptr);
   LinkDelete(link);
   AUTD3_CAPI_TRY({
     wrapper->ptr->open(std::move(link_));
@@ -61,13 +61,13 @@ bool AUTDOpenController(const void* const handle, void* const p_link) {
 
 int32_t AUTDAddDevice(const void* const handle, const double x, const double y, const double z, const double rz1, const double ry, const double rz2) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto res = wrapper->ptr->geometry()->add_device(ToVec3(x, y, z), ToVec3(rz1, ry, rz2));
+  const auto res = wrapper->ptr->geometry().add_device(ToVec3(x, y, z), ToVec3(rz1, ry, rz2));
   return static_cast<int32_t>(res);
 }
 int32_t AUTDAddDeviceQuaternion(const void* const handle, const double x, const double y, const double z, const double qw, const double qx,
                                 const double qy, const double qz) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto res = wrapper->ptr->geometry()->add_device(ToVec3(x, y, z), ToQuaternion(qw, qx, qy, qz));
+  const auto res = wrapper->ptr->geometry().add_device(ToVec3(x, y, z), ToQuaternion(qw, qx, qy, qz));
   return static_cast<int32_t>(res);
 }
 int32_t AUTDCloseController(const void* const handle) {
@@ -136,24 +136,24 @@ void AUTDSetCheckAck(const void* const handle, const bool check_ack) {
 }
 double AUTDGetWavelength(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  return wrapper->ptr->geometry()->wavelength();
+  return wrapper->ptr->geometry().wavelength();
 }
 double AUTDGetAttenuation(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  return wrapper->ptr->geometry()->attenuation_coefficient();
+  return wrapper->ptr->geometry().attenuation_coefficient();
 }
 void AUTDSetWavelength(const void* const handle, const double wavelength) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  wrapper->ptr->geometry()->wavelength() = wavelength;
+  wrapper->ptr->geometry().wavelength() = wavelength;
 }
 void AUTDSetAttenuation(const void* const handle, const double attenuation) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  wrapper->ptr->geometry()->attenuation_coefficient() = attenuation;
+  wrapper->ptr->geometry().attenuation_coefficient() = attenuation;
 }
 bool AUTDGetFPGAInfo(const void* handle, uint8_t* out) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   AUTD3_CAPI_TRY({
-    const auto res = wrapper->ptr->fpga_info();
+    const auto& res = wrapper->ptr->fpga_info();
     std::memcpy(out, &res[0], res.size());
     return true;
   })
@@ -163,60 +163,30 @@ int32_t AUTDUpdateCtrlFlags(const void* handle) {
   AUTD3_CAPI_TRY2(return wrapper->ptr->update_ctrl_flag() ? 1 : 0)
 }
 
-int32_t AUTDSetOutputDelay(const void* handle, const uint8_t* const delay) {
-  const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto num_devices = wrapper->ptr->geometry()->num_devices();
-  std::vector<std::array<uint8_t, autd::core::NUM_TRANS_IN_UNIT>> delay_;
-  delay_.resize(num_devices);
-  for (size_t i = 0; i < num_devices; i++) std::memcpy(&delay_[i][0], &delay[i * autd::core::NUM_TRANS_IN_UNIT], autd::core::NUM_TRANS_IN_UNIT);
-  AUTD3_CAPI_TRY2(return wrapper->ptr->set_output_delay(delay_) ? 1 : 0)
-}
-int32_t AUTDSetDutyOffset(const void* handle, const uint8_t* const offset) {
-  const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto num_devices = wrapper->ptr->geometry()->num_devices();
-  std::vector<std::array<uint8_t, autd::core::NUM_TRANS_IN_UNIT>> offset_;
-  offset_.resize(num_devices);
-  for (size_t i = 0; i < num_devices; i++) std::memcpy(&offset_[i][0], &offset[i * autd::core::NUM_TRANS_IN_UNIT], autd::core::NUM_TRANS_IN_UNIT);
-  AUTD3_CAPI_TRY2(return wrapper->ptr->set_duty_offset(offset_) ? 1 : 0)
-}
 int32_t AUTDSetDelayOffset(const void* handle, const uint8_t* const delay, const uint8_t* const offset) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto num_devices = wrapper->ptr->geometry()->num_devices();
-  std::vector<std::array<uint8_t, autd::core::NUM_TRANS_IN_UNIT>> delay_;
-  std::vector<std::array<uint8_t, autd::core::NUM_TRANS_IN_UNIT>> offset_;
-  delay_.resize(num_devices);
-  offset_.resize(num_devices);
-  for (size_t i = 0; i < num_devices; i++) {
-    std::memcpy(&delay_[i][0], &delay[i * autd::core::NUM_TRANS_IN_UNIT], autd::core::NUM_TRANS_IN_UNIT);
-    std::memcpy(&offset_[i][0], &offset[i * autd::core::NUM_TRANS_IN_UNIT], autd::core::NUM_TRANS_IN_UNIT);
+
+  if (delay != nullptr) {
+    for (const auto& device : wrapper->ptr->geometry())
+      for (const auto& transducer : device) wrapper->ptr->delay_offset()[transducer.id()].delay = delay[transducer.id()];
   }
-  AUTD3_CAPI_TRY2(return wrapper->ptr->set_delay_offset(delay_, offset_) ? 1 : 0)
+  if (offset != nullptr) {
+    for (const auto& device : wrapper->ptr->geometry())
+      for (const auto& transducer : device) wrapper->ptr->delay_offset()[transducer.id()].offset = offset[transducer.id()];
+  }
+
+  AUTD3_CAPI_TRY2(return wrapper->ptr->set_delay_offset() ? 1 : 0)
 }
 
 int32_t AUTDNumDevices(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto res = wrapper->ptr->geometry()->num_devices();
+  const auto res = wrapper->ptr->geometry().num_devices();
   return static_cast<int32_t>(res);
 }
-int32_t AUTDNumTransducers(const void* const handle) {
+
+void AUTDTransPosition(const void* const handle, const int32_t device_idx, const int32_t local_trans_idx, double* x, double* y, double* z) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto res = wrapper->ptr->geometry()->num_transducers();
-  return static_cast<int32_t>(res);
-}
-int32_t AUTDDeviceIdxForTransIdx(const int32_t global_trans_idx) {
-  const auto res = autd::core::Geometry::device_idx_for_trans_idx(global_trans_idx);
-  return static_cast<int32_t>(res);
-}
-void AUTDTransPositionByGlobal(const void* const handle, const int32_t global_trans_idx, double* x, double* y, double* z) {
-  const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto& pos = wrapper->ptr->geometry()->position(global_trans_idx);
-  *x = pos.x();
-  *y = pos.y();
-  *z = pos.z();
-}
-void AUTDTransPositionByLocal(const void* const handle, const int32_t device_idx, const int32_t local_trans_idx, double* x, double* y, double* z) {
-  const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto& pos = wrapper->ptr->geometry()->position(device_idx, local_trans_idx);
+  const auto& pos = wrapper->ptr->geometry()[device_idx][local_trans_idx].position();
   *x = pos.x();
   *y = pos.y();
   *z = pos.z();
@@ -224,21 +194,21 @@ void AUTDTransPositionByLocal(const void* const handle, const int32_t device_idx
 
 void AUTDDeviceXDirection(const void* const handle, const int32_t device_idx, double* x, double* y, double* z) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto& dir = wrapper->ptr->geometry()->x_direction(device_idx);
+  const auto& dir = wrapper->ptr->geometry()[device_idx].x_direction();
   *x = dir.x();
   *y = dir.y();
   *z = dir.z();
 }
 void AUTDDeviceYDirection(const void* const handle, const int32_t device_idx, double* x, double* y, double* z) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto& dir = wrapper->ptr->geometry()->y_direction(device_idx);
+  const auto& dir = wrapper->ptr->geometry()[device_idx].y_direction();
   *x = dir.x();
   *y = dir.y();
   *z = dir.z();
 }
 void AUTDDeviceZDirection(const void* const handle, const int32_t device_idx, double* x, double* y, double* z) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto& dir = wrapper->ptr->geometry()->z_direction(device_idx);
+  const auto& dir = wrapper->ptr->geometry()[device_idx].z_direction();
   *x = dir.x();
   *y = dir.y();
   *z = dir.z();
@@ -246,7 +216,7 @@ void AUTDDeviceZDirection(const void* const handle, const int32_t device_idx, do
 
 int32_t AUTDGetFirmwareInfoListPointer(const void* const handle, void** out) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto size = static_cast<int32_t>(wrapper->ptr->geometry()->num_devices());
+  const auto size = static_cast<int32_t>(wrapper->ptr->geometry().num_devices());
   AUTD3_CAPI_TRY2({
     const auto res = wrapper->ptr->firmware_info_list();
     if (res.empty()) {
@@ -328,7 +298,7 @@ void AUTDModulationStatic(void** mod, const uint8_t duty) {
 void AUTDModulationCustom(void** mod, const uint8_t* const buf, const uint32_t size, const uint32_t freq_div) {
   std::vector<uint8_t> buffer;
   for (uint32_t i = 0; i < size; i++) buffer.emplace_back(buf[i]);
-  auto* m = ModulationCreate(CustomModulation::create(buffer, static_cast<size_t>(freq_div)));
+  auto* m = ModulationCreate(CustomModulation::create(buffer, freq_div));
   *mod = m;
 }
 void AUTDModulationSquare(void** mod, const int32_t freq, const uint8_t low, const uint8_t high, const double duty) {
@@ -394,7 +364,7 @@ bool AUTDSequenceAddPoints(const void* const seq, const double* const points, co
 }
 bool AUTDSequenceAddGain(const void* const seq, const void* const gain) {
   const auto* seq_w = static_cast<const SequenceWrapper*>(seq);
-  const auto g = gain == nullptr ? nullptr : static_cast<const GainWrapper*>(gain)->ptr;
+  const autd::GainPtr g = gain == nullptr ? nullptr : static_cast<const GainWrapper*>(gain)->ptr;
   AUTD3_CAPI_TRY({
     std::dynamic_pointer_cast<autd::core::GainSequence>(seq_w->ptr)->add_gain(g);
     return true;
@@ -450,33 +420,25 @@ int32_t AUTDResume(const void* const handle) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
   AUTD3_CAPI_TRY2(return wrapper->ptr->resume() ? 1 : 0)
 }
-int32_t AUTDSendGain(const void* const handle, const void* const gain) {
-  const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto g = gain == nullptr ? nullptr : static_cast<const GainWrapper*>(gain)->ptr;
-  AUTD3_CAPI_TRY(return wrapper->ptr->send(g) ? 1 : 0)
-}
-int32_t AUTDSendModulation(const void* const handle, const void* const mod) {
-  const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto m = mod == nullptr ? nullptr : static_cast<const ModulationWrapper*>(mod)->ptr;
-  AUTD3_CAPI_TRY(return wrapper->ptr->send(m) ? 1 : 0)
-}
 int32_t AUTDSendGainModulation(const void* const handle, const void* const gain, const void* const mod) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto g = gain == nullptr ? nullptr : static_cast<const GainWrapper*>(gain)->ptr;
-  const auto m = mod == nullptr ? nullptr : static_cast<const ModulationWrapper*>(mod)->ptr;
+  const autd::GainPtr g = gain == nullptr ? nullptr : static_cast<const GainWrapper*>(gain)->ptr;
+  const autd::ModulationPtr m = mod == nullptr ? nullptr : static_cast<const ModulationWrapper*>(mod)->ptr;
   AUTD3_CAPI_TRY(return wrapper->ptr->send(g, m) ? 1 : 0)
 }
 int32_t AUTDSendSequenceModulation(const void* const handle, const void* const seq, const void* const mod) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto s = seq == nullptr ? nullptr : static_cast<const SequenceWrapper*>(seq)->ptr;
-  const auto m = mod == nullptr ? nullptr : static_cast<const ModulationWrapper*>(mod)->ptr;
-  AUTD3_CAPI_TRY(return wrapper->ptr->send(std::dynamic_pointer_cast<autd::core::PointSequence>(s), m) ? 1 : 0)
+  const autd::PointSequencePtr s =
+      seq == nullptr ? nullptr : std::dynamic_pointer_cast<autd::core::PointSequence>(static_cast<const SequenceWrapper*>(seq)->ptr);
+  const autd::ModulationPtr m = mod == nullptr ? nullptr : static_cast<const ModulationWrapper*>(mod)->ptr;
+  AUTD3_CAPI_TRY(return wrapper->ptr->send(s, m) ? 1 : 0)
 }
 int32_t AUTDSendGainSequenceModulation(const void* const handle, const void* const seq, const void* const mod) {
   const auto* wrapper = static_cast<const ControllerWrapper*>(handle);
-  const auto s = seq == nullptr ? nullptr : static_cast<const SequenceWrapper*>(seq)->ptr;
-  const auto m = mod == nullptr ? nullptr : static_cast<const ModulationWrapper*>(mod)->ptr;
-  AUTD3_CAPI_TRY(return wrapper->ptr->send(std::dynamic_pointer_cast<autd::core::GainSequence>(s), m) ? 1 : 0)
+  const autd::GainSequencePtr s =
+      seq == nullptr ? nullptr : std::dynamic_pointer_cast<autd::core::GainSequence>(static_cast<const SequenceWrapper*>(seq)->ptr);
+  const autd::ModulationPtr m = mod == nullptr ? nullptr : static_cast<const ModulationWrapper*>(mod)->ptr;
+  AUTD3_CAPI_TRY(return wrapper->ptr->send(s, m) ? 1 : 0)
 }
 
 void AUTDSTMController(void** out, const void* handle) {

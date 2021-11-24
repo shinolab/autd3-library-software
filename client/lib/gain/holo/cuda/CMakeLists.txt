@@ -4,6 +4,12 @@ set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} --expt-relaxed-constexpr -Xcudafe "--diag
 if(WIN32 AND (MSVC_TOOLSET_VERSION VERSION_EQUAL 143))
   set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} -allow-unsupported-compiler)
 endif()
+if(WIN32)
+  foreach(flag_var
+        CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE)
+    string(REGEX REPLACE "/GR " "/GR- " ${flag_var} "${${flag_var}}")
+  endforeach(flag_var)
+endif()
 
 if(BUILD_SHARED_LIBS)
   set(CUDA_LINK_LIBRARIES_KEYWORD PRIVATE)
@@ -16,9 +22,12 @@ cuda_add_library(cuda_backend
     cuda_backend.cu
     cuda_backend.cpp
     cuda_matrix.hpp
+    ${PROJECT_SOURCE_DIR}/lib/gain/holo/holo_impl.hpp
+    ${PROJECT_SOURCE_DIR}/lib/gain/holo/matrix_pool.hpp
     ${PROJECT_SOURCE_DIR}/include/autd3/gain/backend.hpp
     ${PROJECT_SOURCE_DIR}/include/autd3/gain/cuda_backend.hpp
 )
+
 cuda_add_cublas_to_target(cuda_backend)
 target_include_directories(cuda_backend PRIVATE ${PROJECT_SOURCE_DIR}/lib/gain/holo ${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
 target_include_directories(cuda_backend INTERFACE ${CUDA_INCLUDE_DIRS})

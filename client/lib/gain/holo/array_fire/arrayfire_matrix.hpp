@@ -3,7 +3,7 @@
 // Created Date: 08/09/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/11/2021
+// Last Modified: 22/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -107,13 +107,13 @@ struct AFMatrix {
   }
   void solve(const std::shared_ptr<AFMatrix<T>>& b) { b->af_array = af::solve(af_array, b->af_array); }
   T dot(const std::shared_ptr<const AFMatrix<T>>& a) {
-    T v;
+    T v{};
     auto r = af::dot(af_array, a->af_array, AF_MAT_CONJ);
     r.host(&v);
     return v;
   }
   [[nodiscard]] double max_element() const {
-    T v;
+    T v{};
     (af::max)((af::max)(af_array)).host(&v);
     return std::abs(v);
   }
@@ -125,7 +125,7 @@ struct AFMatrix {
   }
 
   [[nodiscard]] T at(const size_t row, const size_t col) const {
-    T v;
+    T v{};
     af_array(static_cast<int>(row), static_cast<int>(col)).host(&v);
     return v;
   }
@@ -145,11 +145,11 @@ struct AFMatrix {
     af_array.write(reinterpret_cast<const void*>(v), n * sizeof(T));
   }
 
-  void transfer_matrix(const double* foci, size_t foci_num, const std::vector<const double*>& positions, const std::vector<const double*>& directions,
-                       double wavelength, double attenuation);
+  void transfer_matrix(const double* foci, size_t foci_num, const std::vector<const core::Transducer*>& transducers,
+                       const std::vector<const double*>& directions, double wavelength, double attenuation);
   void set_bcd_result(const std::shared_ptr<const AFMatrix<T>>& vec, size_t index);
-  void set_from_complex_drive(std::vector<core::DataArray>& dst, bool normalize, double max_coefficient);
-  void set_from_arg(std::vector<core::DataArray>& dst, size_t n);
+  void set_from_complex_drive(std::vector<core::Drive>& dst, bool normalize, double max_coefficient);
+  void set_from_arg(std::vector<core::Drive>& dst, size_t n);
   void back_prop(const std::shared_ptr<const AFMatrix<T>>& transfer, const std::shared_ptr<const AFMatrix<T>>& amps);
   void sigma_regularization(const std::shared_ptr<const AFMatrix<T>>& transfer, const std::shared_ptr<const AFMatrix<T>>& amps, double gamma);
   void col_sum_imag(const std::shared_ptr<AFMatrix<complex>>& src);
@@ -206,28 +206,27 @@ inline void AFMatrix<complex>::max_eigen_vector(const std::shared_ptr<AFMatrix<c
   ev->copy_from(max_ev.data());
 }
 
-inline void AFMatrix<double>::transfer_matrix(const double*, size_t, const std::vector<const double*>&, const std::vector<const double*>&, double,
-                                              double) {}
-inline void AFMatrix<complex>::transfer_matrix(const double* foci, const size_t foci_num, const std::vector<const double*>& positions,
+inline void AFMatrix<double>::transfer_matrix(const double*, size_t, const std::vector<const core::Transducer*>&, const std::vector<const double*>&,
+                                              double, double) {}
+inline void AFMatrix<complex>::transfer_matrix(const double* foci, const size_t foci_num, const std::vector<const core::Transducer*>& transducers,
                                                const std::vector<const double*>& directions, double const wavelength, double const attenuation) {
   // FIXME: implement with ArrayFire
-  const auto data = std::make_unique<complex[]>(foci_num * positions.size() * core::NUM_TRANS_IN_UNIT);
+  const auto data = std::make_unique<complex[]>(foci_num * transducers.size() * core::NUM_TRANS_IN_UNIT);
 
   const auto wave_number = 2.0 * M_PI / wavelength;
   size_t k = 0;
-  for (size_t dev = 0; dev < positions.size(); dev++) {
-    const double* p = positions[dev];
+  for (size_t dev = 0; dev < transducers.size(); dev++) {
     const auto dir = core::Vector3(directions[dev][0], directions[dev][1], directions[dev][2]);
     for (Eigen::Index j = 0; j < static_cast<Eigen::Index>(core::NUM_TRANS_IN_UNIT); j++) {
-      const auto pos = core::Vector3(p[3 * j], p[3 * j + 1], p[3 * j + 2]);
+      const auto& transducer = transducers[dev][j];
       for (size_t i = 0; i < foci_num; i++, k++) {
         const auto tp = core::Vector3(foci[3 * i], foci[3 * i + 1], foci[3 * i + 2]);
-        data[k] = utils::transfer(pos, dir, tp, wave_number, attenuation);
+        data[k] = utils::transfer(transducer, dir, tp, wave_number, attenuation);
       }
     }
   }
 
-  af_array = af::array(static_cast<dim_t>(foci_num), static_cast<dim_t>(positions.size() * core::NUM_TRANS_IN_UNIT),
+  af_array = af::array(static_cast<dim_t>(foci_num), static_cast<dim_t>(transducers.size() * core::NUM_TRANS_IN_UNIT),
                        reinterpret_cast<const af::cdouble*>(data.get()));
 }
 
@@ -240,44 +239,30 @@ inline void AFMatrix<complex>::set_bcd_result(const std::shared_ptr<const AFMatr
   set(index, index, ii);
 }
 
-inline void AFMatrix<double>::set_from_complex_drive(std::vector<core::DataArray>&, const bool, const double) {}
-inline void AFMatrix<complex>::set_from_complex_drive(std::vector<core::DataArray>& dst, const bool normalize, const double max_coefficient) {
+inline void AFMatrix<double>::set_from_complex_drive(std::vector<core::Drive>&, const bool, const double) {}
+inline void AFMatrix<complex>::set_from_complex_drive(std::vector<core::Drive>& dst, const bool normalize, const double max_coefficient) {
   // FIXME: implement with ArrayFire
   const auto n = rows() * cols();
   const auto data = std::make_unique<complex[]>(n);
   af_array.host(data.get());
 
-  size_t dev_idx = 0;
-  size_t trans_idx = 0;
   for (size_t j = 0; j < n; j++) {
     const auto f_amp = normalize ? 1.0 : std::abs(data[j]) / max_coefficient;
-    const auto phase = core::utils::to_phase(std::arg(data[j]));
-    const auto duty = core::utils::to_duty(f_amp);
-    dst[dev_idx][trans_idx++] = core::utils::pack_to_u16(duty, phase);
-    if (trans_idx == core::NUM_TRANS_IN_UNIT) {
-      dev_idx++;
-      trans_idx = 0;
-    }
+    dst[j].duty = core::utils::to_duty(f_amp);
+    dst[j].phase = core::utils::to_phase(std::arg(data[j]));
   }
 }
 
-inline void AFMatrix<double>::set_from_arg(std::vector<core::DataArray>& dst, const size_t n) {
+inline void AFMatrix<double>::set_from_arg(std::vector<core::Drive>& dst, const size_t n) {
   // FIXME: implement with ArrayFire
-  size_t dev_idx = 0;
-  size_t trans_idx = 0;
   const auto data = std::make_unique<double[]>(n);
   af_array(af::seq(static_cast<double>(n))).host(data.get());
   for (size_t j = 0; j < n; j++) {
-    constexpr uint8_t duty = 0xFF;
-    const auto phase = core::utils::to_phase(data[j]);
-    dst[dev_idx][trans_idx++] = core::utils::pack_to_u16(duty, phase);
-    if (trans_idx == core::NUM_TRANS_IN_UNIT) {
-      dev_idx++;
-      trans_idx = 0;
-    }
+    dst[j].duty = 0xFF;
+    dst[j].phase = core::utils::to_phase(data[j]);
   }
 }
-inline void AFMatrix<complex>::set_from_arg(std::vector<core::DataArray>&, const size_t) {}
+inline void AFMatrix<complex>::set_from_arg(std::vector<core::Drive>&, const size_t) {}
 
 inline void AFMatrix<double>::back_prop(const std::shared_ptr<const AFMatrix<double>>&, const std::shared_ptr<const AFMatrix<double>>&) {}
 inline void AFMatrix<complex>::back_prop(const std::shared_ptr<const AFMatrix<complex>>& transfer,

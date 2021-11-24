@@ -3,7 +3,7 @@
 // Created Date: 13/08/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/11/2021
+// Last Modified: 22/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -42,10 +42,15 @@ using autd::gain::holo::ZERO;
 
 template <typename P>
 class BackendTest : public testing::Test {
- protected:
+ public:
   BackendTest() : _pool() {}
   ~BackendTest() override {}
+  BackendTest(const BackendTest& v) noexcept = default;
+  BackendTest& operator=(const BackendTest& obj) = default;
+  BackendTest(BackendTest&& obj) = default;
+  BackendTest& operator=(BackendTest&& obj) = default;
 
+ protected:
   P _pool;
 };
 
@@ -84,7 +89,7 @@ BackendTest<autd::gain::holo::MatrixBufferPool<autd::gain::holo::CuMatrix<double
 
 typedef Types<Eigen3BackendType BLASBackendType CUDABackendType ArrayFireBackendType> Implementations;
 
-TYPED_TEST_SUITE(BackendTest, Implementations);
+TYPED_TEST_SUITE(BackendTest, Implementations, );
 
 template <typename T>
 std::vector<double> random_vector(T n, const double minimum = -1.0, const double maximum = 1.0) {
@@ -660,21 +665,17 @@ TYPED_TEST(BackendTest, set_from_complex_drive) {
   std::vector drive = random_vector_complex(n, 0.0, 1.0);
   a->copy_from(drive);
 
-  std::vector<autd::core::DataArray> data;
-  for (size_t d = 0; d < dev; d++) data.emplace_back(autd::core::DataArray{});
+  std::vector<autd::core::Drive> data;
+  for (size_t d = 0; d < n; d++) data.emplace_back(autd::core::Drive{});
 
   auto max_coef = a->max_element();
   a->set_from_complex_drive(data, normalize, max_coef);
 
-  size_t k = 0;
-  for (size_t d = 0; d < dev; d++)
-    for (size_t i = 0; i < autd::core::NUM_TRANS_IN_UNIT; i++, k++) {
-      const auto f_amp = normalize ? 1.0 : std::abs(drive[k]) / max_coef;
-      const auto phase = autd::core::utils::to_phase(std::arg(drive[k]));
-      const auto duty = autd::core::utils::to_duty(f_amp);
-      const auto p = autd::core::utils::pack_to_u16(duty, phase);
-      ASSERT_EQ(data[d][i], p);
-    }
+  for (size_t i = 0; i < n; i++) {
+    const auto f_amp = normalize ? 1.0 : std::abs(drive[i]) / max_coef;
+    ASSERT_EQ(data[i].duty, autd::core::utils::to_duty(f_amp));
+    ASSERT_EQ(data[i].phase, autd::core::utils::to_phase(std::arg(drive[i])));
+  }
 }
 
 TYPED_TEST(BackendTest, set_from_arg) {
@@ -683,15 +684,14 @@ TYPED_TEST(BackendTest, set_from_arg) {
   std::vector args = {0.0, M_PI, 2.0 * M_PI};
   a->copy_from(args);
 
-  std::vector<autd::core::DataArray> data;
-  data.emplace_back(autd::core::DataArray{});
+  std::vector<autd::core::Drive> data;
+  for (auto i = 0; i < n; i++) data.emplace_back(autd::core::Drive{});
 
   a->set_from_arg(data, n);
 
   for (auto i = 0; i < n; i++) {
-    const auto phase = autd::core::utils::to_phase(args[i]);
-    const auto p = autd::core::utils::pack_to_u16(0xFF, phase);
-    ASSERT_EQ(data[0][i], p);
+    ASSERT_EQ(data[i].duty, 0xFF);
+    ASSERT_EQ(data[i].phase, autd::core::utils::to_phase(args[i]));
   }
 }
 
@@ -738,9 +738,9 @@ TYPED_TEST(BackendTest, sigma_regularization) {
   auto tmp_t = random_vector_complex(m * n);
   auto tmp_a = random_vector_complex(m);
   std::vector<complex> expected;
-  for (auto j = 0; j < n; j++) {
+  for (size_t j = 0; j < n; j++) {
     double tmp = 0;
-    for (auto i = 0; i < m; i++) tmp += std::abs(tmp_t[i + j * m] * tmp_a[i]);
+    for (size_t i = 0; i < m; i++) tmp += std::abs(tmp_t[i + j * m] * tmp_a[i]);
     expected.emplace_back(std::pow(std::sqrt(tmp / static_cast<double>(m)), gamma), 0.0);
   }
 

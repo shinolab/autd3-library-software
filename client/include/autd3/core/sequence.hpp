@@ -3,7 +3,7 @@
 // Created Date: 14/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/11/2021
+// Last Modified: 22/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -31,8 +31,12 @@ class Sequence {
  public:
   Sequence() : _freq_div_ratio(1), _sent(0) {}
   virtual ~Sequence() = default;
+  Sequence(const Sequence& v) noexcept = default;
+  Sequence& operator=(const Sequence& obj) = default;
+  Sequence(Sequence&& obj) = default;
+  Sequence& operator=(Sequence&& obj) = default;
 
-  virtual size_t size() const = 0;
+  [[nodiscard]] virtual size_t size() const = 0;
 
   /**
    * @brief Set frequency of the sequence
@@ -98,7 +102,7 @@ class PointSequence : virtual public Sequence {
  public:
   PointSequence() noexcept : Sequence() {}
 
-  size_t size() const override { return this->_control_points.size(); }
+  [[nodiscard]] size_t size() const override { return this->_control_points.size(); }
 
   /**
    * @brief Generate empty PointSequence.
@@ -112,7 +116,7 @@ class PointSequence : virtual public Sequence {
    */
   void add_point(const Vector3& point, const uint8_t duty = 0xFF) {
     if (this->_control_points.size() + 1 > POINT_SEQ_BUFFER_SIZE_MAX)
-      throw core::exception::SequenceBuildError(
+      throw exception::SequenceBuildError(
           std::string("Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX)));
 
     this->_control_points.emplace_back(point);
@@ -127,7 +131,7 @@ class PointSequence : virtual public Sequence {
    */
   void add_points(const std::vector<Vector3>& points, std::vector<uint8_t>& duties) {
     if (this->_control_points.size() + points.size() > POINT_SEQ_BUFFER_SIZE_MAX)
-      throw core::exception::SequenceBuildError(
+      throw exception::SequenceBuildError(
           std::string("Point sequence buffer overflow. Maximum available buffer size is " + std::to_string(POINT_SEQ_BUFFER_SIZE_MAX)));
 
     this->_control_points.reserve(this->_control_points.size() + points.size());
@@ -142,13 +146,13 @@ class PointSequence : virtual public Sequence {
    * @param[in] index control point index
    * @return Vector3 Control point of the sequence
    */
-  [[nodiscard]] Vector3& control_point(size_t index) { return this->_control_points[index]; }
+  [[nodiscard]] Vector3& control_point(const size_t index) { return this->_control_points[index]; }
 
   /**
    * @param[in] index control point index
    * @return uint8_t Duty ratio of the sequence
    */
-  [[nodiscard]] uint8_t& duty(size_t index) { return this->_duties[index]; }
+  [[nodiscard]] uint8_t& duty(const size_t index) { return this->_duties[index]; }
 
   /**
    * @return std::vector<Vector3> Control points of the sequence
@@ -177,13 +181,14 @@ class PointSequence : virtual public Sequence {
  * 1. The maximum number of gains is autd::core::GAIN_SEQ_BUFFER_SIZE_MAX.
  * 2. The sampling interval of gains is an integer multiple of 25us and less than 25us x autd::core::SEQ_SAMPLING_FREQ_DIV_MAX.
  */
-class GainSequence : virtual public Sequence {
+class GainSequence final : public Sequence {
  public:
   GainSequence() noexcept : Sequence(), _gain_mode(GAIN_MODE::DUTY_PHASE_FULL) {}
-  explicit GainSequence(GAIN_MODE gain_mode) noexcept : Sequence(), _gain_mode(gain_mode) {}
-  explicit GainSequence(std::vector<GainPtr> gains, GAIN_MODE gain_mode) noexcept : Sequence(), _gains(std::move(gains)), _gain_mode(gain_mode) {}
+  explicit GainSequence(const GAIN_MODE gain_mode) noexcept : Sequence(), _gain_mode(gain_mode) {}
+  explicit GainSequence(std::vector<GainPtr> gains, const GAIN_MODE gain_mode) noexcept
+      : Sequence(), _gains(std::move(gains)), _gain_mode(gain_mode) {}
 
-  size_t size() const override { return this->_gains.size(); }
+  [[nodiscard]] size_t size() const override { return this->_gains.size(); }
 
   /**
    * @brief Generate empty GainSequence
@@ -203,7 +208,7 @@ class GainSequence : virtual public Sequence {
    */
   void add_gain(const GainPtr& gain) {
     if (this->_gains.size() + 1 > GAIN_SEQ_BUFFER_SIZE_MAX)
-      throw core::exception::SequenceBuildError(
+      throw exception::SequenceBuildError(
           std::string("Gain sequence buffer overflow. Maximum available buffer size is " + std::to_string(GAIN_SEQ_BUFFER_SIZE_MAX)));
 
     this->_gains.emplace_back(gain);
@@ -215,7 +220,7 @@ class GainSequence : virtual public Sequence {
    */
   void add_points(const std::vector<GainPtr>& gains) {
     if (this->_gains.size() + gains.size() > GAIN_SEQ_BUFFER_SIZE_MAX)
-      throw core::exception::SequenceBuildError(
+      throw exception::SequenceBuildError(
           std::string("Gain sequence buffer overflow. Maximum available buffer size is " + std::to_string(GAIN_SEQ_BUFFER_SIZE_MAX)));
 
     this->_gains.reserve(this->_gains.size() + gains.size());
@@ -241,4 +246,5 @@ class GainSequence : virtual public Sequence {
   std::vector<GainPtr> _gains;
   GAIN_MODE _gain_mode;
 };
+
 }  // namespace autd::core

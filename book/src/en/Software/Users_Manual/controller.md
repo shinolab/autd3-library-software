@@ -64,16 +64,24 @@ All other bits are 0.
 
 ## Duty offset
 
-To change $D_\text{offset}$ (see [Create Custom Gain Tutorial](gain.md#create-custom-gain-tutorial)), use the `set_duty_offset` function.
-The argument of `set_duty_offset` is a `vector<array<uint8_t, 249>>`, which is set $D_\text{offset}$ for each transducer.
+To change $D_\text{offset}$ (see [Create Custom Gain Tutorial](gain.md#create-custom-gain-tutorial)), use the `duty_offset` function.
 Note that only the lowest $\SI{1}{bit}$ is used, so only $D_\text{offset}=0,1$ can be used.
+
+```cpp
+  autd->delay_offset()[0][0].offset = 0; // duty offset is 0 for 0-th transducer 
+  autd->set_delay_offset();              // apply change
+```
 
 ## Output delay
 
 SDK provides a function to delay the output of each transducer relative to the unit of $\SI{25}{μs}$.
-To do so, use the `set_output_delay` function.
-The argument is a `vector<array<uint8_t, 249>>`.
+To do so, use the `output_delay` function.
 Note that only the lower $\SI{7}{bit}$ of the delay value is used, and so the maximum delay is $127=\SI{3.175}{ms}$.
+
+```cpp
+  autd->delay_offset()[0][0].delay = 4;  // 4 cycle = 100 us delay in 0-th transducer
+  autd->set_delay_offset();              // apply change
+```
 
 ## pause/resume/stop
 
