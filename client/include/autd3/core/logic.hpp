@@ -81,7 +81,7 @@ class Logic {
                              size_t* const mod_sent) {
     const uint8_t msg_id = get_id();
     pack_header(msg_id, fpga_ctrl_flag, cpu_ctrl_flag, data);
-    if (mod == nullptr || *mod_sent >= mod->buffer().size()) return msg_id;
+    if (mod == nullptr || *mod_sent == mod->buffer().size()) return msg_id;
 
     auto* header = reinterpret_cast<GlobalHeader*>(data);
     size_t offset = 0;
@@ -125,17 +125,18 @@ class Logic {
    * \param seq Sequence
    * \param geometry Geometry
    * \param[out] data pointer to transmission data
+   * \param[out] seq_sent length of sequence data already sent
    * \return size_t size to send
    * \details This function must be called after pack_header
    */
-  static size_t pack_body(const PointSequencePtr& seq, const Geometry& geometry, uint8_t* data) {
-    if (seq == nullptr || seq->sent() == seq->control_points().size()) return sizeof(GlobalHeader);
+  static size_t pack_body(const PointSequencePtr& seq, const Geometry& geometry, uint8_t* data, size_t* const seq_sent) {
+    if (seq == nullptr || *seq_sent == seq->control_points().size()) return sizeof(GlobalHeader);
 
     auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(GlobalHeader));
     size_t offset = 1;
     auto* header = reinterpret_cast<GlobalHeader*>(data);
     header->cpu_ctrl_flags |= WRITE_BODY;
-    if (seq->sent() == 0) {
+    if (*seq_sent == 0) {
       header->cpu_ctrl_flags |= SEQ_BEGIN;
       for (const auto& device : geometry) {
         cursor[device.id() * NUM_TRANS_IN_UNIT + 1] = static_cast<uint16_t>(seq->sampling_freq_div_ratio() - 1);
@@ -144,20 +145,20 @@ class Logic {
       offset += 4;
     }
     const auto send_size =
-        std::clamp(seq->control_points().size() - seq->sent(), size_t{0}, sizeof(uint16_t) * (NUM_TRANS_IN_UNIT - offset) / sizeof(SeqFocus));
-    if (seq->sent() + send_size >= seq->control_points().size()) header->cpu_ctrl_flags |= SEQ_END;
+        std::clamp(seq->control_points().size() - *seq_sent, size_t{0}, sizeof(uint16_t) * (NUM_TRANS_IN_UNIT - offset) / sizeof(SeqFocus));
+    if (*seq_sent + send_size >= seq->control_points().size()) header->cpu_ctrl_flags |= SEQ_END;
 
     const auto fixed_num_unit = 256.0 / geometry.wavelength();
     for (const auto& device : geometry) {
       cursor[0] = static_cast<uint16_t>(send_size);
       auto* focus_cursor = reinterpret_cast<SeqFocus*>(&cursor[offset]);
-      for (size_t i = seq->sent(); i < seq->sent() + send_size; i++, focus_cursor++) {
+      for (size_t i = *seq_sent; i < *seq_sent + send_size; i++, focus_cursor++) {
         const auto v = (device.to_local_position(seq->control_point(i)) * fixed_num_unit).cast<int32_t>();
         focus_cursor->set(v.x(), v.y(), v.z(), seq->duty(i));
       }
       cursor += NUM_TRANS_IN_UNIT;
     }
-    seq->sent() += send_size;
+    *seq_sent += send_size;
     return sizeof(GlobalHeader) + geometry.num_transducers() * sizeof(uint16_t);
   }
 
@@ -166,42 +167,41 @@ class Logic {
    * \param seq Sequence
    * \param geometry Geometry
    * \param[out] data pointer to transmission data
+   * \param[out] seq_sent length of sequence data already sent. Note that seq_sent should be (length of gain list) + 1 when all data is sent.
    * \return size_t size to send
    * \details This function must be called after pack_header
    */
-  static size_t pack_body(const GainSequencePtr& seq, const Geometry& geometry, uint8_t* data) {
-    if (seq == nullptr || seq->sent() >= seq->gains().size() + 1) return sizeof(GlobalHeader);
+  static size_t pack_body(const GainSequencePtr& seq, const Geometry& geometry, uint8_t* data, size_t* const seq_sent) {
+    if (seq == nullptr || *seq_sent == seq->gains().size() + 1) return sizeof(GlobalHeader);
 
     auto* header = reinterpret_cast<GlobalHeader*>(data);
     header->cpu_ctrl_flags |= WRITE_BODY;
-    const auto seq_sent = static_cast<size_t>(seq->gain_mode());
-    if (seq->sent() == 0) {
+    const auto sent = static_cast<size_t>(seq->gain_mode());
+    if (*seq_sent == 0) {
       header->cpu_ctrl_flags |= SEQ_BEGIN;
       auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(GlobalHeader));
       for (const auto& device : geometry) {
-        cursor[device.id() * NUM_TRANS_IN_UNIT] = static_cast<uint16_t>(seq_sent);
+        cursor[device.id() * NUM_TRANS_IN_UNIT] = static_cast<uint16_t>(sent);
         cursor[device.id() * NUM_TRANS_IN_UNIT + 1] = static_cast<uint16_t>(seq->sampling_freq_div_ratio() - 1);
         cursor[device.id() * NUM_TRANS_IN_UNIT + 2] = static_cast<uint16_t>(seq->size());
       }
-      seq->sent()++;
+      *seq_sent += 1;
       return sizeof(GlobalHeader) + geometry.num_transducers() * sizeof(uint16_t);
     }
 
-    if (seq->sent() + seq_sent > seq->gains().size()) header->cpu_ctrl_flags |= SEQ_END;
+    if (*seq_sent + sent > seq->gains().size()) header->cpu_ctrl_flags |= SEQ_END;
 
     auto* cursor = reinterpret_cast<uint16_t*>(data + sizeof(GlobalHeader));
-    const auto gain_idx = seq->sent() - 1;
+    const auto gain_idx = *seq_sent - 1;
     switch (seq->gain_mode()) {
       case GAIN_MODE::DUTY_PHASE_FULL:
         std::memcpy(cursor, seq->gains()[gain_idx]->data().data(), seq->gains()[gain_idx]->data().size() * sizeof(uint16_t));
         break;
       case GAIN_MODE::PHASE_FULL:
         for (const auto& dev : geometry)
-          for (const auto& trans : dev) {
-            cursor[2 * trans.id()] = static_cast<uint8_t>(seq->gains()[gain_idx]->data()[trans.id()].phase);
-            cursor[2 * trans.id() + 1] =
-                static_cast<uint8_t>(gain_idx + 1 >= seq->size() ? 0x00 : seq->gains()[gain_idx + 1]->data()[trans.id()].phase);
-          }
+          for (const auto& trans : dev)
+            cursor[trans.id()] =
+                core::utils::pack_to_u16(seq->gains()[gain_idx + 1]->data()[trans.id()].phase, seq->gains()[gain_idx]->data()[trans.id()].phase);
         break;
       case GAIN_MODE::PHASE_HALF:
         for (const auto& dev : geometry)
@@ -213,12 +213,11 @@ class Logic {
                 static_cast<uint8_t>(gain_idx + 2 >= seq->size() ? 0x00 : seq->gains()[gain_idx + 2]->data()[trans.id()].phase >> 4 & 0x0F);
             const auto phase4 =
                 static_cast<uint8_t>(gain_idx + 3 >= seq->size() ? 0x00 : seq->gains()[gain_idx + 3]->data()[trans.id()].phase & 0xF0);
-            cursor[2 * trans.id()] = utils::pack_to_u16(phase2, phase1);
-            cursor[2 * trans.id() + 1] = utils::pack_to_u16(phase4, phase3);
+            cursor[trans.id()] = utils::pack_to_u16(phase4 | phase3, phase2 | phase1);
           }
         break;
     }
-    seq->sent() += seq_sent;
+    *seq_sent += sent;
     return sizeof(GlobalHeader) + geometry.num_transducers() * sizeof(uint16_t);
   }
 
