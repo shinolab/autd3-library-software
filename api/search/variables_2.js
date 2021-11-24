@@ -1,13 +1,12 @@
 var searchData=
 [
-  ['ec_5fdevice_5fper_5fframe_556',['EC_DEVICE_PER_FRAME',['../namespaceautd_1_1core.html#ab0c7905a7d36fa1bad0436c7c8bbd36f',1,'autd::core']]],
-  ['ec_5fframe_5flength_557',['EC_FRAME_LENGTH',['../namespaceautd_1_1core.html#ae03482be5505d6a046908fda8f7f3fbe',1,'autd::core']]],
-  ['ec_5finput_5fframe_5fsize_558',['EC_INPUT_FRAME_SIZE',['../namespaceautd_1_1core.html#a1b846958496e59926ab6d6df5ca299e0',1,'autd::core']]],
-  ['ec_5foutput_5fframe_5fsize_559',['EC_OUTPUT_FRAME_SIZE',['../namespaceautd_1_1core.html#a7d2c24f414c832e467955d3029156a6c',1,'autd::core']]],
-  ['ec_5fsm3_5fcycle_5ftime_5fmicro_5fsec_560',['EC_SM3_CYCLE_TIME_MICRO_SEC',['../namespaceautd_1_1core.html#a8321aa07070b41e3c3f9fd98be96ebca',1,'autd::core']]],
-  ['ec_5fsm3_5fcycle_5ftime_5fnano_5fsec_561',['EC_SM3_CYCLE_TIME_NANO_SEC',['../namespaceautd_1_1core.html#a1247f0542155801c8a292bb50bae297b',1,'autd::core']]],
-  ['ec_5fspeed_5fbps_562',['EC_SPEED_BPS',['../namespaceautd_1_1core.html#af6db78bc24dd8348383d508e56d624fa',1,'autd::core']]],
-  ['ec_5fsync0_5fcycle_5ftime_5fmicro_5fsec_563',['EC_SYNC0_CYCLE_TIME_MICRO_SEC',['../namespaceautd_1_1core.html#adf126a5cca163f52333f78f84faa71e0',1,'autd::core']]],
-  ['ec_5fsync0_5fcycle_5ftime_5fnano_5fsec_564',['EC_SYNC0_CYCLE_TIME_NANO_SEC',['../namespaceautd_1_1core.html#a3e9f7ca4c1ad1002e71b8b5f24ff42dc',1,'autd::core']]],
-  ['ec_5ftraffic_5fdelay_565',['EC_TRAFFIC_DELAY',['../namespaceautd_1_1core.html#a240e5949a6aead7145e94834d490a164',1,'autd::core']]]
+  ['delay_564',['delay',['../structautd_1_1core_1_1DelayOffset.html#a62a79b223f6ca91d40d58626e3cde5d5',1,'autd::core::DelayOffset']]],
+  ['desc_565',['desc',['../structautd_1_1link_1_1EtherCATAdapter.html#af411bba1b0e1478943413d27d94c9377',1,'autd::link::EtherCATAdapter']]],
+  ['device_5fheight_566',['DEVICE_HEIGHT',['../namespaceautd_1_1core.html#ab862948757797bdf3611cf9d5ddd408d',1,'autd::core']]],
+  ['device_5fwidth_567',['DEVICE_WIDTH',['../namespaceautd_1_1core.html#a167e902c4acabc970e51f01079d385e2',1,'autd::core']]],
+  ['dir_5fcoefficient_5fa_568',['DIR_COEFFICIENT_A',['../namespaceautd_1_1utils.html#ab373474032eeaa0b975f5eaa930db5f4',1,'autd::utils']]],
+  ['dir_5fcoefficient_5fb_569',['DIR_COEFFICIENT_B',['../namespaceautd_1_1utils.html#a07226bd0b4e91c7f1ca4f95f8c17a57e',1,'autd::utils']]],
+  ['dir_5fcoefficient_5fc_570',['DIR_COEFFICIENT_C',['../namespaceautd_1_1utils.html#ae644b60f6e086fdb486510a4c35c6dfe',1,'autd::utils']]],
+  ['dir_5fcoefficient_5fd_571',['DIR_COEFFICIENT_D',['../namespaceautd_1_1utils.html#a957c392e22782a0eb2d1cf1a76ccb8e3',1,'autd::utils']]],
+  ['duty_572',['duty',['../structautd_1_1core_1_1Drive.html#a803b76209e336327fdafb922b202757d',1,'autd::core::Drive']]]
 ];

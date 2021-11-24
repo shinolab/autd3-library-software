@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>C API Reference - AUTD3 Developers Manual v1.9.2</title>
+        <title>C API Reference - AUTD3 Developers Manual v1.9.3</title>
         <!-- Custom HTML head -->
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
@@ -106,13 +106,13 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">AUTD3 Developers Manual v1.9.2</h1>
+                    <h1 class="menu-title">AUTD3 Developers Manual v1.9.3</h1>
 
                     <div class="right-buttons">
                         <a href="../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
-                        <a href="https://github.com/shinolab/autd3-docs" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/shinolab/autd3-library-software" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
                     </div>
@@ -384,35 +384,11 @@ Also, if the check ack flag is on and the return value is greater than 0, it gua
 <tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
 <tr><td>return</td><td>int32_t</td><td>-</td><td>if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, it guarantees devices have processed data. if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, error ocurred.</td></tr>
 </tbody></table>
-<h2 id="autdsetoutputdelay-autd3capi"><a class="header" href="#autdsetoutputdelay-autd3capi">AUTDSetOutputDelay (autd3capi)</a></h2>
-<p>Set output delays. One of the send functions.
-The <code>handle</code> is the controller created by <code>AUTDCreateController</code>.
-The <code>delay</code> must be a pointer to data of length (number of devices) <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">2</span><span class="mord">4</span><span class="mord">9</span></span></span></span>.</p>
-<p>This function returns a value less than 0 if an error occurred.
-If an error occurs, you can get the error message with <code>AUTDGetLastError</code>.
-Also, if the check ack flag is on and the return value is greater than 0, it guarantees that the data has been processed by the device.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>delay</td><td>uint8_t *</td><td>in</td><td>pointer to delay data</td></tr>
-<tr><td>return</td><td>int32_t</td><td>-</td><td>if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, it guarantees devices have processed data. if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, error ocurred.</td></tr>
-</tbody></table>
-<h2 id="autdsetdutyoffset-autd3capi"><a class="header" href="#autdsetdutyoffset-autd3capi">AUTDSetDutyOffset (autd3capi)</a></h2>
-<p>Set duty offset. One of the send functions.
-The <code>handle</code> is the controller created by <code>AUTDCreateController</code>.
-The <code>offset</code> must be a pointer to data of length (number of devices) <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">2</span><span class="mord">4</span><span class="mord">9</span></span></span></span>.</p>
-<p>This function returns a value less than 0 if an error occurred.
-If an error occurs, you can get the error message with <code>AUTDGetLastError</code>.
-Also, if the check ack flag is on and the return value is greater than 0, it guarantees that the data has been processed by the device.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>offset</td><td>uint8_t *</td><td>in</td><td>pointer to duty offset data</td></tr>
-<tr><td>return</td><td>int32_t</td><td>-</td><td>if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, it guarantees devices have processed data. if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, error ocurred.</td></tr>
-</tbody></table>
 <h2 id="autdsetdelayoffset-autd3capi"><a class="header" href="#autdsetdelayoffset-autd3capi">AUTDSetDelayOffset (autd3capi)</a></h2>
 <p>Set output delays and duty offsets. 
 One of the send functions.
 The <code>handle</code> is the controller created by <code>AUTDCreateController</code>. delay,
-The <code>delay</code> and <code>offset</code> must be a pointer to data of length (number of devices) <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">2</span><span class="mord">4</span><span class="mord">9</span></span></span></span>.</p>
+The <code>delay</code> and <code>offset</code> must be a pointer to data of length (number of devices) <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">2</span><span class="mord">4</span><span class="mord">9</span></span></span></span> or nullptr.</p>
 <p>This function returns a value less than 0 if an error occurred.
 If an error occurs, you can get the error message with <code>AUTDGetLastError</code>.
 Also, if the check ack flag is on and the return value is greater than 0, it guarantees that the data has been processed by the device.</p>
@@ -439,31 +415,7 @@ The <code>handle</code> is the controller created by <code>AUTDCreateController<
 <tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
 <tr><td>return</td><td>int32_t</td><td>-</td><td>number of devices</td></tr>
 </tbody></table>
-<h2 id="autdnumtransducers-autd3capi"><a class="header" href="#autdnumtransducers-autd3capi">AUTDNumTransducers (autd3capi)</a></h2>
-<p>Get the total number of transducers.
-The <code>handle</code> is the controller created by <code>AUTDCreateController</code>.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>return</td><td>int32_t</td><td>-</td><td>number of transducers</td></tr>
-</tbody></table>
-<h2 id="autddeviceidxfortransidx-autd3capi"><a class="header" href="#autddeviceidxfortransidx-autd3capi">AUTDDeviceIdxForTransIdx (autd3capi)</a></h2>
-<p>Convert global transducer index to device index. </p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>global_trans_idx</td><td>int32_t</td><td>in</td><td>global transducer index</td></tr>
-<tr><td>return</td><td>int32_t</td><td>-</td><td>device index</td></tr>
-</tbody></table>
-<h2 id="autdtranspositionbyglobal-autd3capi"><a class="header" href="#autdtranspositionbyglobal-autd3capi">AUTDTransPositionByGlobal (autd3capi)</a></h2>
-<p>Get the position of transducer specified by the global transducer index.
-The <code>handle</code> is the controller created by <code>AUTDCreateController</code>.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>global_trans_idx</td><td>int32_t</td><td>in</td><td>global transducer index</td></tr>
-<tr><td>x</td><td>double*</td><td>out</td><td>x coordinate of transducer position</td></tr>
-<tr><td>y</td><td>double*</td><td>out</td><td>y coordinate of transducer position</td></tr>
-<tr><td>z</td><td>double*</td><td>out</td><td>z coordinate of transducer position</td></tr>
-<tr><td>return</td><td>void</td><td>-</td><td>nothing</td></tr>
-</tbody></table>
-<h2 id="autdtranspositionbylocal-autd3capi"><a class="header" href="#autdtranspositionbylocal-autd3capi">AUTDTransPositionByLocal (autd3capi)</a></h2>
+<h2 id="autdtransposition-autd3capi"><a class="header" href="#autdtransposition-autd3capi">AUTDTransPosition (autd3capi)</a></h2>
 <p>Get the position of transducer specified by the device index and local transducer index.
 The <code>handle</code> is the controller created by <code>AUTDCreateController</code>.</p>
 <table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
@@ -865,32 +817,6 @@ If an error occurs, you can get the error message with <code>AUTDGetLastError</c
 Also, if the check ack flag is on and the return value is greater than 0, it guarantees that the data has been processed by the device.</p>
 <table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
 <tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>return</td><td>int32_t</td><td>-</td><td>if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, it guarantees devices have processed data. if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, error ocurred.</td></tr>
-</tbody></table>
-<h2 id="autdsendgain-autd3capi"><a class="header" href="#autdsendgain-autd3capi">AUTDSendGain (autd3capi)</a></h2>
-<p>Send Gain.
-One of the send functions.</p>
-<p>The <code>handle</code> is the controller created by <code>AUTDCreateController</code>.</p>
-<p>If <code>check_ack</code> is true, the function waits until the data is processed by the device.</p>
-<p>This function returns a value less than 0 if an error occurred.
-If an error occurs, you can get the error message with <code>AUTDGetLastError</code>.
-Also, if the check ack flag is on and the return value is greater than 0, it guarantees that the data has been processed by the device.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>gain</td><td>void*</td><td>in</td><td>GainPtr</td></tr>
-<tr><td>return</td><td>int32_t</td><td>-</td><td>if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, it guarantees devices have processed data. if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, error ocurred.</td></tr>
-</tbody></table>
-<h2 id="autdsendmodulation-autd3capi"><a class="header" href="#autdsendmodulation-autd3capi">AUTDSendModulation (autd3capi)</a></h2>
-<p>Send Modulation. 
-One of the send functions.</p>
-<p>The <code>handle</code> is the controller created by <code>AUTDCreateController</code>.</p>
-<p>If <code>check_ack</code> is true, the function waits until the data is processed by the device.</p>
-<p>This function returns a value less than 0 if an error occurred.
-If an error occurs, you can get the error message with <code>AUTDGetLastError</code>.
-Also, if the check ack flag is on and the return value is greater than 0, it guarantees that the data has been processed by the device.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>mod</td><td>void*</td><td>in</td><td>ModulationPtr</td></tr>
 <tr><td>return</td><td>int32_t</td><td>-</td><td>if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, it guarantees devices have processed data. if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, error ocurred.</td></tr>
 </tbody></table>
 <h2 id="autdsendgainmodulation-autd3capi"><a class="header" href="#autdsendgainmodulation-autd3capi">AUTDSendGainModulation (autd3capi)</a></h2>

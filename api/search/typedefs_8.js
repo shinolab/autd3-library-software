@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['quaternion_620',['Quaternion',['../namespaceautd_1_1core.html#ac1b3521a7f62f7dbe88d26bdf82e25ed',1,'autd::core']]]
+  ['static_633',['Static',['../namespaceautd_1_1modulation.html#a8a17bdf32631fe7e82bb21f0178f93e2',1,'autd::modulation']]]
 ];

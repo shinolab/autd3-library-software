@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">1.9.2</span>
+   &#160;<span id="projectnumber">1.9.3</span>
    </div>
   </td>
  </tr>
@@ -75,7 +75,7 @@ $(function() {
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">// Created Date: 10/05/2021</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">// Author: Shun Suzuki</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">// -----</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">// Last Modified: 13/09/2021</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">// Last Modified: 21/11/2021</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment">// -----</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">// Copyright (c) 2021 Hapis Lab. All rights reserved.</span></div>
@@ -110,12 +110,11 @@ $(function() {
 <div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="classautd_1_1link_1_1RemoteTwinCAT.html#aaf40c64e2310c89fa2096dfaff03768e">   38</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classautd_1_1link_1_1RemoteTwinCAT.html#aaf40c64e2310c89fa2096dfaff03768e">open</a>() <span class="keyword">override</span> = 0;</div>
 <div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="classautd_1_1link_1_1RemoteTwinCAT.html#a998ece45595c87ab52645cc9a89bb862">   39</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classautd_1_1link_1_1RemoteTwinCAT.html#a998ece45595c87ab52645cc9a89bb862">close</a>() <span class="keyword">override</span> = 0;</div>
 <div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="classautd_1_1link_1_1RemoteTwinCAT.html#ad23a03d8ffc8c36db5e3e87e6a3fa422">   40</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classautd_1_1link_1_1RemoteTwinCAT.html#ad23a03d8ffc8c36db5e3e87e6a3fa422">send</a>(<span class="keyword">const</span> uint8_t* buf, <span class="keywordtype">size_t</span> size) <span class="keyword">override</span> = 0;</div>
-<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="classautd_1_1link_1_1RemoteTwinCAT.html#a95ce7e9285a5a17c9b5b15e5f4e86914">   41</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classautd_1_1link_1_1RemoteTwinCAT.html#a95ce7e9285a5a17c9b5b15e5f4e86914">read</a>(uint8_t* rx, <span class="keywordtype">size_t</span> buffer_len) <span class="keyword">override</span> = 0;</div>
+<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="classautd_1_1link_1_1RemoteTwinCAT.html#aa027d63aaab9d541d00d63eecc766257">   41</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classautd_1_1link_1_1RemoteTwinCAT.html#aa027d63aaab9d541d00d63eecc766257">receive</a>(uint8_t* rx, <span class="keywordtype">size_t</span> buffer_len) <span class="keyword">override</span> = 0;</div>
 <div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="classautd_1_1link_1_1RemoteTwinCAT.html#a99d46301f495a8d661aab1af6eb13d4e">   42</a></span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classautd_1_1link_1_1RemoteTwinCAT.html#a99d46301f495a8d661aab1af6eb13d4e">is_open</a>() <span class="keyword">override</span> = 0;</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;};</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;}  <span class="comment">// namespace autd::link</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="aclassautd_1_1link_1_1RemoteTwinCAT_html_a95ce7e9285a5a17c9b5b15e5f4e86914"><div class="ttname"><a href="classautd_1_1link_1_1RemoteTwinCAT.html#a95ce7e9285a5a17c9b5b15e5f4e86914">autd::link::RemoteTwinCAT::read</a></div><div class="ttdeci">void read(uint8_t *rx, size_t buffer_len) override=0</div><div class="ttdoc">Read data from devices.</div></div>
 <div class="ttc" id="aclassautd_1_1link_1_1RemoteTwinCAT_html_a99d46301f495a8d661aab1af6eb13d4e"><div class="ttname"><a href="classautd_1_1link_1_1RemoteTwinCAT.html#a99d46301f495a8d661aab1af6eb13d4e">autd::link::RemoteTwinCAT::is_open</a></div><div class="ttdeci">bool is_open() override=0</div></div>
 <div class="ttc" id="aclassautd_1_1link_1_1RemoteTwinCAT_html_af125b64fefccc947697474a0ed621972"><div class="ttname"><a href="classautd_1_1link_1_1RemoteTwinCAT.html#af125b64fefccc947697474a0ed621972">autd::link::RemoteTwinCAT::operator=</a></div><div class="ttdeci">RemoteTwinCAT &amp; operator=(RemoteTwinCAT &amp;&amp;obj)=delete</div></div>
 <div class="ttc" id="aclassautd_1_1link_1_1RemoteTwinCAT_html_a647a7769dab62afe0ef039807da698d0"><div class="ttname"><a href="classautd_1_1link_1_1RemoteTwinCAT.html#a647a7769dab62afe0ef039807da698d0">autd::link::RemoteTwinCAT::operator=</a></div><div class="ttdeci">RemoteTwinCAT &amp; operator=(const RemoteTwinCAT &amp;obj)=delete</div></div>
@@ -123,6 +122,7 @@ $(function() {
 <div class="ttc" id="aclassautd_1_1link_1_1RemoteTwinCAT_html_aaf40c64e2310c89fa2096dfaff03768e"><div class="ttname"><a href="classautd_1_1link_1_1RemoteTwinCAT.html#aaf40c64e2310c89fa2096dfaff03768e">autd::link::RemoteTwinCAT::open</a></div><div class="ttdeci">void open() override=0</div><div class="ttdoc">Open link.</div></div>
 <div class="ttc" id="aclassautd_1_1link_1_1RemoteTwinCAT_html_a72bb546b34960e5077ad4d36ba9ff900"><div class="ttname"><a href="classautd_1_1link_1_1RemoteTwinCAT.html#a72bb546b34960e5077ad4d36ba9ff900">autd::link::RemoteTwinCAT::~RemoteTwinCAT</a></div><div class="ttdeci">~RemoteTwinCAT() override=default</div></div>
 <div class="ttc" id="aclassautd_1_1link_1_1RemoteTwinCAT_html_a337725c63b4c60ec9e436baa1d5907b5"><div class="ttname"><a href="classautd_1_1link_1_1RemoteTwinCAT.html#a337725c63b4c60ec9e436baa1d5907b5">autd::link::RemoteTwinCAT::RemoteTwinCAT</a></div><div class="ttdeci">RemoteTwinCAT(const RemoteTwinCAT &amp;v) noexcept=delete</div></div>
+<div class="ttc" id="aclassautd_1_1link_1_1RemoteTwinCAT_html_aa027d63aaab9d541d00d63eecc766257"><div class="ttname"><a href="classautd_1_1link_1_1RemoteTwinCAT.html#aa027d63aaab9d541d00d63eecc766257">autd::link::RemoteTwinCAT::receive</a></div><div class="ttdeci">void receive(uint8_t *rx, size_t buffer_len) override=0</div><div class="ttdoc">Read data from devices.</div></div>
 <div class="ttc" id="aclassautd_1_1link_1_1RemoteTwinCAT_html_a8138e7e876823bd13ec0a0a19fe09fe4"><div class="ttname"><a href="classautd_1_1link_1_1RemoteTwinCAT.html#a8138e7e876823bd13ec0a0a19fe09fe4">autd::link::RemoteTwinCAT::RemoteTwinCAT</a></div><div class="ttdeci">RemoteTwinCAT(RemoteTwinCAT &amp;&amp;obj)=delete</div></div>
 <div class="ttc" id="aclassautd_1_1link_1_1RemoteTwinCAT_html"><div class="ttname"><a href="classautd_1_1link_1_1RemoteTwinCAT.html">autd::link::RemoteTwinCAT</a></div><div class="ttdoc">Link using TwinCAT via Beckhoff ADS.</div><div class="ttdef"><b>Definition:</b> <a href="remote__twincat_8hpp_source.html#l00024">remote_twincat.hpp:24</a></div></div>
 <div class="ttc" id="alink_8hpp_html"><div class="ttname"><a href="link_8hpp.html">link.hpp</a></div></div>

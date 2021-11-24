@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['wav_520',['Wav',['../classautd_1_1modulation_1_1Wav.html#a0dbb096087353257f1c0d4db7b91a3f5',1,'autd::modulation::Wav']]],
-  ['wavelength_521',['wavelength',['../classautd_1_1core_1_1Geometry.html#af5dde1cc9060f5b8560be0013839b18c',1,'autd::core::Geometry']]]
+  ['update_5fctrl_5fflag_533',['update_ctrl_flag',['../classautd_1_1Controller.html#a2d7870dbcbd93c880a06ef7429bdd747',1,'autd::Controller']]]
 ];

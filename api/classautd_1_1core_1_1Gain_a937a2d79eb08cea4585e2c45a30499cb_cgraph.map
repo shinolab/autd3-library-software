@@ -1,4 +1,0 @@
-<map id="autd::core::Gain::build" name="autd::core::Gain::build">
-<area shape="rect" id="node1" title="Initialize data and call calc()." alt="" coords="5,5,149,32"/>
-<area shape="rect" id="node2" href="$classautd_1_1core_1_1Gain.html#a9adb494ac85d54b6de64aa67eb060ce5" title="Calculate duty ratio and phase of each transducer." alt="" coords="197,5,339,32"/>
-</map>

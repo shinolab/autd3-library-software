@@ -1,4 +1,0 @@
-<map id="autd::core::Geometry::position" name="autd::core::Geometry::position">
-<area shape="rect" id="node1" title="Position of a transducer specified by id." alt="" coords="5,5,145,47"/>
-<area shape="rect" id="node2" href="$classautd_1_1core_1_1Geometry.html#ab80271ba7cec4a9fe62a243da44304d4" title="Convert transducer index into device index." alt="" coords="193,5,364,47"/>
-</map>

@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>AUTD3 Developers Manual v1.9.2</title>
+        <title>AUTD3 Developers Manual v1.9.3</title>
         <meta name="robots" content="noindex" />
         <!-- Custom HTML head -->
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
@@ -107,13 +107,13 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">AUTD3 Developers Manual v1.9.2</h1>
+                    <h1 class="menu-title">AUTD3 Developers Manual v1.9.3</h1>
 
                     <div class="right-buttons">
                         <a href="print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
-                        <a href="https://github.com/shinolab/autd3-docs" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/shinolab/autd3-library-software" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
                     </div>
@@ -785,30 +785,29 @@ cmake --install . --prefix D:\lib\openblas -v
 <h2 id="create-custom-gain-tutorial"><a class="header" href="#create-custom-gain-tutorial">Create Custom Gain Tutorial</a></h2>
 <p><code>Gain</code>クラスを継承することで独自の<code>Gain</code>を作成することができる.
 ここでは, <code>FocalPoint</code>と同じように単一焦点を生成する<code>Focus</code>を実際に定義してみることにする.</p>
-<p><code>Gain</code>の実態は<code>vector&lt;array&lt;uint16_t, 249&gt;&gt; _data</code>であり, <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord"><span class="mord">1</span><span class="mord">6</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span></span></span></span></span></span>データの振動子数分の配列のデバイス数分の<code>vector</code>になっている.
-<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord"><span class="mord">1</span><span class="mord">6</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span></span></span></span></span></span>データの内, 上位<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord"><span class="mord">8</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span></span></span></span></span></span>がDuty比, 下位<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord"><span class="mord">8</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span></span></span></span></span></span>が位相を表す.
+<p><code>Gain</code>の実態は<code>vector&lt;Drive&gt; _data</code>であり, 位相/振幅データを格納する<code>Drive</code>構造体の振動子数分の<code>vector</code>になっている.
 下が, 単一焦点を生成する<code>Gain</code>のサンプルである.</p>
 <pre><code class="language-cpp">#include &quot;autd3.hpp&quot;
 #include &quot;autd3/core/utils.hpp&quot;
 
 class Focus final : public autd::core::Gain {
  public:
-  Focus(autd::Vector3 point) : _point(point) {} 
-  
+  explicit Focus(const autd::Vector3 point) : _point(point) {}
+
   static autd::GainPtr create(autd::Vector3 point) { return std::make_shared&lt;Focus&gt;(point); }
-  
-  void calc(const autd::GeometryPtr&amp; geometry) override {
-    const auto wavenum = 2.0 * M_PI / geometry-&gt;wavelength();
-    for (size_t dev = 0; dev &lt; geometry-&gt;num_devices(); dev++)
-      for (size_t i = 0; i &lt; autd::NUM_TRANS_IN_UNIT; i++) {
-        const auto dist = (geometry-&gt;position(dev, i) - this-&gt;_point).norm();
-        const auto phase = autd::core::Utilities::to_phase(dist * wavenum);
-        this-&gt;_data[dev][i] = autd::core::Utilities::pack_to_u16(0xFF, phase);
+
+  void calc(const autd::Geometry&amp; geometry) override {
+    const auto wavenum = 2.0 * M_PI / geometry.wavelength();
+    for (const auto&amp; device : geometry)
+      for (const auto&amp; transducer : device) {
+        const auto dist = (transducer.position() - this-&gt;_point).norm();
+        this-&gt;_data[transducer.id()].duty = 0xFF;
+        this-&gt;_data[transducer.id()].phase = autd::core::utils::to_phase(dist * wavenum);
       }
-  }
-  
-  private:
-    autd::Vector3 _point;
+  } 
+
+ private:
+  autd::Vector3 _point;
 };
 </code></pre>
 <p><code>Controller::send</code>関数は<code>GainPtr</code>型 (<code>shared_ptr&lt;autd::core::Gain&gt;</code>のエイリアス) を引数に取る.
@@ -827,14 +826,14 @@ class Focus final : public autd::core::Gain {
 <span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">ϕ</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:2.04633em;vertical-align:-0.686em;"></span><span class="mord">−</span><span class="mord">2</span><span class="mord mathnormal" style="margin-right:0.03588em;">π</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.36033em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">2</span><span class="mord">5</span><span class="mord">6</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">P</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:2.00744em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.32144em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">λ</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">2</span><span class="mord mathnormal" style="margin-right:0.03588em;">π</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mord">∥</span><span class="mord"><span class="mord"><span class="mord"><span class="mord boldsymbol" style="margin-right:0.03194em;">r</span></span></span></span><span class="mord">∥</span></span></span></span></span>
 とすれば良い.
 ここで, <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span></span></span></span>は振動子と焦点位置との間の距離である.</p>
-<p>SDKでは, 波長は<code>Geometry::wavelength()</code>, 振動子の位置は<code>Geometry::position()</code>で取得できる.
-<code>Geometry::position()</code>の第1引数はDeviceのインデックス, 第2引数はローカルな振動子のインデックスである.
+<p>SDKでは, 波長は<code>Geometry::wavelength()</code>, できる.
+Geometryにはイテレータが定義されており, <code>Device</code>のイテレータが返される.
+また, <code>Device</code>にもイテレータが定義されており, <code>Transducer</code>のイテレータが返され, ここから振動子の位置を取得できる.
 また, <code>autd::core::Utilities::to_phase</code>関数は, 上記の<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord"><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">r</span><span class="mord mathrm">a</span><span class="mord mathrm">d</span></span></span></span></span></span>単位の位相<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">ϕ</span></span></span></span>をSDKの内部表現<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">P</span></span></span></span>に変換するためのユーティリティ関数で, 以下のように定義されている<sup class="footnote-reference"><a href="#fn_phase">4</a></sup>.</p>
 <pre><code class="language-cpp">  inline static uint8_t to_phase(const double phase) noexcept {
     return static_cast&lt;uint8_t&gt;(static_cast&lt;int&gt;(std::round((phase / (2.0 * M_PI) + 0.5) * 256.0)) &amp; 0xFF);
   }
 </code></pre>
-<p>また, <code>autd::core::Utilities::pack_to_u16</code>はただ単に2つの<code>uint8_t</code>の値を受け取って, それぞれ<code>uint16_t</code>の値の上位/下位<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord"><span class="mord">8</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span></span></span></span></span></span>に詰めるだけのユーティリティ関数である.</p>
 <div class="footnote-definition" id="fn_backend"><sup class="footnote-definition-label">1</sup>
 <p>各自ソースコードからコンパイルする必要がある. GitHubにアップロードされているpre-built binaryには含まれていない.</p>
 </div>
@@ -1128,15 +1127,19 @@ SDKにはこれを抑制するためのフラグが用意されている.</p>
 <p><code>fpga_info</code>の返り値は<code>uint8_t</code>のデバイス分だけの<code>vector</code>であり, 下位<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord"><span class="mord">1</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span></span></span></span></span></span>がファンの状態を表している.
 それ以外のbitはすべて0である.</p>
 <h2 id="duty-offset"><a class="header" href="#duty-offset">Duty offset</a></h2>
-<p><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:-0.02778em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord text mtight"><span class="mord mtight">offset</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> (<a href="Software/Users_Manual/gain.html#create-custom-gain-tutorial">Create Custom Gain Tutorial</a>参照) を変更するには<code>set_duty_offset</code>関数を使う.
-<code>set_duty_offset</code>の引数は<code>vector&lt;array&lt;uint8_t, 249&gt;&gt;</code>であり, 各振動子ごとに設定する.
+<p><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:-0.02778em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord text mtight"><span class="mord mtight">offset</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> (<a href="Software/Users_Manual/gain.html#create-custom-gain-tutorial">Create Custom Gain Tutorial</a>参照) を変更するには<code>duty_offset</code>関数を使う.
 なお, 下位<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord"><span class="mord">1</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span></span></span></span></span></span>のみが用いられる.
 したがって, <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:-0.02778em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord text mtight"><span class="mord mtight">offset</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord">0</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">1</span></span></span></span>のみ使用できる.</p>
+<pre><code class="language-cpp">  autd-&gt;delay_offset()[0][0].offset = 0; // duty offset is 0 for 0-th transducer 
+  autd-&gt;set_delay_offset();              // apply change
+</code></pre>
 <h2 id="output-delay"><a class="header" href="#output-delay">Output delay</a></h2>
 <p>各振動子の出力を<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord">2</span><span class="mord">5</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal">μ</span><span class="mord mathrm">s</span></span></span></span></span></span>単位で相対的に遅らせることができる.
-これには, <code>set_output_delay</code>関数を使う.
-引数は<code>vector&lt;array&lt;uint8_t, 249&gt;&gt;</code>である.
+これには, <code>duty_offset</code>関数を使う.
 ただし, Delay値は下位<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord"><span class="mord">7</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span></span></span></span></span></span>のみ使用され, 遅延は最大で<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord">2</span><span class="mord">7</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord"><span class="mord">3</span><span class="mord">.</span><span class="mord">1</span><span class="mord">7</span><span class="mord">5</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">m</span><span class="mord mathrm">s</span></span></span></span></span></span>である.</p>
+<pre><code class="language-cpp">  autd-&gt;delay_offset()[0][0].delay = 4;  // 4 cycle = 100 us delay in 0-th transducer
+  autd-&gt;set_delay_offset();              // apply change
+</code></pre>
 <h2 id="pauseresumestop"><a class="header" href="#pauseresumestop">pause/resume/stop</a></h2>
 <p><code>pause</code>関数を呼び出すと出力を一時停止する.
 また, <code>resume</code>関数で再開する.</p>
@@ -1751,36 +1754,10 @@ handleは<code>AUTDCreateController</code>で作成したものを使う.</p>
 <tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
 <tr><td>return</td><td>int32_t</td><td>-</td><td>if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, it guarantees devices have processed data. if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, error ocurred.</td></tr>
 </tbody></table>
-<h2 id="autdsetoutputdelay-autd3capi"><a class="header" href="#autdsetoutputdelay-autd3capi">AUTDSetOutputDelay (autd3capi)</a></h2>
-<p>Output delayを設定する. send functionの.
-handleは<code>AUTDCreateController</code>で作成したものを使う.
-delayは(Deviceの台数)<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">2</span><span class="mord">4</span><span class="mord">9</span></span></span></span>の長さのデータへのポインタである必要がある.</p>
-<p>この関数はエラーが発生した場合に0未満の値を返す.
-エラーが生じた場合には<code>AUTDGetLastError</code>でエラーメッセージを取得できる.
-また, check ackフラグがOn, かつ, 返り値が0より大きい場合は,
-データが実際のデバイスで処理されたことを保証する.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>delay</td><td>uint8_t *</td><td>in</td><td>pointer to delay data</td></tr>
-<tr><td>return</td><td>int32_t</td><td>-</td><td>if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, it guarantees devices have processed data. if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, error ocurred.</td></tr>
-</tbody></table>
-<h2 id="autdsetdutyoffset-autd3capi"><a class="header" href="#autdsetdutyoffset-autd3capi">AUTDSetDutyOffset (autd3capi)</a></h2>
-<p>Duty offsetを設定する. send functionの一つ.
-handleは<code>AUTDCreateController</code>で作成したものを使う.
-offsetは(Deviceの台数)<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">2</span><span class="mord">4</span><span class="mord">9</span></span></span></span>の長さのデータへのポインタである必要がある.</p>
-<p>この関数はエラーが発生した場合に0未満の値を返す.
-エラーが生じた場合には<code>AUTDGetLastError</code>でエラーメッセージを取得できる.
-また,check ackフラグがOn, かつ, 返り値が0より大きい場合は,
-データが実際のデバイスで処理されたことを保証する.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>offset</td><td>uint8_t *</td><td>in</td><td>pointer to duty offset data</td></tr>
-<tr><td>return</td><td>int32_t</td><td>-</td><td>if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, it guarantees devices have processed data. if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, error ocurred.</td></tr>
-</tbody></table>
 <h2 id="autdsetdelayoffset-autd3capi"><a class="header" href="#autdsetdelayoffset-autd3capi">AUTDSetDelayOffset (autd3capi)</a></h2>
 <p>Output delayとDuty offsetを設定する. send functionの一つ..
 handleは<code>AUTDCreateController</code>で作成したものを使う. delay,
-offsetは(Deviceの台数)<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">2</span><span class="mord">4</span><span class="mord">9</span></span></span></span>の長さのデータへのポインタである必要がある.</p>
+offsetは(Deviceの台数)<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">2</span><span class="mord">4</span><span class="mord">9</span></span></span></span>の長さのデータへのポインタまたはnullptrである必要がある.</p>
 <p>この関数はエラーが発生した場合に0未満の値を返す.
 エラーが生じた場合には<code>AUTDGetLastError</code>でエラーメッセージを取得できる.
 また,check ackフラグがOn, かつ, 返り値が0より大きい場合は,
@@ -1810,32 +1787,7 @@ handleは<code>AUTDCreateController</code>で作成したものを使う.</p>
 <tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
 <tr><td>return</td><td>int32_t</td><td>-</td><td>number of devices</td></tr>
 </tbody></table>
-<h2 id="autdnumtransducers-autd3capi"><a class="header" href="#autdnumtransducers-autd3capi">AUTDNumTransducers (autd3capi)</a></h2>
-<p>振動子の総数を取得する.
-handleは<code>AUTDCreateController</code>で作成したものを使う.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>return</td><td>int32_t</td><td>-</td><td>number of transducers</td></tr>
-</tbody></table>
-<h2 id="autddeviceidxfortransidx-autd3capi"><a class="header" href="#autddeviceidxfortransidx-autd3capi">AUTDDeviceIdxForTransIdx (autd3capi)</a></h2>
-<p>グローバルな振動子のインデックスをDeviceのインデックスに変換する.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>global_trans_idx</td><td>int32_t</td><td>in</td><td>global transducer index</td></tr>
-<tr><td>return</td><td>int32_t</td><td>-</td><td>device index</td></tr>
-</tbody></table>
-<h2 id="autdtranspositionbyglobal-autd3capi"><a class="header" href="#autdtranspositionbyglobal-autd3capi">AUTDTransPositionByGlobal (autd3capi)</a></h2>
-<p>指定した振動子の位置を取得する.
-振動子の指定はグローバルなインデックスでおこなう.
-handleは<code>AUTDCreateController</code>で作成したものを使う.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>global_trans_idx</td><td>int32_t</td><td>in</td><td>global transducer index</td></tr>
-<tr><td>x</td><td>double*</td><td>out</td><td>x coordinate of transducer position</td></tr>
-<tr><td>y</td><td>double*</td><td>out</td><td>y coordinate of transducer position</td></tr>
-<tr><td>z</td><td>double*</td><td>out</td><td>z coordinate of transducer position</td></tr>
-<tr><td>return</td><td>void</td><td>-</td><td>nothing</td></tr>
-</tbody></table>
-<h2 id="autdtranspositionbylocal-autd3capi"><a class="header" href="#autdtranspositionbylocal-autd3capi">AUTDTransPositionByLocal (autd3capi)</a></h2>
+<h2 id="autdtransposition-autd3capi"><a class="header" href="#autdtransposition-autd3capi">AUTDTransPosition (autd3capi)</a></h2>
 <p>指定した振動子の位置を取得する.
 振動子の指定はデバイスのインデックスとローカルの振動子インデックスでおこなう.
 handleは<code>AUTDCreateController</code>で作成したものを使う.</p>
@@ -2239,34 +2191,6 @@ falseの場合には<code>AUTDGetLastError</code>でエラーメッセージを�
 データが実際のデバイスで処理されたことを保証する.</p>
 <table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
 <tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>return</td><td>int32_t</td><td>-</td><td>if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, it guarantees devices have processed data. if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, error ocurred.</td></tr>
-</tbody></table>
-<h2 id="autdsendgain-autd3capi"><a class="header" href="#autdsendgain-autd3capi">AUTDSendGain (autd3capi)</a></h2>
-<p>Gainを送信する.send functionの一つ.</p>
-<p><code>handle</code>には<code>AUTDCreateController</code>で作成したControllerを使用する.</p>
-<p><code>check_ack</code>がtrueの場合は,
-この関数はデータが実際のデバイスで処理されるまで待機する.</p>
-<p>この関数はエラーが発生した場合に0未満の値を返す.
-エラーが生じた場合には<code>AUTDGetLastError</code>でエラーメッセージを取得できる.
-また,check ackフラグがOn, かつ, 返り値が0より大きい場合は,
-データが実際のデバイスで処理されたことを保証する.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>gain</td><td>void*</td><td>in</td><td>GainPtr</td></tr>
-<tr><td>return</td><td>int32_t</td><td>-</td><td>if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, it guarantees devices have processed data. if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, error ocurred.</td></tr>
-</tbody></table>
-<h2 id="autdsendmodulation-autd3capi"><a class="header" href="#autdsendmodulation-autd3capi">AUTDSendModulation (autd3capi)</a></h2>
-<p>Modulationを送信する. send functionの一つ.</p>
-<p><code>handle</code>には<code>AUTDCreateController</code>で作成したControllerを使用する.</p>
-<p><code>check_ack</code>がtrueの場合は,
-この関数はデータが実際のデバイスで処理されるまで待機する.</p>
-<p>この関数はエラーが発生した場合に0未満の値を返す.
-エラーが生じた場合には<code>AUTDGetLastError</code>でエラーメッセージを取得できる.
-また,check ackフラグがOn, かつ, 返り値が0より大きい場合は,
-データが実際のデバイスで処理されたことを保証する.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>mod</td><td>void*</td><td>in</td><td>ModulationPtr</td></tr>
 <tr><td>return</td><td>int32_t</td><td>-</td><td>if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, it guarantees devices have processed data. if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, error ocurred.</td></tr>
 </tbody></table>
 <h2 id="autdsendgainmodulation-autd3capi"><a class="header" href="#autdsendgainmodulation-autd3capi">AUTDSendGainModulation (autd3capi)</a></h2>

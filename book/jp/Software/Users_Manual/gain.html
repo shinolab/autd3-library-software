@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Gain - AUTD3 Developers Manual v1.9.2</title>
+        <title>Gain - AUTD3 Developers Manual v1.9.3</title>
         <!-- Custom HTML head -->
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
@@ -106,13 +106,13 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">AUTD3 Developers Manual v1.9.2</h1>
+                    <h1 class="menu-title">AUTD3 Developers Manual v1.9.3</h1>
 
                     <div class="right-buttons">
                         <a href="../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
-                        <a href="https://github.com/shinolab/autd3-docs" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/shinolab/autd3-library-software" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
                     </div>
@@ -288,30 +288,29 @@ cmake --install . --prefix D:\lib\openblas -v
 <h2 id="create-custom-gain-tutorial"><a class="header" href="#create-custom-gain-tutorial">Create Custom Gain Tutorial</a></h2>
 <p><code>Gain</code>クラスを継承することで独自の<code>Gain</code>を作成することができる.
 ここでは, <code>FocalPoint</code>と同じように単一焦点を生成する<code>Focus</code>を実際に定義してみることにする.</p>
-<p><code>Gain</code>の実態は<code>vector&lt;array&lt;uint16_t, 249&gt;&gt; _data</code>であり, <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord"><span class="mord">1</span><span class="mord">6</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span></span></span></span></span></span>データの振動子数分の配列のデバイス数分の<code>vector</code>になっている.
-<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord"><span class="mord">1</span><span class="mord">6</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span></span></span></span></span></span>データの内, 上位<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord"><span class="mord">8</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span></span></span></span></span></span>がDuty比, 下位<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord"><span class="mord">8</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span></span></span></span></span></span>が位相を表す.
+<p><code>Gain</code>の実態は<code>vector&lt;Drive&gt; _data</code>であり, 位相/振幅データを格納する<code>Drive</code>構造体の振動子数分の<code>vector</code>になっている.
 下が, 単一焦点を生成する<code>Gain</code>のサンプルである.</p>
 <pre><code class="language-cpp">#include &quot;autd3.hpp&quot;
 #include &quot;autd3/core/utils.hpp&quot;
 
 class Focus final : public autd::core::Gain {
  public:
-  Focus(autd::Vector3 point) : _point(point) {} 
-  
+  explicit Focus(const autd::Vector3 point) : _point(point) {}
+
   static autd::GainPtr create(autd::Vector3 point) { return std::make_shared&lt;Focus&gt;(point); }
-  
-  void calc(const autd::GeometryPtr&amp; geometry) override {
-    const auto wavenum = 2.0 * M_PI / geometry-&gt;wavelength();
-    for (size_t dev = 0; dev &lt; geometry-&gt;num_devices(); dev++)
-      for (size_t i = 0; i &lt; autd::NUM_TRANS_IN_UNIT; i++) {
-        const auto dist = (geometry-&gt;position(dev, i) - this-&gt;_point).norm();
-        const auto phase = autd::core::Utilities::to_phase(dist * wavenum);
-        this-&gt;_data[dev][i] = autd::core::Utilities::pack_to_u16(0xFF, phase);
+
+  void calc(const autd::Geometry&amp; geometry) override {
+    const auto wavenum = 2.0 * M_PI / geometry.wavelength();
+    for (const auto&amp; device : geometry)
+      for (const auto&amp; transducer : device) {
+        const auto dist = (transducer.position() - this-&gt;_point).norm();
+        this-&gt;_data[transducer.id()].duty = 0xFF;
+        this-&gt;_data[transducer.id()].phase = autd::core::utils::to_phase(dist * wavenum);
       }
-  }
-  
-  private:
-    autd::Vector3 _point;
+  } 
+
+ private:
+  autd::Vector3 _point;
 };
 </code></pre>
 <p><code>Controller::send</code>関数は<code>GainPtr</code>型 (<code>shared_ptr&lt;autd::core::Gain&gt;</code>のエイリアス) を引数に取る.
@@ -330,14 +329,14 @@ class Focus final : public autd::core::Gain {
 <span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">ϕ</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:2.04633em;vertical-align:-0.686em;"></span><span class="mord">−</span><span class="mord">2</span><span class="mord mathnormal" style="margin-right:0.03588em;">π</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.36033em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">2</span><span class="mord">5</span><span class="mord">6</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">P</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:2.00744em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.32144em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">λ</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">2</span><span class="mord mathnormal" style="margin-right:0.03588em;">π</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mord">∥</span><span class="mord"><span class="mord"><span class="mord"><span class="mord boldsymbol" style="margin-right:0.03194em;">r</span></span></span></span><span class="mord">∥</span></span></span></span></span>
 とすれば良い.
 ここで, <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span></span></span></span>は振動子と焦点位置との間の距離である.</p>
-<p>SDKでは, 波長は<code>Geometry::wavelength()</code>, 振動子の位置は<code>Geometry::position()</code>で取得できる.
-<code>Geometry::position()</code>の第1引数はDeviceのインデックス, 第2引数はローカルな振動子のインデックスである.
+<p>SDKでは, 波長は<code>Geometry::wavelength()</code>, できる.
+Geometryにはイテレータが定義されており, <code>Device</code>のイテレータが返される.
+また, <code>Device</code>にもイテレータが定義されており, <code>Transducer</code>のイテレータが返され, ここから振動子の位置を取得できる.
 また, <code>autd::core::Utilities::to_phase</code>関数は, 上記の<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord"><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">r</span><span class="mord mathrm">a</span><span class="mord mathrm">d</span></span></span></span></span></span>単位の位相<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">ϕ</span></span></span></span>をSDKの内部表現<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">P</span></span></span></span>に変換するためのユーティリティ関数で, 以下のように定義されている<sup class="footnote-reference"><a href="#fn_phase">4</a></sup>.</p>
 <pre><code class="language-cpp">  inline static uint8_t to_phase(const double phase) noexcept {
     return static_cast&lt;uint8_t&gt;(static_cast&lt;int&gt;(std::round((phase / (2.0 * M_PI) + 0.5) * 256.0)) &amp; 0xFF);
   }
 </code></pre>
-<p>また, <code>autd::core::Utilities::pack_to_u16</code>はただ単に2つの<code>uint8_t</code>の値を受け取って, それぞれ<code>uint16_t</code>の値の上位/下位<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord"><span class="mord">8</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span></span></span></span></span></span>に詰めるだけのユーティリティ関数である.</p>
 <div class="footnote-definition" id="fn_backend"><sup class="footnote-definition-label">1</sup>
 <p>各自ソースコードからコンパイルする必要がある. GitHubにアップロードされているpre-built binaryには含まれていない.</p>
 </div>

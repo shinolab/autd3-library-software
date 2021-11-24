@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">1.9.2</span>
+   &#160;<span id="projectnumber">1.9.3</span>
    </div>
   </td>
  </tr>
@@ -79,18 +79,18 @@ Functions</h2></td></tr>
 <tr class="memdesc:a69e9baa6ad1677e5fd1d65d45d9eba0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert ultrasound amplitude to duty ratio.  <a href="namespaceautd_1_1core_1_1utils.html#a69e9baa6ad1677e5fd1d65d45d9eba0b">More...</a><br /></td></tr>
 <tr class="separator:a69e9baa6ad1677e5fd1d65d45d9eba0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae603c21439f05663c492a8c3c4ab281d"><td class="memItemLeft" align="right" valign="top">static uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core_1_1utils.html#ae603c21439f05663c492a8c3c4ab281d">to_phase</a> (const double phase) noexcept</td></tr>
-<tr class="memdesc:ae603c21439f05663c492a8c3c4ab281d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert phase in radian to descrete phase used in device.  <a href="namespaceautd_1_1core_1_1utils.html#ae603c21439f05663c492a8c3c4ab281d">More...</a><br /></td></tr>
+<tr class="memdesc:ae603c21439f05663c492a8c3c4ab281d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert phase in radian to discrete phase used in device.  <a href="namespaceautd_1_1core_1_1utils.html#ae603c21439f05663c492a8c3c4ab281d">More...</a><br /></td></tr>
 <tr class="separator:ae603c21439f05663c492a8c3c4ab281d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a598fc7494d31059eb0a516a745b5ab03"><td class="memItemLeft" align="right" valign="top">static uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core_1_1utils.html#a598fc7494d31059eb0a516a745b5ab03">pack_to_u16</a> (const uint8_t high, const uint8_t low) noexcept</td></tr>
 <tr class="memdesc:a598fc7494d31059eb0a516a745b5ab03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack two uint8_t value to uint16_t.  <a href="namespaceautd_1_1core_1_1utils.html#a598fc7494d31059eb0a516a745b5ab03">More...</a><br /></td></tr>
 <tr class="separator:a598fc7494d31059eb0a516a745b5ab03"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa80879cc471a0fb774b5dc4b84ad565c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core_1_1utils.html#aa80879cc471a0fb774b5dc4b84ad565c">modulo_positive</a> (int32_t i, size_t n)</td></tr>
-<tr class="memdesc:aa80879cc471a0fb774b5dc4b84ad565c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Positive modulo.  <a href="namespaceautd_1_1core_1_1utils.html#aa80879cc471a0fb774b5dc4b84ad565c">More...</a><br /></td></tr>
-<tr class="separator:aa80879cc471a0fb774b5dc4b84ad565c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85fd9512a76957cb8cb1d016a2c7a4ca"><td class="memItemLeft" align="right" valign="top">static int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core_1_1utils.html#a85fd9512a76957cb8cb1d016a2c7a4ca">modulo_positive</a> (const int32_t i, const size_t n)</td></tr>
+<tr class="memdesc:a85fd9512a76957cb8cb1d016a2c7a4ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Positive modulo.  <a href="namespaceautd_1_1core_1_1utils.html#a85fd9512a76957cb8cb1d016a2c7a4ca">More...</a><br /></td></tr>
+<tr class="separator:a85fd9512a76957cb8cb1d016a2c7a4ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="aa80879cc471a0fb774b5dc4b84ad565c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa80879cc471a0fb774b5dc4b84ad565c">&#9670;&nbsp;</a></span>modulo_positive()</h2>
+<a id="a85fd9512a76957cb8cb1d016a2c7a4ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85fd9512a76957cb8cb1d016a2c7a4ca">&#9670;&nbsp;</a></span>modulo_positive()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -99,15 +99,15 @@ Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">int autd::core::utils::modulo_positive </td>
+          <td class="memname">static int32_t autd::core::utils::modulo_positive </td>
           <td>(</td>
-          <td class="paramtype">int32_t&#160;</td>
+          <td class="paramtype">const int32_t&#160;</td>
           <td class="paramname"><em>i</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">size_t&#160;</td>
+          <td class="paramtype">const size_t&#160;</td>
           <td class="paramname"><em>n</em>&#160;</td>
         </tr>
         <tr>
@@ -118,7 +118,7 @@ Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -166,7 +166,7 @@ Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -183,14 +183,14 @@ Functions</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="core_2utils_8hpp_source.html#l00047">47</a> of file <a class="el" href="core_2utils_8hpp_source.html">utils.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="logic_8hpp_source.html#l00234">autd::core::Logic::pack_delay_offset_body()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="logic_8hpp_source.html#l00172">autd::core::Logic::pack_body()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="namespaceautd_1_1core_1_1utils_a598fc7494d31059eb0a516a745b5ab03_icgraph.png" border="0" usemap="#namespaceautd_1_1core_1_1utils_a598fc7494d31059eb0a516a745b5ab03_icgraph" alt=""/></div>
 <map name="namespaceautd_1_1core_1_1utils_a598fc7494d31059eb0a516a745b5ab03_icgraph" id="namespaceautd_1_1core_1_1utils_a598fc7494d31059eb0a516a745b5ab03_icgraph">
-<area shape="rect" title="Pack two uint8_t value to uint16_t." alt="" coords="213,5,328,47"/>
-<area shape="rect" href="classautd_1_1core_1_1Logic.html#a24661cc52f90517bf0a204ae7d0725ee" title="Pack data body to set output delay and enable." alt="" coords="5,5,165,47"/>
+<area shape="rect" title="Pack two uint8_t value to uint16_t." alt="" coords="176,5,291,47"/>
+<area shape="rect" href="classautd_1_1core_1_1Logic.html#a10ced14ce57908bab4c8690891c99694" title="Pack data body with sequence data." alt="" coords="5,5,128,47"/>
 </map>
 </div>
 
@@ -215,7 +215,7 @@ Here is the caller graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -231,7 +231,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="core_2utils_8hpp_source.html#l00026">26</a> of file <a class="el" href="core_2utils_8hpp_source.html">utils.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="modulation_8hpp_source.html#l00054">autd::core::Modulation::create()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="modulation_8hpp_source.html#l00053">autd::core::Modulation::create()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -263,23 +263,23 @@ Here is the caller graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Convert phase in radian to descrete phase used in device. </p>
+<p>Convert phase in radian to discrete phase used in device. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">phase</td><td>phase in radian </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>descrete phase </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>discrete phase </dd></dl>
 
 <p class="definition">Definition at line <a class="el" href="core_2utils_8hpp_source.html#l00036">36</a> of file <a class="el" href="core_2utils_8hpp_source.html">utils.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="hardware__defined_8hpp_source.html#l00044">autd::core::PHASE_INVERTED</a>.</p>
+<p class="reference">References <a class="el" href="hardware__defined_8hpp_source.html#l00043">autd::core::PHASE_INVERTED</a>.</p>
 
 </div>
 </div>

@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>AUTD3 Developers Manual v1.9.2</title>
+        <title>AUTD3 Developers Manual v1.9.3</title>
         <meta name="robots" content="noindex" />
         <!-- Custom HTML head -->
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
@@ -107,13 +107,13 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">AUTD3 Developers Manual v1.9.2</h1>
+                    <h1 class="menu-title">AUTD3 Developers Manual v1.9.3</h1>
 
                     <div class="right-buttons">
                         <a href="print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
-                        <a href="https://github.com/shinolab/autd3-docs" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/shinolab/autd3-library-software" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
                     </div>
@@ -754,30 +754,29 @@ cmake --install . --prefix D:\lib\openblas -v
 <h2 id="create-custom-gain-tutorial"><a class="header" href="#create-custom-gain-tutorial">Create Custom Gain Tutorial</a></h2>
 <p>By inheriting from the <code>Gain</code> class, you can create your own <code>Gain</code>.
 In this section, we will define <code>Focus</code> which generates a single focus.</p>
-<p>The essence of <code>Gain</code> is <code>vector&lt;array&lt;uint16_t, 249&gt;&gt; _data</code>, which is a <code>vector</code> of the number of devices in the array for the number of transducers of <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord"><span class="mord">1</span><span class="mord">6</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span></span></span></span></span></span> data.
-In each <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord"><span class="mord">1</span><span class="mord">6</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span></span></span></span></span></span> data, the higher <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord"><span class="mord">8</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span></span></span></span></span></span> represents the duty ratio and the lower <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord"><span class="mord">8</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span></span></span></span></span></span> represents the phase.
+<p>The essence of <code>Gain</code> is <code>vector&lt;Drive&gt; _data</code>, where <code>Drive</code> class contains phase and duty ratio of transducer.
 Below is a sample of the <code>Gain</code> that generates a single focus.</p>
 <pre><code class="language-cpp">#include &quot;autd3.hpp&quot;
 #include &quot;autd3/core/utils.hpp&quot;
 
 class Focus final : public autd::core::Gain {
  public:
-  Focus(autd::Vector3 point) : _point(point) {} 
-  
+  explicit Focus(const autd::Vector3 point) : _point(point) {}
+
   static autd::GainPtr create(autd::Vector3 point) { return std::make_shared&lt;Focus&gt;(point); }
-  
-  void calc(const autd::GeometryPtr&amp; geometry) override {
-    const auto wavenum = 2.0 * M_PI / geometry-&gt;wavelength();
-    for (size_t dev = 0; dev &lt; geometry-&gt;num_devices(); dev++)
-      for (size_t i = 0; i &lt; autd::NUM_TRANS_IN_UNIT; i++) {
-        const auto dist = (geometry-&gt;position(dev, i) - this-&gt;_point).norm();
-        const auto phase = autd::core::Utilities::to_phase(dist * wavenum);
-        this-&gt;_data[dev][i] = autd::core::Utilities::pack_to_u16(0xFF, phase);
+
+  void calc(const autd::Geometry&amp; geometry) override {
+    const auto wavenum = 2.0 * M_PI / geometry.wavelength();
+    for (const auto&amp; device : geometry)
+      for (const auto&amp; transducer : device) {
+        const auto dist = (transducer.position() - this-&gt;_point).norm();
+        this-&gt;_data[transducer.id()].duty = 0xFF;
+        this-&gt;_data[transducer.id()].phase = autd::core::utils::to_phase(dist * wavenum);
       }
   }
-  
-  private:
-    autd::Vector3 _point;
+
+ private:
+  autd::Vector3 _point;
 };
 </code></pre>
 <p><code>Controller::send</code> function takes a <code>GainPtr</code> type (an alias of <code>shared_ptr&lt;autd::core::Gain&gt;</code>) as an argument.
@@ -794,14 +793,14 @@ Therefore, the sound pressure is maximum at <span class="katex"><span class="kat
 Therefore, we have to set <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">ϕ</span></span></span></span> as,
 <span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">ϕ</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:2.04633em;vertical-align:-0.686em;"></span><span class="mord">−</span><span class="mord">2</span><span class="mord mathnormal" style="margin-right:0.03588em;">π</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.36033em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">2</span><span class="mord">5</span><span class="mord">6</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">P</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:2.00744em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.32144em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">λ</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">2</span><span class="mord mathnormal" style="margin-right:0.03588em;">π</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mord">∥</span><span class="mord"><span class="mord"><span class="mord"><span class="mord boldsymbol" style="margin-right:0.03194em;">r</span></span></span></span><span class="mord">∥</span><span class="mpunct">,</span></span></span></span></span>
 where <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span></span></span></span> is the distance between the transducer and the focal point.</p>
-<p>In SDK, you can get the wavelength by <code>Geometry::wavelength()</code> and the position of the transducer by <code>Geometry::position()</code>.
-The first argument of <code>Geometry::position()</code> is the index of the device, and the second argument is the local index of transducers.
+<p>In SDK, you can get the wavelength by <code>Geometry::wavelength()</code>.
+An iterator which returns <code>Device</code> iterator is defined for <code>Geometry</code>, and an iterator which returns <code>Transducer</code> iterator is also defined for <code>Device</code>.
+You can get transducer position from <code>Transducer</code> struct.
 The <code>autd::core::Utilities::to_phase</code> function is a utility function to convert the above phase <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">ϕ</span></span></span></span> in <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord"><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">r</span><span class="mord mathrm">a</span><span class="mord mathrm">d</span></span></span></span></span></span> to the internal representation <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">P</span></span></span></span> of SDK, defined as follows<sup class="footnote-reference"><a href="#fn_phase">3</a></sup>.</p>
 <pre><code class="language-cpp">  inline static uint8_t to_phase(const double phase) noexcept {
     return static_cast&lt;uint8_t&gt;(static_cast&lt;int&gt;(std::round((phase / (2.0 * M_PI) + 0.5) * 256.0)) &amp; 0xFF);
   }
 </code></pre>
-<p>Also, <code>autd::core::Utilities::pack_to_u16</code> is a utility function that simply takes two <code>uint8_t</code> values and packs them into the high/low <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord"><span class="mord">8</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span></span></span></span></span></span> of the <code>uint16_t</code> value.</p>
 <div class="footnote-definition" id="fn_backend"><sup class="footnote-definition-label">1</sup>
 <p>You need to compile it from the source code. It is not included in the pre-built binary uploaded to GitHub.</p>
 </div>
@@ -1074,14 +1073,18 @@ The <code>force_fan</code> flag is a flag to force the fan to start.</p>
 <p>The return value of <code>fpga_info</code> is a <code>vector</code> of <code>uint8_t</code>, where the lowest <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord"><span class="mord">1</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span></span></span></span></span></span> represents the fan state for each device.
 All other bits are 0.</p>
 <h2 id="duty-offset"><a class="header" href="#duty-offset">Duty offset</a></h2>
-<p>To change <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:-0.02778em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord text mtight"><span class="mord mtight">offset</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> (see <a href="Software/Users_Manual/gain.html#create-custom-gain-tutorial">Create Custom Gain Tutorial</a>), use the <code>set_duty_offset</code> function.
-The argument of <code>set_duty_offset</code> is a <code>vector&lt;array&lt;uint8_t, 249&gt;&gt;</code>, which is set <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:-0.02778em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord text mtight"><span class="mord mtight">offset</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> for each transducer.
+<p>To change <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:-0.02778em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord text mtight"><span class="mord mtight">offset</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> (see <a href="Software/Users_Manual/gain.html#create-custom-gain-tutorial">Create Custom Gain Tutorial</a>), use the <code>duty_offset</code> function.
 Note that only the lowest <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord"><span class="mord">1</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span></span></span></span></span></span> is used, so only <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:-0.02778em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord text mtight"><span class="mord mtight">offset</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord">0</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">1</span></span></span></span> can be used.</p>
+<pre><code class="language-cpp">  autd-&gt;delay_offset()[0][0].offset = 0; // duty offset is 0 for 0-th transducer 
+  autd-&gt;set_delay_offset();              // apply change
+</code></pre>
 <h2 id="output-delay"><a class="header" href="#output-delay">Output delay</a></h2>
 <p>SDK provides a function to delay the output of each transducer relative to the unit of <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord">2</span><span class="mord">5</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal">μ</span><span class="mord mathrm">s</span></span></span></span></span></span>.
-To do so, use the <code>set_output_delay</code> function.
-The argument is a <code>vector&lt;array&lt;uint8_t, 249&gt;&gt;</code>.
+To do so, use the <code>output_delay</code> function.
 Note that only the lower <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord"><span class="mord">7</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span></span></span></span></span></span> of the delay value is used, and so the maximum delay is <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord">2</span><span class="mord">7</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord"><span class="mord">3</span><span class="mord">.</span><span class="mord">1</span><span class="mord">7</span><span class="mord">5</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathrm">m</span><span class="mord mathrm">s</span></span></span></span></span></span>.</p>
+<pre><code class="language-cpp">  autd-&gt;delay_offset()[0][0].delay = 4;  // 4 cycle = 100 us delay in 0-th transducer
+  autd-&gt;set_delay_offset();              // apply change
+</code></pre>
 <h2 id="pauseresumestop"><a class="header" href="#pauseresumestop">pause/resume/stop</a></h2>
 <p>Call the <code>pause</code> function to pause the output.
 It can be resumed with the <code>resume</code> function.</p>
@@ -1705,35 +1708,11 @@ Also, if the check ack flag is on and the return value is greater than 0, it gua
 <tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
 <tr><td>return</td><td>int32_t</td><td>-</td><td>if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, it guarantees devices have processed data. if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, error ocurred.</td></tr>
 </tbody></table>
-<h2 id="autdsetoutputdelay-autd3capi"><a class="header" href="#autdsetoutputdelay-autd3capi">AUTDSetOutputDelay (autd3capi)</a></h2>
-<p>Set output delays. One of the send functions.
-The <code>handle</code> is the controller created by <code>AUTDCreateController</code>.
-The <code>delay</code> must be a pointer to data of length (number of devices) <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">2</span><span class="mord">4</span><span class="mord">9</span></span></span></span>.</p>
-<p>This function returns a value less than 0 if an error occurred.
-If an error occurs, you can get the error message with <code>AUTDGetLastError</code>.
-Also, if the check ack flag is on and the return value is greater than 0, it guarantees that the data has been processed by the device.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>delay</td><td>uint8_t *</td><td>in</td><td>pointer to delay data</td></tr>
-<tr><td>return</td><td>int32_t</td><td>-</td><td>if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, it guarantees devices have processed data. if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, error ocurred.</td></tr>
-</tbody></table>
-<h2 id="autdsetdutyoffset-autd3capi"><a class="header" href="#autdsetdutyoffset-autd3capi">AUTDSetDutyOffset (autd3capi)</a></h2>
-<p>Set duty offset. One of the send functions.
-The <code>handle</code> is the controller created by <code>AUTDCreateController</code>.
-The <code>offset</code> must be a pointer to data of length (number of devices) <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">2</span><span class="mord">4</span><span class="mord">9</span></span></span></span>.</p>
-<p>This function returns a value less than 0 if an error occurred.
-If an error occurs, you can get the error message with <code>AUTDGetLastError</code>.
-Also, if the check ack flag is on and the return value is greater than 0, it guarantees that the data has been processed by the device.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>offset</td><td>uint8_t *</td><td>in</td><td>pointer to duty offset data</td></tr>
-<tr><td>return</td><td>int32_t</td><td>-</td><td>if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, it guarantees devices have processed data. if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, error ocurred.</td></tr>
-</tbody></table>
 <h2 id="autdsetdelayoffset-autd3capi"><a class="header" href="#autdsetdelayoffset-autd3capi">AUTDSetDelayOffset (autd3capi)</a></h2>
 <p>Set output delays and duty offsets. 
 One of the send functions.
 The <code>handle</code> is the controller created by <code>AUTDCreateController</code>. delay,
-The <code>delay</code> and <code>offset</code> must be a pointer to data of length (number of devices) <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">2</span><span class="mord">4</span><span class="mord">9</span></span></span></span>.</p>
+The <code>delay</code> and <code>offset</code> must be a pointer to data of length (number of devices) <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">2</span><span class="mord">4</span><span class="mord">9</span></span></span></span> or nullptr.</p>
 <p>This function returns a value less than 0 if an error occurred.
 If an error occurs, you can get the error message with <code>AUTDGetLastError</code>.
 Also, if the check ack flag is on and the return value is greater than 0, it guarantees that the data has been processed by the device.</p>
@@ -1760,31 +1739,7 @@ The <code>handle</code> is the controller created by <code>AUTDCreateController<
 <tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
 <tr><td>return</td><td>int32_t</td><td>-</td><td>number of devices</td></tr>
 </tbody></table>
-<h2 id="autdnumtransducers-autd3capi"><a class="header" href="#autdnumtransducers-autd3capi">AUTDNumTransducers (autd3capi)</a></h2>
-<p>Get the total number of transducers.
-The <code>handle</code> is the controller created by <code>AUTDCreateController</code>.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>return</td><td>int32_t</td><td>-</td><td>number of transducers</td></tr>
-</tbody></table>
-<h2 id="autddeviceidxfortransidx-autd3capi"><a class="header" href="#autddeviceidxfortransidx-autd3capi">AUTDDeviceIdxForTransIdx (autd3capi)</a></h2>
-<p>Convert global transducer index to device index. </p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>global_trans_idx</td><td>int32_t</td><td>in</td><td>global transducer index</td></tr>
-<tr><td>return</td><td>int32_t</td><td>-</td><td>device index</td></tr>
-</tbody></table>
-<h2 id="autdtranspositionbyglobal-autd3capi"><a class="header" href="#autdtranspositionbyglobal-autd3capi">AUTDTransPositionByGlobal (autd3capi)</a></h2>
-<p>Get the position of transducer specified by the global transducer index.
-The <code>handle</code> is the controller created by <code>AUTDCreateController</code>.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>global_trans_idx</td><td>int32_t</td><td>in</td><td>global transducer index</td></tr>
-<tr><td>x</td><td>double*</td><td>out</td><td>x coordinate of transducer position</td></tr>
-<tr><td>y</td><td>double*</td><td>out</td><td>y coordinate of transducer position</td></tr>
-<tr><td>z</td><td>double*</td><td>out</td><td>z coordinate of transducer position</td></tr>
-<tr><td>return</td><td>void</td><td>-</td><td>nothing</td></tr>
-</tbody></table>
-<h2 id="autdtranspositionbylocal-autd3capi"><a class="header" href="#autdtranspositionbylocal-autd3capi">AUTDTransPositionByLocal (autd3capi)</a></h2>
+<h2 id="autdtransposition-autd3capi"><a class="header" href="#autdtransposition-autd3capi">AUTDTransPosition (autd3capi)</a></h2>
 <p>Get the position of transducer specified by the device index and local transducer index.
 The <code>handle</code> is the controller created by <code>AUTDCreateController</code>.</p>
 <table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
@@ -2186,32 +2141,6 @@ If an error occurs, you can get the error message with <code>AUTDGetLastError</c
 Also, if the check ack flag is on and the return value is greater than 0, it guarantees that the data has been processed by the device.</p>
 <table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
 <tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>return</td><td>int32_t</td><td>-</td><td>if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, it guarantees devices have processed data. if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, error ocurred.</td></tr>
-</tbody></table>
-<h2 id="autdsendgain-autd3capi"><a class="header" href="#autdsendgain-autd3capi">AUTDSendGain (autd3capi)</a></h2>
-<p>Send Gain.
-One of the send functions.</p>
-<p>The <code>handle</code> is the controller created by <code>AUTDCreateController</code>.</p>
-<p>If <code>check_ack</code> is true, the function waits until the data is processed by the device.</p>
-<p>This function returns a value less than 0 if an error occurred.
-If an error occurs, you can get the error message with <code>AUTDGetLastError</code>.
-Also, if the check ack flag is on and the return value is greater than 0, it guarantees that the data has been processed by the device.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>gain</td><td>void*</td><td>in</td><td>GainPtr</td></tr>
-<tr><td>return</td><td>int32_t</td><td>-</td><td>if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, it guarantees devices have processed data. if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, error ocurred.</td></tr>
-</tbody></table>
-<h2 id="autdsendmodulation-autd3capi"><a class="header" href="#autdsendmodulation-autd3capi">AUTDSendModulation (autd3capi)</a></h2>
-<p>Send Modulation. 
-One of the send functions.</p>
-<p>The <code>handle</code> is the controller created by <code>AUTDCreateController</code>.</p>
-<p>If <code>check_ack</code> is true, the function waits until the data is processed by the device.</p>
-<p>This function returns a value less than 0 if an error occurred.
-If an error occurs, you can get the error message with <code>AUTDGetLastError</code>.
-Also, if the check ack flag is on and the return value is greater than 0, it guarantees that the data has been processed by the device.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>mod</td><td>void*</td><td>in</td><td>ModulationPtr</td></tr>
 <tr><td>return</td><td>int32_t</td><td>-</td><td>if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, it guarantees devices have processed data. if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, error ocurred.</td></tr>
 </tbody></table>
 <h2 id="autdsendgainmodulation-autd3capi"><a class="header" href="#autdsendgainmodulation-autd3capi">AUTDSendGainModulation (autd3capi)</a></h2>

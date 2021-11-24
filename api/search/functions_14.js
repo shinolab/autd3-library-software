@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['y_5fdirection_523',['y_direction',['../classautd_1_1core_1_1Geometry.html#aede035fe600164b543dbd79fe90589fd',1,'autd::core::Geometry']]]
+  ['x_5fdirection_536',['x_direction',['../structautd_1_1core_1_1Device.html#a862c8220eaba8d47eeae58147ba6ec3b',1,'autd::core::Device']]]
 ];

@@ -1,4 +1,0 @@
-<map id="autd::core::Geometry::position" name="autd::core::Geometry::position">
-<area shape="rect" id="node1" title="Position of a transducer specified by id." alt="" coords="193,5,333,47"/>
-<area shape="rect" id="node2" href="$classautd_1_1core_1_1Geometry.html#af6d7b6e4d16449ee2768526cf7597bca" title="Add new device with position and rotation. Note that the transform is done with order: Translate &#45;&gt; R..." alt="" coords="5,5,145,47"/>
-</map>

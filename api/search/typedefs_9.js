@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['static_621',['Static',['../namespaceautd_1_1modulation.html#a8a17bdf32631fe7e82bb21f0178f93e2',1,'autd::modulation']]]
+  ['vector3_634',['Vector3',['../namespaceautd_1_1core.html#a9c63374b69b62da3bac7b61854db4610',1,'autd::core']]],
+  ['vector4_635',['Vector4',['../namespaceautd_1_1core.html#ae382763f8f96c50fc0603d50d1aebcdf',1,'autd::core']]]
 ];

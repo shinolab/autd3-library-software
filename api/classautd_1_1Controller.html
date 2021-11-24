@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">1.9.2</span>
+   &#160;<span id="projectnumber">1.9.3</span>
    </div>
   </td>
  </tr>
@@ -104,9 +104,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a8e40bb050081b6ae61fbc67d1f21ffd0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a8e40bb050081b6ae61fbc67d1f21ffd0">is_open</a> () const</td></tr>
 <tr class="memdesc:a8e40bb050081b6ae61fbc67d1f21ffd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verify the device is properly connected.  <a href="classautd_1_1Controller.html#a8e40bb050081b6ae61fbc67d1f21ffd0">More...</a><br /></td></tr>
 <tr class="separator:a8e40bb050081b6ae61fbc67d1f21ffd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6f171889e55badad18bbc4d102c6aae8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a6f171889e55badad18bbc4d102c6aae8">geometry</a> () noexcept</td></tr>
-<tr class="memdesc:a6f171889e55badad18bbc4d102c6aae8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Geometry of the devices.  <a href="classautd_1_1Controller.html#a6f171889e55badad18bbc4d102c6aae8">More...</a><br /></td></tr>
-<tr class="separator:a6f171889e55badad18bbc4d102c6aae8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6da6d00eb626bc1228d9eca7ee54e9cf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classautd_1_1core_1_1Geometry.html">core::Geometry</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a6da6d00eb626bc1228d9eca7ee54e9cf">geometry</a> () noexcept</td></tr>
+<tr class="memdesc:a6da6d00eb626bc1228d9eca7ee54e9cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Geometry of the devices.  <a href="classautd_1_1Controller.html#a6da6d00eb626bc1228d9eca7ee54e9cf">More...</a><br /></td></tr>
+<tr class="separator:a6da6d00eb626bc1228d9eca7ee54e9cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a199a211373779d7076bae072909c34a2"><td class="memItemLeft" align="right" valign="top">bool &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a199a211373779d7076bae072909c34a2">output_enable</a> () noexcept</td></tr>
 <tr class="memdesc:a199a211373779d7076bae072909c34a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output enable.  <a href="classautd_1_1Controller.html#a199a211373779d7076bae072909c34a2">More...</a><br /></td></tr>
 <tr class="separator:a199a211373779d7076bae072909c34a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -131,15 +131,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2d7870dbcbd93c880a06ef7429bdd747"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a2d7870dbcbd93c880a06ef7429bdd747">update_ctrl_flag</a> ()</td></tr>
 <tr class="memdesc:a2d7870dbcbd93c880a06ef7429bdd747"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update control flag.  <a href="classautd_1_1Controller.html#a2d7870dbcbd93c880a06ef7429bdd747">More...</a><br /></td></tr>
 <tr class="separator:a2d7870dbcbd93c880a06ef7429bdd747"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaf140df44fc4bccffea81effdd5aa3e0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#aaf140df44fc4bccffea81effdd5aa3e0">set_output_delay</a> (const std::vector&lt; std::array&lt; uint8_t, <a class="el" href="namespaceautd_1_1core.html#aa82844cbfc211b283de1e79193783b7c">core::NUM_TRANS_IN_UNIT</a> &gt;&gt; &amp;delay)</td></tr>
-<tr class="memdesc:aaf140df44fc4bccffea81effdd5aa3e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set output delay.  <a href="classautd_1_1Controller.html#aaf140df44fc4bccffea81effdd5aa3e0">More...</a><br /></td></tr>
-<tr class="separator:aaf140df44fc4bccffea81effdd5aa3e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa7926335a7637860772d74acde22bd5f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#aa7926335a7637860772d74acde22bd5f">set_duty_offset</a> (const std::vector&lt; std::array&lt; uint8_t, <a class="el" href="namespaceautd_1_1core.html#aa82844cbfc211b283de1e79193783b7c">core::NUM_TRANS_IN_UNIT</a> &gt;&gt; &amp;offset)</td></tr>
-<tr class="memdesc:aa7926335a7637860772d74acde22bd5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set duty offset.  <a href="classautd_1_1Controller.html#aa7926335a7637860772d74acde22bd5f">More...</a><br /></td></tr>
-<tr class="separator:aa7926335a7637860772d74acde22bd5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adbe9ed738234c45dfe743a9855cc527b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#adbe9ed738234c45dfe743a9855cc527b">set_delay_offset</a> (const std::vector&lt; std::array&lt; uint8_t, <a class="el" href="namespaceautd_1_1core.html#aa82844cbfc211b283de1e79193783b7c">core::NUM_TRANS_IN_UNIT</a> &gt;&gt; &amp;delay, const std::vector&lt; std::array&lt; uint8_t, <a class="el" href="namespaceautd_1_1core.html#aa82844cbfc211b283de1e79193783b7c">core::NUM_TRANS_IN_UNIT</a> &gt;&gt; &amp;offset)</td></tr>
-<tr class="memdesc:adbe9ed738234c45dfe743a9855cc527b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set delay and duty offset.  <a href="classautd_1_1Controller.html#adbe9ed738234c45dfe743a9855cc527b">More...</a><br /></td></tr>
-<tr class="separator:adbe9ed738234c45dfe743a9855cc527b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f70f379535f248f7bc28b0176eee337"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structautd_1_1core_1_1DelayOffset.html">core::DelayOffset</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a9f70f379535f248f7bc28b0176eee337">delay_offset</a> ()</td></tr>
+<tr class="memdesc:a9f70f379535f248f7bc28b0176eee337"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setter/Getter for delay and duty offset \detais You must call set_delay_offset function to apply the change.  <a href="classautd_1_1Controller.html#a9f70f379535f248f7bc28b0176eee337">More...</a><br /></td></tr>
+<tr class="separator:a9f70f379535f248f7bc28b0176eee337"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f97400fc1d91d298a0c7db2a4caa1a3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a0f97400fc1d91d298a0c7db2a4caa1a3">set_delay_offset</a> ()</td></tr>
+<tr class="memdesc:a0f97400fc1d91d298a0c7db2a4caa1a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set delay and duty offset data.  <a href="classautd_1_1Controller.html#a0f97400fc1d91d298a0c7db2a4caa1a3">More...</a><br /></td></tr>
+<tr class="separator:a0f97400fc1d91d298a0c7db2a4caa1a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a235d54abde6a96c9b895f32e7c37db8e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1Controller.html#a235d54abde6a96c9b895f32e7c37db8e">open</a> (<a class="el" href="namespaceautd_1_1core.html#a0200527a2a6df4631ae21d855ae8cdcf">core::LinkPtr</a> link)</td></tr>
 <tr class="memdesc:a235d54abde6a96c9b895f32e7c37db8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Open device with a link.  <a href="classautd_1_1Controller.html#a235d54abde6a96c9b895f32e7c37db8e">More...</a><br /></td></tr>
 <tr class="separator:a235d54abde6a96c9b895f32e7c37db8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -387,6 +384,25 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a9f70f379535f248f7bc28b0176eee337"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f70f379535f248f7bc28b0176eee337">&#9670;&nbsp;</a></span>delay_offset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structautd_1_1core_1_1DelayOffset.html">core::DelayOffset</a>&gt;&amp; autd::Controller::delay_offset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Setter/Getter for delay and duty offset \detais You must call set_delay_offset function to apply the change. </p>
+
+</div>
+</div>
 <a id="a849e7f81ca333c2ab447209b2f6022c4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a849e7f81ca333c2ab447209b2f6022c4">&#9670;&nbsp;</a></span>firmware_info_list()</h2>
 
@@ -455,8 +471,8 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a6f171889e55badad18bbc4d102c6aae8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6f171889e55badad18bbc4d102c6aae8">&#9670;&nbsp;</a></span>geometry()</h2>
+<a id="a6da6d00eb626bc1228d9eca7ee54e9cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6da6d00eb626bc1228d9eca7ee54e9cf">&#9670;&nbsp;</a></span>geometry()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -465,7 +481,7 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespaceautd_1_1core.html#a560e6b1cacfde1dc4a97b431c3009cd0">core::GeometryPtr</a>&amp; autd::Controller::geometry </td>
+          <td class="memname"><a class="el" href="classautd_1_1core_1_1Geometry.html">core::Geometry</a>&amp; autd::Controller::geometry </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -868,8 +884,8 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="adbe9ed738234c45dfe743a9855cc527b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adbe9ed738234c45dfe743a9855cc527b">&#9670;&nbsp;</a></span>set_delay_offset()</h2>
+<a id="a0f97400fc1d91d298a0c7db2a4caa1a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f97400fc1d91d298a0c7db2a4caa1a3">&#9670;&nbsp;</a></span>set_delay_offset()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -877,85 +893,13 @@ Static Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">bool autd::Controller::set_delay_offset </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; std::array&lt; uint8_t, <a class="el" href="namespaceautd_1_1core.html#aa82844cbfc211b283de1e79193783b7c">core::NUM_TRANS_IN_UNIT</a> &gt;&gt; &amp;&#160;</td>
-          <td class="paramname"><em>delay</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::vector&lt; std::array&lt; uint8_t, <a class="el" href="namespaceautd_1_1core.html#aa82844cbfc211b283de1e79193783b7c">core::NUM_TRANS_IN_UNIT</a> &gt;&gt; &amp;&#160;</td>
-          <td class="paramname"><em>offset</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Set delay and duty offset. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">delay</td><td>delay for each transducer in units of ultrasound period (i.e. 25us) in 7bit. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">offset</td><td>duty offset for each transducers (only the lowest 1 bit will be used) </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>if this function returns true and check_ack is true, it guarantees that the devices have processed the data. </dd></dl>
-
-</div>
-</div>
-<a id="aa7926335a7637860772d74acde22bd5f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa7926335a7637860772d74acde22bd5f">&#9670;&nbsp;</a></span>set_duty_offset()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool autd::Controller::set_duty_offset </td>
-          <td>(</td>
-          <td class="paramtype">const std::vector&lt; std::array&lt; uint8_t, <a class="el" href="namespaceautd_1_1core.html#aa82844cbfc211b283de1e79193783b7c">core::NUM_TRANS_IN_UNIT</a> &gt;&gt; &amp;&#160;</td>
-          <td class="paramname"><em>offset</em></td><td>)</td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Set duty offset. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">offset</td><td>duty offset for each transducers (only the lowest 1 bit will be used) </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>if this function returns true and check_ack is true, it guarantees that the devices have processed the data. </dd></dl>
-
-</div>
-</div>
-<a id="aaf140df44fc4bccffea81effdd5aa3e0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaf140df44fc4bccffea81effdd5aa3e0">&#9670;&nbsp;</a></span>set_output_delay()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool autd::Controller::set_output_delay </td>
-          <td>(</td>
-          <td class="paramtype">const std::vector&lt; std::array&lt; uint8_t, <a class="el" href="namespaceautd_1_1core.html#aa82844cbfc211b283de1e79193783b7c">core::NUM_TRANS_IN_UNIT</a> &gt;&gt; &amp;&#160;</td>
-          <td class="paramname"><em>delay</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Set output delay. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">delay</td><td>delay for each transducer in units of ultrasound period (i.e. 25us) in 7bit. </td></tr>
-  </table>
-  </dd>
-</dl>
+<p>Set delay and duty offset data. </p>
 <dl class="section return"><dt>Returns</dt><dd>if this function returns true and check_ack is true, it guarantees that the devices have processed the data. </dd></dl>
 
 </div>

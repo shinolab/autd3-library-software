@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">1.9.2</span>
+   &#160;<span id="projectnumber">1.9.3</span>
    </div>
   </td>
  </tr>
@@ -75,7 +75,7 @@ $(function() {
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">// Created Date: 11/05/2021</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">// Author: Shun Suzuki</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">// -----</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">// Last Modified: 03/09/2021</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">// Last Modified: 21/11/2021</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment">// -----</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">// Copyright (c) 2021 Hapis Lab. All rights reserved.</span></div>
@@ -114,7 +114,7 @@ $(function() {
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="comment">  /**</span></div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment">   * @brief  Read data from devices</span></div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="comment">   */</span></div>
-<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="classautd_1_1core_1_1Link.html#afaec14875ff26c9340020409b42101b0">   45</a></span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classautd_1_1core_1_1Link.html#afaec14875ff26c9340020409b42101b0">read</a>(uint8_t* rx, <span class="keywordtype">size_t</span> buffer_len) = 0;</div>
+<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="classautd_1_1core_1_1Link.html#ad9910b1e81caaf47130ca3cff6ce9472">   45</a></span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classautd_1_1core_1_1Link.html#ad9910b1e81caaf47130ca3cff6ce9472">receive</a>(uint8_t* rx, <span class="keywordtype">size_t</span> buffer_len) = 0;</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
 <div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="classautd_1_1core_1_1Link.html#abe338562e71400116c31be83852e0dd5">   47</a></span>&#160;  [[nodiscard]] <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classautd_1_1core_1_1Link.html#abe338562e71400116c31be83852e0dd5">is_open</a>() = 0;</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;};</div>
@@ -123,6 +123,7 @@ $(function() {
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;}  <span class="comment">// namespace autd::core</span></div>
 </div><!-- fragment --></div><!-- contents -->
+<div class="ttc" id="aclassautd_1_1core_1_1Link_html_ad9910b1e81caaf47130ca3cff6ce9472"><div class="ttname"><a href="classautd_1_1core_1_1Link.html#ad9910b1e81caaf47130ca3cff6ce9472">autd::core::Link::receive</a></div><div class="ttdeci">virtual void receive(uint8_t *rx, size_t buffer_len)=0</div><div class="ttdoc">Read data from devices.</div></div>
 <div class="ttc" id="aclassautd_1_1core_1_1Link_html_a47fcf6d547dd439bc1dedda36a5dbde9"><div class="ttname"><a href="classautd_1_1core_1_1Link.html#a47fcf6d547dd439bc1dedda36a5dbde9">autd::core::Link::operator=</a></div><div class="ttdeci">Link &amp; operator=(const Link &amp;obj)=delete</div></div>
 <div class="ttc" id="aclassautd_1_1core_1_1Link_html_abab4352b8f6e32951e495b6c8bd90beb"><div class="ttname"><a href="classautd_1_1core_1_1Link.html#abab4352b8f6e32951e495b6c8bd90beb">autd::core::Link::send</a></div><div class="ttdeci">virtual void send(const uint8_t *buf, size_t size)=0</div><div class="ttdoc">Send data to devices.</div></div>
 <div class="ttc" id="aclassautd_1_1core_1_1Link_html_abe338562e71400116c31be83852e0dd5"><div class="ttname"><a href="classautd_1_1core_1_1Link.html#abe338562e71400116c31be83852e0dd5">autd::core::Link::is_open</a></div><div class="ttdeci">virtual bool is_open()=0</div></div>
@@ -131,7 +132,6 @@ $(function() {
 <div class="ttc" id="aclassautd_1_1core_1_1Link_html_aa5f1eae6e7a66c91f90c4297d7edc6de"><div class="ttname"><a href="classautd_1_1core_1_1Link.html#aa5f1eae6e7a66c91f90c4297d7edc6de">autd::core::Link::Link</a></div><div class="ttdeci">Link()=default</div></div>
 <div class="ttc" id="aclassautd_1_1core_1_1Link_html_a5c0ebad0a687cf90c56a84feaa510627"><div class="ttname"><a href="classautd_1_1core_1_1Link.html#a5c0ebad0a687cf90c56a84feaa510627">autd::core::Link::~Link</a></div><div class="ttdeci">virtual ~Link()=default</div></div>
 <div class="ttc" id="aclassautd_1_1core_1_1Link_html_a231479700b8b5fb37fbedce2bc0044d6"><div class="ttname"><a href="classautd_1_1core_1_1Link.html#a231479700b8b5fb37fbedce2bc0044d6">autd::core::Link::operator=</a></div><div class="ttdeci">Link &amp; operator=(Link &amp;&amp;obj)=default</div></div>
-<div class="ttc" id="aclassautd_1_1core_1_1Link_html_afaec14875ff26c9340020409b42101b0"><div class="ttname"><a href="classautd_1_1core_1_1Link.html#afaec14875ff26c9340020409b42101b0">autd::core::Link::read</a></div><div class="ttdeci">virtual void read(uint8_t *rx, size_t buffer_len)=0</div><div class="ttdoc">Read data from devices.</div></div>
 <div class="ttc" id="anamespaceautd_1_1core_html"><div class="ttname"><a href="namespaceautd_1_1core.html">autd::core</a></div><div class="ttdef"><b>Definition:</b> <a href="ec__config_8hpp_source.html#l00017">ec_config.hpp:17</a></div></div>
 <div class="ttc" id="aclassautd_1_1core_1_1Link_html_a92aedf7012bd8db61b843a03f4aff6f4"><div class="ttname"><a href="classautd_1_1core_1_1Link.html#a92aedf7012bd8db61b843a03f4aff6f4">autd::core::Link::close</a></div><div class="ttdeci">virtual void close()=0</div><div class="ttdoc">Close link.</div></div>
 <div class="ttc" id="anamespaceautd_1_1core_html_a0200527a2a6df4631ae21d855ae8cdcf"><div class="ttname"><a href="namespaceautd_1_1core.html#a0200527a2a6df4631ae21d855ae8cdcf">autd::core::LinkPtr</a></div><div class="ttdeci">std::unique_ptr&lt; Link &gt; LinkPtr</div><div class="ttdef"><b>Definition:</b> <a href="link_8hpp_source.html#l00050">link.hpp:50</a></div></div>

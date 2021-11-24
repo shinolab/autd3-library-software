@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['y_5fdirection_602',['y_direction',['../structautd_1_1core_1_1Device.html#a94919ebb2751ffc28e2f32545f4f08ff',1,'autd::core::Device']]]
+  ['zero_618',['ZERO',['../namespaceautd_1_1gain_1_1holo.html#aa8dd1ce0d689b7df5b6f598f69bbb895',1,'autd::gain::holo']]]
 ];

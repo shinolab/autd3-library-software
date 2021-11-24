@@ -1,4 +1,7 @@
 <map id="autd::core::Geometry::num_devices" name="autd::core::Geometry::num_devices">
-<area shape="rect" id="node1" title="Number of devices." alt="" coords="193,5,333,47"/>
-<area shape="rect" id="node2" href="$classautd_1_1core_1_1Geometry.html#ad2da7e9abff6eb7914bd5e1e07b15cff" title="Number of transducers." alt="" coords="5,5,145,47"/>
+<area shape="rect" id="node1" title="Number of devices." alt="" coords="588,27,728,69"/>
+<area shape="rect" id="node2" href="$classautd_1_1core_1_1Geometry.html#ad2da7e9abff6eb7914bd5e1e07b15cff" title="Number of transducers." alt="" coords="400,27,540,69"/>
+<area shape="rect" id="node3" href="$classautd_1_1core_1_1Gain.html#a541ed3df20cd46883b4adb83c49fe6e8" title="Initialize data and call calc()." alt="" coords="208,5,352,32"/>
+<area shape="rect" id="node5" href="$classautd_1_1core_1_1Logic.html#a10ced14ce57908bab4c8690891c99694" title="Pack data body with sequence data." alt="" coords="219,57,341,98"/>
+<area shape="rect" id="node4" href="$classautd_1_1core_1_1Gain.html#a4de33768d1e007ce4246bafd661791b3" title="Re&#45;calculate duty ratio and phase of each transducer." alt="" coords="5,5,160,32"/>
 </map>

@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">1.9.2</span>
+   &#160;<span id="projectnumber">1.9.3</span>
    </div>
   </td>
  </tr>
@@ -121,9 +121,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a40c18a49612ba7ab8b3a8b7c6b1bfd02"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1link_1_1SOEM.html#a40c18a49612ba7ab8b3a8b7c6b1bfd02">send</a> (const uint8_t *buf, size_t size) override=0</td></tr>
 <tr class="memdesc:a40c18a49612ba7ab8b3a8b7c6b1bfd02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send data to devices.  <a href="classautd_1_1link_1_1SOEM.html#a40c18a49612ba7ab8b3a8b7c6b1bfd02">More...</a><br /></td></tr>
 <tr class="separator:a40c18a49612ba7ab8b3a8b7c6b1bfd02"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a856175ab80903a2077180ae16f08abe8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1link_1_1SOEM.html#a856175ab80903a2077180ae16f08abe8">read</a> (uint8_t *rx, size_t buffer_len) override=0</td></tr>
-<tr class="memdesc:a856175ab80903a2077180ae16f08abe8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read data from devices.  <a href="classautd_1_1link_1_1SOEM.html#a856175ab80903a2077180ae16f08abe8">More...</a><br /></td></tr>
-<tr class="separator:a856175ab80903a2077180ae16f08abe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03c94166a293a6c06ceeb31b22560128"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1link_1_1SOEM.html#a03c94166a293a6c06ceeb31b22560128">receive</a> (uint8_t *rx, size_t buffer_len) override=0</td></tr>
+<tr class="memdesc:a03c94166a293a6c06ceeb31b22560128"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read data from devices.  <a href="classautd_1_1link_1_1SOEM.html#a03c94166a293a6c06ceeb31b22560128">More...</a><br /></td></tr>
+<tr class="separator:a03c94166a293a6c06ceeb31b22560128"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe8971627703d8432ee88d79499f3489"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1link_1_1SOEM.html#abe8971627703d8432ee88d79499f3489">on_lost</a> (std::function&lt; void(std::string)&gt; callback)=0</td></tr>
 <tr class="separator:abe8971627703d8432ee88d79499f3489"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8994910af86a8e32b5584e598653e182"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1link_1_1SOEM.html#a8994910af86a8e32b5584e598653e182">is_open</a> () override=0</td></tr>
@@ -337,7 +337,7 @@ Static Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<p>Available Network interface names are obtained by EnumerateAdapters(). The numbers of connected devices is obtained by Geometry::num_devices(). </p>
+<p>Available Network interface names are obtained by EnumerateAdapters(). The numbers of connected devices is obtained by <a class="el" href="classautd_1_1core_1_1Geometry.html#aa59d69f347e9fb2bedbbd73bda36b4e9" title="Number of devices.">Geometry::num_devices()</a>. </p>
 
 </div>
 </div>
@@ -502,8 +502,8 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a856175ab80903a2077180ae16f08abe8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a856175ab80903a2077180ae16f08abe8">&#9670;&nbsp;</a></span>read()</h2>
+<a id="a03c94166a293a6c06ceeb31b22560128"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03c94166a293a6c06ceeb31b22560128">&#9670;&nbsp;</a></span>receive()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -512,7 +512,7 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void autd::link::SOEM::read </td>
+          <td class="memname">void autd::link::SOEM::receive </td>
           <td>(</td>
           <td class="paramtype">uint8_t *&#160;</td>
           <td class="paramname"><em>rx</em>, </td>
@@ -538,7 +538,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Read data from devices. </p>
 
-<p>Implements <a class="el" href="classautd_1_1core_1_1Link.html#afaec14875ff26c9340020409b42101b0">autd::core::Link</a>.</p>
+<p>Implements <a class="el" href="classautd_1_1core_1_1Link.html#ad9910b1e81caaf47130ca3cff6ce9472">autd::core::Link</a>.</p>
 
 </div>
 </div>

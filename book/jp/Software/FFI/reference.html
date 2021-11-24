@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>C API Reference - AUTD3 Developers Manual v1.9.2</title>
+        <title>C API Reference - AUTD3 Developers Manual v1.9.3</title>
         <!-- Custom HTML head -->
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
@@ -106,13 +106,13 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">AUTD3 Developers Manual v1.9.2</h1>
+                    <h1 class="menu-title">AUTD3 Developers Manual v1.9.3</h1>
 
                     <div class="right-buttons">
                         <a href="../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
-                        <a href="https://github.com/shinolab/autd3-docs" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/shinolab/autd3-library-software" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
                     </div>
@@ -375,36 +375,10 @@ handleは<code>AUTDCreateController</code>で作成したものを使う.</p>
 <tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
 <tr><td>return</td><td>int32_t</td><td>-</td><td>if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, it guarantees devices have processed data. if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, error ocurred.</td></tr>
 </tbody></table>
-<h2 id="autdsetoutputdelay-autd3capi"><a class="header" href="#autdsetoutputdelay-autd3capi">AUTDSetOutputDelay (autd3capi)</a></h2>
-<p>Output delayを設定する. send functionの.
-handleは<code>AUTDCreateController</code>で作成したものを使う.
-delayは(Deviceの台数)<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">2</span><span class="mord">4</span><span class="mord">9</span></span></span></span>の長さのデータへのポインタである必要がある.</p>
-<p>この関数はエラーが発生した場合に0未満の値を返す.
-エラーが生じた場合には<code>AUTDGetLastError</code>でエラーメッセージを取得できる.
-また, check ackフラグがOn, かつ, 返り値が0より大きい場合は,
-データが実際のデバイスで処理されたことを保証する.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>delay</td><td>uint8_t *</td><td>in</td><td>pointer to delay data</td></tr>
-<tr><td>return</td><td>int32_t</td><td>-</td><td>if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, it guarantees devices have processed data. if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, error ocurred.</td></tr>
-</tbody></table>
-<h2 id="autdsetdutyoffset-autd3capi"><a class="header" href="#autdsetdutyoffset-autd3capi">AUTDSetDutyOffset (autd3capi)</a></h2>
-<p>Duty offsetを設定する. send functionの一つ.
-handleは<code>AUTDCreateController</code>で作成したものを使う.
-offsetは(Deviceの台数)<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">2</span><span class="mord">4</span><span class="mord">9</span></span></span></span>の長さのデータへのポインタである必要がある.</p>
-<p>この関数はエラーが発生した場合に0未満の値を返す.
-エラーが生じた場合には<code>AUTDGetLastError</code>でエラーメッセージを取得できる.
-また,check ackフラグがOn, かつ, 返り値が0より大きい場合は,
-データが実際のデバイスで処理されたことを保証する.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>offset</td><td>uint8_t *</td><td>in</td><td>pointer to duty offset data</td></tr>
-<tr><td>return</td><td>int32_t</td><td>-</td><td>if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, it guarantees devices have processed data. if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, error ocurred.</td></tr>
-</tbody></table>
 <h2 id="autdsetdelayoffset-autd3capi"><a class="header" href="#autdsetdelayoffset-autd3capi">AUTDSetDelayOffset (autd3capi)</a></h2>
 <p>Output delayとDuty offsetを設定する. send functionの一つ..
 handleは<code>AUTDCreateController</code>で作成したものを使う. delay,
-offsetは(Deviceの台数)<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">2</span><span class="mord">4</span><span class="mord">9</span></span></span></span>の長さのデータへのポインタである必要がある.</p>
+offsetは(Deviceの台数)<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">2</span><span class="mord">4</span><span class="mord">9</span></span></span></span>の長さのデータへのポインタまたはnullptrである必要がある.</p>
 <p>この関数はエラーが発生した場合に0未満の値を返す.
 エラーが生じた場合には<code>AUTDGetLastError</code>でエラーメッセージを取得できる.
 また,check ackフラグがOn, かつ, 返り値が0より大きい場合は,
@@ -434,32 +408,7 @@ handleは<code>AUTDCreateController</code>で作成したものを使う.</p>
 <tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
 <tr><td>return</td><td>int32_t</td><td>-</td><td>number of devices</td></tr>
 </tbody></table>
-<h2 id="autdnumtransducers-autd3capi"><a class="header" href="#autdnumtransducers-autd3capi">AUTDNumTransducers (autd3capi)</a></h2>
-<p>振動子の総数を取得する.
-handleは<code>AUTDCreateController</code>で作成したものを使う.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>return</td><td>int32_t</td><td>-</td><td>number of transducers</td></tr>
-</tbody></table>
-<h2 id="autddeviceidxfortransidx-autd3capi"><a class="header" href="#autddeviceidxfortransidx-autd3capi">AUTDDeviceIdxForTransIdx (autd3capi)</a></h2>
-<p>グローバルな振動子のインデックスをDeviceのインデックスに変換する.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>global_trans_idx</td><td>int32_t</td><td>in</td><td>global transducer index</td></tr>
-<tr><td>return</td><td>int32_t</td><td>-</td><td>device index</td></tr>
-</tbody></table>
-<h2 id="autdtranspositionbyglobal-autd3capi"><a class="header" href="#autdtranspositionbyglobal-autd3capi">AUTDTransPositionByGlobal (autd3capi)</a></h2>
-<p>指定した振動子の位置を取得する.
-振動子の指定はグローバルなインデックスでおこなう.
-handleは<code>AUTDCreateController</code>で作成したものを使う.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>global_trans_idx</td><td>int32_t</td><td>in</td><td>global transducer index</td></tr>
-<tr><td>x</td><td>double*</td><td>out</td><td>x coordinate of transducer position</td></tr>
-<tr><td>y</td><td>double*</td><td>out</td><td>y coordinate of transducer position</td></tr>
-<tr><td>z</td><td>double*</td><td>out</td><td>z coordinate of transducer position</td></tr>
-<tr><td>return</td><td>void</td><td>-</td><td>nothing</td></tr>
-</tbody></table>
-<h2 id="autdtranspositionbylocal-autd3capi"><a class="header" href="#autdtranspositionbylocal-autd3capi">AUTDTransPositionByLocal (autd3capi)</a></h2>
+<h2 id="autdtransposition-autd3capi"><a class="header" href="#autdtransposition-autd3capi">AUTDTransPosition (autd3capi)</a></h2>
 <p>指定した振動子の位置を取得する.
 振動子の指定はデバイスのインデックスとローカルの振動子インデックスでおこなう.
 handleは<code>AUTDCreateController</code>で作成したものを使う.</p>
@@ -863,34 +812,6 @@ falseの場合には<code>AUTDGetLastError</code>でエラーメッセージを�
 データが実際のデバイスで処理されたことを保証する.</p>
 <table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
 <tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>return</td><td>int32_t</td><td>-</td><td>if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, it guarantees devices have processed data. if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, error ocurred.</td></tr>
-</tbody></table>
-<h2 id="autdsendgain-autd3capi"><a class="header" href="#autdsendgain-autd3capi">AUTDSendGain (autd3capi)</a></h2>
-<p>Gainを送信する.send functionの一つ.</p>
-<p><code>handle</code>には<code>AUTDCreateController</code>で作成したControllerを使用する.</p>
-<p><code>check_ack</code>がtrueの場合は,
-この関数はデータが実際のデバイスで処理されるまで待機する.</p>
-<p>この関数はエラーが発生した場合に0未満の値を返す.
-エラーが生じた場合には<code>AUTDGetLastError</code>でエラーメッセージを取得できる.
-また,check ackフラグがOn, かつ, 返り値が0より大きい場合は,
-データが実際のデバイスで処理されたことを保証する.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>gain</td><td>void*</td><td>in</td><td>GainPtr</td></tr>
-<tr><td>return</td><td>int32_t</td><td>-</td><td>if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, it guarantees devices have processed data. if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, error ocurred.</td></tr>
-</tbody></table>
-<h2 id="autdsendmodulation-autd3capi"><a class="header" href="#autdsendmodulation-autd3capi">AUTDSendModulation (autd3capi)</a></h2>
-<p>Modulationを送信する. send functionの一つ.</p>
-<p><code>handle</code>には<code>AUTDCreateController</code>で作成したControllerを使用する.</p>
-<p><code>check_ack</code>がtrueの場合は,
-この関数はデータが実際のデバイスで処理されるまで待機する.</p>
-<p>この関数はエラーが発生した場合に0未満の値を返す.
-エラーが生じた場合には<code>AUTDGetLastError</code>でエラーメッセージを取得できる.
-また,check ackフラグがOn, かつ, 返り値が0より大きい場合は,
-データが実際のデバイスで処理されたことを保証する.</p>
-<table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
-<tr><td>handle</td><td>void*</td><td>in</td><td>ControllerPtr</td></tr>
-<tr><td>mod</td><td>void*</td><td>in</td><td>ModulationPtr</td></tr>
 <tr><td>return</td><td>int32_t</td><td>-</td><td>if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, it guarantees devices have processed data. if <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>, error ocurred.</td></tr>
 </tbody></table>
 <h2 id="autdsendgainmodulation-autd3capi"><a class="header" href="#autdsendgainmodulation-autd3capi">AUTDSendGainModulation (autd3capi)</a></h2>

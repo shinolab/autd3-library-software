@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['matrix4x4_615',['Matrix4X4',['../namespaceautd_1_1core.html#a4ec75a6a23b4aca19a6fb42f8afe55da',1,'autd::core']]],
-  ['modulationptr_616',['ModulationPtr',['../namespaceautd_1_1core.html#aa9fb70cafbef0bcbc7726f109558efef',1,'autd::core']]]
+  ['null_629',['Null',['../namespaceautd_1_1gain.html#a82292bcd00ebefe960c37aaca005c4ba',1,'autd::gain']]]
 ];

@@ -1,0 +1,6 @@
+<map id="autd::core::Logic::pack_body" name="autd::core::Logic::pack_body">
+<area shape="rect" id="node1" title="Pack data body with sequence data." alt="" coords="5,39,128,80"/>
+<area shape="rect" id="node2" href="$classautd_1_1core_1_1Geometry.html#ad2da7e9abff6eb7914bd5e1e07b15cff" title="Number of transducers." alt="" coords="176,5,316,47"/>
+<area shape="rect" id="node4" href="$namespaceautd_1_1core_1_1utils.html#a598fc7494d31059eb0a516a745b5ab03" title="Pack two uint8_t value to uint16_t." alt="" coords="189,71,303,112"/>
+<area shape="rect" id="node3" href="$classautd_1_1core_1_1Geometry.html#aa59d69f347e9fb2bedbbd73bda36b4e9" title="Number of devices." alt="" coords="364,5,504,47"/>
+</map>

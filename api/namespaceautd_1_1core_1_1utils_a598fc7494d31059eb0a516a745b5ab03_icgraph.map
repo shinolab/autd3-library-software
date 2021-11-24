@@ -1,4 +1,4 @@
 <map id="autd::core::utils::pack_to_u16" name="autd::core::utils::pack_to_u16">
-<area shape="rect" id="node1" title="Pack two uint8_t value to uint16_t." alt="" coords="213,5,328,47"/>
-<area shape="rect" id="node2" href="$classautd_1_1core_1_1Logic.html#a24661cc52f90517bf0a204ae7d0725ee" title="Pack data body to set output delay and enable." alt="" coords="5,5,165,47"/>
+<area shape="rect" id="node1" title="Pack two uint8_t value to uint16_t." alt="" coords="176,5,291,47"/>
+<area shape="rect" id="node2" href="$classautd_1_1core_1_1Logic.html#a10ced14ce57908bab4c8690891c99694" title="Pack data body with sequence data." alt="" coords="5,5,128,47"/>
 </map>

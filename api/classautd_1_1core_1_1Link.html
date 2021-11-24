@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">1.9.2</span>
+   &#160;<span id="projectnumber">1.9.3</span>
    </div>
   </td>
  </tr>
@@ -114,9 +114,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:abab4352b8f6e32951e495b6c8bd90beb"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Link.html#abab4352b8f6e32951e495b6c8bd90beb">send</a> (const uint8_t *buf, size_t size)=0</td></tr>
 <tr class="memdesc:abab4352b8f6e32951e495b6c8bd90beb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send data to devices.  <a href="classautd_1_1core_1_1Link.html#abab4352b8f6e32951e495b6c8bd90beb">More...</a><br /></td></tr>
 <tr class="separator:abab4352b8f6e32951e495b6c8bd90beb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afaec14875ff26c9340020409b42101b0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Link.html#afaec14875ff26c9340020409b42101b0">read</a> (uint8_t *rx, size_t buffer_len)=0</td></tr>
-<tr class="memdesc:afaec14875ff26c9340020409b42101b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read data from devices.  <a href="classautd_1_1core_1_1Link.html#afaec14875ff26c9340020409b42101b0">More...</a><br /></td></tr>
-<tr class="separator:afaec14875ff26c9340020409b42101b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9910b1e81caaf47130ca3cff6ce9472"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Link.html#ad9910b1e81caaf47130ca3cff6ce9472">receive</a> (uint8_t *rx, size_t buffer_len)=0</td></tr>
+<tr class="memdesc:ad9910b1e81caaf47130ca3cff6ce9472"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read data from devices.  <a href="classautd_1_1core_1_1Link.html#ad9910b1e81caaf47130ca3cff6ce9472">More...</a><br /></td></tr>
+<tr class="separator:ad9910b1e81caaf47130ca3cff6ce9472"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe338562e71400116c31be83852e0dd5"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1Link.html#abe338562e71400116c31be83852e0dd5">is_open</a> ()=0</td></tr>
 <tr class="separator:abe338562e71400116c31be83852e0dd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -365,8 +365,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="afaec14875ff26c9340020409b42101b0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afaec14875ff26c9340020409b42101b0">&#9670;&nbsp;</a></span>read()</h2>
+<a id="ad9910b1e81caaf47130ca3cff6ce9472"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9910b1e81caaf47130ca3cff6ce9472">&#9670;&nbsp;</a></span>receive()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -375,7 +375,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void autd::core::Link::read </td>
+          <td class="memname">virtual void autd::core::Link::receive </td>
           <td>(</td>
           <td class="paramtype">uint8_t *&#160;</td>
           <td class="paramname"><em>rx</em>, </td>
@@ -401,7 +401,7 @@ Public Member Functions</h2></td></tr>
 
 <p>Read data from devices. </p>
 
-<p>Implemented in <a class="el" href="classautd_1_1link_1_1SOEM.html#a856175ab80903a2077180ae16f08abe8">autd::link::SOEM</a>, <a class="el" href="classautd_1_1link_1_1Emulator.html#ab07175c6efd680f55a17300cbb213dcc">autd::link::Emulator</a>, <a class="el" href="classautd_1_1link_1_1RemoteTwinCAT.html#a95ce7e9285a5a17c9b5b15e5f4e86914">autd::link::RemoteTwinCAT</a>, and <a class="el" href="classautd_1_1link_1_1TwinCAT.html#aadf9e07c0465fb97e4538510299c40bd">autd::link::TwinCAT</a>.</p>
+<p>Implemented in <a class="el" href="classautd_1_1link_1_1SOEM.html#a03c94166a293a6c06ceeb31b22560128">autd::link::SOEM</a>, <a class="el" href="classautd_1_1link_1_1Emulator.html#abc21613011f9d90f1e5c8824a9d07a9b">autd::link::Emulator</a>, <a class="el" href="classautd_1_1link_1_1RemoteTwinCAT.html#aa027d63aaab9d541d00d63eecc766257">autd::link::RemoteTwinCAT</a>, and <a class="el" href="classautd_1_1link_1_1TwinCAT.html#a95c9c62b122631da9d733ba32fd5ff41">autd::link::TwinCAT</a>.</p>
 
 </div>
 </div>
