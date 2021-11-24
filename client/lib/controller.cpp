@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/11/2021
+// Last Modified: 24/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -159,10 +159,9 @@ bool Controller::send(const core::ModulationPtr& mod) {
 bool Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod) {
   core::GainPtr g = gain;
 
-  if (mod != nullptr) {
-    mod->sent() = 0;
-    mod->build();
-  }
+  size_t mod_sent = 0;
+  if (mod != nullptr) mod->build();
+
   if (g != nullptr) {
     this->_props._output_enable = true;
     this->_props._op_mode = core::OP_MODE_NORMAL;
@@ -170,39 +169,35 @@ bool Controller::send(const core::GainPtr& gain, const core::ModulationPtr& mod)
   }
 
   while (true) {
-    const auto msg_id = core::Logic::pack_header(mod, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag(), &this->_tx_buf[0]);
+    const auto msg_id = core::Logic::pack_header(mod, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag(), &this->_tx_buf[0], &mod_sent);
     const auto size = core::Logic::pack_body(g, &this->_tx_buf[0]);
     this->_link->send(&this->_tx_buf[0], size);
     if (!wait_msg_processed(msg_id)) return false;
-    if (mod == nullptr || mod->is_finished()) return true;
+    if (mod == nullptr || mod_sent >= mod->buffer().size()) return true;
     g = nullptr;
   }
 }
 
 bool Controller::send(const core::PointSequencePtr& seq, const core::ModulationPtr& mod) {
-  if (mod != nullptr) {
-    mod->sent() = 0;
-    mod->build();
-  }
+  size_t mod_sent = 0;
+  if (mod != nullptr) mod->build();
 
   this->_props._output_enable = true;
   this->_props._op_mode = core::OP_MODE_SEQ;
   this->_props._seq_mode = core::SEQ_MODE_POINT;
 
   while (true) {
-    const auto msg_id = core::Logic::pack_header(mod, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag(), &this->_tx_buf[0]);
+    const auto msg_id = core::Logic::pack_header(mod, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag(), &this->_tx_buf[0], &mod_sent);
     const auto size = core::Logic::pack_body(seq, this->_geometry, &this->_tx_buf[0]);
     this->_link->send(&this->_tx_buf[0], size);
     if (!wait_msg_processed(msg_id)) return false;
-    if ((seq == nullptr || seq->is_finished()) && (mod == nullptr || mod->is_finished())) return true;
+    if ((seq == nullptr || seq->is_finished()) && (mod == nullptr || mod_sent >= mod->buffer().size())) return true;
   }
 }
 
 bool Controller::send(const core::GainSequencePtr& seq, const core::ModulationPtr& mod) {
-  if (mod != nullptr) {
-    mod->sent() = 0;
-    mod->build();
-  }
+  size_t mod_sent = 0;
+  if (mod != nullptr) mod->build();
 
   for (auto&& g : seq->gains()) g->build(this->_geometry);
 
@@ -211,11 +206,11 @@ bool Controller::send(const core::GainSequencePtr& seq, const core::ModulationPt
   this->_props._seq_mode = core::SEQ_MODE_GAIN;
 
   while (true) {
-    const auto msg_id = core::Logic::pack_header(mod, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag(), &this->_tx_buf[0]);
+    const auto msg_id = core::Logic::pack_header(mod, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag(), &this->_tx_buf[0], &mod_sent);
     const auto size = core::Logic::pack_body(seq, this->_geometry, &this->_tx_buf[0]);
     this->_link->send(&this->_tx_buf[0], size);
     if (!wait_msg_processed(msg_id)) return false;
-    if ((seq == nullptr || seq->is_finished()) && (mod == nullptr || mod->is_finished())) return true;
+    if ((seq == nullptr || seq->is_finished()) && (mod == nullptr || mod_sent >= mod->buffer().size())) return true;
   }
 }
 
@@ -291,7 +286,8 @@ void Controller::STMController::add_gain(const core::GainPtr& gain) const {
   gain->build(this->_p_cnt->_geometry);
 
   auto build_buf = std::make_unique<uint8_t[]>(this->_p_cnt->_geometry.num_devices() * core::EC_OUTPUT_FRAME_SIZE);
-  core::Logic::pack_header(nullptr, this->_p_cnt->_props.fpga_ctrl_flag() | core::OUTPUT_ENABLE, this->_p_cnt->_props.cpu_ctrl_flag(), &build_buf[0]);
+  const uint8_t msg_id = core::Logic::get_id();
+  core::Logic::pack_header(msg_id, this->_p_cnt->_props.fpga_ctrl_flag() | core::OUTPUT_ENABLE, this->_p_cnt->_props.cpu_ctrl_flag(), &build_buf[0]);
   const auto size = core::Logic::pack_body(gain, &build_buf[0]);
 
   this->_handler->add(std::move(build_buf), size);
