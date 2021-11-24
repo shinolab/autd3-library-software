@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/11/2021
+// Last Modified: 21/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -69,7 +69,7 @@ class SOEMController {
   [[nodiscard]] bool is_open() const;
 
   void send(const uint8_t* buf, size_t size);
-  void read(uint8_t* rx) const;
+  void receive(uint8_t* rx) const;
 
  private:
   void setup_sync0(bool activate, uint32_t cycle_time_ns) const;

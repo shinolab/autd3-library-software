@@ -3,7 +3,7 @@
 // Created Date: 10/09/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/09/2021
+// Last Modified: 22/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -24,7 +24,14 @@
 #include <memory>
 #include <vector>
 
-#include "autd3/core/hardware_defined.hpp"
+#ifdef __NVCC_DIAG_PRAGMA_SUPPORT__
+#pragma nv_diag_suppress 20014
+#define diag_suppress nv_diag_suppress
+#endif
+#include "autd3/core/gain.hpp"
+#ifdef __NVCC_DIAG_PRAGMA_SUPPORT__
+#undef diag_suppress
+#endif
 #include "autd3/gain/matrix.hpp"
 #include "matrix_pool.hpp"
 
@@ -87,11 +94,11 @@ struct CuMatrix {
   void copy_from(const T* v) { copy_from(v, _row * _col); }
   void copy_from(const T* v, size_t n);
 
-  void transfer_matrix(const double* foci, size_t foci_num, const std::vector<const double*>& positions, const std::vector<const double*>& directions,
-                       double wavelength, double attenuation);
+  void transfer_matrix(const double* foci, size_t foci_num, const std::vector<const core::Transducer*>& transducers,
+                       const std::vector<const double*>& directions, double wavelength, double attenuation);
   void set_bcd_result(const std::shared_ptr<const CuMatrix<T>>& vec, size_t index);
-  void set_from_complex_drive(std::vector<core::DataArray>& dst, bool normalize, double max_coefficient);
-  void set_from_arg(std::vector<core::DataArray>& dst, size_t n);
+  void set_from_complex_drive(std::vector<core::Drive>& dst, bool normalize, double max_coefficient);
+  void set_from_arg(std::vector<core::Drive>& dst, size_t n);
   void back_prop(const std::shared_ptr<const CuMatrix<T>>& transfer, const std::shared_ptr<const CuMatrix<T>>& amps);
   void sigma_regularization(const std::shared_ptr<const CuMatrix<T>>& transfer, const std::shared_ptr<const CuMatrix<T>>& amps, double gamma);
   void col_sum_imag(const std::shared_ptr<CuMatrix<complex>>& src);

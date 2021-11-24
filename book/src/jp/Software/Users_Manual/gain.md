@@ -196,8 +196,7 @@ ArrayFireバックエンドをビルドする場合, [ArrayFire](https://arrayfi
 `Gain`クラスを継承することで独自の`Gain`を作成することができる.
 ここでは, `FocalPoint`と同じように単一焦点を生成する`Focus`を実際に定義してみることにする.
 
-`Gain`の実態は`vector<array<uint16_t, 249>> _data`であり, $\SI{16}{bit}$データの振動子数分の配列のデバイス数分の`vector`になっている.
-$\SI{16}{bit}$データの内, 上位$\SI{8}{bit}$がDuty比, 下位$\SI{8}{bit}$が位相を表す.
+`Gain`の実態は`vector<Drive> _data`であり, 位相/振幅データを格納する`Drive`構造体の振動子数分の`vector`になっている.
 下が, 単一焦点を生成する`Gain`のサンプルである.
 
 ```cpp
@@ -206,22 +205,22 @@ $\SI{16}{bit}$データの内, 上位$\SI{8}{bit}$がDuty比, 下位$\SI{8}{bit}
 
 class Focus final : public autd::core::Gain {
  public:
-  Focus(autd::Vector3 point) : _point(point) {} 
-  
+  explicit Focus(const autd::Vector3 point) : _point(point) {}
+
   static autd::GainPtr create(autd::Vector3 point) { return std::make_shared<Focus>(point); }
-  
-  void calc(const autd::GeometryPtr& geometry) override {
-    const auto wavenum = 2.0 * M_PI / geometry->wavelength();
-    for (size_t dev = 0; dev < geometry->num_devices(); dev++)
-      for (size_t i = 0; i < autd::NUM_TRANS_IN_UNIT; i++) {
-        const auto dist = (geometry->position(dev, i) - this->_point).norm();
-        const auto phase = autd::core::Utilities::to_phase(dist * wavenum);
-        this->_data[dev][i] = autd::core::Utilities::pack_to_u16(0xFF, phase);
+
+  void calc(const autd::Geometry& geometry) override {
+    const auto wavenum = 2.0 * M_PI / geometry.wavelength();
+    for (const auto& device : geometry)
+      for (const auto& transducer : device) {
+        const auto dist = (transducer.position() - this->_point).norm();
+        this->_data[transducer.id()].duty = 0xFF;
+        this->_data[transducer.id()].phase = autd::core::utils::to_phase(dist * wavenum);
       }
-  }
-  
-  private:
-    autd::Vector3 _point;
+  } 
+
+ private:
+  autd::Vector3 _point;
 };
 ```
 
@@ -249,16 +248,15 @@ $$
 とすれば良い.
 ここで, $r$は振動子と焦点位置との間の距離である.
 
-SDKでは, 波長は`Geometry::wavelength()`, 振動子の位置は`Geometry::position()`で取得できる.
-`Geometry::position()`の第1引数はDeviceのインデックス, 第2引数はローカルな振動子のインデックスである.
+SDKでは, 波長は`Geometry::wavelength()`, できる.
+Geometryにはイテレータが定義されており, `Device`のイテレータが返される.
+また, `Device`にもイテレータが定義されており, `Transducer`のイテレータが返され, ここから振動子の位置を取得できる.
 また, `autd::core::Utilities::to_phase`関数は, 上記の$\SI{}{rad}$単位の位相$\phi$をSDKの内部表現$P$に変換するためのユーティリティ関数で, 以下のように定義されている[^fn_phase].
 ```cpp
   inline static uint8_t to_phase(const double phase) noexcept {
     return static_cast<uint8_t>(static_cast<int>(std::round((phase / (2.0 * M_PI) + 0.5) * 256.0)) & 0xFF);
   }
 ```
-また, `autd::core::Utilities::pack_to_u16`はただ単に2つの`uint8_t`の値を受け取って, それぞれ`uint16_t`の値の上位/下位$\SI{8}{bit}$に詰めるだけのユーティリティ関数である.
-
 
 [^fn_backend]: 各自ソースコードからコンパイルする必要がある. GitHubにアップロードされているpre-built binaryには含まれていない.
 

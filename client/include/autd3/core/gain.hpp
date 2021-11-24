@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/09/2021
+// Last Modified: 22/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -16,12 +16,20 @@
 
 #include "geometry.hpp"
 #include "hardware_defined.hpp"
-#include "utils.hpp"
 
-namespace autd::core {
+namespace autd {
+namespace core {
 
 class Gain;
 using GainPtr = std::shared_ptr<Gain>;
+
+struct Drive final {
+  Drive() : Drive(0x00, 0x00) {}
+  explicit Drive(const uint8_t duty, const uint8_t phase) : phase(phase), duty(duty) {}
+
+  uint8_t phase;
+  uint8_t duty;
+};
 
 /**
  * @brief Gain controls the duty ratio and phase of each transducer in AUTD devices.
@@ -37,21 +45,20 @@ class Gain {
    * \brief Calculate duty ratio and phase of each transducer
    * \param geometry Geometry
    */
-  virtual void calc(const GeometryPtr& geometry) {
-    for (size_t i = 0; i < geometry->num_devices(); i++) this->_data[i].fill(0x0000);
+  virtual void calc(const Geometry& geometry) {
+    for (const auto& device : geometry)
+      for (const auto& transducer : device) this->_data[transducer.id()] = Drive(0x00, 0x00);
   }
 
   /**
    * \brief Initialize data and call calc().
    * \param geometry Geometry
    */
-  void build(const GeometryPtr& geometry) {
+  void build(const Geometry& geometry) {
     if (this->_built) return;
 
-    const auto num_device = geometry->num_devices();
-
     this->_data.clear();
-    this->_data.resize(num_device);
+    this->_data.resize(geometry.num_transducers());
 
     this->calc(geometry);
     this->_built = true;
@@ -61,16 +68,15 @@ class Gain {
    * \brief Re-calculate duty ratio and phase of each transducer
    * \param geometry Geometry
    */
-  void rebuild(const GeometryPtr& geometry) {
+  void rebuild(const Geometry& geometry) {
     this->_built = false;
     this->build(geometry);
   }
 
   /**
    * @brief Getter function for the data of duty ratio and phase of each transducers
-   * @details Each data is 16 bit unsigned integer, where high 8bits represents duty ratio and low 8bits represents phase
    */
-  const std::vector<DataArray>& data() const { return _data; }
+  [[nodiscard]] const std::vector<Drive>& data() const { return _data; }
 
   Gain() noexcept : _built(false) {}
   virtual ~Gain() = default;
@@ -81,6 +87,7 @@ class Gain {
 
  protected:
   bool _built;
-  std::vector<DataArray> _data;
+  std::vector<Drive> _data;
 };
-}  // namespace autd::core
+}  // namespace core
+}  // namespace autd

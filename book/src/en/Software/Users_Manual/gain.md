@@ -192,8 +192,7 @@ In the above case, device 0 uses `Gain g0` and device 1 uses `Gain g1`.
 By inheriting from the `Gain` class, you can create your own `Gain`.
 In this section, we will define `Focus` which generates a single focus.
 
-The essence of `Gain` is `vector<array<uint16_t, 249>> _data`, which is a `vector` of the number of devices in the array for the number of transducers of $\SI{16}{bit}$ data.
-In each $\SI{16}{bit}$ data, the higher $\SI{8}{bit}$ represents the duty ratio and the lower $\SI{8}{bit}$ represents the phase.
+The essence of `Gain` is `vector<Drive> _data`, where `Drive` class contains phase and duty ratio of transducer.
 Below is a sample of the `Gain` that generates a single focus.
 
 ```cpp
@@ -202,22 +201,22 @@ Below is a sample of the `Gain` that generates a single focus.
 
 class Focus final : public autd::core::Gain {
  public:
-  Focus(autd::Vector3 point) : _point(point) {} 
-  
+  explicit Focus(const autd::Vector3 point) : _point(point) {}
+
   static autd::GainPtr create(autd::Vector3 point) { return std::make_shared<Focus>(point); }
-  
-  void calc(const autd::GeometryPtr& geometry) override {
-    const auto wavenum = 2.0 * M_PI / geometry->wavelength();
-    for (size_t dev = 0; dev < geometry->num_devices(); dev++)
-      for (size_t i = 0; i < autd::NUM_TRANS_IN_UNIT; i++) {
-        const auto dist = (geometry->position(dev, i) - this->_point).norm();
-        const auto phase = autd::core::Utilities::to_phase(dist * wavenum);
-        this->_data[dev][i] = autd::core::Utilities::pack_to_u16(0xFF, phase);
+
+  void calc(const autd::Geometry& geometry) override {
+    const auto wavenum = 2.0 * M_PI / geometry.wavelength();
+    for (const auto& device : geometry)
+      for (const auto& transducer : device) {
+        const auto dist = (transducer.position() - this->_point).norm();
+        this->_data[transducer.id()].duty = 0xFF;
+        this->_data[transducer.id()].phase = autd::core::utils::to_phase(dist * wavenum);
       }
   }
-  
-  private:
-    autd::Vector3 _point;
+
+ private:
+  autd::Vector3 _point;
 };
 ```
 
@@ -243,15 +242,15 @@ $$
 $$
 where $r$ is the distance between the transducer and the focal point.
 
-In SDK, you can get the wavelength by `Geometry::wavelength()` and the position of the transducer by `Geometry::position()`.
-The first argument of `Geometry::position()` is the index of the device, and the second argument is the local index of transducers.
+In SDK, you can get the wavelength by `Geometry::wavelength()`.
+An iterator which returns `Device` iterator is defined for `Geometry`, and an iterator which returns `Transducer` iterator is also defined for `Device`.
+You can get transducer position from `Transducer` struct.
 The `autd::core::Utilities::to_phase` function is a utility function to convert the above phase $\phi$ in $\SI{}{rad}$ to the internal representation $P$ of SDK, defined as follows[^fn_phase].
 ```cpp
   inline static uint8_t to_phase(const double phase) noexcept {
     return static_cast<uint8_t>(static_cast<int>(std::round((phase / (2.0 * M_PI) + 0.5) * 256.0)) & 0xFF);
   }
 ```
-Also, `autd::core::Utilities::pack_to_u16` is a utility function that simply takes two `uint8_t` values and packs them into the high/low $\SI{8}{bit}$ of the `uint16_t` value.
 
 [^fn_backend]: You need to compile it from the source code. It is not included in the pre-built binary uploaded to GitHub.
 

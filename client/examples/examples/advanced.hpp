@@ -3,7 +3,7 @@
 // Created Date: 19/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/09/2021
+// Last Modified: 22/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -35,19 +35,20 @@ class BurstModulation final : public autd::core::Modulation {
 class UniformGain final : public autd::core::Gain {
  public:
   static autd::GainPtr create() { return std::make_shared<UniformGain>(); }
-  void calc(const autd::GeometryPtr& geometry) override {
-    for (size_t i = 0; i < geometry->num_transducers(); i++)
-      this->_data[geometry->device_idx_for_trans_idx(i)].at(i % autd::NUM_TRANS_IN_UNIT) = 0xFF80;
+  void calc(const autd::Geometry& geometry) override {
+    for (const auto& dev : geometry)
+      for (const auto& trans : dev) {
+        this->_data[trans.id()].duty = 0xFF;
+        this->_data[trans.id()].phase = 0x80;
+      }
   }
 };
 
 inline void advanced_test(const autd::ControllerPtr& autd) {
   autd->silent_mode() = false;
 
-  std::vector<std::array<uint8_t, autd::NUM_TRANS_IN_UNIT>> delays;
-  delays.resize(autd->geometry()->num_devices());
-  delays[0][0] = 4;  // 4 cycle = 100 us delay in 0-th transducer
-  autd->set_output_delay(delays);
+  autd->delay_offset()[0].delay = 4;  // 4 cycle = 100 us delay in 0-th transducer
+  autd->set_delay_offset();           // apply change
 
   const auto g = UniformGain::create();
   const auto m = BurstModulation::create();

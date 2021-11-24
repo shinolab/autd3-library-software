@@ -3,7 +3,7 @@
 // Created Date: 06/07/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/11/2021
+// Last Modified: 22/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -32,6 +32,7 @@
 #pragma GCC diagnostic pop
 #endif
 
+#include "autd3/core/gain.hpp"
 #include "autd3/core/hardware_defined.hpp"
 #include "autd3/core/utils.hpp"
 #include "autd3/gain/matrix.hpp"
@@ -151,11 +152,11 @@ struct EigenMatrix {
   virtual void copy_from(const T* v) { std::memcpy(this->data.data(), v, sizeof(T) * this->data.size()); }
 
   // FIXME: following functions are too specialized
-  void transfer_matrix(const double* foci, size_t foci_num, const std::vector<const double*>& positions, const std::vector<const double*>& directions,
-                       double wavelength, double attenuation);
+  void transfer_matrix(const double* foci, size_t foci_num, const std::vector<const core::Transducer*>& transducers,
+                       const std::vector<const double*>& directions, double wavelength, double attenuation);
   void set_bcd_result(const std::shared_ptr<const EigenMatrix<T>>& vec, size_t index);
-  void set_from_complex_drive(std::vector<core::DataArray>& dst, bool normalize, double max_coefficient);
-  void set_from_arg(std::vector<core::DataArray>& dst, size_t n);
+  void set_from_complex_drive(std::vector<core::Drive>& dst, bool normalize, double max_coefficient);
+  void set_from_arg(std::vector<core::Drive>& dst, size_t n);
   void back_prop(const std::shared_ptr<const EigenMatrix<T>>& transfer, const std::shared_ptr<const EigenMatrix<T>>& amps);
   void sigma_regularization(const std::shared_ptr<const EigenMatrix<T>>& transfer, const std::shared_ptr<const EigenMatrix<T>>& amps, double gamma);
   void col_sum_imag(const std::shared_ptr<EigenMatrix<complex>>& src);
@@ -195,7 +196,7 @@ inline void EigenMatrix<complex>::max_eigen_vector(const std::shared_ptr<EigenMa
 }
 
 template <>
-inline void EigenMatrix<complex>::transfer_matrix(const double* foci, const size_t foci_num, const std::vector<const double*>& positions,
+inline void EigenMatrix<complex>::transfer_matrix(const double* foci, const size_t foci_num, const std::vector<const core::Transducer*>& transducers,
                                                   const std::vector<const double*>& directions, const double wavelength, const double attenuation) {
   const auto m = static_cast<Eigen::Index>(foci_num);
 
@@ -203,13 +204,10 @@ inline void EigenMatrix<complex>::transfer_matrix(const double* foci, const size
   for (Eigen::Index i = 0; i < m; i++) {
     const auto tp = core::Vector3(foci[3 * i], foci[3 * i + 1], foci[3 * i + 2]);
     Eigen::Index k = 0;
-    for (size_t dev = 0; dev < positions.size(); dev++) {
-      const double* p = positions[dev];
+    for (size_t dev = 0; dev < transducers.size(); dev++) {
       const auto dir = core::Vector3(directions[dev][0], directions[dev][1], directions[dev][2]);
-      for (Eigen::Index j = 0; j < static_cast<Eigen::Index>(core::NUM_TRANS_IN_UNIT); j++, k++) {
-        const auto pos = core::Vector3(p[3 * j], p[3 * j + 1], p[3 * j + 2]);
-        data(i, k) = utils::transfer(pos, dir, tp, wave_number, attenuation);
-      }
+      for (Eigen::Index j = 0; j < static_cast<Eigen::Index>(core::NUM_TRANS_IN_UNIT); j++, k++)
+        data(i, k) = utils::transfer(transducers[dev][j], dir, tp, wave_number, attenuation);
     }
   }
 }
@@ -225,34 +223,20 @@ inline void EigenMatrix<complex>::set_bcd_result(const std::shared_ptr<const Eig
 }
 
 template <>
-inline void EigenMatrix<complex>::set_from_complex_drive(std::vector<core::DataArray>& dst, const bool normalize, const double max_coefficient) {
+inline void EigenMatrix<complex>::set_from_complex_drive(std::vector<core::Drive>& dst, const bool normalize, const double max_coefficient) {
   const Eigen::Index n = data.size();
-  size_t dev_idx = 0;
-  size_t trans_idx = 0;
   for (Eigen::Index j = 0; j < n; j++) {
     const auto f_amp = normalize ? 1.0 : std::abs(data(j, 0)) / max_coefficient;
-    const auto phase = core::utils::to_phase(std::arg(data(j, 0)));
-    const auto duty = core::utils::to_duty(f_amp);
-    dst[dev_idx][trans_idx++] = core::utils::pack_to_u16(duty, phase);
-    if (trans_idx == core::NUM_TRANS_IN_UNIT) {
-      dev_idx++;
-      trans_idx = 0;
-    }
+    dst[j].duty = core::utils::to_duty(f_amp);
+    dst[j].phase = core::utils::to_phase(std::arg(data(j, 0)));
   }
 }
 
 template <>
-inline void EigenMatrix<double>::set_from_arg(std::vector<core::DataArray>& dst, const size_t n) {
-  size_t dev_idx = 0;
-  size_t trans_idx = 0;
+inline void EigenMatrix<double>::set_from_arg(std::vector<core::Drive>& dst, const size_t n) {
   for (Eigen::Index j = 0; j < static_cast<Eigen::Index>(n); j++) {
-    constexpr uint8_t duty = 0xFF;
-    const auto phase = core::utils::to_phase(data(j, 0));
-    dst[dev_idx][trans_idx++] = core::utils::pack_to_u16(duty, phase);
-    if (trans_idx == core::NUM_TRANS_IN_UNIT) {
-      dev_idx++;
-      trans_idx = 0;
-    }
+    dst[j].duty = 0xFF;
+    dst[j].phase = core::utils::to_phase(data(j, 0));
   }
 }
 

@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
-file(GLOB include_files ${PROJECT_SOURCE_DIR}/include/*.hpp ${PROJECT_SOURCE_DIR}/include/**/*.hpp)
+file(GLOB include_files ${PROJECT_SOURCE_DIR}/include/*.hpp ${PROJECT_SOURCE_DIR}/include/autd3/*.hpp)
+file(GLOB core_include_files ${PROJECT_SOURCE_DIR}/include/autd3/core/*.hpp)
 
 set(SOURCE_LIST
   controller.cpp
@@ -9,6 +10,7 @@ set(SOURCE_LIST
   modulation/filter/fir.cpp
   sequence/primitive.cpp
   ${include_files}
+  ${core_include_files}
 )
 
 add_library(autd3 ${SOURCE_LIST})
@@ -18,18 +20,22 @@ if(WIN32)
 endif()
 
 if(WIN32)
+  target_sources(autd3 PRIVATE ${PROJECT_SOURCE_DIR}/include/autd3/gain/primitive.hpp)
   source_group("gain" FILES
     gain/primitive.cpp
     ${PROJECT_SOURCE_DIR}/include/autd3/gain/primitive.hpp
   )
+  target_sources(autd3 PRIVATE ${PROJECT_SOURCE_DIR}/include/autd3/modulation/primitive.hpp)
   source_group("modulation" FILES
     modulation/primitive.cpp
     ${PROJECT_SOURCE_DIR}/include/autd3/modulation/primitive.hpp
   )
+  target_sources(autd3 PRIVATE ${PROJECT_SOURCE_DIR}/include/autd3/modulation/filter/fir.hpp)
   source_group("modulation/filter" FILES
     modulation/filter/fir.cpp
     ${PROJECT_SOURCE_DIR}/include/autd3/modulation/filter/fir.hpp
   )
+  target_sources(autd3 PRIVATE ${PROJECT_SOURCE_DIR}/include/autd3/sequence/primitive.hpp)
   source_group("sequence" FILES
     sequence/primitive.cpp
     ${PROJECT_SOURCE_DIR}/include/autd3/sequence/primitive.hpp
@@ -37,6 +43,9 @@ if(WIN32)
   source_group("controller" FILES
     controller.cpp
     ${PROJECT_SOURCE_DIR}/include/autd3/controller.hpp
+  )
+  source_group("core" FILES
+    ${core_include_files}
   )
 endif()
 

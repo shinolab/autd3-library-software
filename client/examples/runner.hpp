@@ -3,7 +3,7 @@
 // Created Date: 03/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/11/2021
+// Last Modified: 21/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -51,9 +51,9 @@ inline int run(autd::ControllerPtr autd) {
 #endif
                                                      std::pair(F{advanced_test}, "Advanced Test (custom Gain, Modulation, and set output delay)"),
                                                      std::pair(F{trans_test_test}, "TransducerTest Test")};
-  if (autd->geometry()->num_devices() == 2) examples.emplace_back(std::pair(F{group_test}, "Group gain Test"));
+  if (autd->geometry().num_devices() == 2) examples.emplace_back(std::pair(F{group_test}, "Group gain Test"));
 
-  autd->geometry()->wavelength() = 8.5;  // mm
+  autd->geometry().wavelength() = 8.5;  // mm
 
   autd->clear();
 

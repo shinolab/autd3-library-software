@@ -1,3 +1,17 @@
+# 1.9.3
+* fix minor bugs
+* Change transducers' geometry accessor
+    * Introduce `Transducer` struct which contains id and position of transducer 
+* Introduce `Drive` struct which contains explicit phase and duty parameter for transducer
+* Change delay and duty offset api
+    * Delete `AUTDSetDutyOffset` and `AUTDSetOutputDelay` from capi
+* Delete `Geometry::device_idx_for_trans_idx`
+    * Delete `AUTDDeviceIdxForTransIdx` from capi
+* Delete `AUTDNumTransducers`, `AUTDTransPositionByGlobal`, `AUTDSendGain`, and `AUTDSendModulation` from capi
+* Rename `AUTDTransPositionByLocal` to `AUTDTransPosition` in capi
+* (Internal change) Rename `link::read` to `receive`
+* (Internal change) Remove `core::Modulation::sent`
+
 # 1.9.2
 * Fix #10
 * Delete `Geometry::del_device`, `Geometry::clear_devices`, `Geometry::direction`, and `Geometry::group_id_for_device_idx`

@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 19/11/2021
+// Last Modified: 22/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -14,10 +14,8 @@
 #include <map>
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "autd3/core/gain.hpp"
-#include "autd3/core/hardware_defined.hpp"
 
 namespace autd::gain {
 
@@ -25,7 +23,6 @@ using core::Gain;
 using core::GainPtr;
 using Null = Gain;
 
-using core::DataArray;
 using core::Vector3;
 
 /**
@@ -45,7 +42,7 @@ class Grouped final : public Gain {
    */
   void add(size_t device_id, const GainPtr& gain);
 
-  void calc(const core::GeometryPtr& geometry) override;
+  void calc(const core::Geometry& geometry) override;
   Grouped() : Gain() {}
   ~Grouped() override = default;
   Grouped(const Grouped& v) noexcept = default;
@@ -75,7 +72,7 @@ class PlaneWave final : public Gain {
    */
   static GainPtr create(const Vector3& direction, double amp);
 
-  void calc(const core::GeometryPtr& geometry) override;
+  void calc(const core::Geometry& geometry) override;
   explicit PlaneWave(Vector3 direction, const uint8_t duty) : Gain(), _direction(std::move(direction)), _duty(duty) {}
   ~PlaneWave() override = default;
   PlaneWave(const PlaneWave& v) noexcept = default;
@@ -106,7 +103,7 @@ class FocalPoint final : public Gain {
    */
   static GainPtr create(const Vector3& point, double amp);
 
-  void calc(const core::GeometryPtr& geometry) override;
+  void calc(const core::Geometry& geometry) override;
   explicit FocalPoint(Vector3 point, const uint8_t duty) : Gain(), _point(std::move(point)), _duty(duty) {}
   ~FocalPoint() override = default;
   FocalPoint(const FocalPoint& v) noexcept = default;
@@ -142,7 +139,7 @@ class BesselBeam final : public Gain {
    */
   static GainPtr create(const Vector3& apex, const Vector3& vec_n, double theta_z, double amp);
 
-  void calc(const core::GeometryPtr& geometry) override;
+  void calc(const core::Geometry& geometry) override;
   explicit BesselBeam(Vector3 apex, Vector3 vec_n, const double theta_z, const uint8_t duty)
       : Gain(), _apex(std::move(apex)), _vec_n(std::move(vec_n)), _theta_z(theta_z), _duty(duty) {}
   ~BesselBeam() override = default;
@@ -170,7 +167,7 @@ class TransducerTest final : public Gain {
    * @param[in] phase phase of the phase
    */
   static GainPtr create(size_t transducer_index, uint8_t duty, uint8_t phase);
-  void calc(const core::GeometryPtr& geometry) override;
+  void calc(const core::Geometry& geometry) override;
   TransducerTest(const size_t transducer_index, const uint8_t duty, const uint8_t phase)
       : Gain(), _transducer_idx(transducer_index), _duty(duty), _phase(phase) {}
   ~TransducerTest() override = default;
