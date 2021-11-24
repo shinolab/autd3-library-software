@@ -1,7 +1,7 @@
 set(CMAKE_SYSTEM_NAME Linux)
 set(CMAKE_SYSTEM_PROCESSOR arm)
 
-set(CMAKE_C_FLAGS "-Wall -Wno-unknown-pragmas -fno-rtti")
+set(CMAKE_C_FLAGS "-Wall -Wno-unknown-pragmas")
 set(CMAKE_C_FLAGS_DEBUG "-g -O0")
 set(CMAKE_C_FLAGS_RELEASE "-O3 -s")
 set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++11")

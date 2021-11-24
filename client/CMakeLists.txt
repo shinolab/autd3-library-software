@@ -199,12 +199,6 @@ if(NOT BUILD_SHARED_LIBS)
 endif()
 
 if(BUILD_CAPI)
-  if(WIN32)
-    string(REPLACE "/GR-" "/GR" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-  else()
-    string(REPLACE "-fno-rtti" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-  endif()
-
   add_subdirectory(capi/base)
   if(BUILD_SOEM_LINK)
     add_subdirectory(capi/soem_link)
