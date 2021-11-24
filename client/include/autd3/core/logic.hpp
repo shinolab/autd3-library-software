@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/11/2021
+// Last Modified: 24/11/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -74,28 +74,30 @@ class Logic {
    * \param fpga_ctrl_flag fpga control flag
    * \param cpu_ctrl_flag cpu control flag
    * \param[out] data pointer to transmission data
+   * \param[out] mod_sent length of modulation data already sent
    * \return message id
    */
-  static uint8_t pack_header(const ModulationPtr& mod, const uint8_t fpga_ctrl_flag, const uint8_t cpu_ctrl_flag, uint8_t* const data) {
+  static uint8_t pack_header(const ModulationPtr& mod, const uint8_t fpga_ctrl_flag, const uint8_t cpu_ctrl_flag, uint8_t* const data,
+                             size_t* const mod_sent) {
     const uint8_t msg_id = get_id();
     pack_header(msg_id, fpga_ctrl_flag, cpu_ctrl_flag, data);
-    if (mod == nullptr || mod->sent() >= mod->buffer().size()) return msg_id;
+    if (mod == nullptr || *mod_sent >= mod->buffer().size()) return msg_id;
 
     auto* header = reinterpret_cast<GlobalHeader*>(data);
     size_t offset = 0;
-    if (mod->sent() == 0) {
+    if (*mod_sent == 0) {
       header->cpu_ctrl_flags |= MOD_BEGIN;
       const auto div = static_cast<uint16_t>(mod->sampling_freq_div_ratio() - 1);
       header->mod[0] = static_cast<uint8_t>(div & 0xFF);
       header->mod[1] = static_cast<uint8_t>(div >> 8 & 0xFF);
       offset += 2;
     }
-    const auto mod_size = static_cast<uint8_t>(std::clamp(mod->buffer().size() - mod->sent(), size_t{0}, MOD_FRAME_SIZE - offset));
-    if (mod->sent() + mod_size >= mod->buffer().size()) header->cpu_ctrl_flags |= MOD_END;
+    const auto mod_size = static_cast<uint8_t>(std::clamp(mod->buffer().size() - *mod_sent, size_t{0}, MOD_FRAME_SIZE - offset));
+    if (*mod_sent + mod_size >= mod->buffer().size()) header->cpu_ctrl_flags |= MOD_END;
     header->mod_size = mod_size;
 
-    std::memcpy(&header->mod[offset], &mod->buffer()[mod->sent()], mod_size);
-    mod->sent() += mod_size;
+    std::memcpy(&header->mod[offset], &mod->buffer()[*mod_sent], mod_size);
+    *mod_sent += mod_size;
 
     return msg_id;
   }

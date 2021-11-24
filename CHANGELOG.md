@@ -9,7 +9,8 @@
     * Delete `AUTDDeviceIdxForTransIdx` from capi
 * Delete `AUTDNumTransducers`, `AUTDTransPositionByGlobal`, `AUTDSendGain`, and `AUTDSendModulation` from capi
 * Rename `AUTDTransPositionByLocal` to `AUTDTransPosition` in capi
-* Rename `link::read` to `receive`
+* (Internal change) Rename `link::read` to `receive`
+* (Internal change) Remove `core::Modulation::sent`
 
 # 1.9.2
 * Fix #10
