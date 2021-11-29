@@ -138,7 +138,7 @@ Please include `autd3/link/soem.hpp` to use SOEM link.
 
 ...
 
-  auto link = autd::link::SOEM::create(ifname, autd->geometry()->num_devices());
+  auto link = autd::link::SOEM::create(ifname, autd->geometry().num_devices());
 ```
 The first argument of `SOEM::create` is the interface name and the second argument is the number of devices.
 The interface name is the name of the ethernet interface connected to the AUTD3 device.
@@ -152,7 +152,7 @@ Note that SOEM sometimes becomes unstable when a large number of devices are use
 In this case, increase the value of the third argument of `create` (`cycle_ticks`) (default is 1).
 ```cpp
   const uint32_t cycle_ticks = 2;
-  auto link = autd::link::SOEM::create(ifname, autd->geometry()->num_devices(), cycle_ticks);
+  auto link = autd::link::SOEM::create(ifname, autd->geometry().num_devices(), cycle_ticks);
 ```
 The `cycle_ticks` controls the data update interval and the firing period of the synchronization signal.
 The default values of the data update interval and the firing period of the synchronization signal are $\SI{1000}{μs}$ and $\SI{500}{μs}$, respectively, which are multiplied by the value of `cycle_ticks`.

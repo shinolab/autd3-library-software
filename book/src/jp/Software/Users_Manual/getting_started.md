@@ -147,10 +147,10 @@ string get_adapter_name() {
 int main() try {
   auto autd = Controller::create();
 
-  autd->geometry()->add_device(Vector3(0, 0, 0), Vector3(0, 0, 0));
+  autd->geometry().add_device(Vector3(0, 0, 0), Vector3(0, 0, 0));
 
   const auto ifname = get_adapter_name();
-  auto link = link::SOEM::create(ifname, autd->geometry()->num_devices());
+  auto link = link::SOEM::create(ifname, autd->geometry().num_devices());
   autd->open(std::move(link));
 
   autd->clear();
@@ -204,7 +204,7 @@ SDKを使用するには, `autd3.hpp`ヘッダーをインクルードする.
 
 その後, デバイスの配置を指定する.
 ```cpp
-  autd->geometry()->add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+  autd->geometry().add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
 ```
 `add_device`の第一引数は位置, 第2引数は回転を表す.
 位置は自分の設定したグローバル座標系におけるデバイスの原点を指定する.
@@ -214,7 +214,7 @@ SDKを使用するには, `autd3.hpp`ヘッダーをインクルードする.
 次に, `Link`を作成し, デバイスと接続する.
 ```cpp
   const auto ifname = get_adapter_name();
-  auto link = link::SOEM::create(ifname, autd->geometry()->num_devices());
+  auto link = link::SOEM::create(ifname, autd->geometry().num_devices());
   autd->open(std::move(link));
 ```
 `link::SOEM::create()`の第一引数はインターフェース名で, 第2引数は接続しているAUTD3デバイスの数である. 
