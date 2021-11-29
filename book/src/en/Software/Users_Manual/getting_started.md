@@ -143,10 +143,10 @@ string get_adapter_name() {
 int main() try {
   auto autd = Controller::create();
 
-  autd->geometry()->add_device(Vector3(0, 0, 0), Vector3(0, 0, 0));
+  autd->geometry().add_device(Vector3(0, 0, 0), Vector3(0, 0, 0));
 
   const auto ifname = get_adapter_name();
-  auto link = link::SOEM::create(ifname, autd->geometry()->num_devices());
+  auto link = link::SOEM::create(ifname, autd->geometry().num_devices());
   autd->open(std::move(link));
 
   autd->clear();
@@ -200,7 +200,7 @@ Then, create `Controller` instance.
 
 After that, we specify the geometry of the device in the real world.
 ```cpp
-  autd->geometry()->add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+  autd->geometry().add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
 ```
 The first argument of `add_device` is the position, the second argument is the rotation.
 The position is 0-th transducer position in the global coordinate system you set.
@@ -210,7 +210,7 @@ Here, we assume that the device is placed at global origin without rotation.
 Next, create `Link`, and connect to the device.
 ```cpp
   const auto ifname = get_adapter_name();
-  auto link = link::SOEM::create(ifname, autd->geometry()->num_devices());
+  auto link = link::SOEM::create(ifname, autd->geometry().num_devices());
   autd->open(std::move(link));
 ```
 The first argument of `link::SOEM::create()` is the ethernet interface name where the AUTD3 device is connected, and the second argument is the number of AUTD3 devices connected. 

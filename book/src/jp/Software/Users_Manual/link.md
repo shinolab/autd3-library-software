@@ -141,7 +141,7 @@ SOEMのLinkを使用する際は`autd3/link/soem.hpp`ヘッダーをインクル
 
 ...
 
-  auto link = autd::link::SOEM::create(ifname, autd->geometry()->num_devices());
+  auto link = autd::link::SOEM::create(ifname, autd->geometry().num_devices());
 ```
 `SOEM::create`の第1引数はインターフェース名で, 第2引数はデバイスの数である.
 インターフェース名はAUTD3デバイスに接続しているehernetインターフェース名である.
@@ -155,7 +155,7 @@ SOEMのLinkを使用する際は`autd3/link/soem.hpp`ヘッダーをインクル
 このときは, `create`の第3引数 (`cycle_ticks`) の値を増やす (defaultは1).
 ```cpp
   const uint32_t cycle_ticks = 2;
-  auto link = autd::link::SOEM::create(ifname, autd->geometry()->num_devices(), cycle_ticks);
+  auto link = autd::link::SOEM::create(ifname, autd->geometry().num_devices(), cycle_ticks);
 ```
 `cycle_ticks`は, データ更新間隔と同期信号の発火周期を制御している.
 データ更新間隔と同期信号の発火周期のデフォルトはそれぞれ$\SI{1000}{μs}$と$\SI{500}{μs}$であり, これに`cycle_ticks`の値が掛け合わされる.
