@@ -262,10 +262,10 @@ string get_adapter_name() {
 int main() try {
   auto autd = Controller::create();
 
-  autd-&gt;geometry()-&gt;add_device(Vector3(0, 0, 0), Vector3(0, 0, 0));
+  autd-&gt;geometry().add_device(Vector3(0, 0, 0), Vector3(0, 0, 0));
 
   const auto ifname = get_adapter_name();
-  auto link = link::SOEM::create(ifname, autd-&gt;geometry()-&gt;num_devices());
+  auto link = link::SOEM::create(ifname, autd-&gt;geometry().num_devices());
   autd-&gt;open(std::move(link));
 
   autd-&gt;clear();
@@ -309,7 +309,7 @@ You also need <code>autd3/link/soem.hpp</code> to use <code>link::SOEM</code>.</
 <pre><code class="language-cpp">  auto autd = autd::Controller::create();
 </code></pre>
 <p>After that, we specify the geometry of the device in the real world.</p>
-<pre><code class="language-cpp">  autd-&gt;geometry()-&gt;add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+<pre><code class="language-cpp">  autd-&gt;geometry().add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
 </code></pre>
 <p>The first argument of <code>add_device</code> is the position, the second argument is the rotation.
 The position is 0-th transducer position in the global coordinate system you set.
@@ -317,7 +317,7 @@ The rotation is specified by ZYZ euler angles or quaternions.
 Here, we assume that the device is placed at global origin without rotation.</p>
 <p>Next, create <code>Link</code>, and connect to the device.</p>
 <pre><code class="language-cpp">  const auto ifname = get_adapter_name();
-  auto link = link::SOEM::create(ifname, autd-&gt;geometry()-&gt;num_devices());
+  auto link = link::SOEM::create(ifname, autd-&gt;geometry().num_devices());
   autd-&gt;open(std::move(link));
 </code></pre>
 <p>The first argument of <code>link::SOEM::create()</code> is the ethernet interface name where the AUTD3 device is connected, and the second argument is the number of AUTD3 devices connected. 

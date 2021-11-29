@@ -180,9 +180,9 @@ AUTDServer実行後に, IPアドレスの入力を求められるがここは空
 TwinCAT XAE Shell上部メニューからTwinCAT→Show Realtime Ethernet Compatible Devicesを開きCompatible devicesの中の対応デバイスを選択肢Installをクリックする.
 なお, Compatible devicesに何も表示されていない場合はそのPCのイーサネットデバイスはTwinCATに対応していない.</p>
 <h4 id="license"><a class="header" href="#license">License</a></h4>
-<p>また, 初回はライセンス関係のエラーが出るので, XAE ShellでSolution Explorer→SYSTEM→Licenseを開き, “7 Days Trial License ...”をクリックし, 画面に表示される文字を入力する.
+<p>また, 初回はライセンス関係のエラーが出るので, XAE ShellでSolution Explorer→SYSTEM→Licenseを開き, “7 Days Trial License …“をクリックし, 画面に表示される文字を入力する.
 なお. ライセンスは7日間限定のトライアルライセンスだが, 切れたら再び同じ作業を行うことで再発行できる.
-ライセンスを発行し終わったら, XAE Shellを閉じて, 再び”AUTDServer.exe”を実行する.</p>
+ライセンスを発行し終わったら, XAE Shellを閉じて, 再び“AUTDServer.exe“を実行する.</p>
 <h3 id="trouble-shooting"><a class="header" href="#trouble-shooting">Trouble shooting</a></h3>
 <p>大量のDeviceを使用しようとすると, 下の図のようなエラーが発生することがある.
 このときは, <code>settings.ini</code>内の<code>TaskCycleTime</code>と<code>Sync0Cycletime</code>の値を整数倍し, AUTDServerを再び実行する.
@@ -204,24 +204,24 @@ Sync0Cycletime=1000000
 その場合は, RemoteTwinCAT linkを用いて遠隔からTwinCATを操作することができる.</p>
 <p>RemoteTwinCATを使用する場合はPCを2台用意する必要がある.
 この時, 片方のPCは上記のTwinCAT linkが使えるである必要がある.
-このPCをここでは”サーバ”と呼ぶ.
-一方, 開発側のPC, 即ちSDKを使用する側は特に制約はなく, サーバと同じLANに繋がっていれば良い, こちらをここでは”クライアント”と呼ぶ.</p>
+このPCをここでは“サーバ“と呼ぶ.
+一方, 開発側のPC, 即ちSDKを使用する側は特に制約はなく, サーバと同じLANに繋がっていれば良い, こちらをここでは“クライアント“と呼ぶ.</p>
 <p>まず, サーバとAUTDデバイスを接続する.
 この時使うLANのアダプタはTwinCAT linkと同じく, TwinCAT対応のアダプタである必要がある.
 また, サーバとクライアントを別のLANで繋ぐ.
 こちらのLANアダプタはTwinCAT対応である必要はない<sup class="footnote-reference"><a href="#fn_remote_twin">1</a></sup>.
 そして, サーバとクライアント間のLANのIPを確認しておく.
-ここでは例えば, サーバ側が”169.254.205.219”, クライアント側が”169.254.175.45”だったとする.
+ここでは例えば, サーバ側が“169.254.205.219“, クライアント側が“169.254.175.45“だったとする.
 次に, サーバでAUTDServerを起動する.
 起動後にIPの入力を求められるが, ここでクライアント側のIP (この例だと<code>169.254.175.45</code>) を入力する.
-また, 最後に”No”を入力し, TwinCATAUTDServerを開いたままにしておく.
+また, 最後に“No“を入力し, TwinCATAUTDServerを開いたままにしておく.
 以下の図のように, System→Routesを開き, Current RouteタブのAmsNetId及び, NetId ManagementタブのLocal NetIdを確認する.</p>
 <figure>
   <img src="https://raw.githubusercontent.com/shinolab/autd3-library-software/master/book/src/fig/Users_Manual/Current_Route.jpg"/>
   <img src="https://raw.githubusercontent.com/shinolab/autd3-library-software/master/book/src/fig/Users_Manual/NetId_Management.jpg"/>
   <figcaption>AmsNetId/Local NetId</figcaption>
 </figure>
-<p>ここでは, それぞれ”169.254.175.45.1.1”, “172.16.99.194.1.1”だったとする.
+<p>ここでは, それぞれ“169.254.175.45.1.1“, “172.16.99.194.1.1“だったとする.
 この時, クライアント側は<code>autd3/link/remote_twincat.hpp</code>ヘッダーをincludeして,</p>
 <pre><code class="language-cpp">#include &quot;autd3/link/remote_twincat.hpp&quot;
 
@@ -242,14 +242,14 @@ SOEMを使用するのはやむを得ない理由があるか, 開発時のみ�
 一方, SOEMはクロスプラットフォームで動作し, インストールも単純という利点がある.</p>
 <p>Windowsの場合は, <a href="https://nmap.org/npcap/">npcap</a>, または, <a href="https://www.winpcap.org/">WinPcap</a>を予めインストールしておくこと.
 npcapはWinPcapの後継であり, こちらの利用を推奨する.
-<strong>なお, npcapをインストールする場合は”WinPcap API compatible mode”でインストールすること.</strong>
+<strong>なお, npcapをインストールする場合は“WinPcap API compatible mode“でインストールすること.</strong>
 Linux/macの場合は, 特に準備は必要ない.</p>
 <p>SOEMのLinkを使用する際は<code>autd3/link/soem.hpp</code>ヘッダーをインクルードする.</p>
 <pre><code class="language-cpp">#include &quot;autd3/link/soem.hpp&quot;
 
 ...
 
-  auto link = autd::link::SOEM::create(ifname, autd-&gt;geometry()-&gt;num_devices());
+  auto link = autd::link::SOEM::create(ifname, autd-&gt;geometry().num_devices());
 </code></pre>
 <p><code>SOEM::create</code>の第1引数はインターフェース名で, 第2引数はデバイスの数である.
 インターフェース名はAUTD3デバイスに接続しているehernetインターフェース名である.
@@ -260,7 +260,7 @@ Linux/macの場合は, 特に準備は必要ない.</p>
 <p>なお, SOEMも大量のDeviceを使用すると挙動が不安定になる時がある<sup class="footnote-reference"><a href="#fn_soem">2</a></sup>.
 このときは, <code>create</code>の第3引数 (<code>cycle_ticks</code>) の値を増やす (defaultは1).</p>
 <pre><code class="language-cpp">  const uint32_t cycle_ticks = 2;
-  auto link = autd::link::SOEM::create(ifname, autd-&gt;geometry()-&gt;num_devices(), cycle_ticks);
+  auto link = autd::link::SOEM::create(ifname, autd-&gt;geometry().num_devices(), cycle_ticks);
 </code></pre>
 <p><code>cycle_ticks</code>は, データ更新間隔と同期信号の発火周期を制御している.
 データ更新間隔と同期信号の発火周期のデフォルトはそれぞれ<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord">1</span><span class="mord">0</span><span class="mord">0</span><span class="mord">0</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal">μ</span><span class="mord mathrm">s</span></span></span></span></span></span>と<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord">5</span><span class="mord">0</span><span class="mord">0</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal">μ</span><span class="mord mathrm">s</span></span></span></span></span></span>であり, これに<code>cycle_ticks</code>の値が掛け合わされる.

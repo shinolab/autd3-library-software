@@ -264,10 +264,10 @@ string get_adapter_name() {
 int main() try {
   auto autd = Controller::create();
 
-  autd-&gt;geometry()-&gt;add_device(Vector3(0, 0, 0), Vector3(0, 0, 0));
+  autd-&gt;geometry().add_device(Vector3(0, 0, 0), Vector3(0, 0, 0));
 
   const auto ifname = get_adapter_name();
-  auto link = link::SOEM::create(ifname, autd-&gt;geometry()-&gt;num_devices());
+  auto link = link::SOEM::create(ifname, autd-&gt;geometry().num_devices());
   autd-&gt;open(std::move(link));
 
   autd-&gt;clear();
@@ -311,7 +311,7 @@ int main() try {
 <pre><code class="language-cpp">  auto autd = autd::Controller::create();
 </code></pre>
 <p>その後, デバイスの配置を指定する.</p>
-<pre><code class="language-cpp">  autd-&gt;geometry()-&gt;add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+<pre><code class="language-cpp">  autd-&gt;geometry().add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
 </code></pre>
 <p><code>add_device</code>の第一引数は位置, 第2引数は回転を表す.
 位置は自分の設定したグローバル座標系におけるデバイスの原点を指定する.
@@ -319,7 +319,7 @@ int main() try {
 ここでは, 回転も移動も行わないものとする.</p>
 <p>次に, <code>Link</code>を作成し, デバイスと接続する.</p>
 <pre><code class="language-cpp">  const auto ifname = get_adapter_name();
-  auto link = link::SOEM::create(ifname, autd-&gt;geometry()-&gt;num_devices());
+  auto link = link::SOEM::create(ifname, autd-&gt;geometry().num_devices());
   autd-&gt;open(std::move(link));
 </code></pre>
 <p><code>link::SOEM::create()</code>の第一引数はインターフェース名で, 第2引数は接続しているAUTD3デバイスの数である. 

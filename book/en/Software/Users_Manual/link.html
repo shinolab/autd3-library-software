@@ -178,7 +178,7 @@ If you use AUTDServer at the first time, please enter <code>No</code> and follow
 From the top menu of the TwinCAT XAE Shell, go to “TwinCAT” -&gt; “Show Realtime Ethernet Compatible Devices” and select a compatible device from the list of compatible devices and click on Install.
 If nothing is shown in the compatible devices, the network controllers of the PC are not compatible with TwinCAT.</p>
 <h4 id="licensing"><a class="header" href="#licensing">Licensing</a></h4>
-<p>The first time you run the program, you will get an error related to the license, so open “Solution Explorer” -&gt; “SYSTEM” -&gt; “License” in XAE Shell, and click “7 Days Trial License ...”. and enter the text displayed on the screen.
+<p>The first time you run the program, you will get an error related to the license, so open “Solution Explorer” -&gt; “SYSTEM” -&gt; “License” in XAE Shell, and click “7 Days Trial License …”. and enter the text displayed on the screen.
 Note that the license is a 7-day trial license, but can be reissued when it expires by performing the same procedure again.
 After the license is issued, close the XAE Shell and run “AUTDServer.exe” again.</p>
 <h3 id="trouble-shooting"><a class="header" href="#trouble-shooting">Trouble shooting</a></h3>
@@ -213,7 +213,7 @@ For example, let’s assume that the server IP is “169.254.205.219” and the 
 Next, start AUTDServer on the “server”.
 After starting, you will be asked to enter the IP, where you should enter the IP of the client side (<code>169.254.175.45</code> in this example).
 Then, enter “No” at the end to leave TwinCATAUTDServer open.
-As shown in the following figure, open “SYSTEM”→”Routes” and check <em>AmsNetId</em> in Current Route tab and <em>Local NetId</em> in NetId Management tab.</p>
+As shown in the following figure, open “SYSTEM“→“Routes” and check <em>AmsNetId</em> in Current Route tab and <em>Local NetId</em> in NetId Management tab.</p>
 <figure>
   <img src="https://raw.githubusercontent.com/shinolab/autd3-library-software/master/book/src/fig/Users_Manual/Current_Route.jpg"/>
   <img src="https://raw.githubusercontent.com/shinolab/autd3-library-software/master/book/src/fig/Users_Manual/NetId_Management.jpg"/>
@@ -246,7 +246,7 @@ For Linux/macOS, no special preparation is required.</p>
 
 ...
 
-  auto link = autd::link::SOEM::create(ifname, autd-&gt;geometry()-&gt;num_devices());
+  auto link = autd::link::SOEM::create(ifname, autd-&gt;geometry().num_devices());
 </code></pre>
 <p>The first argument of <code>SOEM::create</code> is the interface name and the second argument is the number of devices.
 The interface name is the name of the ethernet interface connected to the AUTD3 device.
@@ -257,7 +257,7 @@ The interface list can be retrieved by the <code>SOEM::enumerate_adapters</code>
 <p>Note that SOEM sometimes becomes unstable when a large number of devices are used.
 In this case, increase the value of the third argument of <code>create</code> (<code>cycle_ticks</code>) (default is 1).</p>
 <pre><code class="language-cpp">  const uint32_t cycle_ticks = 2;
-  auto link = autd::link::SOEM::create(ifname, autd-&gt;geometry()-&gt;num_devices(), cycle_ticks);
+  auto link = autd::link::SOEM::create(ifname, autd-&gt;geometry().num_devices(), cycle_ticks);
 </code></pre>
 <p>The <code>cycle_ticks</code> controls the data update interval and the firing period of the synchronization signal.
 The default values of the data update interval and the firing period of the synchronization signal are <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord">1</span><span class="mord">0</span><span class="mord">0</span><span class="mord">0</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal">μ</span><span class="mord mathrm">s</span></span></span></span></span></span> and <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord">5</span><span class="mord">0</span><span class="mord">0</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal">μ</span><span class="mord mathrm">s</span></span></span></span></span></span>, respectively, which are multiplied by the value of <code>cycle_ticks</code>.

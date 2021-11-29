@@ -689,7 +689,7 @@ If it returns false, you can get the error message with <code>AUTDGetLastError</
 <p><code>seq</code> is a PointSequence created with <code>AUTDSequence</code>.</p>
 <p><code>points</code> is a pointer to an array of length <code>points_size</code> <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">3</span></span></span></span>,
 where the data is stored in x[0], y[0], z[0], x[1], y[1],
-z[1], ... order.
+z[1], … order.
 If <code>duties_size</code> is less than <code>points_size</code>, the missing data will be filled with duty=0xFF.
 If <code>duties_size</code> is greater than <code>points_size</code>, the excess is ignored.</p>
 <p>This function returns false if it fails.
@@ -923,7 +923,7 @@ If it returns false, you can get the error message with <code>AUTDGetLastError</
 </tbody></table>
 <h2 id="autdgainholosdp-autd3capi-holo-gain"><a class="header" href="#autdgainholosdp-autd3capi-holo-gain">AUTDGainHoloSDP (autd3capi-holo-gain)</a></h2>
 <p>Create holo::SDP.</p>
-<p><code>points</code> is a pointer to an array of length <code>size</code> <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">3</span></span></span></span>, where the focal points are stored in the following order: x[0], y[0], z[0], x[1], ...
+<p><code>points</code> is a pointer to an array of length <code>size</code> <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">3</span></span></span></span>, where the focal points are stored in the following order: x[0], y[0], z[0], x[1], …
 <code>amps</code> is a pointer to an array of length <code>size</code> and specifies the intensity of foci.</p>
 <p>You must delete the created Gain with <code>AUTDDeleteGain</code> at the end.</p>
 <table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
@@ -939,7 +939,7 @@ If it returns false, you can get the error message with <code>AUTDGetLastError</
 </tbody></table>
 <h2 id="autdgainholoevd-autd3capi-holo-gain"><a class="header" href="#autdgainholoevd-autd3capi-holo-gain">AUTDGainHoloEVD (autd3capi-holo-gain)</a></h2>
 <p>Create holo::EVD.</p>
-<p><code>points</code> is a pointer to an array of length <code>size</code> <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">3</span></span></span></span>, where the focal points are stored in the following order: x[0], y[0], z[0], x[1], ...
+<p><code>points</code> is a pointer to an array of length <code>size</code> <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">3</span></span></span></span>, where the focal points are stored in the following order: x[0], y[0], z[0], x[1], …
 <code>amps</code> is a pointer to an array of length <code>size</code> and specifies the intensity of foci.</p>
 <p>You must delete the created Gain with <code>AUTDDeleteGain</code> at the end.</p>
 <table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
@@ -954,7 +954,7 @@ If it returns false, you can get the error message with <code>AUTDGetLastError</
 </tbody></table>
 <h2 id="autdgainholonaive-autd3capi-holo-gain"><a class="header" href="#autdgainholonaive-autd3capi-holo-gain">AUTDGainHoloNaive (autd3capi-holo-gain)</a></h2>
 <p>Create holo::Naive.</p>
-<p><code>points</code> is a pointer to an array of length <code>size</code> <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">3</span></span></span></span>, where the focal points are stored in the following order: x[0], y[0], z[0], x[1], ...
+<p><code>points</code> is a pointer to an array of length <code>size</code> <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">3</span></span></span></span>, where the focal points are stored in the following order: x[0], y[0], z[0], x[1], …
 <code>amps</code> is a pointer to an array of length <code>size</code> and specifies the intensity of foci.</p>
 <p>You must delete the created Gain with <code>AUTDDeleteGain</code> at the end.</p>
 <table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
@@ -967,7 +967,7 @@ If it returns false, you can get the error message with <code>AUTDGetLastError</
 </tbody></table>
 <h2 id="autdgainhologs-autd3capi-holo-gain"><a class="header" href="#autdgainhologs-autd3capi-holo-gain">AUTDGainHoloGS (autd3capi-holo-gain)</a></h2>
 <p>Create holo::GS.</p>
-<p><code>points</code> is a pointer to an array of length <code>size</code> <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">3</span></span></span></span>, where the focal points are stored in the following order: x[0], y[0], z[0], x[1], ...
+<p><code>points</code> is a pointer to an array of length <code>size</code> <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">3</span></span></span></span>, where the focal points are stored in the following order: x[0], y[0], z[0], x[1], …
 <code>amps</code> is a pointer to an array of length <code>size</code> and specifies the intensity of foci.</p>
 <p>You must delete the created Gain with <code>AUTDDeleteGain</code> at the end.</p>
 <table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
@@ -981,7 +981,7 @@ If it returns false, you can get the error message with <code>AUTDGetLastError</
 </tbody></table>
 <h2 id="autdgainhologspat-autd3capi-holo-gain"><a class="header" href="#autdgainhologspat-autd3capi-holo-gain">AUTDGainHoloGSPAT (autd3capi-holo-gain)</a></h2>
 <p>Create holo::GSPAT.</p>
-<p><code>points</code> is a pointer to an array of length <code>size</code> <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">3</span></span></span></span>, where the focal points are stored in the following order: x[0], y[0], z[0], x[1], ...
+<p><code>points</code> is a pointer to an array of length <code>size</code> <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">3</span></span></span></span>, where the focal points are stored in the following order: x[0], y[0], z[0], x[1], …
 <code>amps</code> is a pointer to an array of length <code>size</code> and specifies the intensity of foci.</p>
 <p>You must delete the created Gain with <code>AUTDDeleteGain</code> at the end.</p>
 <table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
@@ -995,7 +995,7 @@ If it returns false, you can get the error message with <code>AUTDGetLastError</
 </tbody></table>
 <h2 id="autdgainhololm-autd3capi-holo-gain"><a class="header" href="#autdgainhololm-autd3capi-holo-gain">AUTDGainHoloLM (autd3capi-holo-gain)</a></h2>
 <p>Create holo::LM.</p>
-<p><code>points</code> is a pointer to an array of length <code>size</code> <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">3</span></span></span></span>, where the focal points are stored in the following order: x[0], y[0], z[0], x[1], ...
+<p><code>points</code> is a pointer to an array of length <code>size</code> <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">3</span></span></span></span>, where the focal points are stored in the following order: x[0], y[0], z[0], x[1], …
 <code>amps</code> is a pointer to an array of length <code>size</code> and specifies the intensity of foci.</p>
 <p>You must delete the created Gain with <code>AUTDDeleteGain</code> at the end.</p>
 <table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
@@ -1014,7 +1014,7 @@ If it returns false, you can get the error message with <code>AUTDGetLastError</
 </tbody></table>
 <h2 id="autdgainhologaussnewton-autd3capi-holo-gain"><a class="header" href="#autdgainhologaussnewton-autd3capi-holo-gain">AUTDGainHoloGaussNewton (autd3capi-holo-gain)</a></h2>
 <p>Create holo::GaussNewton.</p>
-<p><code>points</code> is a pointer to an array of length <code>size</code> <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">3</span></span></span></span>, where the focal points are stored in the following order: x[0], y[0], z[0], x[1], ...
+<p><code>points</code> is a pointer to an array of length <code>size</code> <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">3</span></span></span></span>, where the focal points are stored in the following order: x[0], y[0], z[0], x[1], …
 <code>amps</code> is a pointer to an array of length <code>size</code> and specifies the intensity of foci.</p>
 <p>You must delete the created Gain with <code>AUTDDeleteGain</code> at the end.</p>
 <table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
@@ -1032,7 +1032,7 @@ If it returns false, you can get the error message with <code>AUTDGetLastError</
 </tbody></table>
 <h2 id="autdgainhologradientdescent-autd3capi-holo-gain"><a class="header" href="#autdgainhologradientdescent-autd3capi-holo-gain">AUTDGainHoloGradientDescent (autd3capi-holo-gain)</a></h2>
 <p>Create holo::GradientDescent.</p>
-<p><code>points</code> is a pointer to an array of length <code>size</code> <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">3</span></span></span></span>, where the focal points are stored in the following order: x[0], y[0], z[0], x[1], ...
+<p><code>points</code> is a pointer to an array of length <code>size</code> <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">3</span></span></span></span>, where the focal points are stored in the following order: x[0], y[0], z[0], x[1], …
 <code>amps</code> is a pointer to an array of length <code>size</code> and specifies the intensity of foci.</p>
 <p>You must delete the created Gain with <code>AUTDDeleteGain</code> at the end.</p>
 <table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
@@ -1050,7 +1050,7 @@ If it returns false, you can get the error message with <code>AUTDGetLastError</
 </tbody></table>
 <h2 id="autdgainholoapo-autd3capi-holo-gain"><a class="header" href="#autdgainholoapo-autd3capi-holo-gain">AUTDGainHoloAPO (autd3capi-holo-gain)</a></h2>
 <p>Create holo::APO.</p>
-<p><code>points</code> is a pointer to an array of length <code>size</code> <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">3</span></span></span></span>, where the focal points are stored in the following order: x[0], y[0], z[0], x[1], ...
+<p><code>points</code> is a pointer to an array of length <code>size</code> <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">3</span></span></span></span>, where the focal points are stored in the following order: x[0], y[0], z[0], x[1], …
 <code>amps</code> is a pointer to an array of length <code>size</code> and specifies the intensity of foci.</p>
 <p>You must delete the created Gain with <code>AUTDDeleteGain</code> at the end.</p>
 <table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
@@ -1066,7 +1066,7 @@ If it returns false, you can get the error message with <code>AUTDGetLastError</
 </tbody></table>
 <h2 id="autdgainhologreedy-autd3capi-holo-gain"><a class="header" href="#autdgainhologreedy-autd3capi-holo-gain">AUTDGainHoloGreedy (autd3capi-holo-gain)</a></h2>
 <p>Create holo::Greedy.</p>
-<p><code>points</code> is a pointer to an array of length <code>size</code> <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">3</span></span></span></span>, where the focal points are stored in the following order: x[0], y[0], z[0], x[1], ...
+<p><code>points</code> is a pointer to an array of length <code>size</code> <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">×</span><span class="mord">3</span></span></span></span>, where the focal points are stored in the following order: x[0], y[0], z[0], x[1], …
 <code>amps</code> is a pointer to an array of length <code>size</code> and specifies the intensity of foci.</p>
 <p>You must delete the created Gain with <code>AUTDDeleteGain</code> at the end.</p>
 <table><thead><tr><th>Argument name / return</th><th>type</th><th>in/out</th><th>description</th></tr></thead><tbody>
