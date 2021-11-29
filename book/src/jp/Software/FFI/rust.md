@@ -11,16 +11,16 @@ Rust版のライブラリはC++版をラップしたものではなく, Rustで�
 
 ```
 [dependencies]
-autd3 = "1.9.2"
+autd3 = "1.9.3"
 ```
 
 また, 各種Link, Gain等は別crateとして公開しているので必要に応じてdependenciesに追加すること.
 ```
 [dependencies]
-autd3-soem-link = "1.9.2"
-autd3-twincat-link = "1.9.2"
-autd3-emulator-link = "1.9.2"
-autd3-holo-gain = "1.9.2"
+autd3-soem-link = "1.9.3"
+autd3-twincat-link = "1.9.3"
+autd3-emulator-link = "1.9.3"
+autd3-holo-gain = "1.9.3"
 ```
 
 さらに, 適当な非同期ランタイムが必要になる. 以下の例ではtokioを用いる.
