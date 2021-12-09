@@ -50,7 +50,9 @@ inline std::unique_ptr<autd::Gain> select_opt(const std::vector<autd::Vector3>& 
   std::stringstream s(in);
   if (const auto empty = in == "\n"; !(s >> idx) || idx >= opts.size() || empty) idx = 0;
 
-  auto& [_name, opt] = std::move(opts[idx]);
+  std::string _name;
+  std::unique_ptr<autd::Gain> opt;
+  std::tie(_name, opt) = std::move(opts[idx]);
   return std::move(opt);
 }
 
