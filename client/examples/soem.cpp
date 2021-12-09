@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/11/2021
+// Last Modified: 09/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -32,15 +32,15 @@ std::string get_adapter_name() {
 }
 
 int main() try {
-  auto autd = autd::Controller::create();
+  autd::Controller autd;
 
-  autd->geometry().add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+  autd.geometry().add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
   // autd.geometry().add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
 
   // If you have already recognized the EtherCAT adapter name, you can write it directly like below.
   // auto ifname = "\\Device\\NPF_{B5B631C6-ED16-4780-9C4C-3941AE8120A6}";
   const auto ifname = get_adapter_name();
-  auto link = autd::link::SOEM::create(ifname, autd->geometry().num_devices());
+  auto link = autd::link::SOEM::create(ifname, autd.geometry().num_devices());
 
   link->on_lost([](const std::string& msg) {
     std::cerr << "Link is lost\n";
@@ -53,7 +53,7 @@ int main() try {
 #endif
   });
 
-  autd->open(std::move(link));
+  autd.open(std::move(link));
   return run(std::move(autd));
 } catch (std::exception& e) {
   std::cerr << e.what() << std::endl;

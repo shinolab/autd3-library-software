@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/11/2021
+// Last Modified: 09/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -22,15 +22,10 @@
 
 namespace autd {
 using core::Geometry;
-using core::LinkPtr;
 using core::Matrix4X4;
 using core::Quaternion;
 using core::Vector3;
-using gain::GainPtr;
-using modulation::ModulationPtr;
 using sequence::GAIN_MODE;
-using sequence::GainSequencePtr;
-using sequence::PointSequencePtr;
 
 using core::DEVICE_HEIGHT;
 using core::DEVICE_WIDTH;

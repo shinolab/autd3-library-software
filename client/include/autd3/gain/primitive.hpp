@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/11/2021
+// Last Modified: 09/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -16,14 +16,30 @@
 #include <utility>
 
 #include "autd3/core/gain.hpp"
+#include "autd3/core/utils.hpp"
 
 namespace autd::gain {
 
 using core::Gain;
-using core::GainPtr;
-using Null = Gain;
-
 using core::Vector3;
+
+/**
+ * @brief Gain to produce nothing
+ */
+class Null final : public Gain {
+ public:
+  void calc(const core::Geometry& geometry) override {
+    for (const auto& device : geometry)
+      for (const auto& transducer : device) this->_data[transducer.id()] = core::Drive(0x00, 0x00);
+  }
+
+  Null() : Gain() {}
+  ~Null() override = default;
+  Null(const Null& v) noexcept = delete;
+  Null& operator=(const Null& obj) = delete;
+  Null(Null&& obj) = default;
+  Null& operator=(Null&& obj) = default;
+};
 
 /**
  * @brief Gain to group some gains
@@ -31,27 +47,22 @@ using core::Vector3;
 class Grouped final : public Gain {
  public:
   /**
-   * @brief Generate function
-   */
-  static std::shared_ptr<Grouped> create();
-
-  /**
    * \brief Decide which device outputs which Gain
    * \param device_id device id
    * \param gain gain
    */
-  void add(size_t device_id, const GainPtr& gain);
+  void add(size_t device_id, const std::shared_ptr<Gain>& gain);
 
   void calc(const core::Geometry& geometry) override;
   Grouped() : Gain() {}
   ~Grouped() override = default;
-  Grouped(const Grouped& v) noexcept = default;
-  Grouped& operator=(const Grouped& obj) = default;
+  Grouped(const Grouped& v) noexcept = delete;
+  Grouped& operator=(const Grouped& obj) = delete;
   Grouped(Grouped&& obj) = default;
   Grouped& operator=(Grouped&& obj) = default;
 
  private:
-  std::map<size_t, GainPtr> _gain_map;
+  std::map<size_t, std::shared_ptr<Gain>> _gain_map;
 };
 
 /**
@@ -60,23 +71,22 @@ class Grouped final : public Gain {
 class PlaneWave final : public Gain {
  public:
   /**
-   * @brief Generate function
    * @param[in] direction wave direction
    * @param[in] duty duty ratio of driving signal
    */
-  static GainPtr create(const Vector3& direction, uint8_t duty = 0xff);
+  explicit PlaneWave(Vector3 direction, const uint8_t duty = 0xFF) : Gain(), _direction(std::move(direction)), _duty(duty) {}
+
   /**
-   * @brief Generate function
    * @param[in] direction wave direction
    * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
    */
-  static GainPtr create(const Vector3& direction, double amp);
+  explicit PlaneWave(Vector3 direction, const double amp) : PlaneWave(std::move(direction), core::utils::to_duty(amp)) {}
 
   void calc(const core::Geometry& geometry) override;
-  explicit PlaneWave(Vector3 direction, const uint8_t duty) : Gain(), _direction(std::move(direction)), _duty(duty) {}
+
   ~PlaneWave() override = default;
-  PlaneWave(const PlaneWave& v) noexcept = default;
-  PlaneWave& operator=(const PlaneWave& obj) = default;
+  PlaneWave(const PlaneWave& v) noexcept = delete;
+  PlaneWave& operator=(const PlaneWave& obj) = delete;
   PlaneWave(PlaneWave&& obj) = default;
   PlaneWave& operator=(PlaneWave&& obj) = default;
 
@@ -91,23 +101,21 @@ class PlaneWave final : public Gain {
 class FocalPoint final : public Gain {
  public:
   /**
-   * @brief Generate function
    * @param[in] point focal point
    * @param[in] duty duty ratio of driving signal
    */
-  static GainPtr create(const Vector3& point, uint8_t duty = 0xff);
+  explicit FocalPoint(Vector3 point, const uint8_t duty = 0xFF) : Gain(), _point(std::move(point)), _duty(duty) {}
   /**
-   * @brief Generate function
    * @param[in] point focal point
    * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
    */
-  static GainPtr create(const Vector3& point, double amp);
+  explicit FocalPoint(Vector3 point, const double amp) : FocalPoint(std::move(point), core::utils::to_duty(amp)) {}
 
   void calc(const core::Geometry& geometry) override;
-  explicit FocalPoint(Vector3 point, const uint8_t duty) : Gain(), _point(std::move(point)), _duty(duty) {}
+
   ~FocalPoint() override = default;
-  FocalPoint(const FocalPoint& v) noexcept = default;
-  FocalPoint& operator=(const FocalPoint& obj) = default;
+  FocalPoint(const FocalPoint& v) noexcept = delete;
+  FocalPoint& operator=(const FocalPoint& obj) = delete;
   FocalPoint(FocalPoint&& obj) = default;
   FocalPoint& operator=(FocalPoint&& obj) = default;
 
@@ -122,29 +130,28 @@ class FocalPoint final : public Gain {
 class BesselBeam final : public Gain {
  public:
   /**
-   * @brief Generate function
    * @param[in] apex apex of the conical wavefront of the beam
    * @param[in] vec_n direction of the beam
    * @param[in] theta_z angle between the side of the cone and the plane perpendicular to direction of the beam
    * @param[in] duty duty ratio of driving signal
    */
-  static GainPtr create(const Vector3& apex, const Vector3& vec_n, double theta_z, uint8_t duty = 0xff);
+  explicit BesselBeam(Vector3 apex, Vector3 vec_n, const double theta_z, const uint8_t duty = 0xFF)
+      : Gain(), _apex(std::move(apex)), _vec_n(std::move(vec_n)), _theta_z(theta_z), _duty(duty) {}
 
   /**
-   * @brief Generate function
    * @param[in] apex apex of the conical wavefront of the beam
    * @param[in] vec_n direction of the beam
    * @param[in] theta_z angle between the conical wavefront of the beam and the direction
    * @param[in] amp amplitude of the wave (from 0.0 to 1.0)
    */
-  static GainPtr create(const Vector3& apex, const Vector3& vec_n, double theta_z, double amp);
+  explicit BesselBeam(Vector3 apex, Vector3 vec_n, const double theta_z, const double amp)
+      : BesselBeam(std::move(apex), std::move(vec_n), theta_z, core::utils::to_duty(amp)) {}
 
   void calc(const core::Geometry& geometry) override;
-  explicit BesselBeam(Vector3 apex, Vector3 vec_n, const double theta_z, const uint8_t duty)
-      : Gain(), _apex(std::move(apex)), _vec_n(std::move(vec_n)), _theta_z(theta_z), _duty(duty) {}
+
   ~BesselBeam() override = default;
-  BesselBeam(const BesselBeam& v) noexcept = default;
-  BesselBeam& operator=(const BesselBeam& obj) = default;
+  BesselBeam(const BesselBeam& v) noexcept = delete;
+  BesselBeam& operator=(const BesselBeam& obj) = delete;
   BesselBeam(BesselBeam&& obj) = default;
   BesselBeam& operator=(BesselBeam&& obj) = default;
 
@@ -161,18 +168,18 @@ class BesselBeam final : public Gain {
 class TransducerTest final : public Gain {
  public:
   /**
-   * @brief Generate function
    * @param[in] transducer_index index of the transducer
    * @param[in] duty duty ratio of driving signal
    * @param[in] phase phase of the phase
    */
-  static GainPtr create(size_t transducer_index, uint8_t duty, uint8_t phase);
-  void calc(const core::Geometry& geometry) override;
   TransducerTest(const size_t transducer_index, const uint8_t duty, const uint8_t phase)
       : Gain(), _transducer_idx(transducer_index), _duty(duty), _phase(phase) {}
+
+  void calc(const core::Geometry& geometry) override;
+
   ~TransducerTest() override = default;
-  TransducerTest(const TransducerTest& v) noexcept = default;
-  TransducerTest& operator=(const TransducerTest& obj) = default;
+  TransducerTest(const TransducerTest& v) noexcept = delete;
+  TransducerTest& operator=(const TransducerTest& obj) = delete;
   TransducerTest(TransducerTest&& obj) = default;
   TransducerTest& operator=(TransducerTest&& obj) = default;
 

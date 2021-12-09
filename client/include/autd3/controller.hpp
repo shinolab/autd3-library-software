@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/11/2021
+// Last Modified: 09/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -26,9 +26,6 @@
 
 namespace autd {
 
-class Controller;
-using ControllerPtr = std::unique_ptr<Controller>;
-
 /**
  * @brief AUTD Controller
  */
@@ -45,7 +42,8 @@ class Controller {
           _force_fan(false),
           _op_mode(core::OP_MODE_NORMAL),
           _seq_mode(core::SEQ_MODE_POINT),
-          _reads_fpga_info(false) {}
+          _reads_fpga_info(false),
+          _wait_on_sync(false) {}
     ~ControllerProps() = default;
     ControllerProps(const ControllerProps& v) noexcept = delete;
     ControllerProps& operator=(const ControllerProps& obj) = delete;
@@ -63,6 +61,7 @@ class Controller {
     bool _op_mode;
     bool _seq_mode;
     bool _reads_fpga_info;
+    bool _wait_on_sync;
   };
 
  public:
@@ -75,8 +74,6 @@ class Controller {
   Controller& operator=(const Controller& obj) = delete;
   Controller(Controller&& obj) = default;
   Controller& operator=(Controller&& obj) = default;
-
-  static ControllerPtr create();
 
   /**
    * @brief Verify the device is properly connected
@@ -184,14 +181,14 @@ class Controller {
    * @param[in] gain Gain to display
    * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
    */
-  bool send(const core::GainPtr& gain);
+  bool send(core::Gain& gain);
 
   /**
    * @brief Send modulation to the device
    * @param[in] mod Amplitude modulation to display
    * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
    */
-  bool send(const core::ModulationPtr& mod);
+  bool send(core::Modulation& mod);
 
   /**
    * @brief Send gain and modulation to the device
@@ -199,7 +196,7 @@ class Controller {
    * @param[in] mod Amplitude modulation to display
    * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
    */
-  bool send(const core::GainPtr& gain, const core::ModulationPtr& mod);
+  bool send(core::Gain& gain, core::Modulation& mod);
 
   /**
    * @brief Send sequence to the device
@@ -207,7 +204,7 @@ class Controller {
    * @param[in] mod Amplitude modulation to display
    * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
    */
-  bool send(const core::PointSequencePtr& seq, const core::ModulationPtr& mod = nullptr);
+  bool send(const core::PointSequence& seq, core::Modulation& mod);
 
   /**
    * @brief Send sequence to the device
@@ -215,7 +212,7 @@ class Controller {
    * @param[in] mod Amplitude modulation to display
    * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
    */
-  bool send(const core::GainSequencePtr& seq, const core::ModulationPtr& mod = nullptr);
+  bool send(const core::GainSequence& seq, core::Modulation& mod);
 
   /**
    * @brief Enumerate firmware information
@@ -239,7 +236,7 @@ class Controller {
     /**
      * @brief Add gain for STM
      */
-    void add_gain(const core::GainPtr& gain) const;
+    void add_gain(const std::shared_ptr<core::Gain>& gain) const;
 
     /**
      * @brief Start Spatio-Temporal Modulation

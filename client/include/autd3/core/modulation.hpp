@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 24/11/2021
+// Last Modified: 09/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -16,12 +16,8 @@
 
 #include "exception.hpp"
 #include "hardware_defined.hpp"
-#include "utils.hpp"
 
 namespace autd::core {
-
-class Modulation;
-using ModulationPtr = std::shared_ptr<Modulation>;
 
 /**
  * @brief Modulation controls the amplitude modulation
@@ -37,25 +33,9 @@ class Modulation {
   Modulation& operator=(Modulation&& obj) = default;
 
   /**
-   * @brief Generate empty modulation, which produce static pressure
-   * \param duty duty ratio
-   */
-  static ModulationPtr create(const uint8_t duty = 0xFF) {
-    auto mod = std::make_shared<Modulation>();
-    mod->_buffer.resize(1, duty);
-    return mod;
-  }
-
-  /**
-   * @brief Generate empty modulation, which produce static pressure
-   * \param amp relative amplitude (0 to 1)
-   */
-  static ModulationPtr create(const double amp) { return create(utils::to_duty(amp)); }
-
-  /**
    * \brief Calculate modulation data
    */
-  virtual void calc() {}
+  virtual void calc() = 0;
 
   /**
    * \brief Build modulation data
@@ -80,7 +60,7 @@ class Modulation {
   /**
    * \brief modulation data
    */
-  std::vector<uint8_t>& buffer() { return _buffer; }
+  [[nodiscard]] const std::vector<uint8_t>& buffer() const { return _buffer; }
 
   /**
    * \brief sampling frequency division ratio
@@ -88,6 +68,13 @@ class Modulation {
    * autd::core::MOD_SAMPLING_FREQ_DIV_MAX.
    */
   size_t& sampling_freq_div_ratio() noexcept { return _freq_div_ratio; }
+
+  /**
+   * \brief sampling frequency division ratio
+   * \details sampling frequency will be autd::core::MOD_SAMPLING_FREQ_BASE /(sampling frequency division ratio). The value must be in 1, 2, ...,
+   * autd::core::MOD_SAMPLING_FREQ_DIV_MAX.
+   */
+  size_t sampling_freq_div_ratio() const noexcept { return _freq_div_ratio; }
 
   /**
    * \brief modulation sampling frequency
@@ -98,24 +85,6 @@ class Modulation {
   bool _built;
   size_t _freq_div_ratio;
   std::vector<uint8_t> _buffer;
-};
-
-/**
- * Software filter for Modulation
- */
-class Filter {
- public:
-  Filter() = default;
-  virtual ~Filter() = default;
-  Filter(const Filter& v) noexcept = default;
-  Filter& operator=(const Filter& obj) = default;
-  Filter(Filter&& obj) = default;
-  Filter& operator=(Filter&& obj) = default;
-
-  /**
-   * \brief apply filter to Modulation
-   */
-  virtual void apply(const ModulationPtr& mod) const = 0;
 };
 
 }  // namespace autd::core
