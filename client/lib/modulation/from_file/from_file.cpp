@@ -3,7 +3,7 @@
 // Created Date: 17/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/11/2021
+// Last Modified: 09/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -26,22 +26,19 @@ double sinc(const double x) noexcept {
 }
 }  // namespace
 
-core::ModulationPtr RawPCM::create(const std::string& filename, const double sampling_freq, const uint16_t mod_sampling_freq_div) {
+RawPCM::RawPCM(const std::string& filename, double sampling_freq, uint16_t mod_sampling_freq_div)
+    : Modulation(mod_sampling_freq_div), _sampling_freq(sampling_freq) {
   std::ifstream ifs;
   ifs.open(filename, std::ios::binary);
 
   if (ifs.fail()) throw core::exception::ModulationBuildError("Error on opening file");
 
-  std::vector<uint8_t> tmp;
   char buf[sizeof(uint8_t)];
   while (ifs.read(buf, sizeof(uint8_t))) {
     int value;
     std::memcpy(&value, buf, sizeof(uint8_t));
-    tmp.emplace_back(value);
+    _buf.emplace_back(value);
   }
-
-  core::ModulationPtr mod = std::make_shared<RawPCM>(sampling_freq, mod_sampling_freq_div, tmp);
-  return mod;
 }
 
 void RawPCM::calc() {
@@ -92,7 +89,7 @@ T read_from_stream(std::ifstream& fsp) {
 }
 }  // namespace
 
-core::ModulationPtr Wav::create(const std::string& filename, const uint16_t mod_sampling_freq_div) {
+Wav::Wav(const std::string& filename, const uint16_t mod_sampling_freq_div) : Modulation(mod_sampling_freq_div) {
   std::ifstream fs;
   fs.open(filename, std::ios::binary);
   if (fs.fail()) throw core::exception::ModulationBuildError("Error on opening file");
@@ -114,7 +111,7 @@ core::ModulationPtr Wav::create(const std::string& filename, const uint16_t mod_
   if (const auto channel = read_from_stream<uint16_t>(fs); channel != 0x0001u)
     throw core::exception::ModulationBuildError("Invalid data format. This supports only monaural audio.");
 
-  const auto sample_freq = read_from_stream<uint32_t>(fs);
+  _sampling_freq = read_from_stream<uint32_t>(fs);
   [[maybe_unused]] const auto bytes_per_sec = read_from_stream<uint32_t>(fs);
   [[maybe_unused]] const auto block_size = read_from_stream<uint16_t>(fs);
 
@@ -128,21 +125,17 @@ core::ModulationPtr Wav::create(const std::string& filename, const uint16_t mod_
   if (bits_per_sample != 8 && bits_per_sample != 16)
     throw core::exception::ModulationBuildError("This only supports 8 or 16 bits per sampling data.");
 
-  std::vector<uint8_t> tmp;
   const auto data_size = data_chunk_size / (bits_per_sample / 8);
   for (size_t i = 0; i < data_size; i++) {
     if (bits_per_sample == 8) {
       auto d = read_from_stream<uint8_t>(fs);
-      tmp.emplace_back(d);
+      _buf.emplace_back(d);
     } else if (bits_per_sample == 16) {
       const auto d32 = static_cast<int32_t>(read_from_stream<int16_t>(fs)) - std::numeric_limits<int16_t>::min();
       auto d8 = static_cast<uint8_t>(static_cast<double>(d32) / std::numeric_limits<uint16_t>::max() * std::numeric_limits<uint8_t>::max());
-      tmp.emplace_back(d8);
+      _buf.emplace_back(d8);
     }
   }
-
-  core::ModulationPtr mod = std::make_shared<Wav>(sample_freq, mod_sampling_freq_div, tmp);
-  return mod;
 }
 
 void Wav::calc() {

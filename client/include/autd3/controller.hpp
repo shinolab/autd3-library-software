@@ -86,9 +86,19 @@ class Controller {
   [[nodiscard]] core::Geometry& geometry() noexcept;
 
   /**
+   * @brief Geometry of the devices
+   */
+  [[nodiscard]] const core::Geometry& geometry() const noexcept;
+
+  /**
    * @brief Output enable
    */
   bool& output_enable() noexcept;
+
+  /**
+   * @brief Output enable
+   */
+  bool output_enable() const noexcept;
 
   /**
    * @brief Silent mode
@@ -96,9 +106,19 @@ class Controller {
   bool& silent_mode() noexcept;
 
   /**
+   * @brief Silent mode
+   */
+  bool silent_mode() const noexcept;
+
+  /**
    * @brief If true, the devices return FPGA info in all frames. The FPGA info can be read by fpga_info().
    */
   bool& reads_fpga_info() noexcept;
+
+  /**
+   * @brief If true, the devices return FPGA info in all frames. The FPGA info can be read by fpga_info().
+   */
+  bool reads_fpga_info() const noexcept;
 
   /**
    * @brief If true, the fan will be forced to start.
@@ -106,14 +126,29 @@ class Controller {
   bool& force_fan() noexcept;
 
   /**
+   * @brief If true, the fan will be forced to start.
+   */
+  bool force_fan() const noexcept;
+
+  /**
    * @brief If true, the applied voltage to transducers is dropped to GND while transducers are not being outputting.
    */
   bool& output_balance() noexcept;
 
   /**
+   * @brief If true, the applied voltage to transducers is dropped to GND while transducers are not being outputting.
+   */
+  bool output_balance() const noexcept;
+
+  /**
    * @brief If true, this controller check ack from devices.
    */
   bool& check_ack() noexcept;
+
+  /**
+   * @brief If true, this controller check ack from devices.
+   */
+  bool check_ack() const noexcept;
 
   /**
    * @brief FPGA info
@@ -236,7 +271,7 @@ class Controller {
     /**
      * @brief Add gain for STM
      */
-    void add_gain(const std::shared_ptr<core::Gain>& gain) const;
+    void add_gain(core::Gain& gain) const;
 
     /**
      * @brief Start Spatio-Temporal Modulation

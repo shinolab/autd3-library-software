@@ -4,7 +4,6 @@ add_library(autd3capi-from-file-modulation SHARED
   c_api.cpp
   from_file_modulation.h
   ../base/header.h
-  ../base/wrapper_modulation.hpp
 )
 
 target_link_libraries(autd3capi-from-file-modulation from_file_modulation)
