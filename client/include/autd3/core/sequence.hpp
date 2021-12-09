@@ -3,7 +3,7 @@
 // Created Date: 14/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 24/11/2021
+// Last Modified: 09/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -24,15 +24,13 @@
 namespace autd::core {
 class PointSequence;
 class GainSequence;
-using PointSequencePtr = std::shared_ptr<PointSequence>;
-using GainSequencePtr = std::shared_ptr<GainSequence>;
 
 class Sequence {
  public:
   Sequence() : _freq_div_ratio(1) {}
   virtual ~Sequence() = default;
-  Sequence(const Sequence& v) noexcept = default;
-  Sequence& operator=(const Sequence& obj) = default;
+  Sequence(const Sequence& v) noexcept = delete;
+  Sequence& operator=(const Sequence& obj) = delete;
   Sequence(Sequence&& obj) = default;
   Sequence& operator=(Sequence&& obj) = default;
 
@@ -80,6 +78,13 @@ class Sequence {
    */
   size_t& sampling_freq_div_ratio() noexcept { return this->_freq_div_ratio; }
 
+  /**
+   * The sampling frequency division ratio means the autd::core::SEQ_BASE_FREQ/(sampling frequency) = (sampling period)/25us.
+   * @return size_t Sampling frequency division ratio
+   * \details  The value must be in 1, 2, ..., autd::core::SEQ_SAMPLING_FREQ_DIV_MAX.
+   */
+  size_t sampling_freq_div_ratio() const noexcept { return this->_freq_div_ratio; }
+
  protected:
   size_t _freq_div_ratio;
 };
@@ -97,11 +102,6 @@ class PointSequence : virtual public Sequence {
   PointSequence() noexcept : Sequence() {}
 
   [[nodiscard]] size_t size() const override { return this->_control_points.size(); }
-
-  /**
-   * @brief Generate empty PointSequence.
-   */
-  static PointSequencePtr create() noexcept { return std::make_shared<PointSequence>(); }
 
   /**
    * @brief Add control point
@@ -140,18 +140,18 @@ class PointSequence : virtual public Sequence {
    * @param[in] index control point index
    * @return Vector3 Control point of the sequence
    */
-  [[nodiscard]] Vector3& control_point(const size_t index) { return this->_control_points[index]; }
+  [[nodiscard]] const Vector3& control_point(const size_t index) const { return this->_control_points[index]; }
 
   /**
    * @param[in] index control point index
    * @return uint8_t Duty ratio of the sequence
    */
-  [[nodiscard]] uint8_t& duty(const size_t index) { return this->_duties[index]; }
+  [[nodiscard]] uint8_t duty(const size_t index) const { return this->_duties[index]; }
 
   /**
    * @return std::vector<Vector3> Control points of the sequence
    */
-  [[nodiscard]] const std::vector<Vector3>& control_points() { return this->_control_points; }
+  [[nodiscard]] const std::vector<Vector3>& control_points() const { return this->_control_points; }
 
   /**
    * @return std::vector<uint8_t> Duty ratios of the sequence
@@ -174,28 +174,16 @@ class GainSequence final : public Sequence {
  public:
   GainSequence() noexcept : Sequence(), _gain_mode(GAIN_MODE::DUTY_PHASE_FULL) {}
   explicit GainSequence(const GAIN_MODE gain_mode) noexcept : Sequence(), _gain_mode(gain_mode) {}
-  explicit GainSequence(std::vector<GainPtr> gains, const GAIN_MODE gain_mode) noexcept
+  explicit GainSequence(std::vector<std::shared_ptr<Gain>> gains, const GAIN_MODE gain_mode) noexcept
       : Sequence(), _gains(std::move(gains)), _gain_mode(gain_mode) {}
 
   [[nodiscard]] size_t size() const override { return this->_gains.size(); }
 
   /**
-   * @brief Generate empty GainSequence
-   */
-  static GainSequencePtr create(GAIN_MODE gain_mode = GAIN_MODE::DUTY_PHASE_FULL) noexcept { return std::make_shared<GainSequence>(gain_mode); }
-
-  /**
-   * @brief Generate PointSequence with control points.
-   */
-  static GainSequencePtr create(const std::vector<GainPtr>& gains, GAIN_MODE gain_mode = GAIN_MODE::DUTY_PHASE_FULL) noexcept {
-    return std::make_shared<GainSequence>(gains, gain_mode);
-  }
-
-  /**
    * @brief Add gain
    * @param[in] gain gain
    */
-  void add_gain(const GainPtr& gain) {
+  void add_gain(const std::shared_ptr<Gain>& gain) {
     if (this->_gains.size() + 1 > GAIN_SEQ_BUFFER_SIZE_MAX)
       throw exception::SequenceBuildError(
           std::string("Gain sequence buffer overflow. Maximum available buffer size is " + std::to_string(GAIN_SEQ_BUFFER_SIZE_MAX)));
@@ -207,7 +195,7 @@ class GainSequence final : public Sequence {
    * @brief Add gains
    * @param[in] gains vector of gain
    */
-  void add_points(const std::vector<GainPtr>& gains) {
+  void add_points(const std::vector<std::shared_ptr<Gain>>& gains) {
     if (this->_gains.size() + gains.size() > GAIN_SEQ_BUFFER_SIZE_MAX)
       throw exception::SequenceBuildError(
           std::string("Gain sequence buffer overflow. Maximum available buffer size is " + std::to_string(GAIN_SEQ_BUFFER_SIZE_MAX)));
@@ -219,15 +207,19 @@ class GainSequence final : public Sequence {
   /**
    * @return std::vector<GainPtr> Gain list of the sequence
    */
-  [[nodiscard]] const std::vector<GainPtr>& gains() { return this->_gains; }
+  [[nodiscard]] const std::vector<std::shared_ptr<Gain>>& gains() const { return this->_gains; }
 
   /**
    * @return GAIN_MODE
    */
   GAIN_MODE& gain_mode() { return this->_gain_mode; }
+  /**
+   * @return GAIN_MODE
+   */
+  GAIN_MODE gain_mode() const { return this->_gain_mode; }
 
  private:
-  std::vector<GainPtr> _gains;
+  std::vector<std::shared_ptr<Gain>> _gains;
   GAIN_MODE _gain_mode;
 };
 

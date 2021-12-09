@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/11/2021
+// Last Modified: 09/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -64,6 +64,7 @@ enum CPU_CONTROL_FLAGS : uint8_t {
   READS_FPGA_INFO = 1 << 4,
   DELAY_OFFSET = 1 << 5,
   WRITE_BODY = 1 << 6,
+  WAIT_ON_SYNC = 1 << 7,
 };
 
 constexpr uint8_t MSG_CLEAR = 0x00;
@@ -83,6 +84,14 @@ struct GlobalHeader {
   uint8_t cpu_ctrl_flags;
   uint8_t mod_size;
   uint8_t mod[MOD_FRAME_SIZE];
+};
+
+struct Drive final {
+  Drive() : Drive(0x00, 0x00) {}
+  explicit Drive(const uint8_t duty, const uint8_t phase) : phase(phase), duty(duty) {}
+
+  uint8_t phase;
+  uint8_t duty;
 };
 
 struct DelayOffset {
@@ -123,6 +132,11 @@ enum class GAIN_MODE : uint16_t {
   DUTY_PHASE_FULL = 0x0001,
   PHASE_FULL = 0x0002,
   PHASE_HALF = 0x0004,
+};
+
+struct RxMessage final {
+  uint8_t ack;
+  uint8_t msg_id;
 };
 
 }  // namespace core
