@@ -1,3 +1,6 @@
+# 1.10
+* Rename `SinePressure` to `SineSquared`
+
 # 1.9.3
 * fix minor bugs
 * Change transducers' geometry accessor
