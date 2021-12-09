@@ -21,8 +21,12 @@
 #include "autd3/sequence/primitive.hpp"
 
 namespace autd {
+using core::Gain;
+using core::GainSequence;
 using core::Geometry;
 using core::Matrix4X4;
+using core::Modulation;
+using core::PointSequence;
 using core::Quaternion;
 using core::Vector3;
 using sequence::GAIN_MODE;

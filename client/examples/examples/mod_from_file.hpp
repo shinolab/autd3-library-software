@@ -24,7 +24,7 @@ inline void mod_from_file_test(autd::Controller& autd) {
   autd.silent_mode() = true;
 
   const fs::path path = fs::path(std::string(AUTD3_RESOURCE_PATH)).append(std::string("sin150.wav"));
-  const auto m = autd::modulation::Wav::create(path.string());
+  autd::modulation::Wav m(path.string());
 
   const autd::Vector3 center(TRANS_SPACING_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SPACING_MM * ((NUM_TRANS_Y - 1) / 2.0), 150.0);
   autd::gain::FocalPoint g(center);

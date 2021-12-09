@@ -48,14 +48,21 @@ Controller::~Controller() noexcept {
 bool Controller::is_open() const { return this->_link != nullptr && this->_link->is_open(); }
 
 core::Geometry& Controller::geometry() noexcept { return this->_geometry; }
+const core::Geometry& Controller::geometry() const noexcept { return this->_geometry; }
 
 bool& Controller::output_enable() noexcept { return this->_props._output_enable; }
 bool& Controller::silent_mode() noexcept { return this->_props._silent_mode; }
 bool& Controller::reads_fpga_info() noexcept { return this->_props._reads_fpga_info; }
 bool& Controller::force_fan() noexcept { return this->_props._force_fan; }
 bool& Controller::output_balance() noexcept { return this->_props._output_balance; }
-
 bool& Controller::check_ack() noexcept { return this->_check_ack; }
+
+bool Controller::output_enable() const noexcept { return this->_props._output_enable; }
+bool Controller::silent_mode() const noexcept { return this->_props._silent_mode; }
+bool Controller::reads_fpga_info() const noexcept { return this->_props._reads_fpga_info; }
+bool Controller::force_fan() const noexcept { return this->_props._force_fan; }
+bool Controller::output_balance() const noexcept { return this->_props._output_balance; }
+bool Controller::check_ack() const noexcept { return this->_check_ack; }
 
 const std::vector<uint8_t>& Controller::fpga_info() {
   const auto num_devices = this->_geometry.num_devices();
@@ -185,7 +192,7 @@ bool Controller::send(core::Gain& gain, core::Modulation& mod) {
   this->_props._op_mode = core::OP_MODE_NORMAL;
   gain.build(this->_geometry);
 
-  // TODO
+  // TODO(ME)
   while (true) {
     const auto msg_id = core::logic::pack_header(mod, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag(), &this->_tx_buf[0], &mod_sent);
     const auto size = core::logic::pack_body(gain, &this->_tx_buf[0]);
@@ -301,13 +308,13 @@ std::unique_ptr<Controller::STMController> Controller::stm() {
   return std::make_unique<Impl>(std::make_unique<STMTimerCallback>(std::move(this->_link)), this);
 }
 
-void Controller::STMController::add_gain(const std::shared_ptr<core::Gain>& gain) const {
-  gain->build(this->_p_cnt->_geometry);
+void Controller::STMController::add_gain(core::Gain& gain) const {
+  gain.build(this->_p_cnt->_geometry);
 
   auto build_buf = std::make_unique<uint8_t[]>(this->_p_cnt->_geometry.num_devices() * core::EC_OUTPUT_FRAME_SIZE);
   const uint8_t msg_id = core::logic::get_id();
   core::logic::pack_header(msg_id, this->_p_cnt->_props.fpga_ctrl_flag() | core::OUTPUT_ENABLE, this->_p_cnt->_props.cpu_ctrl_flag(), &build_buf[0]);
-  const auto size = core::logic::pack_body(*gain, &build_buf[0]);
+  const auto size = core::logic::pack_body(gain, &build_buf[0]);
 
   this->_handler->add(std::move(build_buf), size);
 }

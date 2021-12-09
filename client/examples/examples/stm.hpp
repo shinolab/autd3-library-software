@@ -29,7 +29,7 @@ inline void stm_test(autd::Controller& autd) {
     constexpr auto radius = 20.0;
     const auto theta = 2.0 * M_PI * static_cast<double>(i) / point_num;
     const autd::Vector3 pos(radius * cos(theta), radius * sin(theta), 0.0);
-    const auto g = std::make_shared<autd::gain::FocalPoint>(center + pos);
+    autd::gain::FocalPoint g(center + pos);
     stm->add_gain(g);
   }
 

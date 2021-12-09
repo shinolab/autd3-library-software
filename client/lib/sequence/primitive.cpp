@@ -25,7 +25,7 @@ Circumference::Circumference(const core::Vector3& center, const core::Vector3& n
   const auto normal_ = normal.normalized();
   const auto n1 = get_orthogonal(normal_).normalized();
   const auto n2 = normal_.cross(n1).normalized();
-  ;
+
   for (size_t i = 0; i < n; i++) {
     const auto theta = 2 * M_PI / static_cast<double>(n) * static_cast<double>(i);
     auto x = n1 * radius * std::cos(theta);
