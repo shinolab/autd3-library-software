@@ -12,6 +12,7 @@
 #pragma once
 
 #include <algorithm>
+#include <iostream>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -143,7 +144,7 @@ struct EigenMatrix {
     data.block(start_row, col, end_row - start_row, 1) = vec->data.block(start_row, 0, end_row - start_row, 1);
   }
   void set_row(const size_t row, const size_t start_col, const size_t end_col, const std::shared_ptr<const EigenMatrix<T>>& vec) {
-    data.block(row, start_col, 1, end_col - start_col) = vec->data.block(row, 0, end_col - start_col, 1);
+    data.block(row, start_col, 1, end_col - start_col) = vec->data.block(start_col, 0, end_col - start_col, 1).transpose();
   }
 
   void get_col(const std::shared_ptr<const EigenMatrix<T>>& src, const size_t i) {
