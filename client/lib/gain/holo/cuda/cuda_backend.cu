@@ -63,10 +63,15 @@ struct CuMatrix<double>::Impl {
   double* ptr() { return _d_vec.data().get(); }
 
   void exp() { cu_exp((uint32_t)_row, (uint32_t)_col, ptr()); }
+  void pow(double s) { cu_pow((uint32_t)_row, (uint32_t)_col, ptr(), s); }
   void real(const std::shared_ptr<const CuMatrix<complex>> src) {
     cu_real((const cuDoubleComplex*)src->ptr(), (uint32_t)src->rows(), (uint32_t)src->cols(), ptr());
   }
+  void imag(const std::shared_ptr<const CuMatrix<complex>> src) {
+    cu_imag((const cuDoubleComplex*)src->ptr(), (uint32_t)src->rows(), (uint32_t)src->cols(), ptr());
+  }
   void scale(const double s) { cublasDscal_v2(CuContext::handle, static_cast<int>(_row * _col), &s, ptr(), 1); }
+  void sqrt() { cu_sqrt((uint32_t)_row, (uint32_t)_col, ptr()); }
   void reciprocal(const std::shared_ptr<const CuMatrix<double>> src) {
     cu_reciprocal((uint32_t)src->rows(), (uint32_t)src->cols(), src->ptr(), ptr());
   }
@@ -184,6 +189,14 @@ struct CuMatrix<double>::Impl {
   void set(const size_t row, const size_t col, double v) {
     cudaMemcpy(_d_vec.data().get() + row + _row * col, &v, sizeof(double), cudaMemcpyHostToDevice);
   }
+
+  void set_col(size_t col, size_t start_row, size_t end_row, const std::shared_ptr<const CuMatrix<double>>& vec) {
+    cudaMemcpy(ptr(), vec->ptr() + col * _row + start_row, (end_row - start_row) * sizeof(double), cudaMemcpyDeviceToDevice);
+  }
+  void set_row(size_t row, size_t start_col, size_t end_col, const std::shared_ptr<const CuMatrix<double>>& vec) {
+    cublasDcopy(CuContext::handle, (int)(end_col - start_col), vec->ptr() + start_col, 1, ptr(), _row);
+  }
+
   void get_col(const std::shared_ptr<const CuMatrix<double>>& src, const size_t i) {
     cudaMemcpy(ptr(), src->ptr() + i * _row, _row * sizeof(double), cudaMemcpyDeviceToDevice);
   }
@@ -195,6 +208,14 @@ struct CuMatrix<double>::Impl {
     fill(0.0);
     cu_set_diagonal(v->ptr(), ptr(), (uint32_t)(std::min)(_row, _col));
   }
+
+  void reduce_col(const std::shared_ptr<const CuMatrix<double>>& src) {
+    const auto m = src->rows();
+    const auto n = src->cols();
+    thrust::device_vector<double> buffer(m * BLOCK_SIZE / 2);
+    cu_reduce_col(src->ptr(), (uint32_t)m, (uint32_t)n, ptr(), buffer.data().get());
+  }
+
   void copy_from(const std::shared_ptr<const CuMatrix<double>>& src) {
     cudaMemcpy(_d_vec.data().get(), src->ptr(), _row * _col * sizeof(double), cudaMemcpyDeviceToDevice);
   }
@@ -207,12 +228,6 @@ struct CuMatrix<double>::Impl {
 
     cu_set_from_arg(ptr(), (uint32_t)n, d_data);
     cudaMemcpy(data.data(), d_data, data.size() * sizeof(uint16_t), cudaMemcpyDeviceToHost);
-  }
-  void col_sum_imag(const std::shared_ptr<const CuMatrix<complex>> mat) {
-    const auto m = mat->rows();
-    const auto n = mat->cols();
-    thrust::device_vector<double> buffer(m * BLOCK_SIZE / 2);
-    cu_col_sum_imag((const cuDoubleComplex*)mat->ptr(), (uint32_t)m, (uint32_t)n, ptr(), buffer.data().get());
   }
 
  private:
@@ -236,6 +251,7 @@ struct CuMatrix<complex>::Impl {
     cu_make_complex(r->ptr(), i->ptr(), (uint32_t)_row, (uint32_t)_col, (cuDoubleComplex*)ptr());
   }
   void exp() { cu_exp((uint32_t)_row, (uint32_t)_col, (cuDoubleComplex*)ptr()); }
+  void pow(double s) { cu_pow((uint32_t)_row, (uint32_t)_col, (cuDoubleComplex*)ptr(), s); }
   void scale(const complex s) {
     cublasZscal_v2(CuContext::handle, static_cast<int>(_row * _col), (const cuDoubleComplex*)&s, (cuDoubleComplex*)ptr(), 1);
   }
@@ -247,6 +263,9 @@ struct CuMatrix<complex>::Impl {
   }
   void arg(const std::shared_ptr<const CuMatrix<complex>> src) {
     cu_arg((const cuDoubleComplex*)src->ptr(), (uint32_t)src->rows(), (uint32_t)src->cols(), (cuDoubleComplex*)ptr());
+  }
+  void conj(const std::shared_ptr<const CuMatrix<complex>> src) {
+    cu_conj((const cuDoubleComplex*)src->ptr(), (uint32_t)src->rows(), (uint32_t)src->cols(), (cuDoubleComplex*)ptr());
   }
   void hadamard_product(const std::shared_ptr<const CuMatrix<complex>>& a, const std::shared_ptr<const CuMatrix<complex>>& b) {
     cu_hadamard_product((const cuDoubleComplex*)a->ptr(), (const cuDoubleComplex*)b->ptr(), (uint32_t)_row, (uint32_t)_col, (cuDoubleComplex*)ptr());
@@ -395,6 +414,12 @@ struct CuMatrix<complex>::Impl {
   void set(const size_t row, const size_t col, complex v) {
     cudaMemcpy(_d_vec.data().get() + row + _row * col, &v, sizeof(complex), cudaMemcpyHostToDevice);
   }
+  void set_col(size_t col, size_t start_row, size_t end_row, const std::shared_ptr<const CuMatrix<complex>>& vec) {
+    cudaMemcpy(ptr(), vec->ptr() + col * _row + start_row, (end_row - start_row) * sizeof(complex), cudaMemcpyDeviceToDevice);
+  }
+  void set_row(size_t row, size_t start_col, size_t end_col, const std::shared_ptr<const CuMatrix<complex>>& vec) {
+    cublasZcopy(CuContext::handle, (int)(end_col - start_col), (const cuDoubleComplex*)vec->ptr() + start_col, 1, (cuDoubleComplex*)ptr(), _row);
+  }
   void get_col(const std::shared_ptr<const CuMatrix<complex>>& src, const size_t i) {
     cudaMemcpy(ptr(), src->ptr() + i * _row, _row * sizeof(complex), cudaMemcpyDeviceToDevice);
   }
@@ -441,39 +466,11 @@ struct CuMatrix<complex>::Impl {
     cu_transfer_matrix(d_foci.data().get(), (uint32_t)m, d_pos.data().get(), d_dir.data().get(), (uint32_t)n, 2.0 * M_PI / wavelength, attenuation,
                        (cuDoubleComplex*)ptr());
   }
-  void set_bcd_result(std::shared_ptr<const CuMatrix<complex>> vec, const size_t index) {
-    const uint32_t m = (uint32_t)vec->rows();
-    cu_set_bcd_result((const cuDoubleComplex*)vec->ptr(), m, (uint32_t)index, (cuDoubleComplex*)ptr());
-  }
-  void back_prop(const std::shared_ptr<const CuMatrix<complex>>& transfer, const std::shared_ptr<const CuMatrix<complex>>& amps) {
-    const auto m = transfer->rows();
-    const auto n = transfer->cols();
-
-    thrust::device_vector<double> denominator(m);
-    thrust::device_vector<double> buffer(m * BLOCK_SIZE / 2);
-    for (int i = 0; i < m; i++) {
-      double v;
-      cudaMemcpy(&v, denominator.data().get() + i, sizeof(double), cudaMemcpyDeviceToHost);
-    }
-    cu_col_sum_abs((const cuDoubleComplex*)transfer->ptr(), (uint32_t)m, (uint32_t)n, denominator.data().get(), buffer.data().get());
-    for (int i = 0; i < m; i++) {
-      double v;
-      cudaMemcpy(&v, denominator.data().get() + i, sizeof(double), cudaMemcpyDeviceToHost);
-    }
-    cu_make_back_prop((const cuDoubleComplex*)amps->ptr(), denominator.data().get(), (const cuDoubleComplex*)transfer->ptr(), (uint32_t)m,
-                      (uint32_t)n, (cuDoubleComplex*)ptr());
-  }
-
-  void sigma_regularization(const std::shared_ptr<const CuMatrix<complex>>& transfer, const std::shared_ptr<const CuMatrix<complex>>& amps,
-                            const double gamma) {
-    const auto m = transfer->rows();
-    const auto n = transfer->cols();
-
-    thrust::device_vector<complex> tmp(n);
-    thrust::device_vector<double> buffer(n * BLOCK_SIZE / 2);
-    cu_make_sigma_diagonal((const cuDoubleComplex*)transfer->ptr(), (uint32_t)m, (uint32_t)n, (const cuDoubleComplex*)amps->ptr(), gamma,
-                           (cuDoubleComplex*)tmp.data().get(), buffer.data().get());
-    create_diagonal(tmp);
+  void reduce_col(const std::shared_ptr<const CuMatrix<complex>>& src) {
+    const auto m = src->rows();
+    const auto n = src->cols();
+    thrust::device_vector<cuDoubleComplex> buffer(m * BLOCK_SIZE / 2);
+    cu_reduce_col((const cuDoubleComplex*)src->ptr(), (uint32_t)m, (uint32_t)n, (cuDoubleComplex*)ptr(), buffer.data().get());
   }
 
  private:
@@ -509,14 +506,22 @@ void CuMatrix<complex>::make_complex(const std::shared_ptr<const CuMatrix<double
 }
 void CuMatrix<double>::exp() { _pimpl->exp(); }
 void CuMatrix<complex>::exp() { _pimpl->exp(); }
+void CuMatrix<double>::pow(double s) { _pimpl->pow(s); }
+void CuMatrix<complex>::pow(double s) { _pimpl->pow(s); }
 void CuMatrix<double>::scale(const double s) { _pimpl->scale(s); }
 void CuMatrix<complex>::scale(const complex s) { _pimpl->scale(s); }
+void CuMatrix<double>::sqrt() { _pimpl->sqrt(); }
+void CuMatrix<complex>::sqrt() {}
 void CuMatrix<double>::reciprocal(const std::shared_ptr<const CuMatrix<double>>& src) { _pimpl->reciprocal(src); }
 void CuMatrix<complex>::reciprocal(const std::shared_ptr<const CuMatrix<complex>>& src) { _pimpl->reciprocal(src); }
 void CuMatrix<double>::abs(const std::shared_ptr<const CuMatrix<double>>& src) { _pimpl->abs(src); }
 void CuMatrix<complex>::abs(const std::shared_ptr<const CuMatrix<complex>>& src) { _pimpl->abs(src); }
 void CuMatrix<double>::real(const std::shared_ptr<const CuMatrix<complex>>& src) { _pimpl->real(src); }
 void CuMatrix<complex>::real(const std::shared_ptr<const CuMatrix<complex>>& src) {}
+void CuMatrix<double>::imag(const std::shared_ptr<const CuMatrix<complex>>& src) { _pimpl->imag(src); }
+void CuMatrix<complex>::imag(const std::shared_ptr<const CuMatrix<complex>>& src) {}
+void CuMatrix<double>::conj(const std::shared_ptr<const CuMatrix<complex>>& src) {}
+void CuMatrix<complex>::conj(const std::shared_ptr<const CuMatrix<complex>>& src) { _pimpl->conj(src); }
 void CuMatrix<double>::arg(const std::shared_ptr<const CuMatrix<complex>>& src) {}
 void CuMatrix<complex>::arg(const std::shared_ptr<const CuMatrix<complex>>& src) { _pimpl->arg(src); }
 void CuMatrix<double>::hadamard_product(const std::shared_ptr<const CuMatrix<double>>& a, const std::shared_ptr<const CuMatrix<double>>& b) {
@@ -572,6 +577,18 @@ double CuMatrix<double>::at(const size_t row, const size_t col) { return _pimpl-
 complex CuMatrix<complex>::at(const size_t row, const size_t col) { return _pimpl->at(row, col); }
 void CuMatrix<double>::set(const size_t row, const size_t col, double v) { _pimpl->set(row, col, v); }
 void CuMatrix<complex>::set(const size_t row, const size_t col, complex v) { _pimpl->set(row, col, v); }
+void CuMatrix<double>::set_col(size_t col, size_t start_row, size_t end_row, const std::shared_ptr<const CuMatrix<double>>& vec) {
+  _pimpl->set_col(col, start_row, end_row, vec);
+}
+void CuMatrix<double>::set_row(size_t row, size_t start_col, size_t end_col, const std::shared_ptr<const CuMatrix<double>>& vec) {
+  _pimpl->set_row(row, start_col, end_col, vec);
+}
+void CuMatrix<complex>::set_col(size_t col, size_t start_row, size_t end_row, const std::shared_ptr<const CuMatrix<complex>>& vec) {
+  _pimpl->set_col(col, start_row, end_row, vec);
+}
+void CuMatrix<complex>::set_row(size_t row, size_t start_col, size_t end_col, const std::shared_ptr<const CuMatrix<complex>>& vec) {
+  _pimpl->set_row(row, start_col, end_col, vec);
+}
 void CuMatrix<double>::get_col(const std::shared_ptr<const CuMatrix<double>>& src, const size_t i) { _pimpl->get_col(src, i); }
 void CuMatrix<complex>::get_col(const std::shared_ptr<const CuMatrix<complex>>& src, const size_t i) { _pimpl->get_col(src, i); }
 void CuMatrix<double>::fill(double v) { _pimpl->fill(v); }
@@ -580,6 +597,8 @@ void CuMatrix<double>::get_diagonal(const std::shared_ptr<const CuMatrix<double>
 void CuMatrix<complex>::get_diagonal(const std::shared_ptr<const CuMatrix<complex>>& src) { return _pimpl->get_diagonal(src); }
 void CuMatrix<double>::create_diagonal(const std::shared_ptr<const CuMatrix<double>>& v) { _pimpl->create_diagonal(v); }
 void CuMatrix<complex>::create_diagonal(const std::shared_ptr<const CuMatrix<complex>>& v) { _pimpl->create_diagonal(v); }
+void CuMatrix<double>::reduce_col(const std::shared_ptr<const CuMatrix<double>>& src) { _pimpl->reduce_col(src); }
+void CuMatrix<complex>::reduce_col(const std::shared_ptr<const CuMatrix<complex>>& src) { _pimpl->reduce_col(src); }
 void CuMatrix<double>::copy_from(const std::shared_ptr<const CuMatrix<double>>& src) { _pimpl->copy_from(src); }
 void CuMatrix<complex>::copy_from(const std::shared_ptr<const CuMatrix<complex>>& src) { _pimpl->copy_from(src); }
 void CuMatrix<double>::copy_from(const double* v, const size_t n) { _pimpl->copy_from(v, n); }
@@ -591,26 +610,12 @@ void CuMatrix<complex>::transfer_matrix(const double* foci, size_t foci_num, con
                                         const std::vector<const double*>& directions, double wavelength, double attenuation) {
   _pimpl->transfer_matrix(foci, foci_num, transducers, directions, wavelength, attenuation);
 }
-void CuMatrix<double>::set_bcd_result(const std::shared_ptr<const CuMatrix<double>>& vec, size_t index) {}
-void CuMatrix<complex>::set_bcd_result(const std::shared_ptr<const CuMatrix<complex>>& vec, size_t index) { _pimpl->set_bcd_result(vec, index); }
 void CuMatrix<double>::set_from_complex_drive(std::vector<core::Drive>& dst, bool normalize, double max_coefficient) {}
 void CuMatrix<complex>::set_from_complex_drive(std::vector<core::Drive>& dst, bool normalize, double max_coefficient) {
   _pimpl->set_from_complex_drive(dst, normalize, max_coefficient);
 }
 void CuMatrix<double>::set_from_arg(std::vector<core::Drive>& dst, size_t n) { _pimpl->set_from_arg(dst, n); }
 void CuMatrix<complex>::set_from_arg(std::vector<core::Drive>& dst, size_t n) {}
-void CuMatrix<double>::back_prop(const std::shared_ptr<const CuMatrix<double>>& transfer, const std::shared_ptr<const CuMatrix<double>>& amps) {}
-void CuMatrix<complex>::back_prop(const std::shared_ptr<const CuMatrix<complex>>& transfer, const std::shared_ptr<const CuMatrix<complex>>& amps) {
-  _pimpl->back_prop(transfer, amps);
-}
-void CuMatrix<double>::sigma_regularization(const std::shared_ptr<const CuMatrix<double>>& transfer,
-                                            const std::shared_ptr<const CuMatrix<double>>& amps, double gamma) {}
-void CuMatrix<complex>::sigma_regularization(const std::shared_ptr<const CuMatrix<complex>>& transfer,
-                                             const std::shared_ptr<const CuMatrix<complex>>& amps, double gamma) {
-  _pimpl->sigma_regularization(transfer, amps, gamma);
-}
-void CuMatrix<double>::col_sum_imag(const std::shared_ptr<CuMatrix<complex>>& src) { _pimpl->col_sum_imag(src); }
-void CuMatrix<complex>::col_sum_imag(const std::shared_ptr<CuMatrix<complex>>& src) {}
 
 }  // namespace holo
 }  // namespace gain
