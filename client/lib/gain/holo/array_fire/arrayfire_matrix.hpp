@@ -3,7 +3,7 @@
 // Created Date: 08/09/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/11/2021
+// Last Modified: 10/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -48,10 +48,14 @@ struct AFMatrix {
     af_array = af::complex(r->af_array, i->af_array);
   }
   void exp() { af_array = af::exp(af_array); }
+  void pow(const double s) { af_array = af::pow(af_array, s); }
   void scale(const T s) { af_array *= cast(s); }
+  void sqrt() { af_array = af::sqrt(af_array); }
   void reciprocal(const std::shared_ptr<const AFMatrix<T>>& src);
   void abs(const std::shared_ptr<const AFMatrix<T>>& src) { af_array = af::abs(src->af_array); }
   void real(const std::shared_ptr<const AFMatrix<complex>>& src) { af_array = af::real(src->af_array); }
+  void imag(const std::shared_ptr<const AFMatrix<complex>>& src) { af_array = af::imag(src->af_array); }
+  void conj(const std::shared_ptr<const AFMatrix<complex>>& src) { af_array = af::conjg(src->af_array); }
   void arg(const std::shared_ptr<const AFMatrix<complex>>& src) { af_array = src->af_array / af::abs(src->af_array); }
   void hadamard_product(const std::shared_ptr<const AFMatrix<T>>& a, const std::shared_ptr<const AFMatrix<T>>& b) {
     af_array = a->af_array * b->af_array;
@@ -133,10 +137,17 @@ struct AFMatrix {
   [[nodiscard]] size_t cols() const { return af_array.dims(1); }
 
   void set(const size_t row, const size_t col, T v) { af_array(static_cast<int>(row), static_cast<int>(col)) = cast(v); }
+  void set_col(const size_t col, const size_t start_row, const size_t end_row, const std::shared_ptr<const AFMatrix<T>>& vec) {
+    af_array.col(col).rows(start_row, end_row) = vec->af_array.cols(start_row, end_row);
+  }
+  void set_row(const size_t row, const size_t start_col, const size_t end_col, const std::shared_ptr<const AFMatrix<T>>& vec) {
+    af_array.row(row).cols(start_col, end_col) = vec->af_array.cols(start_col, end_col);
+  }
   void get_col(const std::shared_ptr<const AFMatrix<T>>& src, const size_t i) { af_array = src->af_array.col(static_cast<int>(i)); }
   void fill(T v) { af_array = cast(v); }
   void get_diagonal(const std::shared_ptr<const AFMatrix<T>>& src) { af_array = af::diag(src->af_array); }
   void create_diagonal(const std::shared_ptr<const AFMatrix<T>>& v) { af_array = af::diag(v->af_array, 0, false); }
+  void reduce_col(const std::shared_ptr<const AFMatrix<T>>& src) { af_array = af::sum(src->af_array, 1); }
   void copy_from(const std::shared_ptr<const AFMatrix<T>>& a) { af_array = af::array(a->af_array); }
   void copy_from(const std::vector<T>& v) { copy_from(v.data(), v.size()); }
   void copy_from(const T* v) { copy_from(v, rows() * cols()); }
@@ -147,12 +158,8 @@ struct AFMatrix {
 
   void transfer_matrix(const double* foci, size_t foci_num, const std::vector<const core::Transducer*>& transducers,
                        const std::vector<const double*>& directions, double wavelength, double attenuation);
-  void set_bcd_result(const std::shared_ptr<const AFMatrix<T>>& vec, size_t index);
   void set_from_complex_drive(std::vector<core::Drive>& dst, bool normalize, double max_coefficient);
   void set_from_arg(std::vector<core::Drive>& dst, size_t n);
-  void back_prop(const std::shared_ptr<const AFMatrix<T>>& transfer, const std::shared_ptr<const AFMatrix<T>>& amps);
-  void sigma_regularization(const std::shared_ptr<const AFMatrix<T>>& transfer, const std::shared_ptr<const AFMatrix<T>>& amps, double gamma);
-  void col_sum_imag(const std::shared_ptr<AFMatrix<complex>>& src);
 };
 
 inline AFMatrix<double>::AFMatrix(const size_t row, const size_t col) : af_array(static_cast<dim_t>(row), static_cast<dim_t>(col), af::dtype::f64) {}
@@ -230,15 +237,6 @@ inline void AFMatrix<complex>::transfer_matrix(const double* foci, const size_t 
                        reinterpret_cast<const af::cdouble*>(data.get()));
 }
 
-inline void AFMatrix<double>::set_bcd_result(const std::shared_ptr<const AFMatrix<double>>&, size_t) {}
-inline void AFMatrix<complex>::set_bcd_result(const std::shared_ptr<const AFMatrix<complex>>& vec, const size_t index) {
-  const auto ii = at(index, index);
-  const auto vh = vec->af_array.H();
-  af_array.row(static_cast<int>(index)) = vh;
-  af_array.col(static_cast<int>(index)) = vec->af_array;
-  set(index, index, ii);
-}
-
 inline void AFMatrix<double>::set_from_complex_drive(std::vector<core::Drive>&, const bool, const double) {}
 inline void AFMatrix<complex>::set_from_complex_drive(std::vector<core::Drive>& dst, const bool normalize, const double max_coefficient) {
   // FIXME: implement with ArrayFire
@@ -263,38 +261,4 @@ inline void AFMatrix<double>::set_from_arg(std::vector<core::Drive>& dst, const 
   }
 }
 inline void AFMatrix<complex>::set_from_arg(std::vector<core::Drive>&, const size_t) {}
-
-inline void AFMatrix<double>::back_prop(const std::shared_ptr<const AFMatrix<double>>&, const std::shared_ptr<const AFMatrix<double>>&) {}
-inline void AFMatrix<complex>::back_prop(const std::shared_ptr<const AFMatrix<complex>>& transfer,
-                                         const std::shared_ptr<const AFMatrix<complex>>& amps) {
-  const auto m = static_cast<dim_t>(transfer->rows());
-  const auto n = static_cast<dim_t>(transfer->cols());
-
-  const af::array t = af::abs(transfer->af_array);
-  af::array c = tile(moddims(amps->af_array / sum(t, 1), 1, m), static_cast<unsigned>(n), 1);
-  af_array = c * transfer->af_array.H();
-}
-
-inline void AFMatrix<complex>::sigma_regularization(const std::shared_ptr<const AFMatrix<complex>>& transfer,
-                                                    const std::shared_ptr<const AFMatrix<complex>>& amps, const double gamma) {
-  const auto m = transfer->rows();
-  const auto n = static_cast<dim_t>(transfer->cols());
-
-  af::array ac = tile(amps->af_array, 1, static_cast<unsigned>(n));
-  ac *= transfer->af_array;
-  const af::array a = af::abs(ac);
-
-  af::array d = moddims(sum(a, 0), n);
-  d /= static_cast<double>(m);
-  d = af::sqrt(d);
-  d = af::pow(d, gamma);
-  af_array = af::complex(diag(d, 0, false), 0);
-}
-
-inline void AFMatrix<double>::col_sum_imag(const std::shared_ptr<AFMatrix<complex>>& src) {
-  const af::array imag = af::imag(src->af_array);
-  af_array = sum(imag, 1);
-}
-inline void AFMatrix<complex>::col_sum_imag(const std::shared_ptr<AFMatrix<complex>>&) {}
-
 }  // namespace autd::gain::holo
