@@ -56,10 +56,10 @@ static uint16_t pack_to_u16(const uint8_t high, const uint8_t low) noexcept {
  * \param n right operand
  * \return i % n
  */
-static int32_t modulo_positive(const int32_t i, const size_t n) {
+static size_t modulo_positive(const int32_t i, const size_t n) {
   int32_t res = i % static_cast<int32_t>(n);
   if (res < 0) res += static_cast<int32_t>(n);
-  return res;
+  return static_cast<size_t>(res);
 }
 
 }  // namespace autd::core::utils
