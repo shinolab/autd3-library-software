@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/12/2021
+// Last Modified: 10/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -23,7 +23,7 @@ class Static final : public Modulation {
   /**
    * \param duty duty ratio
    */
-  Static(const uint8_t duty = 0xFF) : Modulation() { this->_buffer.resize(1, duty); }
+  explicit Static(const uint8_t duty = 0xFF) : Modulation() { this->_buffer.resize(1, duty); }
 
   void calc() override {}
 
@@ -46,7 +46,7 @@ class Sine final : public Modulation {
    * @details Ultrasound amplitude oscillate from offset-amp/2 to offset+amp/2.
    * If the value exceeds the range of [0, 1], the value will be clamped in the [0, 1].
    */
-  Sine(const int freq, const double amp = 1.0, const double offset = 0.5) : Modulation(), _freq(freq), _amp(amp), _offset(offset) {}
+  explicit Sine(const int freq, const double amp = 1.0, const double offset = 0.5) : Modulation(), _freq(freq), _amp(amp), _offset(offset) {}
 
   void calc() override;
 
@@ -74,12 +74,12 @@ class SineSquared final : public Modulation {
    * @details Radiation pressure oscillate from offset-amp/2 to offset+amp/2
    * If the value exceeds the range of [0, 1], the value will be clamped in the [0, 1].
    */
-  SineSquared(const int freq, const double amp = 1.0, const double offset = 0.5) : Modulation(), _freq(freq), _amp(amp), _offset(offset) {}
+  explicit SineSquared(const int freq, const double amp = 1.0, const double offset = 0.5) : Modulation(), _freq(freq), _amp(amp), _offset(offset) {}
 
   void calc() override;
 
   ~SineSquared() override = default;
-  SineSquared(const Sine& v) noexcept = delete;
+  SineSquared(const SineSquared& v) noexcept = delete;
   SineSquared& operator=(const SineSquared& obj) = delete;
   SineSquared(SineSquared&& obj) = default;
   SineSquared& operator=(SineSquared&& obj) = default;
@@ -102,7 +102,7 @@ class SineLegacy final : public Modulation {
    * @details Ultrasound amplitude oscillate from offset-amp/2 to offset+amp/2.
    * If the value exceeds the range of [0, 1], the value will be clamped in the [0, 1].
    */
-  SineLegacy(const double freq, const double amp = 1.0, const double offset = 0.5) : Modulation(), _freq(freq), _amp(amp), _offset(offset) {}
+  explicit SineLegacy(const double freq, const double amp = 1.0, const double offset = 0.5) : Modulation(), _freq(freq), _amp(amp), _offset(offset) {}
 
   void calc() override;
 

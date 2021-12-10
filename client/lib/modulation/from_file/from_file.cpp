@@ -3,7 +3,7 @@
 // Created Date: 17/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/12/2021
+// Last Modified: 10/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -26,7 +26,7 @@ double sinc(const double x) noexcept {
 }
 }  // namespace
 
-RawPCM::RawPCM(const std::string& filename, double sampling_freq, uint16_t mod_sampling_freq_div)
+RawPCM::RawPCM(const std::string& filename, const double sampling_freq, const uint16_t mod_sampling_freq_div)
     : Modulation(mod_sampling_freq_div), _sampling_freq(sampling_freq) {
   std::ifstream ifs;
   ifs.open(filename, std::ios::binary);

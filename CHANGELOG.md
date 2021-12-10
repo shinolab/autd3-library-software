@@ -1,5 +1,6 @@
 # 1.10
 * Rename `SinePressure` to `SineSquared`
+* Add `modulation::LPF`
 
 # 1.9.3
 * fix minor bugs

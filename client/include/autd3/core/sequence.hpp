@@ -3,7 +3,7 @@
 // Created Date: 14/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/12/2021
+// Last Modified: 10/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -83,7 +83,7 @@ class Sequence {
    * @return size_t Sampling frequency division ratio
    * \details  The value must be in 1, 2, ..., autd::core::SEQ_SAMPLING_FREQ_DIV_MAX.
    */
-  size_t sampling_freq_div_ratio() const noexcept { return this->_freq_div_ratio; }
+  [[nodiscard]] size_t sampling_freq_div_ratio() const noexcept { return this->_freq_div_ratio; }
 
  protected:
   size_t _freq_div_ratio;
@@ -216,7 +216,7 @@ class GainSequence final : public Sequence {
   /**
    * @return GAIN_MODE
    */
-  GAIN_MODE gain_mode() const { return this->_gain_mode; }
+  [[nodiscard]] GAIN_MODE gain_mode() const { return this->_gain_mode; }
 
  private:
   std::vector<std::shared_ptr<Gain>> _gains;
