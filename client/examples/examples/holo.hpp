@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/12/2021
+// Last Modified: 10/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -50,9 +50,9 @@ inline std::unique_ptr<autd::Gain> select_opt(const std::vector<autd::Vector3>& 
   std::stringstream s(in);
   if (const auto empty = in == "\n"; !(s >> idx) || idx >= opts.size() || empty) idx = 0;
 
-  std::string _name;
+  std::string name;
   std::unique_ptr<autd::Gain> opt;
-  std::tie(_name, opt) = std::move(opts[idx]);
+  std::tie(name, opt) = std::move(opts[idx]);
   return std::move(opt);
 }
 

@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/12/2021
+// Last Modified: 10/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,10 +11,7 @@
 
 #pragma once
 
-#include <limits>
 #include <memory>
-#include <random>
-#include <string>
 #include <utility>
 #include <vector>
 
@@ -40,8 +37,8 @@ class Holo : public core::Gain {
   Holo(Holo&& obj) = default;
   Holo& operator=(Holo&& obj) = default;
 
-  const std::vector<core::Vector3>& foci() const { return this->_foci; }
-  const std::vector<complex>& amplitudes() const { return this->_amps; }
+  [[nodiscard]] const std::vector<core::Vector3>& foci() const { return this->_foci; }
+  [[nodiscard]] const std::vector<complex>& amplitudes() const { return this->_amps; }
 
  protected:
   BackendPtr _backend;
@@ -58,6 +55,7 @@ class Holo : public core::Gain {
 class SDP final : public Holo {
  public:
   /**
+   * @param[in] backend pointer to Backend
    * @param[in] foci focal points
    * @param[in] amps amplitudes of the foci
    * @param[in] alpha parameter
@@ -69,7 +67,7 @@ class SDP final : public Holo {
                const double lambda = 0.9, const size_t repeat = 100, const bool normalize = true)
       : Holo(std::move(backend), foci, amps), _alpha(alpha), _lambda(lambda), _repeat(repeat), _normalize(normalize) {}
 
-  void calc(const core::Geometry& geometry);
+  void calc(const core::Geometry& geometry) override;
 
  private:
   double _alpha;
@@ -86,6 +84,7 @@ class SDP final : public Holo {
 class EVD final : public Holo {
  public:
   /**
+   * @param[in] backend pointer to Backend
    * @param[in] foci focal points
    * @param[in] amps amplitudes of the foci
    * @param[in] gamma parameter
@@ -95,7 +94,7 @@ class EVD final : public Holo {
       const bool normalize = true)
       : Holo(std::move(backend), foci, amps), _gamma(gamma), _normalize(normalize) {}
 
-  void calc(const core::Geometry& geometry);
+  void calc(const core::Geometry& geometry) override;
 
  private:
   double _gamma;
@@ -108,12 +107,13 @@ class EVD final : public Holo {
 class Naive final : public Holo {
  public:
   /**
+   * @param[in] backend pointer to Backend
    * @param[in] foci focal points
    * @param[in] amps amplitudes of the foci
    */
   Naive(BackendPtr backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps) : Holo(std::move(backend), foci, amps) {}
 
-  void calc(const core::Geometry& geometry);
+  void calc(const core::Geometry& geometry) override;
 };
 
 /**
@@ -124,6 +124,7 @@ class Naive final : public Holo {
 class GS final : public Holo {
  public:
   /**
+   * @param[in] backend pointer to Backend
    * @param[in] foci focal points
    * @param[in] amps amplitudes of the foci
    * @param[in] repeat parameter
@@ -131,7 +132,7 @@ class GS final : public Holo {
   GS(BackendPtr backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps, const size_t repeat = 100)
       : Holo(std::move(backend), foci, amps), _repeat(repeat) {}
 
-  void calc(const core::Geometry& geometry);
+  void calc(const core::Geometry& geometry) override;
 
  private:
   size_t _repeat;
@@ -146,6 +147,7 @@ class GS final : public Holo {
 class GSPAT final : public Holo {
  public:
   /**
+   * @param[in] backend pointer to Backend
    * @param[in] foci focal points
    * @param[in] amps amplitudes of the foci
    * @param[in] repeat parameter
@@ -153,7 +155,7 @@ class GSPAT final : public Holo {
   GSPAT(BackendPtr backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps, const size_t repeat = 100)
       : Holo(std::move(backend), foci, amps), _repeat(repeat) {}
 
-  void calc(const core::Geometry& geometry);
+  void calc(const core::Geometry& geometry) override;
 
  private:
   size_t _repeat;
@@ -170,6 +172,7 @@ class GSPAT final : public Holo {
 class LM final : public Holo {
  public:
   /**
+   * @param[in] backend pointer to Backend
    * @param[in] foci focal points
    * @param[in] amps amplitudes of the foci
    * @param[in] eps_1 parameter
@@ -179,10 +182,10 @@ class LM final : public Holo {
    * @param[in] initial initial phase of transducers
    */
   LM(BackendPtr backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps, const double eps_1 = 1e-8,
-     const double eps_2 = 1e-8, const double tau = 1e-3, const size_t k_max = 5, const std::vector<double>& initial = {})
+     const double eps_2 = 1e-8, const double tau = 1e-3, const size_t k_max = 5, std::vector<double> initial = {})
       : Holo(std::move(backend), foci, amps), _eps_1(eps_1), _eps_2(eps_2), _tau(tau), _k_max(k_max), _initial(std::move(initial)) {}
 
-  void calc(const core::Geometry& geometry);
+  void calc(const core::Geometry& geometry) override;
 
  private:
   double _eps_1;
@@ -198,6 +201,7 @@ class LM final : public Holo {
 class GaussNewton final : public Holo {
  public:
   /**
+   * @param[in] backend pointer to Backend
    * @param[in] foci focal points
    * @param[in] amps amplitudes of the foci
    * @param[in] eps_1 parameter
@@ -206,10 +210,10 @@ class GaussNewton final : public Holo {
    * @param[in] initial initial phase of transducers
    */
   GaussNewton(BackendPtr backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps, const double eps_1 = 1e-6,
-              const double eps_2 = 1e-6, const size_t k_max = 500, const std::vector<double>& initial = {})
+              const double eps_2 = 1e-6, const size_t k_max = 500, std::vector<double> initial = {})
       : Holo(std::move(backend), foci, amps), _eps_1(eps_1), _eps_2(eps_2), _k_max(k_max), _initial(std::move(initial)) {}
 
-  void calc(const core::Geometry& geometry);
+  void calc(const core::Geometry& geometry) override;
 
  private:
   double _eps_1;
@@ -224,6 +228,7 @@ class GaussNewton final : public Holo {
 class GradientDescent final : public Holo {
  public:
   /**
+   * @param[in] backend pointer to Backend
    * @param[in] foci focal points
    * @param[in] amps amplitudes of the foci
    * @param[in] eps parameter
@@ -232,10 +237,10 @@ class GradientDescent final : public Holo {
    * @param[in] initial initial phase of transducers
    */
   GradientDescent(BackendPtr backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps, const double eps = 1e-6,
-                  const double step = 0.5, const size_t k_max = 2000, const std::vector<double>& initial = {})
+                  const double step = 0.5, const size_t k_max = 2000, std::vector<double> initial = {})
       : Holo(std::move(backend), foci, amps), _eps(eps), _k_max(k_max), _step(step), _initial(std::move(initial)) {}
 
-  void calc(const core::Geometry& geometry);
+  void calc(const core::Geometry& geometry) override;
 
  private:
   double _eps;
@@ -252,6 +257,7 @@ class GradientDescent final : public Holo {
 class APO final : public Holo {
  public:
   /**
+   * @param[in] backend pointer to Backend
    * @param[in] foci focal points
    * @param[in] amps amplitudes of the foci
    * @param[in] eps parameter
@@ -262,13 +268,12 @@ class APO final : public Holo {
       const size_t k_max = 200)
       : Holo(std::move(backend), foci, amps), _eps(eps), _lambda(lambda), _k_max(k_max) {}
 
-  void calc(const core::Geometry& geometry);
+  void calc(const core::Geometry& geometry) override;
 
  private:
   double _eps;
   double _lambda;
   size_t _k_max;
-  size_t _line_search_max = 100;
 };
 
 /**
@@ -280,6 +285,7 @@ class APO final : public Holo {
 class Greedy final : public Holo {
  public:
   /**
+   * @param[in] backend pointer to Backend
    * @param[in] foci focal points
    * @param[in] amps amplitudes of the foci
    * @param[in] phase_div resolution of the phase to be searched
@@ -287,7 +293,7 @@ class Greedy final : public Holo {
   Greedy(BackendPtr backend, const std::vector<core::Vector3>& foci, const std::vector<double>& amps, const size_t phase_div = 16)
       : Holo(std::move(backend), foci, amps), _phase_div(phase_div) {}
 
-  void calc(const core::Geometry& geometry);
+  void calc(const core::Geometry& geometry) override;
 
  private:
   size_t _phase_div;

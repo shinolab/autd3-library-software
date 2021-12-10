@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/12/2021
+// Last Modified: 10/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -98,7 +98,7 @@ class Controller {
   /**
    * @brief Output enable
    */
-  bool output_enable() const noexcept;
+  [[nodiscard]] bool output_enable() const noexcept;
 
   /**
    * @brief Silent mode
@@ -108,7 +108,7 @@ class Controller {
   /**
    * @brief Silent mode
    */
-  bool silent_mode() const noexcept;
+  [[nodiscard]] bool silent_mode() const noexcept;
 
   /**
    * @brief If true, the devices return FPGA info in all frames. The FPGA info can be read by fpga_info().
@@ -118,7 +118,7 @@ class Controller {
   /**
    * @brief If true, the devices return FPGA info in all frames. The FPGA info can be read by fpga_info().
    */
-  bool reads_fpga_info() const noexcept;
+  [[nodiscard]] bool reads_fpga_info() const noexcept;
 
   /**
    * @brief If true, the fan will be forced to start.
@@ -128,7 +128,7 @@ class Controller {
   /**
    * @brief If true, the fan will be forced to start.
    */
-  bool force_fan() const noexcept;
+  [[nodiscard]] bool force_fan() const noexcept;
 
   /**
    * @brief If true, the applied voltage to transducers is dropped to GND while transducers are not being outputting.
@@ -138,7 +138,7 @@ class Controller {
   /**
    * @brief If true, the applied voltage to transducers is dropped to GND while transducers are not being outputting.
    */
-  bool output_balance() const noexcept;
+  [[nodiscard]] bool output_balance() const noexcept;
 
   /**
    * @brief If true, this controller check ack from devices.
@@ -148,7 +148,7 @@ class Controller {
   /**
    * @brief If true, this controller check ack from devices.
    */
-  bool check_ack() const noexcept;
+  [[nodiscard]] bool check_ack() const noexcept;
 
   /**
    * @brief FPGA info

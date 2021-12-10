@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/12/2021
+// Last Modified: 10/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -198,7 +198,7 @@ static size_t pack_body(const GainSequence& seq, const Geometry& geometry, uint8
       for (const auto& dev : geometry)
         for (const auto& trans : dev)
           cursor[trans.id()] =
-              core::utils::pack_to_u16(seq.gains()[gain_idx + 1]->data()[trans.id()].phase, seq.gains()[gain_idx]->data()[trans.id()].phase);
+              utils::pack_to_u16(seq.gains()[gain_idx + 1]->data()[trans.id()].phase, seq.gains()[gain_idx]->data()[trans.id()].phase);
       break;
     case GAIN_MODE::PHASE_HALF:
       for (const auto& dev : geometry)

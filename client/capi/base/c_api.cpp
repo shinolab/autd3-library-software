@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/12/2021
+// Last Modified: 10/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -403,15 +403,15 @@ int32_t AUTDSendGainModulation(void* const handle, void* const gain, void* const
   auto* const m = static_cast<autd::Modulation*>(mod);
   AUTD3_CAPI_TRY(return wrapper->send(*g, *m) ? 1 : 0)
 }
-int32_t AUTDSendSequenceModulation(void* const handle, void* const seq, void* const mod) {
+int32_t AUTDSendSequenceModulation(void* const handle, const void* const seq, void* const mod) {
   auto* const wrapper = static_cast<autd::Controller*>(handle);
-  auto* const s = static_cast<autd::PointSequence*>(seq);
+  const auto* const s = static_cast<const autd::PointSequence*>(seq);
   auto* const m = static_cast<autd::Modulation*>(mod);
   AUTD3_CAPI_TRY(return wrapper->send(*s, *m) ? 1 : 0)
 }
-int32_t AUTDSendGainSequenceModulation(void* const handle, void* const seq, void* const mod) {
+int32_t AUTDSendGainSequenceModulation(void* const handle, const void* const seq, void* const mod) {
   auto* const wrapper = static_cast<autd::Controller*>(handle);
-  auto* const s = static_cast<autd::GainSequence*>(seq);
+  const auto* const s = static_cast<const autd::GainSequence*>(seq);
   auto* const m = static_cast<autd::Modulation*>(mod);
   AUTD3_CAPI_TRY(return wrapper->send(*s, *m) ? 1 : 0)
 }

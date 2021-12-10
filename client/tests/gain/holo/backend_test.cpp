@@ -3,7 +3,7 @@
 // Created Date: 13/08/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/11/2021
+// Last Modified: 10/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -137,6 +137,50 @@ TYPED_TEST(BackendTest, exp) {
   ASSERT_NEAR_COMPLEX(a->at(1, 0), std::exp(complex(2, 3)), 1e-6);
 }
 
+TYPED_TEST(BackendTest, pow) {
+  auto a = this->_pool.rent("a", 4, 1);
+  a->copy_from({0, 1, 2, 3});
+
+  a->pow(0.5);
+
+  ASSERT_NEAR(a->at(0, 0), std::pow(0, 0.5), 1e-6);
+  ASSERT_NEAR(a->at(1, 0), std::pow(1, 0.5), 1e-6);
+  ASSERT_NEAR(a->at(2, 0), std::pow(2, 0.5), 1e-6);
+  ASSERT_NEAR(a->at(3, 0), std::pow(3, 0.5), 1e-6);
+}
+
+TYPED_TEST(BackendTest, pow_c) {
+  auto a = this->_pool.rent_c("a", 2, 1);
+  a->copy_from({complex(0, 1), complex(2, 3)});
+
+  a->pow(0.5);
+
+  ASSERT_NEAR_COMPLEX(a->at(0, 0), std::pow(complex(0, 1), 0.5), 1e-6);
+  ASSERT_NEAR_COMPLEX(a->at(1, 0), std::pow(complex(2, 3), 0.5), 1e-6);
+}
+
+TYPED_TEST(BackendTest, sqrt) {
+  auto a = this->_pool.rent("a", 4, 1);
+  a->copy_from({0, 1, 2, 3});
+
+  a->sqrt();
+
+  ASSERT_NEAR(a->at(0, 0), std::sqrt(0), 1e-6);
+  ASSERT_NEAR(a->at(1, 0), std::sqrt(1), 1e-6);
+  ASSERT_NEAR(a->at(2, 0), std::sqrt(2), 1e-6);
+  ASSERT_NEAR(a->at(3, 0), std::sqrt(3), 1e-6);
+}
+
+TYPED_TEST(BackendTest, sqrt_c) {
+  auto a = this->_pool.rent_c("a", 2, 1);
+  a->copy_from({complex(0, 1), complex(2, 3)});
+
+  a->sqrt();
+
+  ASSERT_NEAR_COMPLEX(a->at(0, 0), std::sqrt(complex(0, 1)), 1e-6);
+  ASSERT_NEAR_COMPLEX(a->at(1, 0), std::sqrt(complex(2, 3)), 1e-6);
+}
+
 TYPED_TEST(BackendTest, scale) {
   auto a = this->_pool.rent_c("a", 4, 1);
   a->copy_from({complex(0, 1), complex(2, 3), complex(4, 5), complex(6, 7)});
@@ -195,6 +239,34 @@ TYPED_TEST(BackendTest, real) {
   ASSERT_EQ(b->at(1, 0), 2.0);
   ASSERT_EQ(b->at(0, 1), 4.0);
   ASSERT_EQ(b->at(1, 1), 6.0);
+}
+
+TYPED_TEST(BackendTest, imag) {
+  auto a = this->_pool.rent_c("a", 2, 2);
+  a->copy_from({complex(0, 1), complex(2, 3), complex(4, 5), complex(6, 7)});
+
+  auto b = this->_pool.rent("b", 2, 2);
+
+  b->imag(a);
+
+  ASSERT_EQ(b->at(0, 0), 1.0);
+  ASSERT_EQ(b->at(1, 0), 3.0);
+  ASSERT_EQ(b->at(0, 1), 5.0);
+  ASSERT_EQ(b->at(1, 1), 7.0);
+}
+
+TYPED_TEST(BackendTest, conj) {
+  auto a = this->_pool.rent_c("a", 2, 2);
+  a->copy_from({complex(0, 1), complex(2, 3), complex(4, 5), complex(6, 7)});
+
+  auto b = this->_pool.rent_c("b", 2, 2);
+
+  b->conj(a);
+
+  ASSERT_EQ(b->at(0, 0), complex(0, -1));
+  ASSERT_EQ(b->at(1, 0), complex(2, -3));
+  ASSERT_EQ(b->at(0, 1), complex(4, -5));
+  ASSERT_EQ(b->at(1, 1), complex(6, -7));
 }
 
 TYPED_TEST(BackendTest, arg) {
@@ -547,6 +619,93 @@ TYPED_TEST(BackendTest, set_c) {
   ASSERT_EQ(a->at(0, 0), complex(10.0, 5.0));
 }
 
+TYPED_TEST(BackendTest, set_col) {
+  constexpr size_t n = 10;
+  auto a = this->_pool.rent("a", n, n);
+  a->fill(0);
+
+  auto b = this->_pool.rent("b", n, 1);
+  auto vals = random_vector(n);
+  b->copy_from(vals);
+
+  a->set_col(3, 1, 6, b);
+  ASSERT_EQ(a->at(0, 3), 0.0);
+  ASSERT_EQ(a->at(1, 3), vals[1]);
+  ASSERT_EQ(a->at(2, 3), vals[2]);
+  ASSERT_EQ(a->at(3, 3), vals[3]);
+  ASSERT_EQ(a->at(4, 3), vals[4]);
+  ASSERT_EQ(a->at(5, 3), vals[5]);
+  ASSERT_EQ(a->at(6, 3), 0.0);
+  ASSERT_EQ(a->at(7, 3), 0.0);
+  ASSERT_EQ(a->at(8, 3), 0.0);
+  ASSERT_EQ(a->at(9, 3), 0.0);
+}
+
+TYPED_TEST(BackendTest, set_col_c) {
+  constexpr size_t n = 10;
+  auto a = this->_pool.rent_c("a", n, n);
+  a->fill(0);
+
+  auto b = this->_pool.rent_c("b", n, 1);
+  auto vals = random_vector_complex(n);
+  b->copy_from(vals);
+
+  a->set_col(9, 7, 10, b);
+  ASSERT_EQ(a->at(0, 9), ZERO);
+  ASSERT_EQ(a->at(1, 9), ZERO);
+  ASSERT_EQ(a->at(2, 9), ZERO);
+  ASSERT_EQ(a->at(3, 9), ZERO);
+  ASSERT_EQ(a->at(4, 9), ZERO);
+  ASSERT_EQ(a->at(5, 9), ZERO);
+  ASSERT_EQ(a->at(6, 9), ZERO);
+  ASSERT_EQ(a->at(7, 9), vals[7]);
+  ASSERT_EQ(a->at(8, 9), vals[8]);
+  ASSERT_EQ(a->at(9, 9), vals[9]);
+}
+
+TYPED_TEST(BackendTest, set_row) {
+  constexpr size_t n = 10;
+  auto a = this->_pool.rent("a", n, n);
+  a->fill(0);
+
+  auto b = this->_pool.rent("b", n, 1);
+  auto vals = random_vector(n);
+  b->copy_from(vals);
+
+  a->set_row(7, 1, 6, b);
+  ASSERT_EQ(a->at(7, 0), 0.0);
+  ASSERT_EQ(a->at(7, 1), vals[1]);
+  ASSERT_EQ(a->at(7, 2), vals[2]);
+  ASSERT_EQ(a->at(7, 3), vals[3]);
+  ASSERT_EQ(a->at(7, 4), vals[4]);
+  ASSERT_EQ(a->at(7, 5), vals[5]);
+  ASSERT_EQ(a->at(7, 6), 0.0);
+  ASSERT_EQ(a->at(7, 7), 0.0);
+  ASSERT_EQ(a->at(7, 8), 0.0);
+  ASSERT_EQ(a->at(7, 9), 0.0);
+}
+
+TYPED_TEST(BackendTest, set_row_c) {
+  constexpr size_t n = 10;
+  auto a = this->_pool.rent_c("a", n, n);
+  a->fill(0);
+
+  auto b = this->_pool.rent_c("b", n, 1);
+  auto vals = random_vector_complex(n);
+  b->copy_from(vals);
+
+  a->set_row(0, 7, 10, b);
+  ASSERT_EQ(a->at(0, 0), ZERO);
+  ASSERT_EQ(a->at(0, 1), ZERO);
+  ASSERT_EQ(a->at(0, 2), ZERO);
+  ASSERT_EQ(a->at(0, 3), ZERO);
+  ASSERT_EQ(a->at(0, 4), ZERO);
+  ASSERT_EQ(a->at(0, 5), ZERO);
+  ASSERT_EQ(a->at(0, 6), ZERO);
+  ASSERT_EQ(a->at(0, 7), vals[7]);
+  ASSERT_EQ(a->at(0, 8), vals[8]);
+  ASSERT_EQ(a->at(0, 9), vals[9]);
+}
 TYPED_TEST(BackendTest, get_col) {
   auto a = this->_pool.rent("a", 2, 2);
   a->copy_from({0.0, 1.0, 2.0, 3.0});
@@ -637,26 +796,6 @@ TYPED_TEST(BackendTest, create_diagonal_c) {
   ASSERT_EQ(b->at(1, 1), complex(2.0, 3.0));
 }
 
-TYPED_TEST(BackendTest, set_bcd_result) {
-  auto a = this->_pool.rent_c("a", 3, 3);
-  auto v = this->_pool.rent_c("v", 3, 1);
-  v->copy_from({complex(0.0, 1.0), complex(2.0, 3.0), complex(4.0, 5.0)});
-
-  a->fill(ZERO);
-
-  a->set_bcd_result(v, 1);
-
-  ASSERT_EQ(a->at(0, 0), ZERO);
-  ASSERT_EQ(a->at(1, 0), complex(0.0, -1.0));
-  ASSERT_EQ(a->at(2, 0), ZERO);
-  ASSERT_EQ(a->at(0, 1), complex(0.0, 1.0));
-  ASSERT_EQ(a->at(1, 1), ZERO);
-  ASSERT_EQ(a->at(2, 1), complex(4.0, 5.0));
-  ASSERT_EQ(a->at(0, 2), ZERO);
-  ASSERT_EQ(a->at(1, 2), complex(4.0, -5.0));
-  ASSERT_EQ(a->at(2, 2), ZERO);
-}
-
 TYPED_TEST(BackendTest, set_from_complex_drive) {
   constexpr size_t dev = 4;
   constexpr auto n = dev * autd::core::NUM_TRANS_IN_UNIT;
@@ -695,81 +834,26 @@ TYPED_TEST(BackendTest, set_from_arg) {
   }
 }
 
-TYPED_TEST(BackendTest, back_prop) {
-  constexpr size_t m = 2;
-  constexpr size_t dev = 4;
-  constexpr auto n = autd::core::NUM_TRANS_IN_UNIT * dev;
-
-  auto tmp_t = random_vector_complex(m * n, 0.0, 1.0);
-  auto tmp_a = random_vector_complex(m, 0.0, 1.0);
-  std::vector<complex> expected;
-
-  std::vector<double> denominator;
-  for (size_t i = 0; i < m; i++) {
-    auto tmp = 0.0;
-    for (size_t j = 0; j < n; j++) tmp += std::abs(tmp_t[i + m * j]);
-    denominator.emplace_back(tmp);
-  }
-
-  for (size_t i = 0; i < m; i++) {
-    auto c = tmp_a[i] / denominator[i];
-    for (size_t j = 0; j < n; j++) expected.emplace_back(c * std::conj(tmp_t[i + m * j]));
-  }
-
-  auto t = this->_pool.rent_c("a", m, n);
-  t->copy_from(tmp_t);
-
-  auto a = this->_pool.rent_c("b", m, 1);
-  a->copy_from(tmp_a);
-
-  auto s = this->_pool.rent_c("s", n, m);
-  s->back_prop(t, a);
-
-  for (size_t i = 0; i < n; i++)
-    for (size_t j = 0; j < m; j++) ASSERT_NEAR_COMPLEX(s->at(i, j), expected[i + j * n], 1e-6);
-}
-
-TYPED_TEST(BackendTest, sigma_regularization) {
-  constexpr auto m = 2;
-  constexpr auto n = 3;
-
-  double gamma = 1.5;
-
-  auto tmp_t = random_vector_complex(m * n);
-  auto tmp_a = random_vector_complex(m);
-  std::vector<complex> expected;
-  for (size_t j = 0; j < n; j++) {
-    double tmp = 0;
-    for (size_t i = 0; i < m; i++) tmp += std::abs(tmp_t[i + j * m] * tmp_a[i]);
-    expected.emplace_back(std::pow(std::sqrt(tmp / static_cast<double>(m)), gamma), 0.0);
-  }
-
-  auto t = this->_pool.rent_c("a", m, n);
-  t->copy_from(tmp_t);
-
-  auto a = this->_pool.rent_c("b", m, 1);
-  a->copy_from(tmp_a);
-
-  auto s = this->_pool.rent_c("s", n, n);
-  s->sigma_regularization(t, a, gamma);
-
-  for (auto j = 0; j < n; j++) {
-    for (auto i = 0; i < m; i++)
-      if (i == j)
-        ASSERT_NEAR_COMPLEX(s->at(i, j), expected[i], 1e-6);
-      else
-        ASSERT_EQ(s->at(i, j), ZERO);
-  }
-}
-
-TYPED_TEST(BackendTest, col_sum_imag) {
-  auto a = this->_pool.rent_c("a", 2, 2);
-  a->copy_from({complex(0.0, 1.0), complex(2.0, 3.0), complex(4.0, 5.0), complex(6.0, 7.0)});
+TYPED_TEST(BackendTest, reduce_col) {
+  auto a = this->_pool.rent("a", 2, 2);
+  a->copy_from({0.0, 1.0, 2.0, 3.0});
 
   auto b = this->_pool.rent("b", 2, 1);
 
-  b->col_sum_imag(a);
+  b->reduce_col(a);
 
-  ASSERT_NEAR(b->at(0, 0), 6.0, 1e-6);
-  ASSERT_NEAR(b->at(1, 0), 10.0, 1e-6);
+  ASSERT_NEAR(b->at(0, 0), 2.0, 1e-6);
+  ASSERT_NEAR(b->at(1, 0), 4.0, 1e-6);
+}
+
+TYPED_TEST(BackendTest, reduce_col_c) {
+  auto a = this->_pool.rent_c("a", 2, 2);
+  a->copy_from({complex(0.0, 1.0), complex(2.0, 3.0), complex(4.0, 5.0), complex(6.0, 7.0)});
+
+  auto b = this->_pool.rent_c("b", 2, 1);
+
+  b->reduce_col(a);
+
+  ASSERT_NEAR_COMPLEX(b->at(0, 0), complex(4.0, 6.0), 1e-6);
+  ASSERT_NEAR_COMPLEX(b->at(1, 0), complex(8.0, 10.0), 1e-6);
 }

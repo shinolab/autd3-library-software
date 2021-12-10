@@ -7,6 +7,7 @@ set(SOURCE_LIST
   controller.cpp
   gain/primitive.cpp
   modulation/primitive.cpp
+  modulation/lpf.cpp
   sequence/primitive.cpp
   ${include_files}
   ${core_include_files}
@@ -27,7 +28,9 @@ if(WIN32)
   target_sources(autd3 PRIVATE ${PROJECT_SOURCE_DIR}/include/autd3/modulation/primitive.hpp)
   source_group("modulation" FILES
     modulation/primitive.cpp
+    modulation/lpf.cpp
     ${PROJECT_SOURCE_DIR}/include/autd3/modulation/primitive.hpp
+    ${PROJECT_SOURCE_DIR}/include/autd3/modulation/lpf.hpp
   )
   target_sources(autd3 PRIVATE ${PROJECT_SOURCE_DIR}/include/autd3/sequence/primitive.hpp)
   source_group("sequence" FILES

@@ -3,7 +3,7 @@
 // Created Date: 20/07/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/12/2021
+// Last Modified: 10/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -16,11 +16,8 @@
 #include <vector>
 
 #include "autd3.hpp"
-#include "autd3/gain/eigen_backend.hpp"
-#include "autd3/gain/holo.hpp"
 
 using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SPACING_MM;
-using autd::gain::holo::EigenBackend;
 
 inline void seq_gain_test(autd::Controller& autd) {
   autd.silent_mode() = false;
