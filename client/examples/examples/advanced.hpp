@@ -3,7 +3,7 @@
 // Created Date: 19/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/12/2021
+// Last Modified: 10/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,7 +11,6 @@
 
 #pragma once
 
-#include <memory>
 #include <vector>
 
 #include "autd3.hpp"
@@ -23,7 +22,7 @@ class BurstModulation final : public autd::core::Modulation {
     this->_buffer[_buf_size - 1] = 0xFF;
   }
 
-  BurstModulation(const size_t buf_size = 4000, const uint16_t mod_freq_div = 10) : Modulation(mod_freq_div), _buf_size(buf_size) {}
+  explicit BurstModulation(const size_t buf_size = 4000, const uint16_t mod_freq_div = 10) : Modulation(mod_freq_div), _buf_size(buf_size) {}
 
  private:
   size_t _buf_size;

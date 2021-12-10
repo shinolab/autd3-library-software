@@ -3,7 +3,7 @@
 // Created Date: 06/07/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/11/2021
+// Last Modified: 10/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -32,7 +32,6 @@
 #pragma GCC diagnostic pop
 #endif
 
-#include "autd3/core/gain.hpp"
 #include "autd3/core/hardware_defined.hpp"
 #include "autd3/core/utils.hpp"
 #include "autd3/gain/matrix.hpp"
