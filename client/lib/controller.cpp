@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/12/2021
+// Last Modified: 10/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -74,7 +74,7 @@ const std::vector<uint8_t>& Controller::fpga_info() {
 bool Controller::update_ctrl_flag() {
   const auto msg_id = core::logic::get_id();
   core::logic::pack_header(msg_id, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag(), &this->_tx_buf[0]);
-  const auto size = sizeof(core::GlobalHeader);
+  constexpr auto size = sizeof(core::GlobalHeader);
   this->_link->send(&this->_tx_buf[0], size);
   return wait_msg_processed(msg_id);
 }
@@ -177,7 +177,7 @@ bool Controller::send(core::Modulation& mod) {
 
   while (true) {
     const auto msg_id = core::logic::pack_header(mod, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag(), &this->_tx_buf[0], &mod_sent);
-    const auto size = sizeof(core::GlobalHeader);
+    constexpr auto size = sizeof(core::GlobalHeader);
     this->_link->send(&this->_tx_buf[0], size);
     if (!wait_msg_processed(msg_id)) return false;
     if (mod_sent >= mod.buffer().size()) return true;
@@ -216,7 +216,7 @@ bool Controller::send(const core::PointSequence& seq, core::Modulation& mod) {
     const auto size = core::logic::pack_body(seq, this->_geometry, &this->_tx_buf[0], &seq_sent);
     this->_link->send(&this->_tx_buf[0], size);
     if (!wait_msg_processed(msg_id)) return false;
-    if ((seq_sent == seq.control_points().size()) && (mod_sent == mod.buffer().size())) return true;
+    if (seq_sent == seq.control_points().size() && mod_sent == mod.buffer().size()) return true;
   }
 }
 
@@ -236,7 +236,7 @@ bool Controller::send(const core::GainSequence& seq, core::Modulation& mod) {
     const auto size = core::logic::pack_body(seq, this->_geometry, &this->_tx_buf[0], &seq_sent);
     this->_link->send(&this->_tx_buf[0], size);
     if (!wait_msg_processed(msg_id)) return false;
-    if ((seq_sent == seq.gains().size() + 1) && (mod_sent == mod.buffer().size())) return true;
+    if (seq_sent == seq.gains().size() + 1 && mod_sent == mod.buffer().size()) return true;
   }
 }
 

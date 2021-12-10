@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/12/2021
+// Last Modified: 10/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -74,7 +74,7 @@ class Modulation {
    * \details sampling frequency will be autd::core::MOD_SAMPLING_FREQ_BASE /(sampling frequency division ratio). The value must be in 1, 2, ...,
    * autd::core::MOD_SAMPLING_FREQ_DIV_MAX.
    */
-  size_t sampling_freq_div_ratio() const noexcept { return _freq_div_ratio; }
+  [[nodiscard]] size_t sampling_freq_div_ratio() const noexcept { return _freq_div_ratio; }
 
   /**
    * \brief modulation sampling frequency

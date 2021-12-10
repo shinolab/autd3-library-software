@@ -37,7 +37,7 @@ constexpr double LPF_COEF[COEF_SIZE] = {
 
 namespace autd::modulation {
 
-LPF::LPF(core::Modulation& modulation) : Modulation(2) {
+LPF::LPF(Modulation& modulation) : Modulation(2) {
   modulation.build();
   _resampled.reserve(modulation.buffer().size() * modulation.sampling_freq_div_ratio());
   for (const auto d : modulation.buffer())
