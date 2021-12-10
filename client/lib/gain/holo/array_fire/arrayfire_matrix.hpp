@@ -138,10 +138,12 @@ struct AFMatrix {
 
   void set(const size_t row, const size_t col, T v) { af_array(static_cast<int>(row), static_cast<int>(col)) = cast(v); }
   void set_col(const size_t col, const size_t start_row, const size_t end_row, const std::shared_ptr<const AFMatrix<T>>& vec) {
-    af_array.col(col).rows(start_row, end_row) = vec->af_array.cols(start_row, end_row);
+    af_array(af::seq(static_cast<double>(start_row), static_cast<double>(end_row) - 1), static_cast<int>(col)) =
+        vec->af_array(af::seq(static_cast<double>(start_row), static_cast<double>(end_row) - 1), 0);
   }
   void set_row(const size_t row, const size_t start_col, const size_t end_col, const std::shared_ptr<const AFMatrix<T>>& vec) {
-    af_array.row(row).cols(start_col, end_col) = vec->af_array.cols(start_col, end_col);
+    af_array(static_cast<int>(row), af::seq(static_cast<double>(start_col), static_cast<double>(end_col) - 1)) =
+        vec->af_array(af::seq(static_cast<double>(start_col), static_cast<double>(end_col) - 1), 0);
   }
   void get_col(const std::shared_ptr<const AFMatrix<T>>& src, const size_t i) { af_array = src->af_array.col(static_cast<int>(i)); }
   void fill(T v) { af_array = cast(v); }

@@ -114,18 +114,13 @@ void cu_exp(const uint32_t row, const uint32_t col, cuDoubleComplex* c) {
   exp_kernel<<<grid, block>>>(row, col, c);
 }
 
-__global__ void sqrt_kernel(const uint32_t row, const uint32_t col, double* c) {
-  int xi = blockIdx.x * blockDim.x + threadIdx.x;
-  int yi = blockIdx.y * blockDim.y + threadIdx.y;
-  if (xi >= row || yi >= col) return;
+__device__ double absc2(cuDoubleComplex x) { return x.x * x.x + x.y * x.y; }
+__device__ double absc(cuDoubleComplex x) { return sqrt(absc2(x)); }
 
-  int idx = xi + yi * row;
-  c[idx] = sqrt(c[idx]);
-}
-void cu_sqrt(const uint32_t row, const uint32_t col, double* c) {
-  dim3 block(BLOCK_SIZE, BLOCK_SIZE, 1);
-  dim3 grid((row - 1) / BLOCK_SIZE + 1, (col - 1) / BLOCK_SIZE + 1, 1);
-  sqrt_kernel<<<grid, block>>>(row, col, c);
+__device__ cuDoubleComplex powc(cuDoubleComplex x, double s) {
+  double r = pow(absc(x), s);
+  double theta = atan2(x.y, x.x) * s;
+  return make_cuDoubleComplex(r * cos(theta), r * sin(theta));
 }
 
 __global__ void pow_kernel(const uint32_t row, const uint32_t col, double* c, double s) {
@@ -142,8 +137,7 @@ __global__ void pow_kernel(const uint32_t row, const uint32_t col, cuDoubleCompl
   if (xi >= row || yi >= col) return;
 
   int idx = xi + yi * row;
-  c[idx].x = pow(c[idx].x, s);
-  c[idx].y = pow(c[idx].y, s);
+  c[idx] = powc(c[idx], s);
 }
 
 void cu_pow(const uint32_t row, const uint32_t col, double* c, double s) {
@@ -157,9 +151,27 @@ void cu_pow(const uint32_t row, const uint32_t col, cuDoubleComplex* c, double s
   pow_kernel<<<grid, block>>>(row, col, c, s);
 }
 
+__global__ void sqrt_kernel(const uint32_t row, const uint32_t col, double* c) {
+  int xi = blockIdx.x * blockDim.x + threadIdx.x;
+  int yi = blockIdx.y * blockDim.y + threadIdx.y;
+  if (xi >= row || yi >= col) return;
+
+  int idx = xi + yi * row;
+  c[idx] = sqrt(c[idx]);
+}
+
+void cu_sqrt(const uint32_t row, const uint32_t col, double* c) {
+  dim3 block(BLOCK_SIZE, BLOCK_SIZE, 1);
+  dim3 grid((row - 1) / BLOCK_SIZE + 1, (col - 1) / BLOCK_SIZE + 1, 1);
+  sqrt_kernel<<<grid, block>>>(row, col, c);
+}
+void cu_sqrt(const uint32_t row, const uint32_t col, cuDoubleComplex* c) {
+  dim3 block(BLOCK_SIZE, BLOCK_SIZE, 1);
+  dim3 grid((row - 1) / BLOCK_SIZE + 1, (col - 1) / BLOCK_SIZE + 1, 1);
+  pow_kernel<<<grid, block>>>(row, col, c, 0.5);
+}
+
 __device__ cuDoubleComplex conj(cuDoubleComplex a) { return make_cuDoubleComplex(a.x, -a.y); }
-__device__ double absc2(cuDoubleComplex x) { return x.x * x.x + x.y * x.y; }
-__device__ double absc(cuDoubleComplex x) { return sqrt(absc2(x)); }
 
 __global__ void reciprocal_kernel(const uint32_t row, const uint32_t col, const double* src, double* dst) {
   int xi = blockIdx.x * blockDim.x + threadIdx.x;
@@ -270,8 +282,7 @@ __global__ void conj_kernel(const cuDoubleComplex* a, const uint32_t row, const 
   if (xi >= row || yi >= col) return;
 
   int idx = xi + yi * row;
-  b[idx].x = a[idx].x;
-  b[idx].y = a[idx].y;
+  b[idx] = conj(a[idx]);
 }
 
 void cu_conj(const cuDoubleComplex* a, uint32_t row, uint32_t col, cuDoubleComplex* b) {

@@ -31,6 +31,7 @@ void cu_make_complex(const double* r, const double* i, uint32_t row, uint32_t co
 void cu_exp(uint32_t row, uint32_t col, cuDoubleComplex* c);
 void cu_exp(uint32_t row, uint32_t col, double* c);
 void cu_sqrt(uint32_t row, uint32_t col, double* c);
+void cu_sqrt(uint32_t row, uint32_t col, cuDoubleComplex* c);
 void cu_pow(uint32_t row, uint32_t col, cuDoubleComplex* c, double s);
 void cu_pow(uint32_t row, uint32_t col, double* c, double s);
 void cu_reciprocal(uint32_t row, uint32_t col, const double* src, double* dst);
