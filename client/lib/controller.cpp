@@ -95,7 +95,7 @@ bool Controller::wait_msg_processed(const uint8_t msg_id, const size_t max_trial
   const auto num_devices = this->_geometry.num_devices();
   for (size_t i = 0; i < max_trial; i++) {
     this->_link->receive(this->_rx_buf);
-    if (core::is_msg_processed(num_devices, msg_id, _rx_buf)) return true;
+    if (is_msg_processed(num_devices, msg_id, _rx_buf)) return true;
     auto wait = static_cast<size_t>(std::ceil(core::EC_TRAFFIC_DELAY * 1000.0 / core::EC_DEVICE_PER_FRAME * static_cast<double>(num_devices)));
     std::this_thread::sleep_for(std::chrono::milliseconds(wait));
   }

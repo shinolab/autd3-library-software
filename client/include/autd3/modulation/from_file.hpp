@@ -3,7 +3,7 @@
 // Created Date: 17/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/12/2021
+// Last Modified: 12/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -12,7 +12,6 @@
 #pragma once
 
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "autd3/core/modulation.hpp"
@@ -29,7 +28,7 @@ class RawPCM final : public core::Modulation {
    * @param[in] mod_sampling_freq_div sampling frequency of the Modulation
    * @details The sampling frequency of AUTD is shown in autd::MOD_SAMPLING_FREQ, and it is not possible to modulate beyond the Nyquist frequency.
    * No modulation beyond the Nyquist frequency can be produced.
-   * If samplingFreq is less than the Nyquist frequency, the data will be upsampled.
+   * If samplingFreq is less than the Nyquist frequency, the data will be up-sampled.
    * The maximum modulation buffer size is shown in autd::MOD_BUF_SIZE. Only the data up to MOD_BUF_SIZE/MOD_SAMPLING_FREQ seconds can be output.
    */
   explicit RawPCM(const std::string& filename, double sampling_freq = 0.0, uint16_t mod_sampling_freq_div = 10);
@@ -57,7 +56,7 @@ class Wav final : public core::Modulation {
    * @param[in] mod_sampling_freq_div sampling frequency of the Modulation
    * @details The sampling frequency of AUTD is shown in autd::MOD_SAMPLING_FREQ, and it is not possible to modulate beyond the Nyquist frequency.
    * No modulation beyond the Nyquist frequency can be produced.
-   * If samplingFreq is less than the Nyquist frequency, the data will be upsampled.
+   * If samplingFreq is less than the Nyquist frequency, the data will be up-sampled.
    * The maximum modulation buffer size is shown in autd::MOD_BUF_SIZE. Only the data up to MOD_BUF_SIZE/MOD_SAMPLING_FREQ seconds can be output.
    */
   explicit Wav(const std::string& filename, uint16_t mod_sampling_freq_div = 10);

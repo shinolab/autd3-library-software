@@ -43,7 +43,7 @@ class EmulatorGeometry final : public core::IDatagramBody {
 
   [[nodiscard]] bool is_finished() const override { return true; }
 
-  EmulatorGeometry(const core::Geometry& geometry) noexcept {
+  explicit EmulatorGeometry(const core::Geometry& geometry) noexcept {
     constexpr auto vec_size = 9 * sizeof(float);
     const auto size = sizeof(core::GlobalHeader) + geometry.num_devices() * vec_size;
 
@@ -71,7 +71,7 @@ class EmulatorGeometry final : public core::IDatagramBody {
       cursor[9 * i + 7] = up.y();
       cursor[9 * i + 8] = up.z();
     }
-  };
+  }
   ~EmulatorGeometry() override = default;
   EmulatorGeometry(const EmulatorGeometry& v) noexcept = delete;
   EmulatorGeometry& operator=(const EmulatorGeometry& obj) = delete;
@@ -111,8 +111,6 @@ class EmulatorImpl final : public Emulator {
   core::TxDatagram _geometry_datagram;
 
   static core::TxDatagram init_geometry_datagram(const core::Geometry& geometry) {
-    constexpr auto vec_size = 9 * sizeof(float);
-    const auto size = sizeof(core::GlobalHeader) + geometry.num_devices() * vec_size;
     core::TxDatagram buf(geometry.num_devices());
 
     auto* const uh = reinterpret_cast<core::GlobalHeader*>(buf.header());
@@ -121,21 +119,20 @@ class EmulatorImpl final : public Emulator {
     uh->cpu_ctrl_flags = 0x00;
     uh->mod_size = 0x00;
 
-    auto* const cursor = reinterpret_cast<float*>(buf.data());
     for (const auto& device : geometry) {
-      const auto i = device.id();
+      auto* const cursor = reinterpret_cast<float*>(buf.body(device.id()));
       auto origin = device.begin()->position().cast<float>();
       auto right = device.x_direction().cast<float>();
       auto up = device.y_direction().cast<float>();
-      cursor[9 * i] = origin.x();
-      cursor[9 * i + 1] = origin.y();
-      cursor[9 * i + 2] = origin.z();
-      cursor[9 * i + 3] = right.x();
-      cursor[9 * i + 4] = right.y();
-      cursor[9 * i + 5] = right.z();
-      cursor[9 * i + 6] = up.x();
-      cursor[9 * i + 7] = up.y();
-      cursor[9 * i + 8] = up.z();
+      cursor[0] = origin.x();
+      cursor[1] = origin.y();
+      cursor[2] = origin.z();
+      cursor[3] = right.x();
+      cursor[4] = right.y();
+      cursor[5] = right.z();
+      cursor[6] = up.x();
+      cursor[7] = up.y();
+      cursor[8] = up.z();
     }
 
     return buf;
@@ -148,7 +145,7 @@ core::LinkPtr Emulator::create(const uint16_t port, const core::Geometry& geomet
 }
 
 EmulatorImpl::EmulatorImpl(const uint16_t port, const core::Geometry& geometry)
-    : _is_open(false), _port(port), _geometry_datagram(EmulatorImpl::init_geometry_datagram(geometry)) {}
+    : _is_open(false), _port(port), _geometry_datagram(init_geometry_datagram(geometry)) {}
 
 void EmulatorImpl::send(const core::TxDatagram& tx) {
   const auto* header = reinterpret_cast<const core::GlobalHeader*>(tx.data());

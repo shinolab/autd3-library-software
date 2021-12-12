@@ -24,6 +24,7 @@
 namespace autd {
 using core::DelayOffsets;
 using core::Gain;
+using core::GAIN_MODE;
 using core::GainSequence;
 using core::Geometry;
 using core::Matrix4X4;
@@ -31,7 +32,6 @@ using core::Modulation;
 using core::PointSequence;
 using core::Quaternion;
 using core::Vector3;
-using sequence::GAIN_MODE;
 
 using core::DEVICE_HEIGHT;
 using core::DEVICE_WIDTH;

@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/09/2021
+// Last Modified: 12/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -18,6 +18,6 @@ void AUTDLinkRemoteTwinCAT(void** out, const char* remote_ip_addr, const char* r
   const auto remote_ams_net_id_ = std::string(remote_ams_net_id);
   const auto local_ams_net_id_ = std::string(local_ams_net_id);
 
-  auto* link = LinkCreate(autd::link::RemoteTwinCAT::create(remote_ip_addr_, remote_ams_net_id_, local_ams_net_id_));
+  auto* link = link_create(autd::link::RemoteTwinCAT::create(remote_ip_addr_, remote_ams_net_id_, local_ams_net_id_));
   *out = link;
 }

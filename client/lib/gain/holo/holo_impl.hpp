@@ -3,7 +3,7 @@
 // Created Date: 10/09/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/12/2021
+// Last Modified: 12/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -72,7 +72,7 @@ void sdp_impl(P& pool, const core::Geometry& geometry, const std::vector<core::V
 
   const auto b = pool.rent_c("b", m, n);
   generate_transfer_matrix(foci, geometry, b);
-  const auto pseudo_inv_b = pool.rent_c("pinvb", n, m);
+  const auto pseudo_inv_b = pool.rent_c("p_inv_b", n, m);
   auto u_ = pool.rent_c("u_", m, m);
   auto s = pool.rent_c("s", n, m);
   auto vt = pool.rent_c("vt", n, n);
@@ -82,7 +82,7 @@ void sdp_impl(P& pool, const core::Geometry& geometry, const std::vector<core::V
   pseudo_inv_b->pseudo_inverse_svd(b_tmp, alpha, u_, s, vt, buf);
 
   const auto mm = pool.rent_c("mm", m, m);
-  const auto one = pool.rent_c("onec", m, 1);
+  const auto one = pool.rent_c("one_c", m, 1);
   one->fill(ONE);
   mm->create_diagonal(one);
 
