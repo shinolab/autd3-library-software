@@ -3,7 +3,7 @@
 // Created Date: 08/09/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/12/2021
+// Last Modified: 12/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -55,7 +55,7 @@ struct AFMatrix {
   void abs(const std::shared_ptr<const AFMatrix<T>>& src) { af_array = af::abs(src->af_array); }
   void real(const std::shared_ptr<const AFMatrix<complex>>& src) { af_array = af::real(src->af_array); }
   void imag(const std::shared_ptr<const AFMatrix<complex>>& src) { af_array = af::imag(src->af_array); }
-  void conj(const std::shared_ptr<const AFMatrix<complex>>& src) { af_array = af::conjg(src->af_array); }
+  void conj(const std::shared_ptr<const AFMatrix<complex>>& src) { af_array = conjg(src->af_array); }
   void arg(const std::shared_ptr<const AFMatrix<complex>>& src) { af_array = src->af_array / af::abs(src->af_array); }
   void hadamard_product(const std::shared_ptr<const AFMatrix<T>>& a, const std::shared_ptr<const AFMatrix<T>>& b) {
     af_array = a->af_array * b->af_array;

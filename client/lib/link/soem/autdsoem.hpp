@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/11/2021
+// Last Modified: 12/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -68,8 +68,8 @@ class SOEMController {
 
   [[nodiscard]] bool is_open() const;
 
-  void send(const uint8_t* buf, size_t size);
-  void receive(uint8_t* rx) const;
+  void send(const core::TxDatagram& tx);
+  void receive(core::RxDatagram& rx) const;
 
  private:
   void setup_sync0(bool activate, uint32_t cycle_time_ns) const;
@@ -84,7 +84,7 @@ class SOEMController {
   ECConfig _config;
   bool _is_open;
 
-  std::unique_ptr<std::pair<std::unique_ptr<uint8_t[]>, size_t>[]> _send_buf;
+  std::vector<core::TxDatagram> _send_buf;
   size_t _send_buf_cursor;
   size_t _send_buf_size;
   std::mutex _send_mtx;
