@@ -1,6 +1,8 @@
 # 1.10
 * Rename `SinePressure` to `SineSquared`
 * Add `modulation::LPF`
+* Remove `AUTDSendGainModulation`, `AUTDSendSequenceModulation`, and `AUTDSendGainSequenceModulation`
+    * Add `AUTDSendHeader`, `AUTDSendBody`, and `AUTDSendHeaderBody`
 
 # 1.9.3
 * fix minor bugs

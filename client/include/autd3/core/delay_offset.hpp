@@ -20,18 +20,22 @@ namespace autd::core {
  */
 class DelayOffsets final : public IDatagramBody {
  public:
+  DelayOffset& operator[](const size_t i) { return _data[i]; }
+  const DelayOffset& operator[](const size_t i) const { return _data[i]; }
+
   void init() override {}
 
-  uint8_t pack(const Geometry&, TxDatagram& tx, uint8_t&& fpga_ctrl_flag, uint8_t&& cpu_ctrl_flag) override {
+  uint8_t pack(const Geometry& geometry, TxDatagram& tx, uint8_t& fpga_ctrl_flag, uint8_t& cpu_ctrl_flag) override {
     const auto msg_id = get_id();
     cpu_ctrl_flag |= WRITE_BODY;
     std::memcpy(tx.body(0), _data.data(), _data.size() * sizeof(DelayOffset));
+    tx.num_bodies() = geometry.num_devices();
     return msg_id;
   }
 
   [[nodiscard]] bool is_finished() const override { return true; }
 
-  DelayOffsets() noexcept = default;
+  DelayOffsets(const size_t num_devices) noexcept { _data.resize(num_devices * sizeof(Body), DelayOffset()); };
   ~DelayOffsets() override = default;
   DelayOffsets(const DelayOffsets& v) noexcept = delete;
   DelayOffsets& operator=(const DelayOffsets& obj) = delete;

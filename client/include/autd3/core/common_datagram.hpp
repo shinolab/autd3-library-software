@@ -17,13 +17,14 @@ class CommonHeader final : public IDatagramHeader {
  public:
   void init() override {}
 
-  uint8_t pack(const Geometry&, TxDatagram& tx, uint8_t&& fpga_ctrl_flag, uint8_t&& cpu_ctrl_flag) override {
+  uint8_t pack(const Geometry&, TxDatagram& tx, uint8_t& fpga_ctrl_flag, uint8_t& cpu_ctrl_flag) override {
     const auto msg_id = get_id();
     auto* header = reinterpret_cast<GlobalHeader*>(tx.data());
     header->msg_id = msg_id;
     header->fpga_ctrl_flags = fpga_ctrl_flag;
     header->cpu_ctrl_flags = cpu_ctrl_flag;
     header->mod_size = 0;
+    tx.num_bodies() = 0;
     return msg_id;
   }
 
@@ -41,12 +42,13 @@ class SpecialMessageIdHeader final : public IDatagramHeader {
  public:
   void init() override {}
 
-  uint8_t pack(const Geometry&, TxDatagram& tx, uint8_t&& fpga_ctrl_flag, uint8_t&& cpu_ctrl_flag) override {
+  uint8_t pack(const Geometry&, TxDatagram& tx, uint8_t& fpga_ctrl_flag, uint8_t& cpu_ctrl_flag) override {
     auto* header = reinterpret_cast<GlobalHeader*>(tx.data());
     header->msg_id = _msg_id;
     header->fpga_ctrl_flags = fpga_ctrl_flag;
     header->cpu_ctrl_flags = cpu_ctrl_flag;
     header->mod_size = 0;
+    tx.num_bodies() = 0;
     return _msg_id;
   }
 
@@ -61,6 +63,22 @@ class SpecialMessageIdHeader final : public IDatagramHeader {
 
  private:
   uint8_t _msg_id;
+};
+
+class NullBody final : public IDatagramBody {
+ public:
+  void init() override {}
+
+  uint8_t pack(const Geometry&, TxDatagram&, uint8_t&, uint8_t&) override { return 0; }
+
+  [[nodiscard]] bool is_finished() const override { return true; }
+
+  NullBody() noexcept = default;
+  ~NullBody() override = default;
+  NullBody(const NullBody& v) noexcept = delete;
+  NullBody& operator=(const NullBody& obj) = delete;
+  NullBody(NullBody&& obj) = default;
+  NullBody& operator=(NullBody&& obj) = default;
 };
 
 }  // namespace autd::core

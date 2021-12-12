@@ -23,6 +23,7 @@
 
 // "ethercat.h" must be included before followings
 #include "autd3/core/exception.hpp"
+#include "autd3/core/hardware_defined.hpp"
 #include "autdsoem.hpp"
 
 namespace autd::autdsoem {

@@ -152,18 +152,6 @@ class Controller {
   bool update_ctrl_flag();
 
   /**
-   * \brief Setter/Getter for delay and duty offset
-   * \detais You must call set_delay_offset function to apply the change.
-   */
-  std::vector<core::DelayOffset>& delay_offset();
-
-  /**
-   * \brief Set delay and duty offset data
-   * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
-   */
-  bool set_delay_offset();
-
-  /**
    * @brief Open device with a link.
    * @param[in] link Link
    */
@@ -203,43 +191,9 @@ class Controller {
 
   bool send(core::IDatagramBody& body);
 
-  // /**
-  //  * @brief Send gain to the device
-  //  * @param[in] gain Gain to display
-  //  * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
-  //  */
-  // bool send(core::Gain& gain);
+  bool send(core::IDatagramHeader& header, core::IDatagramBody& body);
 
-  // /**
-  //  * @brief Send modulation to the device
-  //  * @param[in] mod Amplitude modulation to display
-  //  * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
-  //  */
-  // bool send(core::Modulation& mod);
-
-  // /**
-  //  * @brief Send gain and modulation to the device
-  //  * @param[in] gain Gain to display
-  //  * @param[in] mod Amplitude modulation to display
-  //  * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
-  //  */
-  // bool send(core::Gain& gain, core::Modulation& mod);
-
-  // /**
-  //  * @brief Send sequence to the device
-  //  * @param[in] seq Sequence to display
-  //  * @param[in] mod Amplitude modulation to display
-  //  * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
-  //  */
-  // bool send(const core::PointSequence& seq, core::Modulation& mod);
-
-  // /**
-  //  * @brief Send sequence to the device
-  //  * @param[in] seq Sequence to display
-  //  * @param[in] mod Amplitude modulation to display
-  //  * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
-  //  */
-  // bool send(const core::GainSequence& seq, core::Modulation& mod);
+  bool send(core::IDatagramBody& body, core::IDatagramHeader& header);
 
   /**
    * @brief Enumerate firmware information
@@ -329,6 +283,5 @@ class Controller {
   core::RxDatagram _rx_buf;
 
   std::vector<uint8_t> _fpga_infos;
-  std::vector<core::DelayOffset> _delay_offset;
 };
 }  // namespace autd

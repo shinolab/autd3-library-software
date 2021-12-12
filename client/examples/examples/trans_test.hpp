@@ -3,7 +3,7 @@
 // Created Date: 05/07/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/12/2021
+// Last Modified: 12/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -24,10 +24,11 @@ inline void trans_test_test(autd::Controller& autd) {
   // The default duty_offset is set to 1, so you should set the offset to 0 for transducers you don't want to drive
 
   // 0-th transducer of 0-th device offset is 1, and the others are 0
+  autd::DelayOffsets offsets(autd.geometry().num_devices());
   for (const auto& dev : autd.geometry())
-    for (const auto& transducer : dev) autd.delay_offset()[transducer.id()].offset = 0;
-  autd.delay_offset()[0].offset = 1;
-  autd.set_delay_offset();  // apply
+    for (const auto& transducer : dev) offsets[transducer.id()].offset = 0;
+  offsets[0].offset = 1;
+  autd.send(offsets);  // apply
 
   autd::modulation::Static m;
   autd::gain::TransducerTest g(0, 0xFF, 0x00);

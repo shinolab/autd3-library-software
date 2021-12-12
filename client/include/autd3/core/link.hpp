@@ -13,7 +13,7 @@
 
 #include <memory>
 
-#include "interface.hpp"
+#include "hardware_defined.hpp"
 
 namespace autd::core {
 

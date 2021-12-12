@@ -14,7 +14,7 @@
 #include <condition_variable>
 #include <vector>
 
-#include "autd3/core/common_header.hpp"
+#include "autd3/core/common_datagram.hpp"
 #include "autd3/core/ec_config.hpp"
 #include "autd3/gain/primitive.hpp"
 
@@ -80,7 +80,6 @@ void Controller::open(core::LinkPtr link) {
   this->_rx_buf = core::RxDatagram(this->_geometry.num_devices());
 
   this->_fpga_infos.resize(this->_geometry.num_transducers());
-  this->_delay_offset.resize(this->_geometry.num_transducers());
 
   link->open();
   this->_link = std::move(link);
@@ -135,112 +134,31 @@ bool Controller::resume() {
 }
 
 bool Controller::send(core::IDatagramHeader& header) {
-  header.init();
-  const auto msg_id = header.pack(this->_geometry, _tx_buf, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag());
-  this->_link->send(this->_tx_buf);
-  return wait_msg_processed(msg_id);
+  core::NullBody body;
+  return this->send(header, body);
 }
 
 bool Controller::send(core::IDatagramBody& body) {
-  body.init();
-  const auto msg_id = body.pack(this->_geometry, _tx_buf, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag());
-  this->_link->send(this->_tx_buf);
-  return wait_msg_processed(msg_id);
+  core::CommonHeader header;
+  return this->send(header, body);
 }
 
-//
-// bool Controller::send(core::IDatagram& gain) {
-//  this->_props._output_enable = true;
-//
-//  gain.init();
-//
-//  const auto msg_id = gain.prepare(_props.fpga_ctrl_flag(), _props.cpu_ctrl_flag());
-//  this->_link->send(gain);
-//
-//  return wait_msg_processed(msg_id);
-//}
-//
-// bool Controller::send(core::Modulation& mod) {
-//  mod.init();
-//
-//  while (true) {
-//    const auto msg_id = mod.prepare(_props.fpga_ctrl_flag(), _props.cpu_ctrl_flag());
-//    this->_link->send(mod);
-//    // const auto msg_id = core::logic::pack_header(mod, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag(), &this->_tx_buf[0], &mod_sent);
-//    // constexpr auto size = sizeof(core::GlobalHeader);
-//    // this->_link->send(&this->_tx_buf[0], size);
-//    if (!wait_msg_processed(msg_id)) return false;
-//    if (mod.is_finished) return true;
-//  }
-//}
-//
-// bool Controller::send(core::Gain& gain, core::Modulation& mod) {
-//  size_t mod_sent = 0;
-//  mod.build();
-//
-//  this->_props._output_enable = true;
-//  this->_props._op_mode = core::OP_MODE_NORMAL;
-//  gain.build(this->_geometry);
-//
-//  // TODO(ME)
-//  while (true) {
-//    const auto msg_id = core::logic::pack_header(mod, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag(), &this->_tx_buf[0], &mod_sent);
-//    const auto size = core::logic::pack_body(gain, &this->_tx_buf[0]);
-//    this->_link->send(&this->_tx_buf[0], size);
-//    if (!wait_msg_processed(msg_id)) return false;
-//    if (mod_sent >= mod.buffer().size()) return true;
-//  }
-//}
-//
-// bool Controller::send(const core::PointSequence& seq, core::Modulation& mod) {
-//  size_t mod_sent = 0;
-//  size_t seq_sent = 0;
-//  mod.build();
-//
-//  this->_props._output_enable = true;
-//  this->_props._op_mode = core::OP_MODE_SEQ;
-//  this->_props._seq_mode = core::SEQ_MODE_POINT;
-//
-//  while (true) {
-//    const auto msg_id = core::logic::pack_header(mod, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag(), &this->_tx_buf[0], &mod_sent);
-//    const auto size = core::logic::pack_body(seq, this->_geometry, &this->_tx_buf[0], &seq_sent);
-//    this->_link->send(&this->_tx_buf[0], size);
-//    if (!wait_msg_processed(msg_id)) return false;
-//    if (seq_sent == seq.control_points().size() && mod_sent == mod.buffer().size()) return true;
-//  }
-//}
-//
-// bool Controller::send(const core::GainSequence& seq, core::Modulation& mod) {
-//  size_t mod_sent = 0;
-//  size_t seq_sent = 0;
-//  mod.build();
-//
-//  for (auto&& g : seq.gains()) g->build(this->_geometry);
-//
-//  this->_props._output_enable = true;
-//  this->_props._op_mode = core::OP_MODE_SEQ;
-//  this->_props._seq_mode = core::SEQ_MODE_GAIN;
-//
-//  while (true) {
-//    const auto msg_id = core::logic::pack_header(mod, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag(), &this->_tx_buf[0], &mod_sent);
-//    const auto size = core::logic::pack_body(seq, this->_geometry, &this->_tx_buf[0], &seq_sent);
-//    this->_link->send(&this->_tx_buf[0], size);
-//    if (!wait_msg_processed(msg_id)) return false;
-//    if (seq_sent == seq.gains().size() + 1 && mod_sent == mod.buffer().size()) return true;
-//  }
-//}
+bool Controller::send(core::IDatagramBody& body, core::IDatagramHeader& header) { return this->send(header, body); }
 
-// std::vector<core::DelayOffset>& Controller::delay_offset() { return this->_delay_offset; }
-//
-// bool Controller::set_delay_offset() { return this->send_delay_offset(); }
-//
-// bool Controller::send_delay_offset() const {
-//   const uint8_t msg_id = core::logic::get_id();
-//   core::logic::pack_header(msg_id, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag() | core::DELAY_OFFSET, &this->_tx_buf[0]);
-//   const auto size = core::logic::pack_delay_offset_body(this->_delay_offset, &this->_tx_buf[0]);
-//   this->_link->send(&this->_tx_buf[0], size);
-//   return wait_msg_processed(msg_id);
-// }
+bool Controller::send(core::IDatagramHeader& header, core::IDatagramBody& body) {
+  header.init();
+  body.init();
+
+  while (true) {
+    auto fpga_flag = _props.fpga_ctrl_flag();
+    auto cpu_flag = _props.cpu_ctrl_flag();
+    const auto msg_id = header.pack(this->_geometry, _tx_buf, fpga_flag, cpu_flag);
+    body.pack(this->_geometry, _tx_buf, fpga_flag, cpu_flag);
+    this->_link->send(this->_tx_buf);
+    if (!wait_msg_processed(msg_id)) return false;
+    if (header.is_finished() && body.is_finished()) return true;
+  }
+}
 
 std::vector<FirmwareInfo> Controller::firmware_info_list() {
   auto concat_byte = [](const uint8_t high, const uint16_t low) { return static_cast<uint16_t>(static_cast<uint16_t>(high) << 8 | low); };
@@ -257,7 +175,9 @@ std::vector<FirmwareInfo> Controller::firmware_info_list() {
   auto send_command = [&](const uint8_t msg_id, const uint8_t cmd) {
     core::CommonHeader common_header;
     common_header.init();
-    common_header.pack(_geometry, _tx_buf, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag());
+    auto fpga_flag = _props.fpga_ctrl_flag();
+    auto cpu_flag = _props.cpu_ctrl_flag();
+    common_header.pack(_geometry, _tx_buf, fpga_flag, cpu_flag);
     _tx_buf.header()[2] = cmd;
     _link->send(_tx_buf);
     return wait_msg_processed(msg_id);
@@ -303,7 +223,9 @@ void Controller::STMController::add_gain(core::Gain& gain) const {
   gain.init();
 
   auto build_buf = core::TxDatagram(this->_p_cnt->_geometry.num_devices());
-  gain.pack(this->_p_cnt->geometry(), build_buf, this->_p_cnt->_props.fpga_ctrl_flag(), this->_p_cnt->_props.cpu_ctrl_flag());
+  auto fpga_flag = this->_p_cnt->_props.fpga_ctrl_flag();
+  auto cpu_flag = this->_p_cnt->_props.cpu_ctrl_flag();
+  gain.pack(this->_p_cnt->geometry(), build_buf, fpga_flag, cpu_flag);
 
   this->_handler->add(std::move(build_buf));
 }
