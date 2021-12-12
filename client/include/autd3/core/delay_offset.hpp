@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include "hardware_defined.hpp"
 #include "interface.hpp"
 
@@ -35,7 +37,7 @@ class DelayOffsets final : public IDatagramBody {
 
   [[nodiscard]] bool is_finished() const override { return true; }
 
-  DelayOffsets(const size_t num_devices) noexcept { _data.resize(num_devices * sizeof(Body), DelayOffset()); };
+  explicit DelayOffsets(const size_t num_devices) noexcept { _data.resize(num_devices * sizeof(Body), DelayOffset()); }
   ~DelayOffsets() override = default;
   DelayOffsets(const DelayOffsets& v) noexcept = delete;
   DelayOffsets& operator=(const DelayOffsets& obj) = delete;

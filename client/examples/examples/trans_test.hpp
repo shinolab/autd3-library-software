@@ -11,8 +11,6 @@
 
 #pragma once
 
-#include <vector>
-
 #include "autd3.hpp"
 
 using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SPACING_MM;

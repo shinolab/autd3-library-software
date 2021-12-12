@@ -32,7 +32,7 @@ struct EtherCATAdapter final {
 };
 
 /**
- * @brief Link using [SOEM](https://github.com/OpenEtherCATsociety/SOEM)
+ * @brief Link using [SOEM](https://github.com/OpenEtherCATSociety/SOEM)
  */
 class SOEM : virtual public core::Link {
  public:

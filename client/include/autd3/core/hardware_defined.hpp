@@ -11,8 +11,8 @@
 
 #pragma once
 
-#include <atomic>
 #include <cstdint>
+#include <memory>
 
 namespace autd {
 namespace core {
@@ -119,7 +119,7 @@ class TxDatagram final {
 
   [[nodiscard]] const uint8_t* data() const { return _data.get(); }
   [[nodiscard]] const uint8_t* header() const { return _data.get(); }
-  [[nodiscard]] const uint8_t* body(size_t i) const { return _data.get() + _header_size + _body_size * i; }
+  [[nodiscard]] const uint8_t* body(const size_t i) const { return _data.get() + _header_size + _body_size * i; }
 
   uint8_t* data() { return _data.get(); }
   uint8_t* header() { return _data.get(); }

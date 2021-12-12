@@ -3,7 +3,7 @@
 // Created Date: 06/07/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/12/2021
+// Last Modified: 12/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -12,7 +12,6 @@
 #pragma once
 
 #include <algorithm>
-#include <iostream>
 #include <memory>
 #include <utility>
 #include <vector>

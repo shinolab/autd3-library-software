@@ -18,10 +18,9 @@
 #include "core/firmware_version.hpp"
 #include "core/gain.hpp"
 #include "core/geometry.hpp"
+#include "core/interface.hpp"
 #include "core/link.hpp"
-#include "core/modulation.hpp"
 #include "core/osal_timer.hpp"
-#include "core/sequence.hpp"
 
 namespace autd {
 
@@ -56,7 +55,7 @@ class Controller {
   class STMController;
   class STMTimer;
 
-  Controller() noexcept : _link(nullptr), _props(ControllerProps()), _check_ack(false), _tx_buf(), _rx_buf() {}
+  Controller() noexcept : _link(nullptr), _props(ControllerProps()), _check_ack(false) {}
   ~Controller() noexcept;
   Controller(const Controller& v) noexcept = delete;
   Controller& operator=(const Controller& obj) = delete;

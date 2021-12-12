@@ -3,7 +3,7 @@
 // Created Date: 13/08/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/12/2021
+// Last Modified: 12/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -56,18 +56,18 @@ class BackendTest : public testing::Test {
 
 using testing::Types;
 
-#define Eigen3BackendType autd::gain::holo::MatrixBufferPool<autd::gain::holo::EigenMatrix<double>, autd::gain::holo::EigenMatrix<complex>>
+#define EIGEN3_BACKEND_TYPE autd::gain::holo::MatrixBufferPool<autd::gain::holo::EigenMatrix<double>, autd::gain::holo::EigenMatrix<complex>>
 
 #ifdef TEST_BLAS_BACKEND
 #include "blas/blas_matrix.hpp"
-#define BLASBackendType , autd::gain::holo::MatrixBufferPool<autd::gain::holo::BLASMatrix<double>, autd::gain::holo::BLASMatrix<complex>>
+#define BLAS_BACKEND_TYPE , autd::gain::holo::MatrixBufferPool<autd::gain::holo::BLASMatrix<double>, autd::gain::holo::BLASMatrix<complex>>
 #else
-#define BLASBackendType
+#define BLAS_BACKEND_TYPE
 #endif
 
 #ifdef TEST_CUDA_BACKEND
 #include "cuda/cuda_matrix.hpp"
-#define CUDABackendType , autd::gain::holo::MatrixBufferPool<autd::gain::holo::CuMatrix<double>, autd::gain::holo::CuMatrix<complex>>
+#define CUDA_BACKEND_TYPE , autd::gain::holo::MatrixBufferPool<autd::gain::holo::CuMatrix<double>, autd::gain::holo::CuMatrix<complex>>
 template <>
 BackendTest<autd::gain::holo::MatrixBufferPool<autd::gain::holo::CuMatrix<double>, autd::gain::holo::CuMatrix<complex>>>::BackendTest() {
   autd::gain::holo::CuContext::init(0);
@@ -77,17 +77,17 @@ BackendTest<autd::gain::holo::MatrixBufferPool<autd::gain::holo::CuMatrix<double
   autd::gain::holo::CuContext::free();
 }
 #else
-#define CUDABackendType
+#define CUDA_BACKEND_TYPE
 #endif
 
 #ifdef TEST_ARRAYFIRE_BACKEND
 #include "array_fire/arrayfire_matrix.hpp"
-#define ArrayFireBackendType , autd::gain::holo::MatrixBufferPool<autd::gain::holo::AFMatrix<double>, autd::gain::holo::AFMatrix<complex>>
+#define ARRAY_FIRE_BACKEND_TYPE , autd::gain::holo::MatrixBufferPool<autd::gain::holo::AFMatrix<double>, autd::gain::holo::AFMatrix<complex>>
 #else
-#define ArrayFireBackendType
+#define ARRAY_FIRE_BACKEND_TYPE
 #endif
 
-typedef Types<Eigen3BackendType BLASBackendType CUDABackendType ArrayFireBackendType> Implementations;
+typedef Types<EIGEN3_BACKEND_TYPE BLAS_BACKEND_TYPE CUDA_BACKEND_TYPE ARRAY_FIRE_BACKEND_TYPE> Implementations;
 
 TYPED_TEST_SUITE(BackendTest, Implementations, );
 
