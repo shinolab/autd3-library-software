@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/11/2021
+// Last Modified: 12/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -39,14 +39,13 @@ void SOEMCallback::callback() {
 
 bool SOEMController::is_open() const { return _is_open; }
 
-void SOEMController::send(const uint8_t* buf, const size_t size) {
+void SOEMController::send(const core::TxDatagram& tx) {
   if (!_is_open) throw core::exception::LinkError("link is closed");
 
   while (_send_buf_size == SEND_BUF_SIZE) std::this_thread::sleep_for(std::chrono::milliseconds(this->_config.ec_sm3_cycle_time_ns / 1000 / 1000));
   {
     std::lock_guard lock(_send_mtx);
-    std::memcpy(_send_buf[_send_buf_cursor].first.get(), buf, size);
-    _send_buf[_send_buf_cursor].second = size;
+    _send_buf[_send_buf_cursor].copy_from(tx);
     _send_buf_size++;
     _send_buf_cursor = (_send_buf_cursor + 1) % SEND_BUF_SIZE;
   }
@@ -54,9 +53,9 @@ void SOEMController::send(const uint8_t* buf, const size_t size) {
   _send_cond.notify_one();
 }
 
-void SOEMController::receive(uint8_t* rx) const {
+void SOEMController::receive(core::RxDatagram& rx) const {
   if (!_is_open) throw core::exception::LinkError("link is closed");
-  std::memcpy(rx, &_io_map[this->_output_size], this->_dev_num * this->_config.input_frame_size);
+  std::memcpy(rx.data(), &_io_map[this->_output_size], this->_dev_num * this->_config.input_frame_size);
 }
 
 void SOEMController::setup_sync0(const bool activate, const uint32_t cycle_time_ns) const {
@@ -72,8 +71,8 @@ void SOEMController::open(const char* ifname, const size_t dev_num, const ECConf
   const auto output_size = (header_size + body_size) * _dev_num;
   _output_size = output_size;
 
-  this->_send_buf = std::make_unique<std::pair<std::unique_ptr<uint8_t[]>, size_t>[]>(SEND_BUF_SIZE);
-  for (size_t i = 0; i < SEND_BUF_SIZE; i++) this->_send_buf[i] = std::make_pair(std::make_unique<uint8_t[]>(output_size), 0);
+  this->_send_buf.reserve(SEND_BUF_SIZE);
+  for (size_t i = 0; i < SEND_BUF_SIZE; i++) this->_send_buf.emplace_back(dev_num);
 
   if (const auto size = _output_size + config.input_frame_size * _dev_num; size != _io_map_size) {
     _io_map_size = size;
@@ -125,7 +124,7 @@ void SOEMController::open(const char* ifname, const size_t dev_num, const ECConf
                                                   interval_us);
 
   _is_open = true;
-  this->_send_thread = std::thread([this, body_size, header_size] {
+  this->_send_thread = std::thread([this] {
     while (this->_is_open) {
       {
         std::unique_lock lock(this->_send_mtx);
@@ -133,12 +132,13 @@ void SOEMController::open(const char* ifname, const size_t dev_num, const ECConf
         if (!this->_is_open) return;
         const auto idx = this->_send_buf_cursor >= this->_send_buf_size ? this->_send_buf_cursor - this->_send_buf_size
                                                                         : this->_send_buf_cursor + SEND_BUF_SIZE - this->_send_buf_size;
-        auto& [buf, size] = this->_send_buf[idx];
+        auto& buf = this->_send_buf[idx];
 
-        if (size > header_size)
-          for (size_t i = 0; i < _dev_num; i++) std::memcpy(&_io_map[(header_size + body_size) * i], &buf[header_size + body_size * i], body_size);
-        if (size > 0)
-          for (size_t i = 0; i < _dev_num; i++) std::memcpy(&_io_map[(header_size + body_size) * i + body_size], &buf[0], header_size);
+        if (buf.body_size() > 0)
+          for (size_t i = 0; i < _dev_num; i++) std::memcpy(&_io_map[(buf.header_size() + buf.body_size()) * i], buf.body(i), buf.body_size());
+        if (buf.header_size() > 0)
+          for (size_t i = 0; i < _dev_num; i++)
+            std::memcpy(&_io_map[(buf.header_size() + buf.num_bodies()) * i + buf.body_size()], buf.header(), buf.header_size());
 
         this->_send_buf_size--;
       }

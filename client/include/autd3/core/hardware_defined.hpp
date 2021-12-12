@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/12/2021
+// Last Modified: 12/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include <atomic>
 #include <cstdint>
 
 namespace autd {
@@ -43,6 +44,7 @@ constexpr size_t SEQ_SAMPLING_FREQ_DIV_MAX = 65536;
 constexpr bool PHASE_INVERTED = true;
 
 enum FPGA_CONTROL_FLAGS {
+  NONE = 0,
   OUTPUT_ENABLE = 1 << 0,
   OUTPUT_BALANCE = 1 << 1,
   SILENT = 1 << 3,
@@ -95,43 +97,16 @@ struct Drive final {
 };
 
 struct DelayOffset {
-  DelayOffset() : DelayOffset(0x00, 0x00) {}
+  DelayOffset() : DelayOffset(0x00, 0x01) {}
   explicit DelayOffset(const uint8_t delay, const uint8_t offset) : delay(delay), offset(offset) {}
 
   uint8_t delay;
   uint8_t offset;
 };
 
-/**
- * \brief Focus struct used in sequence mode
- */
-struct SeqFocus {
-  SeqFocus() = default;
-
-  void set(const int32_t x, const int32_t y, const int32_t z, const uint8_t duty) {
-    _buf[0] = x & 0xFFFF;             // x 0-15 bit
-    uint16_t tmp = x >> 16 & 0x0001;  // x 16th bit
-    tmp |= x >> 30 & 0x0002;          // x sign bit
-    tmp |= y << 2 & 0xFFFC;           // y 0-13 bit
-    _buf[1] = tmp;
-    tmp = y >> 14 & 0x0007;   // y 14-16 bit
-    tmp |= y >> 28 & 0x0008;  // y sign bit
-    tmp |= z << 4 & 0xFFF0;   // z 0-11 bit
-    _buf[2] = tmp;
-    tmp = z >> 12 & 0x001F;     // z 12-16 bit
-    tmp |= z >> 26 & 0x0020;    // z sign bit
-    tmp |= duty << 6 & 0x3FC0;  // duty
-    _buf[3] = tmp;
-  }
-
- private:
-  uint16_t _buf[4];
-};
-
-enum class GAIN_MODE : uint16_t {
-  DUTY_PHASE_FULL = 0x0001,
-  PHASE_FULL = 0x0002,
-  PHASE_HALF = 0x0004,
+union Body {
+  Drive drives[NUM_TRANS_IN_UNIT];
+  DelayOffset delay_offsets[NUM_TRANS_IN_UNIT];
 };
 
 struct RxMessage final {

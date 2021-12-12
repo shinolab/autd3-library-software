@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/12/2021
+// Last Modified: 12/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -19,7 +19,6 @@
 #include "core/gain.hpp"
 #include "core/geometry.hpp"
 #include "core/link.hpp"
-#include "core/logic.hpp"
 #include "core/modulation.hpp"
 #include "core/osal_timer.hpp"
 #include "core/sequence.hpp"
@@ -35,15 +34,7 @@ class Controller {
   struct ControllerProps {
     friend class Controller;
     friend class STMController;
-    ControllerProps()
-        : _output_enable(false),
-          _output_balance(false),
-          _silent_mode(true),
-          _force_fan(false),
-          _op_mode(core::OP_MODE_NORMAL),
-          _seq_mode(core::SEQ_MODE_POINT),
-          _reads_fpga_info(false),
-          _wait_on_sync(false) {}
+    ControllerProps() : _output_enable(false), _output_balance(false), _silent_mode(true), _force_fan(false), _reads_fpga_info(false) {}
     ~ControllerProps() = default;
     ControllerProps(const ControllerProps& v) noexcept = delete;
     ControllerProps& operator=(const ControllerProps& obj) = delete;
@@ -58,17 +49,14 @@ class Controller {
     bool _output_balance;
     bool _silent_mode;
     bool _force_fan;
-    bool _op_mode;
-    bool _seq_mode;
     bool _reads_fpga_info;
-    bool _wait_on_sync;
   };
 
  public:
   class STMController;
   class STMTimer;
 
-  Controller() noexcept : _link(nullptr), _props(ControllerProps()), _check_ack(false), _tx_buf(nullptr), _rx_buf(nullptr) {}
+  Controller() noexcept : _link(nullptr), _props(ControllerProps()), _check_ack(false), _tx_buf(), _rx_buf() {}
   ~Controller() noexcept;
   Controller(const Controller& v) noexcept = delete;
   Controller& operator=(const Controller& obj) = delete;
@@ -211,43 +199,47 @@ class Controller {
    */
   bool resume();
 
-  /**
-   * @brief Send gain to the device
-   * @param[in] gain Gain to display
-   * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
-   */
-  bool send(core::Gain& gain);
+  bool send(core::IDatagramHeader& header);
 
-  /**
-   * @brief Send modulation to the device
-   * @param[in] mod Amplitude modulation to display
-   * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
-   */
-  bool send(core::Modulation& mod);
+  bool send(core::IDatagramBody& body);
 
-  /**
-   * @brief Send gain and modulation to the device
-   * @param[in] gain Gain to display
-   * @param[in] mod Amplitude modulation to display
-   * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
-   */
-  bool send(core::Gain& gain, core::Modulation& mod);
+  // /**
+  //  * @brief Send gain to the device
+  //  * @param[in] gain Gain to display
+  //  * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
+  //  */
+  // bool send(core::Gain& gain);
 
-  /**
-   * @brief Send sequence to the device
-   * @param[in] seq Sequence to display
-   * @param[in] mod Amplitude modulation to display
-   * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
-   */
-  bool send(const core::PointSequence& seq, core::Modulation& mod);
+  // /**
+  //  * @brief Send modulation to the device
+  //  * @param[in] mod Amplitude modulation to display
+  //  * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
+  //  */
+  // bool send(core::Modulation& mod);
 
-  /**
-   * @brief Send sequence to the device
-   * @param[in] seq Sequence to display
-   * @param[in] mod Amplitude modulation to display
-   * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
-   */
-  bool send(const core::GainSequence& seq, core::Modulation& mod);
+  // /**
+  //  * @brief Send gain and modulation to the device
+  //  * @param[in] gain Gain to display
+  //  * @param[in] mod Amplitude modulation to display
+  //  * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
+  //  */
+  // bool send(core::Gain& gain, core::Modulation& mod);
+
+  // /**
+  //  * @brief Send sequence to the device
+  //  * @param[in] seq Sequence to display
+  //  * @param[in] mod Amplitude modulation to display
+  //  * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
+  //  */
+  // bool send(const core::PointSequence& seq, core::Modulation& mod);
+
+  // /**
+  //  * @brief Send sequence to the device
+  //  * @param[in] seq Sequence to display
+  //  * @param[in] mod Amplitude modulation to display
+  //  * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
+  //  */
+  // bool send(const core::GainSequence& seq, core::Modulation& mod);
 
   /**
    * @brief Enumerate firmware information
@@ -316,29 +308,25 @@ class Controller {
 
     explicit STMTimerCallback(core::LinkPtr link) : _link(std::move(link)), _idx(0), _lock(false) {}
 
-    void add(std::unique_ptr<uint8_t[]> data, size_t size);
+    void add(core::TxDatagram tx);
     void clear();
     void callback() override;
 
    private:
     core::LinkPtr _link;
-    std::vector<std::unique_ptr<uint8_t[]>> _bodies;
-    std::vector<size_t> _sizes;
+    std::vector<core::TxDatagram> _txs;
     size_t _idx;
     std::atomic<bool> _lock;
   };
 
-  [[nodiscard]] bool send_header(uint8_t msg_id) const;
-  void init_delay_offset();
-  [[nodiscard]] bool send_delay_offset() const;
-  [[nodiscard]] bool wait_msg_processed(uint8_t msg_id, size_t max_trial = 50) const;
+  [[nodiscard]] bool wait_msg_processed(uint8_t msg_id, size_t max_trial = 50);
 
   core::LinkPtr _link;
   core::Geometry _geometry;
   ControllerProps _props;
   bool _check_ack;
-  std::unique_ptr<uint8_t[]> _tx_buf;
-  std::unique_ptr<uint8_t[]> _rx_buf;
+  core::TxDatagram _tx_buf;
+  core::RxDatagram _rx_buf;
 
   std::vector<uint8_t> _fpga_infos;
   std::vector<core::DelayOffset> _delay_offset;
