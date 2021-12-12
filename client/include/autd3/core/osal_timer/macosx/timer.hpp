@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 23/07/2021
+// Last Modified: 12/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -18,7 +18,8 @@
 #include <thread>
 #include <utility>
 
-#include "../osal_callback.hpp"
+#include "autd3/core/exception.hpp"
+#include "autd3/core/osal_timer/osal_callback.hpp"
 
 namespace autd::core {
 
