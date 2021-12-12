@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/12/2021
+// Last Modified: 12/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -15,6 +15,7 @@
 
 #include "geometry.hpp"
 #include "hardware_defined.hpp"
+#include "interface.hpp"
 
 namespace autd {
 namespace core {
@@ -22,7 +23,7 @@ namespace core {
 /**
  * @brief Gain controls the duty ratio and phase of each transducer in AUTD devices.
  */
-class Gain {
+class Gain : public IDatagramBody {
  public:
   /**
    * \brief Calculate duty ratio and phase of each transducer
@@ -58,8 +59,22 @@ class Gain {
    */
   [[nodiscard]] const std::vector<Drive>& data() const { return _data; }
 
+  void init() override {}
+
+  uint8_t pack(const Geometry& geometry, TxDatagram& tx, uint8_t&& fpga_ctrl_flag, uint8_t&& cpu_ctrl_flag) override {
+    this->build(geometry);
+
+    const auto msg_id = get_id();
+    fpga_ctrl_flag |= OUTPUT_ENABLE;
+    cpu_ctrl_flag |= WRITE_BODY;
+    std::memcpy(tx.data(), _data.data(), _data.size() * sizeof(Drive));
+    return msg_id;
+  }
+
+  [[nodiscard]] bool is_finished() const override { return true; }
+
   Gain() noexcept : _built(false) {}
-  virtual ~Gain() = default;
+  ~Gain() override = default;
   Gain(const Gain& v) noexcept = delete;
   Gain& operator=(const Gain& obj) = delete;
   Gain(Gain&& obj) = default;
