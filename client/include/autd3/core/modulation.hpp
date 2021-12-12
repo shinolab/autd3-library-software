@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/12/2021
+// Last Modified: 12/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,24 +11,24 @@
 
 #pragma once
 
-#include <memory>
 #include <vector>
 
 #include "exception.hpp"
 #include "hardware_defined.hpp"
+#include "interface.hpp"
 
 namespace autd::core {
 
 /**
  * @brief Modulation controls the amplitude modulation
  */
-class Modulation {
+class Modulation : public IDatagramHeader {
  public:
   Modulation() noexcept : Modulation(10) {}
-  explicit Modulation(const size_t freq_div) noexcept : _built(false), _freq_div_ratio(freq_div) {}
-  virtual ~Modulation() = default;
-  Modulation(const Modulation& v) noexcept = default;
-  Modulation& operator=(const Modulation& obj) = default;
+  explicit Modulation(const size_t freq_div) noexcept : _built(false), _freq_div_ratio(freq_div), _sent(0) {}
+  ~Modulation() override = default;
+  Modulation(const Modulation& v) noexcept = delete;
+  Modulation& operator=(const Modulation& obj) = delete;
   Modulation(Modulation&& obj) = default;
   Modulation& operator=(Modulation&& obj) = default;
 
@@ -81,10 +81,49 @@ class Modulation {
    */
   [[nodiscard]] double sampling_freq() const noexcept { return static_cast<double>(MOD_SAMPLING_FREQ_BASE) / static_cast<double>(_freq_div_ratio); }
 
+  void init() override {
+    this->build();
+    _sent = 0;
+  }
+
+  uint8_t pack(const Geometry&, TxDatagram& tx, uint8_t& fpga_ctrl_flag, uint8_t& cpu_ctrl_flag) override {
+    const uint8_t msg_id = get_id();
+
+    auto* header = reinterpret_cast<GlobalHeader*>(tx.data());
+    header->msg_id = msg_id;
+    header->fpga_ctrl_flags = fpga_ctrl_flag;
+    header->cpu_ctrl_flags = cpu_ctrl_flag;
+    header->mod_size = 0;
+
+    tx.num_bodies() = 0;
+
+    if (is_finished()) return msg_id;
+
+    size_t offset = 0;
+    if (_sent == 0) {
+      header->cpu_ctrl_flags |= MOD_BEGIN;
+      const auto div = static_cast<uint16_t>(sampling_freq_div_ratio() - 1);
+      header->mod[0] = static_cast<uint8_t>(div & 0xFF);
+      header->mod[1] = static_cast<uint8_t>(div >> 8 & 0xFF);
+      offset += 2;
+    }
+    const auto mod_size = static_cast<uint8_t>(std::clamp(_buffer.size() - _sent, size_t{0}, MOD_FRAME_SIZE - offset));
+    if (_sent + mod_size >= _buffer.size()) header->cpu_ctrl_flags |= MOD_END;
+    header->mod_size = mod_size;
+
+    std::memcpy(&header->mod[offset], &_buffer[_sent], mod_size);
+    _sent += mod_size;
+
+    return msg_id;
+  }
+
+  [[nodiscard]] bool is_finished() const override { return _sent == _buffer.size(); }
+
  protected:
   bool _built;
   size_t _freq_div_ratio;
   std::vector<uint8_t> _buffer;
+  size_t _sent;
 };
 
 }  // namespace autd::core

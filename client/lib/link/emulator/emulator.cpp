@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/11/2021
+// Last Modified: 12/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -23,51 +23,39 @@
 
 #include "autd3/core/exception.hpp"
 #include "autd3/core/geometry.hpp"
+#include "autd3/core/interface.hpp"
 #include "autd3/core/link.hpp"
 
 namespace autd::link {
 
-class EmulatorImpl final : public Emulator {
+/**
+ * @brief DelayOffsets controls the duty offset and delay of each transducer in AUTD devices.
+ */
+class EmulatorGeometry final : public core::IDatagramBody {
  public:
-  explicit EmulatorImpl(uint16_t port, const core::Geometry& geometry);
-  ~EmulatorImpl() override = default;
-  EmulatorImpl(const EmulatorImpl& v) noexcept = delete;
-  EmulatorImpl& operator=(const EmulatorImpl& obj) = delete;
-  EmulatorImpl(EmulatorImpl&& obj) = delete;
-  EmulatorImpl& operator=(EmulatorImpl&& obj) = delete;
+  void init() override {}
 
-  void open() override;
-  void close() override;
-  void send(const uint8_t* buf, size_t size) override;
-  void receive(uint8_t* rx, size_t buffer_len) override;
-  bool is_open() override;
+  uint8_t pack(const core::Geometry& geometry, core::TxDatagram& tx, uint8_t& fpga_ctrl_flag, uint8_t& cpu_ctrl_flag) override {
+    std::memcpy(tx.body(0), _geometry_buf.data(), _geometry_buf.size());
+    tx.num_bodies() = geometry.num_devices();
+    return core::MSG_EMU_GEOMETRY_SET;
+  }
 
- private:
-  bool _is_open;
-  uint16_t _port;
-#if _WINDOWS
-  SOCKET _socket = {};
-#else
-  int _socket = 0;
-#endif
-  sockaddr_in _addr = {};
+  [[nodiscard]] bool is_finished() const override { return true; }
 
-  uint8_t _last_msg_id = 0;
-  std::vector<uint8_t> _geometry_buf;
-
-  static std::vector<uint8_t> init_geometry_buf(const core::Geometry& geometry) {
+  explicit EmulatorGeometry(const core::Geometry& geometry) noexcept {
     constexpr auto vec_size = 9 * sizeof(float);
     const auto size = sizeof(core::GlobalHeader) + geometry.num_devices() * vec_size;
-    std::vector<uint8_t> buf;
-    buf.resize(size);
 
-    auto* const uh = reinterpret_cast<core::GlobalHeader*>(&buf[0]);
+    _geometry_buf.resize(size);
+
+    auto* const uh = reinterpret_cast<core::GlobalHeader*>(&_geometry_buf[0]);
     uh->msg_id = core::MSG_EMU_GEOMETRY_SET;
     uh->fpga_ctrl_flags = 0x00;
     uh->cpu_ctrl_flags = 0x00;
     uh->mod_size = 0x00;
 
-    auto* const cursor = reinterpret_cast<float*>(&buf[sizeof(core::GlobalHeader)]);
+    auto* const cursor = reinterpret_cast<float*>(&_geometry_buf[sizeof(core::GlobalHeader)]);
     for (const auto& device : geometry) {
       const auto i = device.id();
       auto origin = device.begin()->position().cast<float>();
@@ -83,6 +71,69 @@ class EmulatorImpl final : public Emulator {
       cursor[9 * i + 7] = up.y();
       cursor[9 * i + 8] = up.z();
     }
+  }
+  ~EmulatorGeometry() override = default;
+  EmulatorGeometry(const EmulatorGeometry& v) noexcept = delete;
+  EmulatorGeometry& operator=(const EmulatorGeometry& obj) = delete;
+  EmulatorGeometry(EmulatorGeometry&& obj) = default;
+  EmulatorGeometry& operator=(EmulatorGeometry&& obj) = default;
+
+ private:
+  std::vector<uint8_t> _geometry_buf;
+};
+
+class EmulatorImpl final : public Emulator {
+ public:
+  explicit EmulatorImpl(uint16_t port, const core::Geometry& geometry);
+  ~EmulatorImpl() override = default;
+  EmulatorImpl(const EmulatorImpl& v) noexcept = delete;
+  EmulatorImpl& operator=(const EmulatorImpl& obj) = delete;
+  EmulatorImpl(EmulatorImpl&& obj) = delete;
+  EmulatorImpl& operator=(EmulatorImpl&& obj) = delete;
+
+  void open() override;
+  void close() override;
+  void send(const core::TxDatagram& tx) override;
+  void receive(core::RxDatagram& rx) override;
+  bool is_open() override;
+
+ private:
+  bool _is_open;
+  uint16_t _port;
+#if _WINDOWS
+  SOCKET _socket = {};
+#else
+  int _socket = 0;
+#endif
+  sockaddr_in _addr = {};
+
+  uint8_t _last_msg_id = 0;
+  core::TxDatagram _geometry_datagram;
+
+  static core::TxDatagram init_geometry_datagram(const core::Geometry& geometry) {
+    core::TxDatagram buf(geometry.num_devices());
+
+    auto* const uh = reinterpret_cast<core::GlobalHeader*>(buf.header());
+    uh->msg_id = core::MSG_EMU_GEOMETRY_SET;
+    uh->fpga_ctrl_flags = 0x00;
+    uh->cpu_ctrl_flags = 0x00;
+    uh->mod_size = 0x00;
+
+    for (const auto& device : geometry) {
+      auto* const cursor = reinterpret_cast<float*>(buf.body(device.id()));
+      auto origin = device.begin()->position().cast<float>();
+      auto right = device.x_direction().cast<float>();
+      auto up = device.y_direction().cast<float>();
+      cursor[0] = origin.x();
+      cursor[1] = origin.y();
+      cursor[2] = origin.z();
+      cursor[3] = right.x();
+      cursor[4] = right.y();
+      cursor[5] = right.z();
+      cursor[6] = up.x();
+      cursor[7] = up.y();
+      cursor[8] = up.z();
+    }
 
     return buf;
   }
@@ -94,12 +145,13 @@ core::LinkPtr Emulator::create(const uint16_t port, const core::Geometry& geomet
 }
 
 EmulatorImpl::EmulatorImpl(const uint16_t port, const core::Geometry& geometry)
-    : _is_open(false), _port(port), _geometry_buf(init_geometry_buf(geometry)) {}
+    : _is_open(false), _port(port), _geometry_datagram(init_geometry_datagram(geometry)) {}
 
-void EmulatorImpl::send(const uint8_t* buf, const size_t size) {
-  const auto* header = reinterpret_cast<const core::GlobalHeader*>(buf);
+void EmulatorImpl::send(const core::TxDatagram& tx) {
+  const auto* header = reinterpret_cast<const core::GlobalHeader*>(tx.data());
   _last_msg_id = header->msg_id;
-  if (sendto(_socket, reinterpret_cast<const char*>(buf), static_cast<int>(size), 0, reinterpret_cast<sockaddr*>(&_addr), sizeof _addr) == -1)
+  if (sendto(_socket, reinterpret_cast<const char*>(tx.data()), static_cast<int>(tx.size()), 0, reinterpret_cast<sockaddr*>(&_addr), sizeof _addr) ==
+      -1)
     throw core::exception::LinkError("failed to send data");
 }
 
@@ -132,7 +184,7 @@ void EmulatorImpl::open() {
 #endif
 
   _is_open = true;
-  this->send(&this->_geometry_buf[0], this->_geometry_buf.size());
+  this->send(this->_geometry_datagram);
 }
 
 void EmulatorImpl::close() {
@@ -146,11 +198,11 @@ void EmulatorImpl::close() {
   _is_open = false;
 }
 
-void EmulatorImpl::receive(uint8_t* rx, size_t buffer_len) {
-  for (size_t i = 0; i < buffer_len; i += 2) rx[i + 1] = this->_last_msg_id;
+void EmulatorImpl::receive(core::RxDatagram& rx) {
+  for (size_t i = 0; i < rx.num_messages(); i++) rx[i].msg_id = this->_last_msg_id;
 
-  const auto set = [rx, buffer_len](const uint8_t value) {
-    for (size_t i = 0; i < buffer_len; i += 2) rx[i] = value;
+  const auto set = [&rx](const uint8_t value) {
+    for (size_t i = 0; i < rx.num_messages(); i++) rx[i].ack = value;
   };
 
   switch (this->_last_msg_id) {
