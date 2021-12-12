@@ -20,7 +20,6 @@
 #include <utility>
 #include <vector>
 
-#include "autd3/core/interface.hpp"
 #include "autd3/core/osal_timer.hpp"
 
 namespace autd::autdsoem {

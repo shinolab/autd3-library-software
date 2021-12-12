@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/12/2021
+// Last Modified: 12/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -165,16 +165,18 @@ int32_t AUTDUpdateCtrlFlags(void* const handle) {
 int32_t AUTDSetDelayOffset(void* const handle, const uint8_t* const delay, const uint8_t* const offset) {
   auto* const wrapper = static_cast<autd::Controller*>(handle);
 
+  autd::DelayOffsets delay_offsets(wrapper->geometry().num_devices());
+
   if (delay != nullptr) {
     for (const auto& device : wrapper->geometry())
-      for (const auto& transducer : device) wrapper->delay_offset()[transducer.id()].delay = delay[transducer.id()];
+      for (const auto& transducer : device) delay_offsets[transducer.id()].delay = delay[transducer.id()];
   }
   if (offset != nullptr) {
     for (const auto& device : wrapper->geometry())
-      for (const auto& transducer : device) wrapper->delay_offset()[transducer.id()].offset = offset[transducer.id()];
+      for (const auto& transducer : device) delay_offsets[transducer.id()].offset = offset[transducer.id()];
   }
 
-  AUTD3_CAPI_TRY2(return wrapper->set_delay_offset() ? 1 : 0)
+  AUTD3_CAPI_TRY2(return wrapper->send(delay_offsets) ? 1 : 0)
 }
 
 int32_t AUTDNumDevices(const void* const handle) {
@@ -397,23 +399,21 @@ int32_t AUTDResume(void* const handle) {
   auto* const wrapper = static_cast<autd::Controller*>(handle);
   AUTD3_CAPI_TRY2(return wrapper->resume() ? 1 : 0)
 }
-int32_t AUTDSendGainModulation(void* const handle, void* const gain, void* const mod) {
+int32_t AUTDSendHeader(void* const handle, void* const header) {
   auto* const wrapper = static_cast<autd::Controller*>(handle);
-  auto* const g = static_cast<autd::Gain*>(gain);
-  auto* const m = static_cast<autd::Modulation*>(mod);
-  AUTD3_CAPI_TRY(return wrapper->send(*g, *m) ? 1 : 0)
+  auto* const h = static_cast<autd::core::IDatagramHeader*>(header);
+  AUTD3_CAPI_TRY(return wrapper->send(*h) ? 1 : 0)
 }
-int32_t AUTDSendSequenceModulation(void* const handle, const void* const seq, void* const mod) {
+int32_t AUTDSendBody(void* const handle, void* const body) {
   auto* const wrapper = static_cast<autd::Controller*>(handle);
-  const auto* const s = static_cast<const autd::PointSequence*>(seq);
-  auto* const m = static_cast<autd::Modulation*>(mod);
-  AUTD3_CAPI_TRY(return wrapper->send(*s, *m) ? 1 : 0)
+  auto* const b = static_cast<autd::core::IDatagramBody*>(body);
+  AUTD3_CAPI_TRY(return wrapper->send(*b) ? 1 : 0)
 }
-int32_t AUTDSendGainSequenceModulation(void* const handle, const void* const seq, void* const mod) {
+int32_t AUTDSendHeaderBody(void* const handle, void* const header, void* const body) {
   auto* const wrapper = static_cast<autd::Controller*>(handle);
-  const auto* const s = static_cast<const autd::GainSequence*>(seq);
-  auto* const m = static_cast<autd::Modulation*>(mod);
-  AUTD3_CAPI_TRY(return wrapper->send(*s, *m) ? 1 : 0)
+  auto* const h = static_cast<autd::core::IDatagramHeader*>(header);
+  auto* const b = static_cast<autd::core::IDatagramBody*>(body);
+  AUTD3_CAPI_TRY(return wrapper->send(*h, *b) ? 1 : 0)
 }
 void AUTDSTMController(void** out, void* handle) {
   auto* const wrapper = static_cast<autd::Controller*>(handle);

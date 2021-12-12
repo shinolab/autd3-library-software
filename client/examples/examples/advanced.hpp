@@ -3,7 +3,7 @@
 // Created Date: 19/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/12/2021
+// Last Modified: 12/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -44,8 +44,10 @@ class UniformGain final : public autd::core::Gain {
 inline void advanced_test(autd::Controller& autd) {
   autd.silent_mode() = false;
 
-  autd.delay_offset()[0].delay = 4;  // 4 cycle = 100 us delay in 0-th transducer
-  autd.set_delay_offset();           // apply change
+  autd::DelayOffsets delay_offsets(autd.geometry().num_devices());
+
+  delay_offsets[0].delay = 4;  // 4 cycle = 100 us delay in 0-th transducer
+  autd.send(delay_offsets);    // apply change
 
   UniformGain g;
   BurstModulation m;

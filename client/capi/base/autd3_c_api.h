@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/12/2021
+// Last Modified: 12/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -86,9 +86,9 @@ EXPORT_AUTD void AUTDDeleteSequence(const void* seq);
 EXPORT_AUTD int32_t AUTDStop(void* handle);
 EXPORT_AUTD int32_t AUTDPause(void* handle);
 EXPORT_AUTD int32_t AUTDResume(void* handle);
-EXPORT_AUTD int32_t AUTDSendGainModulation(void* handle, void* gain, void* mod);
-EXPORT_AUTD int32_t AUTDSendSequenceModulation(void* handle, const void* seq, void* mod);
-EXPORT_AUTD int32_t AUTDSendGainSequenceModulation(void* handle, const void* seq, void* mod);
+EXPORT_AUTD int32_t AUTDSendHeader(void* handle, void* header);
+EXPORT_AUTD int32_t AUTDSendBody(void* handle, const void* body);
+EXPORT_AUTD int32_t AUTDSendHeaderBody(void* handle, const void* header, void* body);
 EXPORT_AUTD void AUTDSTMController(void** out, void* handle);
 EXPORT_AUTD bool AUTDAddSTMGain(const void* handle, void* gain);
 EXPORT_AUTD bool AUTDStartSTM(const void* handle, double freq);

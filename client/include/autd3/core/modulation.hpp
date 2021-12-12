@@ -87,7 +87,7 @@ class Modulation : public IDatagramHeader {
     _sent = 0;
   }
 
-  uint8_t prepare(const Geometry&, TxDatagram& tx, uint8_t&& fpga_ctrl_flag, uint8_t&& cpu_ctrl_flag) {
+  uint8_t pack(const Geometry&, TxDatagram& tx, uint8_t& fpga_ctrl_flag, uint8_t& cpu_ctrl_flag) override {
     const uint8_t msg_id = get_id();
 
     auto* header = reinterpret_cast<GlobalHeader*>(tx.data());
@@ -95,6 +95,8 @@ class Modulation : public IDatagramHeader {
     header->fpga_ctrl_flags = fpga_ctrl_flag;
     header->cpu_ctrl_flags = cpu_ctrl_flag;
     header->mod_size = 0;
+
+    tx.num_bodies() = 0;
 
     if (is_finished()) return msg_id;
 

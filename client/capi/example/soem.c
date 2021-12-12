@@ -4,7 +4,7 @@
  * Created Date: 25/11/2021
  * Author: Shun Suzuki
  * -----
- * Last Modified: 25/11/2021
+ * Last Modified: 12/12/2021
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -31,7 +31,7 @@ typedef void (*AUTDGainFocalPoint)(void** gain, double x, double y, double z, ui
 typedef void (*AUTDDeleteGain)(const void* gain);
 typedef void (*AUTDModulationSine)(void** mod, int32_t freq, double amp, double offset);
 typedef void (*AUTDDeleteModulation)(const void* mod);
-typedef int32_t (*AUTDSendGainModulation)(const void* handle, const void* gain, const void* mod);
+typedef int32_t (*AUTDSendHeaderBody)(const void* handle, void* header, void* body);
 
 typedef int32_t (*AUTDGetAdapterPointer)(void** out);
 typedef void (*AUTDGetAdapter)(void* p_adapter, int32_t index, char* desc, char* name);
@@ -63,7 +63,7 @@ int main() {
   const AUTDDeleteGain delete_gain = (AUTDDeleteGain)GetProcAddress(dll_base, "AUTDDeleteGain");
   const AUTDModulationSine modulation_sine = (AUTDModulationSine)GetProcAddress(dll_base, "AUTDModulationSine");
   const AUTDDeleteModulation delete_modulation = (AUTDDeleteModulation)GetProcAddress(dll_base, "AUTDDeleteModulation");
-  const AUTDSendGainModulation send_gain_modulation = (AUTDSendGainModulation)GetProcAddress(dll_base, "AUTDSendGainModulation");
+  const AUTDSendHeaderBody send_header_body = (AUTDSendHeaderBody)GetProcAddress(dll_base, "AUTDSendHeaderBody");
 
   const AUTDGetAdapterPointer get_adapter_pointer = (AUTDGetAdapterPointer)GetProcAddress(dll_soem, "AUTDGetAdapterPointer");
   const AUTDGetAdapter get_adapter = (AUTDGetAdapter)GetProcAddress(dll_soem, "AUTDGetAdapter");
@@ -111,7 +111,7 @@ int main() {
   void* m = NULL;
   modulation_sine(&m, 150, 1.0, 0.5);
 
-  send_gain_modulation(cnt, g, m);
+  send_header_body(cnt, g, m);
 
   printf("press any key to finish...\n");
   (void)getchar();

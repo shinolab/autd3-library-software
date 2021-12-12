@@ -26,7 +26,7 @@ namespace autd::core {
 class PointSequence;
 class GainSequence;
 
-class Sequence : IDatagramBody {
+class Sequence : public IDatagramBody {
  public:
   Sequence() : _freq_div_ratio(1) {}
   ~Sequence() override = default;
@@ -175,10 +175,14 @@ class PointSequence : virtual public Sequence {
 
   void init() override { _sent = 0; }
 
-  uint8_t pack(const Geometry& geometry, TxDatagram& tx, uint8_t&& fpga_ctrl_flag, uint8_t&& cpu_ctrl_flag) override {
+  uint8_t pack(const Geometry& geometry, TxDatagram& tx, uint8_t& fpga_ctrl_flag, uint8_t& cpu_ctrl_flag) override {
     cpu_ctrl_flag |= WRITE_BODY;
+    fpga_ctrl_flag |= SEQ_MODE;
+    fpga_ctrl_flag |= SEQ_GAIN_MODE;
 
     if (is_finished()) return 0;
+
+    tx.num_bodies() = geometry.num_devices();
 
     size_t offset = 1;
     auto* header = reinterpret_cast<GlobalHeader*>(tx.header());
@@ -231,7 +235,7 @@ enum class GAIN_MODE : uint16_t {
  * 1. The maximum number of gains is autd::core::GAIN_SEQ_BUFFER_SIZE_MAX.
  * 2. The sampling interval of gains is an integer multiple of 25us and less than 25us x autd::core::SEQ_SAMPLING_FREQ_DIV_MAX.
  */
-class GainSequence final : public Sequence {
+class GainSequence final : virtual public Sequence {
  public:
   GainSequence() noexcept : Sequence(), _gain_mode(GAIN_MODE::DUTY_PHASE_FULL), _sent(0) {}
   explicit GainSequence(const GAIN_MODE gain_mode) noexcept : Sequence(), _gain_mode(gain_mode), _sent(0) {}
@@ -281,10 +285,14 @@ class GainSequence final : public Sequence {
 
   void init() override { _sent = 0; }
 
-  uint8_t pack(const Geometry& geometry, TxDatagram& tx, uint8_t&& fpga_ctrl_flag, uint8_t&& cpu_ctrl_flag) override {
+  uint8_t pack(const Geometry& geometry, TxDatagram& tx, uint8_t& fpga_ctrl_flag, uint8_t& cpu_ctrl_flag) override {
     cpu_ctrl_flag |= WRITE_BODY;
+    fpga_ctrl_flag |= SEQ_MODE;
+    fpga_ctrl_flag |= SEQ_GAIN_MODE;
 
     if (is_finished()) return 0;
+
+    tx.num_bodies() = geometry.num_devices();
 
     auto* header = reinterpret_cast<GlobalHeader*>(tx.header());
     header->cpu_ctrl_flags |= WRITE_BODY;
