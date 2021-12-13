@@ -28,7 +28,7 @@ class GainSequence;
 
 class Sequence : public IDatagramBody {
  public:
-  Sequence() : _freq_div_ratio(1) {}
+  Sequence() : _freq_div_ratio(1), _wait_on_sync(false) {}
   ~Sequence() override = default;
   Sequence(const Sequence& v) noexcept = delete;
   Sequence& operator=(const Sequence& obj) = delete;
@@ -86,8 +86,19 @@ class Sequence : public IDatagramBody {
    */
   [[nodiscard]] size_t sampling_freq_div_ratio() const noexcept { return this->_freq_div_ratio; }
 
+  /**
+   * @brief If true, the output will be start after synchronization.
+   */
+  [[nodiscard]] bool wait_on_sync() const noexcept { return this->_wait_on_sync; }
+
+  /**
+   * @brief If true, the output will be start after synchronization.
+   */
+  bool& wait_on_sync() noexcept { return this->_wait_on_sync; }
+
  protected:
   size_t _freq_div_ratio;
+  bool _wait_on_sync;
 };
 
 /**
@@ -177,6 +188,7 @@ class PointSequence : virtual public Sequence {
 
   void pack(const Geometry& geometry, TxDatagram& tx, uint8_t& fpga_ctrl_flag, uint8_t& cpu_ctrl_flag) override {
     cpu_ctrl_flag |= WRITE_BODY;
+    if (_wait_on_sync) cpu_ctrl_flag |= WAIT_ON_SYNC;
     fpga_ctrl_flag |= SEQ_MODE;
     fpga_ctrl_flag |= SEQ_GAIN_MODE;
 
@@ -285,6 +297,7 @@ class GainSequence final : virtual public Sequence {
 
   void pack(const Geometry& geometry, TxDatagram& tx, uint8_t& fpga_ctrl_flag, uint8_t& cpu_ctrl_flag) override {
     cpu_ctrl_flag |= WRITE_BODY;
+    if (_wait_on_sync) cpu_ctrl_flag |= WAIT_ON_SYNC;
     fpga_ctrl_flag |= SEQ_MODE;
     fpga_ctrl_flag |= SEQ_GAIN_MODE;
 
