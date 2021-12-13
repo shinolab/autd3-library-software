@@ -66,6 +66,7 @@ class Gain : public IDatagramBody {
 
     auto* header = reinterpret_cast<GlobalHeader*>(tx.header());
     header->fpga_ctrl_flags |= OUTPUT_ENABLE;
+    header->fpga_ctrl_flags &= ~SEQ_MODE;
     header->cpu_ctrl_flags |= WRITE_BODY;
     std::memcpy(tx.body(0), _data.data(), _data.size() * sizeof(Drive));
 

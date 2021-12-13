@@ -192,6 +192,7 @@ class PointSequence : virtual public Sequence {
     if (_wait_on_sync) header->cpu_ctrl_flags |= WAIT_ON_SYNC;
     header->fpga_ctrl_flags |= OUTPUT_ENABLE;
     header->fpga_ctrl_flags |= SEQ_MODE;
+    header->fpga_ctrl_flags &= ~SEQ_GAIN_MODE;
 
     if (is_finished()) return;
 
@@ -226,6 +227,36 @@ class PointSequence : virtual public Sequence {
 
   [[nodiscard]] bool is_finished() const override { return _sent == _control_points.size(); }
 
+  class StreamCommaInputPS {
+    friend class Controller;
+
+   public:
+    explicit StreamCommaInputPS(PointSequence& seq) : _seq(seq) {}
+    ~StreamCommaInputPS() = default;
+    StreamCommaInputPS(const StreamCommaInputPS& v) noexcept = delete;
+    StreamCommaInputPS& operator=(const StreamCommaInputPS& obj) = delete;
+    StreamCommaInputPS(StreamCommaInputPS&& obj) = default;
+    StreamCommaInputPS& operator=(StreamCommaInputPS&& obj) = delete;
+
+    StreamCommaInputPS& operator,(const Vector3& point) {
+      _seq.add_point(point);
+      return *this;
+    }
+
+    StreamCommaInputPS& operator<<(const Vector3& point) {
+      _seq.add_point(point);
+      return *this;
+    }
+
+   private:
+    PointSequence& _seq;
+  };
+
+  StreamCommaInputPS operator<<(const Vector3& point) {
+    this->add_point(point);
+    return StreamCommaInputPS{*this};
+  }
+
  private:
   std::vector<Vector3> _control_points;
   std::vector<uint8_t> _duties;
@@ -258,25 +289,26 @@ class GainSequence final : virtual public Sequence {
    * @brief Add gain
    * @param[in] gain gain
    */
+  template <class T>
+  void add_gain(T gain) {
+    static_assert(std::is_base_of_v<Gain, T>, "Class that do not inherit from Gain cannot be added");
+    if (this->_gains.size() + 1 > GAIN_SEQ_BUFFER_SIZE_MAX)
+      throw exception::SequenceBuildError(
+          std::string("Gain sequence buffer overflow. Maximum available buffer size is " + std::to_string(GAIN_SEQ_BUFFER_SIZE_MAX)));
+
+    this->_gains.emplace_back(std::make_shared<T>(std::move(gain)));
+  }
+
+  /**
+   * @brief Add gain
+   * @param[in] gain gain
+   */
   void add_gain(const std::shared_ptr<Gain>& gain) {
     if (this->_gains.size() + 1 > GAIN_SEQ_BUFFER_SIZE_MAX)
       throw exception::SequenceBuildError(
           std::string("Gain sequence buffer overflow. Maximum available buffer size is " + std::to_string(GAIN_SEQ_BUFFER_SIZE_MAX)));
 
     this->_gains.emplace_back(gain);
-  }
-
-  /**
-   * @brief Add gains
-   * @param[in] gains vector of gain
-   */
-  void add_points(const std::vector<std::shared_ptr<Gain>>& gains) {
-    if (this->_gains.size() + gains.size() > GAIN_SEQ_BUFFER_SIZE_MAX)
-      throw exception::SequenceBuildError(
-          std::string("Gain sequence buffer overflow. Maximum available buffer size is " + std::to_string(GAIN_SEQ_BUFFER_SIZE_MAX)));
-
-    this->_gains.reserve(this->_gains.size() + gains.size());
-    for (const auto& p : gains) this->_gains.emplace_back(p);
   }
 
   /**
@@ -326,17 +358,26 @@ class GainSequence final : virtual public Sequence {
     const auto gain_idx = _sent - 1;
     switch (_gain_mode) {
       case GAIN_MODE::DUTY_PHASE_FULL: {
+        _gains[gain_idx]->build(geometry);
         auto* cursor = reinterpret_cast<uint16_t*>(tx.body(0));
         std::memcpy(cursor, _gains[gain_idx]->data().data(), _gains[gain_idx]->data().size() * sizeof(uint16_t));
       } break;
       case GAIN_MODE::PHASE_FULL:
+        _gains[gain_idx]->build(geometry);
+        if (gain_idx + 1 < _gains.size()) _gains[gain_idx + 1]->build(geometry);
         for (const auto& dev : geometry) {
           auto* cursor = reinterpret_cast<uint16_t*>(tx.body(dev.id()));
-          for (const auto& trans : dev)
-            cursor[trans.id()] = utils::pack_to_u16(_gains[gain_idx + 1]->data()[trans.id()].phase, _gains[gain_idx]->data()[trans.id()].phase);
+          for (const auto& trans : dev) {
+            const uint8_t phase = gain_idx + 1 >= _gains.size() ? 0x00 : _gains[gain_idx + 1]->data()[trans.id()].phase;
+            cursor[trans.id()] = utils::pack_to_u16(phase, _gains[gain_idx]->data()[trans.id()].phase);
+          }
         }
         break;
       case GAIN_MODE::PHASE_HALF:
+        _gains[gain_idx]->build(geometry);
+        if (gain_idx + 1 < _gains.size()) _gains[gain_idx + 1]->build(geometry);
+        if (gain_idx + 2 < _gains.size()) _gains[gain_idx + 2]->build(geometry);
+        if (gain_idx + 3 < _gains.size()) _gains[gain_idx + 3]->build(geometry);
         for (const auto& dev : geometry) {
           auto* cursor = reinterpret_cast<uint16_t*>(tx.body(dev.id()));
           for (const auto& trans : dev) {
@@ -354,6 +395,39 @@ class GainSequence final : virtual public Sequence {
   }
 
   [[nodiscard]] bool is_finished() const override { return _sent == _gains.size() + 1; }
+
+  class StreamCommaInputGS {
+    friend class Controller;
+
+   public:
+    explicit StreamCommaInputGS(GainSequence& cnt) : _cnt(cnt) {}
+    ~StreamCommaInputGS() = default;
+    StreamCommaInputGS(const StreamCommaInputGS& v) noexcept = delete;
+    StreamCommaInputGS& operator=(const StreamCommaInputGS& obj) = delete;
+    StreamCommaInputGS(StreamCommaInputGS&& obj) = default;
+    StreamCommaInputGS& operator=(StreamCommaInputGS&& obj) = delete;
+
+    template <class T>
+    StreamCommaInputGS& operator,(T gain) {
+      _cnt.add_gain(std::move(gain));
+      return *this;
+    }
+
+    template <class T>
+    StreamCommaInputGS& operator<<(T gain) {
+      _cnt.add_gain(std::move(gain));
+      return *this;
+    }
+
+   private:
+    GainSequence& _cnt;
+  };
+
+  template <class T>
+  StreamCommaInputGS operator<<(T gain) {
+    this->add_gain(std::move(gain));
+    return StreamCommaInputGS{*this};
+  }
 
  private:
   std::vector<std::shared_ptr<Gain>> _gains;

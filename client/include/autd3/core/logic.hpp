@@ -20,10 +20,9 @@ namespace autd::core {
  * \brief Get unique message id
  * \return message id
  */
-static uint8_t get_id() {
+inline uint8_t get_id() {
   static std::atomic id{MSG_NORMAL_BASE};
-  uint8_t expected = 0xff;
-  if (!id.compare_exchange_weak(expected, MSG_NORMAL_BASE)) id.fetch_add(0x01);
+  if (uint8_t expected = 0xff; !id.compare_exchange_weak(expected, MSG_NORMAL_BASE)) id.fetch_add(0x01);
   return id.load();
 }
 
@@ -49,7 +48,7 @@ class CommonHeader final : public IDatagramHeader {
     const auto msg_id = get_id();
     auto* header = reinterpret_cast<GlobalHeader*>(tx.data());
     header->msg_id = msg_id;
-    header->fpga_ctrl_flags = fpga_ctrl_flag;
+    header->fpga_ctrl_flags = (header->fpga_ctrl_flags & ~_fpga_flag_mask) | (fpga_ctrl_flag & _fpga_flag_mask);
     header->cpu_ctrl_flags = cpu_ctrl_flag;
     header->mod_size = 0;
     tx.num_bodies() = 0;
@@ -58,12 +57,15 @@ class CommonHeader final : public IDatagramHeader {
 
   [[nodiscard]] bool is_finished() const override { return true; }
 
-  CommonHeader() noexcept = default;
+  explicit CommonHeader(const uint8_t fpga_flag_mask) noexcept : _fpga_flag_mask(fpga_flag_mask) {}
   ~CommonHeader() override = default;
   CommonHeader(const CommonHeader& v) noexcept = delete;
   CommonHeader& operator=(const CommonHeader& obj) = delete;
   CommonHeader(CommonHeader&& obj) = default;
   CommonHeader& operator=(CommonHeader&& obj) = default;
+
+ private:
+  uint8_t _fpga_flag_mask;
 };
 
 class SpecialMessageIdHeader final : public IDatagramHeader {
@@ -73,7 +75,7 @@ class SpecialMessageIdHeader final : public IDatagramHeader {
   uint8_t pack(TxDatagram& tx, const uint8_t fpga_ctrl_flag, const uint8_t cpu_ctrl_flag) override {
     auto* header = reinterpret_cast<GlobalHeader*>(tx.data());
     header->msg_id = _msg_id;
-    header->fpga_ctrl_flags = fpga_ctrl_flag;
+    header->fpga_ctrl_flags = (header->fpga_ctrl_flags & ~_fpga_flag_mask) | (fpga_ctrl_flag & _fpga_flag_mask);
     header->cpu_ctrl_flags = cpu_ctrl_flag;
     header->mod_size = 0;
     tx.num_bodies() = 0;
@@ -82,7 +84,7 @@ class SpecialMessageIdHeader final : public IDatagramHeader {
 
   [[nodiscard]] bool is_finished() const override { return true; }
 
-  explicit SpecialMessageIdHeader(const uint8_t msg_id) noexcept : _msg_id(msg_id) {}
+  explicit SpecialMessageIdHeader(const uint8_t msg_id, const uint8_t fpga_flag_mask) noexcept : _msg_id(msg_id), _fpga_flag_mask(fpga_flag_mask) {}
   ~SpecialMessageIdHeader() override = default;
   SpecialMessageIdHeader(const SpecialMessageIdHeader& v) noexcept = delete;
   SpecialMessageIdHeader& operator=(const SpecialMessageIdHeader& obj) = delete;
@@ -91,6 +93,7 @@ class SpecialMessageIdHeader final : public IDatagramHeader {
 
  private:
   uint8_t _msg_id;
+  uint8_t _fpga_flag_mask;
 };
 
 class NullBody final : public IDatagramBody {

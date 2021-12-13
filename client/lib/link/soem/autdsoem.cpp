@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 12/12/2021
+// Last Modified: 13/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -135,11 +135,10 @@ void SOEMController::open(const char* ifname, const size_t dev_num, const ECConf
                                                                         : this->_send_buf_cursor + SEND_BUF_SIZE - this->_send_buf_size;
         auto& buf = this->_send_buf[idx];
 
-        if (buf.body_size() > 0)
-          for (size_t i = 0; i < _dev_num; i++) std::memcpy(&_io_map[(buf.header_size() + buf.body_size()) * i], buf.body(i), buf.body_size());
+        for (size_t i = 0; i < buf.num_bodies(); i++) std::memcpy(&_io_map[(buf.header_size() + buf.body_size()) * i], buf.body(i), buf.body_size());
         if (buf.header_size() > 0)
           for (size_t i = 0; i < _dev_num; i++)
-            std::memcpy(&_io_map[(buf.header_size() + buf.num_bodies()) * i + buf.body_size()], buf.header(), buf.header_size());
+            std::memcpy(&_io_map[(buf.header_size() + buf.body_size()) * i + buf.body_size()], buf.header(), buf.header_size());
 
         this->_send_buf_size--;
       }

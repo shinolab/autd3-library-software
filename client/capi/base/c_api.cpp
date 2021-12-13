@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 12/12/2021
+// Last Modified: 13/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -423,28 +423,28 @@ bool AUTDAddSTMGain(const void* const handle, void* const gain) {
   auto* const wrapper = static_cast<const STMControllerWrapper*>(handle);
   auto* const g = static_cast<autd::Gain*>(gain);
   AUTD3_CAPI_TRY({
-    wrapper->ptr->add_gain(*g);
+    wrapper->stm.add_gain(*g);
     return true;
   })
 }
-bool AUTDStartSTM(const void* const handle, const double freq) {
-  const auto* const wrapper = static_cast<const STMControllerWrapper*>(handle);
+bool AUTDStartSTM(void* const handle, const double freq) {
+  auto* const wrapper = static_cast<STMControllerWrapper*>(handle);
   AUTD3_CAPI_TRY({
-    wrapper->ptr->start(freq);
+    wrapper->stm.start(freq);
     return true;
   })
 }
-bool AUTDStopSTM(const void* const handle) {
-  const auto* const wrapper = static_cast<const STMControllerWrapper*>(handle);
+bool AUTDStopSTM(void* const handle) {
+  auto* const wrapper = static_cast<STMControllerWrapper*>(handle);
   AUTD3_CAPI_TRY({
-    wrapper->ptr->stop();
+    wrapper->stm.stop();
     return true;
   })
 }
-bool AUTDFinishSTM(const void* const handle) {
-  const auto* const wrapper = static_cast<const STMControllerWrapper*>(handle);
+bool AUTDFinishSTM(void* const handle) {
+  auto* const wrapper = static_cast<STMControllerWrapper*>(handle);
   AUTD3_CAPI_TRY({
-    wrapper->ptr->finish();
+    wrapper->stm.finish();
     stm_controller_delete(wrapper);
     return true;
   })
