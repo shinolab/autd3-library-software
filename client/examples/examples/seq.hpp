@@ -3,7 +3,7 @@
 // Created Date: 14/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/12/2021
+// Last Modified: 13/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -28,10 +28,10 @@ inline void seq_test(autd::Controller& autd) {
     constexpr auto radius = 30.0;
     const auto theta = 2.0 * M_PI * static_cast<double>(i) / static_cast<double>(point_num);
     const autd::Vector3 p(radius * std::cos(theta), radius * std::sin(theta), 0);
-    seq.add_point(center + p);
+    seq << center + p;
   }
 
   const auto actual_freq = seq.set_frequency(1);
   std::cout << "Actual frequency is " << actual_freq << " Hz\n";
-  autd.send(seq, m);
+  autd << seq, m;
 }

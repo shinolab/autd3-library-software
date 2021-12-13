@@ -204,7 +204,7 @@ class Controller {
    * \brief return pointer to software spatio-temporal modulation controller.
    * \details Never use Controller before calling STMController::finish
    */
-  [[nodiscard]] std::unique_ptr<STMController> stm();
+  [[nodiscard]] STMController stm();
 
   /**
    * \brief Software spatio-temporal modulation controller.
@@ -239,7 +239,44 @@ class Controller {
      */
     void finish();
 
+    class StreamCommaInputSTM {
+      friend class Controller;
+
+     public:
+      explicit StreamCommaInputSTM(STMController& cnt) : _cnt(cnt) {}
+      ~StreamCommaInputSTM() = default;
+      StreamCommaInputSTM(const StreamCommaInputSTM& v) noexcept = delete;
+      StreamCommaInputSTM& operator=(const StreamCommaInputSTM& obj) = delete;
+      StreamCommaInputSTM(StreamCommaInputSTM&& obj) = default;
+      StreamCommaInputSTM& operator=(StreamCommaInputSTM&& obj) = delete;
+
+      StreamCommaInputSTM& operator,(core::Gain& gain) {
+        _cnt.add_gain(gain);
+        return *this;
+      }
+
+      StreamCommaInputSTM& operator<<(core::Gain& gain) {
+        _cnt.add_gain(gain);
+        return *this;
+      }
+
+     private:
+      STMController& _cnt;
+    };
+
+    StreamCommaInputSTM operator<<(core::Gain& gain) {
+      this->add_gain(gain);
+      return StreamCommaInputSTM{*this};
+    }
+
+    ~STMController() { this->finish(); }
+    STMController(const STMController& v) noexcept = delete;
+    STMController& operator=(const STMController& obj) = delete;
+    STMController(STMController&& obj) = default;
+    STMController& operator=(STMController&& obj) = default;
+
    private:
+    STMController() : _p_cnt(nullptr), _handler(nullptr), _timer(nullptr) {}
     explicit STMController(Controller* p_cnt, std::unique_ptr<STMTimerCallback> handler)
         : _p_cnt(p_cnt), _handler(std::move(handler)), _timer(nullptr) {}
 
@@ -282,5 +319,67 @@ class Controller {
   core::RxDatagram _rx_buf;
 
   std::vector<core::FPGAInfo> _fpga_infos;
+
+ public:
+  class StreamCommaInputHeader {
+    friend class Controller;
+
+   public:
+    explicit StreamCommaInputHeader(Controller& cnt, core::IDatagramHeader& header) : _cnt(cnt), _header(header), _sent(false) {}
+    ~StreamCommaInputHeader() {
+      if (!_sent) _cnt.send(_header);
+    }
+    StreamCommaInputHeader(const StreamCommaInputHeader& v) noexcept = delete;
+    StreamCommaInputHeader& operator=(const StreamCommaInputHeader& obj) = delete;
+    StreamCommaInputHeader(StreamCommaInputHeader&& obj) = default;
+    StreamCommaInputHeader& operator=(StreamCommaInputHeader&& obj) = delete;
+
+    void operator,(core::IDatagramBody& body) {
+      _cnt.send(_header, body);
+      _sent = true;
+    }
+
+    void operator<<(core::IDatagramBody& body) {
+      _cnt.send(_header, body);
+      _sent = true;
+    }
+
+   private:
+    Controller& _cnt;
+    core::IDatagramHeader& _header;
+    bool _sent;
+  };
+  class StreamCommaInputBody {
+    friend class Controller;
+
+   public:
+    explicit StreamCommaInputBody(Controller& cnt, core::IDatagramBody& body) : _cnt(cnt), _body(body), _sent(false) {}
+    ~StreamCommaInputBody() {
+      if (!_sent) _cnt.send(_body);
+    }
+    StreamCommaInputBody(const StreamCommaInputBody& v) noexcept = delete;
+    StreamCommaInputBody& operator=(const StreamCommaInputBody& obj) = delete;
+    StreamCommaInputBody(StreamCommaInputBody&& obj) = default;
+    StreamCommaInputBody& operator=(StreamCommaInputBody&& obj) = delete;
+
+    void operator,(core::IDatagramHeader& header) {
+      _cnt.send(header, _body);
+      _sent = true;
+    }
+
+    void operator<<(core::IDatagramHeader& header) {
+      _cnt.send(header, _body);
+      _sent = true;
+    }
+
+   private:
+    Controller& _cnt;
+    core::IDatagramBody& _body;
+    bool _sent;
+  };
+
+  StreamCommaInputHeader operator<<(core::IDatagramHeader& header) { return StreamCommaInputHeader{*this, header}; }
+  StreamCommaInputBody operator<<(core::IDatagramBody& body) { return StreamCommaInputBody{*this, body}; }
 };
+
 }  // namespace autd

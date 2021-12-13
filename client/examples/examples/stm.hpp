@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/12/2021
+// Last Modified: 13/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -21,7 +21,7 @@ inline void stm_test(autd::Controller& autd) {
   autd::modulation::Static m;
   autd.send(m);
 
-  const auto stm = autd.stm();
+  auto stm = autd.stm();
 
   const autd::Vector3 center(TRANS_SPACING_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SPACING_MM * ((NUM_TRANS_Y - 1) / 2.0), 150.0);
   constexpr auto point_num = 100;
@@ -30,14 +30,14 @@ inline void stm_test(autd::Controller& autd) {
     const auto theta = 2.0 * M_PI * static_cast<double>(i) / point_num;
     const autd::Vector3 pos(radius * cos(theta), radius * sin(theta), 0.0);
     autd::gain::FocalPoint g(center + pos);
-    stm->add_gain(g);
+    stm << g;
   }
 
-  stm->start(0.5);  // 0.5 Hz
+  stm.start(0.5);  // 0.5 Hz
 
   std::cout << "press any key to stop..." << std::endl;
   std::cin.ignore();
 
-  stm->stop();
-  stm->finish();
+  stm.stop();
+  stm.finish();
 }

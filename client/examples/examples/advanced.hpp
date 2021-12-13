@@ -3,7 +3,7 @@
 // Created Date: 19/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 12/12/2021
+// Last Modified: 13/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -47,9 +47,9 @@ inline void advanced_test(autd::Controller& autd) {
   autd::DelayOffsets delay_offsets(autd.geometry().num_devices());
 
   delay_offsets[0].delay = 4;  // 4 cycle = 100 us delay in 0-th transducer
-  autd.send(delay_offsets);    // apply change
+  autd << delay_offsets;       // apply change
 
   UniformGain g;
   BurstModulation m;
-  autd.send(g, m);
+  autd << g, m;
 }

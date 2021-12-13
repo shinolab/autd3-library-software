@@ -215,12 +215,7 @@ std::vector<FirmwareInfo> Controller::firmware_info_list() {
   return infos;
 }
 
-std::unique_ptr<Controller::STMController> Controller::stm() {
-  struct Impl : STMController {
-    Impl(std::unique_ptr<STMTimerCallback> callback, Controller* p_cnt) : STMController(p_cnt, std::move(callback)) {}
-  };
-  return std::make_unique<Impl>(std::make_unique<STMTimerCallback>(std::move(this->_link)), this);
-}
+Controller::STMController Controller::stm() { return STMController{this, std::make_unique<STMTimerCallback>(std::move(this->_link))}; }
 
 void Controller::STMController::add_gain(core::Gain& gain) const {
   core::TxDatagram build_buf(this->_p_cnt->_geometry.num_devices());
@@ -245,9 +240,13 @@ void Controller::STMController::start(const double freq) {
 }
 
 void Controller::STMController::finish() {
+  if (_p_cnt == nullptr) return;
   this->stop();
   this->_handler->clear();
   this->_p_cnt->_link = std::move(this->_handler->_link);
+  this->_p_cnt = nullptr;
+  this->_handler = nullptr;
+  this->_timer = nullptr;
 }
 
 void Controller::STMController::stop() {

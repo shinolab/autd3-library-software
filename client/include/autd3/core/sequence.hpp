@@ -227,6 +227,36 @@ class PointSequence : virtual public Sequence {
 
   [[nodiscard]] bool is_finished() const override { return _sent == _control_points.size(); }
 
+  class StreamCommaInputPS {
+    friend class Controller;
+
+   public:
+    explicit StreamCommaInputPS(PointSequence& seq) : _seq(seq) {}
+    ~StreamCommaInputPS() = default;
+    StreamCommaInputPS(const StreamCommaInputPS& v) noexcept = delete;
+    StreamCommaInputPS& operator=(const StreamCommaInputPS& obj) = delete;
+    StreamCommaInputPS(StreamCommaInputPS&& obj) = default;
+    StreamCommaInputPS& operator=(StreamCommaInputPS&& obj) = delete;
+
+    StreamCommaInputPS& operator,(const Vector3& point) {
+      _seq.add_point(point);
+      return *this;
+    }
+
+    StreamCommaInputPS& operator<<(const Vector3& point) {
+      _seq.add_point(point);
+      return *this;
+    }
+
+   private:
+    PointSequence& _seq;
+  };
+
+  StreamCommaInputPS operator<<(const Vector3& point) {
+    this->add_point(point);
+    return StreamCommaInputPS{*this};
+  }
+
  private:
   std::vector<Vector3> _control_points;
   std::vector<uint8_t> _duties;
@@ -259,25 +289,26 @@ class GainSequence final : virtual public Sequence {
    * @brief Add gain
    * @param[in] gain gain
    */
-  void add_gain(const std::shared_ptr<Gain>& gain) {
+  template <class T>
+  void add_gain(T gain) {
+    static_assert(std::is_base_of_v<Gain, T>, "Class that do not inherit from Gain cannot be added");
+    if (this->_gains.size() + 1 > GAIN_SEQ_BUFFER_SIZE_MAX)
+      throw exception::SequenceBuildError(
+          std::string("Gain sequence buffer overflow. Maximum available buffer size is " + std::to_string(GAIN_SEQ_BUFFER_SIZE_MAX)));
+
+    this->_gains.emplace_back(std::make_shared<T>(std::move(gain)));
+  }
+
+  /**
+   * @brief Add gain
+   * @param[in] gain gain
+   */
+  void add_gain(const std::shared_ptr<Gain> gain) {
     if (this->_gains.size() + 1 > GAIN_SEQ_BUFFER_SIZE_MAX)
       throw exception::SequenceBuildError(
           std::string("Gain sequence buffer overflow. Maximum available buffer size is " + std::to_string(GAIN_SEQ_BUFFER_SIZE_MAX)));
 
     this->_gains.emplace_back(gain);
-  }
-
-  /**
-   * @brief Add gains
-   * @param[in] gains vector of gain
-   */
-  void add_gains(const std::vector<std::shared_ptr<Gain>>& gains) {
-    if (this->_gains.size() + gains.size() > GAIN_SEQ_BUFFER_SIZE_MAX)
-      throw exception::SequenceBuildError(
-          std::string("Gain sequence buffer overflow. Maximum available buffer size is " + std::to_string(GAIN_SEQ_BUFFER_SIZE_MAX)));
-
-    this->_gains.reserve(this->_gains.size() + gains.size());
-    for (const auto& p : gains) this->_gains.emplace_back(p);
   }
 
   /**
@@ -364,6 +395,39 @@ class GainSequence final : virtual public Sequence {
   }
 
   [[nodiscard]] bool is_finished() const override { return _sent == _gains.size() + 1; }
+
+  class StreamCommaInputGS {
+    friend class Controller;
+
+   public:
+    explicit StreamCommaInputGS(GainSequence& cnt) : _cnt(cnt) {}
+    ~StreamCommaInputGS() = default;
+    StreamCommaInputGS(const StreamCommaInputGS& v) noexcept = delete;
+    StreamCommaInputGS& operator=(const StreamCommaInputGS& obj) = delete;
+    StreamCommaInputGS(StreamCommaInputGS&& obj) = default;
+    StreamCommaInputGS& operator=(StreamCommaInputGS&& obj) = delete;
+
+    template <class T>
+    StreamCommaInputGS& operator,(T gain) {
+      _cnt.add_gain(std::move(gain));
+      return *this;
+    }
+
+    template <class T>
+    StreamCommaInputGS& operator<<(T gain) {
+      _cnt.add_gain(std::move(gain));
+      return *this;
+    }
+
+   private:
+    GainSequence& _cnt;
+  };
+
+  template <class T>
+  StreamCommaInputGS operator<<(T gain) {
+    this->add_gain(std::move(gain));
+    return StreamCommaInputGS{*this};
+  }
 
  private:
   std::vector<std::shared_ptr<Gain>> _gains;

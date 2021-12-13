@@ -3,7 +3,7 @@
 // Created Date: 23/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/12/2021
+// Last Modified: 13/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -35,5 +35,5 @@ inline void group_test(autd::Controller& autd) {
   g.add(0, g1);
   g.add(1, g2);
 
-  autd.send(g, m);
+  autd << g, m;
 }
