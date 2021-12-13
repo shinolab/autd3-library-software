@@ -92,7 +92,8 @@ class Modulation : public IDatagramHeader {
 
     auto* header = reinterpret_cast<GlobalHeader*>(tx.data());
     header->msg_id = msg_id;
-    header->fpga_ctrl_flags = fpga_ctrl_flag;
+    constexpr auto fpga_mask = core::OUTPUT_BALANCE | core::SILENT | core::READS_FPGA_INFO | core::FORCE_FAN;
+    header->fpga_ctrl_flags = (header->fpga_ctrl_flags & ~fpga_mask) | (fpga_ctrl_flag & fpga_mask);
     header->cpu_ctrl_flags = cpu_ctrl_flag;
     header->mod_size = 0;
 

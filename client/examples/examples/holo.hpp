@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/12/2021
+// Last Modified: 13/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -66,5 +66,5 @@ inline void holo_test(autd::Controller& autd) {
   const std::vector<double> amps = {1, 1};
 
   const auto g = select_opt(foci, amps);
-  autd.send(*g, m);
+  autd << *g, m;
 }
