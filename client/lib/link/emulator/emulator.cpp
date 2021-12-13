@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 12/12/2021
+// Last Modified: 13/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -27,60 +27,6 @@
 #include "autd3/core/link.hpp"
 
 namespace autd::link {
-
-/**
- * @brief DelayOffsets controls the duty offset and delay of each transducer in AUTD devices.
- */
-class EmulatorGeometry final : public core::IDatagramBody {
- public:
-  void init() override {}
-
-  uint8_t pack(const core::Geometry& geometry, core::TxDatagram& tx, uint8_t& fpga_ctrl_flag, uint8_t& cpu_ctrl_flag) override {
-    std::memcpy(tx.body(0), _geometry_buf.data(), _geometry_buf.size());
-    tx.num_bodies() = geometry.num_devices();
-    return core::MSG_EMU_GEOMETRY_SET;
-  }
-
-  [[nodiscard]] bool is_finished() const override { return true; }
-
-  explicit EmulatorGeometry(const core::Geometry& geometry) noexcept {
-    constexpr auto vec_size = 9 * sizeof(float);
-    const auto size = sizeof(core::GlobalHeader) + geometry.num_devices() * vec_size;
-
-    _geometry_buf.resize(size);
-
-    auto* const uh = reinterpret_cast<core::GlobalHeader*>(&_geometry_buf[0]);
-    uh->msg_id = core::MSG_EMU_GEOMETRY_SET;
-    uh->fpga_ctrl_flags = 0x00;
-    uh->cpu_ctrl_flags = 0x00;
-    uh->mod_size = 0x00;
-
-    auto* const cursor = reinterpret_cast<float*>(&_geometry_buf[sizeof(core::GlobalHeader)]);
-    for (const auto& device : geometry) {
-      const auto i = device.id();
-      auto origin = device.begin()->position().cast<float>();
-      auto right = device.x_direction().cast<float>();
-      auto up = device.y_direction().cast<float>();
-      cursor[9 * i] = origin.x();
-      cursor[9 * i + 1] = origin.y();
-      cursor[9 * i + 2] = origin.z();
-      cursor[9 * i + 3] = right.x();
-      cursor[9 * i + 4] = right.y();
-      cursor[9 * i + 5] = right.z();
-      cursor[9 * i + 6] = up.x();
-      cursor[9 * i + 7] = up.y();
-      cursor[9 * i + 8] = up.z();
-    }
-  }
-  ~EmulatorGeometry() override = default;
-  EmulatorGeometry(const EmulatorGeometry& v) noexcept = delete;
-  EmulatorGeometry& operator=(const EmulatorGeometry& obj) = delete;
-  EmulatorGeometry(EmulatorGeometry&& obj) = default;
-  EmulatorGeometry& operator=(EmulatorGeometry&& obj) = default;
-
- private:
-  std::vector<uint8_t> _geometry_buf;
-};
 
 class EmulatorImpl final : public Emulator {
  public:
@@ -199,10 +145,10 @@ void EmulatorImpl::close() {
 }
 
 void EmulatorImpl::receive(core::RxDatagram& rx) {
-  for (size_t i = 0; i < rx.num_messages(); i++) rx[i].msg_id = this->_last_msg_id;
+  for (auto& [_, msg_id] : rx) msg_id = this->_last_msg_id;
 
   const auto set = [&rx](const uint8_t value) {
-    for (size_t i = 0; i < rx.num_messages(); i++) rx[i].ack = value;
+    for (auto& [ack, _] : rx) ack = value;
   };
 
   switch (this->_last_msg_id) {

@@ -1,8 +1,11 @@
 # 1.10
 * Rename `SinePressure` to `SineSquared`
+* Add `wait_on_sync` flag to `Sequence`
 * Add `modulation::LPF`
+    * Remove `modulation::filter`
 * Remove `AUTDSendGainModulation`, `AUTDSendSequenceModulation`, and `AUTDSendGainSequenceModulation`
     * Add `AUTDSendHeader`, `AUTDSendBody`, and `AUTDSendHeaderBody`
+* Change internal `core` namespace
 
 # 1.9.3
 * fix minor bugs
