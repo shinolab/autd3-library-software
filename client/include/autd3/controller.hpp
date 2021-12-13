@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 12/12/2021
+// Last Modified: 13/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -142,7 +142,7 @@ class Controller {
    *  \return ok with FPGA information if succeeded, or err with error message if failed
    *  \details the first bit of FPGA info represents whether the fan is running.
    */
-  const std::vector<uint8_t>& fpga_info();
+  const std::vector<core::FPGAInfo>& fpga_info();
 
   /**
    * @brief Update control flag
@@ -281,6 +281,6 @@ class Controller {
   core::TxDatagram _tx_buf;
   core::RxDatagram _rx_buf;
 
-  std::vector<uint8_t> _fpga_infos;
+  std::vector<core::FPGAInfo> _fpga_infos;
 };
 }  // namespace autd

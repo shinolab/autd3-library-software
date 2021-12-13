@@ -3,7 +3,7 @@
 // Created Date: 14/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 12/12/2021
+// Last Modified: 13/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -175,12 +175,12 @@ class PointSequence : virtual public Sequence {
 
   void init() override { _sent = 0; }
 
-  uint8_t pack(const Geometry& geometry, TxDatagram& tx, uint8_t& fpga_ctrl_flag, uint8_t& cpu_ctrl_flag) override {
+  void pack(const Geometry& geometry, TxDatagram& tx, uint8_t& fpga_ctrl_flag, uint8_t& cpu_ctrl_flag) override {
     cpu_ctrl_flag |= WRITE_BODY;
     fpga_ctrl_flag |= SEQ_MODE;
     fpga_ctrl_flag |= SEQ_GAIN_MODE;
 
-    if (is_finished()) return 0;
+    if (is_finished()) return;
 
     tx.num_bodies() = geometry.num_devices();
 
@@ -210,8 +210,6 @@ class PointSequence : virtual public Sequence {
       }
     }
     _sent += send_size;
-
-    return 0;
   }
 
   [[nodiscard]] bool is_finished() const override { return _sent == _control_points.size(); }
@@ -285,12 +283,12 @@ class GainSequence final : virtual public Sequence {
 
   void init() override { _sent = 0; }
 
-  uint8_t pack(const Geometry& geometry, TxDatagram& tx, uint8_t& fpga_ctrl_flag, uint8_t& cpu_ctrl_flag) override {
+  void pack(const Geometry& geometry, TxDatagram& tx, uint8_t& fpga_ctrl_flag, uint8_t& cpu_ctrl_flag) override {
     cpu_ctrl_flag |= WRITE_BODY;
     fpga_ctrl_flag |= SEQ_MODE;
     fpga_ctrl_flag |= SEQ_GAIN_MODE;
 
-    if (is_finished()) return 0;
+    if (is_finished()) return;
 
     tx.num_bodies() = geometry.num_devices();
 
@@ -306,7 +304,7 @@ class GainSequence final : virtual public Sequence {
         cursor[2] = static_cast<uint16_t>(_gains.size());
       }
       _sent += 1;
-      return 0;
+      return;
     }
 
     if (_sent + sent > _gains.size()) header->cpu_ctrl_flags |= SEQ_END;
@@ -339,8 +337,6 @@ class GainSequence final : virtual public Sequence {
         break;
     }
     _sent += sent;
-
-    return 0;
   }
 
   [[nodiscard]] bool is_finished() const override { return _sent == _gains.size() + 1; }
