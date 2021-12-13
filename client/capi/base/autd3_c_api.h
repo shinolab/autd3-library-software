@@ -13,32 +13,34 @@
 
 #include "./header.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 EXPORT_AUTD void AUTDCreateController(void** out);
-EXPORT_AUTD bool AUTDOpenController(void* handle, void* p_link);
+EXPORT_AUTD bool_t AUTDOpenController(void* handle, void* p_link);
 EXPORT_AUTD int32_t AUTDAddDevice(void* handle, double x, double y, double z, double rz1, double ry, double rz2);
 EXPORT_AUTD int32_t AUTDAddDeviceQuaternion(void* handle, double x, double y, double z, double qw, double qx, double qy, double qz);
 EXPORT_AUTD int32_t AUTDCloseController(void* handle);
 EXPORT_AUTD int32_t AUTDClear(void* handle);
 EXPORT_AUTD void AUTDFreeController(const void* handle);
-EXPORT_AUTD bool AUTDIsOpen(const void* handle);
-EXPORT_AUTD bool AUTDGetOutputEnable(const void* handle);
-EXPORT_AUTD bool AUTDGetSilentMode(const void* handle);
-EXPORT_AUTD bool AUTDGetForceFan(const void* handle);
-EXPORT_AUTD bool AUTDGetReadsFPGAInfo(const void* handle);
-EXPORT_AUTD bool AUTDGetOutputBalance(const void* handle);
-EXPORT_AUTD bool AUTDGetCheckAck(const void* handle);
-EXPORT_AUTD void AUTDSetOutputEnable(void* handle, bool enable);
-EXPORT_AUTD void AUTDSetSilentMode(void* handle, bool mode);
-EXPORT_AUTD void AUTDSetReadsFPGAInfo(void* handle, bool reads_fpga_info);
-EXPORT_AUTD void AUTDSetOutputBalance(void* handle, bool output_balance);
-EXPORT_AUTD void AUTDSetCheckAck(void* handle, bool check_ack);
-EXPORT_AUTD void AUTDSetForceFan(void* handle, bool force);
+EXPORT_AUTD bool_t AUTDIsOpen(const void* handle);
+EXPORT_AUTD bool_t AUTDGetOutputEnable(const void* handle);
+EXPORT_AUTD bool_t AUTDGetSilentMode(const void* handle);
+EXPORT_AUTD bool_t AUTDGetForceFan(const void* handle);
+EXPORT_AUTD bool_t AUTDGetReadsFPGAInfo(const void* handle);
+EXPORT_AUTD bool_t AUTDGetOutputBalance(const void* handle);
+EXPORT_AUTD bool_t AUTDGetCheckAck(const void* handle);
+EXPORT_AUTD void AUTDSetOutputEnable(void* handle, bool_t enable);
+EXPORT_AUTD void AUTDSetSilentMode(void* handle, bool_t mode);
+EXPORT_AUTD void AUTDSetReadsFPGAInfo(void* handle, bool_t reads_fpga_info);
+EXPORT_AUTD void AUTDSetOutputBalance(void* handle, bool_t output_balance);
+EXPORT_AUTD void AUTDSetCheckAck(void* handle, bool_t check_ack);
+EXPORT_AUTD void AUTDSetForceFan(void* handle, bool_t force);
 EXPORT_AUTD double AUTDGetWavelength(const void* handle);
 EXPORT_AUTD double AUTDGetAttenuation(const void* handle);
 EXPORT_AUTD void AUTDSetWavelength(void* handle, double wavelength);
 EXPORT_AUTD void AUTDSetAttenuation(void* handle, double attenuation);
-EXPORT_AUTD bool AUTDGetFPGAInfo(void* handle, uint8_t* out);
+EXPORT_AUTD bool_t AUTDGetFPGAInfo(void* handle, uint8_t* out);
 EXPORT_AUTD int32_t AUTDUpdateCtrlFlags(void* handle);
 EXPORT_AUTD int32_t AUTDSetDelayOffset(void* handle, const uint8_t* delay, const uint8_t* offset);
 EXPORT_AUTD int32_t AUTDGetLastError(char* error);
@@ -71,9 +73,9 @@ EXPORT_AUTD double AUTDModulationSamplingFreq(const void* mod);
 EXPORT_AUTD void AUTDDeleteModulation(const void* mod);
 EXPORT_AUTD void AUTDSequence(void** out);
 EXPORT_AUTD void AUTDGainSequence(void** out, const void* handle, uint16_t gain_mode);
-EXPORT_AUTD bool AUTDSequenceAddPoint(void* seq, double x, double y, double z, uint8_t duty);
-EXPORT_AUTD bool AUTDSequenceAddPoints(void* seq, const double* points, uint64_t points_size, const uint8_t* duties, uint64_t duties_size);
-EXPORT_AUTD bool AUTDSequenceAddGain(void* seq, void* gain);
+EXPORT_AUTD bool_t AUTDSequenceAddPoint(void* seq, double x, double y, double z, uint8_t duty);
+EXPORT_AUTD bool_t AUTDSequenceAddPoints(void* seq, const double* points, uint64_t points_size, const uint8_t* duties, uint64_t duties_size);
+EXPORT_AUTD bool_t AUTDSequenceAddGain(void* seq, void* gain);
 EXPORT_AUTD double AUTDSequenceSetFreq(void* seq, double freq);
 EXPORT_AUTD double AUTDSequenceFreq(const void* seq);
 EXPORT_AUTD uint32_t AUTDSequencePeriod(const void* seq);
@@ -87,11 +89,13 @@ EXPORT_AUTD int32_t AUTDStop(void* handle);
 EXPORT_AUTD int32_t AUTDPause(void* handle);
 EXPORT_AUTD int32_t AUTDResume(void* handle);
 EXPORT_AUTD int32_t AUTDSendHeader(void* handle, void* header);
-EXPORT_AUTD int32_t AUTDSendBody(void* handle, const void* body);
-EXPORT_AUTD int32_t AUTDSendHeaderBody(void* handle, const void* header, void* body);
+EXPORT_AUTD int32_t AUTDSendBody(void* handle, void* body);
+EXPORT_AUTD int32_t AUTDSendHeaderBody(void* handle, void* header, void* body);
 EXPORT_AUTD void AUTDSTMController(void** out, void* handle);
-EXPORT_AUTD bool AUTDAddSTMGain(const void* handle, void* gain);
-EXPORT_AUTD bool AUTDStartSTM(void* handle, double freq);
-EXPORT_AUTD bool AUTDStopSTM(void* handle);
-EXPORT_AUTD bool AUTDFinishSTM(void* handle);
+EXPORT_AUTD bool_t AUTDAddSTMGain(const void* handle, void* gain);
+EXPORT_AUTD bool_t AUTDStartSTM(void* handle, double freq);
+EXPORT_AUTD bool_t AUTDStopSTM(void* handle);
+EXPORT_AUTD bool_t AUTDFinishSTM(void* handle);
+#ifdef __cplusplus
 }
+#endif
