@@ -303,7 +303,7 @@ class GainSequence final : virtual public Sequence {
    * @brief Add gain
    * @param[in] gain gain
    */
-  void add_gain(const std::shared_ptr<Gain> gain) {
+  void add_gain(const std::shared_ptr<Gain>& gain) {
     if (this->_gains.size() + 1 > GAIN_SEQ_BUFFER_SIZE_MAX)
       throw exception::SequenceBuildError(
           std::string("Gain sequence buffer overflow. Maximum available buffer size is " + std::to_string(GAIN_SEQ_BUFFER_SIZE_MAX)));
