@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 12/12/2021
+// Last Modified: 13/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -45,8 +45,8 @@ void AUTDLinkSOEM(void** out, const char* ifname, const int32_t device_num, cons
   *out = link;
 }
 
-void AUTDSetSOEMOnLost(void* link, OnLostCallback callback) {
+void AUTDSetSOEMOnLost(void* link, void* callback) {
   const auto* link_ = static_cast<LinkWrapper*>(link);
   if (auto* soem_link = dynamic_cast<autd::link::SOEM*>(link_->ptr.get()); soem_link != nullptr)
-    soem_link->on_lost([callback](const std::string& msg) { callback(msg.c_str()); });
+    soem_link->on_lost([callback](const std::string& msg) { reinterpret_cast<OnLostCallback>(callback)(msg.c_str()); });
 }
