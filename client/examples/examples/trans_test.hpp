@@ -3,7 +3,7 @@
 // Created Date: 05/07/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 12/12/2021
+// Last Modified: 13/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -26,9 +26,10 @@ inline void trans_test_test(autd::Controller& autd) {
   for (const auto& dev : autd.geometry())
     for (const auto& transducer : dev) offsets[transducer.id()].offset = 0;
   offsets[0].offset = 1;
-  autd.send(offsets);  // apply
+  autd << offsets;  // apply
 
   autd::modulation::Static m;
   autd::gain::TransducerTest g(0, 0xFF, 0x00);
-  autd.send(g, m);
+
+  autd << g, m;
 }

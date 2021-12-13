@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 12/12/2021
+// Last Modified: 13/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -20,12 +20,10 @@
 #include "autd3/gain/backend.hpp"
 
 typedef struct {
-  std::unique_ptr<autd::Controller::STMController> ptr;
+  autd::Controller::STMController stm;
 } STMControllerWrapper;
 
-inline STMControllerWrapper* stm_controller_create(std::unique_ptr<autd::Controller::STMController> ptr) {
-  return new STMControllerWrapper{std::move(ptr)};
-}
+inline STMControllerWrapper* stm_controller_create(autd::Controller::STMController stm) { return new STMControllerWrapper{std::move(stm)}; }
 inline void stm_controller_delete(const STMControllerWrapper* ptr) { delete ptr; }
 
 typedef struct {

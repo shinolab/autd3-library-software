@@ -3,7 +3,7 @@
 // Created Date: 20/07/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/12/2021
+// Last Modified: 13/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -12,8 +12,6 @@
 #pragma once
 
 #include <iostream>
-#include <memory>
-#include <vector>
 
 #include "autd3.hpp"
 
@@ -32,13 +30,10 @@ inline void seq_gain_test(autd::Controller& autd) {
     constexpr auto radius = 30.0;
     const auto theta = 2.0 * M_PI * static_cast<double>(i) / static_cast<double>(point_num);
     const autd::Vector3 p(radius * std::cos(theta), radius * std::sin(theta), 0);
-    std::vector<autd::Vector3> foci = {center + p, center - p};
-    std::vector<double> amps = {1, 1};
-    const auto g = std::make_shared<autd::gain::FocalPoint>(center + p);
-    seq.add_gain(g);
+    seq << autd::gain::FocalPoint(center + p);
   }
 
   const auto actual_freq = seq.set_frequency(1);
   std::cout << "Actual frequency is " << actual_freq << " Hz\n";
-  autd.send(seq, m);
+  autd << seq, m;
 }

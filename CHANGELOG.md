@@ -6,6 +6,9 @@
 * Remove `AUTDSendGainModulation`, `AUTDSendSequenceModulation`, and `AUTDSendGainSequenceModulation`
     * Add `AUTDSendHeader`, `AUTDSendBody`, and `AUTDSendHeaderBody`
 * Change internal `core` namespace
+* Add stream operators
+* `Controller::fpga_info()` is now return vector of `FPGAInfo`
+* Change delay and duty offset API
 
 # 1.9.3
 * fix minor bugs
