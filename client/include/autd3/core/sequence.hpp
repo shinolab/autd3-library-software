@@ -186,18 +186,18 @@ class PointSequence : virtual public Sequence {
 
   void init() override { _sent = 0; }
 
-  void pack(const Geometry& geometry, TxDatagram& tx, uint8_t& fpga_ctrl_flag, uint8_t& cpu_ctrl_flag) override {
-    cpu_ctrl_flag |= WRITE_BODY;
-    if (_wait_on_sync) cpu_ctrl_flag |= WAIT_ON_SYNC;
-    fpga_ctrl_flag |= SEQ_MODE;
-    fpga_ctrl_flag |= SEQ_GAIN_MODE;
+  void pack(const Geometry& geometry, TxDatagram& tx) override {
+    auto* header = reinterpret_cast<GlobalHeader*>(tx.header());
+
+    if (_wait_on_sync) header->cpu_ctrl_flags |= WAIT_ON_SYNC;
+    header->fpga_ctrl_flags |= OUTPUT_ENABLE;
+    header->fpga_ctrl_flags |= SEQ_MODE;
 
     if (is_finished()) return;
 
     tx.num_bodies() = geometry.num_devices();
 
     size_t offset = 1;
-    auto* header = reinterpret_cast<GlobalHeader*>(tx.header());
     header->cpu_ctrl_flags |= WRITE_BODY;
     if (_sent == 0) {
       header->cpu_ctrl_flags |= SEQ_BEGIN;
@@ -295,17 +295,18 @@ class GainSequence final : virtual public Sequence {
 
   void init() override { _sent = 0; }
 
-  void pack(const Geometry& geometry, TxDatagram& tx, uint8_t& fpga_ctrl_flag, uint8_t& cpu_ctrl_flag) override {
-    cpu_ctrl_flag |= WRITE_BODY;
-    if (_wait_on_sync) cpu_ctrl_flag |= WAIT_ON_SYNC;
-    fpga_ctrl_flag |= SEQ_MODE;
-    fpga_ctrl_flag |= SEQ_GAIN_MODE;
+  void pack(const Geometry& geometry, TxDatagram& tx) override {
+    auto* header = reinterpret_cast<GlobalHeader*>(tx.header());
+
+    if (_wait_on_sync) header->cpu_ctrl_flags |= WAIT_ON_SYNC;
+    header->fpga_ctrl_flags |= OUTPUT_ENABLE;
+    header->fpga_ctrl_flags |= SEQ_MODE;
+    header->fpga_ctrl_flags |= SEQ_GAIN_MODE;
 
     if (is_finished()) return;
 
     tx.num_bodies() = geometry.num_devices();
 
-    auto* header = reinterpret_cast<GlobalHeader*>(tx.header());
     header->cpu_ctrl_flags |= WRITE_BODY;
     const auto sent = static_cast<size_t>(_gain_mode);
     if (_sent == 0) {

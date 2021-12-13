@@ -27,8 +27,9 @@ class DelayOffsets final : public IDatagramBody {
 
   void init() override {}
 
-  void pack(const Geometry& geometry, TxDatagram& tx, uint8_t& fpga_ctrl_flag, uint8_t& cpu_ctrl_flag) override {
-    cpu_ctrl_flag |= WRITE_BODY;
+  void pack(const Geometry& geometry, TxDatagram& tx) override {
+    auto* header = reinterpret_cast<GlobalHeader*>(tx.header());
+    header->cpu_ctrl_flags |= WRITE_BODY;
     std::memcpy(tx.body(0), _data.data(), _data.size() * sizeof(DelayOffset));
     tx.num_bodies() = geometry.num_devices();
   }

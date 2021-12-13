@@ -45,7 +45,7 @@ class CommonHeader final : public IDatagramHeader {
  public:
   void init() override {}
 
-  uint8_t pack(TxDatagram& tx, uint8_t& fpga_ctrl_flag, uint8_t& cpu_ctrl_flag) override {
+  uint8_t pack(TxDatagram& tx, const uint8_t fpga_ctrl_flag, const uint8_t cpu_ctrl_flag) override {
     const auto msg_id = get_id();
     auto* header = reinterpret_cast<GlobalHeader*>(tx.data());
     header->msg_id = msg_id;
@@ -70,7 +70,7 @@ class SpecialMessageIdHeader final : public IDatagramHeader {
  public:
   void init() override {}
 
-  uint8_t pack(TxDatagram& tx, uint8_t& fpga_ctrl_flag, uint8_t& cpu_ctrl_flag) override {
+  uint8_t pack(TxDatagram& tx, const uint8_t fpga_ctrl_flag, const uint8_t cpu_ctrl_flag) override {
     auto* header = reinterpret_cast<GlobalHeader*>(tx.data());
     header->msg_id = _msg_id;
     header->fpga_ctrl_flags = fpga_ctrl_flag;
@@ -97,7 +97,7 @@ class NullBody final : public IDatagramBody {
  public:
   void init() override {}
 
-  void pack(const Geometry&, TxDatagram&, uint8_t&, uint8_t&) override {}
+  void pack(const Geometry&, TxDatagram& tx) override { tx.num_bodies() = 0; }
 
   [[nodiscard]] bool is_finished() const override { return true; }
 

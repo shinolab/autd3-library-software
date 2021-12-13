@@ -29,7 +29,7 @@ class IDatagramHeader {
   IDatagramHeader& operator=(IDatagramHeader&& obj) = default;
 
   virtual void init() = 0;
-  virtual uint8_t pack(TxDatagram& tx, uint8_t& fpga_ctrl_flag, uint8_t& cpu_ctrl_flag) = 0;
+  virtual uint8_t pack(TxDatagram& tx, uint8_t fpga_ctrl_flag, uint8_t cpu_ctrl_flag) = 0;
   [[nodiscard]] virtual bool is_finished() const = 0;
 };
 
@@ -43,7 +43,7 @@ class IDatagramBody {
   IDatagramBody& operator=(IDatagramBody&& obj) = default;
 
   virtual void init() = 0;
-  virtual void pack(const Geometry& geometry, TxDatagram& tx, uint8_t& fpga_ctrl_flag, uint8_t& cpu_ctrl_flag) = 0;
+  virtual void pack(const Geometry& geometry, TxDatagram& tx) = 0;
   [[nodiscard]] virtual bool is_finished() const = 0;
 };
 
