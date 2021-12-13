@@ -150,10 +150,8 @@ bool Controller::send(core::IDatagramHeader& header, core::IDatagramBody& body) 
   body.init();
 
   while (true) {
-    auto fpga_flag = _props.fpga_ctrl_flag();
-    auto cpu_flag = _props.cpu_ctrl_flag();
-    const auto msg_id = header.pack(_tx_buf, fpga_flag, cpu_flag);
-    body.pack(this->_geometry, _tx_buf, fpga_flag, cpu_flag);
+    const auto msg_id = header.pack(_tx_buf, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag());
+    body.pack(this->_geometry, _tx_buf);
     this->_link->send(this->_tx_buf);
     if (!wait_msg_processed(msg_id)) return false;
     if (header.is_finished() && body.is_finished()) return true;
@@ -170,11 +168,14 @@ std::vector<FirmwareInfo> Controller::firmware_info_list() {
   constexpr uint8_t READ_FPGA_VER_LSB = 0x04;
   constexpr uint8_t READ_FPGA_VER_MSB = 0x05;
   auto send_command = [&](const uint8_t msg_id, const uint8_t cmd) {
-    core::CommonHeader common_header;
+    core::SpecialMessageIdHeader common_header(msg_id);
+    core::NullBody body;
+
     common_header.init();
-    auto fpga_flag = _props.fpga_ctrl_flag();
-    auto cpu_flag = _props.cpu_ctrl_flag();
-    common_header.pack(_tx_buf, fpga_flag, cpu_flag);
+    body.init();
+
+    common_header.pack(_tx_buf, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag());
+    body.pack(this->_geometry, _tx_buf);
     _tx_buf.header()[2] = cmd;
     _link->send(_tx_buf);
     return wait_msg_processed(msg_id);
@@ -221,12 +222,14 @@ std::unique_ptr<Controller::STMController> Controller::stm() {
 }
 
 void Controller::STMController::add_gain(core::Gain& gain) const {
+  core::TxDatagram build_buf(this->_p_cnt->_geometry.num_devices());
+  core::CommonHeader header;
+
+  header.init();
   gain.init();
 
-  auto build_buf = core::TxDatagram(this->_p_cnt->_geometry.num_devices());
-  auto fpga_flag = this->_p_cnt->_props.fpga_ctrl_flag();
-  auto cpu_flag = this->_p_cnt->_props.cpu_ctrl_flag();
-  gain.pack(this->_p_cnt->geometry(), build_buf, fpga_flag, cpu_flag);
+  header.pack(build_buf, this->_p_cnt->_props.fpga_ctrl_flag(), this->_p_cnt->_props.cpu_ctrl_flag());
+  gain.pack(this->_p_cnt->geometry(), build_buf);
 
   this->_handler->add(std::move(build_buf));
 }

@@ -61,12 +61,13 @@ class Gain : public IDatagramBody {
 
   void init() override {}
 
-  void pack(const Geometry& geometry, TxDatagram& tx, uint8_t& fpga_ctrl_flag, uint8_t& cpu_ctrl_flag) override {
+  void pack(const Geometry& geometry, TxDatagram& tx) override {
     this->build(geometry);
 
-    fpga_ctrl_flag |= OUTPUT_ENABLE;
-    cpu_ctrl_flag |= WRITE_BODY;
-    std::memcpy(tx.data(), _data.data(), _data.size() * sizeof(Drive));
+    auto* header = reinterpret_cast<GlobalHeader*>(tx.header());
+    header->fpga_ctrl_flags |= OUTPUT_ENABLE;
+    header->cpu_ctrl_flags |= WRITE_BODY;
+    std::memcpy(tx.body(0), _data.data(), _data.size() * sizeof(Drive));
 
     tx.num_bodies() = geometry.num_devices();
   }
