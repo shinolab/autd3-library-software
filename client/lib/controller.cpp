@@ -177,7 +177,7 @@ std::vector<FirmwareInfo> Controller::firmware_info_list() {
 
     common_header.pack(_tx_buf, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag());
     body.pack(this->_geometry, _tx_buf);
-    _tx_buf.header()[2] = cmd;
+    _tx_buf.data()[2] = cmd;
     _link->send(_tx_buf);
     return wait_msg_processed(msg_id);
   };

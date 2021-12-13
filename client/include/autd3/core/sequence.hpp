@@ -20,7 +20,6 @@
 #include "exception.hpp"
 #include "gain.hpp"
 #include "geometry.hpp"
-#include "utils.hpp"
 
 namespace autd::core {
 class PointSequence;
@@ -102,32 +101,6 @@ class Sequence : public IDatagramBody {
 };
 
 /**
- * \brief Focus struct used in PointSequence
- */
-struct SeqFocus {
-  SeqFocus() = default;
-
-  void set(const int32_t x, const int32_t y, const int32_t z, const uint8_t duty) {
-    _buf[0] = x & 0xFFFF;             // x 0-15 bit
-    uint16_t tmp = x >> 16 & 0x0001;  // x 16th bit
-    tmp |= x >> 30 & 0x0002;          // x sign bit
-    tmp |= y << 2 & 0xFFFC;           // y 0-13 bit
-    _buf[1] = tmp;
-    tmp = y >> 14 & 0x0007;   // y 14-16 bit
-    tmp |= y >> 28 & 0x0008;  // y sign bit
-    tmp |= z << 4 & 0xFFF0;   // z 0-11 bit
-    _buf[2] = tmp;
-    tmp = z >> 12 & 0x001F;     // z 12-16 bit
-    tmp |= z >> 26 & 0x0020;    // z sign bit
-    tmp |= duty << 6 & 0x3FC0;  // duty
-    _buf[3] = tmp;
-  }
-
- private:
-  uint16_t _buf[4];
-};
-
-/**
  * @brief PointSequence provides a function to display the focus sequentially and periodically.
  * @details PointSequence uses a timer on the FPGA to ensure that the focus is precisely timed.
  * PointSequence currently has the following three limitations.
@@ -136,6 +109,29 @@ struct SeqFocus {
  * 3. Only a single focus can be displayed at a certain moment.
  */
 class PointSequence : virtual public Sequence {
+  struct SeqFocus {
+    SeqFocus() = default;
+
+    void set(const int32_t x, const int32_t y, const int32_t z, const uint8_t duty) {
+      _buf[0] = x & 0xFFFF;             // x 0-15 bit
+      uint16_t tmp = x >> 16 & 0x0001;  // x 16th bit
+      tmp |= x >> 30 & 0x0002;          // x sign bit
+      tmp |= y << 2 & 0xFFFC;           // y 0-13 bit
+      _buf[1] = tmp;
+      tmp = y >> 14 & 0x0007;   // y 14-16 bit
+      tmp |= y >> 28 & 0x0008;  // y sign bit
+      tmp |= z << 4 & 0xFFF0;   // z 0-11 bit
+      _buf[2] = tmp;
+      tmp = z >> 12 & 0x001F;     // z 12-16 bit
+      tmp |= z >> 26 & 0x0020;    // z sign bit
+      tmp |= duty << 6 & 0x3FC0;  // duty
+      _buf[3] = tmp;
+    }
+
+   private:
+    uint16_t _buf[4];
+  };
+
  public:
   PointSequence() noexcept : Sequence(), _sent(0) {}
 
@@ -187,7 +183,7 @@ class PointSequence : virtual public Sequence {
   void init() override { _sent = 0; }
 
   void pack(const Geometry& geometry, TxDatagram& tx) override {
-    auto* header = reinterpret_cast<GlobalHeader*>(tx.header());
+    auto* header = tx.header();
 
     if (_wait_on_sync) header->cpu_ctrl_flags |= WAIT_ON_SYNC;
     header->fpga_ctrl_flags |= OUTPUT_ENABLE;
@@ -275,6 +271,29 @@ enum class GAIN_MODE : uint16_t {
  * 2. The sampling interval of gains is an integer multiple of 25us and less than 25us x autd::core::SEQ_SAMPLING_FREQ_DIV_MAX.
  */
 class GainSequence final : virtual public Sequence {
+  struct PhaseDrive {
+    PhaseDrive() = default;
+    void set(const uint8_t phase0, const uint8_t phase1) {
+      _phase0 = phase0;
+      _phase1 = phase1;
+    }
+
+   private:
+    uint8_t _phase0;
+    uint8_t _phase1;
+  };
+  struct HalfPhaseDrive {
+    HalfPhaseDrive() = default;
+    void set(const uint8_t phase0, const uint8_t phase1, const uint8_t phase2, const uint8_t phase3) {
+      _phase01 = (phase1 & 0xF0) | ((phase0 >> 4) & 0x0F);
+      _phase23 = (phase3 & 0xF0) | ((phase2 >> 4) & 0x0F);
+    }
+
+   private:
+    uint8_t _phase01;
+    uint8_t _phase23;
+  };
+
  public:
   explicit GainSequence(const Geometry& geometry) noexcept : GainSequence(geometry, GAIN_MODE::DUTY_PHASE_FULL) {}
   explicit GainSequence(const Geometry& geometry, const GAIN_MODE gain_mode) noexcept
@@ -337,7 +356,7 @@ class GainSequence final : virtual public Sequence {
   void init() override { _sent = 0; }
 
   void pack(const Geometry& geometry, TxDatagram& tx) override {
-    auto* header = reinterpret_cast<GlobalHeader*>(tx.header());
+    auto* header = tx.header();
 
     if (_wait_on_sync) header->cpu_ctrl_flags |= WAIT_ON_SYNC;
     header->fpga_ctrl_flags |= OUTPUT_ENABLE;
@@ -367,31 +386,25 @@ class GainSequence final : virtual public Sequence {
     const auto gain_idx = _sent - 1;
     switch (_gain_mode) {
       case GAIN_MODE::DUTY_PHASE_FULL: {
-        auto* cursor = reinterpret_cast<uint16_t*>(tx.body(0));
-        std::memcpy(cursor, _gain_drives[gain_idx].data(), _gain_drives[gain_idx].size() * sizeof(uint16_t));
+        auto* cursor = reinterpret_cast<Drive*>(tx.body(0));
+        std::memcpy(cursor, _gain_drives[gain_idx].data(), _gain_drives[gain_idx].size() * sizeof(Drive));
       } break;
       case GAIN_MODE::PHASE_FULL:
         for (const auto& dev : geometry) {
-          auto* cursor = reinterpret_cast<uint16_t*>(tx.body(dev.id()));
-          for (const auto& trans : dev) {
-            const uint8_t phase = gain_idx + 1 >= _gain_drives.size() ? 0x00 : _gain_drives[gain_idx + 1][trans.id()].phase;
-            cursor[trans.id()] = utils::pack_to_u16(phase, _gain_drives[gain_idx][trans.id()].phase);
-          }
+          auto* cursor = reinterpret_cast<PhaseDrive*>(tx.body(dev.id()));
+          for (const auto& trans : dev)
+            cursor[trans.id()].set(_gain_drives[gain_idx][trans.id()].phase,
+                                   gain_idx + 1 >= _gain_drives.size() ? 0x00 : _gain_drives[gain_idx + 1][trans.id()].phase);
         }
         break;
       case GAIN_MODE::PHASE_HALF:
         for (const auto& dev : geometry) {
-          auto* cursor = reinterpret_cast<uint16_t*>(tx.body(dev.id()));
-          for (const auto& trans : dev) {
-            const auto phase1 = static_cast<uint8_t>(_gain_drives[gain_idx][trans.id()].phase >> 4 & 0x0F);
-            const auto phase2 =
-                static_cast<uint8_t>(gain_idx + 1 >= _gain_drives.size() ? 0x00 : _gain_drives[gain_idx + 1][trans.id()].phase & 0xF0);
-            const auto phase3 =
-                static_cast<uint8_t>(gain_idx + 2 >= _gain_drives.size() ? 0x00 : _gain_drives[gain_idx + 2][trans.id()].phase >> 4 & 0x0F);
-            const auto phase4 =
-                static_cast<uint8_t>(gain_idx + 3 >= _gain_drives.size() ? 0x00 : _gain_drives[gain_idx + 3][trans.id()].phase & 0xF0);
-            cursor[trans.id()] = utils::pack_to_u16(phase4 | phase3, phase2 | phase1);
-          }
+          auto* cursor = reinterpret_cast<HalfPhaseDrive*>(tx.body(dev.id()));
+          for (const auto& trans : dev)
+            cursor[trans.id()].set(_gain_drives[gain_idx][trans.id()].phase,
+                                   gain_idx + 1 >= _gain_drives.size() ? 0x00 : _gain_drives[gain_idx + 1][trans.id()].phase,
+                                   gain_idx + 2 >= _gain_drives.size() ? 0x00 : _gain_drives[gain_idx + 2][trans.id()].phase,
+                                   gain_idx + 3 >= _gain_drives.size() ? 0x00 : _gain_drives[gain_idx + 3][trans.id()].phase);
         }
         break;
     }

@@ -59,7 +59,7 @@ class EmulatorImpl final : public Emulator {
   static core::TxDatagram init_geometry_datagram(const core::Geometry& geometry) {
     core::TxDatagram buf(geometry.num_devices());
 
-    auto* const uh = reinterpret_cast<core::GlobalHeader*>(buf.header());
+    auto* const uh = buf.header();
     uh->msg_id = core::MSG_EMU_GEOMETRY_SET;
     uh->fpga_ctrl_flags = 0x00;
     uh->cpu_ctrl_flags = 0x00;
