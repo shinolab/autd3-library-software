@@ -28,9 +28,7 @@ inline void stm_test(autd::Controller& autd) {
   for (auto i = 0; i < point_num; i++) {
     constexpr auto radius = 20.0;
     const auto theta = 2.0 * M_PI * static_cast<double>(i) / point_num;
-    const autd::Vector3 pos(radius * cos(theta), radius * sin(theta), 0.0);
-    autd::gain::FocalPoint g(center + pos);
-    stm << g;
+    stm << autd::gain::FocalPoint(center + autd::Vector3(radius * cos(theta), radius * sin(theta), 0.0));
   }
 
   stm.start(0.5);  // 0.5 Hz

@@ -22,7 +22,7 @@ inline void seq_gain_test(autd::Controller& autd) {
 
   autd::modulation::Static m;
 
-  autd::sequence::GainSequence seq;
+  autd::sequence::GainSequence seq(autd.geometry());
 
   const autd::Vector3 center(TRANS_SPACING_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SPACING_MM * ((NUM_TRANS_Y - 1) / 2.0), 150.0);
   constexpr auto point_num = 200;

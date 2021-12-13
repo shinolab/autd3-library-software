@@ -11,8 +11,6 @@
 
 #pragma once
 
-#include <atomic>
-
 #include "geometry.hpp"
 #include "hardware_defined.hpp"
 

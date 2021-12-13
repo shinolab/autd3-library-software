@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/12/2021
+// Last Modified: 13/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,7 +11,6 @@
 
 #pragma once
 
-#include <map>
 #include <memory>
 #include <utility>
 
@@ -51,18 +50,40 @@ class Grouped final : public Gain {
    * \param device_id device id
    * \param gain gain
    */
-  void add(size_t device_id, const std::shared_ptr<Gain>& gain);
+  template <class T>
+  void add(const size_t device_id, T& gain) {
+    static_assert(std::is_base_of_v<Gain, T>, "Class that do not inherit from Gain cannot be added");
 
-  void calc(const core::Geometry& geometry) override;
-  Grouped() : Gain() {}
+    gain.calc(_geometry);
+
+    if (device_id < _geometry.num_devices())
+      std::memcpy(&this->_data[device_id * core::NUM_TRANS_IN_UNIT], &gain.data()[device_id * core::NUM_TRANS_IN_UNIT],
+                  core::NUM_TRANS_IN_UNIT * sizeof(core::Drive));
+  }
+
+  /**
+   * \brief Decide which device outputs which Gain
+   * \param device_id device id
+   * \param gain gain
+   */
+  void add(const size_t device_id, const std::shared_ptr<Gain>& gain) {
+    gain->calc(_geometry);
+
+    if (device_id < _geometry.num_devices())
+      std::memcpy(&this->_data[device_id * core::NUM_TRANS_IN_UNIT], &gain->data()[device_id * core::NUM_TRANS_IN_UNIT],
+                  core::NUM_TRANS_IN_UNIT * sizeof(core::Drive));
+  }
+
+  void calc(const core::Geometry& geometry) override {}
+  explicit Grouped(const core::Geometry& geometry) : Gain(), _geometry(geometry) {}
   ~Grouped() override = default;
   Grouped(const Grouped& v) noexcept = delete;
   Grouped& operator=(const Grouped& obj) = delete;
   Grouped(Grouped&& obj) = default;
-  Grouped& operator=(Grouped&& obj) = default;
+  Grouped& operator=(Grouped&& obj) = delete;
 
  private:
-  std::map<size_t, std::shared_ptr<Gain>> _gain_map;
+  const core::Geometry& _geometry;
 };
 
 /**

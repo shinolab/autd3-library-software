@@ -27,8 +27,7 @@ inline void seq_test(autd::Controller& autd) {
   for (auto i = 0; i < point_num; i++) {
     constexpr auto radius = 30.0;
     const auto theta = 2.0 * M_PI * static_cast<double>(i) / static_cast<double>(point_num);
-    const autd::Vector3 p(radius * std::cos(theta), radius * std::sin(theta), 0);
-    seq << center + p;
+    seq << center + autd::Vector3(radius * std::cos(theta), radius * std::sin(theta), 0);
   }
 
   const auto actual_freq = seq.set_frequency(1);

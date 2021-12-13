@@ -216,7 +216,12 @@ class Controller {
     /**
      * @brief Add gain for STM
      */
-    void add_gain(core::Gain& gain) const;
+    void add(core::Gain& gain) const;
+
+    /**
+     * @brief Add gain for STM
+     */
+    void add(core::Gain&& gain) const;
 
     /**
      * @brief Start Spatio-Temporal Modulation
@@ -250,13 +255,15 @@ class Controller {
       StreamCommaInputSTM(StreamCommaInputSTM&& obj) = default;
       StreamCommaInputSTM& operator=(StreamCommaInputSTM&& obj) = delete;
 
-      StreamCommaInputSTM& operator,(core::Gain& gain) {
-        _cnt.add_gain(gain);
+      template <class T>
+      std::enable_if_t<std::is_base_of_v<core::Gain, T>, StreamCommaInputSTM&> operator<<(T& gain) {
+        _cnt.add(gain);
         return *this;
       }
 
-      StreamCommaInputSTM& operator<<(core::Gain& gain) {
-        _cnt.add_gain(gain);
+      template <class T>
+      std::enable_if_t<std::is_base_of_v<core::Gain, T>, StreamCommaInputSTM&> operator,(T& gain) {
+        _cnt.add(gain);
         return *this;
       }
 
@@ -264,8 +271,15 @@ class Controller {
       STMController& _cnt;
     };
 
-    StreamCommaInputSTM operator<<(core::Gain& gain) {
-      this->add_gain(gain);
+    template <class T>
+    std::enable_if_t<std::is_base_of_v<core::Gain, T>, StreamCommaInputSTM> operator<<(T& gain) {
+      this->add(gain);
+      return StreamCommaInputSTM{*this};
+    }
+
+    template <class T>
+    std::enable_if_t<std::is_base_of_v<core::Gain, T>, StreamCommaInputSTM> operator<<(T&& gain) {
+      this->add(std::forward<T>(gain));
       return StreamCommaInputSTM{*this};
     }
 
