@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 12/12/2021
+// Last Modified: 13/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -14,6 +14,7 @@
 #include <cstdint>
 #include <cstring>
 #include <memory>
+#include <vector>
 
 namespace autd {
 namespace core {
@@ -110,6 +111,18 @@ struct RxMessage final {
   uint8_t msg_id;
 };
 
+class FPGAInfo final {
+ public:
+  FPGAInfo() : _info(0) {}
+
+  void set(const RxMessage& rx) { _info = rx.ack; }
+
+  [[nodiscard]] bool is_running_fan() const { return (_info & 0x01) != 0; }
+
+ private:
+  uint8_t _info;
+};
+
 class TxDatagram final {
  public:
   TxDatagram() : _data(nullptr), _header_size(0), _body_size(0), _num_bodies(0) {}
@@ -149,22 +162,24 @@ class TxDatagram final {
 
 class RxDatagram final {
  public:
-  RxDatagram() : _data(nullptr), _num_messages(0) {}
+  RxDatagram() = default;
+  explicit RxDatagram(const size_t device_num) { _data.resize(device_num); }
 
-  explicit RxDatagram(const size_t device_num) : _num_messages(device_num) { _data = std::make_unique<RxMessage[]>(device_num); }
-
-  uint8_t* data() { return reinterpret_cast<uint8_t*>(_data.get()); }
-  [[nodiscard]] const uint8_t* data() const { return reinterpret_cast<const uint8_t*>(_data.get()); }
+  uint8_t* data() { return reinterpret_cast<uint8_t*>(_data.data()); }
+  [[nodiscard]] const uint8_t* data() const { return reinterpret_cast<const uint8_t*>(_data.data()); }
 
   RxMessage const& operator[](const size_t i) const { return _data[i]; }
   RxMessage& operator[](const size_t i) { return _data[i]; }
 
-  [[nodiscard]] size_t num_messages() const { return _num_messages; }
-  [[nodiscard]] size_t size() const { return _num_messages * sizeof(RxMessage); }
+  [[nodiscard]] size_t size() const { return _data.size() * sizeof(RxMessage); }
+
+  [[nodiscard]] std::vector<RxMessage>::const_iterator begin() const { return _data.begin(); }
+  [[nodiscard]] std::vector<RxMessage>::const_iterator end() const { return _data.end(); }
+  [[nodiscard]] std::vector<RxMessage>::iterator begin() { return _data.begin(); }
+  [[nodiscard]] std::vector<RxMessage>::iterator end() { return _data.end(); }
 
  private:
-  std::unique_ptr<RxMessage[]> _data;
-  size_t _num_messages;
+  std::vector<RxMessage> _data;
 };
 
 }  // namespace core

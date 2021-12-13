@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 12/12/2021
+// Last Modified: 13/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -35,10 +35,9 @@ class EmulatorGeometry final : public core::IDatagramBody {
  public:
   void init() override {}
 
-  uint8_t pack(const core::Geometry& geometry, core::TxDatagram& tx, uint8_t& fpga_ctrl_flag, uint8_t& cpu_ctrl_flag) override {
+  void pack(const core::Geometry& geometry, core::TxDatagram& tx, uint8_t& fpga_ctrl_flag, uint8_t& cpu_ctrl_flag) override {
     std::memcpy(tx.body(0), _geometry_buf.data(), _geometry_buf.size());
     tx.num_bodies() = geometry.num_devices();
-    return core::MSG_EMU_GEOMETRY_SET;
   }
 
   [[nodiscard]] bool is_finished() const override { return true; }
@@ -199,10 +198,10 @@ void EmulatorImpl::close() {
 }
 
 void EmulatorImpl::receive(core::RxDatagram& rx) {
-  for (size_t i = 0; i < rx.num_messages(); i++) rx[i].msg_id = this->_last_msg_id;
+  for (auto& [_, msg_id] : rx) msg_id = this->_last_msg_id;
 
   const auto set = [&rx](const uint8_t value) {
-    for (size_t i = 0; i < rx.num_messages(); i++) rx[i].ack = value;
+    for (auto& [ack, _] : rx) ack = value;
   };
 
   switch (this->_last_msg_id) {

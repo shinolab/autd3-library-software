@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 12/12/2021
+// Last Modified: 13/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -16,6 +16,7 @@
 #include "exception.hpp"
 #include "hardware_defined.hpp"
 #include "interface.hpp"
+#include "logic.hpp"
 
 namespace autd::core {
 
@@ -86,7 +87,7 @@ class Modulation : public IDatagramHeader {
     _sent = 0;
   }
 
-  uint8_t pack(const Geometry&, TxDatagram& tx, uint8_t& fpga_ctrl_flag, uint8_t& cpu_ctrl_flag) override {
+  uint8_t pack(TxDatagram& tx, uint8_t& fpga_ctrl_flag, uint8_t& cpu_ctrl_flag) override {
     const uint8_t msg_id = get_id();
 
     auto* header = reinterpret_cast<GlobalHeader*>(tx.data());

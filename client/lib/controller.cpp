@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 12/12/2021
+// Last Modified: 13/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -14,8 +14,9 @@
 #include <condition_variable>
 #include <vector>
 
-#include "autd3/core/common_datagram.hpp"
 #include "autd3/core/ec_config.hpp"
+#include "autd3/core/interface.hpp"
+#include "autd3/core/logic.hpp"
 #include "autd3/gain/primitive.hpp"
 
 namespace autd {
@@ -61,10 +62,9 @@ bool Controller::force_fan() const noexcept { return this->_props._force_fan; }
 bool Controller::output_balance() const noexcept { return this->_props._output_balance; }
 bool Controller::check_ack() const noexcept { return this->_check_ack; }
 
-const std::vector<uint8_t>& Controller::fpga_info() {
-  const auto num_devices = this->_geometry.num_devices();
+const std::vector<core::FPGAInfo>& Controller::fpga_info() {
   this->_link->receive(this->_rx_buf);
-  for (size_t i = 0; i < num_devices; i++) this->_fpga_infos[i] = _rx_buf[i].ack;
+  for (size_t i = 0; i < this->_geometry.num_devices(); i++) this->_fpga_infos[i].set(_rx_buf[i]);
   return _fpga_infos;
 }
 
@@ -152,7 +152,7 @@ bool Controller::send(core::IDatagramHeader& header, core::IDatagramBody& body) 
   while (true) {
     auto fpga_flag = _props.fpga_ctrl_flag();
     auto cpu_flag = _props.cpu_ctrl_flag();
-    const auto msg_id = header.pack(this->_geometry, _tx_buf, fpga_flag, cpu_flag);
+    const auto msg_id = header.pack(_tx_buf, fpga_flag, cpu_flag);
     body.pack(this->_geometry, _tx_buf, fpga_flag, cpu_flag);
     this->_link->send(this->_tx_buf);
     if (!wait_msg_processed(msg_id)) return false;
@@ -161,9 +161,6 @@ bool Controller::send(core::IDatagramHeader& header, core::IDatagramBody& body) 
 }
 
 std::vector<FirmwareInfo> Controller::firmware_info_list() {
-  auto concat_byte = [](const uint8_t high, const uint16_t low) { return static_cast<uint16_t>(static_cast<uint16_t>(high) << 8 | low); };
-
-  const auto num_devices = this->_geometry.num_devices();
   const auto check_ack = this->_check_ack;
   this->_check_ack = true;
 
@@ -177,38 +174,42 @@ std::vector<FirmwareInfo> Controller::firmware_info_list() {
     common_header.init();
     auto fpga_flag = _props.fpga_ctrl_flag();
     auto cpu_flag = _props.cpu_ctrl_flag();
-    common_header.pack(_geometry, _tx_buf, fpga_flag, cpu_flag);
+    common_header.pack(_tx_buf, fpga_flag, cpu_flag);
     _tx_buf.header()[2] = cmd;
     _link->send(_tx_buf);
     return wait_msg_processed(msg_id);
   };
 
-  std::vector<uint16_t> cpu_versions(num_devices);
+  std::vector<uint16_t> cpu_versions_lsb;
   if (send_command(core::MSG_RD_CPU_V_LSB, READ_CPU_VER_LSB))
-    for (size_t i = 0; i < num_devices; i++) cpu_versions[i] = this->_rx_buf[i].ack;
+    for (auto& [ack, _] : this->_rx_buf) cpu_versions_lsb.emplace_back(static_cast<uint16_t>(ack));
   else
-    for (size_t i = 0; i < num_devices; i++) cpu_versions[i] = 0x1;
+    for (auto& _ : this->_rx_buf) cpu_versions_lsb.emplace_back(0x0000);
 
+  std::vector<uint16_t> cpu_versions_msb;
   if (send_command(core::MSG_RD_CPU_V_MSB, READ_CPU_VER_MSB))
-    for (size_t i = 0; i < num_devices; i++) cpu_versions[i] = concat_byte(this->_rx_buf[i].ack, cpu_versions[i]);
+    for (auto& [ack, _] : this->_rx_buf) cpu_versions_msb.emplace_back(static_cast<uint16_t>(ack) << 8);
   else
-    for (size_t i = 0; i < num_devices; i++) cpu_versions[i] = concat_byte(0x1, cpu_versions[i]);
+    for (auto& _ : this->_rx_buf) cpu_versions_msb.emplace_back(0x0000);
 
-  std::vector<uint16_t> fpga_versions(num_devices);
+  std::vector<uint16_t> fpga_versions_lsb;
   if (send_command(core::MSG_RD_FPGA_V_LSB, READ_FPGA_VER_LSB))
-    for (size_t i = 0; i < num_devices; i++) fpga_versions[i] = this->_rx_buf[i].ack;
+    for (auto& [ack, _] : this->_rx_buf) fpga_versions_lsb.emplace_back(static_cast<uint16_t>(ack));
   else
-    for (size_t i = 0; i < num_devices; i++) fpga_versions[i] = 0x1;
+    for (auto& _ : this->_rx_buf) fpga_versions_lsb.emplace_back(0x0000);
 
+  std::vector<uint16_t> fpga_versions_msb;
   if (send_command(core::MSG_RD_FPGA_V_MSB, READ_FPGA_VER_MSB))
-    for (size_t i = 0; i < num_devices; i++) fpga_versions[i] = concat_byte(this->_rx_buf[i].ack, fpga_versions[i]);
+    for (auto& [ack, _] : this->_rx_buf) fpga_versions_msb.emplace_back(static_cast<uint16_t>(ack) << 8);
   else
-    for (size_t i = 0; i < num_devices; i++) fpga_versions[i] = concat_byte(0x1, fpga_versions[i]);
+    for (auto& _ : this->_rx_buf) fpga_versions_msb.emplace_back(0x0000);
 
   this->_check_ack = check_ack;
 
   std::vector<FirmwareInfo> infos;
-  for (size_t i = 0; i < num_devices; i++) infos.emplace_back(FirmwareInfo(static_cast<uint16_t>(i), cpu_versions[i], fpga_versions[i]));
+  for (size_t i = 0; i < this->_geometry.num_devices(); i++)
+    infos.emplace_back(
+        FirmwareInfo(static_cast<uint16_t>(i), cpu_versions_msb[i] | cpu_versions_lsb[i], fpga_versions_msb[i] | fpga_versions_lsb[i]));
   return infos;
 }
 
