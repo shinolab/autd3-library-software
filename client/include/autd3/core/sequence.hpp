@@ -192,6 +192,7 @@ class PointSequence : virtual public Sequence {
     if (_wait_on_sync) header->cpu_ctrl_flags |= WAIT_ON_SYNC;
     header->fpga_ctrl_flags |= OUTPUT_ENABLE;
     header->fpga_ctrl_flags |= SEQ_MODE;
+    header->fpga_ctrl_flags &= ~SEQ_GAIN_MODE;
 
     if (is_finished()) return;
 
@@ -270,7 +271,7 @@ class GainSequence final : virtual public Sequence {
    * @brief Add gains
    * @param[in] gains vector of gain
    */
-  void add_points(const std::vector<std::shared_ptr<Gain>>& gains) {
+  void add_gains(const std::vector<std::shared_ptr<Gain>>& gains) {
     if (this->_gains.size() + gains.size() > GAIN_SEQ_BUFFER_SIZE_MAX)
       throw exception::SequenceBuildError(
           std::string("Gain sequence buffer overflow. Maximum available buffer size is " + std::to_string(GAIN_SEQ_BUFFER_SIZE_MAX)));
@@ -326,17 +327,26 @@ class GainSequence final : virtual public Sequence {
     const auto gain_idx = _sent - 1;
     switch (_gain_mode) {
       case GAIN_MODE::DUTY_PHASE_FULL: {
+        _gains[gain_idx]->build(geometry);
         auto* cursor = reinterpret_cast<uint16_t*>(tx.body(0));
         std::memcpy(cursor, _gains[gain_idx]->data().data(), _gains[gain_idx]->data().size() * sizeof(uint16_t));
       } break;
       case GAIN_MODE::PHASE_FULL:
+        _gains[gain_idx]->build(geometry);
+        if (gain_idx + 1 < _gains.size()) _gains[gain_idx + 1]->build(geometry);
         for (const auto& dev : geometry) {
           auto* cursor = reinterpret_cast<uint16_t*>(tx.body(dev.id()));
-          for (const auto& trans : dev)
-            cursor[trans.id()] = utils::pack_to_u16(_gains[gain_idx + 1]->data()[trans.id()].phase, _gains[gain_idx]->data()[trans.id()].phase);
+          for (const auto& trans : dev) {
+            const uint8_t phase = gain_idx + 1 >= _gains.size() ? 0x00 : _gains[gain_idx + 1]->data()[trans.id()].phase;
+            cursor[trans.id()] = utils::pack_to_u16(phase, _gains[gain_idx]->data()[trans.id()].phase);
+          }
         }
         break;
       case GAIN_MODE::PHASE_HALF:
+        _gains[gain_idx]->build(geometry);
+        if (gain_idx + 1 < _gains.size()) _gains[gain_idx + 1]->build(geometry);
+        if (gain_idx + 2 < _gains.size()) _gains[gain_idx + 2]->build(geometry);
+        if (gain_idx + 3 < _gains.size()) _gains[gain_idx + 3]->build(geometry);
         for (const auto& dev : geometry) {
           auto* cursor = reinterpret_cast<uint16_t*>(tx.body(dev.id()));
           for (const auto& trans : dev) {

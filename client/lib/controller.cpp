@@ -69,7 +69,7 @@ const std::vector<core::FPGAInfo>& Controller::fpga_info() {
 }
 
 bool Controller::update_ctrl_flag() {
-  core::CommonHeader header;
+  core::CommonHeader header(core::OUTPUT_ENABLE | core::OUTPUT_BALANCE | core::SILENT | core::READS_FPGA_INFO | core::FORCE_FAN);
   return send(header);
 }
 
@@ -86,7 +86,7 @@ void Controller::open(core::LinkPtr link) {
 }
 
 bool Controller::clear() {
-  core::SpecialMessageIdHeader header(core::MSG_CLEAR);
+  core::SpecialMessageIdHeader header(core::MSG_CLEAR, 0xFF);
   return send(header);
 }
 
@@ -139,7 +139,7 @@ bool Controller::send(core::IDatagramHeader& header) {
 }
 
 bool Controller::send(core::IDatagramBody& body) {
-  core::CommonHeader header;
+  core::CommonHeader header(core::OUTPUT_ENABLE | core::OUTPUT_BALANCE | core::SILENT | core::READS_FPGA_INFO | core::FORCE_FAN);
   return this->send(header, body);
 }
 
@@ -168,7 +168,8 @@ std::vector<FirmwareInfo> Controller::firmware_info_list() {
   constexpr uint8_t READ_FPGA_VER_LSB = 0x04;
   constexpr uint8_t READ_FPGA_VER_MSB = 0x05;
   auto send_command = [&](const uint8_t msg_id, const uint8_t cmd) {
-    core::SpecialMessageIdHeader common_header(msg_id);
+    core::SpecialMessageIdHeader common_header(msg_id,
+                                               core::OUTPUT_ENABLE | core::OUTPUT_BALANCE | core::SILENT | core::READS_FPGA_INFO | core::FORCE_FAN);
     core::NullBody body;
 
     common_header.init();
@@ -223,7 +224,7 @@ std::unique_ptr<Controller::STMController> Controller::stm() {
 
 void Controller::STMController::add_gain(core::Gain& gain) const {
   core::TxDatagram build_buf(this->_p_cnt->_geometry.num_devices());
-  core::CommonHeader header;
+  core::CommonHeader header(core::OUTPUT_ENABLE | core::OUTPUT_BALANCE | core::SILENT | core::READS_FPGA_INFO | core::FORCE_FAN);
 
   header.init();
   gain.init();
