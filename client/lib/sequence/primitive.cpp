@@ -3,7 +3,7 @@
 // Created Date: 16/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/12/2021
+// Last Modified: 13/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -30,7 +30,7 @@ Circumference::Circumference(const core::Vector3& center, const core::Vector3& n
     const auto theta = 2 * M_PI / static_cast<double>(n) * static_cast<double>(i);
     auto x = n1 * radius * std::cos(theta);
     auto y = n2 * radius * std::sin(theta);
-    this->add_point(center + x + y, duty);
+    this->add(center + x + y, duty);
   }
 }
 }  // namespace autd::sequence

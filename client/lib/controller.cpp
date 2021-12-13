@@ -217,7 +217,20 @@ std::vector<FirmwareInfo> Controller::firmware_info_list() {
 
 Controller::STMController Controller::stm() { return STMController{this, std::make_unique<STMTimerCallback>(std::move(this->_link))}; }
 
-void Controller::STMController::add_gain(core::Gain& gain) const {
+void Controller::STMController::add(core::Gain& gain) const {
+  core::TxDatagram build_buf(this->_p_cnt->_geometry.num_devices());
+  core::CommonHeader header(core::OUTPUT_ENABLE | core::OUTPUT_BALANCE | core::SILENT | core::READS_FPGA_INFO | core::FORCE_FAN);
+
+  header.init();
+  gain.init();
+
+  header.pack(build_buf, this->_p_cnt->_props.fpga_ctrl_flag(), this->_p_cnt->_props.cpu_ctrl_flag());
+  gain.pack(this->_p_cnt->geometry(), build_buf);
+
+  this->_handler->add(std::move(build_buf));
+}
+
+void Controller::STMController::add(core::Gain&& gain) const {
   core::TxDatagram build_buf(this->_p_cnt->_geometry.num_devices());
   core::CommonHeader header(core::OUTPUT_ENABLE | core::OUTPUT_BALANCE | core::SILENT | core::READS_FPGA_INFO | core::FORCE_FAN);
 

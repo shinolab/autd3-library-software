@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/12/2021
+// Last Modified: 13/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,7 +11,6 @@
 
 #include "autd3/gain/primitive.hpp"
 
-#include <memory>
 #include <vector>
 
 #include "autd3/core/utils.hpp"
@@ -19,18 +18,6 @@
 namespace autd::gain {
 
 using core::Vector3;
-
-void Grouped::add(const size_t device_id, const std::shared_ptr<Gain>& gain) { this->_gain_map[device_id] = gain; }
-
-void Grouped::calc(const core::Geometry& geometry) {
-  for (const auto& [_, g] : this->_gain_map) g->build(geometry);
-  for (const auto& dev : geometry)
-    if (_gain_map.count(dev.id()) > 0)
-      std::memcpy(&this->_data[dev.id() * core::NUM_TRANS_IN_UNIT], &_gain_map[dev.id()]->data()[dev.id() * core::NUM_TRANS_IN_UNIT],
-                  core::NUM_TRANS_IN_UNIT * sizeof(uint16_t));
-    else
-      std::memset(&this->_data[dev.id() * core::NUM_TRANS_IN_UNIT], 0, core::NUM_TRANS_IN_UNIT * sizeof(uint16_t));
-}
 
 void PlaneWave::calc(const core::Geometry& geometry) {
   const auto dir = this->_direction.normalized();

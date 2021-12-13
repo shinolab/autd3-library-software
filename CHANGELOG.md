@@ -9,6 +9,7 @@
 * Add stream operators
 * `Controller::fpga_info()` is now return vector of `FPGAInfo`
 * Change delay and duty offset API
+* Change `gain::Grouped` and `GainSequence` API
 
 # 1.9.3
 * fix minor bugs

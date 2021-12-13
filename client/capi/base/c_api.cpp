@@ -254,8 +254,9 @@ void AUTDGainNull(void** gain) {
   *gain = g;
 }
 
-void AUTDGainGrouped(void** gain) {
-  auto* g = new autd::gain::Grouped;
+void AUTDGainGrouped(void** gain, const void* const handle) {
+  const auto* wrapper = static_cast<const autd::Controller*>(handle);
+  auto* g = new autd::gain::Grouped(wrapper->geometry());
   *gain = g;
 }
 
@@ -321,11 +322,14 @@ void AUTDDeleteModulation(const void* const mod) {
 }
 
 void AUTDSequence(void** out) { *out = new autd::sequence::PointSequence; }
-void AUTDGainSequence(void** out, const uint16_t gain_mode) { *out = new autd::sequence::GainSequence(static_cast<autd::GAIN_MODE>(gain_mode)); }
+void AUTDGainSequence(void** out, const void* const handle, const uint16_t gain_mode) {
+  const auto* wrapper = static_cast<const autd::Controller*>(handle);
+  *out = new autd::sequence::GainSequence(wrapper->geometry(), static_cast<autd::GAIN_MODE>(gain_mode));
+}
 bool AUTDSequenceAddPoint(void* const seq, const double x, const double y, const double z, const uint8_t duty) {
   auto* const seq_w = static_cast<autd::PointSequence*>(seq);
   AUTD3_CAPI_TRY({
-    seq_w->add_point(to_vec3(x, y, z), duty);
+    seq_w->add(to_vec3(x, y, z), duty);
     return true;
   })
 }
@@ -338,7 +342,7 @@ bool AUTDSequenceAddPoints(void* const seq, const double* const points, const ui
   std::vector<uint8_t> d;
   for (size_t i = 0; i < duties_size; i++) d.emplace_back(duties[i]);
   AUTD3_CAPI_TRY({
-    seq_w->add_points(p, d);
+    seq_w->add(p, d);
     return true;
   })
 }
@@ -346,7 +350,7 @@ bool AUTDSequenceAddGain(void* const seq, void* const gain) {
   auto* const seq_w = static_cast<autd::GainSequence*>(seq);
   auto* const g = static_cast<autd::Gain*>(gain);
   AUTD3_CAPI_TRY({
-    seq_w->add_gain(std::shared_ptr<autd::Gain>(g));
+    seq_w->add(std::shared_ptr<autd::Gain>(g));
     return true;
   })
 }
@@ -423,7 +427,7 @@ bool AUTDAddSTMGain(const void* const handle, void* const gain) {
   auto* const wrapper = static_cast<const STMControllerWrapper*>(handle);
   auto* const g = static_cast<autd::Gain*>(gain);
   AUTD3_CAPI_TRY({
-    wrapper->stm.add_gain(*g);
+    wrapper->stm.add(*g);
     return true;
   })
 }
