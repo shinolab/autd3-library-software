@@ -64,7 +64,7 @@ class Gain : public IDatagramBody {
   void pack(const Geometry& geometry, TxDatagram& tx) override {
     this->build(geometry);
 
-    auto* header = reinterpret_cast<GlobalHeader*>(tx.header());
+    auto* header = tx.header();
     header->fpga_ctrl_flags |= OUTPUT_ENABLE;
     header->fpga_ctrl_flags &= ~SEQ_MODE;
     header->cpu_ctrl_flags |= WRITE_BODY;

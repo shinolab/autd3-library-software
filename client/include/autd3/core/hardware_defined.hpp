@@ -132,12 +132,12 @@ class TxDatagram final {
   }
 
   [[nodiscard]] const uint8_t* data() const { return _data.get(); }
-  [[nodiscard]] const uint8_t* header() const { return _data.get(); }
-  [[nodiscard]] const uint8_t* body(const size_t i) const { return _data.get() + _header_size + _body_size * i; }
+  [[nodiscard]] const GlobalHeader* header() const { return reinterpret_cast<const GlobalHeader*>(_data.get()); }
+  [[nodiscard]] const Body* body(const size_t i) const { return reinterpret_cast<const Body*>(&_data[_header_size + _body_size * i]); }
 
   uint8_t* data() { return _data.get(); }
-  uint8_t* header() { return _data.get(); }
-  uint8_t* body(const size_t i) { return _data.get() + _header_size + _body_size * i; }
+  GlobalHeader* header() { return reinterpret_cast<GlobalHeader*>(_data.get()); }
+  Body* body(const size_t i) { return reinterpret_cast<Body*>(&_data[_header_size + _body_size * i]); }
 
   [[nodiscard]] size_t header_size() const { return _header_size; }
   [[nodiscard]] size_t body_size() const { return _body_size; }
@@ -177,6 +177,8 @@ class RxDatagram final {
   [[nodiscard]] std::vector<RxMessage>::const_iterator end() const { return _data.end(); }
   [[nodiscard]] std::vector<RxMessage>::iterator begin() { return _data.begin(); }
   [[nodiscard]] std::vector<RxMessage>::iterator end() { return _data.end(); }
+
+  void copy_from(const RxMessage* const rx) { std::memcpy(data(), rx, _data.size() * sizeof(RxMessage)); }
 
  private:
   std::vector<RxMessage> _data;

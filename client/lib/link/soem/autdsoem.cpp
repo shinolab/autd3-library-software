@@ -11,7 +11,6 @@
 
 #include <atomic>
 #include <cstdint>
-#include <cstring>
 #include <memory>
 #include <queue>
 #include <sstream>
@@ -43,7 +42,7 @@ bool SOEMController::is_open() const { return _is_open; }
 void SOEMController::send(const core::TxDatagram& tx) {
   if (!_is_open) throw core::exception::LinkError("link is closed");
 
-  while (_send_buf_size == SEND_BUF_SIZE) std::this_thread::sleep_for(std::chrono::milliseconds(this->_config.ec_sm3_cycle_time_ns / 1000 / 1000));
+  while (_send_buf_size == SEND_BUF_SIZE) std::this_thread::sleep_for(std::chrono::milliseconds(_sm3_cycle_time_ms));
   {
     std::lock_guard lock(_send_mtx);
     _send_buf[_send_buf_cursor].copy_from(tx);
@@ -56,7 +55,7 @@ void SOEMController::send(const core::TxDatagram& tx) {
 
 void SOEMController::receive(core::RxDatagram& rx) const {
   if (!_is_open) throw core::exception::LinkError("link is closed");
-  std::memcpy(rx.data(), &_io_map[this->_output_size], this->_dev_num * this->_config.input_frame_size);
+  rx.copy_from(_io_map.input());
 }
 
 void SOEMController::setup_sync0(const bool activate, const uint32_t cycle_time_ns) const {
@@ -65,22 +64,15 @@ void SOEMController::setup_sync0(const bool activate, const uint32_t cycle_time_
 
 void SOEMController::open(const char* ifname, const size_t dev_num, const ECConfig config) {
   _dev_num = dev_num;
-  _config = config;
 
-  const auto header_size = config.header_size;
-  const auto body_size = config.body_size;
-  const auto output_size = (header_size + body_size) * _dev_num;
-  _output_size = output_size;
+  _sm3_cycle_time_ms = config.ec_sm3_cycle_time_ns / 1000 / 1000;
+  _sync0_cycle_time_ns = config.ec_sync0_cycle_time_ns;
 
+  this->_send_buf.clear();
   this->_send_buf.reserve(SEND_BUF_SIZE);
   for (size_t i = 0; i < SEND_BUF_SIZE; i++) this->_send_buf.emplace_back(dev_num);
 
-  if (const auto size = _output_size + config.input_frame_size * _dev_num; size != _io_map_size) {
-    _io_map_size = size;
-
-    _io_map = std::make_unique<uint8_t[]>(size);
-    std::memset(&_io_map[0], 0x00, _io_map_size);
-  }
+  _io_map.resize(dev_num, config);
 
   if (ec_init(ifname) <= 0) {
     std::stringstream ss;
@@ -97,7 +89,7 @@ void SOEMController::open(const char* ifname, const size_t dev_num, const ECConf
     throw core::exception::LinkError(ss.str());
   }
 
-  ec_config_map(&_io_map[0]);
+  ec_config_map(_io_map.get());
 
   ec_configdc();
 
@@ -135,16 +127,13 @@ void SOEMController::open(const char* ifname, const size_t dev_num, const ECConf
                                                                         : this->_send_buf_cursor + SEND_BUF_SIZE - this->_send_buf_size;
         auto& buf = this->_send_buf[idx];
 
-        for (size_t i = 0; i < buf.num_bodies(); i++) std::memcpy(&_io_map[(buf.header_size() + buf.body_size()) * i], buf.body(i), buf.body_size());
-        if (buf.header_size() > 0)
-          for (size_t i = 0; i < _dev_num; i++)
-            std::memcpy(&_io_map[(buf.header_size() + buf.body_size()) * i + buf.body_size()], buf.header(), buf.header_size());
+        _io_map.copy_from(buf);
 
         this->_send_buf_size--;
       }
       this->_sent.store(false, std::memory_order_release);
       while (this->_is_open && !this->_sent.load(std::memory_order_acquire))
-        std::this_thread::sleep_for(std::chrono::milliseconds(this->_config.ec_sm3_cycle_time_ns / 1000 / 1000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(this->_sm3_cycle_time_ms));
     }
   });
 }
@@ -155,7 +144,7 @@ void SOEMController::close() {
   if (!is_open()) return;
 
   this->_send_cond.notify_one();
-  while (_send_buf_size > 0) std::this_thread::sleep_for(std::chrono::milliseconds(this->_config.ec_sm3_cycle_time_ns / 1000 / 1000));
+  while (_send_buf_size > 0) std::this_thread::sleep_for(std::chrono::milliseconds(this->_sm3_cycle_time_ms));
 
   this->_is_open = false;
 
@@ -164,15 +153,14 @@ void SOEMController::close() {
 
   const auto _ = this->_timer->stop();
 
-  setup_sync0(false, _config.ec_sync0_cycle_time_ns);
+  setup_sync0(false, _sync0_cycle_time_ns);
 
   ec_slave[0].state = EC_STATE_INIT;
   ec_writestate(0);
   ec_statecheck(0, EC_STATE_INIT, EC_TIMEOUTSTATE);
   ec_close();
 
-  _io_map = nullptr;
-  _io_map_size = 0;
+  _io_map = {};
 }
 
 bool SOEMController::error_handle() {
@@ -223,7 +211,7 @@ bool SOEMController::error_handle() {
 }
 
 SOEMController::SOEMController()
-    : _io_map(nullptr), _io_map_size(0), _output_size(0), _dev_num(0), _config(), _is_open(false), _send_buf_cursor(0), _send_buf_size(0) {}
+    : _dev_num(0), _sm3_cycle_time_ms(0), _sync0_cycle_time_ns(0), _is_open(false), _send_buf_cursor(0), _send_buf_size(0) {}
 
 SOEMController::~SOEMController() {
   try {
