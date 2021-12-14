@@ -37,4 +37,29 @@ if(WIN32)
       ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/autd3capi-from-file-modulation.dll
       ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
   endif()
+
+  if(BUILD_EMULATOR_LINK)
+    add_executable(c_example_emulator emulator.c)
+    target_include_directories(c_example_emulator PRIVATE ${PROJECT_SOURCE_DIR}/capi/base ${PROJECT_SOURCE_DIR}/capi/emulator_link)
+    target_link_libraries(c_example_emulator autd3capi autd3capi-emulator-link) 
+    target_link_libraries(c_example_emulator winmm ws2_32)
+    set_target_properties(c_example_emulator PROPERTIES FOLDER "capi/example")
+    add_custom_command(TARGET c_example_emulator POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy
+      ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/autd3capi.dll
+      ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+    add_custom_command(TARGET c_example_emulator POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy
+      ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/autd3capi-emulator-link.dll
+      ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+    add_custom_command(TARGET c_example_emulator POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy
+      ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/autd3capi-holo-gain.dll
+      ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+    add_custom_command(TARGET c_example_emulator POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy
+      ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/autd3capi-from-file-modulation.dll
+      ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+  endif()
+
 endif()

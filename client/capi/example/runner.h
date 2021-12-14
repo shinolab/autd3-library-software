@@ -35,7 +35,7 @@ typedef struct {
 } Test;
 
 int run(void* autd) {
-  int32_t example_size = 4;
+  int32_t example_size = 5;
 #ifdef BUILD_HOLO_GAIN
   example_size++;
 #endif
