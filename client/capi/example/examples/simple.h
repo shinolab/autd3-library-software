@@ -18,8 +18,8 @@
 void simple(void* autd) {
   AUTDSetSilentMode(autd, true);
 
-  double x = TRANS_SPACING_MM * ((NUM_TRANS_X - 1) / 2.0);
-  double y = TRANS_SPACING_MM * ((NUM_TRANS_Y - 1) / 2.0);
+  double x = TRANS_SPACING_MM * (((double)NUM_TRANS_X - 1.0) / 2.0);
+  double y = TRANS_SPACING_MM * (((double)NUM_TRANS_Y - 1.0) / 2.0);
   double z = 150.0;
 
   void* g = NULL;

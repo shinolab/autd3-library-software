@@ -76,8 +76,8 @@ void holo(void* autd) {
   void* m = NULL;
   AUTDModulationSine(&m, 150, 1.0, 0.5);
 
-  double x = TRANS_SPACING_MM * ((NUM_TRANS_X - 1) / 2.0);
-  double y = TRANS_SPACING_MM * ((NUM_TRANS_Y - 1) / 2.0);
+  double x = TRANS_SPACING_MM * (((double)NUM_TRANS_X - 1.0) / 2.0);
+  double y = TRANS_SPACING_MM * (((double)NUM_TRANS_Y - 1.0) / 2.0);
   double z = 150.0;
 
   double foci[6] = {x - 30.0, y, z, x + 30.0, y, z};
