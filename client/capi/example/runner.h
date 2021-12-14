@@ -11,6 +11,9 @@
 
 #pragma once
 
+#pragma warning(push)
+#pragma warning(disable : 6011 6386)
+
 #include <stdlib.h>
 
 #include "autd3_c_api.h"
@@ -119,3 +122,5 @@ int run(void* autd) {
 
   return 0;
 }
+
+#pragma warning(pop)
