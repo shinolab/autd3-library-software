@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/12/2021
+// Last Modified: 14/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "autd3/core/gain.hpp"
+#include "autd3/core/type_hints.hpp"
 #include "autd3/core/utils.hpp"
 
 namespace autd::gain {
@@ -51,31 +52,21 @@ class Grouped final : public Gain {
    * \param gain gain
    */
   template <class T>
-  void add(const size_t device_id, T& gain) {
-    static_assert(std::is_base_of_v<Gain, T>, "Class that do not inherit from Gain cannot be added");
+  std::enable_if_t<core::is_gain_v<T>> add(const size_t device_id, T&& gain) {
+    Gain& g = core::to_gain(gain);
 
-    gain.calc(_geometry);
+    g.build(_geometry);
 
     if (device_id < _geometry.num_devices())
-      std::memcpy(&this->_data[device_id * core::NUM_TRANS_IN_UNIT], &gain.data()[device_id * core::NUM_TRANS_IN_UNIT],
+      std::memcpy(&this->_tmp_data[device_id * core::NUM_TRANS_IN_UNIT], &g.data()[device_id * core::NUM_TRANS_IN_UNIT],
                   core::NUM_TRANS_IN_UNIT * sizeof(core::Drive));
   }
 
-  /**
-   * \brief Decide which device outputs which Gain
-   * \param device_id device id
-   * \param gain gain
-   */
-  void add(const size_t device_id, const std::shared_ptr<Gain>& gain) {
-    gain->calc(_geometry);
-
-    if (device_id < _geometry.num_devices())
-      std::memcpy(&this->_data[device_id * core::NUM_TRANS_IN_UNIT], &gain->data()[device_id * core::NUM_TRANS_IN_UNIT],
-                  core::NUM_TRANS_IN_UNIT * sizeof(core::Drive));
+  void calc(const core::Geometry& geometry) override {
+    std::memcpy(this->_data.data(), this->_tmp_data.data(), this->_data.size() * sizeof(core::Drive));
   }
 
-  void calc(const core::Geometry& geometry) override {}
-  explicit Grouped(const core::Geometry& geometry) : Gain(), _geometry(geometry) {}
+  explicit Grouped(const core::Geometry& geometry) : Gain(), _geometry(geometry) { this->_tmp_data.resize(_geometry.num_transducers()); }
   ~Grouped() override = default;
   Grouped(const Grouped& v) noexcept = delete;
   Grouped& operator=(const Grouped& obj) = delete;
@@ -84,6 +75,7 @@ class Grouped final : public Gain {
 
  private:
   const core::Geometry& _geometry;
+  std::vector<core::Drive> _tmp_data;
 };
 
 /**
