@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/12/2021
+// Last Modified: 14/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -350,7 +350,7 @@ bool AUTDSequenceAddGain(void* const seq, void* const gain) {
   auto* const seq_w = static_cast<autd::GainSequence*>(seq);
   auto* const g = static_cast<autd::Gain*>(gain);
   AUTD3_CAPI_TRY({
-    seq_w->add(std::shared_ptr<autd::Gain>(g));
+    seq_w->add(g);
     return true;
   })
 }

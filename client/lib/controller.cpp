@@ -240,7 +240,7 @@ void Controller::STMController::start(const double freq) {
 }
 
 void Controller::STMController::finish() {
-  if (_p_cnt == nullptr) return;
+  if (_p_cnt == nullptr || this->_timer == nullptr || this->_handler == nullptr) return;
   this->stop();
   this->_handler->clear();
   this->_p_cnt->_link = std::move(this->_handler->_link);

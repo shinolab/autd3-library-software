@@ -107,7 +107,7 @@ class Sequence : public IDatagramBody {
  * 2. The sampling interval of control points is an integer multiple of 25us and less than or equal to 25us x autd::core::SEQ_SAMPLING_FREQ_DIV_MAX.
  * 3. Only a single focus can be displayed at a certain moment.
  */
-class PointSequence : virtual public Sequence {
+class PointSequence : public Sequence {
   struct SeqFocus {
     SeqFocus() = default;
 
@@ -269,7 +269,7 @@ enum class GAIN_MODE : uint16_t {
  * 1. The maximum number of gains is autd::core::GAIN_SEQ_BUFFER_SIZE_MAX.
  * 2. The sampling interval of gains is an integer multiple of 25us and less than 25us x autd::core::SEQ_SAMPLING_FREQ_DIV_MAX.
  */
-class GainSequence final : virtual public Sequence {
+class GainSequence final : public Sequence {
   struct PhaseDrive {
     PhaseDrive() = default;
     void set(const uint8_t phase0, const uint8_t phase1) {

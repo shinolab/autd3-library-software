@@ -3,7 +3,7 @@
 // Created Date: 03/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 09/12/2021
+// Last Modified: 14/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -23,12 +23,12 @@
 #include "examples/bessel.hpp"
 #include "examples/group.hpp"
 #include "examples/seq.hpp"
+#include "examples/seq_gain.hpp"
 #include "examples/simple.hpp"
 #include "examples/stm.hpp"
 #include "examples/trans_test.hpp"
 #ifdef BUILD_HOLO_GAIN
 #include "examples/holo.hpp"
-#include "examples/seq_gain.hpp"
 #endif
 #ifdef BUILD_FROM_FILE_MOD
 #include "examples/mod_from_file.hpp"
@@ -46,9 +46,7 @@ inline int run(autd::Controller autd) {
 #endif
                                                      std::pair(F{stm_test}, "Spatio-Temporal Modulation Test"),
                                                      std::pair(F{seq_test}, "PointSequence (hardware STM of single focus) Test"),
-#ifdef BUILD_HOLO_GAIN
                                                      std::pair(F{seq_gain_test}, "GainSequence (hardware STM of arbitrary gain) Test"),
-#endif
                                                      std::pair(F{advanced_test}, "Advanced Test (custom Gain, Modulation, and set output delay)"),
                                                      std::pair(F{trans_test_test}, "TransducerTest Test")};
   if (autd.geometry().num_devices() == 2) examples.emplace_back(std::pair(F{group_test}, "Group gain Test"));
