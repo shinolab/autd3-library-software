@@ -3,7 +3,7 @@
 // Created Date: 10/12/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/12/2021
+// Last Modified: 14/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -34,7 +34,7 @@ constexpr double LPF_COEF[COEF_SIZE] = {
     -0.0001078, -0.0001007, -0.0000930, -0.0000850, -0.0000767, -0.0000684, -0.0000601, -0.0000520, -0.0000441, -0.0000366, -0.0000294, -0.0000227,
     -0.0000165, -0.0000108, -0.0000055, -0.0000008, 0.0000034,  0.0000071,  0.0000103};
 
-static size_t modulo_positive(const int32_t i, const size_t n) {
+size_t modulo_positive(const int32_t i, const size_t n) {
   int32_t res = i % static_cast<int32_t>(n);
   if (res < 0) res += static_cast<int32_t>(n);
   return static_cast<size_t>(res);
