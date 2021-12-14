@@ -3,7 +3,7 @@
 // Created Date: 12/12/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/12/2021
+// Last Modified: 14/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -27,7 +27,7 @@ class IDatagramHeader {
   IDatagramHeader& operator=(IDatagramHeader&& obj) = default;
 
   virtual void init() = 0;
-  virtual uint8_t pack(TxDatagram& tx, uint8_t fpga_ctrl_flag, uint8_t cpu_ctrl_flag) = 0;
+  virtual void pack(uint8_t msg_id, TxDatagram& tx, uint8_t fpga_ctrl_flag, uint8_t cpu_ctrl_flag) = 0;
   [[nodiscard]] virtual bool is_finished() const = 0;
 };
 
