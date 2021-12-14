@@ -11,6 +11,9 @@
 
 #pragma once
 
+#include <memory>
+#include <type_traits>
+
 #include "autd3/core/gain.hpp"
 #include "autd3/core/interface.hpp"
 
