@@ -312,7 +312,7 @@ class GainSequence final : virtual public Sequence {
 
     Gain& g = to_gain(gain);
 
-    g.calc(_geometry);
+    g.build(_geometry);
 
     this->_gain_drives.emplace_back(g.data());
   }
