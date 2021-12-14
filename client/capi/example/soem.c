@@ -49,7 +49,7 @@ int main() {
   AUTDLinkSOEM(&link, name, device_num, 1);
   AUTDFreeAdapterPointer(adapter_list);
 
-  AUTDSetSOEMOnLost(link, callback);
+  AUTDSetSOEMOnLost(link, (void*)callback);
 
   if (!AUTDOpenController(cnt, link)) {
     const int32_t error_size = AUTDGetLastError(NULL);
