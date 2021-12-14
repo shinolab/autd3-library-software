@@ -13,6 +13,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "autd3/core/gain.hpp"
 #include "autd3/core/type_hints.hpp"
