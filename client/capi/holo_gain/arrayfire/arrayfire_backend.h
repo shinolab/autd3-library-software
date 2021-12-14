@@ -15,7 +15,7 @@
 
 #ifdef __cplusplus
 extern "C" {
-#ifdef __cplusplus
+#endif
 EXPORT_AUTD void AUTDArrayFireBackend(void** out);
 #ifdef __cplusplus
 }
