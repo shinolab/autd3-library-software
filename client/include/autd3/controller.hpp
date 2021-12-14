@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/12/2021
+// Last Modified: 14/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -21,6 +21,7 @@
 #include "core/interface.hpp"
 #include "core/link.hpp"
 #include "core/osal_timer.hpp"
+#include "core/type_hints.hpp"
 
 namespace autd {
 
@@ -186,13 +187,25 @@ class Controller {
    */
   bool resume();
 
-  bool send(core::IDatagramHeader& header);
+  template <class T>
+  std::enable_if_t<core::is_header_v<T>, bool> send(T&& header) {
+    return send_impl(core::to_header(header));
+  }
 
-  bool send(core::IDatagramBody& body);
+  template <class T>
+  std::enable_if_t<core::is_body_v<T>, bool> send(T&& body) {
+    return send_impl(core::to_body(body));
+  }
 
-  bool send(core::IDatagramHeader& header, core::IDatagramBody& body);
+  template <class H, class B>
+  std::enable_if_t<std::conjunction_v<core::is_header<H>, core::is_body<B>>, bool> send(H&& header, B&& body) {
+    return send_impl(core::to_body(body), core::to_header(header));
+  }
 
-  bool send(core::IDatagramBody& body, core::IDatagramHeader& header);
+  template <class H, class B>
+  std::enable_if_t<std::conjunction_v<core::is_header<H>, core::is_body<B>>, bool> send(B&& body, H&& header) {
+    return send_impl(core::to_body(body), core::to_header(header));
+  }
 
   /**
    * @brief Enumerate firmware information
@@ -323,6 +336,14 @@ class Controller {
     std::atomic<bool> _lock;
   };
 
+  bool send_impl(core::IDatagramHeader& header);
+
+  bool send_impl(core::IDatagramBody& body);
+
+  bool send_impl(core::IDatagramHeader& header, core::IDatagramBody& body);
+
+  bool send_impl(core::IDatagramBody& body, core::IDatagramHeader& header);
+
   [[nodiscard]] bool wait_msg_processed(uint8_t msg_id, size_t max_trial = 50);
 
   core::LinkPtr _link;
@@ -348,12 +369,14 @@ class Controller {
     StreamCommaInputHeader(StreamCommaInputHeader&& obj) = default;
     StreamCommaInputHeader& operator=(StreamCommaInputHeader&& obj) = delete;
 
-    void operator,(core::IDatagramBody& body) {
+    template <class B>
+    std::enable_if_t<core::is_body_v<B>> operator,(B&& body) {
       _cnt.send(_header, body);
       _sent = true;
     }
 
-    void operator<<(core::IDatagramBody& body) {
+    template <class B>
+    std::enable_if_t<core::is_body_v<B>> operator<<(B&& body) {
       _cnt.send(_header, body);
       _sent = true;
     }
@@ -363,6 +386,7 @@ class Controller {
     core::IDatagramHeader& _header;
     bool _sent;
   };
+
   class StreamCommaInputBody {
     friend class Controller;
 
@@ -376,12 +400,14 @@ class Controller {
     StreamCommaInputBody(StreamCommaInputBody&& obj) = default;
     StreamCommaInputBody& operator=(StreamCommaInputBody&& obj) = delete;
 
-    void operator,(core::IDatagramHeader& header) {
+    template <class H>
+    std::enable_if_t<core::is_header_v<H>> operator,(H&& header) {
       _cnt.send(header, _body);
       _sent = true;
     }
 
-    void operator<<(core::IDatagramHeader& header) {
+    template <class H>
+    std::enable_if_t<core::is_header_v<H>> operator<<(H&& header) {
       _cnt.send(header, _body);
       _sent = true;
     }
@@ -392,8 +418,14 @@ class Controller {
     bool _sent;
   };
 
-  StreamCommaInputHeader operator<<(core::IDatagramHeader& header) { return StreamCommaInputHeader{*this, header}; }
-  StreamCommaInputBody operator<<(core::IDatagramBody& body) { return StreamCommaInputBody{*this, body}; }
+  template <class T>
+  std::enable_if_t<core::is_header_v<T>, StreamCommaInputHeader> operator<<(T&& header) {
+    return StreamCommaInputHeader{*this, core::to_header(header)};
+  }
+  template <class T>
+  std::enable_if_t<core::is_body_v<T>, StreamCommaInputBody> operator<<(T&& body) {
+    return StreamCommaInputBody{*this, core::to_body(body)};
+  }
 };
 
 }  // namespace autd
