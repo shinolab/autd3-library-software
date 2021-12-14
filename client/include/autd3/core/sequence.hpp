@@ -3,7 +3,7 @@
 // Created Date: 14/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/12/2021
+// Last Modified: 14/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -12,14 +12,13 @@
 #pragma once
 
 #include <algorithm>
-#include <memory>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "exception.hpp"
 #include "gain.hpp"
 #include "geometry.hpp"
+#include "type_hints.hpp"
 
 namespace autd::core {
 class PointSequence;
@@ -306,42 +305,16 @@ class GainSequence final : virtual public Sequence {
    * @param[in] gain gain
    */
   template <class T>
-  std::enable_if_t<std::is_base_of_v<Gain, T>> add(T& gain) {
+  std::enable_if_t<is_gain_v<T>> add(T&& gain) {
     if (this->_gain_drives.size() + 1 > GAIN_SEQ_BUFFER_SIZE_MAX)
       throw exception::SequenceBuildError(
           std::string("Gain sequence buffer overflow. Maximum available buffer size is " + std::to_string(GAIN_SEQ_BUFFER_SIZE_MAX)));
 
-    gain.calc(_geometry);
+    Gain& g = to_gain(gain);
 
-    this->_gain_drives.emplace_back(gain.data());
-  }
-  /**
-   * @brief Add gain
-   * @param[in] gain gain
-   */
-  template <class T>
-  std::enable_if_t<std::is_base_of_v<Gain, T>> add(T&& gain) {
-    if (this->_gain_drives.size() + 1 > GAIN_SEQ_BUFFER_SIZE_MAX)
-      throw exception::SequenceBuildError(
-          std::string("Gain sequence buffer overflow. Maximum available buffer size is " + std::to_string(GAIN_SEQ_BUFFER_SIZE_MAX)));
+    g.calc(_geometry);
 
-    gain.calc(_geometry);
-
-    this->_gain_drives.emplace_back(std::move(gain.data()));
-  }
-
-  /**
-   * @brief Add gain
-   * @param[in] gain gain
-   */
-  void add(const std::shared_ptr<Gain>& gain) {
-    if (this->_gain_drives.size() + 1 > GAIN_SEQ_BUFFER_SIZE_MAX)
-      throw exception::SequenceBuildError(
-          std::string("Gain sequence buffer overflow. Maximum available buffer size is " + std::to_string(GAIN_SEQ_BUFFER_SIZE_MAX)));
-
-    gain->calc(_geometry);
-
-    this->_gain_drives.emplace_back(gain->data());
+    this->_gain_drives.emplace_back(g.data());
   }
 
   /**
@@ -423,24 +396,14 @@ class GainSequence final : virtual public Sequence {
     StreamCommaInputGS& operator=(StreamCommaInputGS&& obj) = delete;
 
     template <class T>
-    std::enable_if_t<std::is_base_of_v<Gain, T>, StreamCommaInputGS&> operator,(T&& gain) {
-      _cnt.add(std::forward<T>(gain));
-      return *this;
-    }
-    template <class T>
-    std::enable_if_t<std::is_base_of_v<Gain, T>, StreamCommaInputGS&> operator,(T& gain) {
+    std::enable_if_t<is_gain_v<T>, StreamCommaInputGS&> operator,(T&& gain) {
       _cnt.add(gain);
       return *this;
     }
 
     template <class T>
-    std::enable_if_t<std::is_base_of_v<Gain, T>, StreamCommaInputGS&> operator<<(T& gain) {
+    std::enable_if_t<is_gain_v<T>, StreamCommaInputGS&> operator<<(T&& gain) {
       _cnt.add(gain);
-      return *this;
-    }
-    template <class T>
-    std::enable_if_t<std::is_base_of_v<Gain, T>, StreamCommaInputGS&> operator<<(T&& gain) {
-      _cnt.add(std::forward<T>(gain));
       return *this;
     }
 
@@ -449,14 +412,8 @@ class GainSequence final : virtual public Sequence {
   };
 
   template <class T>
-  std::enable_if_t<std::is_base_of_v<Gain, T>, StreamCommaInputGS> operator<<(T& gain) {
+  std::enable_if_t<is_gain_v<T>, StreamCommaInputGS> operator<<(T&& gain) {
     this->add(gain);
-    return StreamCommaInputGS{*this};
-  }
-
-  template <class T>
-  std::enable_if_t<std::is_base_of_v<Gain, T>, StreamCommaInputGS> operator<<(T&& gain) {
-    this->add(std::forward<T>(gain));
     return StreamCommaInputGS{*this};
   }
 

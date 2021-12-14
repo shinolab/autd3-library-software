@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include "autd3/core/gain.hpp"
 #include "autd3/core/interface.hpp"
 
 namespace autd::core {
@@ -23,7 +24,7 @@ template <typename T, typename B>
 struct is_pointer_of : std::disjunction<is_raw_pointer_of<T, B>, is_smart_pointer_of<T, B>> {};
 
 template <typename T>
-struct is_body_ref : std::conjunction<std::is_reference<T>, std::is_base_of<IDatagramBody, std::remove_reference_t<T>>> {};
+struct is_body_ref : std::is_base_of<IDatagramBody, std::remove_reference_t<T>> {};
 template <typename T>
 inline constexpr bool is_body_ref_v = is_body_ref<T>::value;
 template <typename T>
@@ -36,7 +37,7 @@ template <typename T>
 inline constexpr bool is_body_v = is_body<T>::value;
 
 template <typename T>
-struct is_header_ref : std::conjunction<std::is_reference<T>, std::is_base_of<IDatagramHeader, std::remove_reference_t<T>>> {};
+struct is_header_ref : std::is_base_of<IDatagramHeader, std::remove_reference_t<T>> {};
 template <typename T>
 inline constexpr bool is_header_ref_v = is_header_ref<T>::value;
 template <typename T>
@@ -47,6 +48,19 @@ template <typename T>
 struct is_header : std::disjunction<is_header_ref<T>, is_header_ptr<T>> {};
 template <typename T>
 inline constexpr bool is_header_v = is_header<T>::value;
+
+template <typename T>
+struct is_gain_ref : std::is_base_of<Gain, std::remove_reference_t<T>> {};
+template <typename T>
+inline constexpr bool is_gain_ref_v = is_gain_ref<T>::value;
+template <typename T>
+struct is_gain_ptr : is_pointer_of<T, Gain> {};
+template <typename T>
+inline constexpr bool is_gain_ptr_v = is_gain_ptr<T>::value;
+template <typename T>
+struct is_gain : std::disjunction<is_gain_ref<T>, is_gain_ptr<T>> {};
+template <typename T>
+inline constexpr bool is_gain_v = is_gain<T>::value;
 
 template <class T>
 std::enable_if_t<is_header_v<T>, IDatagramHeader&> to_header(T&& header) {
@@ -62,6 +76,14 @@ std::enable_if_t<is_body_v<T>, IDatagramBody&> to_body(T&& body) {
     return body;
   else
     return *body;
+}
+
+template <class T>
+std::enable_if_t<is_gain_v<T>, Gain&> to_gain(T&& gain) {
+  if constexpr (is_gain_ref_v<T>)
+    return gain;
+  else
+    return *gain;
 }
 
 }  // namespace autd::core
