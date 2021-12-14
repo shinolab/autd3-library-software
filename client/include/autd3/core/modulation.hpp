@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/12/2021
+// Last Modified: 14/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -16,7 +16,6 @@
 #include "exception.hpp"
 #include "hardware_defined.hpp"
 #include "interface.hpp"
-#include "logic.hpp"
 
 namespace autd::core {
 
@@ -87,9 +86,7 @@ class Modulation : public IDatagramHeader {
     _sent = 0;
   }
 
-  uint8_t pack(TxDatagram& tx, const uint8_t fpga_ctrl_flag, const uint8_t cpu_ctrl_flag) override {
-    const uint8_t msg_id = get_id();
-
+  void pack(const uint8_t msg_id, TxDatagram& tx, const uint8_t fpga_ctrl_flag, const uint8_t cpu_ctrl_flag) override {
     auto* header = reinterpret_cast<GlobalHeader*>(tx.data());
     header->msg_id = msg_id;
     constexpr auto fpga_mask = OUTPUT_BALANCE | SILENT | READS_FPGA_INFO | FORCE_FAN;
@@ -99,7 +96,7 @@ class Modulation : public IDatagramHeader {
 
     tx.num_bodies() = 0;
 
-    if (is_finished()) return msg_id;
+    if (is_finished()) return;
 
     size_t offset = 0;
     if (_sent == 0) {
@@ -115,8 +112,6 @@ class Modulation : public IDatagramHeader {
 
     std::memcpy(&header->mod[offset], &_buffer[_sent], mod_size);
     _sent += mod_size;
-
-    return msg_id;
   }
 
   [[nodiscard]] bool is_finished() const override { return _sent == _buffer.size(); }

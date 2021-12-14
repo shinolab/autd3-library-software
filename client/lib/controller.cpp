@@ -11,6 +11,7 @@
 
 #include "autd3/controller.hpp"
 
+#include <atomic>
 #include <condition_variable>
 #include <vector>
 
@@ -18,6 +19,14 @@
 #include "autd3/core/interface.hpp"
 #include "autd3/core/logic.hpp"
 #include "autd3/gain/primitive.hpp"
+
+namespace {
+uint8_t get_id() {
+  static std::atomic id{autd::core::MSG_NORMAL_BASE};
+  if (uint8_t expected = 0xff; !id.compare_exchange_weak(expected, autd::core::MSG_NORMAL_BASE)) id.fetch_add(0x01);
+  return id.load();
+}
+}  // namespace
 
 namespace autd {
 
@@ -150,7 +159,8 @@ bool Controller::send_impl(core::IDatagramHeader& header, core::IDatagramBody& b
   body.init();
 
   while (true) {
-    const auto msg_id = header.pack(_tx_buf, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag());
+    const auto msg_id = get_id();
+    header.pack(msg_id, _tx_buf, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag());
     body.pack(this->_geometry, _tx_buf);
     this->_link->send(this->_tx_buf);
     if (!wait_msg_processed(msg_id)) return false;
@@ -168,14 +178,14 @@ std::vector<FirmwareInfo> Controller::firmware_info_list() {
   constexpr uint8_t READ_FPGA_VER_LSB = 0x04;
   constexpr uint8_t READ_FPGA_VER_MSB = 0x05;
   auto send_command = [&](const uint8_t msg_id, const uint8_t cmd) {
-    core::SpecialMessageIdHeader common_header(msg_id,
-                                               core::OUTPUT_ENABLE | core::OUTPUT_BALANCE | core::SILENT | core::READS_FPGA_INFO | core::FORCE_FAN);
+    core::SpecialMessageIdHeader special_message_id_header(
+        msg_id, core::OUTPUT_ENABLE | core::OUTPUT_BALANCE | core::SILENT | core::READS_FPGA_INFO | core::FORCE_FAN);
     core::NullBody body;
 
-    common_header.init();
+    special_message_id_header.init();
     body.init();
 
-    common_header.pack(_tx_buf, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag());
+    special_message_id_header.pack(0x00, _tx_buf, _props.fpga_ctrl_flag(), _props.cpu_ctrl_flag());
     body.pack(this->_geometry, _tx_buf);
     _tx_buf.data()[2] = cmd;
     _link->send(_tx_buf);
@@ -224,7 +234,8 @@ void Controller::STMController::add(core::Gain& gain) const {
   header.init();
   gain.init();
 
-  header.pack(build_buf, this->_p_cnt->_props.fpga_ctrl_flag(), this->_p_cnt->_props.cpu_ctrl_flag());
+  const auto msg_id = get_id();
+  header.pack(msg_id, build_buf, this->_p_cnt->_props.fpga_ctrl_flag(), this->_p_cnt->_props.cpu_ctrl_flag());
   gain.pack(this->_p_cnt->geometry(), build_buf);
 
   this->_handler->add(std::move(build_buf));

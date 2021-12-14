@@ -3,7 +3,7 @@
 // Created Date: 13/12/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/12/2021
+// Last Modified: 14/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,20 +11,9 @@
 
 #pragma once
 
-#include <atomic>
-
 #include "interface.hpp"
 
 namespace autd::core {
-/**
- * \brief Get unique message id
- * \return message id
- */
-inline uint8_t get_id() {
-  static std::atomic id{MSG_NORMAL_BASE};
-  if (uint8_t expected = 0xff; !id.compare_exchange_weak(expected, MSG_NORMAL_BASE)) id.fetch_add(0x01);
-  return id.load();
-}
 
 /**
  * \brief check if the data which have msg_id have been processed in the devices.
@@ -44,15 +33,13 @@ class CommonHeader final : public IDatagramHeader {
  public:
   void init() override {}
 
-  uint8_t pack(TxDatagram& tx, const uint8_t fpga_ctrl_flag, const uint8_t cpu_ctrl_flag) override {
-    const auto msg_id = get_id();
+  void pack(const uint8_t msg_id, TxDatagram& tx, const uint8_t fpga_ctrl_flag, const uint8_t cpu_ctrl_flag) override {
     auto* header = reinterpret_cast<GlobalHeader*>(tx.data());
     header->msg_id = msg_id;
     header->fpga_ctrl_flags = (header->fpga_ctrl_flags & ~_fpga_flag_mask) | (fpga_ctrl_flag & _fpga_flag_mask);
     header->cpu_ctrl_flags = cpu_ctrl_flag;
     header->mod_size = 0;
     tx.num_bodies() = 0;
-    return msg_id;
   }
 
   [[nodiscard]] bool is_finished() const override { return true; }
@@ -72,14 +59,13 @@ class SpecialMessageIdHeader final : public IDatagramHeader {
  public:
   void init() override {}
 
-  uint8_t pack(TxDatagram& tx, const uint8_t fpga_ctrl_flag, const uint8_t cpu_ctrl_flag) override {
+  void pack(uint8_t, TxDatagram& tx, const uint8_t fpga_ctrl_flag, const uint8_t cpu_ctrl_flag) override {
     auto* header = reinterpret_cast<GlobalHeader*>(tx.data());
     header->msg_id = _msg_id;
     header->fpga_ctrl_flags = (header->fpga_ctrl_flags & ~_fpga_flag_mask) | (fpga_ctrl_flag & _fpga_flag_mask);
     header->cpu_ctrl_flags = cpu_ctrl_flag;
     header->mod_size = 0;
     tx.num_bodies() = 0;
-    return _msg_id;
   }
 
   [[nodiscard]] bool is_finished() const override { return true; }
