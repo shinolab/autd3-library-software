@@ -232,11 +232,6 @@ class Controller {
     void add(core::Gain& gain) const;
 
     /**
-     * @brief Add gain for STM
-     */
-    void add(core::Gain&& gain) const;
-
-    /**
      * @brief Start Spatio-Temporal Modulation
      * @param[in] freq Frequency of STM modulation
      * @details Generate STM modulation by switching gains appended by
@@ -269,14 +264,14 @@ class Controller {
       StreamCommaInputSTM& operator=(StreamCommaInputSTM&& obj) = delete;
 
       template <class T>
-      std::enable_if_t<std::is_base_of_v<core::Gain, T>, StreamCommaInputSTM&> operator<<(T& gain) {
-        _cnt.add(gain);
+      std::enable_if_t<core::is_gain_v<T>, StreamCommaInputSTM&> operator<<(T&& gain) {
+        _cnt.add(to_gain(gain));
         return *this;
       }
 
       template <class T>
-      std::enable_if_t<std::is_base_of_v<core::Gain, T>, StreamCommaInputSTM&> operator,(T& gain) {
-        _cnt.add(gain);
+      std::enable_if_t<core::is_gain_v<T>, StreamCommaInputSTM&> operator,(T&& gain) {
+        _cnt.add(to_gain(gain));
         return *this;
       }
 
@@ -285,14 +280,8 @@ class Controller {
     };
 
     template <class T>
-    std::enable_if_t<std::is_base_of_v<core::Gain, T>, StreamCommaInputSTM> operator<<(T& gain) {
-      this->add(gain);
-      return StreamCommaInputSTM{*this};
-    }
-
-    template <class T>
-    std::enable_if_t<std::is_base_of_v<core::Gain, T>, StreamCommaInputSTM> operator<<(T&& gain) {
-      this->add(std::forward<T>(gain));
+    std::enable_if_t<core::is_gain_v<T>, StreamCommaInputSTM> operator<<(T&& gain) {
+      this->add(to_gain(gain));
       return StreamCommaInputSTM{*this};
     }
 

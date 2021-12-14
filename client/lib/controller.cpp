@@ -230,19 +230,6 @@ void Controller::STMController::add(core::Gain& gain) const {
   this->_handler->add(std::move(build_buf));
 }
 
-void Controller::STMController::add(core::Gain&& gain) const {
-  core::TxDatagram build_buf(this->_p_cnt->_geometry.num_devices());
-  core::CommonHeader header(core::OUTPUT_ENABLE | core::OUTPUT_BALANCE | core::SILENT | core::READS_FPGA_INFO | core::FORCE_FAN);
-
-  header.init();
-  gain.init();
-
-  header.pack(build_buf, this->_p_cnt->_props.fpga_ctrl_flag(), this->_p_cnt->_props.cpu_ctrl_flag());
-  gain.pack(this->_p_cnt->geometry(), build_buf);
-
-  this->_handler->add(std::move(build_buf));
-}
-
 void Controller::STMController::start(const double freq) {
   if (this->_handler == nullptr) throw core::exception::STMError("STM has been already started");
 
