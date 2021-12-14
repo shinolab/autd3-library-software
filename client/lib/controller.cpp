@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/12/2021
+// Last Modified: 14/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -70,7 +70,7 @@ const std::vector<core::FPGAInfo>& Controller::fpga_info() {
 
 bool Controller::update_ctrl_flag() {
   core::CommonHeader header(core::OUTPUT_ENABLE | core::OUTPUT_BALANCE | core::SILENT | core::READS_FPGA_INFO | core::FORCE_FAN);
-  return send(header);
+  return send_impl(header);
 }
 
 void Controller::open(core::LinkPtr link) {
@@ -87,7 +87,7 @@ void Controller::open(core::LinkPtr link) {
 
 bool Controller::clear() {
   core::SpecialMessageIdHeader header(core::MSG_CLEAR, 0xFF);
-  return send(header);
+  return send_impl(header);
 }
 
 bool Controller::wait_msg_processed(const uint8_t msg_id, const size_t max_trial) {
@@ -118,7 +118,7 @@ bool Controller::stop() {
   const auto silent = this->silent_mode();
   this->silent_mode() = true;
   gain::Null g;
-  const auto res = this->send(g);
+  const auto res = this->send_impl(g);
   this->silent_mode() = silent;
   return res;
 }
@@ -133,19 +133,19 @@ bool Controller::resume() {
   return this->update_ctrl_flag();
 }
 
-bool Controller::send(core::IDatagramHeader& header) {
+bool Controller::send_impl(core::IDatagramHeader& header) {
   core::NullBody body;
-  return this->send(header, body);
+  return this->send_impl(header, body);
 }
 
-bool Controller::send(core::IDatagramBody& body) {
+bool Controller::send_impl(core::IDatagramBody& body) {
   core::CommonHeader header(core::OUTPUT_ENABLE | core::OUTPUT_BALANCE | core::SILENT | core::READS_FPGA_INFO | core::FORCE_FAN);
-  return this->send(header, body);
+  return this->send_impl(header, body);
 }
 
-bool Controller::send(core::IDatagramBody& body, core::IDatagramHeader& header) { return this->send(header, body); }
+bool Controller::send_impl(core::IDatagramBody& body, core::IDatagramHeader& header) { return this->send_impl(header, body); }
 
-bool Controller::send(core::IDatagramHeader& header, core::IDatagramBody& body) {
+bool Controller::send_impl(core::IDatagramHeader& header, core::IDatagramBody& body) {
   header.init();
   body.init();
 
