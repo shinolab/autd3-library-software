@@ -3,7 +3,7 @@
 // Created Date: 14/12/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/12/2021
+// Last Modified: 15/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -20,8 +20,8 @@
 void seq(void* autd) {
   AUTDSetSilentMode(autd, false);
 
-  double x = TRANS_SPACING_MM * ((NUM_TRANS_X - 1) / 2.0);
-  double y = TRANS_SPACING_MM * ((NUM_TRANS_Y - 1) / 2.0);
+  double x = TRANS_SPACING_MM * (((double)NUM_TRANS_X - 1.0) / 2.0);
+  double y = TRANS_SPACING_MM * (((double)NUM_TRANS_Y - 1.0) / 2.0);
   double z = 150.0;
 
   void* seq = NULL;

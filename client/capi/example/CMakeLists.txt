@@ -62,4 +62,52 @@ if(WIN32)
       ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
   endif()
 
+  if(BUILD_TWINCAT_LINK)
+    add_executable(c_example_twincat twincat.c)
+    target_include_directories(c_example_twincat PRIVATE ${PROJECT_SOURCE_DIR}/capi/base ${PROJECT_SOURCE_DIR}/capi/twincat_link)
+    target_link_libraries(c_example_twincat autd3capi autd3capi-twincat-link) 
+    target_link_libraries(c_example_twincat winmm ws2_32)
+    set_target_properties(c_example_twincat PROPERTIES FOLDER "capi/example")
+    add_custom_command(TARGET c_example_twincat POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy
+      ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/autd3capi.dll
+      ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+    add_custom_command(TARGET c_example_twincat POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy
+      ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/autd3capi-twincat-link.dll
+      ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+    add_custom_command(TARGET c_example_twincat POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy
+      ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/autd3capi-holo-gain.dll
+      ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+    add_custom_command(TARGET c_example_twincat POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy
+      ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/autd3capi-from-file-modulation.dll
+      ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+  endif()
+
+  if(BUILD_REMOTE_TWINCAT_LINK)
+  add_executable(c_example_remote_twincat remote_twincat.c)
+  target_include_directories(c_example_remote_twincat PRIVATE ${PROJECT_SOURCE_DIR}/capi/base ${PROJECT_SOURCE_DIR}/capi/remote_twincat_link)
+  target_link_libraries(c_example_remote_twincat autd3capi autd3capi-remote-twincat-link) 
+  target_link_libraries(c_example_remote_twincat winmm ws2_32)
+  set_target_properties(c_example_remote_twincat PROPERTIES FOLDER "capi/example")
+  add_custom_command(TARGET c_example_remote_twincat POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/autd3capi.dll
+    ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+  add_custom_command(TARGET c_example_remote_twincat POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/autd3capi-remote-twincat-link.dll
+    ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+  add_custom_command(TARGET c_example_remote_twincat POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/autd3capi-holo-gain.dll
+    ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+  add_custom_command(TARGET c_example_remote_twincat POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/autd3capi-from-file-modulation.dll
+    ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+endif()
+
 endif()

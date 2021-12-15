@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/12/2021
+// Last Modified: 15/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -16,7 +16,6 @@
 #include "autd3.hpp"
 #include "autd3/gain/primitive.hpp"
 #include "autd3/modulation/primitive.hpp"
-#include "autd3/sequence/primitive.hpp"
 #include "custom.hpp"
 #include "wrapper.hpp"
 #include "wrapper_link.hpp"
@@ -321,10 +320,10 @@ void AUTDDeleteModulation(const void* const mod) {
   delete m;
 }
 
-void AUTDSequence(void** out) { *out = new autd::sequence::PointSequence; }
+void AUTDSequence(void** out) { *out = new autd::PointSequence; }
 void AUTDGainSequence(void** out, const void* const handle, const uint16_t gain_mode) {
   const auto* wrapper = static_cast<const autd::Controller*>(handle);
-  *out = new autd::sequence::GainSequence(wrapper->geometry(), static_cast<autd::GAIN_MODE>(gain_mode));
+  *out = new autd::GainSequence(wrapper->geometry(), static_cast<autd::GAIN_MODE>(gain_mode));
 }
 bool AUTDSequenceAddPoint(void* const seq, const double x, const double y, const double z, const uint8_t duty) {
   auto* const seq_w = static_cast<autd::PointSequence*>(seq);
@@ -333,19 +332,7 @@ bool AUTDSequenceAddPoint(void* const seq, const double x, const double y, const
     return true;
   })
 }
-bool AUTDSequenceAddPoints(void* const seq, const double* const points, const uint64_t points_size, const uint8_t* const duties,
-                           const uint64_t duties_size) {
-  auto* const seq_w = static_cast<autd::PointSequence*>(seq);
-  std::vector<autd::Vector3> p;
-  for (size_t i = 0; i < points_size; i++) p.emplace_back(to_vec3(points[3 * i], points[3 * i + 1], points[3 * i + 2]));
 
-  std::vector<uint8_t> d;
-  for (size_t i = 0; i < duties_size; i++) d.emplace_back(duties[i]);
-  AUTD3_CAPI_TRY({
-    seq_w->add(p, d);
-    return true;
-  })
-}
 bool AUTDSequenceAddGain(void* const seq, void* const gain) {
   auto* const seq_w = static_cast<autd::GainSequence*>(seq);
   auto* const g = static_cast<autd::Gain*>(gain);
@@ -385,10 +372,6 @@ void AUTDSequenceSetSamplingFreqDiv(void* const seq, const uint32_t freq_div) {
 void AUTDDeleteSequence(const void* const seq) {
   const auto* const seq_w = static_cast<const autd::core::Sequence*>(seq);
   delete seq_w;
-}
-void AUTDCircumSequence(void** out, const double x, const double y, const double z, const double nx, const double ny, const double nz,
-                        const double radius, const uint64_t n) {
-  *out = new autd::sequence::Circumference(to_vec3(x, y, z), to_vec3(nx, ny, nz), radius, n);
 }
 
 int32_t AUTDStop(void* const handle) {

@@ -4,7 +4,7 @@
  * Created Date: 25/11/2021
  * Author: Shun Suzuki
  * -----
- * Last Modified: 14/12/2021
+ * Last Modified: 15/12/2021
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -30,7 +30,7 @@ int main() {
   AUTDCreateController(&cnt);
 
   AUTDAddDevice(cnt, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-  // AUTDAddDeviceQuaternion(cnt, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+  AUTDAddDeviceQuaternion(cnt, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 
   void* adapter_list = NULL;
   int32_t i;
@@ -51,7 +51,7 @@ int main() {
 
   AUTDSetSOEMOnLost(link, (void*)callback);
 
-  if (!AUTDOpenController(cnt, link)) {
+  if (!AUTDOpenController(cnt, link) || !AUTDIsOpen(cnt)) {
     const int32_t error_size = AUTDGetLastError(NULL);
     char* error = malloc(error_size);
     AUTDGetLastError(error);

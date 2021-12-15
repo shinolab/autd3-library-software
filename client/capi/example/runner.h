@@ -3,7 +3,7 @@
 // Created Date: 14/12/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/12/2021
+// Last Modified: 15/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -17,17 +17,27 @@
 #include <stdlib.h>
 
 #include "autd3_c_api.h"
+#include "examples/advanced.h"
 #include "examples/bessel.h"
+#include "examples/check.h"
 #include "examples/group.h"
+#include "examples/plane.h"
 #include "examples/seq.h"
 #include "examples/seq_gain.h"
 #include "examples/simple.h"
 #include "examples/stm.h"
+#include "examples/trans_test.h"
 #ifdef BUILD_HOLO_GAIN
 #include "examples/holo.h"
 #endif
 #ifdef BUILD_FROM_FILE_MOD
 #include "examples/mod_from_file.h"
+#endif
+
+#define DEBUG_AUTD_CAPI
+
+#ifdef DEBUG_AUTD_CAPI
+#include "examples/api_debug.h"
 #endif
 
 typedef void (*TestFunction)(void*);
@@ -38,11 +48,14 @@ typedef struct {
 } Test;
 
 int run(void* autd) {
-  int32_t example_size = 5;
+  int32_t example_size = 9;
 #ifdef BUILD_HOLO_GAIN
   example_size++;
 #endif
 #ifdef BUILD_FROM_FILE_MOD
+  example_size++;
+#endif
+#ifdef DEBUG_AUTD_CAPI
   example_size++;
 #endif
   if (AUTDNumDevices(autd) == 2) example_size++;
@@ -72,13 +85,24 @@ int run(void* autd) {
     examples[idx].name = "Grouped";
     examples[idx++].func = group;
   }
+  examples[idx].name = "Plane";
+  examples[idx++].func = plane;
+  examples[idx].name = "Trans test";
+  examples[idx++].func = trans_test;
+  examples[idx].name = "Advanced";
+  examples[idx++].func = advanced;
+  examples[idx].name = "Check";
+  examples[idx++].func = check;
+#ifdef DEBUG_AUTD_CAPI
+  examples[idx].name = "API Debug";
+  examples[idx++].func = api_debug;
+#endif
 
   AUTDSetWavelength(autd, 8.5);
-  const double wavelength = AUTDGetWavelength(autd);
-  printf_s("Wavelength: %lf mm\n", wavelength);
 
   AUTDClear(autd);
 
+  printf_s("========= Firmware infomations ==========\n");
   void* firm_info_list = NULL;
   const int32_t firm_info_list_size = AUTDGetFirmwareInfoListPointer(autd, &firm_info_list);
   for (int32_t i = 0; i < firm_info_list_size; i++) {
@@ -87,6 +111,7 @@ int run(void* autd) {
     printf_s("[%d]: CPU=%s, FPGA=%s\n", i, cpu, fpga);
   }
   AUTDFreeFirmwareInfoListPointer(firm_info_list);
+  printf_s("=========================================\n");
 
   while (1) {
     for (int32_t i = 0; i < example_size; i++) {
@@ -111,6 +136,7 @@ int run(void* autd) {
 
     printf_s("Finish.\n");
     AUTDStop(autd);
+    AUTDClear(autd);
   }
 
   AUTDClear(autd);
