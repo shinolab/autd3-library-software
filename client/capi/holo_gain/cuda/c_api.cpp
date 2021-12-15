@@ -3,7 +3,7 @@
 // Created Date: 11/09/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/09/2021
+// Last Modified: 13/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -14,6 +14,6 @@
 #include "autd3/gain/cuda_backend.hpp"
 
 void AUTDCUDABackend(void** out) {
-  auto* b = BackendCreate(autd::gain::holo::CUDABackend::create());
+  auto* b = backend_create(autd::gain::holo::CUDABackend::create());
   *out = b;
 }

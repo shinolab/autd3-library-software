@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/11/2021
+// Last Modified: 12/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -12,6 +12,8 @@
 #pragma once
 
 #include <memory>
+
+#include "hardware_defined.hpp"
 
 namespace autd::core {
 
@@ -31,18 +33,21 @@ class Link {
    * @brief Open link
    */
   virtual void open() = 0;
+
   /**
    * @brief Close link
    */
   virtual void close() = 0;
+
   /**
    * @brief  Send data to devices
    */
-  virtual void send(const uint8_t* buf, size_t size) = 0;
+  virtual void send(const TxDatagram& tx) = 0;
+
   /**
    * @brief  Read data from devices
    */
-  virtual void receive(uint8_t* rx, size_t buffer_len) = 0;
+  virtual void receive(RxDatagram& rx) = 0;
 
   [[nodiscard]] virtual bool is_open() = 0;
 };

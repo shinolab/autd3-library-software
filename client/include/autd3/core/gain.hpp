@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/11/2021
+// Last Modified: 13/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,44 +11,25 @@
 
 #pragma once
 
-#include <memory>
 #include <vector>
 
 #include "geometry.hpp"
 #include "hardware_defined.hpp"
+#include "interface.hpp"
 
 namespace autd {
 namespace core {
 
-class Gain;
-using GainPtr = std::shared_ptr<Gain>;
-
-struct Drive final {
-  Drive() : Drive(0x00, 0x00) {}
-  explicit Drive(const uint8_t duty, const uint8_t phase) : phase(phase), duty(duty) {}
-
-  uint8_t phase;
-  uint8_t duty;
-};
-
 /**
  * @brief Gain controls the duty ratio and phase of each transducer in AUTD devices.
  */
-class Gain {
+class Gain : public IDatagramBody {
  public:
-  /**
-   * @brief Generate empty gain
-   */
-  static GainPtr create() { return std::make_shared<Gain>(); }
-
   /**
    * \brief Calculate duty ratio and phase of each transducer
    * \param geometry Geometry
    */
-  virtual void calc(const Geometry& geometry) {
-    for (const auto& device : geometry)
-      for (const auto& transducer : device) this->_data[transducer.id()] = Drive(0x00, 0x00);
-  }
+  virtual void calc(const Geometry& geometry) = 0;
 
   /**
    * \brief Initialize data and call calc().
@@ -78,10 +59,26 @@ class Gain {
    */
   [[nodiscard]] const std::vector<Drive>& data() const { return _data; }
 
+  void init() override {}
+
+  void pack(const Geometry& geometry, TxDatagram& tx) override {
+    this->build(geometry);
+
+    auto* header = tx.header();
+    header->fpga_ctrl_flags |= OUTPUT_ENABLE;
+    header->fpga_ctrl_flags &= ~SEQ_MODE;
+    header->cpu_ctrl_flags |= WRITE_BODY;
+    std::memcpy(tx.body(0), _data.data(), _data.size() * sizeof(Drive));
+
+    tx.num_bodies() = geometry.num_devices();
+  }
+
+  [[nodiscard]] bool is_finished() const override { return true; }
+
   Gain() noexcept : _built(false) {}
-  virtual ~Gain() = default;
-  Gain(const Gain& v) noexcept = default;
-  Gain& operator=(const Gain& obj) = default;
+  ~Gain() override = default;
+  Gain(const Gain& v) noexcept = delete;
+  Gain& operator=(const Gain& obj) = delete;
   Gain(Gain&& obj) = default;
   Gain& operator=(Gain&& obj) = default;
 
