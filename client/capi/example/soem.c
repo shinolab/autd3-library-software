@@ -11,7 +11,6 @@
  *
  */
 
-#define _AMD64_
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -30,7 +29,7 @@ int main() {
   AUTDCreateController(&cnt);
 
   AUTDAddDevice(cnt, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-  AUTDAddDeviceQuaternion(cnt, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+  // AUTDAddDeviceQuaternion(cnt, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 
   void* adapter_list = NULL;
   int32_t i;
