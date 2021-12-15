@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/12/2021
+// Last Modified: 15/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -88,7 +88,7 @@ void Controller::open(core::LinkPtr link) {
   this->_tx_buf = core::TxDatagram(this->_geometry.num_devices());
   this->_rx_buf = core::RxDatagram(this->_geometry.num_devices());
 
-  this->_fpga_infos.resize(this->_geometry.num_transducers());
+  this->_fpga_infos.resize(this->_geometry.num_devices());
 
   link->open();
   this->_link = std::move(link);
