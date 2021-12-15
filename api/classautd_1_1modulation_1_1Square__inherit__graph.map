@@ -1,4 +1,5 @@
 <map id="autd::modulation::Square" name="autd::modulation::Square">
-<area shape="rect" id="node1" title="Square wave modulation." alt="" coords="5,80,168,107"/>
-<area shape="rect" id="node2" href="$classautd_1_1core_1_1Modulation.html" title="Modulation controls the amplitude modulation." alt="" coords="13,5,160,32"/>
+<area shape="rect" id="node1" title="Square wave modulation." alt="" coords="17,155,180,181"/>
+<area shape="rect" id="node2" href="$classautd_1_1core_1_1Modulation.html" title="Modulation controls the amplitude modulation." alt="" coords="25,80,172,107"/>
+<area shape="rect" id="node3" href="$classautd_1_1core_1_1IDatagramHeader.html" title=" " alt="" coords="5,5,192,32"/>
 </map>

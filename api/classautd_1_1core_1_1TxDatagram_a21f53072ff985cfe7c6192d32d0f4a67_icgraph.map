@@ -1,0 +1,12 @@
+<map id="autd::core::TxDatagram::num_bodies" name="autd::core::TxDatagram::num_bodies">
+<area shape="rect" id="node1" title=" " alt="" coords="233,260,388,301"/>
+<area shape="rect" id="node2" href="$classautd_1_1core_1_1TxDatagram.html#a9474d67a10cfe03883587d04f2b30d9e" title=" " alt="" coords="18,5,173,47"/>
+<area shape="rect" id="node3" href="$classautd_1_1core_1_1DelayOffsets.html#a39ab0c083e48b47d00b0c238d1f3207f" title=" " alt="" coords="16,71,175,112"/>
+<area shape="rect" id="node4" href="$classautd_1_1core_1_1CommonHeader.html#a4f5778530017f32591aaa3844803c24b" title=" " alt="" coords="6,136,185,177"/>
+<area shape="rect" id="node5" href="$classautd_1_1core_1_1SpecialMessageIdHeader.html#ac8843d8550c7e54ac5d7dbbc50253980" title=" " alt="" coords="5,201,185,243"/>
+<area shape="rect" id="node6" href="$classautd_1_1core_1_1Gain.html#a49d578a93a932f5ffc5f6fec24cda48e" title=" " alt="" coords="23,267,168,294"/>
+<area shape="rect" id="node7" href="$classautd_1_1core_1_1NullBody.html#ab64c7eacefb87db4368be8d440bb980b" title=" " alt="" coords="27,319,163,360"/>
+<area shape="rect" id="node8" href="$classautd_1_1core_1_1Modulation.html#a50ebca34f8677b2699dfab6da9705dbf" title=" " alt="" coords="22,384,169,425"/>
+<area shape="rect" id="node9" href="$classautd_1_1core_1_1PointSequence.html#a4ea48b7e3f5175884b3a5aeaf3e494c4" title=" " alt="" coords="9,449,181,491"/>
+<area shape="rect" id="node10" href="$classautd_1_1core_1_1GainSequence.html#a18060db8a8dfceb5579c272604ab4cf3" title=" " alt="" coords="11,515,180,556"/>
+</map>

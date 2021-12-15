@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">1.9.3</span>
+   &#160;<span id="projectnumber">1.10.0</span>
    </div>
   </td>
  </tr>
@@ -86,8 +86,8 @@ $(function() {
   <tr class="even"><td class="entry"><a class="el" href="classautd_1_1link_1_1SOEM.html#a11fbcb04a04d8fbf95bf81afc1e48908">operator=</a>(SOEM &amp;&amp;obj)=delete</td><td class="entry"><a class="el" href="classautd_1_1link_1_1SOEM.html">autd::link::SOEM</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="classautd_1_1core_1_1Link.html#a47fcf6d547dd439bc1dedda36a5dbde9">autd::core::Link::operator=</a>(const Link &amp;obj)=delete</td><td class="entry"><a class="el" href="classautd_1_1core_1_1Link.html">autd::core::Link</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classautd_1_1core_1_1Link.html#a231479700b8b5fb37fbedce2bc0044d6">autd::core::Link::operator=</a>(Link &amp;&amp;obj)=default</td><td class="entry"><a class="el" href="classautd_1_1core_1_1Link.html">autd::core::Link</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="classautd_1_1link_1_1SOEM.html#a03c94166a293a6c06ceeb31b22560128">receive</a>(uint8_t *rx, size_t buffer_len) override=0</td><td class="entry"><a class="el" href="classautd_1_1link_1_1SOEM.html">autd::link::SOEM</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classautd_1_1link_1_1SOEM.html#a40c18a49612ba7ab8b3a8b7c6b1bfd02">send</a>(const uint8_t *buf, size_t size) override=0</td><td class="entry"><a class="el" href="classautd_1_1link_1_1SOEM.html">autd::link::SOEM</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr><td class="entry"><a class="el" href="classautd_1_1link_1_1SOEM.html#a1eb5afacd1ade9b96debc8de785f0445">receive</a>(core::RxDatagram &amp;rx) override=0</td><td class="entry"><a class="el" href="classautd_1_1link_1_1SOEM.html">autd::link::SOEM</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classautd_1_1link_1_1SOEM.html#a7763ae49ae68eb7c8af91682a0b3d918">send</a>(const core::TxDatagram &amp;tx) override=0</td><td class="entry"><a class="el" href="classautd_1_1link_1_1SOEM.html">autd::link::SOEM</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
   <tr><td class="entry"><a class="el" href="classautd_1_1link_1_1SOEM.html#a8e3f7ed1433bc7b416f9c849ba640b48">SOEM</a>()=default</td><td class="entry"><a class="el" href="classautd_1_1link_1_1SOEM.html">autd::link::SOEM</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classautd_1_1link_1_1SOEM.html#a56854020c789be4a86343dbc6733fcba">SOEM</a>(const SOEM &amp;v) noexcept=delete</td><td class="entry"><a class="el" href="classautd_1_1link_1_1SOEM.html">autd::link::SOEM</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="classautd_1_1link_1_1SOEM.html#aed7a3567334b8bce9a349010f13f7342">SOEM</a>(SOEM &amp;&amp;obj)=delete</td><td class="entry"><a class="el" href="classautd_1_1link_1_1SOEM.html">autd::link::SOEM</a></td><td class="entry"></td></tr>

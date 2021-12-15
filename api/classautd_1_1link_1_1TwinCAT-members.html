@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">1.9.3</span>
+   &#160;<span id="projectnumber">1.10.0</span>
    </div>
   </td>
  </tr>
@@ -84,8 +84,8 @@ $(function() {
   <tr class="even"><td class="entry"><a class="el" href="classautd_1_1link_1_1TwinCAT.html#af780c860ec787a9b2a7ef9681fb4eb1a">operator=</a>(TwinCAT &amp;&amp;obj)=delete</td><td class="entry"><a class="el" href="classautd_1_1link_1_1TwinCAT.html">autd::link::TwinCAT</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="classautd_1_1core_1_1Link.html#a47fcf6d547dd439bc1dedda36a5dbde9">autd::core::Link::operator=</a>(const Link &amp;obj)=delete</td><td class="entry"><a class="el" href="classautd_1_1core_1_1Link.html">autd::core::Link</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classautd_1_1core_1_1Link.html#a231479700b8b5fb37fbedce2bc0044d6">autd::core::Link::operator=</a>(Link &amp;&amp;obj)=default</td><td class="entry"><a class="el" href="classautd_1_1core_1_1Link.html">autd::core::Link</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="classautd_1_1link_1_1TwinCAT.html#a95c9c62b122631da9d733ba32fd5ff41">receive</a>(uint8_t *rx, size_t buffer_len) override=0</td><td class="entry"><a class="el" href="classautd_1_1link_1_1TwinCAT.html">autd::link::TwinCAT</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classautd_1_1link_1_1TwinCAT.html#ae937021e1ed1efc29e2c58e90e22029a">send</a>(const uint8_t *buf, size_t size) override=0</td><td class="entry"><a class="el" href="classautd_1_1link_1_1TwinCAT.html">autd::link::TwinCAT</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr><td class="entry"><a class="el" href="classautd_1_1link_1_1TwinCAT.html#ac4e32775ec5d5a20c593cf86235f49c9">receive</a>(core::RxDatagram &amp;rx) override=0</td><td class="entry"><a class="el" href="classautd_1_1link_1_1TwinCAT.html">autd::link::TwinCAT</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classautd_1_1link_1_1TwinCAT.html#aa61c792f0dc59bb49980b1beadd73d98">send</a>(const core::TxDatagram &amp;tx) override=0</td><td class="entry"><a class="el" href="classautd_1_1link_1_1TwinCAT.html">autd::link::TwinCAT</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
   <tr><td class="entry"><a class="el" href="classautd_1_1link_1_1TwinCAT.html#acebf534838badc23c0b4813f3d22e4fa">TwinCAT</a>()=default</td><td class="entry"><a class="el" href="classautd_1_1link_1_1TwinCAT.html">autd::link::TwinCAT</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classautd_1_1link_1_1TwinCAT.html#abe373053278b6c1d2f49f95867e1af86">TwinCAT</a>(const TwinCAT &amp;v) noexcept=delete</td><td class="entry"><a class="el" href="classautd_1_1link_1_1TwinCAT.html">autd::link::TwinCAT</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="classautd_1_1link_1_1TwinCAT.html#aaf64013d1f50a6f75624629016425a11">TwinCAT</a>(TwinCAT &amp;&amp;obj)=delete</td><td class="entry"><a class="el" href="classautd_1_1link_1_1TwinCAT.html">autd::link::TwinCAT</a></td><td class="entry"></td></tr>

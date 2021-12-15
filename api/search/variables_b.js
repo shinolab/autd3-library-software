@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['seq_5fbase_5ffreq_608',['SEQ_BASE_FREQ',['../namespaceautd_1_1core.html#af94e2a700efb3a0b2cbe841e56ab7714',1,'autd::core']]],
-  ['seq_5fmode_5fgain_609',['SEQ_MODE_GAIN',['../namespaceautd_1_1core.html#ab1aff7b5a01e73e9b4d165d5a74cc268',1,'autd::core']]],
-  ['seq_5fmode_5fpoint_610',['SEQ_MODE_POINT',['../namespaceautd_1_1core.html#a0a56d078ca78ee3b4031b7279723e6d5',1,'autd::core']]],
-  ['seq_5fsampling_5ffreq_5fdiv_5fmax_611',['SEQ_SAMPLING_FREQ_DIV_MAX',['../namespaceautd_1_1core.html#a6730eac1b194e935fe8d6c98355dc06e',1,'autd::core']]]
+  ['phase_718',['phase',['../structautd_1_1core_1_1Drive.html#af1a257d19fcef3761b85ecb7216f1138',1,'autd::core::Drive']]],
+  ['phase_5finverted_719',['PHASE_INVERTED',['../namespaceautd_1_1core.html#a53062f1a71daa5d090b17522d38fa167',1,'autd::core']]],
+  ['point_5fseq_5fbuffer_5fsize_5fmax_720',['POINT_SEQ_BUFFER_SIZE_MAX',['../namespaceautd_1_1core.html#a0f1cc5b75435e397f4c485e897da600c',1,'autd::core']]]
 ];

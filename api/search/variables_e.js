@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['zero_614',['ZERO',['../namespaceautd_1_1gain_1_1holo.html#aa8dd1ce0d689b7df5b6f598f69bbb895',1,'autd::gain::holo']]]
+  ['ultrasound_5ffrequency_724',['ULTRASOUND_FREQUENCY',['../namespaceautd_1_1core.html#ac58d8c1c4b3e46d991a68beee99339a8',1,'autd::core']]]
 ];

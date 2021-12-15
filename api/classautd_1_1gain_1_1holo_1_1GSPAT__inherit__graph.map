@@ -1,5 +1,6 @@
 <map id="autd::gain::holo::GSPAT" name="autd::gain::holo::GSPAT">
-<area shape="rect" id="node1" title="Gain to produce multiple focal points with GS&#45;PAT method (not yet been implemented with GPU)...." alt="" coords="5,155,164,181"/>
-<area shape="rect" id="node2" href="$classautd_1_1gain_1_1holo_1_1Holo.html" title="Gain to produce multiple focal points." alt="" coords="15,80,155,107"/>
-<area shape="rect" id="node3" href="$classautd_1_1core_1_1Gain.html" title="Gain controls the duty ratio and phase of each transducer in AUTD devices." alt="" coords="29,5,140,32"/>
+<area shape="rect" id="node1" title="Gain to produce multiple focal points with GS&#45;PAT method (not yet been implemented with GPU)...." alt="" coords="13,229,171,256"/>
+<area shape="rect" id="node2" href="$classautd_1_1gain_1_1holo_1_1Holo.html" title="Gain to produce multiple focal points." alt="" coords="22,155,162,181"/>
+<area shape="rect" id="node3" href="$classautd_1_1core_1_1Gain.html" title="Gain controls the duty ratio and phase of each transducer in AUTD devices." alt="" coords="37,80,147,107"/>
+<area shape="rect" id="node4" href="$classautd_1_1core_1_1IDatagramBody.html" title=" " alt="" coords="5,5,179,32"/>
 </map>

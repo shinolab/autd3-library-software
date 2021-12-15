@@ -1,4 +1,0 @@
-<map id="autd::core::utils::pack_to_u16" name="autd::core::utils::pack_to_u16">
-<area shape="rect" id="node1" title="Pack two uint8_t value to uint16_t." alt="" coords="176,5,291,47"/>
-<area shape="rect" id="node2" href="$classautd_1_1core_1_1Logic.html#ac3ae240dd1ec44a944944b9f4afe4adc" title="Pack data body with sequence data." alt="" coords="5,5,128,47"/>
-</map>

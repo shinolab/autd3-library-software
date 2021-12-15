@@ -246,7 +246,7 @@ For Linux/macOS, no special preparation is required.</p>
 
 ...
 
-  auto link = autd::link::SOEM::create(ifname, autd-&gt;geometry().num_devices());
+  auto link = autd::link::SOEM::create(ifname, autd-&gt;geometry()-&gt;num_devices());
 </code></pre>
 <p>The first argument of <code>SOEM::create</code> is the interface name and the second argument is the number of devices.
 The interface name is the name of the ethernet interface connected to the AUTD3 device.
@@ -257,7 +257,7 @@ The interface list can be retrieved by the <code>SOEM::enumerate_adapters</code>
 <p>Note that SOEM sometimes becomes unstable when a large number of devices are used.
 In this case, increase the value of the third argument of <code>create</code> (<code>cycle_ticks</code>) (default is 1).</p>
 <pre><code class="language-cpp">  const uint32_t cycle_ticks = 2;
-  auto link = autd::link::SOEM::create(ifname, autd-&gt;geometry().num_devices(), cycle_ticks);
+  auto link = autd::link::SOEM::create(ifname, autd-&gt;geometry()-&gt;num_devices(), cycle_ticks);
 </code></pre>
 <p>The <code>cycle_ticks</code> controls the data update interval and the firing period of the synchronization signal.
 The default values of the data update interval and the firing period of the synchronization signal are <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord">1</span><span class="mord">0</span><span class="mord">0</span><span class="mord">0</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal">μ</span><span class="mord mathrm">s</span></span></span></span></span></span> and <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord">5</span><span class="mord">0</span><span class="mord">0</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal">μ</span><span class="mord mathrm">s</span></span></span></span></span></span>, respectively, which are multiplied by the value of <code>cycle_ticks</code>.

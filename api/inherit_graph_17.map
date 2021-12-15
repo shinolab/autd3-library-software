@@ -1,7 +1,6 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classautd_1_1gain_1_1holo_1_1Backend.html" title="Backend for HoloGain." alt="" coords="5,97,169,123"/>
-<area shape="rect" id="node2" href="$classautd_1_1gain_1_1holo_1_1ArrayFireBackend.html" title="ArrayFire Backend for HoloGain (not optimized yet)" alt="" coords="235,5,401,47"/>
-<area shape="rect" id="node3" href="$classautd_1_1gain_1_1holo_1_1BLASBackend.html" title="BLAS/LAPACK Backend for HoloGain." alt="" coords="219,71,417,98"/>
-<area shape="rect" id="node4" href="$classautd_1_1gain_1_1holo_1_1CUDABackend.html" title="CUDA Backend for HoloGain." alt="" coords="217,122,419,149"/>
-<area shape="rect" id="node5" href="$classautd_1_1gain_1_1holo_1_1EigenBackend.html" title="Eigen Backend for HoloGain." alt="" coords="220,173,416,199"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,78,91,105"/>
+<area shape="rect" id="node2" href="$structautd_1_1core_1_1is__body__ref.html" title=" " alt="" coords="145,5,273,47"/>
+<area shape="rect" id="node3" href="$structautd_1_1core_1_1is__gain__ref.html" title=" " alt="" coords="146,71,271,112"/>
+<area shape="rect" id="node4" href="$structautd_1_1core_1_1is__header__ref.html" title=" " alt="" coords="139,136,279,177"/>
 </map>

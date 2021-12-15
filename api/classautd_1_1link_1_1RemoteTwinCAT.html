@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">1.9.3</span>
+   &#160;<span id="projectnumber">1.10.0</span>
    </div>
   </td>
  </tr>
@@ -118,12 +118,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a998ece45595c87ab52645cc9a89bb862"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1link_1_1RemoteTwinCAT.html#a998ece45595c87ab52645cc9a89bb862">close</a> () override=0</td></tr>
 <tr class="memdesc:a998ece45595c87ab52645cc9a89bb862"><td class="mdescLeft">&#160;</td><td class="mdescRight">Close link.  <a href="classautd_1_1link_1_1RemoteTwinCAT.html#a998ece45595c87ab52645cc9a89bb862">More...</a><br /></td></tr>
 <tr class="separator:a998ece45595c87ab52645cc9a89bb862"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad23a03d8ffc8c36db5e3e87e6a3fa422"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1link_1_1RemoteTwinCAT.html#ad23a03d8ffc8c36db5e3e87e6a3fa422">send</a> (const uint8_t *buf, size_t size) override=0</td></tr>
-<tr class="memdesc:ad23a03d8ffc8c36db5e3e87e6a3fa422"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send data to devices.  <a href="classautd_1_1link_1_1RemoteTwinCAT.html#ad23a03d8ffc8c36db5e3e87e6a3fa422">More...</a><br /></td></tr>
-<tr class="separator:ad23a03d8ffc8c36db5e3e87e6a3fa422"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa027d63aaab9d541d00d63eecc766257"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1link_1_1RemoteTwinCAT.html#aa027d63aaab9d541d00d63eecc766257">receive</a> (uint8_t *rx, size_t buffer_len) override=0</td></tr>
-<tr class="memdesc:aa027d63aaab9d541d00d63eecc766257"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read data from devices.  <a href="classautd_1_1link_1_1RemoteTwinCAT.html#aa027d63aaab9d541d00d63eecc766257">More...</a><br /></td></tr>
-<tr class="separator:aa027d63aaab9d541d00d63eecc766257"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa155a6e9898151f4040056d9eabc79ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1link_1_1RemoteTwinCAT.html#aa155a6e9898151f4040056d9eabc79ac">send</a> (const <a class="el" href="classautd_1_1core_1_1TxDatagram.html">core::TxDatagram</a> &amp;tx) override=0</td></tr>
+<tr class="memdesc:aa155a6e9898151f4040056d9eabc79ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send data to devices.  <a href="classautd_1_1link_1_1RemoteTwinCAT.html#aa155a6e9898151f4040056d9eabc79ac">More...</a><br /></td></tr>
+<tr class="separator:aa155a6e9898151f4040056d9eabc79ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae34a247b9a5ffac692c16210e2928b81"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1link_1_1RemoteTwinCAT.html#ae34a247b9a5ffac692c16210e2928b81">receive</a> (<a class="el" href="classautd_1_1core_1_1RxDatagram.html">core::RxDatagram</a> &amp;rx) override=0</td></tr>
+<tr class="memdesc:ae34a247b9a5ffac692c16210e2928b81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read data from devices.  <a href="classautd_1_1link_1_1RemoteTwinCAT.html#ae34a247b9a5ffac692c16210e2928b81">More...</a><br /></td></tr>
+<tr class="separator:ae34a247b9a5ffac692c16210e2928b81"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a99d46301f495a8d661aab1af6eb13d4e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1link_1_1RemoteTwinCAT.html#a99d46301f495a8d661aab1af6eb13d4e">is_open</a> () override=0</td></tr>
 <tr class="separator:a99d46301f495a8d661aab1af6eb13d4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classautd_1_1core_1_1Link"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classautd_1_1core_1_1Link')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classautd_1_1core_1_1Link.html">autd::core::Link</a></td></tr>
@@ -435,8 +435,8 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aa027d63aaab9d541d00d63eecc766257"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa027d63aaab9d541d00d63eecc766257">&#9670;&nbsp;</a></span>receive()</h2>
+<a id="ae34a247b9a5ffac692c16210e2928b81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae34a247b9a5ffac692c16210e2928b81">&#9670;&nbsp;</a></span>receive()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -447,19 +447,9 @@ Static Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void autd::link::RemoteTwinCAT::receive </td>
           <td>(</td>
-          <td class="paramtype">uint8_t *&#160;</td>
-          <td class="paramname"><em>rx</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramtype"><a class="el" href="classautd_1_1core_1_1RxDatagram.html">core::RxDatagram</a> &amp;&#160;</td>
+          <td class="paramname"><em>rx</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>buffer_len</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -471,12 +461,12 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Read data from devices. </p>
 
-<p>Implements <a class="el" href="classautd_1_1core_1_1Link.html#ad9910b1e81caaf47130ca3cff6ce9472">autd::core::Link</a>.</p>
+<p>Implements <a class="el" href="classautd_1_1core_1_1Link.html#a30eb95318e5f177a19810b1e17499c23">autd::core::Link</a>.</p>
 
 </div>
 </div>
-<a id="ad23a03d8ffc8c36db5e3e87e6a3fa422"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad23a03d8ffc8c36db5e3e87e6a3fa422">&#9670;&nbsp;</a></span>send()</h2>
+<a id="aa155a6e9898151f4040056d9eabc79ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa155a6e9898151f4040056d9eabc79ac">&#9670;&nbsp;</a></span>send()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -487,19 +477,9 @@ Static Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void autd::link::RemoteTwinCAT::send </td>
           <td>(</td>
-          <td class="paramtype">const uint8_t *&#160;</td>
-          <td class="paramname"><em>buf</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramtype">const <a class="el" href="classautd_1_1core_1_1TxDatagram.html">core::TxDatagram</a> &amp;&#160;</td>
+          <td class="paramname"><em>tx</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>size</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -511,7 +491,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Send data to devices. </p>
 
-<p>Implements <a class="el" href="classautd_1_1core_1_1Link.html#abab4352b8f6e32951e495b6c8bd90beb">autd::core::Link</a>.</p>
+<p>Implements <a class="el" href="classautd_1_1core_1_1Link.html#ad0f6ef8cb24ea59bb811bd8506a8ec68">autd::core::Link</a>.</p>
 
 </div>
 </div>

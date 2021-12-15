@@ -1,4 +1,0 @@
-<map id="autd::modulation::SinePressure" name="autd::modulation::SinePressure">
-<area shape="rect" id="node1" title="Sine wave modulation in radiation pressure." alt="" coords="5,80,205,107"/>
-<area shape="rect" id="node2" href="$classautd_1_1core_1_1Modulation.html" title="Modulation controls the amplitude modulation." alt="" coords="32,5,179,32"/>
-</map>

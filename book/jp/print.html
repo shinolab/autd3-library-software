@@ -226,7 +226,7 @@ PCと1台目のEherCAT Inをイーサネットケーブルを繋ぎ, <span class
 <p>まず, 必要なツールをインストールする.
 本節で使用するツールとversionは以下の通りである.
 各々公式の手順に従ってインストールすること.
-Visual Studio Community 2022は「C++によるデスクトップ開発」にチェックを入れてインストールすれば良い.
+Visual Studio Community 2019は「C++によるデスクトップ開発」にチェックを入れてインストールすれば良い.
 なお, Linuxの場合はgccが, macOSの場合はclangが使えれば良い.
 また, 以下はターミナルから操作するため, PATHを通しておくことを推奨する.</p>
 <ul>
@@ -342,10 +342,10 @@ string get_adapter_name() {
 int main() try {
   auto autd = Controller::create();
 
-  autd-&gt;geometry().add_device(Vector3(0, 0, 0), Vector3(0, 0, 0));
+  autd-&gt;geometry()-&gt;add_device(Vector3(0, 0, 0), Vector3(0, 0, 0));
 
   const auto ifname = get_adapter_name();
-  auto link = link::SOEM::create(ifname, autd-&gt;geometry().num_devices());
+  auto link = link::SOEM::create(ifname, autd-&gt;geometry()-&gt;num_devices());
   autd-&gt;open(std::move(link));
 
   autd-&gt;clear();
@@ -389,7 +389,7 @@ int main() try {
 <pre><code class="language-cpp">  auto autd = autd::Controller::create();
 </code></pre>
 <p>その後, デバイスの配置を指定する.</p>
-<pre><code class="language-cpp">  autd-&gt;geometry().add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+<pre><code class="language-cpp">  autd-&gt;geometry()-&gt;add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
 </code></pre>
 <p><code>add_device</code>の第一引数は位置, 第2引数は回転を表す.
 位置は自分の設定したグローバル座標系におけるデバイスの原点を指定する.
@@ -397,7 +397,7 @@ int main() try {
 ここでは, 回転も移動も行わないものとする.</p>
 <p>次に, <code>Link</code>を作成し, デバイスと接続する.</p>
 <pre><code class="language-cpp">  const auto ifname = get_adapter_name();
-  auto link = link::SOEM::create(ifname, autd-&gt;geometry().num_devices());
+  auto link = link::SOEM::create(ifname, autd-&gt;geometry()-&gt;num_devices());
   autd-&gt;open(std::move(link));
 </code></pre>
 <p><code>link::SOEM::create()</code>の第一引数はインターフェース名で, 第2引数は接続しているAUTD3デバイスの数である. 
@@ -461,15 +461,15 @@ PCと1台目のEtherCAT Inをケーブルでつなぎ, <span class="katex"><span
 </figure>
 <p>例えば, 上図のように配置・接続しており, 図左側のデバイスが1台目, 右側のデバイスが2台目だとする.
 さらに, グローバル座標を1台目のローカル座標と同じだとすると,</p>
-<pre><code class="language-cpp">  autd-&gt;geometry().add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
-  autd-&gt;geometry().add_device(autd::Vector3(autd::DEVICE_WIDTH, 0, 0), autd::Vector3(0, 0, 0));
+<pre><code class="language-cpp">  autd-&gt;geometry()-&gt;add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+  autd-&gt;geometry()-&gt;add_device(autd::Vector3(autd::DEVICE_WIDTH, 0, 0), autd::Vector3(0, 0, 0));
 </code></pre>
 <p>とすれば良い.
 ここで, <code>autd::DEVICE_WIDTH</code>はデバイスの (基板外形を含めた) 横幅である.
 回転はしないので, 第2引数は<code>(0, 0, 0)</code>で良い.</p>
 <p>また, 例えば, グローバル座標を2台目のローカル座標と同じだとすると,</p>
-<pre><code class="language-cpp">  autd-&gt;geometry().add_device(autd::Vector3(-autd::DEVICE_WIDTH, 0, 0), autd::Vector3(0, 0, 0));
-  autd-&gt;geometry().add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+<pre><code class="language-cpp">  autd-&gt;geometry()-&gt;add_device(autd::Vector3(-autd::DEVICE_WIDTH, 0, 0), autd::Vector3(0, 0, 0));
+  autd-&gt;geometry()-&gt;add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
 </code></pre>
 <p>とすれば良い.</p>
 <figure>
@@ -477,8 +477,8 @@ PCと1台目のEtherCAT Inをケーブルでつなぎ, <span class="katex"><span
   <figcaption>Vertical alignment</figcaption>
 </figure>
 <p>さらに, 例えば, 上図のように配置されており, 下が1台目, 左が2台目で, グローバル座標を1台目のローカル座標と同じだとすると,</p>
-<pre><code class="language-cpp">  autd-&gt;geometry().add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
-  autd-&gt;geometry().add_device(autd::Vector3(0, 0, autd::DEVICE_WIDTH), autd::Vector3(0, M_PI / 2.0, 0));
+<pre><code class="language-cpp">  autd-&gt;geometry()-&gt;add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+  autd-&gt;geometry()-&gt;add_device(autd::Vector3(0, 0, autd::DEVICE_WIDTH), autd::Vector3(0, M_PI / 2.0, 0));
 </code></pre>
 <p>のように指定する.</p>
 <p>SDKにおけるAPIでは, すべてグローバル座標を用いるため, 接続するデバイスの数に依存せず透過的に使用できる.</p>
@@ -592,7 +592,7 @@ Linux/macの場合は, 特に準備は必要ない.</p>
 
 ...
 
-  auto link = autd::link::SOEM::create(ifname, autd-&gt;geometry().num_devices());
+  auto link = autd::link::SOEM::create(ifname, autd-&gt;geometry()-&gt;num_devices());
 </code></pre>
 <p><code>SOEM::create</code>の第1引数はインターフェース名で, 第2引数はデバイスの数である.
 インターフェース名はAUTD3デバイスに接続しているehernetインターフェース名である.
@@ -603,7 +603,7 @@ Linux/macの場合は, 特に準備は必要ない.</p>
 <p>なお, SOEMも大量のDeviceを使用すると挙動が不安定になる時がある<sup class="footnote-reference"><a href="#fn_soem">2</a></sup>.
 このときは, <code>create</code>の第3引数 (<code>cycle_ticks</code>) の値を増やす (defaultは1).</p>
 <pre><code class="language-cpp">  const uint32_t cycle_ticks = 2;
-  auto link = autd::link::SOEM::create(ifname, autd-&gt;geometry().num_devices(), cycle_ticks);
+  auto link = autd::link::SOEM::create(ifname, autd-&gt;geometry()-&gt;num_devices(), cycle_ticks);
 </code></pre>
 <p><code>cycle_ticks</code>は, データ更新間隔と同期信号の発火周期を制御している.
 データ更新間隔と同期信号の発火周期のデフォルトはそれぞれ<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord">1</span><span class="mord">0</span><span class="mord">0</span><span class="mord">0</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal">μ</span><span class="mord mathrm">s</span></span></span></span></span></span>と<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord">5</span><span class="mord">0</span><span class="mord">0</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal">μ</span><span class="mord mathrm">s</span></span></span></span></span></span>であり, これに<code>cycle_ticks</code>の値が掛け合わされる.
@@ -1427,14 +1427,14 @@ main()
 <h2 id="installation-3"><a class="header" href="#installation-3">Installation</a></h2>
 <p><a href="https://crates.io/crates/autd3">crate.io</a>で公開しているので, <code>cargo.toml</code>にて以下のようにすれば良い.</p>
 <pre><code>[dependencies]
-autd3 = &quot;1.9.3&quot;
+autd3 = &quot;1.9.2&quot;
 </code></pre>
 <p>また, 各種Link, Gain等は別crateとして公開しているので必要に応じてdependenciesに追加すること.</p>
 <pre><code>[dependencies]
-autd3-soem-link = &quot;1.9.3&quot;
-autd3-twincat-link = &quot;1.9.3&quot;
-autd3-emulator-link = &quot;1.9.3&quot;
-autd3-holo-gain = &quot;1.9.3&quot;
+autd3-soem-link = &quot;1.9.2&quot;
+autd3-twincat-link = &quot;1.9.2&quot;
+autd3-emulator-link = &quot;1.9.2&quot;
+autd3-holo-gain = &quot;1.9.2&quot;
 </code></pre>
 <p>さらに, 適当な非同期ランタイムが必要になる. 以下の例ではtokioを用いる.</p>
 <pre><code>[dependencies]

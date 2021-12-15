@@ -1,11 +1,25 @@
 var searchData=
 [
-  ['link_136',['Link',['../classautd_1_1core_1_1Link.html',1,'autd::core::Link'],['../classautd_1_1core_1_1Link.html#aa5f1eae6e7a66c91f90c4297d7edc6de',1,'autd::core::Link::Link()=default'],['../classautd_1_1core_1_1Link.html#ae914a5acc6e452710b169f72a0267f8b',1,'autd::core::Link::Link(const Link &amp;v)=delete'],['../classautd_1_1core_1_1Link.html#aac7d742710a50d401fd04867d4411030',1,'autd::core::Link::Link(Link &amp;&amp;obj)=default']]],
-  ['link_2ehpp_137',['link.hpp',['../link_8hpp.html',1,'']]],
-  ['linkerror_138',['LinkError',['../classautd_1_1core_1_1exception_1_1LinkError.html',1,'autd::core::exception::LinkError'],['../classautd_1_1core_1_1exception_1_1LinkError.html#a14073d60b92ebb9c53eacde69f457051',1,'autd::core::exception::LinkError::LinkError(std::string const &amp;message)'],['../classautd_1_1core_1_1exception_1_1LinkError.html#a9c67cdcb7a9dded4fd36fad7e721c598',1,'autd::core::exception::LinkError::LinkError(char const *message)']]],
-  ['linkptr_139',['LinkPtr',['../namespaceautd_1_1core.html#a0200527a2a6df4631ae21d855ae8cdcf',1,'autd::core']]],
-  ['lm_140',['LM',['../classautd_1_1gain_1_1holo_1_1LM.html',1,'autd::gain::holo::LM'],['../classautd_1_1gain_1_1holo_1_1LM.html#a195448c413fb894aa7e4e8e1961abfd5',1,'autd::gain::holo::LM::LM()'],['../classautd_1_1gain_1_1holo_1_1ArrayFireBackend.html#a1cbbe135d2b7a9aa95d346a69f258b3c',1,'autd::gain::holo::ArrayFireBackend::lm()'],['../classautd_1_1gain_1_1holo_1_1Backend.html#ad65fd6f41bd4f4956156ea0a8420b397',1,'autd::gain::holo::Backend::lm()'],['../classautd_1_1gain_1_1holo_1_1BLASBackend.html#a0db4049035cf586fee9e83d4cd1687dc',1,'autd::gain::holo::BLASBackend::lm()'],['../classautd_1_1gain_1_1holo_1_1CUDABackend.html#a76b33f9ba6e7d14b5a44b9f7e0e6258b',1,'autd::gain::holo::CUDABackend::lm()'],['../classautd_1_1gain_1_1holo_1_1EigenBackend.html#aadcbdf80bbc6fcad1fe1cc427a507031',1,'autd::gain::holo::EigenBackend::lm()']]],
-  ['logic_141',['Logic',['../classautd_1_1core_1_1Logic.html',1,'autd::core']]],
-  ['logic_2ehpp_142',['logic.hpp',['../logic_8hpp.html',1,'']]],
-  ['lpf_143',['lpf',['../classautd_1_1modulation_1_1filter_1_1FIR.html#af2532463e0927b0f328b21bffc9d4257',1,'autd::modulation::filter::FIR']]]
+  ['main_5fpage_2emd_166',['main_page.md',['../main__page_8md.html',1,'']]],
+  ['matrix_2ehpp_167',['matrix.hpp',['../matrix_8hpp.html',1,'']]],
+  ['matrix4x4_168',['Matrix4X4',['../namespaceautd_1_1core.html#a4ec75a6a23b4aca19a6fb42f8afe55da',1,'autd::core']]],
+  ['mod_169',['mod',['../structautd_1_1core_1_1GlobalHeader.html#adcef410c8d8c689fa23c3d9431a1b4fb',1,'autd::core::GlobalHeader']]],
+  ['mod_5fbegin_170',['MOD_BEGIN',['../namespaceautd_1_1core.html#a4c14a3320231e0f788f368dbb7288e20aff94cf6529f862e566fb778d08b21dd3',1,'autd::core']]],
+  ['mod_5fbuf_5fsize_5fmax_171',['MOD_BUF_SIZE_MAX',['../namespaceautd_1_1core.html#a8c76774262950ef34b753f4d687cf124',1,'autd::core']]],
+  ['mod_5fend_172',['MOD_END',['../namespaceautd_1_1core.html#a4c14a3320231e0f788f368dbb7288e20aededd59796465025c732c2214319668f',1,'autd::core']]],
+  ['mod_5fframe_5fsize_173',['MOD_FRAME_SIZE',['../namespaceautd_1_1core.html#ae9de75d02d659e75b8596f4deaf5e90f',1,'autd::core']]],
+  ['mod_5fsampling_5ffreq_5fbase_174',['MOD_SAMPLING_FREQ_BASE',['../namespaceautd_1_1core.html#a32a7b1a96dae87d0fa73cb8ce84a41e8',1,'autd::core']]],
+  ['mod_5fsampling_5ffreq_5fdiv_5fmax_175',['MOD_SAMPLING_FREQ_DIV_MAX',['../namespaceautd_1_1core.html#a4d2a3e598ac0545428f5476cbd8be500',1,'autd::core']]],
+  ['mod_5fsize_176',['mod_size',['../structautd_1_1core_1_1GlobalHeader.html#a40a95950ae7ebcee7e25045f8e335a91',1,'autd::core::GlobalHeader']]],
+  ['modulation_177',['Modulation',['../classautd_1_1core_1_1Modulation.html',1,'autd::core::Modulation'],['../classautd_1_1core_1_1Modulation.html#a78b03dff5b47290ee12527580d1d80aa',1,'autd::core::Modulation::Modulation() noexcept'],['../classautd_1_1core_1_1Modulation.html#a59bc964ffb10658f725d4a94f6378c6e',1,'autd::core::Modulation::Modulation(const size_t freq_div) noexcept'],['../classautd_1_1core_1_1Modulation.html#a17d407efdf9b02c94e91381c3c8d708a',1,'autd::core::Modulation::Modulation(const Modulation &amp;v) noexcept=delete'],['../classautd_1_1core_1_1Modulation.html#a3761fdcddacb874f5910f20e7e011b6d',1,'autd::core::Modulation::Modulation(Modulation &amp;&amp;obj)=default']]],
+  ['modulation_2ehpp_178',['modulation.hpp',['../modulation_8hpp.html',1,'']]],
+  ['modulationbuilderror_179',['ModulationBuildError',['../classautd_1_1core_1_1exception_1_1ModulationBuildError.html',1,'autd::core::exception::ModulationBuildError'],['../classautd_1_1core_1_1exception_1_1ModulationBuildError.html#a0e537868de020f16fae9912d7570a7be',1,'autd::core::exception::ModulationBuildError::ModulationBuildError(std::string const &amp;message)'],['../classautd_1_1core_1_1exception_1_1ModulationBuildError.html#a6fdf6c15b32a2ea120c25135dee62a63',1,'autd::core::exception::ModulationBuildError::ModulationBuildError(char const *message)']]],
+  ['msg_5fclear_180',['MSG_CLEAR',['../namespaceautd_1_1core.html#aac86aed8bda4ca64fdfea0225b52c678',1,'autd::core']]],
+  ['msg_5femu_5fgeometry_5fset_181',['MSG_EMU_GEOMETRY_SET',['../namespaceautd_1_1core.html#a0ffa6f7764f021b55123c37917028a30',1,'autd::core']]],
+  ['msg_5fid_182',['msg_id',['../structautd_1_1core_1_1GlobalHeader.html#af6d58a075cefd24ea3879260ac264785',1,'autd::core::GlobalHeader::msg_id()'],['../structautd_1_1core_1_1RxMessage.html#a1d690a6c0cd370e29a78c8482294c642',1,'autd::core::RxMessage::msg_id()']]],
+  ['msg_5fnormal_5fbase_183',['MSG_NORMAL_BASE',['../namespaceautd_1_1core.html#aa8fbe0a9f5ea67de45b31cf5028ec1b8',1,'autd::core']]],
+  ['msg_5frd_5fcpu_5fv_5flsb_184',['MSG_RD_CPU_V_LSB',['../namespaceautd_1_1core.html#a474b735fa50ec6d5147e728a09289f8f',1,'autd::core']]],
+  ['msg_5frd_5fcpu_5fv_5fmsb_185',['MSG_RD_CPU_V_MSB',['../namespaceautd_1_1core.html#ad415242261fa8ad152beb875946d3f19',1,'autd::core']]],
+  ['msg_5frd_5ffpga_5fv_5flsb_186',['MSG_RD_FPGA_V_LSB',['../namespaceautd_1_1core.html#a13a56d19b56c00b2bb765ae2ef3e0e9c',1,'autd::core']]],
+  ['msg_5frd_5ffpga_5fv_5fmsb_187',['MSG_RD_FPGA_V_MSB',['../namespaceautd_1_1core.html#afac06d0104be202a6ec1fa335aa410a9',1,'autd::core']]]
 ];

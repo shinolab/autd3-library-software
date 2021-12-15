@@ -1,14 +1,15 @@
 <map id="autd::gain::holo::Holo" name="autd::gain::holo::Holo">
-<area shape="rect" id="node1" title="Gain to produce multiple focal points." alt="" coords="164,249,304,276"/>
-<area shape="rect" id="node3" href="$classautd_1_1gain_1_1holo_1_1APO.html" title="Gain to produce multiple focal points with Acoustic Power Optimization method. Refer to Keisuke Haseg..." alt="" coords="379,5,521,32"/>
-<area shape="rect" id="node4" href="$classautd_1_1gain_1_1holo_1_1EVD.html" title="Gain to produce multiple focal points with EVD method. Refer to Long, Benjamin, et al...." alt="" coords="381,56,519,83"/>
-<area shape="rect" id="node5" href="$classautd_1_1gain_1_1holo_1_1GaussNewton.html" title="Gain to produce multiple focal points with Gauss&#45;Newton method." alt="" coords="352,107,548,133"/>
-<area shape="rect" id="node6" href="$classautd_1_1gain_1_1holo_1_1GradientDescent.html" title="Gain to produce multiple focal points with GradientDescent method." alt="" coords="369,158,531,199"/>
-<area shape="rect" id="node7" href="$classautd_1_1gain_1_1holo_1_1Greedy.html" title="Gain to produce multiple focal points with Greedy algorithm. Refer to Shun suzuki,..." alt="" coords="373,224,527,251"/>
-<area shape="rect" id="node8" href="$classautd_1_1gain_1_1holo_1_1GS.html" title="Gain to produce multiple focal points with GS method. Refer to Asier Marzo and Bruce W Drinkwater,..." alt="" coords="384,275,516,301"/>
-<area shape="rect" id="node9" href="$classautd_1_1gain_1_1holo_1_1GSPAT.html" title="Gain to produce multiple focal points with GS&#45;PAT method (not yet been implemented with GPU)...." alt="" coords="371,325,529,352"/>
-<area shape="rect" id="node10" href="$classautd_1_1gain_1_1holo_1_1LM.html" title="Gain to produce multiple focal points with Levenberg&#45;Marquardt method. Refer to K...." alt="" coords="384,376,516,403"/>
-<area shape="rect" id="node11" href="$classautd_1_1gain_1_1holo_1_1Naive.html" title="Gain to produce multiple focal points with naive method." alt="" coords="377,427,523,453"/>
-<area shape="rect" id="node12" href="$classautd_1_1gain_1_1holo_1_1SDP.html" title="Gain to produce multiple focal points with SDP method. Refer to Inoue, Seki, Yasutoshi Makino,..." alt="" coords="380,477,520,504"/>
-<area shape="rect" id="node2" href="$classautd_1_1core_1_1Gain.html" title="Gain controls the duty ratio and phase of each transducer in AUTD devices." alt="" coords="5,249,116,276"/>
+<area shape="rect" id="node1" title="Gain to produce multiple focal points." alt="" coords="385,249,525,276"/>
+<area shape="rect" id="node4" href="$classautd_1_1gain_1_1holo_1_1APO.html" title="Gain to produce multiple focal points with Acoustic Power Optimization method. Refer to Keisuke Haseg..." alt="" coords="601,5,742,32"/>
+<area shape="rect" id="node5" href="$classautd_1_1gain_1_1holo_1_1EVD.html" title="Gain to produce multiple focal points with EVD method. Refer to Long, Benjamin, et al...." alt="" coords="602,56,741,83"/>
+<area shape="rect" id="node6" href="$classautd_1_1gain_1_1holo_1_1GaussNewton.html" title="Gain to produce multiple focal points with Gauss&#45;Newton method." alt="" coords="573,107,769,133"/>
+<area shape="rect" id="node7" href="$classautd_1_1gain_1_1holo_1_1GradientDescent.html" title="Gain to produce multiple focal points with GradientDescent method." alt="" coords="590,158,753,199"/>
+<area shape="rect" id="node8" href="$classautd_1_1gain_1_1holo_1_1Greedy.html" title="Gain to produce multiple focal points with Greedy algorithm. Refer to Shun suzuki,..." alt="" coords="594,224,749,251"/>
+<area shape="rect" id="node9" href="$classautd_1_1gain_1_1holo_1_1GS.html" title="Gain to produce multiple focal points with GS method. Refer to Asier Marzo and Bruce W Drinkwater,..." alt="" coords="605,275,737,301"/>
+<area shape="rect" id="node10" href="$classautd_1_1gain_1_1holo_1_1GSPAT.html" title="Gain to produce multiple focal points with GS&#45;PAT method (not yet been implemented with GPU)...." alt="" coords="592,325,751,352"/>
+<area shape="rect" id="node11" href="$classautd_1_1gain_1_1holo_1_1LM.html" title="Gain to produce multiple focal points with Levenberg&#45;Marquardt method. Refer to K...." alt="" coords="605,376,737,403"/>
+<area shape="rect" id="node12" href="$classautd_1_1gain_1_1holo_1_1Naive.html" title="Gain to produce multiple focal points with naive method." alt="" coords="598,427,745,453"/>
+<area shape="rect" id="node13" href="$classautd_1_1gain_1_1holo_1_1SDP.html" title="Gain to produce multiple focal points with SDP method. Refer to Inoue, Seki, Yasutoshi Makino,..." alt="" coords="601,477,741,504"/>
+<area shape="rect" id="node2" href="$classautd_1_1core_1_1Gain.html" title="Gain controls the duty ratio and phase of each transducer in AUTD devices." alt="" coords="227,249,337,276"/>
+<area shape="rect" id="node3" href="$classautd_1_1core_1_1IDatagramBody.html" title=" " alt="" coords="5,249,179,276"/>
 </map>

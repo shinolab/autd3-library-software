@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['naive_334',['Naive',['../classautd_1_1gain_1_1holo_1_1Naive.html',1,'autd::gain::holo']]]
+  ['modulation_395',['Modulation',['../classautd_1_1core_1_1Modulation.html',1,'autd::core']]],
+  ['modulationbuilderror_396',['ModulationBuildError',['../classautd_1_1core_1_1exception_1_1ModulationBuildError.html',1,'autd::core::exception']]]
 ];

@@ -1,0 +1,4 @@
+<map id="autd::core::Modulation" name="autd::core::Modulation">
+<area shape="rect" id="node1" title="Modulation controls the amplitude modulation." alt="" coords="25,80,172,107"/>
+<area shape="rect" id="node2" href="$classautd_1_1core_1_1IDatagramHeader.html" title=" " alt="" coords="5,5,192,32"/>
+</map>

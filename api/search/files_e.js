@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['utils_2ehpp_393',['utils.hpp',['../core_2utils_8hpp.html',1,'(Global Namespace)'],['../utils_8hpp.html',1,'(Global Namespace)']]]
+  ['sequence_2ehpp_464',['sequence.hpp',['../sequence_8hpp.html',1,'']]],
+  ['soem_2ehpp_465',['soem.hpp',['../soem_8hpp.html',1,'']]]
 ];

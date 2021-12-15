@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['trans_5fspacing_5fmm_612',['TRANS_SPACING_MM',['../namespaceautd_1_1core.html#a08f6b896f9cf899e8b7ede7f3c0507c0',1,'autd::core']]]
+  ['seq_5fbase_5ffreq_721',['SEQ_BASE_FREQ',['../namespaceautd_1_1core.html#af94e2a700efb3a0b2cbe841e56ab7714',1,'autd::core']]],
+  ['seq_5fsampling_5ffreq_5fdiv_5fmax_722',['SEQ_SAMPLING_FREQ_DIV_MAX',['../namespaceautd_1_1core.html#a6730eac1b194e935fe8d6c98355dc06e',1,'autd::core']]]
 ];

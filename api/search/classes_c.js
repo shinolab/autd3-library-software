@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['rawpcm_337',['RawPCM',['../classautd_1_1modulation_1_1RawPCM.html',1,'autd::modulation']]],
-  ['remotetwincat_338',['RemoteTwinCAT',['../classautd_1_1link_1_1RemoteTwinCAT.html',1,'autd::link']]]
+  ['planewave_400',['PlaneWave',['../classautd_1_1gain_1_1PlaneWave.html',1,'autd::gain']]],
+  ['pointsequence_401',['PointSequence',['../classautd_1_1core_1_1PointSequence.html',1,'autd::core']]]
 ];

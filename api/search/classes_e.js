@@ -1,7 +1,20 @@
 var searchData=
 [
-  ['timererror_350',['TimerError',['../classautd_1_1core_1_1exception_1_1TimerError.html',1,'autd::core::exception']]],
-  ['transducer_351',['Transducer',['../structautd_1_1core_1_1Transducer.html',1,'autd::core']]],
-  ['transducertest_352',['TransducerTest',['../classautd_1_1gain_1_1TransducerTest.html',1,'autd::gain']]],
-  ['twincat_353',['TwinCAT',['../classautd_1_1link_1_1TwinCAT.html',1,'autd::link']]]
+  ['sdp_406',['SDP',['../classautd_1_1gain_1_1holo_1_1SDP.html',1,'autd::gain::holo']]],
+  ['sequence_407',['Sequence',['../classautd_1_1core_1_1Sequence.html',1,'autd::core']]],
+  ['sequencebuilderror_408',['SequenceBuildError',['../classautd_1_1core_1_1exception_1_1SequenceBuildError.html',1,'autd::core::exception']]],
+  ['sine_409',['Sine',['../classautd_1_1modulation_1_1Sine.html',1,'autd::modulation']]],
+  ['sinelegacy_410',['SineLegacy',['../classautd_1_1modulation_1_1SineLegacy.html',1,'autd::modulation']]],
+  ['sinesquared_411',['SineSquared',['../classautd_1_1modulation_1_1SineSquared.html',1,'autd::modulation']]],
+  ['soem_412',['SOEM',['../classautd_1_1link_1_1SOEM.html',1,'autd::link']]],
+  ['specialmessageidheader_413',['SpecialMessageIdHeader',['../classautd_1_1core_1_1SpecialMessageIdHeader.html',1,'autd::core']]],
+  ['square_414',['Square',['../classautd_1_1modulation_1_1Square.html',1,'autd::modulation']]],
+  ['static_415',['Static',['../classautd_1_1modulation_1_1Static.html',1,'autd::modulation']]],
+  ['stmcontroller_416',['STMController',['../classautd_1_1Controller_1_1STMController.html',1,'autd::Controller']]],
+  ['stmerror_417',['STMError',['../classautd_1_1core_1_1exception_1_1STMError.html',1,'autd::core::exception']]],
+  ['streamcommainputbody_418',['StreamCommaInputBody',['../classautd_1_1Controller_1_1StreamCommaInputBody.html',1,'autd::Controller']]],
+  ['streamcommainputgs_419',['StreamCommaInputGS',['../classautd_1_1core_1_1GainSequence_1_1StreamCommaInputGS.html',1,'autd::core::GainSequence']]],
+  ['streamcommainputheader_420',['StreamCommaInputHeader',['../classautd_1_1Controller_1_1StreamCommaInputHeader.html',1,'autd::Controller']]],
+  ['streamcommainputps_421',['StreamCommaInputPS',['../classautd_1_1core_1_1PointSequence_1_1StreamCommaInputPS.html',1,'autd::core::PointSequence']]],
+  ['streamcommainputstm_422',['StreamCommaInputSTM',['../classautd_1_1Controller_1_1STMController_1_1StreamCommaInputSTM.html',1,'autd::Controller::STMController']]]
 ];

@@ -249,7 +249,7 @@ Linux/macの場合は, 特に準備は必要ない.</p>
 
 ...
 
-  auto link = autd::link::SOEM::create(ifname, autd-&gt;geometry().num_devices());
+  auto link = autd::link::SOEM::create(ifname, autd-&gt;geometry()-&gt;num_devices());
 </code></pre>
 <p><code>SOEM::create</code>の第1引数はインターフェース名で, 第2引数はデバイスの数である.
 インターフェース名はAUTD3デバイスに接続しているehernetインターフェース名である.
@@ -260,7 +260,7 @@ Linux/macの場合は, 特に準備は必要ない.</p>
 <p>なお, SOEMも大量のDeviceを使用すると挙動が不安定になる時がある<sup class="footnote-reference"><a href="#fn_soem">2</a></sup>.
 このときは, <code>create</code>の第3引数 (<code>cycle_ticks</code>) の値を増やす (defaultは1).</p>
 <pre><code class="language-cpp">  const uint32_t cycle_ticks = 2;
-  auto link = autd::link::SOEM::create(ifname, autd-&gt;geometry().num_devices(), cycle_ticks);
+  auto link = autd::link::SOEM::create(ifname, autd-&gt;geometry()-&gt;num_devices(), cycle_ticks);
 </code></pre>
 <p><code>cycle_ticks</code>は, データ更新間隔と同期信号の発火周期を制御している.
 データ更新間隔と同期信号の発火周期のデフォルトはそれぞれ<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord">1</span><span class="mord">0</span><span class="mord">0</span><span class="mord">0</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal">μ</span><span class="mord mathrm">s</span></span></span></span></span></span>と<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord">5</span><span class="mord">0</span><span class="mord">0</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal">μ</span><span class="mord mathrm">s</span></span></span></span></span></span>であり, これに<code>cycle_ticks</code>の値が掛け合わされる.

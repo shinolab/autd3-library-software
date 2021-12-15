@@ -1,6 +1,10 @@
 <map id="include/autd3/link/remote_twincat.hpp" name="include/autd3/link/remote_twincat.hpp">
 <area shape="rect" id="node1" title=" " alt="" coords="5,5,144,47"/>
-<area shape="rect" id="node2" title=" " alt="" coords="66,169,134,196"/>
+<area shape="rect" id="node2" title=" " alt="" coords="15,244,83,271"/>
 <area shape="rect" id="node3" title=" " alt="" coords="47,95,102,121"/>
 <area shape="rect" id="node4" href="$link_8hpp.html" title=" " alt="" coords="127,95,257,121"/>
+<area shape="rect" id="node5" href="$hardware__defined_8hpp.html" title=" " alt="" coords="119,169,265,196"/>
+<area shape="rect" id="node6" title=" " alt="" coords="108,244,169,271"/>
+<area shape="rect" id="node7" title=" " alt="" coords="193,244,255,271"/>
+<area shape="rect" id="node8" title=" " alt="" coords="279,244,337,271"/>
 </map>

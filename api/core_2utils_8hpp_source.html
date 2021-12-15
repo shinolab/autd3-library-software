@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">1.9.3</span>
+   &#160;<span id="projectnumber">1.10.0</span>
    </div>
   </td>
  </tr>
@@ -75,7 +75,7 @@ $(function() {
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">// Created Date: 08/06/2021</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">// Author: Shun Suzuki</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">// -----</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">// Last Modified: 22/11/2021</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">// Last Modified: 13/12/2021</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment">// -----</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">// Copyright (c) 2021 Hapis Lab. All rights reserved.</span></div>
@@ -109,38 +109,12 @@ $(function() {
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <span class="keyword">const</span> <span class="keyword">auto</span> d_phase = <span class="keyword">static_cast&lt;</span>uint8_t<span class="keyword">&gt;</span>(<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::round((phase / (2.0 * M_PI) + 0.5) * 256.0)) &amp; 0xFF);</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="namespaceautd_1_1core.html#a53062f1a71daa5d090b17522d38fa167">PHASE_INVERTED</a> ? d_phase : 0xFF - d_phase;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;}</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="comment"> * \brief Pack two uint8_t value to uint16_t</span></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment"> * \param high high byte</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="comment"> * \param low high byte</span></div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="comment"> * \return packed uint16_t value</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="namespaceautd_1_1core_1_1utils.html#a598fc7494d31059eb0a516a745b5ab03">   47</a></span>&#160;<span class="keyword">static</span> uint16_t <a class="code" href="namespaceautd_1_1core_1_1utils.html#a598fc7494d31059eb0a516a745b5ab03">pack_to_u16</a>(<span class="keyword">const</span> uint8_t high, <span class="keyword">const</span> uint8_t low) noexcept {</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  uint16_t res = <span class="keyword">static_cast&lt;</span>uint16_t<span class="keyword">&gt;</span>(low) &amp; 0x00FF;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  res |= <span class="keyword">static_cast&lt;</span>uint16_t<span class="keyword">&gt;</span>(high) &lt;&lt; 8 &amp; 0xFF00;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keywordflow">return</span> res;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;}</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="comment">/**</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment"> * \brief Positive modulo</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment"> * \param i left operand</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="comment"> * \param n right operand</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="comment"> * \return i % n</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00059"></a><span class="lineno"><a class="line" href="namespaceautd_1_1core_1_1utils.html#a85fd9512a76957cb8cb1d016a2c7a4ca">   59</a></span>&#160;<span class="keyword">static</span> int32_t <a class="code" href="namespaceautd_1_1core_1_1utils.html#a85fd9512a76957cb8cb1d016a2c7a4ca">modulo_positive</a>(<span class="keyword">const</span> int32_t i, <span class="keyword">const</span> <span class="keywordtype">size_t</span> n) {</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  int32_t res = i % <span class="keyword">static_cast&lt;</span>int32_t<span class="keyword">&gt;</span>(n);</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keywordflow">if</span> (res &lt; 0) res += <span class="keyword">static_cast&lt;</span>int32_t<span class="keyword">&gt;</span>(n);</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keywordflow">return</span> res;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;}</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; </div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;}  <span class="comment">// namespace autd::core::utils</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; </div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;}  <span class="comment">// namespace autd::core::utils</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="ahardware__defined_8hpp_html"><div class="ttname"><a href="hardware__defined_8hpp.html">hardware_defined.hpp</a></div></div>
-<div class="ttc" id="anamespaceautd_1_1core_1_1utils_html_a598fc7494d31059eb0a516a745b5ab03"><div class="ttname"><a href="namespaceautd_1_1core_1_1utils.html#a598fc7494d31059eb0a516a745b5ab03">autd::core::utils::pack_to_u16</a></div><div class="ttdeci">static uint16_t pack_to_u16(const uint8_t high, const uint8_t low) noexcept</div><div class="ttdoc">Pack two uint8_t value to uint16_t.</div><div class="ttdef"><b>Definition:</b> <a href="core_2utils_8hpp_source.html#l00047">utils.hpp:47</a></div></div>
-<div class="ttc" id="anamespaceautd_1_1core_1_1utils_html_a85fd9512a76957cb8cb1d016a2c7a4ca"><div class="ttname"><a href="namespaceautd_1_1core_1_1utils.html#a85fd9512a76957cb8cb1d016a2c7a4ca">autd::core::utils::modulo_positive</a></div><div class="ttdeci">static int32_t modulo_positive(const int32_t i, const size_t n)</div><div class="ttdoc">Positive modulo.</div><div class="ttdef"><b>Definition:</b> <a href="core_2utils_8hpp_source.html#l00059">utils.hpp:59</a></div></div>
 <div class="ttc" id="anamespaceautd_1_1core_1_1utils_html_a69e9baa6ad1677e5fd1d65d45d9eba0b"><div class="ttname"><a href="namespaceautd_1_1core_1_1utils.html#a69e9baa6ad1677e5fd1d65d45d9eba0b">autd::core::utils::to_duty</a></div><div class="ttdeci">static uint8_t to_duty(const double amp) noexcept</div><div class="ttdoc">Convert ultrasound amplitude to duty ratio.</div><div class="ttdef"><b>Definition:</b> <a href="core_2utils_8hpp_source.html#l00026">utils.hpp:26</a></div></div>
-<div class="ttc" id="anamespaceautd_1_1core_html_a53062f1a71daa5d090b17522d38fa167"><div class="ttname"><a href="namespaceautd_1_1core.html#a53062f1a71daa5d090b17522d38fa167">autd::core::PHASE_INVERTED</a></div><div class="ttdeci">constexpr bool PHASE_INVERTED</div><div class="ttdef"><b>Definition:</b> <a href="hardware__defined_8hpp_source.html#l00043">hardware_defined.hpp:43</a></div></div>
+<div class="ttc" id="anamespaceautd_1_1core_html_a53062f1a71daa5d090b17522d38fa167"><div class="ttname"><a href="namespaceautd_1_1core.html#a53062f1a71daa5d090b17522d38fa167">autd::core::PHASE_INVERTED</a></div><div class="ttdeci">constexpr bool PHASE_INVERTED</div><div class="ttdef"><b>Definition:</b> <a href="hardware__defined_8hpp_source.html#l00046">hardware_defined.hpp:46</a></div></div>
 <div class="ttc" id="anamespaceautd_1_1core_1_1utils_html_ae603c21439f05663c492a8c3c4ab281d"><div class="ttname"><a href="namespaceautd_1_1core_1_1utils.html#ae603c21439f05663c492a8c3c4ab281d">autd::core::utils::to_phase</a></div><div class="ttdeci">static uint8_t to_phase(const double phase) noexcept</div><div class="ttdoc">Convert phase in radian to discrete phase used in device.</div><div class="ttdef"><b>Definition:</b> <a href="core_2utils_8hpp_source.html#l00036">utils.hpp:36</a></div></div>
 <div class="ttc" id="anamespaceautd_1_1core_1_1utils_html"><div class="ttname"><a href="namespaceautd_1_1core_1_1utils.html">autd::core::utils</a></div><div class="ttdef"><b>Definition:</b> <a href="core_2utils_8hpp_source.html#l00019">utils.hpp:19</a></div></div>
 <!-- start footer part -->

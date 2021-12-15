@@ -1,0 +1,5 @@
+<map id="autd::modulation::SineSquared" name="autd::modulation::SineSquared">
+<area shape="rect" id="node1" title="Sine wave modulation in squared acoustic pressure, which is proportional to radiation pressure." alt="" coords="5,155,201,181"/>
+<area shape="rect" id="node2" href="$classautd_1_1core_1_1Modulation.html" title="Modulation controls the amplitude modulation." alt="" coords="30,80,177,107"/>
+<area shape="rect" id="node3" href="$classautd_1_1core_1_1IDatagramHeader.html" title=" " alt="" coords="10,5,197,32"/>
+</map>

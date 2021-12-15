@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">1.9.3</span>
+   &#160;<span id="projectnumber">1.10.0</span>
    </div>
   </td>
  </tr>
@@ -81,121 +81,8 @@ Functions</h2></td></tr>
 <tr class="memitem:ae603c21439f05663c492a8c3c4ab281d"><td class="memItemLeft" align="right" valign="top">static uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core_1_1utils.html#ae603c21439f05663c492a8c3c4ab281d">to_phase</a> (const double phase) noexcept</td></tr>
 <tr class="memdesc:ae603c21439f05663c492a8c3c4ab281d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert phase in radian to discrete phase used in device.  <a href="namespaceautd_1_1core_1_1utils.html#ae603c21439f05663c492a8c3c4ab281d">More...</a><br /></td></tr>
 <tr class="separator:ae603c21439f05663c492a8c3c4ab281d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a598fc7494d31059eb0a516a745b5ab03"><td class="memItemLeft" align="right" valign="top">static uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core_1_1utils.html#a598fc7494d31059eb0a516a745b5ab03">pack_to_u16</a> (const uint8_t high, const uint8_t low) noexcept</td></tr>
-<tr class="memdesc:a598fc7494d31059eb0a516a745b5ab03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack two uint8_t value to uint16_t.  <a href="namespaceautd_1_1core_1_1utils.html#a598fc7494d31059eb0a516a745b5ab03">More...</a><br /></td></tr>
-<tr class="separator:a598fc7494d31059eb0a516a745b5ab03"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a85fd9512a76957cb8cb1d016a2c7a4ca"><td class="memItemLeft" align="right" valign="top">static int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core_1_1utils.html#a85fd9512a76957cb8cb1d016a2c7a4ca">modulo_positive</a> (const int32_t i, const size_t n)</td></tr>
-<tr class="memdesc:a85fd9512a76957cb8cb1d016a2c7a4ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Positive modulo.  <a href="namespaceautd_1_1core_1_1utils.html#a85fd9512a76957cb8cb1d016a2c7a4ca">More...</a><br /></td></tr>
-<tr class="separator:a85fd9512a76957cb8cb1d016a2c7a4ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a85fd9512a76957cb8cb1d016a2c7a4ca"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a85fd9512a76957cb8cb1d016a2c7a4ca">&#9670;&nbsp;</a></span>modulo_positive()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static int32_t autd::core::utils::modulo_positive </td>
-          <td>(</td>
-          <td class="paramtype">const int32_t&#160;</td>
-          <td class="paramname"><em>i</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const size_t&#160;</td>
-          <td class="paramname"><em>n</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Positive modulo. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">i</td><td>left operand </td></tr>
-    <tr><td class="paramname">n</td><td>right operand </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>i % n </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="core_2utils_8hpp_source.html#l00059">59</a> of file <a class="el" href="core_2utils_8hpp_source.html">utils.hpp</a>.</p>
-
-</div>
-</div>
-<a id="a598fc7494d31059eb0a516a745b5ab03"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a598fc7494d31059eb0a516a745b5ab03">&#9670;&nbsp;</a></span>pack_to_u16()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static uint16_t autd::core::utils::pack_to_u16 </td>
-          <td>(</td>
-          <td class="paramtype">const uint8_t&#160;</td>
-          <td class="paramname"><em>high</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const uint8_t&#160;</td>
-          <td class="paramname"><em>low</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Pack two uint8_t value to uint16_t. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">high</td><td>high byte </td></tr>
-    <tr><td class="paramname">low</td><td>high byte </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>packed uint16_t value </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="core_2utils_8hpp_source.html#l00047">47</a> of file <a class="el" href="core_2utils_8hpp_source.html">utils.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="logic_8hpp_source.html#l00174">autd::core::Logic::pack_body()</a>.</p>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="namespaceautd_1_1core_1_1utils_a598fc7494d31059eb0a516a745b5ab03_icgraph.png" border="0" usemap="#namespaceautd_1_1core_1_1utils_a598fc7494d31059eb0a516a745b5ab03_icgraph" alt=""/></div>
-<map name="namespaceautd_1_1core_1_1utils_a598fc7494d31059eb0a516a745b5ab03_icgraph" id="namespaceautd_1_1core_1_1utils_a598fc7494d31059eb0a516a745b5ab03_icgraph">
-<area shape="rect" title="Pack two uint8_t value to uint16_t." alt="" coords="176,5,291,47"/>
-<area shape="rect" href="classautd_1_1core_1_1Logic.html#ac3ae240dd1ec44a944944b9f4afe4adc" title="Pack data body with sequence data." alt="" coords="5,5,128,47"/>
-</map>
-</div>
-
-</div>
-</div>
 <a id="a69e9baa6ad1677e5fd1d65d45d9eba0b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a69e9baa6ad1677e5fd1d65d45d9eba0b">&#9670;&nbsp;</a></span>to_duty()</h2>
 
@@ -230,17 +117,6 @@ Here is the caller graph for this function:</div>
 <dl class="section return"><dt>Returns</dt><dd>duty ratio </dd></dl>
 
 <p class="definition">Definition at line <a class="el" href="core_2utils_8hpp_source.html#l00026">26</a> of file <a class="el" href="core_2utils_8hpp_source.html">utils.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="modulation_8hpp_source.html#l00053">autd::core::Modulation::create()</a>.</p>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="namespaceautd_1_1core_1_1utils_a69e9baa6ad1677e5fd1d65d45d9eba0b_icgraph.png" border="0" usemap="#namespaceautd_1_1core_1_1utils_a69e9baa6ad1677e5fd1d65d45d9eba0b_icgraph" alt=""/></div>
-<map name="namespaceautd_1_1core_1_1utils_a69e9baa6ad1677e5fd1d65d45d9eba0b_icgraph" id="namespaceautd_1_1core_1_1utils_a69e9baa6ad1677e5fd1d65d45d9eba0b_icgraph">
-<area shape="rect" title="Convert ultrasound amplitude to duty ratio." alt="" coords="200,29,315,71"/>
-<area shape="rect" href="classautd_1_1core_1_1Modulation.html#aff7300af0addec412a148e4f93623c86" title="Generate empty modulation, which produce static pressure." alt="" coords="5,29,152,71"/>
-</map>
-</div>
 
 </div>
 </div>
@@ -279,7 +155,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="core_2utils_8hpp_source.html#l00036">36</a> of file <a class="el" href="core_2utils_8hpp_source.html">utils.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="hardware__defined_8hpp_source.html#l00043">autd::core::PHASE_INVERTED</a>.</p>
+<p class="reference">References <a class="el" href="hardware__defined_8hpp_source.html#l00046">autd::core::PHASE_INVERTED</a>.</p>
 
 </div>
 </div>

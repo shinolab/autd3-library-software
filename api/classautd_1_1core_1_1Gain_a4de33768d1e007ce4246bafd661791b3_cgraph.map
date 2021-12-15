@@ -1,7 +1,7 @@
 <map id="autd::core::Gain::rebuild" name="autd::core::Gain::rebuild">
 <area shape="rect" id="node1" title="Re&#45;calculate duty ratio and phase of each transducer." alt="" coords="5,35,160,61"/>
 <area shape="rect" id="node2" href="$classautd_1_1core_1_1Gain.html#a541ed3df20cd46883b4adb83c49fe6e8" title="Initialize data and call calc()." alt="" coords="208,35,352,61"/>
-<area shape="rect" id="node3" href="$classautd_1_1core_1_1Gain.html#aae36e31d7cda7948e63eaec0fe0b4a8c" title="Calculate duty ratio and phase of each transducer." alt="" coords="400,5,541,32"/>
+<area shape="rect" id="node3" href="$classautd_1_1core_1_1Gain.html#a74f3b6b58e4a9be953660650b01e2e48" title="Calculate duty ratio and phase of each transducer." alt="" coords="400,5,541,32"/>
 <area shape="rect" id="node4" href="$classautd_1_1core_1_1Geometry.html#ad2da7e9abff6eb7914bd5e1e07b15cff" title="Number of transducers." alt="" coords="401,57,541,98"/>
 <area shape="rect" id="node5" href="$classautd_1_1core_1_1Geometry.html#aa59d69f347e9fb2bedbbd73bda36b4e9" title="Number of devices." alt="" coords="589,57,729,98"/>
 </map>

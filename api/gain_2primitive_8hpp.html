@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">1.9.3</span>
+   &#160;<span id="projectnumber">1.10.0</span>
    </div>
   </td>
  </tr>
@@ -68,31 +68,38 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a>  </div>
+<a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle">
 <div class="title">primitive.hpp File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;map&gt;</code><br />
-<code>#include &lt;memory&gt;</code><br />
+<div class="textblock"><code>#include &lt;memory&gt;</code><br />
 <code>#include &lt;utility&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
 <code>#include &quot;<a class="el" href="gain_8hpp_source.html">autd3/core/gain.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="type__hints_8hpp_source.html">autd3/core/type_hints.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="core_2utils_8hpp_source.html">autd3/core/utils.hpp</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for primitive.hpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="gain_2primitive_8hpp__incl.png" border="0" usemap="#include_2autd3_2gain_2primitive_8hpp" alt=""/></div>
 <map name="include_2autd3_2gain_2primitive_8hpp" id="include_2autd3_2gain_2primitive_8hpp">
-<area shape="rect" title=" " alt="" coords="59,5,185,47"/>
-<area shape="rect" title=" " alt="" coords="5,95,52,121"/>
-<area shape="rect" title=" " alt="" coords="63,169,131,196"/>
-<area shape="rect" title=" " alt="" coords="128,95,180,121"/>
-<area shape="rect" href="gain_8hpp.html" title=" " alt="" coords="204,95,339,121"/>
-<area shape="rect" title=" " alt="" coords="141,244,199,271"/>
-<area shape="rect" href="geometry_8hpp.html" title=" " alt="" coords="222,169,321,196"/>
-<area shape="rect" href="hardware__defined_8hpp.html" title=" " alt="" coords="343,244,490,271"/>
-<area shape="rect" title=" " alt="" coords="224,244,319,271"/>
-<area shape="rect" title=" " alt="" coords="386,319,447,345"/>
+<area shape="rect" title=" " alt="" coords="374,5,501,47"/>
+<area shape="rect" title=" " alt="" coords="414,468,482,495"/>
+<area shape="rect" title=" " alt="" coords="695,95,747,121"/>
+<area shape="rect" title=" " alt="" coords="52,468,111,495"/>
+<area shape="rect" href="gain_8hpp.html" title=" " alt="" coords="118,169,253,196"/>
+<area shape="rect" href="type__hints_8hpp.html" title=" " alt="" coords="291,95,461,121"/>
+<area shape="rect" href="core_2utils_8hpp.html" title=" " alt="" coords="537,95,671,121"/>
+<area shape="rect" href="geometry_8hpp.html" title=" " alt="" coords="136,319,235,345"/>
+<area shape="rect" href="hardware__defined_8hpp.html" title=" " alt="" coords="264,393,411,420"/>
+<area shape="rect" href="interface_8hpp.html" title=" " alt="" coords="309,244,405,271"/>
+<area shape="rect" title=" " alt="" coords="145,393,239,420"/>
+<area shape="rect" title=" " alt="" coords="232,468,293,495"/>
+<area shape="rect" title=" " alt="" coords="317,468,379,495"/>
+<area shape="rect" title=" " alt="" coords="277,169,360,196"/>
+<area shape="rect" title=" " alt="" coords="587,169,661,196"/>
+<area shape="rect" title=" " alt="" coords="685,169,744,196"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -109,6 +116,9 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1Null.html">autd::gain::Null</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gain to produce nothing.  <a href="classautd_1_1gain_1_1Null.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1gain_1_1Grouped.html">autd::gain::Grouped</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gain to group some gains.  <a href="classautd_1_1gain_1_1Grouped.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -131,11 +141,6 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceautd_1_1gain"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1gain.html">autd::gain</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:a82292bcd00ebefe960c37aaca005c4ba"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1gain.html#a82292bcd00ebefe960c37aaca005c4ba">autd::gain::Null</a> = Gain</td></tr>
-<tr class="separator:a82292bcd00ebefe960c37aaca005c4ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

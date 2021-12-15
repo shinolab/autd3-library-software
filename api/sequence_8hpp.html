@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">autd3
-   &#160;<span id="projectnumber">1.9.3</span>
+   &#160;<span id="projectnumber">1.10.0</span>
    </div>
   </td>
  </tr>
@@ -69,37 +69,39 @@ $(function() {
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a>  </div>
+<a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
 <div class="title">sequence.hpp File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;algorithm&gt;</code><br />
-<code>#include &lt;memory&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
-<code>#include &lt;utility&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 <code>#include &quot;<a class="el" href="exception_8hpp_source.html">exception.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="gain_8hpp_source.html">gain.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="geometry_8hpp_source.html">geometry.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="type__hints_8hpp_source.html">type_hints.hpp</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sequence.hpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="sequence_8hpp__incl.png" border="0" usemap="#include_2autd3_2core_2sequence_8hpp" alt=""/></div>
 <map name="include_2autd3_2core_2sequence_8hpp" id="include_2autd3_2core_2sequence_8hpp">
-<area shape="rect" title=" " alt="" coords="260,5,388,47"/>
+<area shape="rect" title=" " alt="" coords="229,5,357,47"/>
 <area shape="rect" title=" " alt="" coords="5,95,80,121"/>
-<area shape="rect" title=" " alt="" coords="155,169,223,196"/>
-<area shape="rect" title=" " alt="" coords="473,169,527,196"/>
-<area shape="rect" title=" " alt="" coords="575,95,627,121"/>
-<area shape="rect" title=" " alt="" coords="193,244,252,271"/>
-<area shape="rect" href="exception_8hpp.html" title=" " alt="" coords="449,95,551,121"/>
-<area shape="rect" href="gain_8hpp.html" title=" " alt="" coords="253,95,323,121"/>
-<area shape="rect" href="geometry_8hpp.html" title=" " alt="" coords="349,169,448,196"/>
-<area shape="rect" title=" " alt="" coords="551,169,630,196"/>
-<area shape="rect" href="hardware__defined_8hpp.html" title=" " alt="" coords="276,244,423,271"/>
-<area shape="rect" title=" " alt="" coords="447,244,542,271"/>
-<area shape="rect" title=" " alt="" coords="319,319,380,345"/>
+<area shape="rect" title=" " alt="" coords="90,169,145,196"/>
+<area shape="rect" title=" " alt="" coords="376,468,435,495"/>
+<area shape="rect" href="exception_8hpp.html" title=" " alt="" coords="155,95,256,121"/>
+<area shape="rect" href="gain_8hpp.html" title=" " alt="" coords="453,169,523,196"/>
+<area shape="rect" href="geometry_8hpp.html" title=" " alt="" coords="399,319,497,345"/>
+<area shape="rect" href="type__hints_8hpp.html" title=" " alt="" coords="518,95,623,121"/>
+<area shape="rect" title=" " alt="" coords="169,169,247,196"/>
+<area shape="rect" href="hardware__defined_8hpp.html" title=" " alt="" coords="552,393,699,420"/>
+<area shape="rect" href="interface_8hpp.html" title=" " alt="" coords="572,244,668,271"/>
+<area shape="rect" title=" " alt="" coords="382,393,477,420"/>
+<area shape="rect" title=" " alt="" coords="515,468,576,495"/>
+<area shape="rect" title=" " alt="" coords="600,468,661,495"/>
+<area shape="rect" title=" " alt="" coords="697,468,765,495"/>
+<area shape="rect" title=" " alt="" coords="608,169,691,196"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -107,11 +109,8 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="sequence_8hpp__dep__incl.png" border="0" usemap="#include_2autd3_2core_2sequence_8hppdep" alt=""/></div>
 <map name="include_2autd3_2core_2sequence_8hppdep" id="include_2autd3_2core_2sequence_8hppdep">
-<area shape="rect" title=" " alt="" coords="134,5,262,47"/>
-<area shape="rect" href="logic_8hpp.html" title=" " alt="" coords="7,95,135,136"/>
-<area shape="rect" href="controller_8hpp.html" title=" " alt="" coords="5,191,185,218"/>
-<area shape="rect" href="autd3_8hpp.html" title=" " alt="" coords="162,273,285,300"/>
-<area shape="rect" href="sequence_2primitive_8hpp.html" title=" " alt="" coords="261,184,420,225"/>
+<area shape="rect" title=" " alt="" coords="5,5,133,47"/>
+<area shape="rect" href="autd3_8hpp.html" title=" " alt="" coords="8,95,131,121"/>
 </map>
 </div>
 </div>
@@ -124,8 +123,12 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1PointSequence.html">autd::core::PointSequence</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classautd_1_1core_1_1PointSequence.html" title="PointSequence provides a function to display the focus sequentially and periodically.">PointSequence</a> provides a function to display the focus sequentially and periodically.  <a href="classautd_1_1core_1_1PointSequence.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1PointSequence_1_1StreamCommaInputPS.html">autd::core::PointSequence::StreamCommaInputPS</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1GainSequence.html">autd::core::GainSequence</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classautd_1_1core_1_1GainSequence.html" title="GainSequence provides a function to display Gain sequentially and periodically.">GainSequence</a> provides a function to display <a class="el" href="classautd_1_1core_1_1Gain.html" title="Gain controls the duty ratio and phase of each transducer in AUTD devices.">Gain</a> sequentially and periodically.  <a href="classautd_1_1core_1_1GainSequence.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classautd_1_1core_1_1GainSequence_1_1StreamCommaInputGS.html">autd::core::GainSequence::StreamCommaInputGS</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -135,12 +138,13 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespaceautd_1_1core"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core.html">autd::core</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:ae7ffc0e1fffe52bbd7e1f96524747e0d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core.html#ae7ffc0e1fffe52bbd7e1f96524747e0d">autd::core::PointSequencePtr</a> = std::shared_ptr&lt; PointSequence &gt;</td></tr>
-<tr class="separator:ae7ffc0e1fffe52bbd7e1f96524747e0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a18faea5946e8c4194fea8cdac091524b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core.html#a18faea5946e8c4194fea8cdac091524b">autd::core::GainSequencePtr</a> = std::shared_ptr&lt; GainSequence &gt;</td></tr>
-<tr class="separator:a18faea5946e8c4194fea8cdac091524b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:a4cfbd6df4238bc30ba4b6230fcd70140"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core.html#a4cfbd6df4238bc30ba4b6230fcd70140">autd::core::GAIN_MODE</a> : uint16_t { <a class="el" href="namespaceautd_1_1core.html#a4cfbd6df4238bc30ba4b6230fcd70140a604ec64db94f0a864a332c9198b9f3d6">autd::core::GAIN_MODE::DUTY_PHASE_FULL</a> = 0x0001, 
+<a class="el" href="namespaceautd_1_1core.html#a4cfbd6df4238bc30ba4b6230fcd70140a107f7c346eb545e1c3f670b4403fe14d">autd::core::GAIN_MODE::PHASE_FULL</a> = 0x0002, 
+<a class="el" href="namespaceautd_1_1core.html#a4cfbd6df4238bc30ba4b6230fcd70140a4402017e7affbf721a2162f9ba7dc457">autd::core::GAIN_MODE::PHASE_HALF</a> = 0x0004
+ }</td></tr>
+<tr class="separator:a4cfbd6df4238bc30ba4b6230fcd70140"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

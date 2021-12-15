@@ -1,5 +1,6 @@
 <map id="autd::gain::holo::SDP" name="autd::gain::holo::SDP">
-<area shape="rect" id="node1" title="Gain to produce multiple focal points with SDP method. Refer to Inoue, Seki, Yasutoshi Makino,..." alt="" coords="5,155,145,181"/>
-<area shape="rect" id="node2" href="$classautd_1_1gain_1_1holo_1_1Holo.html" title="Gain to produce multiple focal points." alt="" coords="5,80,145,107"/>
-<area shape="rect" id="node3" href="$classautd_1_1core_1_1Gain.html" title="Gain controls the duty ratio and phase of each transducer in AUTD devices." alt="" coords="20,5,131,32"/>
+<area shape="rect" id="node1" title="Gain to produce multiple focal points with SDP method. Refer to Inoue, Seki, Yasutoshi Makino,..." alt="" coords="22,229,162,256"/>
+<area shape="rect" id="node2" href="$classautd_1_1gain_1_1holo_1_1Holo.html" title="Gain to produce multiple focal points." alt="" coords="22,155,162,181"/>
+<area shape="rect" id="node3" href="$classautd_1_1core_1_1Gain.html" title="Gain controls the duty ratio and phase of each transducer in AUTD devices." alt="" coords="37,80,147,107"/>
+<area shape="rect" id="node4" href="$classautd_1_1core_1_1IDatagramBody.html" title=" " alt="" coords="5,5,179,32"/>
 </map>

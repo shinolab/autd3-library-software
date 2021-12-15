@@ -159,15 +159,15 @@ PCと1台目のEtherCAT Inをケーブルでつなぎ, <span class="katex"><span
 </figure>
 <p>例えば, 上図のように配置・接続しており, 図左側のデバイスが1台目, 右側のデバイスが2台目だとする.
 さらに, グローバル座標を1台目のローカル座標と同じだとすると,</p>
-<pre><code class="language-cpp">  autd-&gt;geometry().add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
-  autd-&gt;geometry().add_device(autd::Vector3(autd::DEVICE_WIDTH, 0, 0), autd::Vector3(0, 0, 0));
+<pre><code class="language-cpp">  autd-&gt;geometry()-&gt;add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+  autd-&gt;geometry()-&gt;add_device(autd::Vector3(autd::DEVICE_WIDTH, 0, 0), autd::Vector3(0, 0, 0));
 </code></pre>
 <p>とすれば良い.
 ここで, <code>autd::DEVICE_WIDTH</code>はデバイスの (基板外形を含めた) 横幅である.
 回転はしないので, 第2引数は<code>(0, 0, 0)</code>で良い.</p>
 <p>また, 例えば, グローバル座標を2台目のローカル座標と同じだとすると,</p>
-<pre><code class="language-cpp">  autd-&gt;geometry().add_device(autd::Vector3(-autd::DEVICE_WIDTH, 0, 0), autd::Vector3(0, 0, 0));
-  autd-&gt;geometry().add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+<pre><code class="language-cpp">  autd-&gt;geometry()-&gt;add_device(autd::Vector3(-autd::DEVICE_WIDTH, 0, 0), autd::Vector3(0, 0, 0));
+  autd-&gt;geometry()-&gt;add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
 </code></pre>
 <p>とすれば良い.</p>
 <figure>
@@ -175,8 +175,8 @@ PCと1台目のEtherCAT Inをケーブルでつなぎ, <span class="katex"><span
   <figcaption>Vertical alignment</figcaption>
 </figure>
 <p>さらに, 例えば, 上図のように配置されており, 下が1台目, 左が2台目で, グローバル座標を1台目のローカル座標と同じだとすると,</p>
-<pre><code class="language-cpp">  autd-&gt;geometry().add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
-  autd-&gt;geometry().add_device(autd::Vector3(0, 0, autd::DEVICE_WIDTH), autd::Vector3(0, M_PI / 2.0, 0));
+<pre><code class="language-cpp">  autd-&gt;geometry()-&gt;add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+  autd-&gt;geometry()-&gt;add_device(autd::Vector3(0, 0, autd::DEVICE_WIDTH), autd::Vector3(0, M_PI / 2.0, 0));
 </code></pre>
 <p>のように指定する.</p>
 <p>SDKにおけるAPIでは, すべてグローバル座標を用いるため, 接続するデバイスの数に依存せず透過的に使用できる.</p>

@@ -1,5 +1,5 @@
 <map id="autd::core::PointSequence" name="autd::core::PointSequence">
-<area shape="rect" id="node1" title="PointSequence provides a function to display the focus sequentially and periodically." alt="" coords="19,80,191,107"/>
-<area shape="rect" id="node3" href="$classautd_1_1sequence_1_1Circumference.html" title="Utility to generate PointSequence on a circumference." alt="" coords="5,155,204,181"/>
-<area shape="rect" id="node2" href="$classautd_1_1core_1_1Sequence.html" title=" " alt="" coords="33,5,176,32"/>
+<area shape="rect" id="node1" title="PointSequence provides a function to display the focus sequentially and periodically." alt="" coords="6,155,178,181"/>
+<area shape="rect" id="node2" href="$classautd_1_1core_1_1Sequence.html" title=" " alt="" coords="21,80,163,107"/>
+<area shape="rect" id="node3" href="$classautd_1_1core_1_1IDatagramBody.html" title=" " alt="" coords="5,5,179,32"/>
 </map>

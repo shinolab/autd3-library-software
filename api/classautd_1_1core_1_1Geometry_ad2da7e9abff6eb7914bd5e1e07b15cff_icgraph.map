@@ -1,6 +1,10 @@
 <map id="autd::core::Geometry::num_transducers" name="autd::core::Geometry::num_transducers">
-<area shape="rect" id="node1" title="Number of transducers." alt="" coords="400,27,540,69"/>
-<area shape="rect" id="node2" href="$classautd_1_1core_1_1Gain.html#a541ed3df20cd46883b4adb83c49fe6e8" title="Initialize data and call calc()." alt="" coords="208,5,352,32"/>
-<area shape="rect" id="node4" href="$classautd_1_1core_1_1Logic.html#ac3ae240dd1ec44a944944b9f4afe4adc" title="Pack data body with sequence data." alt="" coords="219,57,341,98"/>
-<area shape="rect" id="node3" href="$classautd_1_1core_1_1Gain.html#a4de33768d1e007ce4246bafd661791b3" title="Re&#45;calculate duty ratio and phase of each transducer." alt="" coords="5,5,160,32"/>
+<area shape="rect" id="node1" title="Number of transducers." alt="" coords="721,103,861,145"/>
+<area shape="rect" id="node2" href="$classautd_1_1core_1_1Gain.html#a541ed3df20cd46883b4adb83c49fe6e8" title="Initialize data and call calc()." alt="" coords="529,81,673,108"/>
+<area shape="rect" id="node8" href="$classautd_1_1gain_1_1Grouped.html#a18fe19bf82991ddfa12522606a74b351" title=" " alt="" coords="535,133,667,174"/>
+<area shape="rect" id="node3" href="$classautd_1_1gain_1_1Grouped.html#a51025328a953ecf99c334090076c221b" title="Decide which device outputs which Gain." alt="" coords="304,5,463,32"/>
+<area shape="rect" id="node4" href="$classautd_1_1core_1_1GainSequence.html#a31940060c9658ca12434197cc955d107" title="Add gain." alt="" coords="285,56,481,83"/>
+<area shape="rect" id="node6" href="$classautd_1_1core_1_1Gain.html#a49d578a93a932f5ffc5f6fec24cda48e" title=" " alt="" coords="311,107,456,133"/>
+<area shape="rect" id="node7" href="$classautd_1_1core_1_1Gain.html#a4de33768d1e007ce4246bafd661791b3" title="Re&#45;calculate duty ratio and phase of each transducer." alt="" coords="306,157,461,184"/>
+<area shape="rect" id="node5" href="$classautd_1_1core_1_1GainSequence_1_1StreamCommaInputGS.html#ac0bef7bac8e7383196b58ebcc822214b" title=" " alt="" coords="5,49,237,90"/>
 </map>
