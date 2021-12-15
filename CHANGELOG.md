@@ -1,3 +1,17 @@
+# 1.10
+* Rename `SinePressure` to `SineSquared`
+* Add `wait_on_sync` flag to `Sequence`
+* Add `modulation::LPF`
+    * Remove `modulation::filter`
+* Remove `AUTDSendGainModulation`, `AUTDSendSequenceModulation`, and `AUTDSendGainSequenceModulation`
+    * Add `AUTDSendHeader`, `AUTDSendBody`, and `AUTDSendHeaderBody`
+* Change internal `core` namespace
+* Add stream operators
+* `Controller::fpga_info()` is now return vector of `FPGAInfo`
+* Change delay and duty offset API
+* Change `gain::Grouped` and `GainSequence` API
+* Remove `sequence::Circumference`
+
 # 1.9.3
 * fix minor bugs
 * Change transducers' geometry accessor

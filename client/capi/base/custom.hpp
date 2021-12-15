@@ -3,7 +3,7 @@
 // Created Date: 03/11/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/11/2021
+// Last Modified: 09/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -24,22 +24,20 @@
 class CustomGain final : public autd::core::Gain {
  public:
   /**
-   * @brief Generate function
    * @param[in] data pointer to data of duty ratio and phase of each transducer
    * @param[in] data_length length of the data
    * @details The data length should be the same as the number of transducers you use. The data is 16 bit unsigned integer, where high 8bits
    * represents duty ratio and low 8bits represents phase
    */
-  static autd::GainPtr create(const uint16_t* data, const size_t data_length) {
-    std::vector<autd::core::Drive> raw_data(data_length);
-    std::memcpy(&raw_data[0], data, data_length * sizeof(uint16_t));
-    return std::make_shared<CustomGain>(raw_data);
+  explicit CustomGain(const uint16_t* data, const size_t data_length) : Gain(), _raw_data(data_length) {
+    std::memcpy(_raw_data.data(), data, data_length * sizeof(uint16_t));
   }
+
   void calc(const autd::core::Geometry& geometry) override { this->_data = std::move(this->_raw_data); }
-  explicit CustomGain(std::vector<autd::core::Drive> data) : Gain(), _raw_data(std::move(data)) {}
+
   ~CustomGain() override = default;
-  CustomGain(const CustomGain& v) noexcept = default;
-  CustomGain& operator=(const CustomGain& obj) = default;
+  CustomGain(const CustomGain& v) noexcept = delete;
+  CustomGain& operator=(const CustomGain& obj) = delete;
   CustomGain(CustomGain&& obj) = default;
   CustomGain& operator=(CustomGain&& obj) = default;
 
@@ -57,9 +55,15 @@ class CustomModulation final : public autd::modulation::Modulation {
    * @param[in] buffer data of modulation
    * @param freq_div_ratio sampling frequency division ratio
    */
-  static autd::ModulationPtr create(const std::vector<uint8_t>& buffer, const size_t freq_div_ratio = 10) {
-    return std::make_shared<CustomModulation>(buffer, freq_div_ratio);
+  explicit CustomModulation(const std::vector<uint8_t>& buffer, const size_t freq_div_ratio = 10) : Modulation(freq_div_ratio) {
+    this->_buffer = buffer;
   }
+
   void calc() override {}
-  explicit CustomModulation(const std::vector<uint8_t>& buffer, const size_t freq_div_ratio) : Modulation(freq_div_ratio) { this->_buffer = buffer; }
+
+  ~CustomModulation() override = default;
+  CustomModulation(const CustomModulation& v) noexcept = delete;
+  CustomModulation& operator=(const CustomModulation& obj) = delete;
+  CustomModulation(CustomModulation&& obj) = default;
+  CustomModulation& operator=(CustomModulation&& obj) = default;
 };

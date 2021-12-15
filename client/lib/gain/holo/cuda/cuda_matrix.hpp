@@ -3,7 +3,7 @@
 // Created Date: 10/09/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/11/2021
+// Last Modified: 10/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -62,10 +62,14 @@ struct CuMatrix {
 
   void make_complex(const std::shared_ptr<const CuMatrix<double>>& r, const std::shared_ptr<const CuMatrix<double>>& i);
   void exp();
+  void pow(double s);
   void scale(T s);
+  void sqrt();
   void reciprocal(const std::shared_ptr<const CuMatrix<T>>& src);
   void abs(const std::shared_ptr<const CuMatrix<T>>& src);
   void real(const std::shared_ptr<const CuMatrix<complex>>& src);
+  void imag(const std::shared_ptr<const CuMatrix<complex>>& src);
+  void conj(const std::shared_ptr<const CuMatrix<complex>>& src);
   void arg(const std::shared_ptr<const CuMatrix<complex>>& src);
   void hadamard_product(const std::shared_ptr<const CuMatrix<T>>& a, const std::shared_ptr<const CuMatrix<T>>& b);
   void pseudo_inverse_svd(const std::shared_ptr<CuMatrix<T>>& matrix, double alpha, const std::shared_ptr<CuMatrix<T>>& u,
@@ -85,10 +89,13 @@ struct CuMatrix {
   [[nodiscard]] size_t cols() const { return _col; }
 
   void set(size_t row, size_t col, T v);
+  void set_col(size_t col, size_t start_row, size_t end_row, const std::shared_ptr<const CuMatrix<T>>& vec);
+  void set_row(size_t row, size_t start_col, size_t end_col, const std::shared_ptr<const CuMatrix<T>>& vec);
   void get_col(const std::shared_ptr<const CuMatrix<T>>& src, size_t i);
   void fill(T v);
   void get_diagonal(const std::shared_ptr<const CuMatrix<T>>& src);
   void create_diagonal(const std::shared_ptr<const CuMatrix<T>>& v);
+  void reduce_col(const std::shared_ptr<const CuMatrix<T>>& src);
   void copy_from(const std::shared_ptr<const CuMatrix<T>>& a);
   void copy_from(const std::vector<T>& v) { copy_from(v.data(), v.size()); }
   void copy_from(const T* v) { copy_from(v, _row * _col); }
@@ -96,12 +103,8 @@ struct CuMatrix {
 
   void transfer_matrix(const double* foci, size_t foci_num, const std::vector<const core::Transducer*>& transducers,
                        const std::vector<const double*>& directions, double wavelength, double attenuation);
-  void set_bcd_result(const std::shared_ptr<const CuMatrix<T>>& vec, size_t index);
   void set_from_complex_drive(std::vector<core::Drive>& dst, bool normalize, double max_coefficient);
   void set_from_arg(std::vector<core::Drive>& dst, size_t n);
-  void back_prop(const std::shared_ptr<const CuMatrix<T>>& transfer, const std::shared_ptr<const CuMatrix<T>>& amps);
-  void sigma_regularization(const std::shared_ptr<const CuMatrix<T>>& transfer, const std::shared_ptr<const CuMatrix<T>>& amps, double gamma);
-  void col_sum_imag(const std::shared_ptr<CuMatrix<complex>>& src);
 
  private:
   size_t _row;
