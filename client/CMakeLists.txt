@@ -6,8 +6,8 @@ endif()
 
 project(autd3)
 set(VERSION_MAJOR   1   CACHE STRING "Project major version number.")
-set(VERSION_MINOR   9   CACHE STRING "Project minor version number.")
-set(VERSION_PATCH   3   CACHE STRING "Project patch version number.")
+set(VERSION_MINOR   10   CACHE STRING "Project minor version number.")
+set(VERSION_PATCH   0   CACHE STRING "Project patch version number.")
 mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
 
 set (CMAKE_CXX_STANDARD 17)
@@ -104,12 +104,12 @@ endif()
 
 if(ENABLE_LINT)
   if(Git_FOUND)
-  execute_process(COMMAND git -C ${PROJECT_SOURCE_DIR} submodule update --init --recursive -- ${PROJECT_SOURCE_DIR}/deps/cpplint)
+  execute_process(COMMAND git -C ${PROJECT_SOURCE_DIR} submodule update --init --recursive -- ${PROJECT_SOURCE_DIR}/3rdparty/cpplint)
   endif()
   file(GLOB_RECURSE lint_files lib/*.cpp lib/*.hpp include/*.hpp capi/*.cpp capi/*.hpp examples/*.cpp examples/*.hpp)
   ADD_CUSTOM_TARGET(cpplint
     python
-    ${PROJECT_SOURCE_DIR}/deps/cpplint/cpplint.py
+    ${PROJECT_SOURCE_DIR}/3rdparty/cpplint/cpplint.py
     --filter=-runtime/references,-build/c++11,-whitespace/comments,-readability/braces
     --linelength=150
     ${lint_files}
@@ -126,8 +126,8 @@ endif()
 
 if(NOT USE_SYSTEM_EIGEN)
   if(Git_FOUND)
-    execute_process(COMMAND git -C ${PROJECT_SOURCE_DIR} submodule update --init --recursive -- ${PROJECT_SOURCE_DIR}/deps/Eigen3)
-    set(EIGEN_PATH ${PROJECT_SOURCE_DIR}/deps/Eigen3)
+    execute_process(COMMAND git -C ${PROJECT_SOURCE_DIR} submodule update --init --recursive -- ${PROJECT_SOURCE_DIR}/3rdparty/Eigen3)
+    set(EIGEN_PATH ${PROJECT_SOURCE_DIR}/3rdparty/Eigen3)
   endif()
 endif()
 add_compile_definitions(EIGEN_MPL2_ONLY)
@@ -158,18 +158,18 @@ endif()
 
 if(BUILD_REMOTE_TWINCAT_LINK)
   if(Git_FOUND)
-    execute_process(COMMAND git -C ${PROJECT_SOURCE_DIR} submodule update --init --recursive -- ${PROJECT_SOURCE_DIR}/deps/BeckhoffADS)
+    execute_process(COMMAND git -C ${PROJECT_SOURCE_DIR} submodule update --init --recursive -- ${PROJECT_SOURCE_DIR}/3rdparty/BeckhoffADS)
   endif()
-  set(ADS_PATH ${PROJECT_SOURCE_DIR}/deps/BeckhoffADS)
+  set(ADS_PATH ${PROJECT_SOURCE_DIR}/3rdparty/BeckhoffADS)
   add_subdirectory(lib/link/remote_twincat)
   target_link_libraries(autd3 INTERFACE remote_twincat_link)
 endif()
 
 if(BUILD_SOEM_LINK)
   if(Git_FOUND)
-    execute_process(COMMAND git -C ${PROJECT_SOURCE_DIR} submodule update --init --recursive -- ${PROJECT_SOURCE_DIR}/deps/SOEM)
+    execute_process(COMMAND git -C ${PROJECT_SOURCE_DIR} submodule update --init --recursive -- ${PROJECT_SOURCE_DIR}/3rdparty/SOEM)
   endif()
-  set(SOEM_PATH ${PROJECT_SOURCE_DIR}/deps/SOEM)
+  set(SOEM_PATH ${PROJECT_SOURCE_DIR}/3rdparty/SOEM)
   add_subdirectory(lib/link/soem)
   target_link_libraries(autd3 INTERFACE soem_link)
 endif()
@@ -219,5 +219,8 @@ if(BUILD_CAPI)
   endif()
   if(BUILD_EMULATOR_LINK)
     add_subdirectory(capi/emulator_link)
+  endif()
+  if(BUILD_EXAMPLES)
+    add_subdirectory(capi/example)
   endif()
 endif()

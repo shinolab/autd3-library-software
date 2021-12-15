@@ -1,7 +1,21 @@
 cmake_minimum_required(VERSION 3.16)
 
-add_library(holo_gain INTERFACE)
-target_include_directories(holo_gain INTERFACE ${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH} )
+add_library(holo_gain
+  holo.cpp
+  ${PROJECT_SOURCE_DIR}/include/autd3/gain/holo.hpp
+)
+target_include_directories(holo_gain PUBLIC ${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
+set_target_properties(holo_gain
+    PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+)
+if(WIN32)
+  set_target_properties(holo_gain PROPERTIES FOLDER "gain")
+else()
+  set_target_properties(holo_gain PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
 
 add_subdirectory(eigen)
 target_link_libraries(holo_gain INTERFACE eigen_backend)
@@ -35,8 +49,4 @@ if(BUILD_ARRAYFIRE_BACKEND)
     add_subdirectory(array_fire)
     target_link_libraries(holo_gain INTERFACE arrayfire_backend)
   endif()
-endif()
-
-if(WIN32)
-  set_target_properties(holo_gain PROPERTIES FOLDER "gain")
 endif()

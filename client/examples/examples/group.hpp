@@ -3,7 +3,7 @@
 // Created Date: 23/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/09/2021
+// Last Modified: 13/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,30 +11,24 @@
 
 #pragma once
 
-#include <vector>
-
 #include "autd3.hpp"
-#include "autd3/gain/eigen_backend.hpp"
-#include "autd3/gain/holo.hpp"
 
 using autd::NUM_TRANS_X, autd::NUM_TRANS_Y, autd::TRANS_SPACING_MM;
-using autd::gain::holo::EigenBackend;
 
-inline void group_test(const autd::ControllerPtr& autd) {
-  autd->silent_mode() = true;
+inline void group_test(autd::Controller& autd) {
+  autd.silent_mode() = true;
 
-  const auto m = autd::modulation::Sine::create(150);  // 150Hz AM
+  autd::modulation::Sine m(150);  // 150Hz AM
 
   const autd::Vector3 center(TRANS_SPACING_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SPACING_MM * ((NUM_TRANS_Y - 1) / 2.0), 150.0);
-  const auto g1 = autd::gain::FocalPoint::create(center);
+  autd::gain::FocalPoint g1(center);
 
-  const std::vector<autd::Vector3> foci = {center - autd::Vector3::UnitX() * 30.0, center + autd::Vector3::UnitX() * 30.0};
-  const std::vector<double> amps = {1, 1};
-  const auto g2 = autd::gain::holo::SDP::create(EigenBackend::create(), foci, amps);
+  const autd::Vector3 apex(TRANS_SPACING_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SPACING_MM * ((NUM_TRANS_Y - 1) / 2.0), 0);
+  autd::gain::BesselBeam g2(apex, autd::Vector3::UnitZ(), 13.0 / 180.0 * M_PI);
 
-  const auto g = autd::gain::Grouped::create();
-  g->add(0, g1);
-  g->add(1, g2);
+  autd::gain::Grouped g(autd.geometry());
+  g.add(0, g1);
+  g.add(1, g2);
 
-  autd->send(g, m);
+  autd << g, m;
 }

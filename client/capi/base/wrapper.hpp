@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/09/2021
+// Last Modified: 14/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -17,50 +17,25 @@
 
 #include "autd3/controller.hpp"
 #include "autd3/core/firmware_version.hpp"
-#include "autd3/core/gain.hpp"
-#include "autd3/core/sequence.hpp"
 #include "autd3/gain/backend.hpp"
 
 typedef struct {
-  autd::ControllerPtr ptr;
-} ControllerWrapper;
-
-inline ControllerWrapper* ControllerCreate(autd::ControllerPtr ptr) { return new ControllerWrapper{std::move(ptr)}; }
-inline void ControllerDelete(const ControllerWrapper* ptr) { delete ptr; }
-
-typedef struct {
-  std::unique_ptr<autd::Controller::STMController> ptr;
+  autd::Controller::STMController stm;
 } STMControllerWrapper;
 
-inline STMControllerWrapper* STMControllerCreate(std::unique_ptr<autd::Controller::STMController> ptr) {
-  return new STMControllerWrapper{std::move(ptr)};
-}
-inline void STMControllerDelete(const STMControllerWrapper* ptr) { delete ptr; }
-
-typedef struct {
-  autd::core::GainPtr ptr;
-} GainWrapper;
-
-inline GainWrapper* GainCreate(const autd::core::GainPtr& ptr) { return new GainWrapper{ptr}; }
-inline void GainDelete(const GainWrapper* ptr) { delete ptr; }
-
-typedef struct {
-  std::shared_ptr<autd::core::Sequence> ptr;
-} SequenceWrapper;
-
-inline SequenceWrapper* SequenceCreate(const std::shared_ptr<autd::core::Sequence>& ptr) { return new SequenceWrapper{ptr}; }
-inline void SequenceDelete(const SequenceWrapper* ptr) { delete ptr; }
+inline STMControllerWrapper* stm_controller_create(autd::Controller::STMController stm) { return new STMControllerWrapper{std::move(stm)}; }
+inline void stm_controller_delete(const STMControllerWrapper* ptr) { delete ptr; }
 
 typedef struct {
   std::vector<autd::FirmwareInfo> list;
 } FirmwareInfoListWrapper;
 
-inline FirmwareInfoListWrapper* FirmwareInfoListCreate(const std::vector<autd::FirmwareInfo>& list) { return new FirmwareInfoListWrapper{list}; }
-inline void FirmwareInfoListDelete(const FirmwareInfoListWrapper* ptr) { delete ptr; }
+inline FirmwareInfoListWrapper* firmware_info_list_create(const std::vector<autd::FirmwareInfo>& list) { return new FirmwareInfoListWrapper{list}; }
+inline void firmware_info_list_delete(const FirmwareInfoListWrapper* ptr) { delete ptr; }
 
 typedef struct {
   autd::gain::holo::BackendPtr ptr;
 } BackendWrapper;
 
-inline BackendWrapper* BackendCreate(const autd::gain::holo::BackendPtr& ptr) { return new BackendWrapper{ptr}; }
-inline void BackendDelete(const BackendWrapper* ptr) { delete ptr; }
+inline BackendWrapper* backend_create(const autd::gain::holo::BackendPtr& ptr) { return new BackendWrapper{ptr}; }
+inline void backend_delete(const BackendWrapper* ptr) { delete ptr; }

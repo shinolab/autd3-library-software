@@ -3,7 +3,7 @@
 // Created Date: 17/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/09/2021
+// Last Modified: 14/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -11,11 +11,11 @@
 
 #pragma once
 
-#include <cstdint>
-
 #include "../base/header.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 EXPORT_AUTD void AUTDEigen3Backend(void** out);
 EXPORT_AUTD void AUTDDeleteBackend(const void* backend);
 EXPORT_AUTD void AUTDGainHoloSDP(void** gain, const void* backend, const double* points, const double* amps, int32_t size, double alpha,
@@ -34,4 +34,6 @@ EXPORT_AUTD void AUTDGainHoloGradientDescent(void** gain, const void* backend, c
 EXPORT_AUTD void AUTDGainHoloAPO(void** gain, const void* backend, const double* points, const double* amps, int32_t size, double eps, double lambda,
                                  uint64_t k_max);
 EXPORT_AUTD void AUTDGainHoloGreedy(void** gain, const void* backend, const double* points, const double* amps, int32_t size, int32_t phase_div);
+#ifdef __cplusplus
 }
+#endif
