@@ -122,11 +122,11 @@ int run(void* autd) {
     printf_s("Choose number: ");
     int32_t i;
     if (!scanf_s("%d", &i)) {
-      return 0;
+      break;
     }
     (void)getchar();
     if (i >= example_size) {
-      return 0;
+      break;
     }
 
     examples[i].func(autd);

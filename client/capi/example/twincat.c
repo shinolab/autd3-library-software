@@ -11,7 +11,6 @@
  *
  */
 
-#define _AMD64_
 #include <stdio.h>
 #include <stdlib.h>
 
