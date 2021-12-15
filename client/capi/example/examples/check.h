@@ -88,4 +88,6 @@ void check(void* autd) {
 
   AUTDSetForceFan(autd, false);
   AUTDUpdateCtrlFlags(autd);
+
+  free(infos);
 }
