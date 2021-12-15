@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/11/2021
+// Last Modified: 12/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -70,8 +70,8 @@ class TwinCATImpl final : public TwinCAT {
 
   void open() override;
   void close() override;
-  void send(const uint8_t* buf, size_t size) override;
-  void receive(uint8_t* rx, size_t buffer_len) override;
+  void send(const core::TxDatagram& tx) override;
+  void receive(core::RxDatagram& rx) override;
   bool is_open() override;
 
  private:
@@ -126,13 +126,13 @@ void TwinCATImpl::close() {
   this->_port = 0;
 }
 
-void TwinCATImpl::send(const uint8_t* buf, const size_t size) {
+void TwinCATImpl::send(const core::TxDatagram& tx) {
   if (!this->is_open()) throw core::exception::LinkError("Link is closed");
 
   if (const auto ret = this->_write(this->_port,  // NOLINT
                                     &this->_net_addr, INDEX_GROUP, INDEX_OFFSET_BASE,
-                                    static_cast<unsigned long>(size),  // NOLINT
-                                    const_cast<void*>(static_cast<const void*>(buf)));
+                                    static_cast<unsigned long>(tx.size()),  // NOLINT
+                                    const_cast<void*>(static_cast<const void*>(tx.data())));
       ret != 0) {
     // https://infosys.beckhoff.com/english.php?content=../content/1033/tcadscommon/html/tcadscommon_intro.htm&id=
     // 6 : target port not found
@@ -142,12 +142,12 @@ void TwinCATImpl::send(const uint8_t* buf, const size_t size) {
   }
 }
 
-void TwinCATImpl::receive(uint8_t* rx, const size_t buffer_len) {
+void TwinCATImpl::receive(core::RxDatagram& rx) {
   if (!this->is_open()) throw core::exception::LinkError("Link is closed");
 
   unsigned long read_bytes = 0;                  // NOLINT
   if (const auto ret = this->_read(this->_port,  // NOLINT
-                                   &this->_net_addr, INDEX_GROUP, INDEX_OFFSET_BASE_READ, static_cast<uint32_t>(buffer_len), rx, &read_bytes);
+                                   &this->_net_addr, INDEX_GROUP, INDEX_OFFSET_BASE_READ, static_cast<uint32_t>(rx.size()), rx.data(), &read_bytes);
       ret != 0) {
     std::stringstream ss;
     ss << "Error on receiving data: " << std::hex << ret;
@@ -160,8 +160,8 @@ void TwinCATImpl::open() {
   throw core::exception::LinkError("Link to localhost has not been compiled. Rebuild this library on a Twincat3 host machine with TcADS-DLL.");
 }
 void TwinCATImpl::close() { return; }
-void TwinCATImpl::send(const uint8_t*, size_t) { return; }
-void TwinCATImpl::receive(uint8_t*, size_t) { return; }
+void TwinCATImpl::send(const core::TxDatagram& tx) { return; }
+void TwinCATImpl::receive(core::RxDatagram& rx) { return; }
 #endif  // TC_ADS
 
 }  // namespace autd::link

@@ -3,7 +3,7 @@
 // Created Date: 06/07/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/11/2021
+// Last Modified: 12/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -32,7 +32,6 @@
 #pragma GCC diagnostic pop
 #endif
 
-#include "autd3/core/gain.hpp"
 #include "autd3/core/hardware_defined.hpp"
 #include "autd3/core/utils.hpp"
 #include "autd3/gain/matrix.hpp"
@@ -54,12 +53,16 @@ struct EigenMatrix {
 
   void make_complex(const std::shared_ptr<const EigenMatrix<double>>& r, const std::shared_ptr<const EigenMatrix<double>>& i);
   void exp() { data = data.array().exp(); }
+  void pow(double s) { data = data.array().pow(s); }
   void scale(const T s) { data *= s; }
+  void sqrt() { data = data.cwiseSqrt(); }
   void reciprocal(const std::shared_ptr<const EigenMatrix<T>>& src) {
     data = Eigen::Matrix<T, -1, -1, Eigen::ColMajor>::Ones(src->data.rows(), src->data.cols()).cwiseQuotient(src->data);
   }
   void abs(const std::shared_ptr<const EigenMatrix<T>>& src) { data = src->data.cwiseAbs(); }
   void real(const std::shared_ptr<const EigenMatrix<complex>>& src);
+  void imag(const std::shared_ptr<const EigenMatrix<complex>>& src);
+  void conj(const std::shared_ptr<const EigenMatrix<complex>>& src);
   void arg(const std::shared_ptr<const EigenMatrix<complex>>& src);
   void hadamard_product(const std::shared_ptr<const EigenMatrix<T>>& a, const std::shared_ptr<const EigenMatrix<T>>& b) {
     data.noalias() = a->data.cwiseProduct(b->data);
@@ -135,6 +138,14 @@ struct EigenMatrix {
   [[nodiscard]] size_t cols() const { return data.cols(); }
 
   void set(const size_t row, const size_t col, T v) { data(row, col) = v; }
+
+  void set_col(const size_t col, const size_t start_row, const size_t end_row, const std::shared_ptr<const EigenMatrix<T>>& vec) {
+    data.block(start_row, col, end_row - start_row, 1) = vec->data.block(start_row, 0, end_row - start_row, 1);
+  }
+  void set_row(const size_t row, const size_t start_col, const size_t end_col, const std::shared_ptr<const EigenMatrix<T>>& vec) {
+    data.block(row, start_col, 1, end_col - start_col) = vec->data.block(start_col, 0, end_col - start_col, 1).transpose();
+  }
+
   void get_col(const std::shared_ptr<const EigenMatrix<T>>& src, const size_t i) {
     const auto& col = src->data.col(i);
     std::memcpy(data.data(), col.data(), sizeof(T) * col.size());
@@ -147,19 +158,24 @@ struct EigenMatrix {
     fill(0.0);
     data.diagonal() = v->data;
   }
+
+  void reduce_col(const std::shared_ptr<const EigenMatrix<T>>& src) {
+    const auto n = data.size();
+    for (Eigen::Index i = 0; i < n; i++) {
+      T tmp = 0;
+      for (Eigen::Index k = 0; k < n; k++) tmp += src->data(i, k);
+      data(i, 0) = tmp;
+    }
+  }
+
   virtual void copy_from(const std::shared_ptr<const EigenMatrix<T>>& a) { data = a->data; }
   virtual void copy_from(const std::vector<T>& v) { std::memcpy(this->data.data(), v.data(), sizeof(T) * v.size()); }
   virtual void copy_from(const T* v) { std::memcpy(this->data.data(), v, sizeof(T) * this->data.size()); }
 
-  // FIXME: following functions are too specialized
   void transfer_matrix(const double* foci, size_t foci_num, const std::vector<const core::Transducer*>& transducers,
                        const std::vector<const double*>& directions, double wavelength, double attenuation);
-  void set_bcd_result(const std::shared_ptr<const EigenMatrix<T>>& vec, size_t index);
   void set_from_complex_drive(std::vector<core::Drive>& dst, bool normalize, double max_coefficient);
   void set_from_arg(std::vector<core::Drive>& dst, size_t n);
-  void back_prop(const std::shared_ptr<const EigenMatrix<T>>& transfer, const std::shared_ptr<const EigenMatrix<T>>& amps);
-  void sigma_regularization(const std::shared_ptr<const EigenMatrix<T>>& transfer, const std::shared_ptr<const EigenMatrix<T>>& amps, double gamma);
-  void col_sum_imag(const std::shared_ptr<EigenMatrix<complex>>& src);
 };
 
 template <>
@@ -168,9 +184,18 @@ inline void EigenMatrix<complex>::make_complex(const std::shared_ptr<const Eigen
   data.real() = r->data;
   data.imag() = i->data;
 }
+
 template <>
 inline void EigenMatrix<double>::real(const std::shared_ptr<const EigenMatrix<complex>>& src) {
   data = src->data.real();
+}
+template <>
+inline void EigenMatrix<double>::imag(const std::shared_ptr<const EigenMatrix<complex>>& src) {
+  data = src->data.imag();
+}
+template <>
+inline void EigenMatrix<complex>::conj(const std::shared_ptr<const EigenMatrix<complex>>& src) {
+  data = src->data.conjugate();
 }
 template <>
 inline void EigenMatrix<complex>::arg(const std::shared_ptr<const EigenMatrix<complex>>& src) {
@@ -213,16 +238,6 @@ inline void EigenMatrix<complex>::transfer_matrix(const double* foci, const size
 }
 
 template <>
-inline void EigenMatrix<complex>::set_bcd_result(const std::shared_ptr<const EigenMatrix<complex>>& vec, const size_t index) {
-  const auto m = vec->data.size();
-  const auto idx = static_cast<Eigen::Index>(index);
-  for (Eigen::Index i = 0; i < idx; i++) data(idx, i) = std::conj(vec->data(i, 0));
-  for (Eigen::Index i = idx + 1; i < m; i++) data(idx, i) = std::conj(vec->data(i, 0));
-  for (Eigen::Index i = 0; i < idx; i++) data(i, idx) = vec->data(i, 0);
-  for (Eigen::Index i = idx + 1; i < m; i++) data(i, idx) = vec->data(i, 0);
-}
-
-template <>
 inline void EigenMatrix<complex>::set_from_complex_drive(std::vector<core::Drive>& dst, const bool normalize, const double max_coefficient) {
   const Eigen::Index n = data.size();
   for (Eigen::Index j = 0; j < n; j++) {
@@ -240,46 +255,4 @@ inline void EigenMatrix<double>::set_from_arg(std::vector<core::Drive>& dst, con
   }
 }
 
-template <>
-inline void EigenMatrix<complex>::back_prop(const std::shared_ptr<const EigenMatrix<complex>>& transfer,
-                                            const std::shared_ptr<const EigenMatrix<complex>>& amps) {
-  const auto m = transfer->data.rows();
-  const auto n = transfer->data.cols();
-
-  Eigen::Matrix<double, -1, 1, Eigen::ColMajor> denominator(m);
-  for (Eigen::Index i = 0; i < m; i++) {
-    auto tmp = 0.0;
-    for (Eigen::Index j = 0; j < n; j++) tmp += std::abs(transfer->data(i, j));
-    denominator(i) = tmp;
-  }
-
-  for (Eigen::Index i = 0; i < m; i++) {
-    auto c = amps->data(i) / denominator(i);
-    for (Eigen::Index j = 0; j < n; j++) data(j, i) = c * std::conj(transfer->data(i, j));
-  }
-}
-
-template <>
-inline void EigenMatrix<complex>::sigma_regularization(const std::shared_ptr<const EigenMatrix<complex>>& transfer,
-                                                       const std::shared_ptr<const EigenMatrix<complex>>& amps, const double gamma) {
-  const auto m = transfer->data.rows();
-  const auto n = transfer->data.cols();
-
-  fill(ZERO);
-  for (Eigen::Index j = 0; j < n; j++) {
-    double tmp = 0;
-    for (Eigen::Index i = 0; i < m; i++) tmp += std::abs(transfer->data(i, j) * amps->data(i));
-    data(j, j) = complex(std::pow(std::sqrt(tmp / static_cast<double>(m)), gamma), 0.0);
-  }
-}
-
-template <>
-inline void EigenMatrix<double>::col_sum_imag(const std::shared_ptr<EigenMatrix<complex>>& src) {
-  const auto n = data.size();
-  for (Eigen::Index i = 0; i < n; i++) {
-    double tmp = 0;
-    for (Eigen::Index k = 0; k < n; k++) tmp += src->data(i, k).imag();
-    data(i, 0) = tmp;
-  }
-}
 }  // namespace autd::gain::holo
