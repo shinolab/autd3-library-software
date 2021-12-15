@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include <windows.h>
+
 void check(void* autd) {
   int32_t num_devices = AUTDNumDevices(autd);
   printf_s("===== Device informations =====\n");
