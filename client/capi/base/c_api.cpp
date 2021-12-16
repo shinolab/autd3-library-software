@@ -388,18 +388,18 @@ int32_t AUTDResume(void* const handle) {
 }
 int32_t AUTDSendHeader(void* const handle, void* const header) {
   auto* const wrapper = static_cast<autd::Controller*>(handle);
-  auto* const h = static_cast<autd::core::IDatagramHeader*>(header);
+  auto* const h = static_cast<autd::core::datagram::IDatagramHeader*>(header);
   AUTD3_CAPI_TRY(return wrapper->send(*h) ? 1 : 0)
 }
 int32_t AUTDSendBody(void* const handle, void* const body) {
   auto* const wrapper = static_cast<autd::Controller*>(handle);
-  auto* const b = static_cast<autd::core::IDatagramBody*>(body);
+  auto* const b = static_cast<autd::core::datagram::IDatagramBody*>(body);
   AUTD3_CAPI_TRY(return wrapper->send(*b) ? 1 : 0)
 }
 int32_t AUTDSendHeaderBody(void* const handle, void* const header, void* const body) {
   auto* const wrapper = static_cast<autd::Controller*>(handle);
-  auto* const h = static_cast<autd::core::IDatagramHeader*>(header);
-  auto* const b = static_cast<autd::core::IDatagramBody*>(body);
+  auto* const h = static_cast<autd::core::datagram::IDatagramHeader*>(header);
+  auto* const b = static_cast<autd::core::datagram::IDatagramBody*>(body);
   AUTD3_CAPI_TRY(return wrapper->send(*h, *b) ? 1 : 0)
 }
 void AUTDSTMController(void** out, void* handle) {

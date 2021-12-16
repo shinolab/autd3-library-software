@@ -3,7 +3,7 @@
 // Created Date: 12/12/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/12/2021
+// Last Modified: 15/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -16,6 +16,7 @@
 
 namespace autd {
 namespace core {
+namespace datagram {
 
 class IDatagramHeader {
  public:
@@ -45,5 +46,6 @@ class IDatagramBody {
   [[nodiscard]] virtual bool is_finished() const = 0;
 };
 
+}  // namespace datagram
 }  // namespace core
 }  // namespace autd

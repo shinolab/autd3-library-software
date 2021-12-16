@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include <string.h>
+
 #define NUM_TRANS_IN_UNIT (249)
 
 void trans_test(void* autd) {
@@ -19,7 +21,7 @@ void trans_test(void* autd) {
   const int32_t num_trans = AUTDNumDevices(autd) * NUM_TRANS_IN_UNIT;
 
   uint8_t* duty_offsets = malloc(num_trans);
-  memset(duty_offsets, 0, num_trans);
+  (duty_offsets, 0, num_trans);
   duty_offsets[0] = 1;
   AUTDSetDelayOffset(autd, NULL, duty_offsets);
 
