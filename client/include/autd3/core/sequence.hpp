@@ -3,7 +3,7 @@
 // Created Date: 14/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 15/12/2021
+// Last Modified: 16/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -22,6 +22,9 @@
 
 namespace autd::core {
 
+/**
+ * @brief Sequence provide hardware Spatio-Temporal Modulation or Lateral Modulation function.
+ */
 class Sequence : public datagram::IDatagramBody {
  public:
   Sequence() : _freq_div_ratio(1), _wait_on_sync(false) {}
