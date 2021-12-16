@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 10/12/2021
+// Last Modified: 16/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -18,6 +18,9 @@ namespace autd::modulation {
 
 using core::Modulation;
 
+/**
+ * @brief Modulation to avoid amplitude modulation
+ */
 class Static final : public Modulation {
  public:
   /**

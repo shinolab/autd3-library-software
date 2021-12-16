@@ -3,7 +3,7 @@
 // Created Date: 13/12/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 15/12/2021
+// Last Modified: 16/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -15,6 +15,9 @@
 
 namespace autd::core::datagram {
 
+/**
+ * @brief IDatagramHeader with common data
+ */
 class CommonHeader final : public IDatagramHeader {
  public:
   void init() override {}
@@ -41,6 +44,9 @@ class CommonHeader final : public IDatagramHeader {
   uint8_t _fpga_flag_mask;
 };
 
+/**
+ * @brief IDatagramHeader with special message id
+ */
 class SpecialMessageIdHeader final : public IDatagramHeader {
  public:
   void init() override {}
@@ -68,6 +74,9 @@ class SpecialMessageIdHeader final : public IDatagramHeader {
   uint8_t _fpga_flag_mask;
 };
 
+/**
+ * @brief NullBody is used for TxDatagram without Body data
+ */
 class NullBody final : public IDatagramBody {
  public:
   void init() override {}

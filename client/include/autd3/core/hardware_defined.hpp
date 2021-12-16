@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 15/12/2021
+// Last Modified: 16/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -85,6 +85,9 @@ struct GlobalHeader {
   uint8_t mod[MOD_FRAME_SIZE];
 };
 
+/**
+ * \brief Drive contains phase and duty ratio data of a transducer
+ */
 struct Drive final {
   Drive() : Drive(0x00, 0x00) {}
   explicit Drive(const uint8_t duty, const uint8_t phase) : phase(phase), duty(duty) {}
@@ -93,6 +96,9 @@ struct Drive final {
   uint8_t duty;
 };
 
+/**
+ * \brief DelayOffset contains delay and duty offset data of a transducer
+ */
 struct DelayOffset {
   DelayOffset() : DelayOffset(0x00, 0x01) {}
   explicit DelayOffset(const uint8_t delay, const uint8_t offset) : delay(delay), offset(offset) {}
@@ -101,16 +107,25 @@ struct DelayOffset {
   uint8_t offset;
 };
 
+/**
+ * \brief Body represents the data per device.
+ */
 union Body {
   Drive drives[NUM_TRANS_IN_UNIT];
   DelayOffset delay_offsets[NUM_TRANS_IN_UNIT];
 };
 
+/**
+ * \brief RxMessage contains a message id and ack which send from each device
+ */
 struct RxMessage final {
   uint8_t ack;
   uint8_t msg_id;
 };
 
+/**
+ * \brief FPGAInfo contains a FPGA information of a device
+ */
 class FPGAInfo final {
  public:
   FPGAInfo() : _info(0) {}
@@ -123,6 +138,9 @@ class FPGAInfo final {
   uint8_t _info;
 };
 
+/**
+ * \brief TxDatagram represents the data sent to devices.
+ */
 class TxDatagram final {
  public:
   TxDatagram() : _data(nullptr), _header_size(0), _body_size(0), _num_bodies(0) {}
@@ -160,6 +178,9 @@ class TxDatagram final {
   size_t _num_bodies;
 };
 
+/**
+ * \brief RxDatagram represents the data received from devices.
+ */
 class RxDatagram final {
  public:
   RxDatagram() = default;

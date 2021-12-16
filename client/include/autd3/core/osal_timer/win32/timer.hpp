@@ -3,7 +3,7 @@
 // Created Date: 01/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 15/12/2021
+// Last Modified: 16/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -23,6 +23,9 @@
 
 namespace autd::core::timer {
 
+/**
+ * \brief Timer provides a periodic software timer
+ */
 template <typename T>
 class Timer {
  public:
