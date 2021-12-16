@@ -193,6 +193,7 @@ class RxDatagram final {
   RxMessage& operator[](const size_t i) { return _data[i]; }
 
   [[nodiscard]] size_t size() const { return _data.size() * sizeof(RxMessage); }
+  [[nodiscard]] size_t num_messages() const { return _data.size(); }
 
   [[nodiscard]] std::vector<RxMessage>::const_iterator begin() const { return _data.begin(); }
   [[nodiscard]] std::vector<RxMessage>::const_iterator end() const { return _data.end(); }
@@ -207,16 +208,15 @@ class RxDatagram final {
 
 /**
  * \brief check if the data which have msg_id have been processed in the devices.
- * \param num_devices number of devices
  * \param msg_id message id
  * \param rx pointer to received data
  * \return whether the data have been processed
  */
-static bool is_msg_processed(const size_t num_devices, const uint8_t msg_id, const RxDatagram& rx) {
+static bool is_msg_processed(const uint8_t msg_id, const RxDatagram& rx) {
   size_t processed = 0;
   for (auto& [ack, rx_msg_id] : rx)
     if (rx_msg_id == msg_id) processed++;
-  return processed == num_devices;
+  return processed == rx.num_messages();
 }
 
 }  // namespace core
