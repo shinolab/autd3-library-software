@@ -3,7 +3,7 @@
 // Created Date: 10/09/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/11/2021
+// Last Modified: 13/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -14,7 +14,6 @@
 #include <memory>
 #include <vector>
 
-#include "autd3/core/gain.hpp"
 #include "autd3/core/geometry.hpp"
 #include "matrix.hpp"
 

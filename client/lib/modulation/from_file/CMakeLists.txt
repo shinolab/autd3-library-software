@@ -5,7 +5,7 @@ add_library(from_file_modulation
   ${PROJECT_SOURCE_DIR}/include/autd3/modulation/from_file.hpp
 )
 
-target_include_directories(from_file_modulation PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(from_file_modulation PUBLIC ${PROJECT_SOURCE_DIR}/include ${EIGEN_PATH})
 
 set_target_properties(from_file_modulation
   PROPERTIES

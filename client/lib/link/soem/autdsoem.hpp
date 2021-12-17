@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/11/2021
+// Last Modified: 15/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -13,6 +13,7 @@
 
 #include <atomic>
 #include <condition_variable>
+#include <cstring>
 #include <functional>
 #include <memory>
 #include <mutex>
@@ -24,7 +25,7 @@
 
 namespace autd::autdsoem {
 
-struct SOEMCallback final : core::CallbackHandler {
+struct SOEMCallback final : core::timer::CallbackHandler {
   virtual ~SOEMCallback() = default;
   SOEMCallback(const SOEMCallback& v) noexcept = delete;
   SOEMCallback& operator=(const SOEMCallback& obj) = delete;
@@ -51,6 +52,51 @@ struct ECConfig {
   size_t input_frame_size;
 };
 
+struct IOMap {
+  IOMap() : _size(0), _buf(nullptr), _config(), _device_num(0) {}
+
+  explicit IOMap(const size_t device_num, const ECConfig& config)
+      : _size(device_num * (config.header_size + config.body_size + config.input_frame_size)),
+        _buf(std::make_unique<uint8_t[]>(_size)),
+        _config(config),
+        _device_num(device_num) {}
+
+  void resize(const size_t device_num, const ECConfig& config) {
+    if (const auto size = device_num * (config.header_size + config.body_size + config.input_frame_size); _size != size) {
+      _device_num = device_num;
+      _size = size;
+      _config = config;
+      _buf = std::make_unique<uint8_t[]>(_size);
+    }
+  }
+
+  [[nodiscard]] size_t size() const { return _size; }
+
+  core::GlobalHeader* header(const size_t i) {
+    return reinterpret_cast<core::GlobalHeader*>(&_buf[(_config.body_size + _config.header_size) * i + _config.body_size]);
+  }
+
+  core::Body* body(const size_t i) { return reinterpret_cast<core::Body*>(&_buf[(_config.body_size + _config.header_size) * i]); }
+
+  [[nodiscard]] const core::RxMessage* input() const {
+    return reinterpret_cast<const core::RxMessage*>(&_buf[(_config.body_size + _config.header_size) * _device_num]);
+  }
+
+  void copy_from(core::TxDatagram& tx) {
+    for (size_t i = 0; i < tx.num_bodies(); i++) std::memcpy(body(i), tx.body(i), tx.body_size());
+    if (tx.header_size() > 0)
+      for (size_t i = 0; i < _device_num; i++) std::memcpy(header(i), tx.header(), tx.header_size());
+  }
+
+  [[nodiscard]] uint8_t* get() const { return _buf.get(); }
+
+ private:
+  size_t _size;
+  std::unique_ptr<uint8_t[]> _buf;
+  ECConfig _config;
+  size_t _device_num;
+};
+
 constexpr size_t SEND_BUF_SIZE = 32;
 
 class SOEMController {
@@ -68,8 +114,8 @@ class SOEMController {
 
   [[nodiscard]] bool is_open() const;
 
-  void send(const uint8_t* buf, size_t size);
-  void receive(uint8_t* rx) const;
+  void send(const core::TxDatagram& tx);
+  void receive(core::RxDatagram& rx) const;
 
  private:
   void setup_sync0(bool activate, uint32_t cycle_time_ns) const;
@@ -77,14 +123,13 @@ class SOEMController {
   bool error_handle();
   std::function<void(std::string)> _on_lost = nullptr;
 
-  std::unique_ptr<uint8_t[]> _io_map;
-  size_t _io_map_size;
-  size_t _output_size;
+  IOMap _io_map;
   size_t _dev_num;
-  ECConfig _config;
+  uint32_t _sm3_cycle_time_ms;
+  uint32_t _sync0_cycle_time_ns;
   bool _is_open;
 
-  std::unique_ptr<std::pair<std::unique_ptr<uint8_t[]>, size_t>[]> _send_buf;
+  std::vector<core::TxDatagram> _send_buf;
   size_t _send_buf_cursor;
   size_t _send_buf_size;
   std::mutex _send_mtx;
@@ -92,7 +137,7 @@ class SOEMController {
   std::thread _send_thread;
   std::atomic<bool> _sent;
 
-  std::unique_ptr<core::Timer<SOEMCallback>> _timer;
+  std::unique_ptr<core::timer::Timer<SOEMCallback>> _timer;
 };
 
 struct EtherCATAdapterInfo final {

@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 21/11/2021
+// Last Modified: 12/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -36,8 +36,8 @@ class SOEMImpl final : public SOEM {
  protected:
   void open() override;
   void close() override;
-  void send(const uint8_t* buf, size_t size) override;
-  void receive(uint8_t* rx, size_t buffer_len) override;
+  void send(const core::TxDatagram& tx) override;
+  void receive(core::RxDatagram& rx) override;
   void on_lost(std::function<void(std::string)> callback) override;
   bool is_open() override;
 
@@ -68,9 +68,9 @@ void SOEMImpl::open() {
 
 void SOEMImpl::close() { return _cnt.close(); }
 
-void SOEMImpl::send(const uint8_t* buf, const size_t size) { return _cnt.send(buf, size); }
+void SOEMImpl::send(const core::TxDatagram& tx) { return _cnt.send(tx); }
 
-void SOEMImpl::receive(uint8_t* rx, size_t) { return _cnt.receive(rx); }
+void SOEMImpl::receive(core::RxDatagram& rx) { return _cnt.receive(rx); }
 
 bool SOEMImpl::is_open() { return _cnt.is_open(); }
 
