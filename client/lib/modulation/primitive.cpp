@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/11/2021
+// Last Modified: 09/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -19,8 +19,6 @@
 #include "autd3/core/utils.hpp"
 
 namespace autd::modulation {
-
-ModulationPtr Sine::create(const int freq, const double amp, const double offset) { return std::make_shared<Sine>(freq, amp, offset); }
 
 void Sine::calc() {
   const auto f_s = static_cast<int32_t>(sampling_freq());
@@ -39,11 +37,7 @@ void Sine::calc() {
   }
 }
 
-ModulationPtr SinePressure::create(const int freq, const double amp, const double offset) {
-  return std::make_shared<SinePressure>(freq, amp, offset);
-}
-
-void SinePressure::calc() {
+void SineSquared::calc() {
   const auto f_s = static_cast<int32_t>(sampling_freq());
 
   const auto f = std::clamp(this->_freq, 1, f_s / 2);
@@ -60,8 +54,6 @@ void SinePressure::calc() {
   }
 }
 
-ModulationPtr SineLegacy::create(const double freq, const double amp, const double offset) { return std::make_shared<SineLegacy>(freq, amp, offset); }
-
 void SineLegacy::calc() {
   const auto f_s = sampling_freq();
   const auto f = std::clamp(this->_freq, f_s / static_cast<double>(core::MOD_BUF_SIZE_MAX), f_s / 2.0);
@@ -72,13 +64,6 @@ void SineLegacy::calc() {
     double tamp = 255.0 * _offset + 127.5 * _amp * std::cos(2.0 * M_PI * static_cast<double>(i) / static_cast<double>(t));
     this->_buffer[i] = static_cast<uint8_t>(std::clamp(tamp, 0.0, 255.0));
   }
-}
-
-ModulationPtr Square::create(const int freq, const uint8_t low, const uint8_t high, const double duty) {
-  return std::make_shared<Square>(freq, low, high, duty);
-}
-ModulationPtr Square::create(const int freq, const double low, const double high, const double duty) {
-  return create(freq, core::utils::to_duty(low), core::utils::to_duty(high), duty);
 }
 
 void Square::calc() {
