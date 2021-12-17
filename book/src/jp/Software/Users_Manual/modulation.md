@@ -16,8 +16,7 @@ SDKにはデフォルトでいくつかの種類のAMを生成するための`Mo
 変調なし.
 
 ```cpp
-  const auto m = autd::modulation::Static::create();
-  autd->send(m);
+  autd::modulation::Static m;
 ```
 
 なお, 第1引数は`uint8_t`の値を引数に取れ (デフォルトは255), 超音波の出力を一律で変更するために使うことができる.
@@ -26,7 +25,7 @@ SDKにはデフォルトでいくつかの種類のAMを生成するための`Mo
 
 音圧をSin波状に変形するための`Modulation`.
 ```cpp
-  const auto m = autd::modulation::Sine::create(f, amplitude, offset); 
+  autd::modulation::Sine m(f, amplitude, offset); 
 ```
 
 第1引数は周波数$f$, 第2引数は$amplitude$ (デフォルトで1), 第3引数は$offset$ (デフォルトで0.5)になっており, 音圧の波形が
@@ -37,7 +36,7 @@ $$
 ただし, 上記で$[0,1]$を超えるような値は$[0,1]$に収まるように変換される.
 また, サンプリング周波数はデフォルトで$\SI{4}{kHz}$ ($N=10$) になっている.
 
-## SinePressure
+## SineSquared
 
 放射圧, すなわち, 音圧の二乗をSin波状に変形するための`Modulation`.
 引数等は`Sine`と同じ.
@@ -53,11 +52,20 @@ $$
 矩形波状の`Modulation`.
 
 ```cpp
-  const auto m = autd::modulation::Square::create(f, low, high); 
+  autd::modulation::Square m(f, low, high); 
 ```
 第1引数は周波数$f$, 第2引数はlow (デフォルトで0), 第3引数はhigh (デフォルトで255)になっており, 音圧の波形はlowとhighが周波数$f$で繰り返される.
 また, 第4引数にduty比を指定できる.
 duty比は$t_\text{high}/T = t_\text{high}f$で定義される, ここで, $t_\text{high}$は1周期$T=1/f$の内, highを出力する時間である.
+
+## LPF
+
+`LPF`は他の`Modulation`を引数により, その変調にLPFをかけた`Modulation`を生成する.
+これは静音化のために使用することができる.
+
+```cpp
+  autd::modulation::LPF lpf(m); 
+```
 
 ## Create Custom Modulation Tutorial
 
@@ -68,16 +76,12 @@ duty比は$t_\text{high}/T = t_\text{high}f$で定義される, ここで, $t_\t
 ```cpp
 class Burst final : public autd::core::Modulation {
  public:
-  static autd::ModulationPtr create(size_t buf_size = 4000, uint16_t N = 10) {
-    return std::make_shared<BurstModulation>(buf_size, N);
-  }
-  
   void calc() override {
     this->_buffer.resize(_buf_size, 0);
     this->_buffer[_buf_size - 1] = 0xFF;
   }
 
-  Burst(const size_t buf_size, const uint16_t N) : Modulation(N), _buf_size(buf_size) {}
+  explicit Burst(const size_t buf_size = 4000, const uint16_t mod_freq_div = 10) : Modulation(mod_freq_div), _buf_size(buf_size) {}
 
  private:
   size_t _buf_size;
@@ -100,7 +104,7 @@ class Burst final : public autd::core::Modulation {
 `sampling_freq_div_ratio`は1以上65536以下の整数が指定できる.
 
 ```cpp
-    m->sampling_freq_div_ratio() = 5; // 40kHz/5 = 8kHz
+    m.sampling_freq_div_ratio() = 5; // 40kHz/5 = 8kHz
 ```
 
 ### sampling_freq

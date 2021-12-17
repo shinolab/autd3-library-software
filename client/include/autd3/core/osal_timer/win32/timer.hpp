@@ -3,7 +3,7 @@
 // Created Date: 01/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 12/12/2021
+// Last Modified: 16/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -21,8 +21,11 @@
 #include "autd3/core/exception.hpp"
 #include "autd3/core/osal_timer/osal_callback.hpp"
 
-namespace autd::core {
+namespace autd::core::timer {
 
+/**
+ * \brief Timer provides a periodic software timer
+ */
 template <typename T>
 class Timer {
  public:
@@ -69,4 +72,4 @@ class Timer {
   uint32_t _timer_id;
   bool _is_closed;
 };
-}  // namespace autd::core
+}  // namespace autd::core::timer

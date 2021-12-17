@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include <string.h>
+
 #define NUM_TRANS_IN_UNIT (249)
 
 void advanced(void* autd) {

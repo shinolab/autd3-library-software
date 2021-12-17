@@ -2,7 +2,7 @@
 
 The API for the C language is defined under [client/capi](https://github.com/shinolab/autd3-library-software/tree/master/client/capi).
 The reference of this API is given below. 
-For actual usage, see [C#](https://github.com/shinolab/autd3sharp)/[python](https://github.com/shinolab/pyautd)/[Julia](https://github.com/shinolab/AUTD3.jl) wrapper libraries.
+For actual usage, see [C API examples](https://github.com/shinolab/autd3-library-software/tree/master/client/capi/example), [C#](https://github.com/shinolab/autd3sharp)/[python](https://github.com/shinolab/pyautd)/[Julia](https://github.com/shinolab/AUTD3.jl) wrapper libraries.
 
 > Note: The calling conventions are not explicitly stated. The x86 conventions are probably `cdecl`, but we haven't checked it yet, and it may cause errors when used from x86.
 
@@ -489,12 +489,14 @@ You must delete the created Gain with `AUTDDeleteGain` at the end.
 ##  AUTDGainGrouped (autd3capi)
 
 Create Gain::Grouped.
+The `handle` is the controller created by `AUTDCreateController`.
 
 You must delete the created Gain with `AUTDDeleteGain` at the end.
 
 | Argument name / return       | type             | in/out | description                                                                              |
 |------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
 | gain                   | void**     | out    | pointer to GainPtr                                                                      |
+| handle                       | void*      | in     | ControllerPtr                                                                           |
 | return                       | void       | -      | nothing                                                                                 |
 
 ##  AUTDGainGroupedAdd (autd3capi)
@@ -727,12 +729,14 @@ You have to delete the created PointSequence with `AUTDDeleteSequence` at the en
 ##  AUTDGainSequence (autd3capi)
 
 Create GainSequence.
+The `handle` is the controller created by `AUTDCreateController`.
 
 You have to delete the created GainSequence with `AUTDDeleteSequence` at the end.
 
 | Argument name / return       | type             | in/out | description                                                                              |
 |------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
 | out                    | void**     | out    | pointer to GainSequencePtr                                                              |
+| handle                 | void*      | in     | ControllerPtr                                                                           |
 | gain_mode              | uint16_t   | in     | gain mode of GainSequence                                                               |
 | return                       | void       | -      | nothing                                                                                 |
 
@@ -752,30 +756,6 @@ If it returns false, you can get the error message with `AUTDGetLastError`.
 | y                      | double     | in     | y coordinate of point                                                                   |
 | z                      | double     | in     | z coordinate of point                                                                   |
 | duty                   | uint8_t    | in     | duty ratio of point                                                                     |
-| return                       | bool       | -      | true if success                                                                         |
-
-##  AUTDSequenceAddPoints (autd3capi)
-
-Add control points to PointSequence.
-
-`seq` is a PointSequence created with `AUTDSequence`.
-
-`points` is a pointer to an array of length `points_size` $\times 3$,
-where the data is stored in x\[0\], y\[0\], z\[0\], x\[1\], y\[1\],
-z\[1\], ... order.
-If `duties_size` is less than `points_size`, the missing data will be filled with duty=0xFF.
-If `duties_size` is greater than `points_size`, the excess is ignored.
-
-This function returns false if it fails.
-If it returns false, you can get the error message with `AUTDGetLastError`.
-
-| Argument name / return       | type             | in/out | description                                                                              |
-|------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
-| seq                    | void*      | in     | GainSequencePtr                                                                         |
-| points                 | double*    | in     | pointer to points array                                                                 |
-| points_size            | uint64_t   | in     | length of points array                                                                  |
-| duties                 | double*    | in     | pointer to duties array                                                                 |
-| duties_size            | uint64_t   | in     | length of duties array                                                                  |
 | return                       | bool       | -      | true if success                                                                         |
 
 ##  AUTDSequenceAddGain (autd3capi)
@@ -874,25 +854,6 @@ Set sampling frequency division ratio of Sequence.
 | freq_div               | uint32_t   | in     | sampling freqyency division ratio                                                       |
 | return                       | void       | -      | nothing                                                                                 |
 
-##  AUTDCircumSequence (autd3capi)
-
-Create PointSequence on a circumference.
-
-You have to delete the created PointSequence with `AUTDDeleteSequence` at the end.
-
-| Argument name / return       | type             | in/out | description                                                                              |
-|------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
-| out                    | void**     | out    | pointer to PointSequencePtr                                                             |
-| x                      | double     | in     | x coordinate of circumference                                                           |
-| y                      | double     | in     | y coordinate of circumference                                                           |
-| z                      | double     | in     | z coordinate of circumference                                                           |
-| nx                     | double     | in     | x coordinate of normal of circumference                                                 |
-| ny                     | double     | in     | y coordinate of normal of circumference                                                 |
-| nz                     | double     | in     | z coordinate of normal of circumference                                                 |
-| radius                 | double     | in     | radius of circumference                                                                 |
-| n                      | uint64_t   | in     | number of sampling points                                                               |
-| return                       | void       | -      | nothing                                                                                 |
-
 ##  AUTDDeleteSequence (autd3capi)
 
 Delete Sequence you created.
@@ -953,9 +914,9 @@ Also, if the check ack flag is on and the return value is greater than 0, it gua
 | handle                 | void*      | in     | ControllerPtr                                                                           |
 | return                       | int32_t    | -      | if $>0$, it guarantees devices have processed data. if $<0$, error ocurred.             |
 
-##  AUTDSendGainModulation (autd3capi)
+##  AUTDSendHeader (autd3capi)
 
-Send Gain and Modulation. 
+Send Header data (Modulation). 
 One of the send functions.
 
 The `handle` is the controller created by `AUTDCreateController`.
@@ -969,13 +930,12 @@ Also, if the check ack flag is on and the return value is greater than 0, it gua
 | Argument name / return       | type             | in/out | description                                                                              |
 |------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
 | handle                 | void*      | in     | ControllerPtr                                                                           |
-| gain                   | void*      | in     | GainPtr                                                                                 |
-| mod                    | void*      | in     | ModulationPtr                                                                           |
+| header                   | void*      | in     | pointer to Header                                                                                 |
 | return                       | int32_t    | -      | if $>0$, it guarantees devices have processed data. if $<0$, error ocurred.             |
 
-##  AUTDSendSequenceModulation (autd3capi)
+##  AUTDSendBody (autd3capi)
 
-Send PointSequence and Modulation. 
+Send Body data (Gain, PointSequence, GainSequence). 
 One of the send functions.
 
 The `handle` is the controller created by `AUTDCreateController`.
@@ -989,13 +949,12 @@ Also, if the check ack flag is on and the return value is greater than 0, it gua
 | Argument name / return       | type             | in/out | description                                                                              |
 |------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
 | handle                 | void*      | in     | ControllerPtr                                                                           |
-| seq                    | void*      | in     | PointSequencePtr                                                                        |
-| mod                    | void*      | in     | ModulationPtr                                                                           |
+| body                    | void*      | in     | pointer to Body                                                                        |
 | return                       | int32_t    | -      | if $>0$, it guarantees devices have processed data. if $<0$, error ocurred.             |
 
-##  AUTDSendGainSequenceModulation (autd3capi)
+##  AUTDSendHeaderBody (autd3capi)
 
-Send GainSequence and Modulation. 
+Send Header (Modulation) and Body (Gain, PointSequence, GainSequence). 
 One of the send functions.
 
 The `handle` is the controller created by `AUTDCreateController`.
@@ -1009,8 +968,8 @@ Also, if the check ack flag is on and the return value is greater than 0, it gua
 | Argument name / return       | type             | in/out | description                                                                              |
 |------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
 | handle                 | void*      | in     | ControllerPtr                                                                           |
-| seq                    | void*      | in     | GainSequencePtr                                                                         |
-| mod                    | void*      | in     | ModulationPtr                                                                           |
+| header                   | void*      | in     | pointer to Header                                                                                 |
+| body                    | void*      | in     | pointer to Body                                                                        |
 | return                       | int32_t    | -      | if $>0$, it guarantees devices have processed data. if $<0$, error ocurred.             |
 
 ##  AUTDSTMController (autd3capi)

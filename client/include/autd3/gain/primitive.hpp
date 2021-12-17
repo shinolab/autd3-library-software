@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/12/2021
+// Last Modified: 15/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -16,7 +16,7 @@
 #include <vector>
 
 #include "autd3/core/gain.hpp"
-#include "autd3/core/type_hints.hpp"
+#include "autd3/core/type_traits.hpp"
 #include "autd3/core/utils.hpp"
 
 namespace autd::gain {
@@ -53,8 +53,8 @@ class Grouped final : public Gain {
    * \param gain gain
    */
   template <class T>
-  std::enable_if_t<core::is_gain_v<T>> add(const size_t device_id, T&& gain) {
-    Gain& g = core::to_gain(gain);
+  std::enable_if_t<core::type_traits::is_gain_v<T>> add(const size_t device_id, T&& gain) {
+    Gain& g = core::type_traits::to_gain(gain);
 
     g.build(_geometry);
 

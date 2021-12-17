@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 15/12/2021
+// Last Modified: 17/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -15,9 +15,9 @@
 #include <condition_variable>
 #include <vector>
 
+#include "autd3/core/datagrams.hpp"
 #include "autd3/core/ec_config.hpp"
 #include "autd3/core/interface.hpp"
-#include "autd3/core/logic.hpp"
 #include "autd3/gain/primitive.hpp"
 
 namespace {
@@ -78,7 +78,7 @@ const std::vector<core::FPGAInfo>& Controller::fpga_info() {
 }
 
 bool Controller::update_ctrl_flag() {
-  core::CommonHeader header(core::OUTPUT_ENABLE | core::OUTPUT_BALANCE | core::SILENT | core::READS_FPGA_INFO | core::FORCE_FAN);
+  core::datagram::CommonHeader header(core::OUTPUT_ENABLE | core::OUTPUT_BALANCE | core::SILENT | core::FORCE_FAN);
   return send_impl(header);
 }
 
@@ -95,7 +95,7 @@ void Controller::open(core::LinkPtr link) {
 }
 
 bool Controller::clear() {
-  core::SpecialMessageIdHeader header(core::MSG_CLEAR, 0xFF);
+  core::datagram::SpecialMessageIdHeader header(core::MSG_CLEAR, 0xFF);
   return send_impl(header);
 }
 
@@ -104,7 +104,7 @@ bool Controller::wait_msg_processed(const uint8_t msg_id, const size_t max_trial
   const auto num_devices = this->_geometry.num_devices();
   for (size_t i = 0; i < max_trial; i++) {
     this->_link->receive(this->_rx_buf);
-    if (is_msg_processed(num_devices, msg_id, _rx_buf)) return true;
+    if (is_msg_processed(msg_id, _rx_buf)) return true;
     auto wait = static_cast<size_t>(std::ceil(core::EC_TRAFFIC_DELAY * 1000.0 / core::EC_DEVICE_PER_FRAME * static_cast<double>(num_devices)));
     std::this_thread::sleep_for(std::chrono::milliseconds(wait));
   }
@@ -142,19 +142,19 @@ bool Controller::resume() {
   return this->update_ctrl_flag();
 }
 
-bool Controller::send_impl(core::IDatagramHeader& header) {
-  core::NullBody body;
+bool Controller::send_impl(core::datagram::IDatagramHeader& header) {
+  core::datagram::NullBody body;
   return this->send_impl(header, body);
 }
 
-bool Controller::send_impl(core::IDatagramBody& body) {
-  core::CommonHeader header(core::OUTPUT_ENABLE | core::OUTPUT_BALANCE | core::SILENT | core::READS_FPGA_INFO | core::FORCE_FAN);
+bool Controller::send_impl(core::datagram::IDatagramBody& body) {
+  core::datagram::CommonHeader header(core::OUTPUT_ENABLE | core::OUTPUT_BALANCE | core::SILENT | core::FORCE_FAN);
   return this->send_impl(header, body);
 }
 
-bool Controller::send_impl(core::IDatagramBody& body, core::IDatagramHeader& header) { return this->send_impl(header, body); }
+bool Controller::send_impl(core::datagram::IDatagramBody& body, core::datagram::IDatagramHeader& header) { return this->send_impl(header, body); }
 
-bool Controller::send_impl(core::IDatagramHeader& header, core::IDatagramBody& body) {
+bool Controller::send_impl(core::datagram::IDatagramHeader& header, core::datagram::IDatagramBody& body) {
   header.init();
   body.init();
 
@@ -178,9 +178,9 @@ std::vector<FirmwareInfo> Controller::firmware_info_list() {
   constexpr uint8_t READ_FPGA_VER_LSB = 0x04;
   constexpr uint8_t READ_FPGA_VER_MSB = 0x05;
   auto send_command = [&](const uint8_t msg_id, const uint8_t cmd) {
-    core::SpecialMessageIdHeader special_message_id_header(
-        msg_id, core::OUTPUT_ENABLE | core::OUTPUT_BALANCE | core::SILENT | core::READS_FPGA_INFO | core::FORCE_FAN);
-    core::NullBody body;
+    core::datagram::SpecialMessageIdHeader special_message_id_header(msg_id,
+                                                                     core::OUTPUT_ENABLE | core::OUTPUT_BALANCE | core::SILENT | core::FORCE_FAN);
+    core::datagram::NullBody body;
 
     special_message_id_header.init();
     body.init();
@@ -229,7 +229,7 @@ Controller::STMController Controller::stm() { return STMController{this, std::ma
 
 void Controller::STMController::add(core::Gain& gain) const {
   core::TxDatagram build_buf(this->_p_cnt->_geometry.num_devices());
-  core::CommonHeader header(core::OUTPUT_ENABLE | core::OUTPUT_BALANCE | core::SILENT | core::READS_FPGA_INFO | core::FORCE_FAN);
+  core::datagram::CommonHeader header(core::OUTPUT_ENABLE | core::OUTPUT_BALANCE | core::SILENT | core::FORCE_FAN);
 
   header.init();
   gain.init();
@@ -246,7 +246,7 @@ void Controller::STMController::start(const double freq) {
 
   const auto len = this->_handler->_txs.size();
   const auto interval_us = static_cast<uint32_t>(1000000. / static_cast<double>(freq) / static_cast<double>(len));
-  this->_timer = core::Timer<STMTimerCallback>::start(std::move(this->_handler), interval_us);
+  this->_timer = core::timer::Timer<STMTimerCallback>::start(std::move(this->_handler), interval_us);
   this->_handler = nullptr;
 }
 

@@ -3,7 +3,7 @@
 // Created Date: 14/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/12/2021
+// Last Modified: 16/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -18,13 +18,14 @@
 #include "exception.hpp"
 #include "gain.hpp"
 #include "geometry.hpp"
-#include "type_hints.hpp"
+#include "type_traits.hpp"
 
 namespace autd::core {
-class PointSequence;
-class GainSequence;
 
-class Sequence : public IDatagramBody {
+/**
+ * @brief Sequence provide hardware Spatio-Temporal Modulation or Lateral Modulation function.
+ */
+class Sequence : public datagram::IDatagramBody {
  public:
   Sequence() : _freq_div_ratio(1), _wait_on_sync(false) {}
   ~Sequence() override = default;
@@ -305,12 +306,12 @@ class GainSequence final : public Sequence {
    * @param[in] gain gain
    */
   template <class T>
-  std::enable_if_t<is_gain_v<T>> add(T&& gain) {
+  std::enable_if_t<type_traits::is_gain_v<T>> add(T&& gain) {
     if (this->_gain_drives.size() + 1 > GAIN_SEQ_BUFFER_SIZE_MAX)
       throw exception::SequenceBuildError(
           std::string("Gain sequence buffer overflow. Maximum available buffer size is " + std::to_string(GAIN_SEQ_BUFFER_SIZE_MAX)));
 
-    Gain& g = to_gain(gain);
+    Gain& g = type_traits::to_gain(gain);
 
     g.build(_geometry);
 
@@ -396,13 +397,13 @@ class GainSequence final : public Sequence {
     StreamCommaInputGS& operator=(StreamCommaInputGS&& obj) = delete;
 
     template <class T>
-    std::enable_if_t<is_gain_v<T>, StreamCommaInputGS&> operator,(T&& gain) {
+    std::enable_if_t<type_traits::is_gain_v<T>, StreamCommaInputGS&> operator,(T&& gain) {
       _cnt.add(gain);
       return *this;
     }
 
     template <class T>
-    std::enable_if_t<is_gain_v<T>, StreamCommaInputGS&> operator<<(T&& gain) {
+    std::enable_if_t<type_traits::is_gain_v<T>, StreamCommaInputGS&> operator<<(T&& gain) {
       _cnt.add(gain);
       return *this;
     }
@@ -412,7 +413,7 @@ class GainSequence final : public Sequence {
   };
 
   template <class T>
-  std::enable_if_t<is_gain_v<T>, StreamCommaInputGS> operator<<(T&& gain) {
+  std::enable_if_t<type_traits::is_gain_v<T>, StreamCommaInputGS> operator<<(T&& gain) {
     this->add(gain);
     return StreamCommaInputGS{*this};
   }

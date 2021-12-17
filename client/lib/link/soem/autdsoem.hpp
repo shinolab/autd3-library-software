@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/12/2021
+// Last Modified: 15/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -25,7 +25,7 @@
 
 namespace autd::autdsoem {
 
-struct SOEMCallback final : core::CallbackHandler {
+struct SOEMCallback final : core::timer::CallbackHandler {
   virtual ~SOEMCallback() = default;
   SOEMCallback(const SOEMCallback& v) noexcept = delete;
   SOEMCallback& operator=(const SOEMCallback& obj) = delete;
@@ -137,7 +137,7 @@ class SOEMController {
   std::thread _send_thread;
   std::atomic<bool> _sent;
 
-  std::unique_ptr<core::Timer<SOEMCallback>> _timer;
+  std::unique_ptr<core::timer::Timer<SOEMCallback>> _timer;
 };
 
 struct EtherCATAdapterInfo final {

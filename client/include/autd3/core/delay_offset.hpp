@@ -20,7 +20,7 @@ namespace autd::core {
 /**
  * @brief DelayOffsets controls the duty offset and delay of each transducer in AUTD devices.
  */
-class DelayOffsets final : public IDatagramBody {
+class DelayOffsets final : public datagram::IDatagramBody {
  public:
   DelayOffset& operator[](const size_t i) { return _data[i]; }
   const DelayOffset& operator[](const size_t i) const { return _data[i]; }

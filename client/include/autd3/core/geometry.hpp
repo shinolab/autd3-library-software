@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 22/11/2021
+// Last Modified: 16/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -39,6 +39,9 @@ using Vector4 = Eigen::Matrix<double, 4, 1>;
 using Matrix4X4 = Eigen::Matrix<double, 4, 4>;
 using Quaternion = Eigen::Quaternion<double>;
 
+/**
+ * \brief Transduce contains a position and id of a transducer
+ */
 struct Transducer final {
   explicit Transducer(const size_t id, const double x, const double y, const double z) : _id(id), _position(x, y, z) {}
 
