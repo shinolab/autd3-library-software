@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 15/12/2021
+// Last Modified: 17/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -78,7 +78,7 @@ const std::vector<core::FPGAInfo>& Controller::fpga_info() {
 }
 
 bool Controller::update_ctrl_flag() {
-  core::datagram::CommonHeader header(core::OUTPUT_ENABLE | core::OUTPUT_BALANCE | core::SILENT | core::READS_FPGA_INFO | core::FORCE_FAN);
+  core::datagram::CommonHeader header(core::OUTPUT_ENABLE | core::OUTPUT_BALANCE | core::SILENT | core::FORCE_FAN);
   return send_impl(header);
 }
 
@@ -104,7 +104,7 @@ bool Controller::wait_msg_processed(const uint8_t msg_id, const size_t max_trial
   const auto num_devices = this->_geometry.num_devices();
   for (size_t i = 0; i < max_trial; i++) {
     this->_link->receive(this->_rx_buf);
-    if (is_msg_processed(num_devices, msg_id, _rx_buf)) return true;
+    if (is_msg_processed(msg_id, _rx_buf)) return true;
     auto wait = static_cast<size_t>(std::ceil(core::EC_TRAFFIC_DELAY * 1000.0 / core::EC_DEVICE_PER_FRAME * static_cast<double>(num_devices)));
     std::this_thread::sleep_for(std::chrono::milliseconds(wait));
   }
@@ -148,7 +148,7 @@ bool Controller::send_impl(core::datagram::IDatagramHeader& header) {
 }
 
 bool Controller::send_impl(core::datagram::IDatagramBody& body) {
-  core::datagram::CommonHeader header(core::OUTPUT_ENABLE | core::OUTPUT_BALANCE | core::SILENT | core::READS_FPGA_INFO | core::FORCE_FAN);
+  core::datagram::CommonHeader header(core::OUTPUT_ENABLE | core::OUTPUT_BALANCE | core::SILENT | core::FORCE_FAN);
   return this->send_impl(header, body);
 }
 
@@ -178,8 +178,8 @@ std::vector<FirmwareInfo> Controller::firmware_info_list() {
   constexpr uint8_t READ_FPGA_VER_LSB = 0x04;
   constexpr uint8_t READ_FPGA_VER_MSB = 0x05;
   auto send_command = [&](const uint8_t msg_id, const uint8_t cmd) {
-    core::datagram::SpecialMessageIdHeader special_message_id_header(
-        msg_id, core::OUTPUT_ENABLE | core::OUTPUT_BALANCE | core::SILENT | core::READS_FPGA_INFO | core::FORCE_FAN);
+    core::datagram::SpecialMessageIdHeader special_message_id_header(msg_id,
+                                                                     core::OUTPUT_ENABLE | core::OUTPUT_BALANCE | core::SILENT | core::FORCE_FAN);
     core::datagram::NullBody body;
 
     special_message_id_header.init();
@@ -229,7 +229,7 @@ Controller::STMController Controller::stm() { return STMController{this, std::ma
 
 void Controller::STMController::add(core::Gain& gain) const {
   core::TxDatagram build_buf(this->_p_cnt->_geometry.num_devices());
-  core::datagram::CommonHeader header(core::OUTPUT_ENABLE | core::OUTPUT_BALANCE | core::SILENT | core::READS_FPGA_INFO | core::FORCE_FAN);
+  core::datagram::CommonHeader header(core::OUTPUT_ENABLE | core::OUTPUT_BALANCE | core::SILENT | core::FORCE_FAN);
 
   header.init();
   gain.init();

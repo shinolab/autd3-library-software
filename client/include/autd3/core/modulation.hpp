@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 15/12/2021
+// Last Modified: 17/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -89,7 +89,7 @@ class Modulation : public datagram::IDatagramHeader {
   void pack(const uint8_t msg_id, TxDatagram& tx, const uint8_t fpga_ctrl_flag, const uint8_t cpu_ctrl_flag) override {
     auto* header = reinterpret_cast<GlobalHeader*>(tx.data());
     header->msg_id = msg_id;
-    constexpr auto fpga_mask = OUTPUT_BALANCE | SILENT | READS_FPGA_INFO | FORCE_FAN;
+    constexpr auto fpga_mask = OUTPUT_BALANCE | SILENT | FORCE_FAN;
     header->fpga_ctrl_flags = (header->fpga_ctrl_flags & ~fpga_mask) | (fpga_ctrl_flag & fpga_mask);
     header->cpu_ctrl_flags = cpu_ctrl_flag;
     header->mod_size = 0;
