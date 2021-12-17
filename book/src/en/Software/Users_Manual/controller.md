@@ -6,7 +6,7 @@ In this section, we introduce some other functions of the Controller class.
 
 Configure the output enable settings.
 ```cpp
-  autd->output_enable() = false;
+  autd.output_enable() = false;
 ```
 The output of the FPGA is the logical product of this flag.
 
@@ -17,7 +17,7 @@ The flag will be actually updated after calling one of the [Send functions](#sen
 In AM and Spatio-Temporal Modulation, noise is generated while the phase/amplitude changes abruptly.
 SDK provides a flag to suppress this noise.
 ```cpp
-  autd->silent_mode() = true;
+  autd.silent_mode() = true;
 ```
 When this flag is set to on, a low-pass filter is applied to the phase/amplitude data inside the device, smoothing the phase/amplitude changes and suppressing noise [suzuki2020].
 
@@ -27,7 +27,7 @@ The flag will be actually updated after calling one of the [Send functions](#sen
 
 If the `check_ack` flag is set to on, when sending data to the device, SDK will check whether the sent data has been processed by the device or not.
 ```cpp
-  autd->check_ack() = true;
+  autd.check_ack() = true;
 ```
 If `check_ack` is `true`, functions that send data to the device ([Send functions](#send-functions)) will return whether the sent data has been properly processed by the device or not.
 
@@ -42,7 +42,7 @@ The `force_fan` flag is a flag to force the fan to start.
 The flag will be actually updated after calling one of the [Send functions](#send-functions).
 
 ```cpp
-  autd->force_fan() = true;
+  autd.force_fan() = true;
 ```
 
 Note that the fan can be forced on, but it cannot be forced off.
@@ -55,21 +55,22 @@ The flag will be actually updated after calling one of the [Send functions](#sen
 
 The status of the FPGA can be obtained with the `fpga_info` function.
 ```cpp
-  autd->reads_fpga_info() = true;
-  autd->update_ctrl_flag();
-  const auto fpga_info = autd->fpga_info();
+  autd.reads_fpga_info() = true;
+  autd.update_ctrl_flag();
+  const auto fpga_info = autd.fpga_info();
 ```
-The return value of `fpga_info` is a `vector` of `uint8_t`, where the lowest $\SI{1}{bit}$ represents the fan state for each device.
-All other bits are 0.
+The return value of `fpga_info` is a `vector` of `FPGAInfo`.
 
 ## Duty offset
 
-To change $D_\text{offset}$ (see [Create Custom Gain Tutorial](gain.md#create-custom-gain-tutorial)), use the `duty_offset` function.
+To change $D_\text{offset}$ (see [Create Custom Gain Tutorial](gain.md#create-custom-gain-tutorial)), send `DelayOffsets` struct.
 Note that only the lowest $\SI{1}{bit}$ is used, so only $D_\text{offset}=0,1$ can be used.
 
 ```cpp
-  autd->delay_offset()[0][0].offset = 0; // duty offset is 0 for 0-th transducer 
-  autd->set_delay_offset();              // apply change
+  autd::DelayOffsets delay_offsets(autd.geometry().num_devices());
+
+  delay_offsets[0].offset = 0;  // duty offset is 0 for 0-th transducer 
+  autd << delay_offsets;       // apply change
 ```
 
 ## Output delay
@@ -79,8 +80,10 @@ To do so, use the `output_delay` function.
 Note that only the lower $\SI{7}{bit}$ of the delay value is used, and so the maximum delay is $127=\SI{3.175}{ms}$.
 
 ```cpp
-  autd->delay_offset()[0][0].delay = 4;  // 4 cycle = 100 us delay in 0-th transducer
-  autd->set_delay_offset();              // apply change
+  autd::DelayOffsets delay_offsets(autd.geometry().num_devices());
+
+  delay_offsets[0].delay = 4;  // 4 cycle = 100 us delay in 0-th transducer
+  autd << delay_offsets;       // apply change
 ```
 
 ## pause/resume/stop
@@ -102,7 +105,7 @@ Clear the flags, `Gain`/`Modulation` data, etc. in the device.
 The `firmware_info_list` function can be used to get the version information of firmware.
 
 ```cpp
- for (auto&& firm_info : autd->firmware_info_list()) std::cout << firm_info << std::endl;
+ for (auto&& firm_info : autd.firmware_info_list()) std::cout << firm_info << std::endl;
 ```
 
 ## Send functions
@@ -117,14 +120,12 @@ If `check_ack` is `false`, it does not check whether the data has been processed
 The following is a list of Send functions.
 
 * `update_ctrl_flag`
-* `set_output_delay`
-* `set_duty_offset`
-* `set_delay_offset`
 * `clear`
 * `close`
 * `stop`
 * `pause`
 * `resume`
 * `send`
+* `<<` (stream input operator)
 
 [suzuki2020]: Suzuki, Shun, et al. "Reducing amplitude fluctuation by gradual phase shift in midair ultrasound haptics." IEEE transactions on haptics 13.1 (2020): 87-93.

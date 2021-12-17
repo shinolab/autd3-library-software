@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/12/2021
+// Last Modified: 15/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -21,7 +21,7 @@
 #include "core/interface.hpp"
 #include "core/link.hpp"
 #include "core/osal_timer.hpp"
-#include "core/type_hints.hpp"
+#include "core/type_traits.hpp"
 
 namespace autd {
 
@@ -188,23 +188,23 @@ class Controller {
   bool resume();
 
   template <class T>
-  std::enable_if_t<core::is_header_v<T>, bool> send(T&& header) {
-    return send_impl(core::to_header(header));
+  std::enable_if_t<core::type_traits::is_header_v<T>, bool> send(T&& header) {
+    return send_impl(core::type_traits::to_header(header));
   }
 
   template <class T>
-  std::enable_if_t<core::is_body_v<T>, bool> send(T&& body) {
-    return send_impl(core::to_body(body));
+  std::enable_if_t<core::type_traits::is_body_v<T>, bool> send(T&& body) {
+    return send_impl(core::type_traits::to_body(body));
   }
 
   template <class H, class B>
-  std::enable_if_t<std::conjunction_v<core::is_header<H>, core::is_body<B>>, bool> send(H&& header, B&& body) {
-    return send_impl(core::to_body(body), core::to_header(header));
+  std::enable_if_t<std::conjunction_v<core::type_traits::is_header<H>, core::type_traits::is_body<B>>, bool> send(H&& header, B&& body) {
+    return send_impl(core::type_traits::to_body(body), core::type_traits::to_header(header));
   }
 
   template <class H, class B>
-  std::enable_if_t<std::conjunction_v<core::is_header<H>, core::is_body<B>>, bool> send(B&& body, H&& header) {
-    return send_impl(core::to_body(body), core::to_header(header));
+  std::enable_if_t<std::conjunction_v<core::type_traits::is_header<H>, core::type_traits::is_body<B>>, bool> send(B&& body, H&& header) {
+    return send_impl(core::type_traits::to_body(body), core::type_traits::to_header(header));
   }
 
   /**
@@ -264,13 +264,13 @@ class Controller {
       StreamCommaInputSTM& operator=(StreamCommaInputSTM&& obj) = delete;
 
       template <class T>
-      std::enable_if_t<core::is_gain_v<T>, StreamCommaInputSTM&> operator<<(T&& gain) {
+      std::enable_if_t<core::type_traits::is_gain_v<T>, StreamCommaInputSTM&> operator<<(T&& gain) {
         _cnt.add(to_gain(gain));
         return *this;
       }
 
       template <class T>
-      std::enable_if_t<core::is_gain_v<T>, StreamCommaInputSTM&> operator,(T&& gain) {
+      std::enable_if_t<core::type_traits::is_gain_v<T>, StreamCommaInputSTM&> operator,(T&& gain) {
         _cnt.add(to_gain(gain));
         return *this;
       }
@@ -280,8 +280,8 @@ class Controller {
     };
 
     template <class T>
-    std::enable_if_t<core::is_gain_v<T>, StreamCommaInputSTM> operator<<(T&& gain) {
-      this->add(to_gain(gain));
+    std::enable_if_t<core::type_traits::is_gain_v<T>, StreamCommaInputSTM> operator<<(T&& gain) {
+      this->add(core::type_traits::to_gain(gain));
       return StreamCommaInputSTM{*this};
     }
 
@@ -298,11 +298,11 @@ class Controller {
 
     Controller* _p_cnt;
     std::unique_ptr<STMTimerCallback> _handler;
-    std::unique_ptr<core::Timer<STMTimerCallback>> _timer;
+    std::unique_ptr<core::timer::Timer<STMTimerCallback>> _timer;
   };
 
  private:
-  class STMTimerCallback final : core::CallbackHandler {
+  class STMTimerCallback final : core::timer::CallbackHandler {
    public:
     friend class STMController;
 
@@ -325,13 +325,13 @@ class Controller {
     std::atomic<bool> _lock;
   };
 
-  bool send_impl(core::IDatagramHeader& header);
+  bool send_impl(core::datagram::IDatagramHeader& header);
 
-  bool send_impl(core::IDatagramBody& body);
+  bool send_impl(core::datagram::IDatagramBody& body);
 
-  bool send_impl(core::IDatagramHeader& header, core::IDatagramBody& body);
+  bool send_impl(core::datagram::IDatagramHeader& header, core::datagram::IDatagramBody& body);
 
-  bool send_impl(core::IDatagramBody& body, core::IDatagramHeader& header);
+  bool send_impl(core::datagram::IDatagramBody& body, core::datagram::IDatagramHeader& header);
 
   [[nodiscard]] bool wait_msg_processed(uint8_t msg_id, size_t max_trial = 50);
 
@@ -349,7 +349,7 @@ class Controller {
     friend class Controller;
 
    public:
-    explicit StreamCommaInputHeader(Controller& cnt, core::IDatagramHeader& header) : _cnt(cnt), _header(header), _sent(false) {}
+    explicit StreamCommaInputHeader(Controller& cnt, core::datagram::IDatagramHeader& header) : _cnt(cnt), _header(header), _sent(false) {}
     ~StreamCommaInputHeader() {
       if (!_sent) _cnt.send(_header);
     }
@@ -359,20 +359,20 @@ class Controller {
     StreamCommaInputHeader& operator=(StreamCommaInputHeader&& obj) = delete;
 
     template <class B>
-    std::enable_if_t<core::is_body_v<B>> operator,(B&& body) {
+    std::enable_if_t<core::type_traits::is_body_v<B>> operator,(B&& body) {
       _cnt.send(_header, body);
       _sent = true;
     }
 
     template <class B>
-    std::enable_if_t<core::is_body_v<B>> operator<<(B&& body) {
+    std::enable_if_t<core::type_traits::is_body_v<B>> operator<<(B&& body) {
       _cnt.send(_header, body);
       _sent = true;
     }
 
    private:
     Controller& _cnt;
-    core::IDatagramHeader& _header;
+    core::datagram::IDatagramHeader& _header;
     bool _sent;
   };
 
@@ -380,7 +380,7 @@ class Controller {
     friend class Controller;
 
    public:
-    explicit StreamCommaInputBody(Controller& cnt, core::IDatagramBody& body) : _cnt(cnt), _body(body), _sent(false) {}
+    explicit StreamCommaInputBody(Controller& cnt, core::datagram::IDatagramBody& body) : _cnt(cnt), _body(body), _sent(false) {}
     ~StreamCommaInputBody() {
       if (!_sent) _cnt.send(_body);
     }
@@ -390,30 +390,30 @@ class Controller {
     StreamCommaInputBody& operator=(StreamCommaInputBody&& obj) = delete;
 
     template <class H>
-    std::enable_if_t<core::is_header_v<H>> operator,(H&& header) {
+    std::enable_if_t<core::type_traits::is_header_v<H>> operator,(H&& header) {
       _cnt.send(header, _body);
       _sent = true;
     }
 
     template <class H>
-    std::enable_if_t<core::is_header_v<H>> operator<<(H&& header) {
+    std::enable_if_t<core::type_traits::is_header_v<H>> operator<<(H&& header) {
       _cnt.send(header, _body);
       _sent = true;
     }
 
    private:
     Controller& _cnt;
-    core::IDatagramBody& _body;
+    core::datagram::IDatagramBody& _body;
     bool _sent;
   };
 
   template <class T>
-  std::enable_if_t<core::is_header_v<T>, StreamCommaInputHeader> operator<<(T&& header) {
-    return StreamCommaInputHeader{*this, core::to_header(header)};
+  std::enable_if_t<core::type_traits::is_header_v<T>, StreamCommaInputHeader> operator<<(T&& header) {
+    return StreamCommaInputHeader{*this, core::type_traits::to_header(header)};
   }
   template <class T>
-  std::enable_if_t<core::is_body_v<T>, StreamCommaInputBody> operator<<(T&& body) {
-    return StreamCommaInputBody{*this, core::to_body(body)};
+  std::enable_if_t<core::type_traits::is_body_v<T>, StreamCommaInputBody> operator<<(T&& body) {
+    return StreamCommaInputBody{*this, core::type_traits::to_body(body)};
   }
 };
 

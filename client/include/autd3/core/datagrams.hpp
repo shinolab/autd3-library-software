@@ -1,9 +1,9 @@
-// File: logic.hpp
+// File: datagrams.hpp
 // Project: core
 // Created Date: 13/12/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/12/2021
+// Last Modified: 16/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -13,22 +13,11 @@
 
 #include "interface.hpp"
 
-namespace autd::core {
+namespace autd::core::datagram {
 
 /**
- * \brief check if the data which have msg_id have been processed in the devices.
- * \param num_devices number of devices
- * \param msg_id message id
- * \param rx pointer to received data
- * \return whether the data have been processed
+ * @brief IDatagramHeader with common data
  */
-static bool is_msg_processed(const size_t num_devices, const uint8_t msg_id, const RxDatagram& rx) {
-  size_t processed = 0;
-  for (auto& [ack, rx_msg_id] : rx)
-    if (rx_msg_id == msg_id) processed++;
-  return processed == num_devices;
-}
-
 class CommonHeader final : public IDatagramHeader {
  public:
   void init() override {}
@@ -55,6 +44,9 @@ class CommonHeader final : public IDatagramHeader {
   uint8_t _fpga_flag_mask;
 };
 
+/**
+ * @brief IDatagramHeader with special message id
+ */
 class SpecialMessageIdHeader final : public IDatagramHeader {
  public:
   void init() override {}
@@ -82,6 +74,9 @@ class SpecialMessageIdHeader final : public IDatagramHeader {
   uint8_t _fpga_flag_mask;
 };
 
+/**
+ * @brief NullBody is used for TxDatagram without Body data
+ */
 class NullBody final : public IDatagramBody {
  public:
   void init() override {}
@@ -98,4 +93,4 @@ class NullBody final : public IDatagramBody {
   NullBody& operator=(NullBody&& obj) = default;
 };
 
-}  // namespace autd::core
+}  // namespace autd::core::datagram

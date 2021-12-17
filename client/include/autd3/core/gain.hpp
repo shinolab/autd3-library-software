@@ -3,7 +3,7 @@
 // Created Date: 11/05/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/12/2021
+// Last Modified: 15/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -23,7 +23,7 @@ namespace core {
 /**
  * @brief Gain controls the duty ratio and phase of each transducer in AUTD devices.
  */
-class Gain : public IDatagramBody {
+class Gain : public datagram::IDatagramBody {
  public:
   /**
    * \brief Calculate duty ratio and phase of each transducer

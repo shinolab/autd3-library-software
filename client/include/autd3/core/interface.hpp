@@ -3,7 +3,7 @@
 // Created Date: 12/12/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/12/2021
+// Last Modified: 16/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -16,7 +16,11 @@
 
 namespace autd {
 namespace core {
+namespace datagram {
 
+/**
+ * @brief IDatagramHeader interface represents the data to be packed in the Header part of the TxDatagram
+ */
 class IDatagramHeader {
  public:
   IDatagramHeader() = default;
@@ -31,6 +35,9 @@ class IDatagramHeader {
   [[nodiscard]] virtual bool is_finished() const = 0;
 };
 
+/**
+ * @brief IDatagramHeader interface represents the data to be packed in the Body part of the TxDatagram
+ */
 class IDatagramBody {
  public:
   IDatagramBody() = default;
@@ -45,5 +52,6 @@ class IDatagramBody {
   [[nodiscard]] virtual bool is_finished() const = 0;
 };
 
+}  // namespace datagram
 }  // namespace core
 }  // namespace autd

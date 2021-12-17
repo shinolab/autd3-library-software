@@ -14,7 +14,7 @@ SDKでは, `Gain`を周期的に切り替えるための機能が用意されて
   
   ...
   
-  const auto stm = autd->stm();
+  const auto stm = autd.stm();
 
   const autd::Vector3 center(x, y, z);
   constexpr auto point_num = 100;
@@ -22,22 +22,22 @@ SDKでは, `Gain`を周期的に切り替えるための機能が用意されて
     constexpr auto radius = 20.0;
     const auto theta = 2.0 * M_PI * static_cast<double>(i) / point_num;
     const autd::Vector3 pos(radius * cos(theta), radius * sin(theta), 0.0);
-    const auto g = autd::gain::FocalPoint::create(center + pos);
-    stm->add_gain(g);
+    autd::gain::FocalPoint g(center + pos);
+    stm << g;
   }
 
-  stm->start(0.5);  // 0.5 Hz
+  stm.start(0.5);  // 0.5 Hz
 
   std::cout << "press any key to stop..." << std::endl;
   std::cin.ignore();
 
-  stm->stop();
-  stm->finish();
+  stm.stop();
+  stm.finish();
 ```
 上記の例だと, `center`を中心に半径$\SI{20}{mm}$の円周上を等間隔に100点分サンプリングし, その点を一周$\SI{0.5}{Hz}$の周波数で回す.
 
 `stm`を使用するには, `Controller::stm`で`stm`用のコントローラを取得する.
-この`stm`コントローラに`add_gain`で`Gain`を追加していく.
+この`stm`コントローラに`Gain`を追加していく.
 最後に, `start`関数で`stm`を開始する.
 `stm`を一時停止する場合は`stop`関数を呼ぶ.
 `stop`の後にもう一度`start`を呼べば再開される.
@@ -58,7 +58,7 @@ SDKには単一焦点のみをサポートする`PointSequence`と任意の`Gain
 
 `PointSequence`の使用方法は`stm`のサンプルとほぼ同じである.
 ```cpp
-  const auto seq = autd::sequence::PointSequence::create();
+  autd::PointSequence seq;
 
   const autd::Vector3 center(x, y, z);
   constexpr auto point_num = 200;
@@ -66,12 +66,12 @@ SDKには単一焦点のみをサポートする`PointSequence`と任意の`Gain
     constexpr auto radius = 30.0;
     const auto theta = 2.0 * M_PI * static_cast<double>(i) / static_cast<double>(point_num);
     const autd::Vector3 p(radius * std::cos(theta), radius * std::sin(theta), 0);
-    seq->add_point(center + p);
+    seq << center + p;
   }
 
-  const auto actual_freq = seq->set_frequency(1);
+  const auto actual_freq = seq.set_frequency(1);
   std::cout << "Actual frequency is " << actual_freq << " Hz\n";
-  autd->send(seq);
+  autd << seq;
 ```
 
 サンプリング点数とサンプリング周期に関する制約によって, 指定した周波数と実際の周波数は異なる可能性がある.
@@ -86,7 +86,7 @@ SDKには単一焦点のみをサポートする`PointSequence`と任意の`Gain
 
 `GainSequence`の使用サンプルは`PointSequence`とほぼ同じである.
 ```cpp
-  const auto seq = autd::sequence::GainSequence::create();
+  autd::GainSequence seq(autd.geometry());
 
   const autd::Vector3 center(x, y, z);
   constexpr auto point_num = 200;
@@ -94,13 +94,13 @@ SDKには単一焦点のみをサポートする`PointSequence`と任意の`Gain
     constexpr auto radius = 30.0;
     const auto theta = 2.0 * M_PI * static_cast<double>(i) / static_cast<double>(point_num);
     const autd::Vector3 p(radius * std::cos(theta), radius * std::sin(theta), 0);
-    const auto g = autd::gain::FocalPoint::create(center + p);
-    seq->add_gain(g);
+    autd::gain::FocalPoint g(center + p);
+    seq << g;
   }
 
-  const auto actual_freq = seq->set_frequency(1);
+  const auto actual_freq = seq.set_frequency(1);
   std::cout << "Actual frequency is " << actual_freq << " Hz\n";
-  autd->send(seq);
+  autd << seq;
 ```
 周波数の制約も`PointSequence`と同じである.
 
@@ -138,7 +138,7 @@ SDKには単一焦点のみをサポートする`PointSequence`と任意の`Gain
 `sampling_freq_div_ratio`は1以上65536以下の整数が指定できる.
 
 ```cpp
-    seq->sampling_freq_div_ratio() = 5; // 40kHz/5 = 8kHz
+    seq.sampling_freq_div_ratio() = 5; // 40kHz/5 = 8kHz
 ```
 
 [^fn_gain_seq]: `PointSequence`のおよそ60倍のレイテンシ.

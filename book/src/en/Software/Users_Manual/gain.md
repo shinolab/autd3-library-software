@@ -7,9 +7,9 @@ This SDK can control the phase/amplitude of each transducer individually, which 
 
 `FocalPoint` is the simplest `Gain`, which produces a single focus.
 ```cpp
-    const auto g = autd::gain::FocalPoint::create(autd::Vector3(x, y, z));
+    autd::gain::FocalPoint g(autd::Vector3(x, y, z));
 ```
-The first argument of `FocalPoint::create` is the position of the focus.
+The first argument of constructor is the position of the focus.
 As the second argument, you can specify the amplitude as a duty ratio (`uint8_t`) or a normalized sound pressure amplitude from 0 to 1 (`double`).
 
 Here we note the relationship between the duty ratio $D$ and the sound pressure $p$.
@@ -28,10 +28,10 @@ This `Gain` is based on the paper by Hasegawa et al.[hasegawa2017].
   const autd::Vector3 apex(x, y, z);
   const autd::Vector3 dir = autd::Vector3::UnitZ();
   const double theta_z = 0.3;
-  const auto g = autd::gain::BesselBeam::create(apex, dir, theta_z);
+  autd::gain::BesselBeam g(apex, dir, theta_z);
 ```
 
-The first argument is the apex of the virtual cone that generates the beam, the second argument is the direction of the beam, and the third argument is the angle between the plane perpendicular to the beam and the side of the virtual cone ($\theta_z$ in the figure below).
+The first argument of constructor is the apex of the virtual cone that generates the beam, the second argument is the direction of the beam, and the third argument is the angle between the plane perpendicular to the beam and the side of the virtual cone ($\theta_z$ in the figure below).
 As the fourth argument, the amplitude can be specified as a duty ratio (`uint8_t`) or a normalized sound pressure amplitude of 0-1 (`double`).
 
 <figure>
@@ -43,24 +43,24 @@ As the fourth argument, the amplitude can be specified as a duty ratio (`uint8_t
 
 `PlaneWave` Gain generates plane wave.
 ```cpp
-    const auto g = autd::gain::PlaneWave::create(autd::Vector3(x, y, z));
+    autd::gain::PlaneWave g(autd::Vector3(x, y, z));
 ```
-The first argument of `PlaneWave::create` is the direction of the plane wave.
+The first argument of constructor is the direction of the plane wave.
 As the second argument, you can specify the amplitude as a duty ratio (`uint8_t`) or a normalized sound pressure amplitude from 0 to 1 (`double`).
 
 ## TransducerTest
 
 `TransducerTest` Gain drives a single transducer for debugging.
 ```cpp
-    const auto g = autd::gain::TransducerTest::create(index, duty, phase);
+    autd::gain::TransducerTest g(index, duty, phase);
 ```
-The first argument of `TransducerTest::create` is the index of the transducer, the second argument is the duty ratio, and the third argument is the phase.
+The first argument of constructor is the index of the transducer, the second argument is the duty ratio, and the third argument is the phase.
 
 ## Null
 
 `Null` Gain is `Gain` with zero amplitudes, so it produces nothing.
 ```cpp
-    const auto g = autd::gain::Null::create();
+    autd::gain::Null g();
 ```
 
 ## Holo (Multiple foci)
@@ -95,9 +95,9 @@ To use `Holo` Gain, include `autd3/gain/holo.hpp` and the header of each `Backen
 ...
 
   const auto backend = autd::gain::holo::EigenBackend::create();
-  const auto g = autd::gain::holo::SDP::create(backend, foci, amps);
+  autd::gain::holo::SDP g(backend, foci, amps);
 ```
-The first argument of each algorithm is a `backend`, the second argument is a `vector` of `autd::Vector3` for the position of each focus, and the third argument is a `vector` of `double` for the sound pressure of each focus.
+The first argument of each constructor is a `backend`, the second argument is a `vector` of `autd::Vector3` for the position of each focus, and the third argument is a `vector` of `double` for the sound pressure of each focus.
 In addition, there are additional parameters for each algorithm.
 For details of each parameter, please refer to the respective papers.
 
@@ -181,9 +181,9 @@ In `Grouped`, you can associate an arbitrary `Gain` to device id.
   const auto g0 = ...;
   const auto g1 = ...;
 
-  const auto g = autd::gain::Grouped::create();
-  g->add(0, g0);
-  g->add(1, g1);
+  autd::gain::Grouped g(autd.geometry());
+  g.add(0, g0);
+  g.add(1, g1);
 ```
 In the above case, device 0 uses `Gain g0` and device 1 uses `Gain g1`.
 
@@ -203,8 +203,6 @@ class Focus final : public autd::core::Gain {
  public:
   explicit Focus(const autd::Vector3 point) : _point(point) {}
 
-  static autd::GainPtr create(autd::Vector3 point) { return std::make_shared<Focus>(point); }
-
   void calc(const autd::Geometry& geometry) override {
     const auto wavenum = 2.0 * M_PI / geometry.wavelength();
     for (const auto& device : geometry)
@@ -213,7 +211,7 @@ class Focus final : public autd::core::Gain {
         this->_data[transducer.id()].duty = 0xFF;
         this->_data[transducer.id()].phase = autd::core::utils::to_phase(dist * wavenum);
       }
-  }
+  } 
 
  private:
   autd::Vector3 _point;

@@ -13,7 +13,7 @@ The following is a sample of moving a single focus periodically on the circumfer
   
   ...
   
-  const auto stm = autd->stm();
+  const auto stm = autd.stm();
 
   const autd::Vector3 center(x, y, z);
   constexpr auto point_num = 100;
@@ -21,17 +21,17 @@ The following is a sample of moving a single focus periodically on the circumfer
     constexpr auto radius = 20.0;
     const auto theta = 2.0 * M_PI * static_cast<double>(i) / point_num;
     const autd::Vector3 pos(radius * cos(theta), radius * sin(theta), 0.0);
-    const auto g = autd::gain::FocalPoint::create(center + pos);
-    stm->add_gain(g);
+    autd::gain::FocalPoint g(center + pos);
+    stm << g;
   }
 
-  stm->start(0.5);  // 0.5 Hz
+  stm.start(0.5);  // 0.5 Hz
 
   std::cout << "press any key to stop..." << std::endl;
   std::cin.ignore();
 
-  stm->stop();
-  stm->finish();
+  stm.stop();
+  stm.finish();
 ```
 In the above example, 100 points are sampled at equal intervals on a circle of radius $\SI{20}{mm}$ whose center is at `center`.
 A focus moves on the circle while leaping from a sampled point to another at a frequency of $\SI{0.5}{Hz}$.
@@ -59,7 +59,7 @@ SDK provides `PointSequence` which supports only a single focus moving, and `Gai
 
 The usage of `PointSequence` is almost the same as that of `stm`.
 ```cpp
-  const auto seq = autd::sequence::PointSequence::create();
+  autd::sequence::PointSequence seq;
 
   const autd::Vector3 center(x, y, z);
   constexpr auto point_num = 200;
@@ -67,12 +67,12 @@ The usage of `PointSequence` is almost the same as that of `stm`.
     constexpr auto radius = 30.0;
     const auto theta = 2.0 * M_PI * static_cast<double>(i) / static_cast<double>(point_num);
     const autd::Vector3 p(radius * std::cos(theta), radius * std::sin(theta), 0);
-    seq->add_point(center + p);
+    seq << center + p;
   }
 
-  const auto actual_freq = seq->set_frequency(1);
+  const auto actual_freq = seq.set_frequency(1);
   std::cout << "Actual frequency is " << actual_freq << " Hz\n";
-  autd->send(seq);
+  autd << seq;
 ```
 
 Due to the constraints on the number of sampling points and sampling period, the specified frequency and the actual frequency may differ.
@@ -88,7 +88,7 @@ The `set_frequency` function returns the actual frequency.
 
 The usage of `GainSequence` is almost the same as that of `PointSequence`.
 ```cpp
-  const auto seq = autd::sequence::GainSequence::create();
+  autd::GainSequence seq(autd.geometry());
 
   const autd::Vector3 center(x, y, z);
   constexpr auto point_num = 200;
@@ -96,13 +96,13 @@ The usage of `GainSequence` is almost the same as that of `PointSequence`.
     constexpr auto radius = 30.0;
     const auto theta = 2.0 * M_PI * static_cast<double>(i) / static_cast<double>(point_num);
     const autd::Vector3 p(radius * std::cos(theta), radius * std::sin(theta), 0);
-    const auto g = autd::gain::FocalPoint::create(center + p);
-    seq->add_gain(g);
+    autd::gain::FocalPoint g(center + p);
+    seq << g;
   }
 
-  const auto actual_freq = seq->set_frequency(1);
+  const auto actual_freq = seq.set_frequency(1);
   std::cout << "Actual frequency is " << actual_freq << " Hz\n";
-  autd->send(seq);
+  autd << seq;
 ```
 The frequency constraint is also the same as for `PointSequence`.
 
@@ -140,7 +140,7 @@ The base frequency of sampling frequency is $\SI{40}{kHz}$.
 The `sampling_freq_div_ratio` can be an integer from 1 to 65536.
 
 ```cpp
-    seq->sampling_freq_div_ratio() = 5; // 40kHz/5 = 8kHz
+    seq.sampling_freq_div_ratio() = 5; // 40kHz/5 = 8kHz
 ```
 
 [^fn_gain_seq]: Approximately 60x latency against for `PointSequence`.

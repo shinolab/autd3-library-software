@@ -26,8 +26,8 @@ SDKで複数台のデバイスを使用する場合は`add_device`関数を接�
 例えば, 上図のように配置・接続しており, 図左側のデバイスが1台目, 右側のデバイスが2台目だとする.
 さらに, グローバル座標を1台目のローカル座標と同じだとすると,
 ```cpp
-  autd->geometry()->add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
-  autd->geometry()->add_device(autd::Vector3(autd::DEVICE_WIDTH, 0, 0), autd::Vector3(0, 0, 0));
+  autd.geometry().add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+  autd.geometry().add_device(autd::Vector3(autd::DEVICE_WIDTH, 0, 0), autd::Vector3(0, 0, 0));
 ```
 とすれば良い.
 ここで, `autd::DEVICE_WIDTH`はデバイスの (基板外形を含めた) 横幅である.
@@ -35,8 +35,8 @@ SDKで複数台のデバイスを使用する場合は`add_device`関数を接�
 
 また, 例えば, グローバル座標を2台目のローカル座標と同じだとすると,
 ```cpp
-  autd->geometry()->add_device(autd::Vector3(-autd::DEVICE_WIDTH, 0, 0), autd::Vector3(0, 0, 0));
-  autd->geometry()->add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+  autd.geometry().add_device(autd::Vector3(-autd::DEVICE_WIDTH, 0, 0), autd::Vector3(0, 0, 0));
+  autd.geometry().add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
 ```
 とすれば良い.
 
@@ -47,8 +47,8 @@ SDKで複数台のデバイスを使用する場合は`add_device`関数を接�
 
 さらに, 例えば, 上図のように配置されており, 下が1台目, 左が2台目で, グローバル座標を1台目のローカル座標と同じだとすると,
 ```cpp
-  autd->geometry()->add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
-  autd->geometry()->add_device(autd::Vector3(0, 0, autd::DEVICE_WIDTH), autd::Vector3(0, M_PI / 2.0, 0));
+  autd.geometry().add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+  autd.geometry().add_device(autd::Vector3(0, 0, autd::DEVICE_WIDTH), autd::Vector3(0, M_PI / 2.0, 0));
 ```
 のように指定する.
 

@@ -12,10 +12,10 @@ For Visual Studio Community, install "Desktop Development with C++".
 If you are using Linux, you can use gcc. If you are using macOS, you can use clang.
 In addition, since the following instruction will be operated from a terminal, you should set PATH appropriately.
 
-* Visual Studio Community 2022 17.0.1
-* CMake 3.22.0
-* git 2.34.0.windows.1
-* npcap 1.55
+* Visual Studio Community 2022 17.0.4
+* CMake 3.22.1
+* git 2.34.1.windows.1
+* npcap 1.60
 
 ## Setup Device
 
@@ -141,30 +141,30 @@ string get_adapter_name() {
 }
 
 int main() try {
-  auto autd = Controller::create();
+  autd::Controller autd;
 
-  autd->geometry()->add_device(Vector3(0, 0, 0), Vector3(0, 0, 0));
+  autd.geometry().add_device(Vector3(0, 0, 0), Vector3(0, 0, 0));
 
   const auto ifname = get_adapter_name();
-  auto link = link::SOEM::create(ifname, autd->geometry()->num_devices());
-  autd->open(std::move(link));
+  auto link = link::SOEM::create(ifname, autd.geometry().num_devices());
+  autd.open(std::move(link));
 
-  autd->clear();
+  autd.clear();
 
-  auto firm_info_list = autd->firmware_info_list();
+  auto firm_info_list = autd.firmware_info_list();
   for (auto&& firm_info : firm_info_list) cout << firm_info << endl;
 
-  autd->silent_mode() = true;
+  autd.silent_mode() = true;
 
   const auto focus = Vector3(TRANS_SPACING_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SPACING_MM * ((NUM_TRANS_Y - 1) / 2.0), 150.0);
-  const auto g = gain::FocalPoint::create(focus);
-  const auto m = modulation::Sine::create(150);
-  autd->send(g, m);
+  gain::FocalPoint g(focus);
+  modulation::Sine m(150);
+  autd << g, m;
 
   cout << "press enter to finish..." << endl;
   cin.ignore();
 
-  autd->close();
+  autd.close();
 
   return 0;
 } catch (exception& ex) {
@@ -195,12 +195,12 @@ You also need `autd3/link/soem.hpp` to use `link::SOEM`.
 
 Then, create `Controller` instance.
 ```cpp
-  auto autd = autd::Controller::create();
+  autd::Controller autd;
 ```
 
 After that, we specify the geometry of the device in the real world.
 ```cpp
-  autd->geometry()->add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+  autd.geometry().add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
 ```
 The first argument of `add_device` is the position, the second argument is the rotation.
 The position is 0-th transducer position in the global coordinate system you set.
@@ -210,8 +210,8 @@ Here, we assume that the device is placed at global origin without rotation.
 Next, create `Link`, and connect to the device.
 ```cpp
   const auto ifname = get_adapter_name();
-  auto link = link::SOEM::create(ifname, autd->geometry()->num_devices());
-  autd->open(std::move(link));
+  auto link = link::SOEM::create(ifname, autd.geometry().num_devices());
+  autd.open(std::move(link));
 ```
 The first argument of `link::SOEM::create()` is the ethernet interface name where the AUTD3 device is connected, and the second argument is the number of AUTD3 devices connected. 
 We prepared a utility function `get_adapter_name` to get the interface name list, so please select the appropriate one at runtime.
@@ -220,19 +220,19 @@ We prepared a utility function `get_adapter_name` to get the interface name list
 Then, initialize the AUTD devices.
 You may not need to call `clear()` since it is initialized at power-on.
 ```cpp
-  autd->clear();
+  autd.clear();
 ```
 
 Next, we check the version of the firmware.
 This operation is not required to run AUTD3.
 ```cpp
-  auto firm_info_list = autd->firmware_info_list();
+  auto firm_info_list = autd.firmware_info_list();
   for (auto&& firm_info : firm_info_list) cout << firm_info << endl;
 ```
 
 Next, we set _silent mode_ on.
 ```cpp
-  autd->silent_mode() = true;
+  autd.silent_mode() = true;
 ```
 Since it is on by default, you don't need to call it in fact.
 If you want to turn it off, please give `false`.
@@ -241,16 +241,16 @@ In _silent mode_, the phase/amplitude parameters given to the transducer are pas
 After that, send the `Modulation` which applies $\SI{150}{Hz}$ Sin wave amplitude modulation and the `Gain` which represents the single focus.
 ```cpp
   const auto point = autd::Vector3(autd::TRANS_SPACING_MM * ((autd::NUM_TRANS_X - 1) / 2.0), autd::TRANS_SPACING_MM * ((autd::NUM_TRANS_Y - 1) / 2.0), 150.0);
-  const auto g = autd::gain::FocalPoint::create(point);
-  const auto m = autd::modulation::Sine::create(150);
-  autd->send(g, m);
+  autd::gain::FocalPoint g(point);
+  autd::modulation::Sine m(150);
+  autd << g, m;
 ```
 The `point` is a bit complicated; `TRANS_SPACING_MM` represents the spacing of the transducers, and `NUM_TRANS_X` and `NUM_TRANS_Y` represent the number of transducers in the $x,y$-axis, respectively.
 Therefore, `point` represents the point $\SI{150}{mm}$ right above the center of the transducers array.
 
 Finally, you should disconnect the device.
 ```cpp
-  autd->close();
+  autd.close();
 ```
 
 In the next section, we will describe the basic functions.
