@@ -43,7 +43,7 @@ Color scaleはこの色空間の音圧の最大値を表す.
 大量のデバイスを使用すると色が飽和する場合があるので, その時はColor scaleの値を大きくすれば良い.
 また, Sliceそのもののアルファ値をSlice alphaで指定できる.
 
-さらに, `offscreen_renderer feature`をenableにした状態でコンパイルすると, Sliceに表示されている音場の保存及び録画ができるようになる[^1].
+Sliceに表示されている音場の保存及び録画ができる.
 
 ### Camera tab
 
@@ -88,5 +88,3 @@ Logタブではデバッグ用のログが表示される.
 
 portはSDKのEmulator linkとの間で使うポート番号である.
 また, vsyncをtrueにすると垂直同期が有効になる.
-
-[^1]: Windows 10 64bit向けのコンパイル済みのバイナリではONになっている. なお, この機能は Vulkanのラッパーである[Vulkano](https://github.com/vulkano-rs/vulkano)を使用している, コンパイルの際はVulkanoのコンパイル方法も確認すること.

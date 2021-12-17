@@ -7,7 +7,7 @@
 パッケージマネージャからインストールすること.
 
 ```
-(v1.6) pkg> add https://github.com/shinolab/AUTD3.jl.git
+(v1.7) pkg> add https://github.com/shinolab/AUTD3.jl.git
 ```
 
 ### Linux/macOS

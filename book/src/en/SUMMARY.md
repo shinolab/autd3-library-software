@@ -9,7 +9,6 @@
         - [Link](./Software/Users_Manual/link.md)
         - [Gain](./Software/Users_Manual/gain.md)
         - [Modulation](./Software/Users_Manual/modulation.md)
-           - [Filter](./Software/Users_Manual/filter.md)
         - [Spatio-Temporal Modulation](./Software/Users_Manual/stm.md)
         - [Controller](./Software/Users_Manual/controller.md)
     - [FFI](./Software/FFI/README.md)
