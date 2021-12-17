@@ -13,11 +13,10 @@ Visual Studio Community 2022は「C++によるデスクトップ開発」にチ�
 なお, Linuxの場合はgccが, macOSの場合はclangが使えれば良い.
 また, 以下はターミナルから操作するため, PATHを通しておくことを推奨する.
 
-* Visual Studio Community 2022 17.0.1
-* CMake 3.22.0
-* git 2.34.0.windows.1[^fn_git]
-* npcap 1.55[^fn_npcap]
-
+* Visual Studio Community 2022 17.0.4
+* CMake 3.22.1
+* git 2.34.1.windows.1[^fn_git]
+* npcap 1.60[^fn_npcap]
 
 ## Setup Device
 
@@ -31,8 +30,8 @@ PCのイーサネットポートとAUTD3デバイスのEtherCAT In ([Concept](co
 なお, firmwareが古い場合, 動作は保証されない.
 本文章におけるfirmwareのversionは1.9が想定される.
 
-firmwareのupdateには[Vivado Design Suite](https://www.xilinx.com/products/design-tools/vivado.html), 及び, [J-Link Software](https://www.segger.com/downloads/jlink/)をインストールしたWindows 10 64bit PCが必要である[^fn_vivado].
-なお, Vivado 2021.1, 及び, J-Link Software v7.58b (x64)での動作を確認している.
+firmwareのupdateには[Vivado Design Suite](https://www.xilinx.com/products/design-tools/vivado.html), 及び, [J-Link Software](https://www.segger.com/downloads/jlink/)をインストールしたWindows 10/11 64bit PCが必要である[^fn_vivado].
+なお, Vivado 2021.2, 及び, J-Link Software v7.58b (x64)での動作を確認している.
 
 まず, AUTD3デバイスとPCを[XILINX Platform Cable](https://www.xilinx.com/products/boards-and-kits/hw-usb-ii-g.html), 及び, [J-Link 9-Pin Cortex-M Adapter](https://www.segger-pocjapan.com/j-link-9-pin-cortex-m-adapter)付きの[J-Link Plus](https://www.segger.com/products/debug-probes/j-link/models/j-link-plus/)で接続し, AUTD3の電源を入れる.
 次に, [SDK](https://github.com/shinolab/autd3-library-software)内の`dist/firmware/autd_firmware_writer.ps1`, または, [GitHub Release](https://github.com/shinolab/autd3-library-software/releases)で配布されているパッケージ内の`firmware/autd_firmware_writer.ps1`をpowershellから実行し, 指示に従えばよい.
@@ -145,30 +144,30 @@ string get_adapter_name() {
 }
 
 int main() try {
-  auto autd = Controller::create();
+  autd::Controller autd;
 
-  autd->geometry().add_device(Vector3(0, 0, 0), Vector3(0, 0, 0));
+  autd.geometry().add_device(Vector3(0, 0, 0), Vector3(0, 0, 0));
 
   const auto ifname = get_adapter_name();
-  auto link = link::SOEM::create(ifname, autd->geometry().num_devices());
-  autd->open(std::move(link));
+  auto link = link::SOEM::create(ifname, autd.geometry().num_devices());
+  autd.open(std::move(link));
 
-  autd->clear();
+  autd.clear();
 
-  auto firm_info_list = autd->firmware_info_list();
+  auto firm_info_list = autd.firmware_info_list();
   for (auto&& firm_info : firm_info_list) cout << firm_info << endl;
 
-  autd->silent_mode() = true;
+  autd.silent_mode() = true;
 
   const auto focus = Vector3(TRANS_SPACING_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SPACING_MM * ((NUM_TRANS_Y - 1) / 2.0), 150.0);
-  const auto g = gain::FocalPoint::create(focus);
-  const auto m = modulation::Sine::create(150);
-  autd->send(g, m);
+  gain::FocalPoint g(focus);
+  modulation::Sine m(150);
+  autd << g, m;
 
   cout << "press enter to finish..." << endl;
   cin.ignore();
 
-  autd->close();
+  autd.close();
 
   return 0;
 } catch (exception& ex) {
@@ -197,14 +196,14 @@ SDKを使用するには, `autd3.hpp`ヘッダーをインクルードする.
 #include "autd3/link/soem.hpp"
 ```
 
-次に, `Controller`の作成をする.
+次に, `Controller`を作成する.
 ```cpp
-  auto autd = autd::Controller::create();
+  autd::Controller autd;
 ```
 
 その後, デバイスの配置を指定する.
 ```cpp
-  autd->geometry().add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
+  autd.geometry().add_device(autd::Vector3(0, 0, 0), autd::Vector3(0, 0, 0));
 ```
 `add_device`の第一引数は位置, 第2引数は回転を表す.
 位置は自分の設定したグローバル座標系におけるデバイスの原点を指定する.
@@ -214,8 +213,8 @@ SDKを使用するには, `autd3.hpp`ヘッダーをインクルードする.
 次に, `Link`を作成し, デバイスと接続する.
 ```cpp
   const auto ifname = get_adapter_name();
-  auto link = link::SOEM::create(ifname, autd->geometry().num_devices());
-  autd->open(std::move(link));
+  auto link = link::SOEM::create(ifname, autd.geometry().num_devices());
+  autd.open(std::move(link));
 ```
 `link::SOEM::create()`の第一引数はインターフェース名で, 第2引数は接続しているAUTD3デバイスの数である. 
 インターフェース名は, Windowsの場合は, `\Device\NPF_{XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}`のような文字列となり, 確認するのはひと手間かかるので, ユーティリティ関数`get_adapter_name`を用意した. 実行時に適当なものを選択されたい.
@@ -225,19 +224,19 @@ SDKを使用するには, `autd3.hpp`ヘッダーをインクルードする.
 次に, AUTDデバイスの初期化を行う.
 電源投入時に初期化されるので`clear()`は呼ばなくても良いかもしれない.
 ```cpp
-  autd->clear();
+  autd.clear();
 ```
 
 次に, firmwareのバージョンを確認している.
 これは必須ではない.
 ```cpp
-  auto firm_info_list = autd->firmware_info_list();
+  auto firm_info_list = autd.firmware_info_list();
   for (auto&& firm_info : firm_info_list) cout << firm_info << endl;
 ```
 
 次に, silentモードを指定する.
 ```cpp
-  autd->silent_mode() = true;
+  autd.silent_mode() = true;
 ```
 デフォルトではONになっているので, これも実際には呼ぶ必要はない.
 OFFにしたい場合は`false`を与える.
@@ -245,17 +244,17 @@ silentモードでは, 振動子に与える位相/振幅パラメータをLow-p
 
 その後, 単一焦点を表す`Gain`と$\SI{150}{Hz}$のSin波変調をかける`Modulation`を作成し, デバイスに送信する.
 ```cpp
-  const auto point = autd::Vector3(autd::TRANS_SPACING_MM * ((autd::NUM_TRANS_X - 1) / 2.0), autd::TRANS_SPACING_MM * ((autd::NUM_TRANS_Y - 1) / 2.0), 150.0);
-  const auto g = autd::gain::FocalPoint::create(point);
-  const auto m = autd::modulation::Sine::create(150);
-  autd->send(g, m);
+  const auto focus = Vector3(TRANS_SPACING_MM * ((NUM_TRANS_X - 1) / 2.0), TRANS_SPACING_MM * ((NUM_TRANS_Y - 1) / 2.0), 150.0);
+  gain::FocalPoint g(focus);
+  modulation::Sine m(150)
+  autd << g, m;
 ```
-`point`が若干ややこしいが, `TRANS_SPACING_MM`が振動子の配置間隔を, `NUM_TRANS_X`, `NUM_TRANS_Y`がそれぞれ, $x,y$軸方向の振動子の数を表している.
-そのため, `pointは`振動子アレイの中心から直上$\SI{150}{mm}$を表す.
+`focus`が若干ややこしいが, `TRANS_SPACING_MM`が振動子の配置間隔を, `NUM_TRANS_X`, `NUM_TRANS_Y`がそれぞれ, $x,y$軸方向の振動子の数を表している.
+そのため, `focus`は振動子アレイの中心から直上$\SI{150}{mm}$を表す.
 
 最後に, デバイスとの接続を切ってお終いである.
 ```cpp
-  autd->close();
+  autd.close();
 ```
 
 次頁では基本的な関数について解説していく.

@@ -2,7 +2,7 @@
 
 c言語向けのAPIは[client/capi](https://github.com/shinolab/autd3-library-software/tree/master/client/capi)以下で定義されている.
 以下に, このAPIのリファレンスを載せる. 
-実際の利用方法は, [C#](https://github.com/shinolab/autd3sharp)/[python](https://github.com/shinolab/pyautd)/[Julia](https://github.com/shinolab/AUTD3.jl)のラッパーライブラリを参照されたい.
+実際の利用方法は, [C API Example](https://github.com/shinolab/autd3-library-software/tree/master/client/capi/example), [C#](https://github.com/shinolab/autd3sharp)/[python](https://github.com/shinolab/pyautd)/[Julia](https://github.com/shinolab/AUTD3.jl)のラッパーライブラリを参照されたい.
 
 > Note: なお, 呼び出し規約は特に明示していない. x86の規定はおそらくcdeclになっていると思われるが確認しておらず, x86から使用するとエラーがでるかもしれない.
 
@@ -485,12 +485,14 @@ Gain::Nullを作成する.
 ##  AUTDGainGrouped (autd3capi)
 
 Gain::Groupedを作成する.
+handleは`AUTDCreateController`で作成したものを使う.
 
 作成したGainは最後に`AUTDDeleteGain`で削除する必要がある.
 
 | Argument name / return       | type             | in/out | description                                                                              |
 |------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
 | gain                   | void**     | out    | pointer to GainPtr                                                                      |
+| handle                       | void*      | in     | ControllerPtr                                                                           |
 | return                       | void       | -      | nothing                                                                                 |
 
 ##  AUTDGainGroupedAdd (autd3capi)
@@ -629,9 +631,9 @@ Modulation::Sineを作成する.
 | offset                 | double     | in     | offset of sin wave                                                                      |
 | return                       | void       | -      | nothing                                                                                 |
 
-##  AUTDModulationSinePressure (autd3capi)
+##  AUTDModulationSineSquared (autd3capi)
 
-Modulation::SinePressureを作成する.
+Modulation::SineSquaredを作成する.
 
 作成したModulationは最後に`AUTDDeleteModulation`で削除する必要がある.
 
@@ -723,12 +725,14 @@ PointSequenceを作成する.
 ##  AUTDGainSequence (autd3capi)
 
 GainSequenceを作成する.
+handleは`AUTDCreateController`で作成したものを使う.
 
 作成したGainSequenceは最後に`AUTDDeleteSequence`で削除する必要がある.
 
 | Argument name / return       | type             | in/out | description                                                                              |
 |------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
 | out                    | void**     | out    | pointer to GainSequencePtr                                                              |
+| handle                 | void*      | in     | ControllerPtr                                                                           |
 | gain_mode              | uint16_t   | in     | gain mode of GainSequence                                                               |
 | return                       | void       | -      | nothing                                                                                 |
 
@@ -748,31 +752,6 @@ falseの場合には`AUTDGetLastError`でエラーメッセージを取得でき
 | y                      | double     | in     | y coordinate of point                                                                   |
 | z                      | double     | in     | z coordinate of point                                                                   |
 | duty                   | uint8_t    | in     | duty ratio of point                                                                     |
-| return                       | bool       | -      | true if success                                                                         |
-
-##  AUTDSequenceAddPoints (autd3capi)
-
-PointSequenceに複数の制御点を追加する.
-
-`seq`には`AUTDSequence`で作成したPointSequenceを使用する.
-
-`points`は`points_size`$\times 3$の長さの配列のポインタであり,
-x\[0\], y\[0\], z\[0\], x\[1\], y\[1\],
-z\[1\],\...のような順番で指定する.
-`duties_size`が`points_size`未満の場合,
-不足分はduty=0xFFのデータが埋められる.
-`duties_size`が`points_size`より大きい場合, 過剰分は無視される.
-
-この関数は失敗した場合にfalseを返す.
-falseの場合には`AUTDGetLastError`でエラーメッセージを取得できる.
-
-| Argument name / return       | type             | in/out | description                                                                              |
-|------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
-| seq                    | void*      | in     | GainSequencePtr                                                                         |
-| points                 | double*    | in     | pointer to points array                                                                 |
-| points_size            | uint64_t   | in     | length of points array                                                                  |
-| duties                 | double*    | in     | pointer to duties array                                                                 |
-| duties_size            | uint64_t   | in     | length of duties array                                                                  |
 | return                       | bool       | -      | true if success                                                                         |
 
 ##  AUTDSequenceAddGain (autd3capi)
@@ -871,25 +850,6 @@ Sequenceのサンプリング周波数分周比を設定する.
 | freq_div               | uint32_t   | in     | sampling freqyency division ratio                                                       |
 | return                       | void       | -      | nothing                                                                                 |
 
-##  AUTDCircumSequence (autd3capi)
-
-円周状のPointSequenceを作成する.
-
-作成したPointSequenceは最後に`AUTDDeleteSequence`で削除する必要がある.
-
-| Argument name / return       | type             | in/out | description                                                                              |
-|------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
-| out                    | void**     | out    | pointer to PointSequencePtr                                                             |
-| x                      | double     | in     | x coordinate of circumference                                                           |
-| y                      | double     | in     | y coordinate of circumference                                                           |
-| z                      | double     | in     | z coordinate of circumference                                                           |
-| nx                     | double     | in     | x coordinate of normal of circumference                                                 |
-| ny                     | double     | in     | y coordinate of normal of circumference                                                 |
-| nz                     | double     | in     | z coordinate of normal of circumference                                                 |
-| radius                 | double     | in     | radius of circumference                                                                 |
-| n                      | uint64_t   | in     | number of sampling points                                                               |
-| return                       | void       | -      | nothing                                                                                 |
-
 ##  AUTDDeleteSequence (autd3capi)
 
 作成したSequenceを削除する.
@@ -949,9 +909,9 @@ AUTDPauseで一時停止した出力を再開する.send functionの一つ.
 | handle                 | void*      | in     | ControllerPtr                                                                           |
 | return                       | int32_t    | -      | if $>0$, it guarantees devices have processed data. if $<0$, error ocurred.             |
 
-##  AUTDSendGainModulation (autd3capi)
+##  AUTDSendHeader (autd3capi)
 
-GainとModulationを送信する. send functionの一つ.
+Header (Modulation) を送信する. send functionの一つ.
 
 `handle`には`AUTDCreateController`で作成したControllerを使用する.
 
@@ -966,13 +926,12 @@ GainとModulationを送信する. send functionの一つ.
 | Argument name / return       | type             | in/out | description                                                                              |
 |------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
 | handle                 | void*      | in     | ControllerPtr                                                                           |
-| gain                   | void*      | in     | GainPtr                                                                                 |
-| mod                    | void*      | in     | ModulationPtr                                                                           |
+| header                   | void*      | in     | pointer to Header                                                                                 |
 | return                       | int32_t    | -      | if $>0$, it guarantees devices have processed data. if $<0$, error ocurred.             |
 
-##  AUTDSendSequenceModulation (autd3capi)
+##  AUTDSendBody (autd3capi)
 
-PointSequenceとModulationを送信する. send functionの一つ.
+Body (Gain, PointSequence, GainSequence) を送信する. send functionの一つ.
 
 `handle`には`AUTDCreateController`で作成したControllerを使用する.
 
@@ -987,13 +946,12 @@ PointSequenceとModulationを送信する. send functionの一つ.
 | Argument name / return       | type             | in/out | description                                                                              |
 |------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
 | handle                 | void*      | in     | ControllerPtr                                                                           |
-| seq                    | void*      | in     | PointSequencePtr                                                                        |
-| mod                    | void*      | in     | ModulationPtr                                                                           |
+| body                   | void*      | in     | pointer to Body                                                                                 |
 | return                       | int32_t    | -      | if $>0$, it guarantees devices have processed data. if $<0$, error ocurred.             |
 
-##  AUTDSendGainSequenceModulation (autd3capi)
+##  AUTDSendHeaderBody (autd3capi)
 
-GainSequenceとModulationを送信する. send functionの一つ.
+Header (Modulation) と Body (Gain, PointSequence, GainSequence) を送信する. send functionの一つ.
 
 `handle`には`AUTDCreateController`で作成したControllerを使用する.
 
@@ -1008,8 +966,8 @@ GainSequenceとModulationを送信する. send functionの一つ.
 | Argument name / return       | type             | in/out | description                                                                              |
 |------------------------------|------------------|--------|-----------------------------------------------------------------------------------------|
 | handle                 | void*      | in     | ControllerPtr                                                                           |
-| seq                    | void*      | in     | GainSequencePtr                                                                         |
-| mod                    | void*      | in     | ModulationPtr                                                                           |
+| header                   | void*      | in     | pointer to Header                                                                                 |
+| body                   | void*      | in     | pointer to Body                                                                                 |
 | return                       | int32_t    | -      | if $>0$, it guarantees devices have processed data. if $<0$, error ocurred.             |
 
 ##  AUTDSTMController (autd3capi)

@@ -43,8 +43,6 @@ The intensity of the sound pressure is represented by color in Slice.
 If you use a large number of devices, the color may be saturated, in which case you should increase the value of "Color scale".
 You can also specify the alpha value of Slice itself by `Slice alpha'.
 
-Moreover, if you compile with `offscreen_renderer` feature enabled, you can save and record the sound field displayed on Slice[^1].
-
 ### Camera tab
 
 In Camera tab, you can change camera position, rotation, field of view angle, near clip and far clip settings.
@@ -85,5 +83,3 @@ Some settings can be edited only from `settings.json`.
 The most important ones are "port" and "vsync".
 "port" is the port number used to connect to the SDK's Emulator link.
 If you set "vsync" to true, vertical synchronization is enabled.
-
-[^1]: In the pre-built binary for Windows 10 64bit, it is turned on. Note that this function uses [Vulkano](https://github.com/vulkano-rs/vulkano), which is a wrapper for Vulkan, and you should check how to compile Vulkano when you compile it.

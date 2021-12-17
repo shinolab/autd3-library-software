@@ -7,14 +7,14 @@ AUTDは各振動子の位相/振幅を個別に制御することができ, こ�
 
 `FocalPoint`は最も単純な`Gain`であり, 単一焦点を生成する.
 ```cpp
-    const auto g = autd::gain::FocalPoint::create(autd::Vector3(x, y, z));
+    autd::gain::FocalPoint g(autd::Vector3(x, y, z));
 ```
-`FocalPoint::create`の第1引数には焦点の位置を指定する.
+コンストラクタの第1引数には焦点の位置を指定する.
 第2引数として, 振幅をDuty比 (`uint8_t`), または, 0-1の規格化された音圧振幅 (`double`) で指定できる.
 
 ここでDuty比$D$と音圧$p$の関係性について注意する.
 理論的には
-$$
+$$ 
     p \propto \sin \pi D
 $$
 の関係性がある.
@@ -29,10 +29,9 @@ $$
   const autd::Vector3 apex(x, y, z);
   const autd::Vector3 dir = autd::Vector3::UnitZ();
   const double theta_z = 0.3;
-  const auto g = autd::gain::BesselBeam::create(apex, dir, theta_z);
+  autd::gain::BesselBeam g(apex, dir, theta_z);
 ```
-
-第1引数はビームを生成する仮想円錐の頂点であり, 第2引数はビームの方向, 第3引数はビームに垂直な面とビームを生成する仮想円錐の側面となす角度である (下図の$\theta_z$).
+コンストラクタの第1引数はビームを生成する仮想円錐の頂点であり, 第2引数はビームの方向, 第3引数はビームに垂直な面とビームを生成する仮想円錐の側面となす角度である (下図の$\theta_z$).
 第4引数として, 振幅をDuty比 (`uint8_t`), または, 0-1の規格化された音圧振幅 (`double`) で指定できる.
 
 <figure>
@@ -44,16 +43,16 @@ $$
 
 `PlaneWave`は平面波を生成する.
 ```cpp
-    const auto g = autd::gain::PlaneWave::create(autd::Vector3(x, y, z));
+    autd::gain::PlaneWave g(autd::Vector3(x, y, z));
 ```
-`PlaneWave::create`の第1引数には平面波の方向を指定する.
+コンストラクタの第1引数には平面波の方向を指定する.
 第2引数として, 振幅をDuty比 (`uint8_t`), または, 0-1の規格化された音圧振幅 (`double`) で指定できる.
 
 ## TransducerTest
 
 `TransducerTest`はデバッグ用の`Gain`であり, ある一つの振動子のみを駆動する.
 ```cpp
-    const auto g = autd::gain::TransducerTest::create(index, duty, phase);
+    autd::gain::TransducerTest g(index, duty, phase);
 ```
 `TransducerTest::create`の第1引数には振動子のindex, 第2引数はDuty比, 第3引数には位相を指定する.
 
@@ -61,7 +60,7 @@ $$
 
 `Null`は振幅0の`Gain`である.
 ```cpp
-    const auto g = autd::gain::Null::create();
+    autd::gain::Null g;
 ```
 
 ## Holo (Multiple foci)
@@ -96,9 +95,9 @@ SDKには以下の`Backend`が用意されている
 ...
 
   const auto backend = autd::gain::holo::EigenBackend::create();
-  const auto g = autd::gain::holo::SDP::create(backend, foci, amps);
+  autd::gain::holo::SDP g(backend, foci, amps);
 ```
-各アルゴリズムの第1引数は`backend`, 第2引数は各焦点の位置を`autd::Vector3`の`vector`で, 第3引数は各焦点の音圧を`double`の`vector`で指定する.
+各アルゴリズムのコンストラクタの第1引数は`backend`, 第2引数は各焦点の位置を`autd::Vector3`の`vector`で, 第3引数は各焦点の音圧を`double`の`vector`で指定する.
 また, 各アルゴリズムごとに追加のパラメータが存在する.
 各パラメータの詳細はそれぞれの論文を参照されたい.
 
@@ -185,9 +184,9 @@ ArrayFireバックエンドをビルドする場合, [ArrayFire](https://arrayfi
   const auto g0 = ...;
   const auto g1 = ...;
 
-  const auto g = autd::gain::Grouped::create();
-  g->add(0, g0);
-  g->add(1, g1);
+  autd::gain::Grouped g(autd.geometry());
+  g.add(0, g0);
+  g.add(1, g1);
 ```
 上の場合は, デバイス0が`Gain g0`, デバイス1が`Gain g1`を使用する.
 
@@ -207,8 +206,6 @@ class Focus final : public autd::core::Gain {
  public:
   explicit Focus(const autd::Vector3 point) : _point(point) {}
 
-  static autd::GainPtr create(autd::Vector3 point) { return std::make_shared<Focus>(point); }
-
   void calc(const autd::Geometry& geometry) override {
     const auto wavenum = 2.0 * M_PI / geometry.wavelength();
     for (const auto& device : geometry)
@@ -224,11 +221,11 @@ class Focus final : public autd::core::Gain {
 };
 ```
 
-`Controller::send`関数は`GainPtr`型 (`shared_ptr<autd::core::Gain>`のエイリアス) を引数に取る.
-そのため, これを返すような`create`関数を定義しておく.
-今回は, 単一焦点を生成するので, 焦点位置を引数で渡してある.
+`Controller::send`関数または, ストリーム入力演算子は`Gain`型を継承したクラスを引数に取る.
+そのため, `Gain`型を継承をしておく.
+今回は, 単一焦点を生成するので, 焦点位置をコンストラクタで渡してある.
 
-`Controller::send`に`GainPtr`を渡すと, 内部で`Gain::calc`メソッドが呼ばれる.
+`Controller::send`関数または, ストリーム入力演算子内部では`Gain::calc`メソッドが呼ばれる.
 そのため, この`calc`メソッド内で位相/振幅の計算を行えば良い.
 
 SDKで指定した$\SI{8}{bit}$のDuty比$D \in [0, 255]$, 及び, $\SI{8}{bit}$の位相$P \in [0, 255]$に対して, 振動子から放射される超音波音圧は$p$

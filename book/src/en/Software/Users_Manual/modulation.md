@@ -16,8 +16,7 @@ The SDK provides `Modulation`s to generate several kinds of AM by default.
 Without amplitude modulation.
 
 ```cpp
-  const auto m = autd::modulation::Static::create();
-  autd->send(m);
+  autd::modulation::Static m;
 ```
 
 Note that the first argument can be a value of `uint8_t` (default is 255), which can be used to change the output of the ultrasound uniformly.
@@ -26,7 +25,7 @@ Note that the first argument can be a value of `uint8_t` (default is 255), which
 
 `Modulation` for deforming the sound pressure into a sine wave shape.
 ```cpp
-  const auto m = autd::modulation::Sine::create(f, amplitude, offset); 
+  autd::modulation::Sine m(f, amplitude, offset); 
 ```
 
 The first argument is the frequency $f$, the second argument is $amplitude$ (1 by default), and the third argument is $offset$ (0.5 by default), and the sound pressure waveform will be
@@ -36,7 +35,7 @@ $$
 Here, values out of$[0,1]$ are clamped to fit in $[0,1]$.
 The sampling frequency is set to $\SI{4}{kHz}$ ($N=10$) by default.
 
-## SinePressure
+## SineSquared
 
 `Modulation` for deforming the radiation pressure, i.e. the square of the sound pressure, into sine wave shape.
 The arguments are the same as for `Sine`.
@@ -52,11 +51,20 @@ Also, the duty ratio, not the sound pressure, becomes sine wave.
 Square wave-shaped `Modulation`.
 
 ```cpp
-  const auto m = autd::modulation::Square::create(f, low, high); 
+autd::modulation::Square m(f, low, high); 
 ```
 The first argument is the frequency $f$, the second argument is low level (0 by default), the third argument is high level (255 by default).
 The duty ratio of the square modulation can be specified as the fourth argument.
 The duty ratio of the square modulation is defined by $t_\text{high}/T = t_\text{high}f$, where $t_\text{high}$ is the time to output high in a period $T=1/f$.
+
+## LPF
+
+`LPF` takes another `Modulation` as argument, and apply Low-pass filter to the `Modulation` for suppress noise.
+
+```cpp
+  autd::modulation::LPF lpf(m); 
+```
+
 
 ## Create Custom Modulation Tutorial
 
@@ -67,16 +75,12 @@ The following is a sample of `Burst`.
 ```cpp
 class Burst final : public autd::core::Modulation {
  public:
-  static autd::ModulationPtr create(size_t buf_size = 4000, uint16_t N = 10) {
-    return std::make_shared<BurstModulation>(buf_size, N);
-  }
-  
   void calc() override {
     this->_buffer.resize(_buf_size, 0);
     this->_buffer[_buf_size - 1] = 0xFF;
   }
 
-  Burst(const size_t buf_size, const uint16_t N) : Modulation(N), _buf_size(buf_size) {}
+  explicit Burst(const size_t buf_size = 4000, const uint16_t mod_freq_div = 10) : Modulation(mod_freq_div), _buf_size(buf_size) {}
 
  private:
   size_t _buf_size;
@@ -99,7 +103,7 @@ The base frequency of sampling frequency is $\SI{40}{kHz}$.
 The `sampling_freq_div_ratio` can be any integer between 1 and 65536.
 
 ```cpp
-    m->sampling_freq_div_ratio() = 5; // 40kHz/5 = 8kHz
+    m.sampling_freq_div_ratio() = 5; // 40kHz/5 = 8kHz
 ```
 
 ### sampling_freq
