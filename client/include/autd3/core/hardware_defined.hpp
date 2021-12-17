@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 16/12/2021
+// Last Modified: 17/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -214,8 +214,8 @@ class RxDatagram final {
  */
 static bool is_msg_processed(const uint8_t msg_id, const RxDatagram& rx) {
   size_t processed = 0;
-  for (auto& [ack, rx_msg_id] : rx)
-    if (rx_msg_id == msg_id) processed++;
+  for (auto& msg : rx)
+    if (msg.msg_id == msg_id) processed++;
   return processed == rx.num_messages();
 }
 
