@@ -1,5 +1,5 @@
 <map id="autd::Controller::STMController::StreamCommaInputSTM::operator=" name="autd::Controller::STMController::StreamCommaInputSTM::operator=">
-<area shape="rect" id="node1" title=" " alt="" coords="5,23,239,65"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,27,239,69"/>
 <area shape="rect" id="node2" href="$classautd_1_1Controller_1_1STMController.html#acfcbe266fc4a6647178588b0a4998bef" title="Add gain for STM." alt="" coords="287,5,511,32"/>
-<area shape="rect" id="node3" href="$namespaceautd_1_1core.html#a792b18ad4363d2a7d94648496fa6fe9c" title=" " alt="" coords="335,56,462,83"/>
+<area shape="rect" id="node3" href="$namespaceautd_1_1core_1_1type__traits.html#a624a07669909c27db238cfee1080f9e2" title=" " alt="" coords="327,57,471,98"/>
 </map>

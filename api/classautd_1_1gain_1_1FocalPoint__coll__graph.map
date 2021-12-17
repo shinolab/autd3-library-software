@@ -1,5 +1,5 @@
 <map id="autd::gain::FocalPoint" name="autd::gain::FocalPoint">
-<area shape="rect" id="node1" title="Gain to produce single focal point." alt="" coords="19,155,165,181"/>
-<area shape="rect" id="node2" href="$classautd_1_1core_1_1Gain.html" title="Gain controls the duty ratio and phase of each transducer in AUTD devices." alt="" coords="37,80,147,107"/>
-<area shape="rect" id="node3" href="$classautd_1_1core_1_1IDatagramBody.html" title=" " alt="" coords="5,5,179,32"/>
+<area shape="rect" id="node1" title="Gain to produce single focal point." alt="" coords="5,169,151,196"/>
+<area shape="rect" id="node2" href="$classautd_1_1core_1_1Gain.html" title="Gain controls the duty ratio and phase of each transducer in AUTD devices." alt="" coords="23,95,133,121"/>
+<area shape="rect" id="node3" href="$classautd_1_1core_1_1datagram_1_1IDatagramBody.html" title="IDatagramHeader interface represents the data to be packed in the Body part of the TxDatagram." alt="" coords="9,5,147,47"/>
 </map>

@@ -1,6 +1,6 @@
 <map id="autd::core::Sequence" name="autd::core::Sequence">
-<area shape="rect" id="node1" title=" " alt="" coords="116,80,259,107"/>
-<area shape="rect" id="node3" href="$classautd_1_1core_1_1GainSequence.html" title="GainSequence provides a function to display Gain sequentially and periodically." alt="" coords="5,155,175,181"/>
-<area shape="rect" id="node4" href="$classautd_1_1core_1_1PointSequence.html" title="PointSequence provides a function to display the focus sequentially and periodically." alt="" coords="199,155,371,181"/>
-<area shape="rect" id="node2" href="$classautd_1_1core_1_1IDatagramBody.html" title=" " alt="" coords="101,5,274,32"/>
+<area shape="rect" id="node1" title="Sequence provide hardware Spatio&#45;Temporal Modulation or Lateral Modulation function." alt="" coords="116,95,259,121"/>
+<area shape="rect" id="node3" href="$classautd_1_1core_1_1GainSequence.html" title="GainSequence provides a function to display Gain sequentially and periodically." alt="" coords="5,169,175,196"/>
+<area shape="rect" id="node4" href="$classautd_1_1core_1_1PointSequence.html" title="PointSequence provides a function to display the focus sequentially and periodically." alt="" coords="199,169,371,196"/>
+<area shape="rect" id="node2" href="$classautd_1_1core_1_1datagram_1_1IDatagramBody.html" title="IDatagramHeader interface represents the data to be packed in the Body part of the TxDatagram." alt="" coords="118,5,257,47"/>
 </map>

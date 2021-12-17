@@ -2,9 +2,9 @@
 <area shape="rect" id="node1" title=" " alt="" coords="349,5,477,47"/>
 <area shape="rect" id="node2" href="$gain_8hpp.html" title=" " alt="" coords="273,95,401,136"/>
 <area shape="rect" id="node3" href="$controller_8hpp.html" title=" " alt="" coords="5,281,185,307"/>
-<area shape="rect" id="node5" href="$type__hints_8hpp.html" title=" " alt="" coords="121,184,249,225"/>
-<area shape="rect" id="node9" href="$delay__offset_8hpp.html" title=" " alt="" coords="425,95,553,136"/>
-<area shape="rect" id="node10" href="$logic_8hpp.html" title=" " alt="" coords="627,95,755,136"/>
+<area shape="rect" id="node5" href="$type__traits_8hpp.html" title=" " alt="" coords="121,184,249,225"/>
+<area shape="rect" id="node9" href="$datagrams_8hpp.html" title=" " alt="" coords="627,95,755,136"/>
+<area shape="rect" id="node10" href="$delay__offset_8hpp.html" title=" " alt="" coords="425,95,553,136"/>
 <area shape="rect" id="node11" href="$modulation_8hpp.html" title=" " alt="" coords="769,184,897,225"/>
 <area shape="rect" id="node4" href="$autd3_8hpp.html" title=" " alt="" coords="478,363,601,389"/>
 <area shape="rect" id="node6" href="$sequence_8hpp.html" title=" " alt="" coords="222,273,350,315"/>

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['primitive_2ehpp_462',['primitive.hpp',['../gain_2primitive_8hpp.html',1,'(Global Namespace)'],['../modulation_2primitive_8hpp.html',1,'(Global Namespace)']]]
+  ['primitive_2ehpp_480',['primitive.hpp',['../gain_2primitive_8hpp.html',1,'(Global Namespace)'],['../modulation_2primitive_8hpp.html',1,'(Global Namespace)']]]
 ];

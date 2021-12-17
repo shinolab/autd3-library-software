@@ -1,9 +1,0 @@
-<map id="autd::gain::Grouped::add" name="autd::gain::Grouped::add">
-<area shape="rect" id="node1" title="Decide which device outputs which Gain." alt="" coords="5,148,164,175"/>
-<area shape="rect" id="node2" href="$classautd_1_1core_1_1Gain.html#a541ed3df20cd46883b4adb83c49fe6e8" title="Initialize data and call calc()." alt="" coords="212,64,356,91"/>
-<area shape="rect" id="node5" href="$classautd_1_1core_1_1Geometry.html#aa59d69f347e9fb2bedbbd73bda36b4e9" title="Number of devices." alt="" coords="593,86,733,127"/>
-<area shape="rect" id="node6" href="$classautd_1_1core_1_1Gain.html#a4fdc4db9dd7ed369861cf46fb0268770" title="Getter function for the data of duty ratio and phase of each transducers." alt="" coords="213,173,355,200"/>
-<area shape="rect" id="node7" href="$namespaceautd_1_1core.html#a792b18ad4363d2a7d94648496fa6fe9c" title=" " alt="" coords="221,224,347,251"/>
-<area shape="rect" id="node3" href="$classautd_1_1core_1_1Gain.html#a74f3b6b58e4a9be953660650b01e2e48" title="Calculate duty ratio and phase of each transducer." alt="" coords="404,5,545,32"/>
-<area shape="rect" id="node4" href="$classautd_1_1core_1_1Geometry.html#ad2da7e9abff6eb7914bd5e1e07b15cff" title="Number of transducers." alt="" coords="405,57,545,98"/>
-</map>

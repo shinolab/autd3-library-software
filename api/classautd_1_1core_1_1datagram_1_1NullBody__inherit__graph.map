@@ -1,0 +1,4 @@
+<map id="autd::core::datagram::NullBody" name="autd::core::datagram::NullBody">
+<area shape="rect" id="node1" title="NullBody is used for TxDatagram without Body data." alt="" coords="5,95,144,136"/>
+<area shape="rect" id="node2" href="$classautd_1_1core_1_1datagram_1_1IDatagramBody.html" title="IDatagramHeader interface represents the data to be packed in the Body part of the TxDatagram." alt="" coords="5,5,144,47"/>
+</map>

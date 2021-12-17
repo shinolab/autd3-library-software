@@ -1,5 +1,5 @@
 <map id="autd::modulation::Static" name="autd::modulation::Static">
-<area shape="rect" id="node1" title=" " alt="" coords="21,155,177,181"/>
-<area shape="rect" id="node2" href="$classautd_1_1core_1_1Modulation.html" title="Modulation controls the amplitude modulation." alt="" coords="25,80,172,107"/>
-<area shape="rect" id="node3" href="$classautd_1_1core_1_1IDatagramHeader.html" title=" " alt="" coords="5,5,192,32"/>
+<area shape="rect" id="node1" title="Modulation to avoid amplitude modulation." alt="" coords="5,169,161,196"/>
+<area shape="rect" id="node2" href="$classautd_1_1core_1_1Modulation.html" title="Modulation controls the amplitude modulation." alt="" coords="10,95,157,121"/>
+<area shape="rect" id="node3" href="$classautd_1_1core_1_1datagram_1_1IDatagramHeader.html" title="IDatagramHeader interface represents the data to be packed in the Header part of the TxDatagram." alt="" coords="14,5,153,47"/>
 </map>

@@ -1,5 +1,5 @@
 <map id="autd::gain::holo::Holo" name="autd::gain::holo::Holo">
-<area shape="rect" id="node1" title="Gain to produce multiple focal points." alt="" coords="22,155,162,181"/>
-<area shape="rect" id="node2" href="$classautd_1_1core_1_1Gain.html" title="Gain controls the duty ratio and phase of each transducer in AUTD devices." alt="" coords="37,80,147,107"/>
-<area shape="rect" id="node3" href="$classautd_1_1core_1_1IDatagramBody.html" title=" " alt="" coords="5,5,179,32"/>
+<area shape="rect" id="node1" title="Gain to produce multiple focal points." alt="" coords="5,169,145,196"/>
+<area shape="rect" id="node2" href="$classautd_1_1core_1_1Gain.html" title="Gain controls the duty ratio and phase of each transducer in AUTD devices." alt="" coords="20,95,131,121"/>
+<area shape="rect" id="node3" href="$classautd_1_1core_1_1datagram_1_1IDatagramBody.html" title="IDatagramHeader interface represents the data to be packed in the Body part of the TxDatagram." alt="" coords="6,5,145,47"/>
 </map>

@@ -1,4 +1,14 @@
 <map id="include/autd3/core/osal_timer.hpp" name="include/autd3/core/osal_timer.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="26,5,154,47"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,95,175,121"/>
+<area shape="rect" id="node1" title=" " alt="" coords="307,5,435,47"/>
+<area shape="rect" id="node2" href="$linux_2timer_8hpp.html" title=" " alt="" coords="286,95,455,121"/>
+<area shape="rect" id="node3" title=" " alt="" coords="5,177,72,203"/>
+<area shape="rect" id="node4" title=" " alt="" coords="97,177,154,203"/>
+<area shape="rect" id="node5" title=" " alt="" coords="179,177,240,203"/>
+<area shape="rect" id="node6" title=" " alt="" coords="265,177,333,203"/>
+<area shape="rect" id="node7" title=" " alt="" coords="438,259,493,285"/>
+<area shape="rect" id="node8" title=" " alt="" coords="408,177,467,203"/>
+<area shape="rect" id="node9" title=" " alt="" coords="491,177,543,203"/>
+<area shape="rect" id="node10" href="$exception_8hpp.html" title=" " alt="" coords="567,177,734,203"/>
+<area shape="rect" id="node12" href="$osal__callback_8hpp.html" title=" " alt="" coords="759,169,905,211"/>
+<area shape="rect" id="node11" title=" " alt="" coords="611,259,690,285"/>
 </map>
