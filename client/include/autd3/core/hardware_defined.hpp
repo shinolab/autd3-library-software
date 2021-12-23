@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 17/12/2021
+// Last Modified: 23/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -30,7 +30,6 @@ constexpr auto is_missing_transducer(T x, T y) {
   return y == 1 && (x == 1 || x == 2 || x == 16);
 }
 
-constexpr size_t FPGA_CLOCK = 20480000;
 constexpr size_t ULTRASOUND_FREQUENCY = 40000;
 
 constexpr size_t MOD_BUF_SIZE_MAX = 65536;
