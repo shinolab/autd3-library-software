@@ -3,7 +3,7 @@
 // Created Date: 14/04/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 23/12/2021
+// Last Modified: 15/01/2022
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -48,6 +48,7 @@ enum FPGA_CONTROL_FLAGS {
   NONE = 0,
   OUTPUT_ENABLE = 1 << 0,
   OUTPUT_BALANCE = 1 << 1,
+  READS_FPGA_INFO = 1 << 2,
   SILENT = 1 << 3,
   FORCE_FAN = 1 << 4,
   SEQ_MODE = 1 << 5,
@@ -59,7 +60,7 @@ enum CPU_CONTROL_FLAGS : uint8_t {
   MOD_END = 1 << 1,
   SEQ_BEGIN = 1 << 2,
   SEQ_END = 1 << 3,
-  READS_FPGA_INFO = 1 << 4,
+  SET_SILENT_STEP = 1 << 4,
   DELAY_OFFSET = 1 << 5,
   WRITE_BODY = 1 << 6,
   WAIT_ON_SYNC = 1 << 7,

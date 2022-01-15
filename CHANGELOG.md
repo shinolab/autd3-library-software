@@ -1,3 +1,9 @@
+# 1.11
+* Add `set_silent_step`
+* Fix #19
+* Add `AUTDModulationLPF` in capi
+* Update firmware version to 1.11
+
 # 1.10
 * Rename `SinePressure` to `SineSquared`
 * Add `wait_on_sync` flag to `Sequence`

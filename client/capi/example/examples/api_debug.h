@@ -3,7 +3,7 @@
 // Created Date: 15/12/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 15/12/2021
+// Last Modified: 15/01/2022
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -17,6 +17,12 @@ void api_debug(void* autd) {
   void* m = NULL;
   printf_s("SineSquared\n");
   AUTDModulationSineSquared(&m, 150, 1.0, 0.5);
+
+  void* lpf = NULL;
+  printf_s("LPF\n");
+  AUTDModulationLPF(&lpf, m);
+
+  AUTDSetSilentStep(autd, 1);
 
   AUTDSendHeaderBody(autd, m, g);
   AUTDDeleteGain(g);

@@ -3,7 +3,7 @@
 // Created Date: 07/02/2018
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/12/2021
+// Last Modified: 15/01/2022
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2018-2020 Hapis Lab. All rights reserved.
@@ -22,6 +22,7 @@ EXPORT_AUTD int32_t AUTDAddDevice(void* handle, double x, double y, double z, do
 EXPORT_AUTD int32_t AUTDAddDeviceQuaternion(void* handle, double x, double y, double z, double qw, double qx, double qy, double qz);
 EXPORT_AUTD int32_t AUTDCloseController(void* handle);
 EXPORT_AUTD int32_t AUTDClear(void* handle);
+EXPORT_AUTD int32_t AUTDSetSilentStep(void* handle, uint8_t step);
 EXPORT_AUTD void AUTDFreeController(const void* handle);
 EXPORT_AUTD bool AUTDIsOpen(const void* handle);
 EXPORT_AUTD bool AUTDGetOutputEnable(const void* handle);
@@ -67,6 +68,7 @@ EXPORT_AUTD void AUTDModulationSine(void** mod, int32_t freq, double amp, double
 EXPORT_AUTD void AUTDModulationSineSquared(void** mod, int32_t freq, double amp, double offset);
 EXPORT_AUTD void AUTDModulationSineLegacy(void** mod, double freq, double amp, double offset);
 EXPORT_AUTD void AUTDModulationSquare(void** mod, int32_t freq, uint8_t low, uint8_t high, double duty);
+EXPORT_AUTD void AUTDModulationLPF(void** mod, void* mod_in);
 EXPORT_AUTD uint32_t AUTDModulationSamplingFreqDiv(const void* mod);
 EXPORT_AUTD void AUTDModulationSetSamplingFreqDiv(void* mod, uint32_t freq_div);
 EXPORT_AUTD double AUTDModulationSamplingFreq(const void* mod);
