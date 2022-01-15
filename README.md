@@ -3,7 +3,7 @@
 
 # [AUTD3](https://hapislab.org/airborne-ultrasound-tactile-display?lang=en)
 
-Version: 1.10.0
+Version: 1.11.0
 
 ## :books: Document
 
@@ -78,4 +78,4 @@ See [LICENSE](./LICENSE) and [NOTICE](./NOTICE).
 
 # Author
 
-Shun Suzuki, 2019-2021
+Shun Suzuki, 2019-2022
