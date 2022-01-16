@@ -3,7 +3,7 @@
 // Created Date: 10/09/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 12/12/2021
+// Last Modified: 21/12/2021
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -56,6 +56,7 @@ void back_prop(P& pool, const std::shared_ptr<M>& transfer, const std::shared_pt
   const auto b_tmp = pool.rent_c("back_prop_tmp", m, m);
   b_tmp->create_diagonal(denominator);
 
+  b->fill(ZERO);
   b->mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, ONE, transfer, b_tmp, ZERO);
 }
 
@@ -88,6 +89,7 @@ void sdp_impl(P& pool, const core::Geometry& geometry, const std::vector<core::V
 
   mm->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, -ONE, b, pseudo_inv_b, ONE);
   const auto tmp = pool.rent_c("tmp", m, m);
+  tmp->fill(ZERO);
   tmp->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, p, mm, ZERO);
   mm->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, tmp, p, ZERO);
 
@@ -100,6 +102,7 @@ void sdp_impl(P& pool, const core::Geometry& geometry, const std::vector<core::V
   const auto zero = pool.rent_c("zero", m, 1);
   zero->fill(ZERO);
   const auto x = pool.rent_c("x", m, 1);
+  x->fill(ZERO);
   const auto x_conj = pool.rent_c("x_conj", m, 1);
   const auto mmc = pool.rent_c("mmc", m, 1);
   for (size_t i = 0; i < repeat; i++) {
@@ -128,9 +131,11 @@ void sdp_impl(P& pool, const core::Geometry& geometry, const std::vector<core::V
   x_mat->max_eigen_vector(u);
 
   const auto ut = pool.rent_c("ut", m, 1);
+  ut->fill(ZERO);
   ut->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, p, u, ZERO);
 
   const auto q = pool.rent_c("q", n, 1);
+  q->fill(ZERO);
   q->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, pseudo_inv_b, ut, ZERO);
 
   const auto max_coefficient = q->max_element();
@@ -152,6 +157,7 @@ void evd_impl(P& pool, const core::Geometry& geometry, const std::vector<core::V
   back_prop(pool, g, amps, x);
 
   const auto r = pool.rent_c("r", m, m);
+  r->fill(ZERO);
   r->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, g, x, ZERO);
   const auto max_ev = pool.rent_c("max_ev", m, 1);
   r->max_eigen_vector(max_ev);
@@ -159,6 +165,7 @@ void evd_impl(P& pool, const core::Geometry& geometry, const std::vector<core::V
   const auto sigma = pool.rent_c("sigma", n, n);
   {
     const auto sigma_tmp = pool.rent_c("sigma_tmp", n, 1);
+    sigma_tmp->fill(ZERO);
     sigma_tmp->mul(TRANSPOSE::TRANS, TRANSPOSE::NO_TRANS, ONE, g, amps, ZERO);
     sigma_tmp->abs(sigma_tmp);
     sigma_tmp->scale(1.0 / static_cast<double>(m));
@@ -174,14 +181,16 @@ void evd_impl(P& pool, const core::Geometry& geometry, const std::vector<core::V
   fm->arg(max_ev);
   fm->hadamard_product(amps, fm);
   const auto fn = pool.rent_c("fn", n, 1);
-  fn->fill(0.0);
+  fn->fill(ZERO);
   const auto f = pool.rent_c("f", m + n, 1);
   f->concat_row(fm, fn);
 
   const auto gtg = pool.rent_c("gtg", n, n);
+  gtg->fill(ZERO);
   gtg->mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, ONE, gr, gr, ZERO);
 
   const auto gtf = pool.rent_c("gtf", n, 1);
+  gtf->fill(ZERO);
   gtf->mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, ONE, gr, f, ZERO);
 
   gtg->solve(gtf);
@@ -202,7 +211,7 @@ void naive_impl(P& pool, const core::Geometry& geometry, const std::vector<core:
   p->copy_from(amps);
 
   const auto q = pool.rent_c("q", n, 1);
-
+  q->fill(ZERO);
   q->mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, ONE, g, p, ZERO);
 
   q->set_from_complex_drive(dst, true, 1.0);
@@ -227,8 +236,10 @@ void gs_impl(P& pool, const core::Geometry& geometry, const std::vector<core::Ve
   q->copy_from(q0);
 
   const auto gamma = pool.rent_c("gamma", m, 1);
+  gamma->fill(ZERO);
   const auto p = pool.rent_c("p", m, 1);
   const auto xi = pool.rent_c("xi", n, 1);
+  xi->fill(ZERO);
   for (size_t k = 0; k < repeat; k++) {
     gamma->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, g, q, ZERO);
     gamma->arg(gamma);
@@ -257,12 +268,14 @@ void gspat_impl(P& pool, const core::Geometry& geometry, const std::vector<core:
   back_prop(pool, g, amps, b);
 
   const auto r = pool.rent_c("r", m, m);
+  r->fill(ZERO);
   r->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, g, b, ZERO);
 
   const auto p = pool.rent_c("p", m, 1);
   p->copy_from(amps);
 
   const auto gamma = pool.rent_c("gamma", m, 1);
+  gamma->fill(ZERO);
   gamma->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, r, p, ZERO);
   for (size_t k = 0; k < repeat; k++) {
     gamma->arg(gamma);
@@ -279,6 +292,7 @@ void gspat_impl(P& pool, const core::Geometry& geometry, const std::vector<core:
   p->hadamard_product(gamma, tmp);
 
   const auto q = pool.rent_c("q", n, 1);
+  q->fill(ZERO);
   q->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, b, p, ZERO);
 
   q->set_from_complex_drive(dst, true, 1.0);
@@ -303,6 +317,7 @@ void make_bhb(P& pool, const std::vector<core::Vector3>& foci, const core::Geome
   b->concat_col(g, p);
 
   auto bhb = pool.rent_c("bhb", n_param, n_param);
+  bhb->fill(ZERO);
   bhb->mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, ONE, b, b, ZERO);
 }
 template <typename P>
@@ -322,6 +337,7 @@ void calc_jtf(P& pool, const size_t n_param) {
   const auto bhb_tth = pool.rent_c("bhb_tth", n_param, n_param);
   const auto bhb_tth_r = pool.rent("bhb_tth_r", n_param, n_param);
   const auto jtf = pool.rent("jtf", n_param, 1);
+  tth->fill(ZERO);
   tth->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::CONJ_TRANS, ONE, t, t, ZERO);
   bhb_tth->hadamard_product(bhb, tth);
   bhb_tth_r->imag(bhb_tth);
@@ -337,6 +353,7 @@ void calc_jtj_jtf(P& pool, const size_t n_param) {
   const auto bhb_tth_r = pool.rent("bhb_tth_r", n_param, n_param);
   const auto jtj = pool.rent("jtj", n_param, n_param);
   const auto jtf = pool.rent("jtf", n_param, 1);
+  tth->fill(ZERO);
   tth->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::CONJ_TRANS, ONE, t, t, ZERO);
   bhb_tth->hadamard_product(bhb, tth);
   jtj->real(bhb_tth);
@@ -471,6 +488,7 @@ void gauss_newton_impl(P& pool, const core::Geometry& geometry, const std::vecto
   calc_jtj_jtf(pool, n_param);
 
   const auto h_lm = pool.rent("h_lm", n_param, 1);
+  h_lm->fill(0.0);
   const auto pia = pool.rent("pis", n_param, n_param);
   auto u = pool.rent("u", n_param, n_param);
   auto s = pool.rent("s", n_param, n_param);
@@ -539,13 +557,16 @@ void apo_impl(P& pool, const core::Geometry& geometry, const std::vector<core::V
     di->set(i, i, ONE);
 
     auto ri = pool_.rent_c("ri" + std::to_string(i), n, n);
+    ri->fill(ZERO);
     const auto tmp = pool_.rent_c("tmp_ri", n, m);
+    tmp->fill(ZERO);
     tmp->mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, ONE, g, di, ZERO);
     ri->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, ONE, tmp, g, ZERO);
   };
 
   auto calc_nabla_j = [](P& pool_, const size_t m, const size_t n, const double lambda_, const std::string& nabla_j_name) {
     const auto tmp = pool_.rent_c("cnj_tmp", n, 1);
+    tmp->fill(ZERO);
     const auto q = pool_.rent_c("q", n, 1);
     const auto p2 = pool_.rent_c("p2", m, 1);
     const auto nabla_j = pool_.rent_c(nabla_j_name, n, 1);
@@ -564,6 +585,7 @@ void apo_impl(P& pool, const core::Geometry& geometry, const std::vector<core::V
     const auto q = pool_.rent_c("q", n, 1);
     const auto p2 = pool_.rent_c("p2", m, 1);
     const auto tmp = pool_.rent_c("cj_tmp", n, 1);
+    tmp->fill(ZERO);
     auto j = 0.0;
     for (size_t i = 0; i < m; i++) {
       auto ri = pool_.rent_c("ri" + std::to_string(i), n, n);
@@ -607,22 +629,28 @@ void apo_impl(P& pool, const core::Geometry& geometry, const std::vector<core::V
   h->create_diagonal(one);
 
   const auto tmp = pool.rent_c("tmp", n, n);
+  tmp->fill(ZERO);
   tmp->mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, ONE, g, g, ZERO);
   tmp->add(complex(lambda, 0.0), h);
 
   const auto q = pool.rent_c("q", n, 1);
+  q->fill(ZERO);
   q->mul(TRANSPOSE::CONJ_TRANS, TRANSPOSE::NO_TRANS, ONE, g, p, ZERO);
   tmp->solve(q);
 
   for (size_t i = 0; i < m; i++) make_ri(pool, m, n, i);
 
   const auto nabla_j = pool.rent_c("nabla_j", n, 1);
+  nabla_j->fill(ZERO);
   calc_nabla_j(pool, m, n, lambda, "nabla_j");
 
   const auto d = pool.rent_c("d", n, 1);
+  d->fill(ZERO);
   const auto nabla_j_new = pool.rent_c("nabla_j_new", n, 1);
+  nabla_j_new->fill(ZERO);
   const auto s = pool.rent_c("s", n, 1);
   const auto hs = pool.rent_c("hs", n, 1);
+  hs->fill(ZERO);
   for (size_t k = 0; k < k_max; k++) {
     d->mul(TRANSPOSE::NO_TRANS, TRANSPOSE::NO_TRANS, -ONE, h, nabla_j, ZERO);
 

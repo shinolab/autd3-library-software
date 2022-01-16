@@ -3,7 +3,7 @@
 // Created Date: 13/12/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 16/12/2021
+// Last Modified: 15/01/2022
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -71,6 +71,37 @@ class SpecialMessageIdHeader final : public IDatagramHeader {
 
  private:
   uint8_t _msg_id;
+  uint8_t _fpga_flag_mask;
+};
+
+/**
+ * @brief IDatagramHeader with silent step data
+ */
+class SilentStepHeader final : public IDatagramHeader {
+ public:
+  void init() override {}
+
+  void pack(const uint8_t msg_id, TxDatagram& tx, const uint8_t fpga_ctrl_flag, const uint8_t cpu_ctrl_flag) override {
+    auto* header = reinterpret_cast<GlobalHeader*>(tx.data());
+    header->msg_id = msg_id;
+    header->fpga_ctrl_flags = (header->fpga_ctrl_flags & ~_fpga_flag_mask) | (fpga_ctrl_flag & _fpga_flag_mask);
+    header->cpu_ctrl_flags = cpu_ctrl_flag | SET_SILENT_STEP;
+    header->mod_size = _silent_step;
+    tx.num_bodies() = 0;
+  }
+
+  [[nodiscard]] bool is_finished() const override { return true; }
+
+  explicit SilentStepHeader(const uint8_t silent_step, const uint8_t fpga_flag_mask) noexcept
+      : _silent_step(silent_step), _fpga_flag_mask(fpga_flag_mask) {}
+  ~SilentStepHeader() override = default;
+  SilentStepHeader(const SilentStepHeader& v) noexcept = delete;
+  SilentStepHeader& operator=(const SilentStepHeader& obj) = delete;
+  SilentStepHeader(SilentStepHeader&& obj) = default;
+  SilentStepHeader& operator=(SilentStepHeader&& obj) = default;
+
+ private:
+  uint8_t _silent_step;
   uint8_t _fpga_flag_mask;
 };
 

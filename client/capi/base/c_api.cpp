@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 15/12/2021
+// Last Modified: 15/01/2022
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -15,6 +15,7 @@
 #include "./autd3_c_api.h"
 #include "autd3.hpp"
 #include "autd3/gain/primitive.hpp"
+#include "autd3/modulation/lpf.hpp"
 #include "autd3/modulation/primitive.hpp"
 #include "custom.hpp"
 #include "wrapper.hpp"
@@ -75,6 +76,10 @@ int32_t AUTDCloseController(void* const handle) {
 int32_t AUTDClear(void* const handle) {
   auto* wrapper = static_cast<autd::Controller*>(handle);
   AUTD3_CAPI_TRY2(return wrapper->clear() ? 1 : 0)
+}
+int32_t AUTDSetSilentStep(void* handle, uint8_t step) {
+  auto* wrapper = static_cast<autd::Controller*>(handle);
+  AUTD3_CAPI_TRY2(return wrapper->set_silent_step(step) ? 1 : 0)
 }
 void AUTDFreeController(const void* const handle) {
   const auto* wrapper = static_cast<const autd::Controller*>(handle);
@@ -302,6 +307,10 @@ void AUTDModulationSineSquared(void** mod, const int32_t freq, const double amp,
 }
 void AUTDModulationSineLegacy(void** mod, const double freq, const double amp, const double offset) {
   *mod = new autd::modulation::SineLegacy(freq, amp, offset);
+}
+void AUTDModulationLPF(void** mod, void* mod_in) {
+  auto* m = static_cast<autd::Modulation*>(mod_in);
+  *mod = new autd::modulation::LPF(*m);
 }
 uint32_t AUTDModulationSamplingFreqDiv(const void* const mod) {
   const auto* const m = static_cast<const autd::Modulation*>(mod);

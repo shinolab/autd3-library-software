@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 15/12/2021
+// Last Modified: 15/01/2022
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -162,6 +162,11 @@ class Controller {
    * \return if this function returns true and check_ack is true, it guarantees that the devices have processed the data.
    */
   bool clear();
+
+  /**
+   * @brief Set silent step
+   */
+  bool set_silent_step(uint8_t step);
 
   /**
    * @brief Close the controller
