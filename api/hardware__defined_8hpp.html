@@ -170,9 +170,10 @@ Enumerations</h2></td></tr>
 &#160;&#160;<a class="el" href="namespaceautd_1_1core.html#ad80e2dde80c2141fb11382a28c8849d4a15f88bb08cc953500bc88b0c5eaf3ce7">autd::core::NONE</a> = 0, 
 <a class="el" href="namespaceautd_1_1core.html#ad80e2dde80c2141fb11382a28c8849d4a9e49c571743388e84d01ddbcfbd2aef1">autd::core::OUTPUT_ENABLE</a> = 1 &lt;&lt; 0, 
 <a class="el" href="namespaceautd_1_1core.html#ad80e2dde80c2141fb11382a28c8849d4a343f97663eeb81be5787a93a4269abf3">autd::core::OUTPUT_BALANCE</a> = 1 &lt;&lt; 1, 
-<a class="el" href="namespaceautd_1_1core.html#ad80e2dde80c2141fb11382a28c8849d4afcc5e91b084a9a9e9b6d56670f3b5207">autd::core::SILENT</a> = 1 &lt;&lt; 3, 
+<a class="el" href="namespaceautd_1_1core.html#ad80e2dde80c2141fb11382a28c8849d4a89eb500a63277ebf6c9bacb258589116">autd::core::READS_FPGA_INFO</a> = 1 &lt;&lt; 2, 
 <br />
-&#160;&#160;<a class="el" href="namespaceautd_1_1core.html#ad80e2dde80c2141fb11382a28c8849d4a917cb6ee4839bf4d1023c5b32206a460">autd::core::FORCE_FAN</a> = 1 &lt;&lt; 4, 
+&#160;&#160;<a class="el" href="namespaceautd_1_1core.html#ad80e2dde80c2141fb11382a28c8849d4afcc5e91b084a9a9e9b6d56670f3b5207">autd::core::SILENT</a> = 1 &lt;&lt; 3, 
+<a class="el" href="namespaceautd_1_1core.html#ad80e2dde80c2141fb11382a28c8849d4a917cb6ee4839bf4d1023c5b32206a460">autd::core::FORCE_FAN</a> = 1 &lt;&lt; 4, 
 <a class="el" href="namespaceautd_1_1core.html#ad80e2dde80c2141fb11382a28c8849d4aa9f097a7c7c66ec46878205bed324314">autd::core::SEQ_MODE</a> = 1 &lt;&lt; 5, 
 <a class="el" href="namespaceautd_1_1core.html#ad80e2dde80c2141fb11382a28c8849d4a42f3e8c6ac2c3510fcc14d594f595da3">autd::core::SEQ_GAIN_MODE</a> = 1 &lt;&lt; 6
 <br />
@@ -184,7 +185,7 @@ Enumerations</h2></td></tr>
 <a class="el" href="namespaceautd_1_1core.html#a4c14a3320231e0f788f368dbb7288e20a981ce87ab651fb3ad99802ab4e84ef16">autd::core::SEQ_BEGIN</a> = 1 &lt;&lt; 2, 
 <a class="el" href="namespaceautd_1_1core.html#a4c14a3320231e0f788f368dbb7288e20a0d9c03ee863287942006c481a9c73d4c">autd::core::SEQ_END</a> = 1 &lt;&lt; 3, 
 <br />
-&#160;&#160;<a class="el" href="namespaceautd_1_1core.html#a4c14a3320231e0f788f368dbb7288e20a89eb500a63277ebf6c9bacb258589116">autd::core::READS_FPGA_INFO</a> = 1 &lt;&lt; 4, 
+&#160;&#160;<a class="el" href="namespaceautd_1_1core.html#a4c14a3320231e0f788f368dbb7288e20a8e267423bd9fa5a135fc13af91a49ad1">autd::core::SET_SILENT_STEP</a> = 1 &lt;&lt; 4, 
 <a class="el" href="namespaceautd_1_1core.html#a4c14a3320231e0f788f368dbb7288e20a84e91e416b5d60bccfc14808e7b1cc63">autd::core::DELAY_OFFSET</a> = 1 &lt;&lt; 5, 
 <a class="el" href="namespaceautd_1_1core.html#a4c14a3320231e0f788f368dbb7288e20aaf66ee6554bc55df681bed28f6765b89">autd::core::WRITE_BODY</a> = 1 &lt;&lt; 6, 
 <a class="el" href="namespaceautd_1_1core.html#a4c14a3320231e0f788f368dbb7288e20a10f9a6e216ee7c045dc108807085c145">autd::core::WAIT_ON_SYNC</a> = 1 &lt;&lt; 7
@@ -215,8 +216,6 @@ Variables</h2></td></tr>
 <tr class="separator:a167e902c4acabc970e51f01079d385e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab862948757797bdf3611cf9d5ddd408d"><td class="memItemLeft" align="right" valign="top">constexpr double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core.html#ab862948757797bdf3611cf9d5ddd408d">autd::core::DEVICE_HEIGHT</a> = 151.4</td></tr>
 <tr class="separator:ab862948757797bdf3611cf9d5ddd408d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a37e661c09e5d4fefdb064dae78c04c68"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core.html#a37e661c09e5d4fefdb064dae78c04c68">autd::core::FPGA_CLOCK</a> = 20480000</td></tr>
-<tr class="separator:a37e661c09e5d4fefdb064dae78c04c68"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac58d8c1c4b3e46d991a68beee99339a8"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core.html#ac58d8c1c4b3e46d991a68beee99339a8">autd::core::ULTRASOUND_FREQUENCY</a> = 40000</td></tr>
 <tr class="separator:ac58d8c1c4b3e46d991a68beee99339a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c76774262950ef34b753f4d687cf124"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceautd_1_1core.html#a8c76774262950ef34b753f4d687cf124">autd::core::MOD_BUF_SIZE_MAX</a> = 65536</td></tr>

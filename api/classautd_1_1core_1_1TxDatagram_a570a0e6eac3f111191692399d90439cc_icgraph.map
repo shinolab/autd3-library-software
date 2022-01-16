@@ -1,7 +1,8 @@
 <map id="autd::core::TxDatagram::data" name="autd::core::TxDatagram::data">
-<area shape="rect" id="node1" title=" " alt="" coords="264,104,419,145"/>
+<area shape="rect" id="node1" title=" " alt="" coords="264,136,419,177"/>
 <area shape="rect" id="node2" href="$classautd_1_1core_1_1TxDatagram.html#a9474d67a10cfe03883587d04f2b30d9e" title=" " alt="" coords="33,5,188,47"/>
 <area shape="rect" id="node3" href="$classautd_1_1core_1_1datagram_1_1CommonHeader.html#af809438da77b4811895358bdb71206a0" title=" " alt="" coords="33,71,189,112"/>
 <area shape="rect" id="node4" href="$classautd_1_1core_1_1datagram_1_1SpecialMessageIdHeader.html#ab37b45d276da38bef3bb411dc55b73c6" title=" " alt="" coords="5,136,216,177"/>
-<area shape="rect" id="node5" href="$classautd_1_1core_1_1Modulation.html#a50ebca34f8677b2699dfab6da9705dbf" title=" " alt="" coords="37,201,184,243"/>
+<area shape="rect" id="node5" href="$classautd_1_1core_1_1datagram_1_1SilentStepHeader.html#a370298283410bc65dfd6451f206768bc" title=" " alt="" coords="29,201,193,243"/>
+<area shape="rect" id="node6" href="$classautd_1_1core_1_1Modulation.html#a50ebca34f8677b2699dfab6da9705dbf" title=" " alt="" coords="37,267,184,308"/>
 </map>

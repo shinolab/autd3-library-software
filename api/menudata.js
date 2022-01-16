@@ -53,7 +53,6 @@ var menudata={children:[
 {text:"Variables",url:"namespacemembers_vars.html",children:[
 {text:"d",url:"namespacemembers_vars.html#index_d"},
 {text:"e",url:"namespacemembers_vars.html#index_e"},
-{text:"f",url:"namespacemembers_vars.html#index_f"},
 {text:"g",url:"namespacemembers_vars.html#index_g"},
 {text:"h",url:"namespacemembers_vars.html#index_h"},
 {text:"i",url:"namespacemembers_vars.html#index_i"},
