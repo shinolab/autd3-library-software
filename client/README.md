@@ -103,4 +103,4 @@ cmake .. -DBUILD_HOLO_GAIN=ON -DBUILD_ARRAYFIRE_BACKEND=ON
 
 # Author
 
-Shun Suzuki, 2019-2021
+Shun Suzuki, 2019-2022

@@ -3,7 +3,7 @@
 // Created Date: 05/11/2020
 // Author: Shun Suzuki
 // -----
-// Last Modified: 17/12/2021
+// Last Modified: 15/01/2022
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -34,6 +34,7 @@ uint8_t Controller::ControllerProps::fpga_ctrl_flag() const {
   uint8_t flag = 0;
   if (this->_output_enable) flag |= core::OUTPUT_ENABLE;
   if (this->_output_balance) flag |= core::OUTPUT_BALANCE;
+  if (this->_reads_fpga_info) flag |= core::READS_FPGA_INFO;
   if (this->_silent_mode) flag |= core::SILENT;
   if (this->_force_fan) flag |= core::FORCE_FAN;
   return flag;
@@ -41,7 +42,6 @@ uint8_t Controller::ControllerProps::fpga_ctrl_flag() const {
 
 uint8_t Controller::ControllerProps::cpu_ctrl_flag() const {
   uint8_t flag = 0;
-  if (this->_reads_fpga_info) flag |= core::READS_FPGA_INFO;
   return flag;
 }
 
@@ -78,7 +78,7 @@ const std::vector<core::FPGAInfo>& Controller::fpga_info() {
 }
 
 bool Controller::update_ctrl_flag() {
-  core::datagram::CommonHeader header(core::OUTPUT_ENABLE | core::OUTPUT_BALANCE | core::SILENT | core::FORCE_FAN);
+  core::datagram::CommonHeader header(core::OUTPUT_ENABLE | core::OUTPUT_BALANCE | core::SILENT | core::READS_FPGA_INFO | core::FORCE_FAN);
   return send_impl(header);
 }
 
@@ -96,6 +96,11 @@ void Controller::open(core::LinkPtr link) {
 
 bool Controller::clear() {
   core::datagram::SpecialMessageIdHeader header(core::MSG_CLEAR, 0xFF);
+  return send_impl(header);
+}
+
+bool Controller::set_silent_step(const uint8_t step) {
+  core::datagram::SilentStepHeader header(step, 0xFF);
   return send_impl(header);
 }
 
