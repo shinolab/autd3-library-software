@@ -3,7 +3,7 @@
 // Created Date: 08/03/2021
 // Author: Shun Suzuki
 // -----
-// Last Modified: 15/12/2021
+// Last Modified: 08/03/2022
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2021 Hapis Lab. All rights reserved.
@@ -118,16 +118,14 @@ class SOEMController {
   void receive(core::RxDatagram& rx) const;
 
  private:
-  void setup_sync0(bool activate, uint32_t cycle_time_ns) const;
-
   bool error_handle();
   std::function<void(std::string)> _on_lost = nullptr;
 
   IOMap _io_map;
   size_t _dev_num;
   uint32_t _sm3_cycle_time_ms;
-  uint32_t _sync0_cycle_time_ns;
   bool _is_open;
+  std::unique_ptr<uint32_t[]> _user_data;
 
   std::vector<core::TxDatagram> _send_buf;
   size_t _send_buf_cursor;

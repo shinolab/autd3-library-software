@@ -3,7 +3,7 @@
 // Created Date: 23/08/2019
 // Author: Shun Suzuki
 // -----
-// Last Modified: 15/12/2021
+// Last Modified: 08/03/2022
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2019-2020 Hapis Lab. All rights reserved.
@@ -31,6 +31,7 @@ void SOEMCallback::callback() {
   if (auto expected = false; _rt_lock.compare_exchange_weak(expected, true)) {
     ec_send_processdata();
     this->_sent->store(true, std::memory_order_release);
+    ec_receive_processdata(EC_TIMEOUTRET);
     if (const auto wkc = ec_receive_processdata(EC_TIMEOUTRET); wkc != _expected_wkc)
       if (!this->_error_handler()) return;
     _rt_lock.store(false, std::memory_order_release);
@@ -58,15 +59,12 @@ void SOEMController::receive(core::RxDatagram& rx) const {
   rx.copy_from(_io_map.input());
 }
 
-void SOEMController::setup_sync0(const bool activate, const uint32_t cycle_time_ns) const {
-  for (size_t slave = 1; slave <= _dev_num; slave++) ec_dcsync0(static_cast<uint16_t>(slave), activate, cycle_time_ns, 0);
-}
-
 void SOEMController::open(const char* ifname, const size_t dev_num, const ECConfig config) {
   _dev_num = dev_num;
 
   _sm3_cycle_time_ms = config.ec_sm3_cycle_time_ns / 1000 / 1000;
-  _sync0_cycle_time_ns = config.ec_sync0_cycle_time_ns;
+
+  _user_data[0] = config.ec_sync0_cycle_time_ns;
 
   this->_send_buf.clear();
   this->_send_buf.reserve(SEND_BUF_SIZE);
@@ -89,32 +87,35 @@ void SOEMController::open(const char* ifname, const size_t dev_num, const ECConf
     throw core::exception::LinkError(ss.str());
   }
 
-  ec_config_map(_io_map.get());
+  ecx_context.userdata = _user_data.get();
+
+  auto dc_config = [](ecx_contextt* const context, const uint16_t slave) -> int {
+    const auto cyc_time = static_cast<uint32_t*>(context->userdata)[0];
+    ec_dcsync0(slave, true, cyc_time, 0U);
+    return 0;
+  };
+  if (ec_slavecount >= 1)
+    for (int cnt = 1; cnt <= ec_slavecount; cnt++) ec_slave[cnt].PO2SOconfigx = dc_config;
 
   ec_configdc();
 
-  ec_statecheck(0, EC_STATE_SAFE_OP, EC_TIMEOUTSTATE * 4);
-
-  ec_slave[0].state = EC_STATE_OPERATIONAL;
-  ec_send_processdata();
-  ec_receive_processdata(EC_TIMEOUTRET);
-
-  ec_writestate(0);
-
-  auto chk = 200;
-  do {
-    ec_statecheck(0, EC_STATE_OPERATIONAL, 50000);
-  } while (chk-- && ec_slave[0].state != EC_STATE_OPERATIONAL);
-
-  if (ec_slave[0].state != EC_STATE_OPERATIONAL) throw core::exception::LinkError("One ore more slaves are not responding");
-
-  setup_sync0(true, config.ec_sync0_cycle_time_ns);
+  ec_config_map(_io_map.get());
 
   const auto expected_wkc = ec_group[0].outputsWKC * 2 + ec_group[0].inputsWKC;
   const auto interval_us = config.ec_sm3_cycle_time_ns / 1000;
   this->_timer = core::timer::Timer<SOEMCallback>::start(std::make_unique<SOEMCallback>(
                                                              expected_wkc, [this] { return this->error_handle(); }, &this->_sent),
                                                          interval_us);
+
+  ec_statecheck(0, EC_STATE_SAFE_OP, EC_TIMEOUTSTATE * 4);
+
+  ec_slave[0].state = EC_STATE_OPERATIONAL;
+
+  ec_writestate(0);
+
+  ec_statecheck(0, EC_STATE_OPERATIONAL, EC_TIMEOUTSTATE * 5);
+
+  if (ec_slave[0].state != EC_STATE_OPERATIONAL) throw core::exception::LinkError("One ore more slaves are not responding");
 
   _is_open = true;
   this->_send_thread = std::thread([this] {
@@ -153,7 +154,8 @@ void SOEMController::close() {
 
   const auto _ = this->_timer->stop();
 
-  setup_sync0(false, _sync0_cycle_time_ns);
+  const auto cyc_time = static_cast<uint32_t*>(ecx_context.userdata)[0];
+  for (uint16_t slave = 1; slave <= static_cast<uint16_t>(ec_slavecount); slave++) ec_dcsync0(slave, false, cyc_time, 0U);
 
   ec_slave[0].state = EC_STATE_INIT;
   ec_writestate(0);
@@ -205,13 +207,19 @@ bool SOEMController::error_handle() {
   }
   if (!ec_group[0].docheckstate) return true;
 
-  this->_is_open = false;
-  if (_on_lost != nullptr) _on_lost(ss.str());
-  return false;
+  for (uint16_t slave = 1; slave <= static_cast<uint16_t>(ec_slavecount); slave++) {
+    if (ec_slave[slave].islost != 0) {
+      this->_is_open = false;
+      if (_on_lost != nullptr) _on_lost(ss.str());
+      return false;
+    }
+  }
+
+  return true;
 }
 
 SOEMController::SOEMController()
-    : _dev_num(0), _sm3_cycle_time_ms(0), _sync0_cycle_time_ns(0), _is_open(false), _send_buf_cursor(0), _send_buf_size(0) {}
+    : _dev_num(0), _sm3_cycle_time_ms(0), _is_open(false), _user_data(std::make_unique<uint32_t[]>(1)), _send_buf_cursor(0), _send_buf_size(0) {}
 
 SOEMController::~SOEMController() {
   try {
