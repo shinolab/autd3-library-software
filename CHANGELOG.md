@@ -1,3 +1,6 @@
+# 1.11.1
+* Fix link::soem
+
 # 1.11
 * Add `set_silent_step`
 * Fix #19
