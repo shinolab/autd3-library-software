@@ -1,5 +1,0 @@
-<map id="autd::gain::Grouped" name="autd::gain::Grouped">
-<area shape="rect" id="node1" title="Gain to group some gains." alt="" coords="9,169,141,196"/>
-<area shape="rect" id="node2" href="$classautd_1_1core_1_1Gain.html" title="Gain controls the duty ratio and phase of each transducer in AUTD devices." alt="" coords="19,95,130,121"/>
-<area shape="rect" id="node3" href="$classautd_1_1core_1_1datagram_1_1IDatagramBody.html" title="IDatagramHeader interface represents the data to be packed in the Body part of the TxDatagram." alt="" coords="5,5,144,47"/>
-</map>

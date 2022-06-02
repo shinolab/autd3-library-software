@@ -1,6 +1,0 @@
-<map id="autd::gain::holo::GSPAT" name="autd::gain::holo::GSPAT">
-<area shape="rect" id="node1" title="Gain to produce multiple focal points with GS&#45;PAT method (not yet been implemented with GPU)...." alt="" coords="5,244,164,271"/>
-<area shape="rect" id="node2" href="$classautd_1_1gain_1_1holo_1_1Holo.html" title="Gain to produce multiple focal points." alt="" coords="15,169,155,196"/>
-<area shape="rect" id="node3" href="$classautd_1_1core_1_1Gain.html" title="Gain controls the duty ratio and phase of each transducer in AUTD devices." alt="" coords="29,95,140,121"/>
-<area shape="rect" id="node4" href="$classautd_1_1core_1_1datagram_1_1IDatagramBody.html" title="IDatagramHeader interface represents the data to be packed in the Body part of the TxDatagram." alt="" coords="15,5,154,47"/>
-</map>

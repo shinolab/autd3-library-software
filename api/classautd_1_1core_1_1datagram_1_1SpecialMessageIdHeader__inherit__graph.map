@@ -1,4 +1,0 @@
-<map id="autd::core::datagram::SpecialMessageIdHeader" name="autd::core::datagram::SpecialMessageIdHeader">
-<area shape="rect" id="node1" title="IDatagramHeader with special message id." alt="" coords="5,95,183,136"/>
-<area shape="rect" id="node2" href="$classautd_1_1core_1_1datagram_1_1IDatagramHeader.html" title="IDatagramHeader interface represents the data to be packed in the Header part of the TxDatagram." alt="" coords="25,5,163,47"/>
-</map>

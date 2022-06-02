@@ -1,7 +1,0 @@
-<map id="autd::core::Modulation::pack" name="autd::core::Modulation::pack">
-<area shape="rect" id="node1" title=" " alt="" coords="5,104,152,145"/>
-<area shape="rect" id="node2" href="$classautd_1_1core_1_1TxDatagram.html#a570a0e6eac3f111191692399d90439cc" title=" " alt="" coords="205,5,360,47"/>
-<area shape="rect" id="node3" href="$classautd_1_1core_1_1Modulation.html#adfd760f03cd38844d422c9a956b29e2e" title=" " alt="" coords="209,71,356,112"/>
-<area shape="rect" id="node4" href="$classautd_1_1core_1_1TxDatagram.html#a21f53072ff985cfe7c6192d32d0f4a67" title=" " alt="" coords="205,136,360,177"/>
-<area shape="rect" id="node5" href="$classautd_1_1core_1_1Modulation.html#ae0729af48e6740d188423a485d0990de" title="sampling frequency division ratio" alt="" coords="200,201,365,243"/>
-</map>

@@ -1,4 +1,0 @@
-<map id="autd::gain::holo::BLASBackend" name="autd::gain::holo::BLASBackend">
-<area shape="rect" id="node1" title="BLAS/LAPACK Backend for HoloGain." alt="" coords="5,80,204,107"/>
-<area shape="rect" id="node2" href="$classautd_1_1gain_1_1holo_1_1Backend.html" title="Backend for HoloGain." alt="" coords="23,5,187,32"/>
-</map>

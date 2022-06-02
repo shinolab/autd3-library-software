@@ -1,6 +1,0 @@
-<map id="autd::gain::holo::APO" name="autd::gain::holo::APO">
-<area shape="rect" id="node1" title="Gain to produce multiple focal points with Acoustic Power Optimization method. Refer to Keisuke Haseg..." alt="" coords="5,244,147,271"/>
-<area shape="rect" id="node2" href="$classautd_1_1gain_1_1holo_1_1Holo.html" title="Gain to produce multiple focal points." alt="" coords="6,169,146,196"/>
-<area shape="rect" id="node3" href="$classautd_1_1core_1_1Gain.html" title="Gain controls the duty ratio and phase of each transducer in AUTD devices." alt="" coords="21,95,131,121"/>
-<area shape="rect" id="node4" href="$classautd_1_1core_1_1datagram_1_1IDatagramBody.html" title="IDatagramHeader interface represents the data to be packed in the Body part of the TxDatagram." alt="" coords="7,5,145,47"/>
-</map>

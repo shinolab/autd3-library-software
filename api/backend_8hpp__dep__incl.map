@@ -1,8 +1,0 @@
-<map id="include/autd3/gain/backend.hpp" name="include/autd3/gain/backend.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="340,5,467,47"/>
-<area shape="rect" id="node2" href="$arrayfire__backend_8hpp.html" title=" " alt="" coords="5,95,156,136"/>
-<area shape="rect" id="node3" href="$blas__backend_8hpp.html" title=" " alt="" coords="181,95,311,136"/>
-<area shape="rect" id="node4" href="$cuda__backend_8hpp.html" title=" " alt="" coords="336,95,471,136"/>
-<area shape="rect" id="node5" href="$eigen__backend_8hpp.html" title=" " alt="" coords="495,95,632,136"/>
-<area shape="rect" id="node6" href="$holo_8hpp.html" title=" " alt="" coords="656,95,783,136"/>
-</map>

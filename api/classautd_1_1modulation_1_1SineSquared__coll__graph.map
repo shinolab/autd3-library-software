@@ -1,5 +1,0 @@
-<map id="autd::modulation::SineSquared" name="autd::modulation::SineSquared">
-<area shape="rect" id="node1" title="Sine wave modulation in squared acoustic pressure, which is proportional to radiation pressure." alt="" coords="5,169,201,196"/>
-<area shape="rect" id="node2" href="$classautd_1_1core_1_1Modulation.html" title="Modulation controls the amplitude modulation." alt="" coords="30,95,177,121"/>
-<area shape="rect" id="node3" href="$classautd_1_1core_1_1datagram_1_1IDatagramHeader.html" title="IDatagramHeader interface represents the data to be packed in the Header part of the TxDatagram." alt="" coords="34,5,173,47"/>
-</map>

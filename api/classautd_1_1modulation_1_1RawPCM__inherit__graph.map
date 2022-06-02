@@ -1,5 +1,0 @@
-<map id="autd::modulation::RawPCM" name="autd::modulation::RawPCM">
-<area shape="rect" id="node1" title="Modulation created from raw pcm data." alt="" coords="5,169,183,196"/>
-<area shape="rect" id="node2" href="$classautd_1_1core_1_1Modulation.html" title="Modulation controls the amplitude modulation." alt="" coords="21,95,167,121"/>
-<area shape="rect" id="node3" href="$classautd_1_1core_1_1datagram_1_1IDatagramHeader.html" title="IDatagramHeader interface represents the data to be packed in the Header part of the TxDatagram." alt="" coords="25,5,163,47"/>
-</map>

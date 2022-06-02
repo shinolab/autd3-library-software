@@ -1,4 +1,0 @@
-<map id="autd::gain::holo::CUDABackend" name="autd::gain::holo::CUDABackend">
-<area shape="rect" id="node1" title="CUDA Backend for HoloGain." alt="" coords="5,80,207,107"/>
-<area shape="rect" id="node2" href="$classautd_1_1gain_1_1holo_1_1Backend.html" title="Backend for HoloGain." alt="" coords="24,5,188,32"/>
-</map>

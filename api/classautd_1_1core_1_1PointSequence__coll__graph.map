@@ -1,5 +1,0 @@
-<map id="autd::core::PointSequence" name="autd::core::PointSequence">
-<area shape="rect" id="node1" title="PointSequence provides a function to display the focus sequentially and periodically." alt="" coords="5,169,177,196"/>
-<area shape="rect" id="node2" href="$classautd_1_1core_1_1Sequence.html" title="Sequence provide hardware Spatio&#45;Temporal Modulation or Lateral Modulation function." alt="" coords="20,95,163,121"/>
-<area shape="rect" id="node3" href="$classautd_1_1core_1_1datagram_1_1IDatagramBody.html" title="IDatagramHeader interface represents the data to be packed in the Body part of the TxDatagram." alt="" coords="22,5,161,47"/>
-</map>

@@ -1,5 +1,0 @@
-<map id="autd::modulation::LPF" name="autd::modulation::LPF">
-<area shape="rect" id="node1" title="LPF Modulation to reduce noise." alt="" coords="5,169,152,196"/>
-<area shape="rect" id="node2" href="$classautd_1_1core_1_1Modulation.html" title="Modulation controls the amplitude modulation." alt="" coords="5,95,152,121"/>
-<area shape="rect" id="node3" href="$classautd_1_1core_1_1datagram_1_1IDatagramHeader.html" title="IDatagramHeader interface represents the data to be packed in the Header part of the TxDatagram." alt="" coords="9,5,148,47"/>
-</map>

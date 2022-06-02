@@ -1,6 +1,0 @@
-<map id="autd::core::Gain::data" name="autd::core::Gain::data">
-<area shape="rect" id="node1" title="Getter function for the data of duty ratio and phase of each transducers." alt="" coords="529,31,672,57"/>
-<area shape="rect" id="node2" href="$classautd_1_1gain_1_1Grouped.html#ae8a4abf7bef3e3fad1e9773e38301007" title="Decide which device outputs which Gain." alt="" coords="304,5,463,32"/>
-<area shape="rect" id="node3" href="$classautd_1_1core_1_1GainSequence.html#a533cbda8db20a20d187bfd7c3ab85ae3" title="Add gain." alt="" coords="285,56,481,83"/>
-<area shape="rect" id="node4" href="$classautd_1_1core_1_1GainSequence_1_1StreamCommaInputGS.html#a7f07f76e143c00f8af96646db8aa15b9" title=" " alt="" coords="5,49,237,90"/>
-</map>

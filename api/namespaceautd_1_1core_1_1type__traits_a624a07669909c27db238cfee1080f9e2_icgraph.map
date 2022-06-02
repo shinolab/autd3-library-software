@@ -1,8 +1,0 @@
-<map id="autd::core::type_traits::to_gain" name="autd::core::type_traits::to_gain">
-<area shape="rect" id="node1" title=" " alt="" coords="567,78,711,119"/>
-<area shape="rect" id="node2" href="$classautd_1_1gain_1_1Grouped.html#ae8a4abf7bef3e3fad1e9773e38301007" title="Decide which device outputs which Gain." alt="" coords="323,5,481,32"/>
-<area shape="rect" id="node3" href="$classautd_1_1core_1_1GainSequence.html#a533cbda8db20a20d187bfd7c3ab85ae3" title="Add gain." alt="" coords="304,56,500,83"/>
-<area shape="rect" id="node5" href="$classautd_1_1Controller_1_1STMController_1_1StreamCommaInputSTM.html#aaece4ce3c14bb988cdb45ba16df48bd8" title=" " alt="" coords="287,107,517,149"/>
-<area shape="rect" id="node6" href="$classautd_1_1Controller_1_1STMController_1_1StreamCommaInputSTM.html#a5ba1a4f91b6e014a6d79b55d35df2249" title=" " alt="" coords="285,173,519,214"/>
-<area shape="rect" id="node4" href="$classautd_1_1core_1_1GainSequence_1_1StreamCommaInputGS.html#a7f07f76e143c00f8af96646db8aa15b9" title=" " alt="" coords="5,49,237,90"/>
-</map>

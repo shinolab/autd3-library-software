@@ -1,5 +1,0 @@
-<map id="autd::core::GainSequence" name="autd::core::GainSequence">
-<area shape="rect" id="node1" title="GainSequence provides a function to display Gain sequentially and periodically." alt="" coords="5,169,175,196"/>
-<area shape="rect" id="node2" href="$classautd_1_1core_1_1Sequence.html" title="Sequence provide hardware Spatio&#45;Temporal Modulation or Lateral Modulation function." alt="" coords="19,95,161,121"/>
-<area shape="rect" id="node3" href="$classautd_1_1core_1_1datagram_1_1IDatagramBody.html" title="IDatagramHeader interface represents the data to be packed in the Body part of the TxDatagram." alt="" coords="21,5,159,47"/>
-</map>

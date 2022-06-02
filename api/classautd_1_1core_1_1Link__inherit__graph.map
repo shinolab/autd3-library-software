@@ -1,7 +1,0 @@
-<map id="autd::core::Link" name="autd::core::Link">
-<area shape="rect" id="node1" title="Link is the interface to the AUTD device." alt="" coords="280,5,389,32"/>
-<area shape="rect" id="node2" href="$classautd_1_1link_1_1Emulator.html" title="Emulator link for AUTD&#45;emulator" alt="" coords="5,80,136,107"/>
-<area shape="rect" id="node3" href="$classautd_1_1link_1_1RemoteTwinCAT.html" title="Link using TwinCAT via Beckhoff ADS." alt="" coords="160,80,339,107"/>
-<area shape="rect" id="node4" href="$classautd_1_1link_1_1SOEM.html" title="Link using SOEM" alt="" coords="363,80,480,107"/>
-<area shape="rect" id="node5" href="$classautd_1_1link_1_1TwinCAT.html" title="Link using TwinCAT." alt="" coords="504,80,637,107"/>
-</map>
